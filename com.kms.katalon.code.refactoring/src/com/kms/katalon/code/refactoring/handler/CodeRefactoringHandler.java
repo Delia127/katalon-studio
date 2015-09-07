@@ -78,7 +78,7 @@ public class CodeRefactoringHandler implements EventHandler {
 						.openConfirm(
 								null,
 								"Confirmation",
-								"System has detected that your current project's using the old version of Katalon(older than 3.0.129).\n"
+								"System has detected that your current project's using the old version of Katalon(older than 3.0.128).\n"
 										+ "Please note that our libraries prefix now start with com.kms.katalon instead of com.kms.qautomate.\n"
 										+ "To continue working with our verison, system need to modify your script. Do you want to continue?");
 			}
