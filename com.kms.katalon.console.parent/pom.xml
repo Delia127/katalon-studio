@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<artifactId>com.kms.katalon.console.parent</artifactId>
+	<packaging>pom</packaging>
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.kms</groupId>
+		<artifactId>com.kms.parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+  
+	<modules>
+		<module>../com.kms.katalon.target</module>
+		<module>../com.kms.katalon.constant</module>		
+		<module>../com.kms.katalon.entity</module>
+		<module>../ com.kms.katalon.preferences</module>
+		<module>../com.kms.katalon.engine</module>
+		<module>../com.kms.katalon.groovy</module>
+		<module>../com.kms.katalon.core</module>
+		<module>../com.kms.katalon.custom</module>
+		<module>../com.kms.katalon.dal</module>
+		<module>../com.kms.katalon.dal.file</module>
+		<module>../com.kms.katalon.integration.qtest</module>
+		<module>../com.kms.katalon.controller</module>
+		<module>../com.kms.katalon.execution</module>
+		<module>../com.kms.katalon.console.feature</module>
+		<module>../com.kms.katalon.console</module>
+		<module>../com.kms.katalon.console.product</module>
+	</modules>
+	
+
+	<properties>
+		<tycho.version>0.19.0</tycho.version>
+		<eclipse_repo_url>http://download.eclipse.org/eclipse/updates/4.5milestones/</eclipse_repo_url>
+		<eclipse_orbit_repo_url>http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/</eclipse_orbit_repo_url>
+		<groovy_repo_url>http://dist.springsource.org/snapshot/GRECLIPSE/e4.4/</groovy_repo_url>
+	</properties>
+
+	<dependencies>
+  <dependency>
+    <groupId>org.codehaus.groovy</groupId>
+    <artifactId>groovy-all</artifactId>
+    <version>2.1.8</version>
+  </dependency>
+</dependencies>
+  
+	<repositories>
+		<repository>
+			<id>eclipse_repo</id>
+			<url>${eclipse_repo_url}</url>
+			<layout>p2</layout>
+		</repository>
+		
+		<repository>
+			<id>eclipse_orbit_repo</id>
+			<url>${eclipse_orbit_repo_url}</url>
+			<layout>p2</layout>
+		</repository>
+		
+		<repository>
+			<id>groovy_repo</id>
+			<url>${groovy_repo_url}</url>
+			<layout>p2</layout>
+		</repository>
+
+	</repositories>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<extensions>true</extensions>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-compiler-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<excludeResources>
+						<excludeResource>**/*.groovy</excludeResource>
+					</excludeResources>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<target>
+						<artifact>
+							<groupId>com.kms</groupId>
+							<artifactId>com.kms.katalon.target</artifactId>
+							<version>1.0.0-SNAPSHOT</version>
+						</artifact>
+					</target>
+					<environments>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86</arch>
+						</environment>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86_64</arch>
+						</environment>
+						<environment>
+							<os>win32</os>
+							<ws>win32</ws>
+							<arch>x86</arch>
+						</environment>
+						<environment>
+							<os>win32</os>
+							<ws>win32</ws>
+							<arch>x86_64</arch>
+						</environment>
+						<environment>
+							<os>macosx</os>
+							<ws>cocoa</ws>
+							<arch>x86</arch>
+						</environment>
+						<environment>
+							<os>macosx</os>
+							<ws>cocoa</ws>
+							<arch>x86_64</arch>
+						</environment>
+					</environments>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+				  <compilerId>groovy-eclipse-compiler</compilerId>
+				</configuration>
+				<dependencies>
+				  <dependency>
+					<groupId>org.codehaus.groovy</groupId>
+					<artifactId>groovy-eclipse-compiler</artifactId>
+					<version>2.8.0-01</version>
+				  </dependency>
+				  <dependency>
+					<groupId>org.codehaus.groovy</groupId>
+					<artifactId>groovy-eclipse-batch</artifactId>
+					<version>2.1.8-01</version>				  
+				  </dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<goals>							
+							<goal>compile</goal>
+							<goal>testCompile</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+
+	</build>
+
+</project> 

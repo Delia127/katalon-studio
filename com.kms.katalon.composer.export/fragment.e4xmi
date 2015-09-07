@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_TbjOMDMeEeSDWvRdX4izrQ">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_OG0vwDMfEeSDWvRdX4izrQ" featurename="children" parentElementId="com.kms.katalon.composer.menu.importexport" positionInList="last">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_iza6oDMfEeSDWvRdX4izrQ" elementId="com.kms.katalon.composer.export.menuitem.exportproject" command="_ur3vUDMfEeSDWvRdX4izrQ"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_nnBMgDMfEeSDWvRdX4izrQ" featurename="commands" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="commands:Command" xmi:id="_ur3vUDMfEeSDWvRdX4izrQ" elementId="com.kms.katalon.composer.export.command.exportproject" commandName="Export project"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_zCd8IDMfEeSDWvRdX4izrQ" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="commands:Handler" xmi:id="_8pVIsDMfEeSDWvRdX4izrQ" elementId="com.kms.katalon.composer.export.handler.exportproject" contributionURI="bundleclass://com.kms.katalon.composer.export/com.kms.katalon.composer.export.handlers.ExportProjectHandler" command="_ur3vUDMfEeSDWvRdX4izrQ"/>
+  </fragments>
+</fragment:ModelFragments>

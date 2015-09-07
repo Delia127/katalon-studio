@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="com.kms.katalon.entity.testsuite">
+	<java-types>
+		<java-type name="TestSuiteEntity">
+			<xml-root-element name="TestSuiteEntity" />
+			<java-attributes>
+				<xml-element java-attribute="comment" />
+				<xml-element java-attribute="testSuiteTestCaseLinks" name="testCaseLink"/>
+				<xml-element java-attribute="pageLoadTimeout" />
+				<xml-element java-attribute="isRerun" />
+				<xml-element java-attribute="numberOfRerun" />
+				<xml-element java-attribute="lastRun" />
+			</java-attributes>
+		</java-type>
+	</java-types>
+</xml-bindings>

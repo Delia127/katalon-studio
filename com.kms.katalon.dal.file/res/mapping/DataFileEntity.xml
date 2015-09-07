@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="com.kms.katalon.entity.testdata">
+  <java-types>
+    <java-type name="DataFileEntity">
+      <xml-root-element name="DataFileEntity" />
+      <java-attributes>
+        <xml-element java-attribute="driver" />
+        <xml-element java-attribute="dataSourceUrl" />
+        <xml-element java-attribute="sheetName" />
+        <xml-element java-attribute="dataFileGUID" />
+        <xml-element java-attribute="isInternalPath" />
+        <xml-element java-attribute="internalDataColumns"/>
+        <xml-transient java-attribute="data"/>
+        <xml-element java-attribute="encriptData" name="data"/>
+      </java-attributes>
+    </java-type>
+  </java-types>
+</xml-bindings>

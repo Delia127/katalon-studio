@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Preferences
+Bundle-SymbolicName: com.kms.katalon.preferences;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: KMS
+Require-Bundle: org.eclipse.e4.core.di,
+ org.eclipse.e4.core.services,
+ org.eclipse.core.runtime,
+ org.eclipse.e4.core.contexts,
+ com.kms.katalon.constant,
+ org.eclipse.jface
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Export-Package: com.kms.katalon.preferences.internal

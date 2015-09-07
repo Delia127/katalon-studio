@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_u-OnkB4LEeSmhJle-cYKmg">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_4V6IoB4LEeSmhJle-cYKmg" featurename="commands" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="commands:Command" xmi:id="_6TGRQB4PEeSmhJle-cYKmg" elementId="com.kms.katalon.composer.preferences.commands.open" commandName="Open Preferences"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_4msWoB4LEeSmhJle-cYKmg" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="commands:Handler" xmi:id="_DbrmYB4QEeSmhJle-cYKmg" elementId="com.kms.katalon.composer.preferences.handler.open" contributionURI="bundleclass://com.kms.katalon.composer.preferences/com.kms.katalon.composer.preferences.handlers.PreferencesHandler" command="_6TGRQB4PEeSmhJle-cYKmg"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_DihqsB4PEeSmhJle-cYKmg" featurename="children" parentElementId="com.kms.katalon.composer.menu.settings">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_vdUlEB4QEeSmhJle-cYKmg" elementId="com.kms.katalon.composer.preferences.handledmenuitem.open" label="Preferences" command="_6TGRQB4PEeSmhJle-cYKmg"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_hNRqUA8oEeW1X5UIL5jJZA" featurename="bindings" parentElementId="com.kms.katalon.bindingtable.window">
+    <elements xsi:type="commands:KeyBinding" xmi:id="_l2lXwA8oEeW1X5UIL5jJZA" elementId="com.kms.katalon.composer.preferences.keybinding.open" keySequence="M1+M2+P" command="_6TGRQB4PEeSmhJle-cYKmg"/>
+  </fragments>
+</fragment:ModelFragments>

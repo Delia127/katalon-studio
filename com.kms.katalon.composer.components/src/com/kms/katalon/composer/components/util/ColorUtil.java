@@ -1,0 +1,80 @@
+package com.kms.katalon.composer.components.util;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.widgets.Display;
+
+public class ColorUtil {
+    
+    //background
+    public static Color getSelectedTableItemBackgroundColor() {
+        return new Color(Display.getCurrent(), 234, 125, 20);
+    }
+    
+    public static Color getEvenTableItemBackgroundColor() {
+        return  new Color(Display.getCurrent(), 135, 206, 250);
+    }
+    
+    public static Color getOddTableItemBackgroundColor() {
+        return new Color(Display.getCurrent(), 243, 243, 243);
+    }
+    
+    public static Color getCompositeBackgroundColor() {
+        return getExtraLightGrayBackgroundColor();
+    }
+    
+    public static Color getCompositeHeaderBackgroundColor() {
+        return new Color(Display.getCurrent(), 67, 81, 90);
+    }
+    
+    public static Color getHighlightBackgroundColor() {
+       return Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW);
+    }
+    
+    public static Color getWhiteBackGroundColor() {
+        return new Color(Display.getCurrent(), 255, 255, 255);
+    }
+    
+    // #E8E8E8
+    public static Color getButtonMouseOverBackgroundColor() {
+        return new Color(Display.getCurrent(), 232, 232, 232);
+    }
+    
+    public static Color getButtonMouseDownBackgroundColor() {
+        return new Color(Display.getCurrent(), 218, 218, 218);
+    }
+    
+    public static Color getPassedLogBackgroundColor() {
+        return new Color(Display.getCurrent(), 91, 177, 53);
+    }
+    
+    public static Color getFailedLogBackgroundColor() {
+        return new Color(Display.getCurrent(), 205, 97, 97);
+    }
+    public static Color getWarningLogBackgroundColor() {
+        return new Color(Display.getCurrent(), 201, 173, 61);
+    }
+    
+    // #F6F6F6
+    public static Color getExtraLightGrayBackgroundColor() {
+        return new Color(Display.getCurrent(), 246, 246, 246);
+    }
+    
+    //foreground
+    public static Color getTextPlaceholderColor() {
+        return new Color(Display.getCurrent(), 218, 218, 218);
+    }
+    
+    public static Color getDefaultTextColor() {
+        return new Color(Display.getCurrent(), 0, 0, 0);
+    }
+    
+    public static Color getTextWhiteColor() {
+    	return new Color(Display.getCurrent(), 255, 255, 255);
+    }
+    
+    // #F0F0F0
+    public static Color getDefaultBackgroundColor() {
+    	return new Color(Display.getCurrent(), 240, 240, 240);
+    }
+}

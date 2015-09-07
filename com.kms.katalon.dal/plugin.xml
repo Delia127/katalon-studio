@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+	<extension
+         point="com.kms.katalon.preferences.PreferencePages">      
+      <page
+            class="com.kms.katalon.dal.preferences.MailPreferencePage"
+            id="com.kms.katalon.dal.preferences.mail"
+            name="Email">
+      </page>   
+   	</extension>
+   	
+   	<extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.kms.katalon.dal.preferences.MailPreferenceDefaultValueInitializer">
+      </initializer>
+   </extension>
+</plugin>

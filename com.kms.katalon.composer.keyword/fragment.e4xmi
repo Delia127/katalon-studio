@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_d82SQDysEeSyWKNsROcdJA">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_iknuoDysEeSyWKNsROcdJA" featurename="addons" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="application:Addon" xmi:id="_iknuoTysEeSyWKNsROcdJA" elementId="com.kms.katalon.composer.keyword.addon.inject" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.addons.KeywordInjectionManagerAddon"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_2KeX0D-1EeSqW-o8jtXO1g" featurename="commands" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="commands:Command" xmi:id="_2KeX0T-1EeSqW-o8jtXO1g" elementId="com.kms.katalon.composer.keyword.command.add" commandName="" description="New Keyword"/>
+    <elements xsi:type="commands:Command" xmi:id="_ojWuwEIOEeSPr8gi-fpUXw" elementId="com.kms.katalon.composer.package.command.add" commandName="" description="New Package"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_5zvkkD-1EeSqW-o8jtXO1g" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="commands:Handler" xmi:id="_5zvkkT-1EeSqW-o8jtXO1g" elementId="com.kms.katalon.composer.keyword.handler.addkeyword" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.handlers.NewKeywordHandler" command="_2KeX0T-1EeSqW-o8jtXO1g"/>
+    <elements xsi:type="commands:Handler" xmi:id="_sy5RUEIOEeSPr8gi-fpUXw" elementId="com.kms.katalon.composer.keyword.handler.addpackage" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.handlers.NewPackageHandler" command="_ojWuwEIOEeSPr8gi-fpUXw"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="__11C0D-1EeSqW-o8jtXO1g" featurename="children" parentElementId="com.kms.katalon.menu.submenu.new" positionInList="index:6">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="__11C0T-1EeSqW-o8jtXO1g" elementId="com.kms.katalon.menu.submenu.new.keyword" label="Keyword" iconURI="platform:/plugin/com.kms.katalon.composer.keyword/icons/keyword_16.png" tooltip="New Keyword" command="_2KeX0T-1EeSqW-o8jtXO1g"/>
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_vMV08EIOEeSPr8gi-fpUXw" elementId="com.kms.katalon.menu.submenu.new.package" label="Package" iconURI="platform:/plugin/com.kms.katalon.composer.keyword/icons/package_16.png" tooltip="New Package" command="_ojWuwEIOEeSPr8gi-fpUXw"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_RYbW4D-2EeSqW-o8jtXO1g" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu.new" positionInList="first">
+    <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_RYbW4T-2EeSqW-o8jtXO1g" elementId="com.kms.katalon.composer.keyword.popupmenu.new.dynamicmenucontribution" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.menu.NewKeywordPopupMenuContribution"/>
+    <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_H4j3EEIPEeSPr8gi-fpUXw" elementId="com.kms.katalon.composer.package.popupmenu.new.dynamicmenucontribution" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.menu.NewPackagePopupMenuContribution"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_--KSoD_DEeSqW-o8jtXO1g" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="index:3">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_3TAaEEIOEeSPr8gi-fpUXw" elementId="com.kms.katalon.composer.toolbar.handledtoolitem.new.package" label="" iconURI="platform:/plugin/com.kms.katalon.composer.keyword/icons/new_package_28.png" tooltip="New Package for Keyword" command="_ojWuwEIOEeSPr8gi-fpUXw">
+      <tags>FORCE_TEXT</tags>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_VJRQcBQLEeWFKqx225rIVg" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="index:6">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_--KSoj_DEeSqW-o8jtXO1g" elementId="com.kms.katalon.composer.toolbar.handledtoolitem.new.keyword" label="" iconURI="platform:/plugin/com.kms.katalon.composer.keyword/icons/new_keyword_28.png" tooltip="New Keyword" command="_2KeX0T-1EeSqW-o8jtXO1g">
+      <tags>FORCE_TEXT</tags>
+    </elements>
+  </fragments>
+</fragment:ModelFragments>

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+	package-name="com.kms.katalon.entity.project">
+	<java-types>
+		<java-type name="ProjectEntity">
+			<xml-root-element name="Project" />
+			<java-attributes>
+				<xml-element java-attribute="pageLoadTimeout"/>
+				<xml-element java-attribute="folderLocation"/>
+			</java-attributes>
+		</java-type>
+	</java-types>
+</xml-bindings>

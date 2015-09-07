@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_lZUq4EurEeWj7OhDHfltSQ">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_uad7QEurEeWj7OhDHfltSQ" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="first">
+    <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_z_kikEurEeWj7OhDHfltSQ" elementId="com.kms.katalon.composer.webui.dynamicmenucontribution.execution" label="Execution" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.menu.WebUiExecutionDynamicMenuContribution"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_t9GNUEusEeWj7OhDHfltSQ" featurename="commands" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="commands:Command" xmi:id="_1W2pIEusEeWj7OhDHfltSQ" elementId="com.kms.katalon.composer.webui.execution.command.firefox" commandName="Firefox"/>
+    <elements xsi:type="commands:Command" xmi:id="_xoxN0EusEeWj7OhDHfltSQ" elementId="com.kms.katalon.composer.webui.execution.command.chrome" commandName="Chrome"/>
+    <elements xsi:type="commands:Command" xmi:id="_3o9OoEusEeWj7OhDHfltSQ" elementId="com.kms.katalon.composer.webui.execution.command.ie" commandName="IE"/>
+    <elements xsi:type="commands:Command" xmi:id="_6EqcEEusEeWj7OhDHfltSQ" elementId="com.kms.katalon.composer.webui.execution.command.safari" commandName="Safari"/>
+    <elements xsi:type="commands:Command" xmi:id="_M23AkFIgEeWdwJZaPXJ0_w" elementId="com.kms.katalon.composer.webui.execution.command.remoteweb" commandName="Remote Web"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_89TdIEusEeWj7OhDHfltSQ" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="commands:Handler" xmi:id="__lEwoEusEeWj7OhDHfltSQ" elementId="com.kms.katalon.composer.webui.execution.handler.firefox" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.handler.FirefoxExecutionHandler" command="_1W2pIEusEeWj7OhDHfltSQ"/>
+    <elements xsi:type="commands:Handler" xmi:id="_N130cE_ZEeWHcr3axp_7hQ" elementId="com.kms.katalon.composer.webui.execution.handler.chrome" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.handler.ChromeExecutionHandler" command="_xoxN0EusEeWj7OhDHfltSQ"/>
+    <elements xsi:type="commands:Handler" xmi:id="_QuBtUE_ZEeWHcr3axp_7hQ" elementId="com.kms.katalon.composer.webui.execution.handler.ie" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.handler.IEExecutionHandler" command="_3o9OoEusEeWj7OhDHfltSQ"/>
+    <elements xsi:type="commands:Handler" xmi:id="_SPm00E_ZEeWHcr3axp_7hQ" elementId="com.kms.katalon.composer.webui.execution.handler.safari" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.handler.SafariExecutionHandler" command="_6EqcEEusEeWj7OhDHfltSQ"/>
+    <elements xsi:type="commands:Handler" xmi:id="_PgQrwFIgEeWdwJZaPXJ0_w" elementId="com.kms.katalon.composer.webui.handler.remoteweb" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.handler.RemoteWebDriverExecutionHandler" command="_M23AkFIgEeWdwJZaPXJ0_w"/>
+  </fragments>
+</fragment:ModelFragments>
