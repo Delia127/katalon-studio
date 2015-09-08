@@ -402,8 +402,8 @@ public class TestCaseFileServiceManager {
 		String testCaseId = testCase.getRelativePathForUI().replace(File.separator, "/");
 		for (TestSuiteEntity ts : allTestSuites) {
 			if (dataProviderSetting.getTestSuiteDataProvider().getTestCaseLink(ts, testCaseId) != null) {
-				if (sb.toString().equals("") == false) sb.append(", ");
-				sb.append(ts.getRelativePathForUI());
+				if (sb.toString().equals("") == false) sb.append("\n");
+				sb.append("- " + ts.getRelativePathForUI());
 			}
 		}
 		if (!sb.toString().equals("")) {
