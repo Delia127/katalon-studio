@@ -117,8 +117,9 @@ public class TestCaseMain {
 		if (methodList != null && methodList.size() > 0) {
 			logger.logInfo(startMessage);
 			for (MethodNode method : methodList) {
+                Stack<KeywordStackElement> keywordStack = new Stack<KeywordStackElement>();
+                logger.startKeyword(method.getName(), null, keywordStack);
 				try {
-					logger.startKeyword(method.getName(), null, 1);
 					StringBuilder stringBuilder = new StringBuilder(importString);
 					GroovyParser groovyParser = new GroovyParser(stringBuilder);
 					groovyParser.parse(method.getCode());
@@ -128,7 +129,8 @@ public class TestCaseMain {
 					logger.logWarning(MessageFormat.format(StringConstants.MAIN_LOG_WARNING_ERROR_OCCURRED_WHEN_RUN_METHOD,
 							method.getName(), e.getClass().getName().toString(), ExceptionsUtil.getMessageForThrowable(e)));
 				} finally {
-					logger.endKeyword(method.getName(), null, 1);
+                    endAllUnfinishedKeywords(keywordStack);
+                    logger.endKeyword(method.getName(), null, keywordStack);
 				}
 			}
 		}
