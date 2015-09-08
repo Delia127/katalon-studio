@@ -4,7 +4,7 @@ import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.mobile.constants.StringConstants;
 
 public enum MobileDriverType implements DriverType {
-	IOS_DRIVER(StringConstants.IOS_NATIVE), ANDROID_DRIVER(StringConstants.ANDROID_NATIVE);
+	IOS_DRIVER(StringConstants.IOS), ANDROID_DRIVER(StringConstants.ANDROID);
 
 	private String driverName;
 
@@ -18,11 +18,7 @@ public enum MobileDriverType implements DriverType {
 	}
 
 	public String getPlatform() {
-		if (this == IOS_DRIVER) {
-			return StringConstants.IOS;
-		} else {
-			return StringConstants.ANDROID;
-		}
+		return toString();
 	}
 
 	@Override
@@ -57,6 +53,6 @@ public enum MobileDriverType implements DriverType {
 
 	@Override
 	public String getPropertyValue() {
-		return getPlatform();
+		return getName();
 	}
 }
