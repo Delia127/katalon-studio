@@ -8,10 +8,10 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String HAND_ERROR_MSG_UNABLE_TO_DELETE_KEYWORD = "Unable to delete keyword.";
 
 	// NewKeywordHandler
-	public static final String HAND_ERROR_MSG_UNABLE_TO_CREATE_KEYWORD = "Unable to create new Keyword.";
+	public static final String HAND_ERROR_MSG_UNABLE_TO_CREATE_KEYWORD = "Unable to create Keyword.";
 
 	// NewPackageHandler
-	public static final String HAND_ERROR_MSG_UNABLE_TO_CREATE_PACKAGE = "Unable to create new package.";
+	public static final String HAND_ERROR_MSG_UNABLE_TO_CREATE_PACKAGE = "Unable to create package.";
 
 	// OpenKeywordHandler
 	public static final String HAND_REFRESHING_PROJECT = "Refreshing project";

@@ -177,7 +177,7 @@ public class CreateNewTestSuiteParentDialog extends Dialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Create new test suite's parent");
+		newShell.setText("Create Test Suite's parent");
 	}
 
 	public QTestSuiteParent getNewTestSuiteParent() {

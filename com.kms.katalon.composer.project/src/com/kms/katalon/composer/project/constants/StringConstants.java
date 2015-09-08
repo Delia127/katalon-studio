@@ -14,7 +14,7 @@ public class StringConstants extends GlobalStringConstants {
 
 	// NewProjectHandler
 	public static final String ERROR_TITLE = ERROR;
-	public static final String HAND_ERROR_MSG_UNABLE_TO_CREATE_NEW_PROJ = "Unable to create new project";
+	public static final String HAND_ERROR_MSG_UNABLE_TO_CREATE_NEW_PROJ = "Unable to create project";
 
 	// OpenProjectHandler
 	public static final String HAND_ERROR_MSG_CANNOT_OPEN_PROJ = "Can not open project.";

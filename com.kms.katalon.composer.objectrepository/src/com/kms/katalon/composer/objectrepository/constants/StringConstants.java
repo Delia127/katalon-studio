@@ -5,7 +5,7 @@ import com.kms.katalon.constants.GlobalStringConstants;
 public class StringConstants extends GlobalStringConstants {
 	// NewTestObjectDialog
 	public static final String DIA_TITLE_TEST_OBJECT = "Test Object";
-	public static final String DIA_MSG_CREATE_NEW_TEST_OBJECT = "Create new Test Object";
+	public static final String DIA_MSG_CREATE_NEW_TEST_OBJECT = "Create Test Object";
 
 	// DeleteTestObjectHandler
 	public static final String ERROR_TITLE = ERROR;
@@ -13,7 +13,7 @@ public class StringConstants extends GlobalStringConstants {
 
 	// NewTestObjectHandler
 	public static final String HAND_NEW_TEST_OBJ = "New Test Object";
-	public static final String HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_OBJ = "Unable to create new test object";
+	public static final String HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_OBJ = "Unable to create test object";
 
 	// RenameTestObjectHandler
 	public static final String HAND_ERROR_MSG_UNABLE_TO_RENAME_TEST_DATA = "Unable to rename test data.";

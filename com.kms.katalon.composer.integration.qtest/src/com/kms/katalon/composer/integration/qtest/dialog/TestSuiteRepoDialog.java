@@ -130,7 +130,7 @@ public class TestSuiteRepoDialog extends Dialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Create new Test Suite Repository");
+		newShell.setText("Create Test Suite Repository");
 	}
 
 	private void initilize() {

@@ -5,7 +5,7 @@ import com.kms.katalon.constants.GlobalStringConstants;
 public class StringConstants extends GlobalStringConstants {
 	// NewFolderDialog
 	public static final String DIA_FOLDER_NEW_TITLE = FOLDER;
-	public static final String DIA_FOLDER_NEW_MSG = "Create new Folder";
+	public static final String DIA_FOLDER_NEW_MSG = "Create Folder";
 
 	// DeleteFolderHandler
 	public static final String ERROR_TITLE = ERROR;
@@ -13,7 +13,7 @@ public class StringConstants extends GlobalStringConstants {
 
 	// NewFolderHandler
 	public static final String HAND_NEW_FOLDER = "New Folder";
-	public static final String HAND_ERROR_MSG_UNABLE_TO_CREATE_FOLDER = "Unable to create new folder";
+	public static final String HAND_ERROR_MSG_UNABLE_TO_CREATE_FOLDER = "Unable to create folder";
 
 	// PasteFolderHandler
 	public static final String HAND_ERROR_MSG_UNABLE_TO_PASTE_DATA = "Unable to paste data.";
