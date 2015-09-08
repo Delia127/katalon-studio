@@ -49,9 +49,9 @@ import com.kms.katalon.entity.file.IntegratedFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.integration.qtest.QTestConstants;
 import com.kms.katalon.integration.qtest.QTestIntegrationFolderManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationProjectManager;
+import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 
@@ -146,7 +146,7 @@ public class TestCaseRepoPreferencePage extends PreferencePage implements EventH
 		if (!needToInitialize || container == null || container.isDisposed()) return;
 
 		ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-		IntegratedEntity integratedProjectEntity = projectEntity.getIntegratedEntity(QTestConstants.PRODUCT_NAME);
+		IntegratedEntity integratedProjectEntity = projectEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 
 		try {
 			if (integratedProjectEntity != null) {
@@ -261,7 +261,7 @@ public class TestCaseRepoPreferencePage extends PreferencePage implements EventH
 					if (folderEntity == null) insertNewRepoToTable(index, newRepo);
 
 					IntegratedEntity folderIntegratedEntity = folderEntity
-							.getIntegratedEntity(QTestConstants.PRODUCT_NAME);
+							.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 
 					if (folderIntegratedEntity == null) insertNewRepoToTable(index, newRepo);
 
@@ -316,7 +316,7 @@ public class TestCaseRepoPreferencePage extends PreferencePage implements EventH
 
 			if (folderEntity == null) removeRepoFromTable(repo);
 
-			IntegratedEntity folderIntegratedEntity = folderEntity.getIntegratedEntity(QTestConstants.PRODUCT_NAME);
+			IntegratedEntity folderIntegratedEntity = folderEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 
 			if (folderIntegratedEntity == null) removeRepoFromTable(repo);
 
@@ -416,7 +416,7 @@ public class TestCaseRepoPreferencePage extends PreferencePage implements EventH
 	}
 
 	private IntegratedFileEntity updateFileIntegratedEntity(IntegratedFileEntity entity, IntegratedEntity newIntegrated) {
-		IntegratedEntity oldIntegrated = entity.getIntegratedEntity(QTestConstants.PRODUCT_NAME);
+		IntegratedEntity oldIntegrated = entity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 
 		// Otherwise, add the new one to integrated list
 		int index = 0;

@@ -42,8 +42,8 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.integration.qtest.QTestConstants;
 import com.kms.katalon.integration.qtest.QTestIntegrationProjectManager;
+import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 
 public class TestSuiteRepoPreferencePage extends PreferencePage implements EventHandler {
@@ -132,7 +132,7 @@ public class TestSuiteRepoPreferencePage extends PreferencePage implements Event
 	private void initilize() {
 		if (!needToInitialize || container == null || container.isDisposed()) return;
 		ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-		IntegratedEntity integratedProjectEntity = projectEntity.getIntegratedEntity(QTestConstants.PRODUCT_NAME);
+		IntegratedEntity integratedProjectEntity = projectEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 
 		try {
 			if (integratedProjectEntity != null) {

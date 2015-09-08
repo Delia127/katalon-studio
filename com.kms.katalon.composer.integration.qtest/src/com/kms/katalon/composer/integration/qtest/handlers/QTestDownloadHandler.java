@@ -19,61 +19,71 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class QTestDownloadHandler {
-	@Inject
-	private ESelectionService selectionService;
+    @Inject
+    private ESelectionService selectionService;
 
-	@Inject
-	private UISynchronize sync;
+    @Inject
+    private UISynchronize sync;
 
-	/**
-	 * @return true if the selected tree item is a test case folder and it is
-	 *         being integrated with qTest or is a test case root folder.
-	 */
-	@CanExecute
-	public boolean canExecute() {
-		try {
-			if (ProjectController.getInstance().getCurrentProject() == null) return false;
-			String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
-			if (!QTestSettingStore.isIntegrationActive(projectDir)) return false;
-			Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-			if (selectedObjects == null || selectedObjects.length != 1) return false;
-			if (selectedObjects[0] instanceof ITreeEntity) {
-				Object selectedEntity = ((ITreeEntity) selectedObjects[0]).getObject();
-				if (selectedEntity instanceof FolderEntity) {
-					FolderEntity folder = (FolderEntity) selectedEntity;
+    /**
+     * @return true if the selected tree item is a test case folder and it is
+     *         being integrated with qTest or is a test case root folder.
+     */
+    @CanExecute
+    public boolean canExecute() {
+        try {
+            if (ProjectController.getInstance().getCurrentProject() == null) {
+                return false;
+            }
+            ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
+            String projectDir = projectEntity.getFolderLocation();
 
-					if (folder.getFolderType() == FolderType.TESTCASE) {
-						return QTestIntegrationUtil.canBeDownloadedOrDisintegrated(folder);
-					}
-				}
-			}
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-		return false;
-	}
+            if (!QTestSettingStore.isIntegrationActive(projectDir)) {
+                return false;
+            }
 
-	@Execute
-	public void execute() {
-		try {
-			Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-			ITreeEntity treeEntity = (ITreeEntity) selectedObjects[0];
-			Object selectedObject = treeEntity.getObject();
-			if (selectedObject instanceof FolderEntity) {
-				FolderEntity folder = (FolderEntity) selectedObject;
-				if (folder.getFolderType() == FolderType.TESTCASE) {
-					List<IntegratedFileEntity> testCaseEntities = new ArrayList<IntegratedFileEntity>();
-					testCaseEntities.add(folder);
-					DownloadTestCaseJob job = new DownloadTestCaseJob("Download test case", sync);
-					job.setFileEntities(testCaseEntities);
-					job.doTask();
-				}
-			}
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-	}
+            Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
+            if (selectedObjects == null || selectedObjects.length != 1) {
+                return false;
+            }
+            if (selectedObjects[0] instanceof ITreeEntity) {
+                Object selectedEntity = ((ITreeEntity) selectedObjects[0]).getObject();
+                if (selectedEntity instanceof FolderEntity) {
+                    FolderEntity folder = (FolderEntity) selectedEntity;
+
+                    if (folder.getFolderType() == FolderType.TESTCASE) {
+                        return QTestIntegrationUtil.canBeDownloadedOrDisintegrated(folder, projectEntity);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        return false;
+    }
+
+    @Execute
+    public void execute() {
+        try {
+            Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
+            ITreeEntity treeEntity = (ITreeEntity) selectedObjects[0];
+            Object selectedObject = treeEntity.getObject();
+            if (selectedObject instanceof FolderEntity) {
+                FolderEntity folder = (FolderEntity) selectedObject;
+                if (folder.getFolderType() == FolderType.TESTCASE) {
+                    List<IntegratedFileEntity> testCaseEntities = new ArrayList<IntegratedFileEntity>();
+                    testCaseEntities.add(folder);
+                    DownloadTestCaseJob job = new DownloadTestCaseJob("Download test case", sync);
+                    job.setFileEntities(testCaseEntities);
+                    job.doTask();
+                }
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
 }

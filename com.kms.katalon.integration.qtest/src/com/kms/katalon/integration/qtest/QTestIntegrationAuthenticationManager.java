@@ -8,80 +8,106 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import org.qas.api.internal.util.json.JsonException;
 import org.qas.api.internal.util.json.JsonObject;
 import org.qas.api.net.UrlEncoder;
 
+import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
+import com.kms.katalon.integration.qtest.exception.QTestException;
+import com.kms.katalon.integration.qtest.exception.QTestIOException;
+import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
+import com.kms.katalon.integration.qtest.helper.QTestAPIRequestHelper;
 
+/**
+ * Provides a set of utility methods for qTest authentication
+ */
 public class QTestIntegrationAuthenticationManager {
+    
+    private QTestIntegrationAuthenticationManager() {
+        //Disable default constructor
+    }
 
-	private static final String USERNAME_PARAM = "j_username=";
-	private static final String PASSWORD_PARAM = "j_password=";
-	private static final String LOGIN_URL = "/api/login?";
+    private static final String USERNAME_PARAM = "j_username=";
+    private static final String PASSWORD_PARAM = "j_password=";
+    private static final String LOGIN_URL = "/api/login?";
 
-	public static String getToken(String serverURL, String username, String password) throws Exception {
-		String url = serverURL + LOGIN_URL + USERNAME_PARAM + UrlEncoder.encode(username) + "&" + PASSWORD_PARAM
-				+ UrlEncoder.encode(password);
+    public static String getToken(String serverURL, String username, String password) throws QTestException {
+        String url = serverURL + LOGIN_URL + USERNAME_PARAM + UrlEncoder.encode(username) + "&" + PASSWORD_PARAM
+                + UrlEncoder.encode(password);
+        HttpURLConnection con = null;
+        OutputStream os = null;
+        String response = "";
+        try {
+            URL obj = new URL(url);
+            con = (HttpURLConnection) obj.openConnection();
 
-		URL obj = new URL(url);
-		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+            con.setRequestMethod(QTestStringConstants.CON_POST_METHOD);
+            con.setRequestProperty(QTestStringConstants.RQ_PROPERTY_CONTENT_TYPE, "application/x-www-form-urlencoded");
+            con.setDoOutput(true);
 
-		con.setRequestMethod("POST");
-		con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-		con.setDoOutput(true);
+            // Send post request
+            os = con.getOutputStream();
+            os.write("".getBytes());
+            os.flush();
 
-		// Send post request
-		OutputStream os = con.getOutputStream();
-		os.write("".getBytes());
-		os.flush();
-		os.close();
+            int status = 0;
+            try {
+                status = con.getResponseCode();
+            } catch (IOException e) {
+                status = con.getResponseCode();
+            }
+            if (status == HttpURLConnection.HTTP_OK) {
+                return getResponse(con.getInputStream());
+            } else {
+                response = getResponse(con.getErrorStream());
 
-		int status = 0;
-		try {
-			status = con.getResponseCode();
-		} catch (IOException e) {
-			status = con.getResponseCode();
-		}
-		if (status == HttpURLConnection.HTTP_OK) {
-			return getReponse(con.getInputStream());
-		} else {
-			String response = getReponse(con.getErrorStream());
+                JsonObject jo = new JsonObject(response.toString());
+                throw new QTestIOException(jo.getString("message"));
+            }
+        } catch (IOException ex) {
+            throw new QTestIOException(ex);
+        } catch (JsonException ex) {
+            throw QTestInvalidFormatException.createInvalidJsonFormatException(response);
+        } finally {
+            if (os != null) {
+                QTestAPIRequestHelper.closeQuietly(os);
+            }
+        }
+    }
 
-			JsonObject jo = new JsonObject(response.toString());
-			throw new IOException(jo.getString("message"));
-		}
-	}
+    private static String getResponse(InputStream inputStream) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        StringBuffer response = new StringBuffer();
+        String inputLine;
+        while ((inputLine = reader.readLine()) != null) {
+            response.append(inputLine);
+        }
+        reader.close();
+        return response.toString();
+    }
 
-	private static String getReponse(InputStream inputStream) throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-		StringBuffer response = new StringBuffer();
-		String inputLine;
-		while ((inputLine = reader.readLine()) != null) {
-			response.append(inputLine);
-		}
-		reader.close();
-		return response.toString();
-	}
+    public static boolean validateToken(String token) {
+        if (token == null || token.isEmpty()) {
+            return false;
+        }
+        // TODO wait for qTest API
+        return true;
+    }
 
-	public static boolean validateToken(String token) {
-		if (token == null || token.isEmpty()) {
-			return false;
-		}
-		// TODO wait for qTest API
-		return true;
-	}
-
-	/**
-	 * If username or password is null or empty, throw a QTestUnauthorizedException
-	 * @param username
-	 * @param password
-	 */
-	public static void authenticate(String username, String password) {
-		if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
-			throw new QTestUnauthorizedException(
-					"Your qTest username or password is not valid.\n"
-							+ "Please enter valid username and password in qTest setting page \n"
-							+ "by choosing Project->Settings->qTest and click on Generate button.");
-		}
-	}
+    /**
+     * If username or password is null or empty, throw a
+     * QTestUnauthorizedException
+     * 
+     * @param username
+     * @param password
+     * @throws QTestUnauthorizedException
+     */
+    public static void authenticate(String username, String password) throws QTestUnauthorizedException {
+        if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
+            throw new QTestUnauthorizedException("Your qTest username or password is not valid.\n"
+                    + "Please enter valid username and password in qTest setting page \n"
+                    + "by choosing Project->Settings->qTest and click on Generate button.");
+        }
+    }
 }

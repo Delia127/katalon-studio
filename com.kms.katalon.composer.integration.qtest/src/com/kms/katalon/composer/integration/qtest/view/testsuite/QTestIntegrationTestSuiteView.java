@@ -45,8 +45,8 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
-import com.kms.katalon.integration.qtest.QTestConstants;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager;
+import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
 import com.kms.katalon.integration.qtest.entity.QTestSuiteParent;
 import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
@@ -509,7 +509,7 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
 	private void initialize() {
 		try {
 			IntegratedEntity testSuiteIntegratedEntity = testSuiteEntity
-					.getIntegratedEntity(QTestConstants.PRODUCT_NAME);
+					.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 			setQTestSuites(QTestIntegrationTestSuiteManager
 					.getQTestSuiteListByIntegratedEntity(testSuiteIntegratedEntity));
 			testSuiteParentTableViewer.setInput(getQTestSuites());
@@ -522,7 +522,7 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
 
 	@Override
 	public void setDirty(boolean dirty) {
-		IntegratedEntity testSuiteIntegratedEntity = testSuiteEntity.getIntegratedEntity(QTestConstants.PRODUCT_NAME);
+		IntegratedEntity testSuiteIntegratedEntity = testSuiteEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 
 		if (testSuiteIntegratedEntity == null) {
 			testSuiteIntegratedEntity = QTestIntegrationTestSuiteManager

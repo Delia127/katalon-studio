@@ -19,84 +19,83 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class QTestDisintegrateHandler {
-	
-	@Inject
-	private ESelectionService selectionService;
-	
-	@CanExecute
-	public boolean canExecute() {
-		try {
-			if (ProjectController.getInstance().getCurrentProject() == null)
-				return false;
-			String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
-			if (!QTestSettingStore.isIntegrationActive(projectDir))
-				return false;
-			Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-			if (selectedObjects == null || selectedObjects.length != 1)
-				return false;
-			if (selectedObjects[0] instanceof ITreeEntity) {
-				Object selectedEntity = ((ITreeEntity) selectedObjects[0]).getObject();
-				if (selectedEntity instanceof TestCaseEntity) {
-					return QTestIntegrationUtil.canBeDownloadedOrDisintegrated((IntegratedFileEntity) selectedEntity);
-				}
 
-				if (selectedEntity instanceof FolderEntity) {
-					FolderEntity folder = (FolderEntity) selectedEntity;
-					if (folder.getFolderType() == FolderType.TESTCASE) {
-						return QTestIntegrationUtil.canBeDownloadedOrDisintegrated(folder);
-					}
-				}
-			}
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-		return false;
-	}
+    @Inject
+    private ESelectionService selectionService;
 
-	
-	private List<IntegratedFileEntity> getIntegratedChildren(IntegratedFileEntity entity) {		
-		List<IntegratedFileEntity> integratedEntities = new ArrayList<IntegratedFileEntity>();		
-		integratedEntities.add((IntegratedFileEntity) entity);
-		return integratedEntities;
-	}
-	
-	private void disintegrateTestCases(List<IntegratedFileEntity> integratedTestCases) {
-		DisintegrateTestCaseJob job = new DisintegrateTestCaseJob("Disintegrate test cases");
-		job.setFileEntities(integratedTestCases);
-		job.doTask();
-	}
-	
-	@Execute
-	public void execute() {
-		try {
-			Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-			ITreeEntity treeEntity = (ITreeEntity) selectedObjects[0];
-			Object selectedObject = treeEntity.getObject();
-			if (selectedObject instanceof TestCaseEntity) {
-				if (MessageDialog.openConfirm(null, "Confirmation",
-						"Are you sure you want to disintegrate this test case with qTest?")) {
-					disintegrateTestCases(getIntegratedChildren((IntegratedFileEntity) selectedObject));
-				}
-			} else if (selectedObject instanceof FolderEntity) {
-				if (MessageDialog.openConfirm(null, "Confirmation",
-						"Are you sure you want to disintegrate all test cases in this folder with qTest?")) {
-					FolderEntity folder = (FolderEntity) selectedObject;
-					switch (folder.getFolderType()) {
-					case TESTCASE:
-						disintegrateTestCases(getIntegratedChildren(folder));
-						break;
-					default:
-						break;
-					}
-				}
-			}
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-	}
-	
+    @CanExecute
+    public boolean canExecute() {
+        try {
+            if (ProjectController.getInstance().getCurrentProject() == null) return false;
+            ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
+            String projectDir = projectEntity.getFolderLocation();
+            if (!QTestSettingStore.isIntegrationActive(projectDir)) return false;
+            Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
+            if (selectedObjects == null || selectedObjects.length != 1) return false;
+            if (selectedObjects[0] instanceof ITreeEntity) {
+                Object selectedEntity = ((ITreeEntity) selectedObjects[0]).getObject();
+                if (selectedEntity instanceof TestCaseEntity) {
+                    return QTestIntegrationUtil.canBeDownloadedOrDisintegrated((IntegratedFileEntity) selectedEntity,
+                            projectEntity);
+                }
+
+                if (selectedEntity instanceof FolderEntity) {
+                    FolderEntity folder = (FolderEntity) selectedEntity;
+                    if (folder.getFolderType() == FolderType.TESTCASE) {
+                        return QTestIntegrationUtil.canBeDownloadedOrDisintegrated(folder, projectEntity);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        return false;
+    }
+
+    private List<IntegratedFileEntity> getIntegratedChildren(IntegratedFileEntity entity) {
+        List<IntegratedFileEntity> integratedEntities = new ArrayList<IntegratedFileEntity>();
+        integratedEntities.add((IntegratedFileEntity) entity);
+        return integratedEntities;
+    }
+
+    private void disintegrateTestCases(List<IntegratedFileEntity> integratedTestCases) {
+        DisintegrateTestCaseJob job = new DisintegrateTestCaseJob("Disintegrate test cases");
+        job.setFileEntities(integratedTestCases);
+        job.doTask();
+    }
+
+    @Execute
+    public void execute() {
+        try {
+            Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
+            ITreeEntity treeEntity = (ITreeEntity) selectedObjects[0];
+            Object selectedObject = treeEntity.getObject();
+            if (selectedObject instanceof TestCaseEntity) {
+                if (MessageDialog.openConfirm(null, "Confirmation",
+                        "Are you sure you want to disintegrate this test case with qTest?")) {
+                    disintegrateTestCases(getIntegratedChildren((IntegratedFileEntity) selectedObject));
+                }
+            } else if (selectedObject instanceof FolderEntity) {
+                if (MessageDialog.openConfirm(null, "Confirmation",
+                        "Are you sure you want to disintegrate all test cases in this folder with qTest?")) {
+                    FolderEntity folder = (FolderEntity) selectedObject;
+                    switch (folder.getFolderType()) {
+                        case TESTCASE:
+                            disintegrateTestCases(getIntegratedChildren(folder));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
+
 }
