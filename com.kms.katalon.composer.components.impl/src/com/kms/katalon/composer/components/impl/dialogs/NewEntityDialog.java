@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.components.impl.dialogs;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
@@ -56,13 +57,14 @@ public class NewEntityDialog extends TitleAreaDialog {
 
 		txtName = new Text(container, SWT.BORDER);
 		txtName.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		txtName.setText(getName());
+		txtName.selectAll();
 
-		updateName();
 		txtName.addModifyListener(new ModifyListener() {
 
 			@Override
 			public void modifyText(ModifyEvent e) {
-				validateName();
+				setName(((Text) e.getSource()).getText());
 				updateStatus();
 			}
 		});
@@ -75,22 +77,18 @@ public class NewEntityDialog extends TitleAreaDialog {
 	}
 
 	private void updateStatus() {
-		super.getButton(OK).setEnabled(validateName());
+		super.getButton(OK).setEnabled(isValidEntityName());
 	}
 
-	private void updateName() {
-		txtName.setText(name);
-		txtName.selectAll();
-	}
-
-	private boolean validateName() {
-		String entityName = txtName.getText();
+	private boolean isValidEntityName() {
+		String entityName = getName();
 		try {
-			if (entityName == null || entityName.trim().isEmpty()) {
+			if (StringUtils.isBlank(entityName)) {
 				throw new InvalidFileNameException(StringConstants.DIA_NAME_CANNOT_BE_BLANK_OR_EMPTY);
 			}
-			if (!EntityService.getInstance().getAvailableName(parentFolder.getLocation(), entityName, isFileCreating())
-					.equalsIgnoreCase(entityName)) {
+			if (!StringUtils.equalsIgnoreCase(
+					EntityService.getInstance().getAvailableName(parentFolder.getLocation(), entityName,
+							isFileCreating()), entityName)) {
 				throw new InvalidFileNameException(StringConstants.DIA_NAME_EXISTED);
 			}
 			EntityService.getInstance().validateName(entityName);
@@ -121,17 +119,15 @@ public class NewEntityDialog extends TitleAreaDialog {
 		setMessage(getDialogMsg(), IMessageProvider.INFORMATION);
 	}
 
-	@Override
-	protected void okPressed() {
-		name = txtName.getText();
-		super.okPressed();
-	}
-
 	public String getName() {
 		return name;
 	}
 
 	public void setName(String name) {
+		if (name != null) {
+			// trim and replace multiple space by single one
+			name = name.trim().replaceAll("\\s+", " ");
+		}
 		this.name = name;
 	}
 

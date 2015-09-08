@@ -139,8 +139,9 @@ public abstract class ExportTestCaseScript {
 		if (methodList != null && methodList.size() > 0) {
 			logger.logInfo(startMessage);
 			for (Method method : methodList) {
+                Stack<KeywordStackElement> keywordStack = new Stack<KeywordStackElement>();
+                logger.startKeyword(method.getName(), null, keywordStack);
 				try {
-					logger.startKeyword(method.getName(), null, 1);
 					def methodClosure = (newScriptClassInstance).&"${method.getName()}"
 					ExportTestCaseHelper.addTestCaseVariableToMethod(testCaseId, newScriptClassInstance)
 					methodClosure.call()
@@ -149,8 +150,9 @@ public abstract class ExportTestCaseScript {
 					logger.logWarning("Error occurred when try to run method '" + method.getName() + "' (Root cause: "
 							+ e.getClass().getName().toString() + " - " + e.getMessage() + ")");
 				} finally {
-					logger.endKeyword(method.getName(), null, 1);
-				}
+                    endAllUnfinishedKeywords(keywordStack);
+                    logger.endKeyword(method.getName(), null, keywordStack);
+                }
 			}
 		}
 	}
