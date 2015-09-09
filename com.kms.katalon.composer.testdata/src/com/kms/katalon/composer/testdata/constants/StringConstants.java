@@ -9,7 +9,7 @@ public class StringConstants extends GlobalStringConstants {
 
 	// NewTestDataHandler
 	public static final String HAND_NEW_TEST_DATA = "New Test Data";
-	public static final String HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_DATA = "Unable to create new Test Data.";
+	public static final String HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_DATA = "Unable to create Test Data.";
 
 	// NewTestDataHandler
 	public static final String HAND_ERROR_MSG_UNABLE_TO_RENAME_TEST_DATA = "Unable to rename Test Data.";
@@ -65,6 +65,6 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String VIEW_LBL_NAME = NAME;
 	public static final String VIEW_LBL_DATA_TYPE = "Data Type";
 	public static final String VIEW_TITLE_TEST_DATA = TEST_DATA;
-	public static final String VIEW_MSG_CREATE_NEW_TEST_DATA = "Create new Test Data";
+	public static final String VIEW_MSG_CREATE_NEW_TEST_DATA = "Create Test Data";
 	public static final String VIEW_WINDOW_TITLE_NEW = "New";
 }

@@ -6,7 +6,7 @@ public class StringConstants extends GlobalStringConstants {
 	// NewWebServiceRequestObjectHandler
 	public static final String HAND_NEW_REQUEST = "New Request";
 	public static final String ERROR_TITLE = ERROR;
-	public static final String HAND_ERROR_MSG_UNABLE_TO_CREATE_NEW_REQ_OBJ = "Unable to create new request object";
+	public static final String HAND_ERROR_MSG_UNABLE_TO_CREATE_NEW_REQ_OBJ = "Unable to create request object";
 
 	// OpenWebServiceRequestObjectHandler
 	public static final String BUNDLE_URI_WEBSERVICE = "bundleclass://com.kms.katalon.composer.webservice/";
@@ -42,7 +42,7 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String VIEW_LBL_NAME = NAME;
 	public static final String VIEW_LBL_REQ_TYPE = "Request Type";
 	public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ = "WebService Request";
-	public static final String VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ = "Create new WebService Request";
+	public static final String VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ = "Create WebService Request";
 
 	// ParameterTable
 	public static final String VIEW_COL_NAME = NAME;

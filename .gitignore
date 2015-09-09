@@ -16,3 +16,7 @@ target/
 
 # Eclipse
 .settings
+workspace/
+
+# Mac Metadata Files
+.DS_Store

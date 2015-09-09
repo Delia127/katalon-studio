@@ -78,7 +78,7 @@ public class StringConstants extends GlobalStringConstants {
 
 	// NewTestCaseDialog
 	public static final String DIA_TITLE_TEST_CASE = TEST_CASE;
-	public static final String DIA_MSG_CREATE_NEW_TEST_CASE = "Create new Test Case";
+	public static final String DIA_MSG_CREATE_NEW_TEST_CASE = "Create Test Case";
 
 	// PropertyInputBuilderDialog
 	public static final String DIA_TITLE_PROPERTY_INPUT = "Property Input";
@@ -121,7 +121,7 @@ public class StringConstants extends GlobalStringConstants {
 
 	// NewTestCaseHandler
 	public static final String HAND_NEW_TEST_CASE = "New Test Case";
-	public static final String HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_CASE = "Unable to create new Test Case";
+	public static final String HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_CASE = "Unable to create Test Case";
 
 	// OpenTestCaseHandler
 	public static final String HAND_DEFAULT_CONTAINER_DATA = "100";

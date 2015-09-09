@@ -222,7 +222,7 @@ public class TestCaseRepoDialog extends Dialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Create new Test Case Repository");
+		newShell.setText("Create Test Case Repository");
 	}
 
 	public List<String> getFolderIds() {

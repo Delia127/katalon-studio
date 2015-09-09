@@ -35,7 +35,7 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String EXC_NO_PROJ_VER_W_ID_X_AND_VER_Y = "There is no project version with project_id = {0} and version = {1}";
 
 	// TestCaseIsReferencedByTestSuiteExepception
-	public static final String EXC_CANNOT_DEL_TEST_CASE_X_FOR_REASON = "Unable to delete test case: {0} because this test case is referenced by the following test suite(s): {1}";
+	public static final String EXC_CANNOT_DEL_TEST_CASE_X_FOR_REASON = "Unable to delete test case \"{0}\" because this test case is referenced by the following test suite(s):\n{1}";
 
 	// WebElementNotFoundException
 	public static final String EXC_NO_WEB_ELEMENT_W_PROJ_ID_X_AND_GUID_Y = "There is no web element with project_id = {0} and guid = {1}";

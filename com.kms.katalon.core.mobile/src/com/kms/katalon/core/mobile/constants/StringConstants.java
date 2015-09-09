@@ -73,8 +73,6 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	// MobileDriverType
 	public static final String ANDROID = "Android";
 	public static final String IOS = "iOS";
-	public static final String IOS_NATIVE = "iOS Native";
-	public static final String ANDROID_NATIVE = "Android Native";
 
 	public static final String CONF_EXECUTED_PLATFORM = XML_LOG_DEVICE_PLATFORM_PROPERTY;
 	public static final String CONF_EXECUTED_DEVICE_NAME = XML_LOG_DEVICE_NAME_PROPERTY;

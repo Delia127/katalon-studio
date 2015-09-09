@@ -30,7 +30,7 @@ public class StringConstants extends GlobalStringConstants {
 
 	// NewTestSuiteDialog
 	public static final String DIA_TITLE_TEST_SUITE = TEST_SUITE;
-	public static final String DIA_MSG_CREATE_NEW_TEST_SUITE = "Create new Test Suite";
+	public static final String DIA_MSG_CREATE_NEW_TEST_SUITE = "Create Test Suite";
 
 	// TestDataLinkFinderDialog
 	public static final String DIA_SHELL_TEST_DATA_LINK_BROWSER = "Test Data Link Browser";
@@ -46,7 +46,7 @@ public class StringConstants extends GlobalStringConstants {
 
 	// NewTestSuiteHandler
 	public static final String HAND_DEFAULT_NAME_NEW_TEST_SUITE = "New Test Suite";
-	public static final String HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_SUITE = "Unable to create new Test Suite";
+	public static final String HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_SUITE = "Unable to create Test Suite";
 
 	// OpenTestSuiteHandler
 	public static final String HAND_DEFAULT_CONTAINER_DATA = "100";
