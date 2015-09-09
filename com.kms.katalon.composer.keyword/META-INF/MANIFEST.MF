@@ -30,5 +30,6 @@ Require-Bundle: org.eclipse.e4.core.services,
  org.eclipse.jdt.groovy.core,
  org.eclipse.ui.workbench,
  com.kms.katalon.core,
- org.eclipse.jdt.core.manipulation
+ org.eclipse.jdt.core.manipulation,
+ org.eclipse.core.filesystem
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
