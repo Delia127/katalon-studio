@@ -16,151 +16,153 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
-import com.kms.katalon.dal.fileservice.EntityService;
-import com.kms.katalon.dal.fileservice.exception.InvalidFileNameException;
+import com.kms.katalon.controller.EntityNameController;
+import com.kms.katalon.dal.exception.InvalidNameException;
 import com.kms.katalon.entity.folder.FolderEntity;
 
 public class NewEntityDialog extends TitleAreaDialog {
 
-	private String name;
+    private String name;
 
-	private String lblName = StringConstants.DIA_LBL_NAME;
+    private String lblName = StringConstants.DIA_LBL_NAME;
 
-	private String dialogTitle = "";
+    private String dialogTitle = "";
 
-	private String dialogMsg = StringConstants.DIA_LBL_CREATE_NEW;
+    private String dialogMsg = StringConstants.DIA_LBL_CREATE_NEW;
 
-	private Text txtName;
+    private Text txtName;
 
-	private Composite container;
+    private Composite container;
 
-	private FolderEntity parentFolder;
+    private FolderEntity parentFolder;
 
-	private boolean isFileCreating = true;
+    private boolean isFileCreating = true;
 
-	public NewEntityDialog(Shell parentShell, FolderEntity parentFolder) {
-		super(parentShell);
-		this.parentFolder = parentFolder;
-	}
+    public NewEntityDialog(Shell parentShell, FolderEntity parentFolder) {
+        super(parentShell);
+        this.parentFolder = parentFolder;
+    }
 
-	@Override
-	protected Control createDialogArea(Composite parent) {
-		// Set window title for dialog
-		if (getShell() != null) getShell().setText(StringConstants.DIA_WINDOW_TITLE_NEW);
+    @Override
+    protected Control createDialogArea(Composite parent) {
+        // Set window title for dialog
+        if (getShell() != null) getShell().setText(StringConstants.DIA_WINDOW_TITLE_NEW);
 
-		Composite area = (Composite) super.createDialogArea(parent);
-		container = new Composite(area, SWT.NONE);
-		container.setLayoutData(new GridData(GridData.FILL_BOTH));
-		container.setLayout(new GridLayout(2, false));
-		Label labelName = new Label(container, SWT.NONE);
-		labelName.setText(getLblName());
+        Composite area = (Composite) super.createDialogArea(parent);
+        container = new Composite(area, SWT.NONE);
+        container.setLayoutData(new GridData(GridData.FILL_BOTH));
+        container.setLayout(new GridLayout(2, false));
+        Label labelName = new Label(container, SWT.NONE);
+        labelName.setText(getLblName());
 
-		txtName = new Text(container, SWT.BORDER);
-		txtName.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		txtName.setText(getName());
-		txtName.selectAll();
+        txtName = new Text(container, SWT.BORDER);
+        txtName.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        txtName.setText(getName());
+        txtName.selectAll();
 
-		txtName.addModifyListener(new ModifyListener() {
+        txtName.addModifyListener(new ModifyListener() {
 
-			@Override
-			public void modifyText(ModifyEvent e) {
-				setName(((Text) e.getSource()).getText());
-				updateStatus();
-			}
-		});
+            @Override
+            public void modifyText(ModifyEvent e) {
+                setName(((Text) e.getSource()).getText());
+                updateStatus();
+            }
+        });
 
-		// Build the separator line
-		Label separator = new Label(area, SWT.HORIZONTAL | SWT.SEPARATOR);
-		separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        // Build the separator line
+        Label separator = new Label(area, SWT.HORIZONTAL | SWT.SEPARATOR);
+        separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		return area;
-	}
+        return area;
+    }
 
-	private void updateStatus() {
-		super.getButton(OK).setEnabled(isValidEntityName());
-	}
+    private void updateStatus() {
+        super.getButton(OK).setEnabled(isValidEntityName());
+    }
 
-	private boolean isValidEntityName() {
-		String entityName = getName();
-		try {
-			if (StringUtils.isBlank(entityName)) {
-				throw new InvalidFileNameException(StringConstants.DIA_NAME_CANNOT_BE_BLANK_OR_EMPTY);
-			}
-			if (!StringUtils.equalsIgnoreCase(
-					EntityService.getInstance().getAvailableName(parentFolder.getLocation(), entityName,
-							isFileCreating()), entityName)) {
-				throw new InvalidFileNameException(StringConstants.DIA_NAME_EXISTED);
-			}
-			EntityService.getInstance().validateName(entityName);
-			setErrorMessage(null);
-			return true;
-		} catch (Exception e) {
-			setErrorMessage(e.getMessage());
-			return false;
-		}
-	}
+    private boolean isValidEntityName() {
+        String entityName = getName();
+        try {
+            if (StringUtils.isBlank(entityName)) {
+                throw new InvalidNameException(StringConstants.DIA_NAME_CANNOT_BE_BLANK_OR_EMPTY);
+            }
+            
+            EntityNameController.getInstance().validateName(entityName);
+            
+            if (!StringUtils.equalsIgnoreCase(EntityNameController.getInstance().getAvailableName(entityName,
+                    parentFolder, !isFileCreating()), entityName)) {
+                throw new InvalidNameException(StringConstants.DIA_NAME_EXISTED);
+            }
+            
+            setErrorMessage(null);
+            return true;
+        } catch (Exception e) {
+            setErrorMessage(e.getMessage());
+            return false;
+        }
+    }
 
-	@Override
-	protected void createButtonsForButtonBar(Composite parent) {
-		super.createButtonsForButtonBar(parent);
-		updateStatus();
-	}
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        super.createButtonsForButtonBar(parent);
+        updateStatus();
+    }
 
-	@Override
-	protected Point getInitialSize() {
-		Point initSize = super.getInitialSize();
-		return new Point(initSize.x, 250);
-	}
+    @Override
+    protected Point getInitialSize() {
+        Point initSize = super.getInitialSize();
+        return new Point(initSize.x, 250);
+    }
 
-	@Override
-	public void create() {
-		super.create();
-		setTitle(getDialogTitle());
-		setMessage(getDialogMsg(), IMessageProvider.INFORMATION);
-	}
+    @Override
+    public void create() {
+        super.create();
+        setTitle(getDialogTitle());
+        setMessage(getDialogMsg(), IMessageProvider.INFORMATION);
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		if (name != null) {
-			// trim and replace multiple space by single one
-			name = name.trim().replaceAll("\\s+", " ");
-		}
-		this.name = name;
-	}
+    public void setName(String name) {
+        if (name != null) {
+            // trim and replace multiple space by single one
+            name = name.trim().replaceAll("\\s+", " ");
+        }
+        this.name = name;
+    }
 
-	public String getLblName() {
-		return lblName;
-	}
+    public String getLblName() {
+        return lblName;
+    }
 
-	public void setLblName(String lblName) {
-		this.lblName = lblName;
-	}
+    public void setLblName(String lblName) {
+        this.lblName = lblName;
+    }
 
-	public String getDialogTitle() {
-		return dialogTitle;
-	}
+    public String getDialogTitle() {
+        return dialogTitle;
+    }
 
-	public void setDialogTitle(String dialogTitle) {
-		this.dialogTitle = dialogTitle;
-	}
+    public void setDialogTitle(String dialogTitle) {
+        this.dialogTitle = dialogTitle;
+    }
 
-	public String getDialogMsg() {
-		return dialogMsg;
-	}
+    public String getDialogMsg() {
+        return dialogMsg;
+    }
 
-	public void setDialogMsg(String dialogMsg) {
-		this.dialogMsg = dialogMsg;
-	}
+    public void setDialogMsg(String dialogMsg) {
+        this.dialogMsg = dialogMsg;
+    }
 
-	public boolean isFileCreating() {
-		return isFileCreating;
-	}
+    public boolean isFileCreating() {
+        return isFileCreating;
+    }
 
-	public void setFileCreating(boolean isFileCreating) {
-		this.isFileCreating = isFileCreating;
-	}
+    public void setFileCreating(boolean isFileCreating) {
+        this.isFileCreating = isFileCreating;
+    }
 
 }

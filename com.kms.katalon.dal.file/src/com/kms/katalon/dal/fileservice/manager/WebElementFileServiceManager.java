@@ -6,10 +6,10 @@ import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 
+import com.kms.katalon.dal.exception.InvalidNameException;
 import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.dal.fileservice.FileServiceConstant;
 import com.kms.katalon.dal.fileservice.constants.StringConstants;
-import com.kms.katalon.dal.fileservice.exception.InvalidFileNameException;
 import com.kms.katalon.entity.IEntity;
 import com.kms.katalon.entity.dal.exception.DuplicatedFileNameException;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
@@ -271,7 +271,7 @@ public class WebElementFileServiceManager {
 		if (isNameChanged(webElement)) {
 			try {
 				EntityService.getInstance().validateName(webElement.getName());
-			} catch (InvalidFileNameException ex) {
+			} catch (InvalidNameException ex) {
 				String oldPk = EntityService.getInstance().getEntityCache().getKey(webElement);
 				webElement.setName(FilenameUtils.getExtension(oldPk));
 				throw ex;

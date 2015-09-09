@@ -1,5 +1,7 @@
 package com.kms.katalon.code.refactoring.handler;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.jobs.Job;
@@ -38,8 +40,13 @@ public class CodeRefactoringHandler implements EventHandler {
 
                     @Override
                     public void run() {
-                        while (!Job.getJobManager().isIdle()) {
-                            //wait for "Open project" job complete
+                        while (Job.getJobManager().currentJob() != null) {
+                            // wait for "Open project" job complete
+                            try {
+                                Thread.sleep(5);
+                            } catch (InterruptedException ex) {
+                                //Do nothing
+                            }
                         }
                         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
                         String projectDir = projectEntity.getFolderLocation();

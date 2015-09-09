@@ -31,8 +31,8 @@ import org.apache.commons.io.IOUtils;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 
+import com.kms.katalon.dal.exception.InvalidNameException;
 import com.kms.katalon.dal.fileservice.constants.StringConstants;
-import com.kms.katalon.dal.fileservice.exception.InvalidFileNameException;
 import com.kms.katalon.dal.fileservice.manager.EntityFileServiceManager;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.file.FileEntity;
@@ -291,11 +291,11 @@ public final class EntityService {
 		return newName;
 	}
 
-	public void validateName(String name) throws InvalidFileNameException {
+	public void validateName(String name) throws InvalidNameException {
 		Pattern pattern = Pattern.compile("^[^/\\\\:*?\"'<>|]+$");
 		Matcher matcher = pattern.matcher(name);
 		if (!matcher.matches()) {
-			throw new InvalidFileNameException(StringConstants.FS_EXC_FILE_NAME_CONTAIN_SPECIAL_CHAR);
+			throw new InvalidNameException(StringConstants.FS_EXC_FILE_NAME_CONTAIN_SPECIAL_CHAR);
 		}
 	}
 	

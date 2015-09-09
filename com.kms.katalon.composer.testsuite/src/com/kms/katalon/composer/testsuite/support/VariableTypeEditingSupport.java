@@ -36,7 +36,7 @@ public class VariableTypeEditingSupport extends EditingSupport {
     protected Object getValue(Object element) {
         if (element != null && element instanceof VariableLink) {
             VariableLink link = (VariableLink) element;
-            return variableTypes.indexOf(link.getType().name());
+            return variableTypes.indexOf(link.getType().getDisplayName());
         }
         return 0;
     }
