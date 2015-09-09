@@ -1,6 +1,7 @@
 package com.kms.katalon.dal.setting;
 
 import com.kms.katalon.dal.IDataFileDataProvider;
+import com.kms.katalon.dal.IEntityNameProvider;
 import com.kms.katalon.dal.IExportDataProvider;
 import com.kms.katalon.dal.IFolderDataProvider;
 import com.kms.katalon.dal.IGlobalVariableDataProvider;
@@ -42,4 +43,6 @@ public interface IDataProviderSetting {
 	public String getEntityPk(Entity entity);
 	
 	public IGlobalVariableDataProvider getGlobalVariableDataProvider();
+	
+	public IEntityNameProvider getEntityNameProvider();
 }

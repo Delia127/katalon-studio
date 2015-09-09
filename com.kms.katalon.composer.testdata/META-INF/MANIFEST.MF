@@ -28,4 +28,5 @@ Require-Bundle: com.kms.katalon.composer.components,
  com.kms.katalon.composer.explorer,
  com.kms.katalon.composer.keyword;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: javax.annotation;version="1.2.0"
+Import-Package: com.kms.katalon.dal.exception,
+ javax.annotation;version="1.2.0"

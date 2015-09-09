@@ -32,9 +32,9 @@ import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.integration.qtest.QTestConstants;
 import com.kms.katalon.integration.qtest.QTestIntegrationFolderManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestCaseManager;
+import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
 
@@ -219,7 +219,7 @@ public class TestCaseTreeDownloadedPreviewDialog extends Dialog {
 		Map<Long, FolderModulePair> qTestModuleMap = new LinkedHashMap<Long, FolderModulePair>();
 
 		for (FolderEntity folderEntity : folderEntities) {
-			IntegratedEntity folderIntegratedEntity = folderEntity.getIntegratedEntity(QTestConstants.PRODUCT_NAME);
+			IntegratedEntity folderIntegratedEntity = folderEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 			if (folderIntegratedEntity == null) continue;
 			QTestModule qTestModule = QTestIntegrationFolderManager
 					.getQTestModuleByIntegratedEntity(folderIntegratedEntity);
@@ -237,7 +237,7 @@ public class TestCaseTreeDownloadedPreviewDialog extends Dialog {
 		List<QTestTestCase> qTestCases = new ArrayList<QTestTestCase>();
 
 		for (TestCaseEntity testCase : testCaseEntities) {
-			IntegratedEntity testCaseIntegratedEntity = testCase.getIntegratedEntity(QTestConstants.PRODUCT_NAME);
+			IntegratedEntity testCaseIntegratedEntity = testCase.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 			QTestTestCase qTestCase = QTestIntegrationTestCaseManager
 					.getQTestTestCaseByIntegratedEntity(testCaseIntegratedEntity);
 

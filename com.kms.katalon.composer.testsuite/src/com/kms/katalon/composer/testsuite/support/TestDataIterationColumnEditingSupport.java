@@ -14,72 +14,72 @@ import com.kms.katalon.entity.link.TestCaseTestDataLink;
 
 public class TestDataIterationColumnEditingSupport extends EditingSupport {
 
-	private TestSuitePart mpart;
+    private TestSuitePart mpart;
 
-	public TestDataIterationColumnEditingSupport(ColumnViewer viewer, TestSuitePart mpart) {
-		super(viewer);
-		this.mpart = mpart;
-	}
+    public TestDataIterationColumnEditingSupport(ColumnViewer viewer, TestSuitePart mpart) {
+        super(viewer);
+        this.mpart = mpart;
+    }
 
-	@Override
-	protected CellEditor getCellEditor(Object element) {
-		if (element != null && element instanceof TestDataLinkTreeNode) {
-			TestDataLinkTreeNode linkTreeNode = (TestDataLinkTreeNode) element;
-			TestCaseTestDataLink testDataLink = linkTreeNode.getTestDataLink();
-			if (testDataLink.getIterationEntity() != null) {
-				return new DataIterationCellEditor((Composite) getViewer().getControl(), testDataLink
-						.getIterationEntity().clone());
-			}
-		}
-		return null;
-	}
+    @Override
+    protected CellEditor getCellEditor(Object element) {
+        if (element != null && element instanceof TestDataLinkTreeNode) {
+            TestDataLinkTreeNode linkTreeNode = (TestDataLinkTreeNode) element;
+            TestCaseTestDataLink testDataLink = linkTreeNode.getTestDataLink();
+            if (testDataLink.getIterationEntity() != null) {
+                return new DataIterationCellEditor((Composite) getViewer().getControl(), testDataLink
+                        .getIterationEntity().clone());
+            }
+        }
+        return null;
+    }
 
-	@Override
-	protected boolean canEdit(Object element) {
-		if (element != null && element instanceof TestDataLinkTreeNode) {
-			TestDataLinkTreeNode linkTreeNode = (TestDataLinkTreeNode) element;
-			TestCaseTestDataLink testDataLink = linkTreeNode.getTestDataLink();
-			
-			if (testDataLink.getIterationEntity() != null) {
-				return true;
-			}
-		}
-		return false;
-	}
+    @Override
+    protected boolean canEdit(Object element) {
+        if (element != null && element instanceof TestDataLinkTreeNode) {
+            TestDataLinkTreeNode linkTreeNode = (TestDataLinkTreeNode) element;
+            TestCaseTestDataLink testDataLink = linkTreeNode.getTestDataLink();
 
-	@Override
-	protected Object getValue(Object element) {
-		if (element != null && element instanceof TestDataLinkTreeNode) {			
-			TestDataLinkTreeNode linkTreeNode = (TestDataLinkTreeNode) element;
-			TestCaseTestDataLink testDataLink = linkTreeNode.getTestDataLink();
-			
-			if (testDataLink.getIterationEntity() != null) {
-				switch (testDataLink.getIterationEntity().getIterationType()) {
-				case ALL:
-					return testDataLink.getIterationEntity().getIterationType().name().toLowerCase();
-				default:
-					return testDataLink.getIterationEntity().getValue();
-				}
-				
-			}
-		}
-		return StringUtils.EMPTY;
-	}
+            if (testDataLink.getIterationEntity() != null) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	@Override
-	protected void setValue(Object element, Object value) {
-		if (element != null && element instanceof TestDataLinkTreeNode && value != null
-				&& value instanceof IterationEntity) {
-			TestDataLinkTreeNode linkTreeNode = (TestDataLinkTreeNode) element;
-			TestCaseTestDataLink testDataLink = linkTreeNode.getTestDataLink();
-			
-			if (!testDataLink.getIterationEntity().equals(value)) {
-				testDataLink.setIterationEntity((IterationEntity) value);
-				
-				getViewer().update(element, null);
-				mpart.setDirty(true);
-			}
-		}
-	}
+    @Override
+    protected Object getValue(Object element) {
+        if (element != null && element instanceof TestDataLinkTreeNode) {
+            TestDataLinkTreeNode linkTreeNode = (TestDataLinkTreeNode) element;
+            TestCaseTestDataLink testDataLink = linkTreeNode.getTestDataLink();
+
+            if (testDataLink.getIterationEntity() != null) {
+                switch (testDataLink.getIterationEntity().getIterationType()) {
+                    case ALL:
+                        return "All";
+                    default:
+                        return testDataLink.getIterationEntity().getValue();
+                }
+
+            }
+        }
+        return StringUtils.EMPTY;
+    }
+
+    @Override
+    protected void setValue(Object element, Object value) {
+        if (element != null && element instanceof TestDataLinkTreeNode && value != null
+                && value instanceof IterationEntity) {
+            TestDataLinkTreeNode linkTreeNode = (TestDataLinkTreeNode) element;
+            TestCaseTestDataLink testDataLink = linkTreeNode.getTestDataLink();
+
+            if (!testDataLink.getIterationEntity().equals(value)) {
+                testDataLink.setIterationEntity((IterationEntity) value);
+
+                getViewer().update(element, null);
+                mpart.setDirty(true);
+            }
+        }
+    }
 
 }

@@ -1,6 +1,7 @@
 package com.kms.katalon.dal.fileservice.dataprovider.setting;
 
 import com.kms.katalon.dal.IDataFileDataProvider;
+import com.kms.katalon.dal.IEntityNameProvider;
 import com.kms.katalon.dal.IExportDataProvider;
 import com.kms.katalon.dal.IFolderDataProvider;
 import com.kms.katalon.dal.IGlobalVariableDataProvider;
@@ -11,6 +12,7 @@ import com.kms.katalon.dal.ITestCaseDataProvider;
 import com.kms.katalon.dal.ITestSuiteDataProvider;
 import com.kms.katalon.dal.IWebElementDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.DataFileFileServiceDataProvider;
+import com.kms.katalon.dal.fileservice.dataprovider.EntityNameFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.ExportFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.FolderFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.GlobalVariableFileServiceDataProvider;
@@ -98,5 +100,10 @@ public class FileServiceDataProviderSetting implements IDataProviderSetting {
 	public IGlobalVariableDataProvider getGlobalVariableDataProvider() {
 		return new GlobalVariableFileServiceDataProvider();
 	}
+
+    @Override
+    public IEntityNameProvider getEntityNameProvider() {
+       return new EntityNameFileServiceDataProvider();
+    }
 
 }

@@ -46,6 +46,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.texteditor.link.EditorLinkedModeUI;
 
+import com.kms.katalon.composer.codeassist.util.KatalonContextUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
 import com.kms.katalon.controller.KeywordController;
@@ -408,7 +409,7 @@ public class KatalonMethodCompletionProposal extends ParameterGuessingProposal {
 
 	/**
 	 * If <code>methodNode</code> is a method of <code>CustomKeywords</code>
-	 * enclose its name by two single quotes, otherwise use default.
+	 * enclose its name by two single quotes. Otherwise, use default.
 	 * 
 	 * @param buffer
 	 */
@@ -431,13 +432,17 @@ public class KatalonMethodCompletionProposal extends ParameterGuessingProposal {
 		return super.computeDisplayString().append(getStyledGroovy());
 	}
 
+	/**
+	 * Add Katalon signature for the proposal
+	 * @return a {@link StyledString} contains Katalon signature
+	 */
 	private StyledString getStyledGroovy() {
 		try {
 			String className = methodNode.getDeclaringClass().getName();
 			String methodName = methodNode.getName();
 			if (GroovyConstants.CUSTOM_KEYWORD_LIB_FILE_NAME.equals((methodNode.getDeclaringClass().getName()))
 					|| (KeywordController.getInstance().getBuiltInKeywordByName(className, methodName) != null)) {
-				return new StyledString(" (Katalon)", StyledString.DECORATIONS_STYLER);
+				return KatalonContextUtil.getKatalonSignature();
 			}
 		} catch (Exception e) {
 			// Cannot find keyword, return empty string

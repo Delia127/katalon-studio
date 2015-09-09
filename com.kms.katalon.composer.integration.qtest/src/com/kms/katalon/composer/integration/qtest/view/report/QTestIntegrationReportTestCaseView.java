@@ -45,10 +45,10 @@ import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
-import com.kms.katalon.integration.qtest.QTestConstants;
 import com.kms.katalon.integration.qtest.QTestIntegrationReportManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestCaseManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager;
+import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestLog;
 import com.kms.katalon.integration.qtest.entity.QTestLogUploadedPreview;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
@@ -214,10 +214,10 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
 		try {
 			if (testSuiteLogRecord != null) {
 				testSuiteEntity = TestSuiteController.getInstance().getTestSuite(testSuiteLogRecord.getId());
-				if (testSuiteEntity != null && testSuiteEntity.getIntegratedEntity(QTestConstants.PRODUCT_NAME) != null) {
+				if (testSuiteEntity != null && testSuiteEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME) != null) {
 					List<QTestSuite> qTestSuiteCollection = QTestIntegrationTestSuiteManager
 							.getQTestSuiteListByIntegratedEntity(testSuiteEntity
-									.getIntegratedEntity(QTestConstants.PRODUCT_NAME));
+									.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME));
 					return qTestSuite = QTestIntegrationTestSuiteManager
 							.getSelectedQTestSuiteByIntegratedEntity(qTestSuiteCollection);
 				}
@@ -253,7 +253,7 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
 				txtTestCaseRunId.setText(Long.toString(qTestRun.getId()));
 			}
 
-			IntegratedEntity reportIntegratedEntity = reportEntity.getIntegratedEntity(QTestConstants.PRODUCT_NAME);
+			IntegratedEntity reportIntegratedEntity = reportEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 			qTestReport = QTestIntegrationReportManager.getQTestReportByIntegratedEntity(reportIntegratedEntity);
 
 			if (qTestReport != null && testCaseLogRecord != null) {
@@ -323,7 +323,7 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
 	private void saveTestRunInTestSuite() {
 		try {
 			IntegratedEntity testSuiteIntegratedEntity = testSuiteEntity
-					.getIntegratedEntity(QTestConstants.PRODUCT_NAME);
+					.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 			List<QTestSuite> qTestSuites = QTestIntegrationTestSuiteManager
 					.getQTestSuiteListByIntegratedEntity(testSuiteIntegratedEntity);
 			for (int index = 0; index < qTestSuites.size(); index++) {
@@ -375,7 +375,7 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
 					testCaseLogRecord.getId());
 			if (testCaseEntity != null) {
 				return QTestIntegrationTestCaseManager.getQTestTestCaseByIntegratedEntity(testCaseEntity
-						.getIntegratedEntity(QTestConstants.PRODUCT_NAME));
+						.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME));
 			}
 		} catch (Exception e) {
 
@@ -395,7 +395,7 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
 			QTestRun qTestRun = QTestIntegrationTestSuiteManager.getTestRunByTestSuiteAndTestCaseId(qTestSuite,
 					qTestCase.getId());
 			if (qTestRun != null) {
-				IntegratedEntity reportIntegratedEntity = reportEntity.getIntegratedEntity(QTestConstants.PRODUCT_NAME);
+				IntegratedEntity reportIntegratedEntity = reportEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 				QTestReport qTestReport = QTestIntegrationReportManager
 						.getQTestReportByIntegratedEntity(reportIntegratedEntity);
 
@@ -419,7 +419,7 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
 		QTestRun qTestRun = QTestIntegrationTestSuiteManager.getTestRunByTestSuiteAndTestCaseId(qTestSuite,
 				qTestCase.getId());
 		if (qTestRun != null) {
-			IntegratedEntity reportIntegratedEntity = reportEntity.getIntegratedEntity(QTestConstants.PRODUCT_NAME);
+			IntegratedEntity reportIntegratedEntity = reportEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 			QTestReport qTestReport;
 			try {
 				qTestReport = QTestIntegrationReportManager.getQTestReportByIntegratedEntity(reportIntegratedEntity);
@@ -464,7 +464,7 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
 		if (testCaseCanBeUploaded.isEmpty() && testCaseCanBeDisintegrated.isEmpty()) return;
 
 		MenuItem qTestMenuItem = new MenuItem(parentMenu, SWT.CASCADE);
-		qTestMenuItem.setText(QTestConstants.PRODUCT_NAME);
+		qTestMenuItem.setText(QTestStringConstants.PRODUCT_NAME);
 
 		Menu qTestMenu = new Menu(parentMenu);
 		qTestMenuItem.setMenu(qTestMenu);

@@ -20,8 +20,8 @@ import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.integration.qtest.QTestConstants;
 import com.kms.katalon.integration.qtest.QTestIntegrationProjectManager;
+import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 
 public class DisintegrateTestCaseJob extends UploadJob {
@@ -42,7 +42,7 @@ public class DisintegrateTestCaseJob extends UploadJob {
 					String testCaseId = TestCaseController.getInstance().getIdForDisplay(testCaseEntity);
 					monitor.subTask("Disintegrating " + testCaseId + "...");
 	
-					IntegratedEntity testCaseIntegratedEntity = testCaseEntity.getIntegratedEntity(QTestConstants.PRODUCT_NAME);
+					IntegratedEntity testCaseIntegratedEntity = testCaseEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 					
 					testCaseEntity.getIntegratedEntities().remove(testCaseIntegratedEntity);
 					
@@ -56,10 +56,10 @@ public class DisintegrateTestCaseJob extends UploadJob {
 					String folderId = FolderController.getInstance().getIdForDisplay(folderEntity);
 					monitor.subTask("Disintegrating " + folderId + "...");
 					IntegratedEntity folderIntegratedEntity = folderEntity
-							.getIntegratedEntity(QTestConstants.PRODUCT_NAME);
+							.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 					
 					if (folderIntegratedEntity != null) {
-						TestCaseRepo repo = QTestIntegrationUtil.getTestCaseRepo(folderEntity);
+						TestCaseRepo repo = QTestIntegrationUtil.getTestCaseRepo(folderEntity, projectEntity);
 						if (repo != null) {
 							if (repo.getFolderId().equals(folderId)) {
 								removeFolderIdFromProject(folderId, repo.getQTestProject());
@@ -80,7 +80,7 @@ public class DisintegrateTestCaseJob extends UploadJob {
 						if (childTestCaseEntityObject instanceof TestCaseEntity) {							
 							TestCaseEntity testCaseEntity = (TestCaseEntity) childTestCaseEntityObject;
 							IntegratedEntity testCaseIntegratedEntity = testCaseEntity
-									.getIntegratedEntity(QTestConstants.PRODUCT_NAME);
+									.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 
 							if (testCaseIntegratedEntity != null) {
 								testCaseEntity.getIntegratedEntities().remove(testCaseIntegratedEntity);
@@ -93,7 +93,7 @@ public class DisintegrateTestCaseJob extends UploadJob {
 						} else {
 							FolderEntity childFolderEntity = (FolderEntity) childTestCaseEntityObject;
 							IntegratedEntity childFolderIntegratedEntity = childFolderEntity
-									.getIntegratedEntity(QTestConstants.PRODUCT_NAME);
+									.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 
 							if (folderIntegratedEntity != null) {
 								childFolderEntity.getIntegratedEntities().remove(childFolderIntegratedEntity);
@@ -115,7 +115,7 @@ public class DisintegrateTestCaseJob extends UploadJob {
 	}
 	
 	private void removeFolderIdFromProject(String folderId, QTestProject qTestProject) throws Exception {
-		IntegratedEntity projectIntegratedEntity = projectEntity.getIntegratedEntity(QTestConstants.PRODUCT_NAME);
+		IntegratedEntity projectIntegratedEntity = projectEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 		List<QTestProject> qTestProjects = QTestIntegrationProjectManager.getQTestProjectsByIntegratedEntity(projectIntegratedEntity);
 		
 		for (QTestProject systemQTestProject : qTestProjects) {
@@ -133,7 +133,7 @@ public class DisintegrateTestCaseJob extends UploadJob {
 	}
 	
 	private IntegratedFileEntity updateFileIntegratedEntity(IntegratedFileEntity entity, IntegratedEntity newIntegrated) {
-		IntegratedEntity oldIntegrated = entity.getIntegratedEntity(QTestConstants.PRODUCT_NAME);
+		IntegratedEntity oldIntegrated = entity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 
 		// Otherwise, add the new one to integrated list
 		int index = 0;

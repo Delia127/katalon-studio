@@ -6,6 +6,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -134,6 +135,7 @@ public class DataIterationDialog extends Dialog {
 		btnRunFromRow.setText(StringConstants.DIA_BTN_RUN_FROM_ROW);
 
 		spinnerFrom = new Spinner(container, SWT.BORDER);
+		spinnerFrom.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		spinnerFrom.setMinimum(1);
 		spinnerFrom.setIncrement(1);
 
@@ -141,7 +143,9 @@ public class DataIterationDialog extends Dialog {
 		lblNewLabel.setText(StringConstants.DIA_LBL_TO_ROW);
 
 		spinnerTo = new Spinner(container, SWT.BORDER);
+		spinnerTo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		spinnerTo.setMinimum(1);
+		spinnerTo.setMaximum(Integer.MAX_VALUE);
 		spinnerTo.setIncrement(1);
 		
 		btnRunSpecificRows = new Button(container, SWT.RADIO);
@@ -174,6 +178,11 @@ public class DataIterationDialog extends Dialog {
 			iterationEntity.setSpecificValue(textSpecificRow.getText());
 		}
 	}
+	
+	@Override
+    protected Point getInitialSize() {
+        return new Point(400, 200);
+    }
 	
 	private void validateIteration() {
 		if (spinnerFrom.getSelection() > spinnerTo.getSelection()) {

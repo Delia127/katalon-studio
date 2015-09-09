@@ -42,5 +42,5 @@ public interface IFolderDataProvider {
 	public FolderEntity saveFolder(FolderEntity folder) throws Exception;
 
 	public String getAvailableFolderName(FolderEntity parentFolder, String name) throws Exception;
-
+	
 }

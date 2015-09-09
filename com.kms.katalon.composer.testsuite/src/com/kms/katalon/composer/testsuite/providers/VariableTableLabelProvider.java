@@ -63,7 +63,7 @@ public class VariableTableLabelProvider extends LabelProvider implements ITableL
 				case COLUMN_DEFAULT_VALUE_INDEX:
 					return variableEntity.getDefaultValue();
 				case COLUMN_TYPE_INDEX:
-					return variableLink.getType().name();
+					return variableLink.getType().getDisplayName();
 				case COLUMN_TEST_DATA_ID_INDEX:
 					if (!variableLink.getTestDataLinkId().isEmpty()) {
 						TestCaseTestDataLink testDataLink = testSuiteController.getTestDataLink(

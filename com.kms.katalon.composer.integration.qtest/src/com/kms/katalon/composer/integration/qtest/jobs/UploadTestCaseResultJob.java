@@ -14,13 +14,14 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
-import com.kms.katalon.integration.qtest.QTestConstants;
 import com.kms.katalon.integration.qtest.QTestIntegrationReportManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager;
+import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestLog;
 import com.kms.katalon.integration.qtest.entity.QTestLogUploadedPreview;
 import com.kms.katalon.integration.qtest.entity.QTestRun;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
+import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 
 public class UploadTestCaseResultJob extends UploadJob {
 
@@ -48,7 +49,7 @@ public class UploadTestCaseResultJob extends UploadJob {
 				monitor.subTask("Uploading result of test case: "
 						+ getWrappedName(uploadedItem.getTestCaseLogRecord().getName()) + "...");
 				IntegratedEntity testSuiteIntegratedEntity = testSuiteEntity
-						.getIntegratedEntity(QTestConstants.PRODUCT_NAME);
+						.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 				List<QTestSuite> qTestSuiteCollection = QTestIntegrationTestSuiteManager
 						.getQTestSuiteListByIntegratedEntity(testSuiteIntegratedEntity);
 
@@ -85,7 +86,10 @@ public class UploadTestCaseResultJob extends UploadJob {
 				monitor.worked(1);
 			}
 			return Status.OK_STATUS;
-		} finally {
+		} catch (QTestInvalidFormatException ex) {
+            monitor.setCanceled(true);
+            return Status.CANCEL_STATUS;
+        } finally {
 			monitor.done();
 			uploadedPreviewLst = null;
 			EventBrokerSingleton.getInstance().getEventBroker()

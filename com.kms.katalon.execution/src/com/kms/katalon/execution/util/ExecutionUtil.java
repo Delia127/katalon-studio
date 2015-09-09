@@ -3,6 +3,7 @@ package com.kms.katalon.execution.util;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,256 +32,280 @@ import com.kms.katalon.groovy.util.GroovyStringUtil;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class ExecutionUtil {
-	private static final String BIT = "bit";
-	private static final String OS_ARCHITECTURE_PROPERTY = "sun.arch.data.model";
-	private static final String OS_NAME_PROPERTY = "os.name";
-	private static final String UNKNOW_HOST = "Unknow host";
+    private static final String BIT = "bit";
+    private static final String OS_ARCHITECTURE_PROPERTY = "sun.arch.data.model";
+    private static final String OS_NAME_PROPERTY = "os.name";
+    private static final String UNKNOW_HOST = "Unknow host";
 
-	public static String getLocalHostName() {
-		try {
-			return InetAddress.getLocalHost().getCanonicalHostName();
-		} catch (UnknownHostException e) {
-			return UNKNOW_HOST;
-		}
-	}
+    public static String getLocalHostName() {
+        try {
+            return InetAddress.getLocalHost().getCanonicalHostName();
+        } catch (UnknownHostException e) {
+            return UNKNOW_HOST;
+        }
+    }
 
-	public static String getLocalOS() {
-		return System.getProperty(OS_NAME_PROPERTY) + " " + System.getProperty(OS_ARCHITECTURE_PROPERTY) + BIT;
-	}
+    public static String getLocalOS() {
+        return System.getProperty(OS_NAME_PROPERTY) + " " + System.getProperty(OS_ARCHITECTURE_PROPERTY) + BIT;
+    }
 
-	public static int getDefaultPageLoadTimeout() {
-		IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-				PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
-		return store.getInt(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_TIMEOUT);
-	}
+    public static int getDefaultPageLoadTimeout() {
+        IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
+                PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
+        return store.getInt(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_TIMEOUT);
+    }
 
-	public static boolean openReportAfterExecuting() {
-		IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-				PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
-		return store.getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_OPEN_REPORT_AFTER_EXECUTING);
-	}
-	
-	public static Map<String, String> escapeGroovy(Map<String, String> propertiesMap) {
-		for (Entry<String, String> entry : propertiesMap.entrySet()) {
-			entry.setValue(GroovyStringUtil.escapeGroovy(entry.getValue()));
-		}
-		return propertiesMap;
-	}
+    public static boolean openReportAfterExecuting() {
+        IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
+                PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
+        return store.getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_OPEN_REPORT_AFTER_EXECUTING);
+    }
 
-	/**
-	 * Create a new TestSuiteExecutedEntity that's based on the given params.
-	 * Store a map of test data used in the given test suite into the new
-	 * created TestSuiteExecutedEntity
-	 * 
-	 * @param testSuite
-	 * @param project
-	 * @return
-	 */
-	public static TestSuiteExecutedEntity loadTestDataForTestSuite(TestSuiteEntity testSuite, ProjectEntity project)
-			throws Exception {
-		TestSuiteExecutedEntity testSuiteExecutedEntity = new TestSuiteExecutedEntity();
-		testSuiteExecutedEntity.setTestSuiteId(TestSuiteController.getInstance().getIdForDisplay(testSuite));
-		String projectDir = project.getFolderLocation();
+    public static Map<String, String> escapeGroovy(Map<String, String> propertiesMap) {
+        for (Entry<String, String> entry : propertiesMap.entrySet()) {
+            entry.setValue(GroovyStringUtil.escapeGroovy(entry.getValue()));
+        }
+        return propertiesMap;
+    }
 
-		// key: id of id of test data
-		Map<String, TestData> testDataUsedMap = new HashMap<String, TestData>();
+    /**
+     * Create a new TestSuiteExecutedEntity that's based on the given params.
+     * Store a map of test data used in the given test suite into the new
+     * created TestSuiteExecutedEntity
+     * 
+     * @param testSuite
+     * @param project
+     * @return
+     */
+    public static TestSuiteExecutedEntity loadTestDataForTestSuite(TestSuiteEntity testSuite, ProjectEntity project)
+            throws Exception {
+        TestSuiteExecutedEntity testSuiteExecutedEntity = new TestSuiteExecutedEntity();
+        testSuiteExecutedEntity.setTestSuiteId(TestSuiteController.getInstance().getIdForDisplay(testSuite));
+        String projectDir = project.getFolderLocation();
 
-		for (TestSuiteTestCaseLink testCaseLink : TestSuiteController.getInstance().getTestSuiteTestCaseRun(testSuite)) {
-			TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByDisplayId(
-					testCaseLink.getTestCaseId());
+        // key: id of id of test data
+        Map<String, TestData> testDataUsedMap = new HashMap<String, TestData>();
 
-			if (testCase == null) {
-				throw new IllegalArgumentException(MessageFormat.format(StringConstants.UTIL_EXC_TEST_CASE_X_NOT_FOUND,
-						testCaseLink.getTestCaseId()));
-			}
+        for (TestSuiteTestCaseLink testCaseLink : TestSuiteController.getInstance().getTestSuiteTestCaseRun(testSuite)) {
+            TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByDisplayId(
+                    testCaseLink.getTestCaseId());
 
-			TestCaseExecutedEntity testCaseExecutedEntity = new TestCaseExecutedEntity(testCaseLink.getTestCaseId());
+            if (testCase == null) {
+                throw new IllegalArgumentException(MessageFormat.format(StringConstants.UTIL_EXC_TEST_CASE_X_NOT_FOUND,
+                        testCaseLink.getTestCaseId()));
+            }
 
-			testCaseExecutedEntity.setLoopTimes(0);
+            TestCaseExecutedEntity testCaseExecutedEntity = new TestCaseExecutedEntity(testCaseLink.getTestCaseId());
 
-			int numberTestCaseUsedOnce = -1;
-			int numTestDataRowUsedManyTimes = 1;
+            testCaseExecutedEntity.setLoopTimes(0);
 
-			List<TestCaseTestDataLink> testDataLinkUsedList = TestSuiteController.getInstance()
-					.getTestDataLinkUsedInTestCase(testCaseLink);
+            int numberTestCaseUsedOnce = -1;
+            int numTestDataRowUsedManyTimes = 1;
 
-			if (testDataLinkUsedList.size() > 0) {
-				for (TestCaseTestDataLink testDataLink : testDataLinkUsedList) {
+            List<TestCaseTestDataLink> testDataLinkUsedList = TestSuiteController.getInstance()
+                    .getTestDataLinkUsedInTestCase(testCaseLink);
 
-					// check test data in the test data map first, if is doesn't
-					// exist, find it by using TestDataFactory to read its
-					// source.
-					TestData testData = testDataUsedMap.get(testDataLink.getTestDataId());
+            if (testDataLinkUsedList.size() > 0) {
+                for (TestCaseTestDataLink testDataLink : testDataLinkUsedList) {
 
-					if (testData == null) {
-						testData = TestDataFactory.findTestDataForExternalBundleCaller(testDataLink.getTestDataId(),
-								projectDir);
-						testDataUsedMap.put(testDataLink.getTestDataId(), testData);
-					}
+                    // check test data in the test data map first, if is doesn't
+                    // exist, find it by using TestDataFactory to read its
+                    // source.
+                    TestData testData = testDataUsedMap.get(testDataLink.getTestDataId());
 
-					if (testData == null || testData.getRowNumbers() < 0) {
-						throw new RuntimeException(MessageFormat.format(
-								StringConstants.UTIL_EXC_TD_DATA_SRC_X_UNAVAILABLE, testDataLink.getTestDataId()));
-					} else {
-						TestDataExecutedEntity testDataExecutedEntity = getTestDataExecutedEntity(testCaseLink,
-								testDataLink, testData);
-						if (testDataExecutedEntity == null)
-							continue;
+                    if (testData == null) {
+                        testData = TestDataFactory.findTestDataForExternalBundleCaller(testDataLink.getTestDataId(),
+                                projectDir);
+                        testDataUsedMap.put(testDataLink.getTestDataId(), testData);
+                    }
 
-						int rowCount = testDataExecutedEntity.getRowIndexes().length;
+                    if (testData == null || testData.getRowNumbers() < 0) {
+                        throw new RuntimeException(MessageFormat.format(
+                                StringConstants.UTIL_EXC_TD_DATA_SRC_X_UNAVAILABLE, testDataLink.getTestDataId()));
+                    } else {
+                        TestDataExecutedEntity testDataExecutedEntity = getTestDataExecutedEntity(testCaseLink,
+                                testDataLink, testData);
+                        if (testDataExecutedEntity == null) continue;
 
-						// update numberTestCaseUsedOnce or
-						// numTestDataRowUsedManyTimes depend on
-						// combinationType of testDataLink
-						if (testDataLink.getCombinationType() == TestDataCombinationType.ONE) {
-							if (numberTestCaseUsedOnce < 1) {
-								numberTestCaseUsedOnce = rowCount;
-							} else {
-								numberTestCaseUsedOnce = Math.min(numberTestCaseUsedOnce, rowCount);
-							}
-						} else {
-							numTestDataRowUsedManyTimes *= rowCount;
+                        int rowCount = testDataExecutedEntity.getRowIndexes().length;
 
-							for (TestDataExecutedEntity siblingDataExecuted : testCaseExecutedEntity
-									.getTestDataExecutions()) {
-								if (siblingDataExecuted.getType() == TestDataCombinationType.MANY) {
-									siblingDataExecuted.setMultiplier(siblingDataExecuted.getMultiplier() * rowCount);
-								}
-							}
-						}
-						testCaseExecutedEntity.getTestDataExecutions().add(testDataExecutedEntity);
-					}
-				}
+                        // update numberTestCaseUsedOnce or
+                        // numTestDataRowUsedManyTimes depend on
+                        // combinationType of testDataLink
+                        if (testDataLink.getCombinationType() == TestDataCombinationType.ONE) {
+                            if (numberTestCaseUsedOnce < 1) {
+                                numberTestCaseUsedOnce = rowCount;
+                            } else {
+                                numberTestCaseUsedOnce = Math.min(numberTestCaseUsedOnce, rowCount);
+                            }
+                        } else {
+                            numTestDataRowUsedManyTimes *= rowCount;
 
-				if (numberTestCaseUsedOnce < 1) {
-					numberTestCaseUsedOnce = 1;
-				}
+                            for (TestDataExecutedEntity siblingDataExecuted : testCaseExecutedEntity
+                                    .getTestDataExecutions()) {
+                                if (siblingDataExecuted.getType() == TestDataCombinationType.MANY) {
+                                    siblingDataExecuted.setMultiplier(siblingDataExecuted.getMultiplier() * rowCount);
+                                }
+                            }
+                        }
+                        testCaseExecutedEntity.getTestDataExecutions().add(testDataExecutedEntity);
+                    }
+                }
 
-				testCaseExecutedEntity.setLoopTimes(numTestDataRowUsedManyTimes * numberTestCaseUsedOnce);
-			} else {
-				testCaseExecutedEntity.setLoopTimes(1);
-			}
+                if (numberTestCaseUsedOnce < 1) {
+                    numberTestCaseUsedOnce = 1;
+                }
 
-			if (numberTestCaseUsedOnce < 1) {
-				numberTestCaseUsedOnce = 1;
-			}
-			// make sure all TestDataExecutedEntity in testCaseExecutedEntity
-			// has the same rows to prevent NullPointerException
-			cutRedundantIndexes(testCaseExecutedEntity, numberTestCaseUsedOnce);
+                testCaseExecutedEntity.setLoopTimes(numTestDataRowUsedManyTimes * numberTestCaseUsedOnce);
+            } else {
+                testCaseExecutedEntity.setLoopTimes(1);
+            }
 
-			testSuiteExecutedEntity.getTestCaseExecutedEntities().add(testCaseExecutedEntity);
-		}
+            if (numberTestCaseUsedOnce < 1) {
+                numberTestCaseUsedOnce = 1;
+            }
+            // make sure all TestDataExecutedEntity in testCaseExecutedEntity
+            // has the same rows to prevent NullPointerException
+            cutRedundantIndexes(testCaseExecutedEntity, numberTestCaseUsedOnce);
 
-		testSuiteExecutedEntity.setTestDataMap(testDataUsedMap);
+            testSuiteExecutedEntity.getTestCaseExecutedEntities().add(testCaseExecutedEntity);
+        }
 
-		return testSuiteExecutedEntity;
-	}
+        testSuiteExecutedEntity.setTestDataMap(testDataUsedMap);
 
-	/**
-	 * Make sure all TestDataExecutedEntity in the given testCaseExecutedEntity
-	 * has the same rows with the given numberTestCaseUsedOnce
-	 * 
-	 * @param testCaseExecutedEntity
-	 * @see {@link TestCaseExecutedEntity}
-	 * @param numberTestCaseUsedOnce
-	 */
-	private static void cutRedundantIndexes(TestCaseExecutedEntity testCaseExecutedEntity, int numberTestCaseUsedOnce) {
-		if (numberTestCaseUsedOnce <= 1)
-			return;
+        return testSuiteExecutedEntity;
+    }
 
-		for (TestDataExecutedEntity siblingDataExecuted : testCaseExecutedEntity.getTestDataExecutions()) {
-			if ((siblingDataExecuted.getType() == TestDataCombinationType.ONE)
-					&& (siblingDataExecuted.getRowIndexes().length > numberTestCaseUsedOnce)) {
+    /**
+     * Make sure all TestDataExecutedEntity in the given testCaseExecutedEntity
+     * has the same rows with the given numberTestCaseUsedOnce
+     * 
+     * @param testCaseExecutedEntity
+     * @see {@link TestCaseExecutedEntity}
+     * @param numberTestCaseUsedOnce
+     */
+    private static void cutRedundantIndexes(TestCaseExecutedEntity testCaseExecutedEntity, int numberTestCaseUsedOnce) {
+        if (numberTestCaseUsedOnce <= 1) return;
 
-				int[] newRowIndexs = ArrayUtils.remove(siblingDataExecuted.getRowIndexes(), numberTestCaseUsedOnce);
+        for (TestDataExecutedEntity siblingDataExecuted : testCaseExecutedEntity.getTestDataExecutions()) {
+            if ((siblingDataExecuted.getType() == TestDataCombinationType.ONE)
+                    && (siblingDataExecuted.getRowIndexes().length > numberTestCaseUsedOnce)) {
 
-				siblingDataExecuted.setRowIndexes(newRowIndexs);
-			}
-		}
-	}
+                int[] newRowIndexs = ArrayUtils.remove(siblingDataExecuted.getRowIndexes(), numberTestCaseUsedOnce);
 
-	/**
-	 * Create new TestDataExecutedEntity that's based on the given params.
-	 * 
-	 * @param testCaseLink
-	 * @param testDataLink
-	 * @param testData
-	 */
-	private static TestDataExecutedEntity getTestDataExecutedEntity(TestSuiteTestCaseLink testCaseLink,
-			TestCaseTestDataLink testDataLink, TestData testData) {
-		TestDataExecutedEntity testDataExecutedEntity = new TestDataExecutedEntity(testDataLink.getId(),
-				testDataLink.getTestDataId());
-		testDataExecutedEntity.setType(testDataLink.getCombinationType());
+                siblingDataExecuted.setRowIndexes(newRowIndexs);
+            }
+        }
+    }
 
-		int rowCount = 0;
+    /**
+     * Create new TestDataExecutedEntity that's based on the given params.
+     * 
+     * @param testCaseLink
+     * @param testDataLink
+     * @param testData
+     */
+    private static TestDataExecutedEntity getTestDataExecutedEntity(TestSuiteTestCaseLink testCaseLink,
+            TestCaseTestDataLink testDataLink, TestData testData) {
+        TestDataExecutedEntity testDataExecutedEntity = new TestDataExecutedEntity(testDataLink.getId(),
+                testDataLink.getTestDataId());
+        testDataExecutedEntity.setType(testDataLink.getCombinationType());
 
-		switch (testDataLink.getIterationEntity().getIterationType()) {
-		case ALL:
-			rowCount = testData.getRowNumbers();
+        int rowCount = 0;
 
-			if (rowCount <= 0) {
-				throw new IllegalArgumentException(MessageFormat.format(
-						StringConstants.UTIL_EXC_TD_X_DOES_NOT_CONTAIN_ANY_RECORDS, testDataLink.getTestDataId()));
-			}
+        switch (testDataLink.getIterationEntity().getIterationType()) {
+            case ALL: {
+                rowCount = testData.getRowNumbers();
 
-			int[] rowIndexes = new int[rowCount];
-			for (int index = 0; index < rowCount; index++) {
-				rowIndexes[index] = index + 1;
-			}
-			testDataExecutedEntity.setRowIndexes(rowIndexes);
+                if (rowCount <= 0) {
+                    throw new IllegalArgumentException(MessageFormat.format(
+                            StringConstants.UTIL_EXC_TD_X_DOES_NOT_CONTAIN_ANY_RECORDS, testDataLink.getTestDataId()));
+                }
 
-			break;
-		case RANGE:
-			int rowStart = testDataLink.getIterationEntity().getFrom();
-			int rowEnd = testDataLink.getIterationEntity().getTo();
+                int[] rowIndexes = new int[rowCount];
+                for (int index = 0; index < rowCount; index++) {
+                    rowIndexes[index] = index + 1;
+                }
+                testDataExecutedEntity.setRowIndexes(rowIndexes);
 
-			if (rowStart > testData.getRowNumbers()) {
-				throw new IllegalArgumentException(MessageFormat.format(
-						StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_START_AT_ROW_IDX,
-						testDataLink.getTestDataId(), Integer.toString(testData.getRowNumbers()),
-						testCaseLink.getTestCaseId(), Integer.toString(rowStart)));
-			}
+                break;
+            }
+            case RANGE: {
+                int rowStart = testDataLink.getIterationEntity().getFrom();
+                int rowEnd = testDataLink.getIterationEntity().getTo();
 
-			if (rowEnd > testData.getRowNumbers()) {
-				throw new IllegalArgumentException(MessageFormat.format(
-						StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_ENDS_AT_ROW_IDX,
-						testDataLink.getTestDataId(), Integer.toString(testData.getRowNumbers()),
-						testCaseLink.getTestCaseId(), Integer.toString(rowEnd)));
-			}
-			rowCount = rowEnd - rowStart + 1;
+                if (rowStart > testData.getRowNumbers()) {
+                    throw new IllegalArgumentException(MessageFormat.format(
+                            StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_START_AT_ROW_IDX,
+                            testDataLink.getTestDataId(), Integer.toString(testData.getRowNumbers()),
+                            testCaseLink.getTestCaseId(), Integer.toString(rowStart)));
+                }
 
-			rowIndexes = new int[rowCount];
-			for (int index = 0; index < rowCount; index++) {
-				rowIndexes[index] = index + rowStart;
-			}
-			testDataExecutedEntity.setRowIndexes(rowIndexes);
+                if (rowEnd > testData.getRowNumbers()) {
+                    throw new IllegalArgumentException(MessageFormat.format(
+                            StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_ENDS_AT_ROW_IDX,
+                            testDataLink.getTestDataId(), Integer.toString(testData.getRowNumbers()),
+                            testCaseLink.getTestCaseId(), Integer.toString(rowEnd)));
+                }
+                rowCount = rowEnd - rowStart + 1;
 
-			break;
-		case SPECIFIC:
-			String[] rowIndexesString = testDataLink.getIterationEntity().getValue().replace(" ", "").split(",");
-			rowCount = rowIndexesString.length;
+                int[] rowIndexes = new int[rowCount];
+                for (int index = 0; index < rowCount; index++) {
+                    rowIndexes[index] = index + rowStart;
+                }
+                testDataExecutedEntity.setRowIndexes(rowIndexes);
 
-			rowIndexes = new int[rowCount];
-			for (int index = 0; index < rowCount; index++) {
-				int rowIndex = Integer.valueOf(rowIndexesString[index]);
+                break;
+            }
+            case SPECIFIC:
+                String[] rowIndexesString = testDataLink.getIterationEntity().getValue().replace(" ", "").split(",");
+                rowCount = rowIndexesString.length;
 
-				if (rowIndex < 1 || rowIndex > testData.getRowNumbers()) {
-					throw new IllegalArgumentException(MessageFormat.format(
-							StringConstants.UTIL_EXC_IDX_X_INVALID_TC_Y_TD_Z, rowIndexesString[index],
-							testCaseLink.getTestCaseId(), testDataLink.getTestDataId()));
-				}
+                List<Integer> rowIndexArray = new ArrayList<Integer>();
+                for (int index = 0; index < rowCount; index++) {
+                    if (rowIndexesString[index].contains("-")) {
+                        int rowStart = Integer.valueOf(rowIndexesString[index].split("-")[0]);
+                        int rowEnd = Integer.valueOf(rowIndexesString[index].split("-")[1]);
 
-				rowIndexes[index] = rowIndex;
-			}
-			testDataExecutedEntity.setRowIndexes(rowIndexes);
+                        if (rowStart > testData.getRowNumbers()) {
+                            throw new IllegalArgumentException(MessageFormat.format(
+                                    StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_START_AT_ROW_IDX,
+                                    testDataLink.getTestDataId(), Integer.toString(testData.getRowNumbers()),
+                                    testCaseLink.getTestCaseId(), Integer.toString(rowStart)));
+                        }
 
-			break;
-		}
-		if (rowCount == 0) {
-			return null;
-		} else {
-			return testDataExecutedEntity;
-		}
-	}
+                        if (rowEnd > testData.getRowNumbers()) {
+                            throw new IllegalArgumentException(MessageFormat.format(
+                                    StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_ENDS_AT_ROW_IDX,
+                                    testDataLink.getTestDataId(), Integer.toString(testData.getRowNumbers()),
+                                    testCaseLink.getTestCaseId(), Integer.toString(rowEnd)));
+                        }
+                        for (int rowIndex = rowStart; rowIndex <= rowEnd; rowIndex++) {
+                            rowIndexArray.add(rowIndex);
+                        }
+
+                    } else {
+                        int rowIndex = Integer.valueOf(rowIndexesString[index]);
+
+                        if (rowIndex < 1 || rowIndex > testData.getRowNumbers()) {
+                            throw new IllegalArgumentException(MessageFormat.format(
+                                    StringConstants.UTIL_EXC_IDX_X_INVALID_TC_Y_TD_Z, rowIndexesString[index],
+                                    testCaseLink.getTestCaseId(), testDataLink.getTestDataId()));
+                        }
+
+                        rowIndexArray.add(rowIndex);
+                    }
+                }
+                testDataExecutedEntity.setRowIndexes(ArrayUtils.toPrimitive(rowIndexArray
+                        .toArray(new Integer[rowIndexArray.size()])));
+
+                break;
+        }
+        if (rowCount == 0) {
+            return null;
+        } else {
+            return testDataExecutedEntity;
+        }
+    }
 
 }

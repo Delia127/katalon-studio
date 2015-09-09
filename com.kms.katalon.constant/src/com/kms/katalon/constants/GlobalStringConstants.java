@@ -48,7 +48,12 @@ package com.kms.katalon.constants;
  * <li>--------------------------
  */
 public class GlobalStringConstants {
+    //Studio's name
 	public static final String APP_NAME = "Katalon Studio";
+	
+	//Path
+	public static final String ENTITY_ID_SEPERATOR = "/";
+	
 	// Common use
 	public static final String ADD = "Add";
 	public static final String INSERT = "Insert";
@@ -62,8 +67,8 @@ public class GlobalStringConstants {
 	public static final String REFRESH = "Refresh";
 	public static final String SEARCH = "Search";
 	public static final String BROWSE = "Browse...";
-	public static final String UP = "Up";
-	public static final String DOWN = "Down";
+	public static final String UP = "Move Up";
+	public static final String DOWN = "Move Down";
 
 	public static final String ALL = "All";
 	public static final String PASSED = "Passed";

@@ -53,12 +53,12 @@ public class TestDataTreeLabelProvider extends LabelProvider implements ITableLa
 		case COLUMN_ITERATION_INDEX:
 			switch (link.getIterationEntity().getIterationType()) {
 			case ALL:
-				return link.getIterationEntity().getIterationType().name().toLowerCase();
+				return "All";
 			default:
 				return link.getIterationEntity().getValue();
 			}
 		case COLUMN_COMBINATION_INDEX:
-			return link.getCombinationType().name();
+			return StringUtils.capitalize(link.getCombinationType().name().toLowerCase());
 			
 		}
 		return StringUtils.EMPTY;

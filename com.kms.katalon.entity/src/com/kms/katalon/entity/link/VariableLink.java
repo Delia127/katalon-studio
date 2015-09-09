@@ -10,22 +10,25 @@ public class VariableLink implements Serializable {
     private String value;
     private VariableType type;
     private String testDataLinkId;
-    
+
     public VariableLink() {
         variableId = "";
         value = "";
         setType(VariableType.SCRIPT);
     }
-    
+
     public String getValue() {
         return value;
     }
+
     public void setValue(String value) {
         this.value = value;
     }
+
     public String getVariableId() {
         return variableId;
     }
+
     public void setVariableId(String variableId) {
         this.variableId = variableId;
     }
@@ -37,36 +40,47 @@ public class VariableLink implements Serializable {
     public void setType(VariableType type) {
         this.type = type;
     }
-    
+
     public String getTestDataLinkId() {
-    	if (testDataLinkId == null) {
-    		testDataLinkId = "";
-    	}
-		return testDataLinkId;
-	}
+        if (testDataLinkId == null) {
+            testDataLinkId = "";
+        }
+        return testDataLinkId;
+    }
 
-	public void setTestDataLinkId(String testDataLinkId) {
-		this.testDataLinkId = testDataLinkId;
-	}
+    public void setTestDataLinkId(String testDataLinkId) {
+        this.testDataLinkId = testDataLinkId;
+    }
 
-	public enum VariableType {
-        DATA_COLUMN,
-        SCRIPT;
-        
+    public enum VariableType {
+        DATA_COLUMN, SCRIPT;
+
         public String value() {
             return name();
         }
 
         public static VariableType fromValue(String v) {
+            if (v.equals("Data Column")) return DATA_COLUMN;
+            if (v.equals("Script")) return SCRIPT;
             return valueOf(v);
         }
-        
+
         public static List<String> getValueStrings() {
             List<String> valueStrings = new ArrayList<>();
             for (VariableType type : values()) {
-                valueStrings.add(type.name());
+                valueStrings.add(type.getDisplayName());
             }
             return valueStrings;
+        }
+
+        public String getDisplayName() {
+            String valueName = "";
+            if (this == DATA_COLUMN) {
+                valueName = "Data Column";
+            } else if (this == SCRIPT) {
+                valueName = "Script";
+            }
+            return valueName;
         }
     }
 

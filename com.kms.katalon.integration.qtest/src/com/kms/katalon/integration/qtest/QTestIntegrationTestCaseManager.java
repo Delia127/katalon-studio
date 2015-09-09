@@ -1,6 +1,6 @@
 package com.kms.katalon.integration.qtest;
 
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -14,6 +14,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.qas.api.internal.util.json.JsonArray;
+import org.qas.api.internal.util.json.JsonException;
 import org.qas.api.internal.util.json.JsonObject;
 import org.qas.qtest.api.auth.BasicQTestCredentials;
 import org.qas.qtest.api.auth.QTestCredentials;
@@ -26,295 +27,314 @@ import org.qas.qtest.api.services.design.model.TestStep;
 
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.integration.IntegratedType;
-import com.kms.katalon.integration.qtest.constants.StringConstants;
+import com.kms.katalon.integration.qtest.constants.QTestMessageConstants;
+import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestEntity;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.entity.QTestStep;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
 import com.kms.katalon.integration.qtest.entity.QTestUser;
+import com.kms.katalon.integration.qtest.exception.QTestException;
+import com.kms.katalon.integration.qtest.exception.QTestIOException;
+import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
 import com.kms.katalon.integration.qtest.helper.QTestAPIRequestHelper;
 import com.kms.katalon.integration.qtest.helper.QTestHttpRequestHelper;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
+/**
+ * Provides a set of utility methods that relate with {@link QTestTestCase}
+ */
 public class QTestIntegrationTestCaseManager {
-	public static QTestTestCase getQTestTestCaseByIntegratedEntity(IntegratedEntity integratedEntity) {
-		if (integratedEntity == null || integratedEntity.getType() != IntegratedType.TESTCASE) return null;
+    
+    private QTestIntegrationTestCaseManager() {
+        //Disable default constructor
+    }
 
-		Map<String, String> properties = integratedEntity.getProperties();
+    public static QTestTestCase getQTestTestCaseByIntegratedEntity(IntegratedEntity integratedEntity) {
+        if (integratedEntity == null || integratedEntity.getType() != IntegratedType.TESTCASE) {
+            return null;
+        }
 
-		if (properties == null) return null;
+        Map<String, String> properties = integratedEntity.getProperties();
 
-		String id = properties.get(QTestEntity.ID_FIELD);
-		String name = properties.get(QTestEntity.NAME_FIELD);
-		String parentId = properties.get(QTestEntity.PARENT_ID_FIELD);
-		String pid = properties.get(QTestEntity.PID_FIELD);
-		String versionId = properties.get("versionId");
+        if (properties == null) return null;
 
-		QTestTestCase testCase = new QTestTestCase(Long.parseLong(id), name, Long.parseLong(parentId), pid);
-		testCase.setVersionId(Long.parseLong(versionId));
-		return testCase;
-	}
+        String id = properties.get(QTestEntity.ID_FIELD);
+        String name = properties.get(QTestEntity.NAME_FIELD);
+        String parentId = properties.get(QTestEntity.PARENT_ID_FIELD);
+        String pid = properties.get(QTestEntity.PID_FIELD);
+        String versionId = properties.get("versionId");
 
-	public static IntegratedEntity getIntegratedEntityByQTestTestCase(QTestTestCase qTestTC) {
-		IntegratedEntity testCaseIntegratedEntity = new IntegratedEntity();
+        QTestTestCase testCase = new QTestTestCase(Long.parseLong(id), name, Long.parseLong(parentId), pid);
+        testCase.setVersionId(Long.parseLong(versionId));
+        return testCase;
+    }
 
-		testCaseIntegratedEntity.setProductName(QTestConstants.PRODUCT_NAME);
-		testCaseIntegratedEntity.setType(IntegratedType.TESTCASE);
+    public static IntegratedEntity getIntegratedEntityByQTestTestCase(QTestTestCase qTestTC) {
+        IntegratedEntity testCaseIntegratedEntity = new IntegratedEntity();
 
-		testCaseIntegratedEntity.getProperties().put(QTestEntity.ID_FIELD, Long.toString(qTestTC.getId()));
-		testCaseIntegratedEntity.getProperties().put(QTestEntity.NAME_FIELD, qTestTC.getName());
-		testCaseIntegratedEntity.getProperties().put(QTestEntity.PARENT_ID_FIELD, Long.toString(qTestTC.getParentId()));
-		testCaseIntegratedEntity.getProperties().put(QTestEntity.PID_FIELD, qTestTC.getPid());
-		testCaseIntegratedEntity.getProperties().put("versionId", Long.toString(qTestTC.getVersionId()));
+        testCaseIntegratedEntity.setProductName(QTestStringConstants.PRODUCT_NAME);
+        testCaseIntegratedEntity.setType(IntegratedType.TESTCASE);
 
-		return testCaseIntegratedEntity;
-	}
+        testCaseIntegratedEntity.getProperties().put(QTestEntity.ID_FIELD, Long.toString(qTestTC.getId()));
+        testCaseIntegratedEntity.getProperties().put(QTestEntity.NAME_FIELD, qTestTC.getName());
+        testCaseIntegratedEntity.getProperties().put(QTestEntity.PARENT_ID_FIELD, Long.toString(qTestTC.getParentId()));
+        testCaseIntegratedEntity.getProperties().put(QTestEntity.PID_FIELD, qTestTC.getPid());
+        testCaseIntegratedEntity.getProperties().put("versionId", Long.toString(qTestTC.getVersionId()));
 
-	public static void deleteTestCaseOnQTest(QTestTestCase qTestTC, QTestProject qTestProject, String projectDir)
-			throws Exception {
-		if (qTestProject == null) {
-			throw new QTestUnauthorizedException(
-					"Cannot find qTest project. Please select a qTest project on qTest setting page.");
-		}
+        return testCaseIntegratedEntity;
+    }
 
-		Map<String, Object> bodyProperties = new LinkedHashMap<String, Object>();
-		int testCaseType = QTestTestCase.getType();
+    public static void deleteTestCaseOnQTest(QTestTestCase qTestTC, QTestProject qTestProject, String projectDir)
+            throws QTestException {
+        if (qTestProject == null) {
+            throw new QTestUnauthorizedException(
+                    "Cannot find qTest project. Please select a qTest project on qTest setting page.");
+        }
 
-		bodyProperties.put(QTestEntity.ID_FIELD, Integer.toString(testCaseType) + "-" + qTestTC.getId());
-		bodyProperties.put(QTestEntity.OBJECT_ID_FIELD, qTestTC.getId());
-		bodyProperties.put(QTestEntity.PARENT_ID_FIELD, qTestTC.getParentId());
-		bodyProperties.put(QTestEntity.TYPE_FIELD, testCaseType);
+        Map<String, Object> bodyProperties = new LinkedHashMap<String, Object>();
+        int testCaseType = QTestTestCase.getType();
 
-		String serverUrl = QTestSettingStore.getServerUrl(projectDir);
+        bodyProperties.put(QTestEntity.ID_FIELD, Integer.toString(testCaseType) + "-" + qTestTC.getId());
+        bodyProperties.put(QTestEntity.OBJECT_ID_FIELD, qTestTC.getId());
+        bodyProperties.put(QTestEntity.PARENT_ID_FIELD, qTestTC.getParentId());
+        bodyProperties.put(QTestEntity.TYPE_FIELD, testCaseType);
 
-		String url = "/p/" + Long.toString(qTestProject.getId()) + "/portal/tree/delete";
+        String serverUrl = QTestSettingStore.getServerUrl(projectDir);
 
-		String username = QTestSettingStore.getUsername(projectDir);
-		String password = QTestSettingStore.getPassword(projectDir);
+        String url = "/p/" + Long.toString(qTestProject.getId()) + "/portal/tree/delete";
 
-		QTestIntegrationAuthenticationManager.authenticate(username, password);
+        String username = QTestSettingStore.getUsername(projectDir);
+        String password = QTestSettingStore.getPassword(projectDir);
 
-		List<NameValuePair> postParams = new ArrayList<NameValuePair>();
-		postParams.add(new BasicNameValuePair("data", QTestHttpRequestHelper.createDataBody(bodyProperties, true)));
-		QTestHttpRequestHelper.sendPostRequest(serverUrl, url, username, password, postParams);
-	}
+        QTestIntegrationAuthenticationManager.authenticate(username, password);
 
-	public static QTestTestCase addTestCase(QTestProject qTestProject, long parentId, String name, String description,
-			String preCondition, String projectDir) throws Exception {
-		String token = QTestSettingStore.getToken(projectDir);
-		String serverUrl = QTestSettingStore.getServerUrl(projectDir);
+        List<NameValuePair> postParams = new ArrayList<NameValuePair>();
+        postParams.add(new BasicNameValuePair("data", QTestHttpRequestHelper.createDataBody(bodyProperties, true)));
+        QTestHttpRequestHelper.sendPostRequest(serverUrl, url, username, password, postParams);
+    }
 
-		if (!QTestIntegrationAuthenticationManager.validateToken(token)) {
-			throw new QTestUnauthorizedException(StringConstants.QTEST_EXC_INVALID_TOKEN);
-		}
+    public static QTestTestCase addTestCase(QTestProject qTestProject, long parentId, String name, String description,
+            String preCondition, String projectDir) throws QTestException {
+        String token = QTestSettingStore.getToken(projectDir);
+        String serverUrl = QTestSettingStore.getServerUrl(projectDir);
 
-		long projectId = qTestProject.getId();
-		
+        if (!QTestIntegrationAuthenticationManager.validateToken(token)) {
+            throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
+        }
 
-		Map<String, Object> testCasePropertiesMap = new LinkedHashMap<String, Object>();
-		testCasePropertiesMap.put(QTestEntity.NAME_FIELD, name);
-		testCasePropertiesMap.put("parent_id", parentId);
-		testCasePropertiesMap.put("description", getUploadedDescription(description));
-		testCasePropertiesMap.put("properties", new JsonArray());
+        long projectId = qTestProject.getId();
 
-		String url = serverUrl + "/api/v3/projects/" + Long.toString(projectId) + "/test-cases";
-		String responseResult = QTestAPIRequestHelper.sendPostRequestViaAPI(url, token, new JsonObject(
-				testCasePropertiesMap).toString());
-		if (responseResult != null && !responseResult.isEmpty()) {
-			JsonObject testCaseJsonObject = new JsonObject(responseResult);
-			
-			QTestTestCase qTestTestCase = new QTestTestCase(
-					testCaseJsonObject.getLong(QTestEntity.ID_FIELD), 
-					name,
-					parentId, 
-					testCaseJsonObject.getString(QTestEntity.PID_FIELD));
-			qTestTestCase.setVersionId(testCaseJsonObject.getLong("test_case_version_id"));
-			
-			updateTestCase(projectDir, qTestProject, qTestTestCase);
-			return qTestTestCase;
-		} else {
-			return null;
-		}
-	}
-	
-	private static void updateTestCase(String projectDir, QTestProject qTestProject, QTestTestCase testCase) {
-		try {
-			String token = QTestSettingStore.getToken(projectDir);
-			String serverUrl = QTestSettingStore.getServerUrl(projectDir);
-			String url = serverUrl + "/api/v3/projects/" + Long.toString(qTestProject.getId()) + "/test-cases/" + testCase.getId();
-			
-			JsonArray reponseJsonArray = getTestCaseFieldJsonArray(qTestProject.getId(), projectDir);
-			List<FieldValue> fieldValues = new ArrayList<FieldValue>();		
-			QTestUser user = QTestIntegrationUserManager.getUser(qTestProject, projectDir);			
-			JsonArray propertiesArray = new JsonArray();
-			fieldValues.add(getTestCaseFieldValue("Type", "Automation", reponseJsonArray));		
-			
-			FieldValue assignedUserField = getTestCaseFieldValue("Assigned To", "", reponseJsonArray);
-			assignedUserField.setProperty("field_value", "[" + user.getId() + "]");
-			fieldValues.add(assignedUserField);
-			
-			Map<String, Object> testCasePropertiesMap = new LinkedHashMap<String, Object>();
-			for (FieldValue fieldValue : fieldValues) {
-				JsonObject fieldJsonObject = new JsonObject();
-				fieldJsonObject.put("field_id", fieldValue.getId());
-				fieldJsonObject.put("field_value", fieldValue.getValue());
-				propertiesArray.put(fieldJsonObject);
-			}
+        Map<String, Object> testCasePropertiesMap = new LinkedHashMap<String, Object>();
+        testCasePropertiesMap.put(QTestEntity.NAME_FIELD, name);
+        testCasePropertiesMap.put("parent_id", parentId);
+        testCasePropertiesMap.put("description", getUploadedDescription(description));
+        testCasePropertiesMap.put("properties", new JsonArray());
 
-			testCasePropertiesMap.put("properties", propertiesArray);
-			String response = QTestAPIRequestHelper.sendPostOrPutRequestViaAPI(url, token, new JsonObject(
-						testCasePropertiesMap).toString(), "PUT");
-			response.trim();
-		} catch (Exception e) {
-			//Do not caught because of server's error
-			e.printStackTrace();
-		}
-	}
-	
-	public static String getUploadedDescription(String description) {
-		if (description == null) return "";
-		StringBuilder descriptionBuilder = new StringBuilder();
-		String[] stringLines = description.split("\n");
-		for (String stringLine : stringLines) {
-			descriptionBuilder.append("<p>").append(StringEscapeUtils.escapeHtml(stringLine)).append("</p>");
-		}
-		return descriptionBuilder.toString();
-	}
+        String url = serverUrl + "/api/v3/projects/" + Long.toString(projectId) + "/test-cases";
+        String responseResult = QTestAPIRequestHelper.sendPostRequestViaAPI(url, token, new JsonObject(
+                testCasePropertiesMap).toString());
+        try {
+            if (responseResult != null && !responseResult.isEmpty()) {
+                JsonObject testCaseJsonObject = new JsonObject(responseResult);
 
-	private static JsonArray getTestCaseFieldJsonArray(long projectId, String projectDir) throws Exception {
-		String serverUrl = QTestSettingStore.getServerUrl(projectDir);
-		String token = QTestSettingStore.getToken(projectDir);
+                QTestTestCase qTestTestCase = new QTestTestCase(testCaseJsonObject.getLong(QTestEntity.ID_FIELD), name,
+                        parentId, testCaseJsonObject.getString(QTestEntity.PID_FIELD));
+                qTestTestCase.setVersionId(testCaseJsonObject.getLong("test_case_version_id"));
 
-		String url = serverUrl + "/api/v3/projects/" + Long.toString(projectId) + "/settings/test-cases/fields";
+                updateTestCase(projectDir, qTestProject, qTestTestCase);
+                return qTestTestCase;
+            } else {
+                return null;
+            }
+        } catch (JsonException ex) {
+            throw QTestInvalidFormatException.createInvalidJsonFormatException(responseResult);
+        }
+    }
 
-		String response = QTestAPIRequestHelper.sendGetRequestViaAPI(url, token);
+    private static void updateTestCase(String projectDir, QTestProject qTestProject, QTestTestCase testCase)
+            throws QTestException {
+        String token = QTestSettingStore.getToken(projectDir);
+        String serverUrl = QTestSettingStore.getServerUrl(projectDir);
+        String url = serverUrl + "/api/v3/projects/" + Long.toString(qTestProject.getId()) + "/test-cases/"
+                + testCase.getId();
+        try {
+            JsonArray reponseJsonArray = getTestCaseFieldJsonArray(qTestProject.getId(), projectDir);
+            List<FieldValue> fieldValues = new ArrayList<FieldValue>();
+            QTestUser user = QTestIntegrationUserManager.getUser(qTestProject, projectDir);
+            JsonArray propertiesArray = new JsonArray();
+            fieldValues.add(getTestCaseFieldValue("Type", "Automation", reponseJsonArray));
 
-		if (response == null || response.isEmpty()) return null;
-		JsonArray responseJsonArray = new JsonArray(response);
+            FieldValue assignedUserField = getTestCaseFieldValue("Assigned To", "", reponseJsonArray);
+            assignedUserField.setProperty("field_value", "[" + user.getId() + "]");
+            fieldValues.add(assignedUserField);
 
-		return responseJsonArray;
-	}
+            Map<String, Object> testCasePropertiesMap = new LinkedHashMap<String, Object>();
+            for (FieldValue fieldValue : fieldValues) {
+                JsonObject fieldJsonObject = new JsonObject();
+                fieldJsonObject.put("field_id", fieldValue.getId());
+                fieldJsonObject.put("field_value", fieldValue.getValue());
+                propertiesArray.put(fieldJsonObject);
+            }
 
-	private static FieldValue getTestCaseFieldValue(String fieldName, String typeName, JsonArray responseJsonArray)
-			throws Exception {
-		for (int index = 0; index < responseJsonArray.length(); index++) {
-			JsonObject fieldJsonObject = responseJsonArray.getJsonObject(index);
-			String responseFieldName = fieldJsonObject.getString("label");
-			if (fieldName.equalsIgnoreCase(responseFieldName)) {
-				if (fieldJsonObject.has("allowed_values")) {
-					JsonArray allowedValueJsonArray = fieldJsonObject.getJsonArray("allowed_values");
+            testCasePropertiesMap.put("properties", propertiesArray);
+            QTestAPIRequestHelper.sendPostOrPutRequestViaAPI(url, token,
+                    new JsonObject(testCasePropertiesMap).toString(), "PUT");
+        } catch (JsonException ex) {
+            throw QTestInvalidFormatException.createInvalidJsonFormatException(ex.getMessage());
+        }
+    }
 
-					for (int entryIndex = 0; entryIndex < allowedValueJsonArray.length(); entryIndex++) {
-						JsonObject entryJsonObject = allowedValueJsonArray.getJsonObject(entryIndex);
-						if (typeName.equalsIgnoreCase(entryJsonObject.getString("label"))) {
-							FieldValue fieldValue = new FieldValue(fieldJsonObject.getLong(QTestEntity.ID_FIELD),
-									entryJsonObject.getString("value"));
-							return fieldValue;
-						}
-					}
-				}
-				return new FieldValue(fieldJsonObject.getLong(QTestEntity.ID_FIELD), null);
-			}
-		}
+    public static String getUploadedDescription(String description) {
+        if (description == null) return "";
+        StringBuilder descriptionBuilder = new StringBuilder();
+        String[] stringLines = description.split("\n");
+        for (String stringLine : stringLines) {
+            descriptionBuilder.append("<p>").append(StringEscapeUtils.escapeHtml(stringLine)).append("</p>");
+        }
+        return descriptionBuilder.toString();
+    }
 
-		return null;
-	}
+    private static JsonArray getTestCaseFieldJsonArray(long projectId, String projectDir) throws QTestException {
+        String serverUrl = QTestSettingStore.getServerUrl(projectDir);
+        String token = QTestSettingStore.getToken(projectDir);
 
-	public static TestCase getTestCaseFromQTest(String serverUrl, String token, long projectId, long qTestId,
-			long qTestVersionId) throws Exception {
-		if (!QTestIntegrationAuthenticationManager.validateToken(token)) {
-			throw new QTestUnauthorizedException(StringConstants.QTEST_EXC_INVALID_TOKEN);
-		}
-		try {
-			QTestCredentials credentials = new BasicQTestCredentials(token);
-			TestDesignServiceClient testDesignService = new TestDesignServiceClient(credentials);
-			testDesignService.setEndpoint(serverUrl);
+        String url = serverUrl + "/api/v3/projects/" + Long.toString(projectId) + "/settings/test-cases/fields";
 
-			GetTestCaseRequest getTestCaseRequest = new GetTestCaseRequest().withProjectId(projectId)
-					.withTestCaseId(qTestId).withTestCaseVersion(qTestVersionId);
+        String response = QTestAPIRequestHelper.sendGetRequestViaAPI(url, token);
+        try {
+            if (response == null || response.isEmpty()) return null;
+            JsonArray responseJsonArray = new JsonArray(response);
 
-			return testDesignService.getTestCase(getTestCaseRequest);
-		} catch (Exception ex) {
-			return null;
-		}
-	}
+            return responseJsonArray;
+        } catch (JsonException ex) {
+            throw QTestInvalidFormatException.createInvalidJsonFormatException(response);
+        }
+    }
 
-	public static URL navigatedUrlToQTestTestCase(QTestProject qTestProject, QTestTestCase testCase, String projectDir)
-			throws MalformedURLException {
+    private static FieldValue getTestCaseFieldValue(String fieldName, String typeName, JsonArray responseJsonArray)
+            throws JsonException {
+        for (int index = 0; index < responseJsonArray.length(); index++) {
+            JsonObject fieldJsonObject = responseJsonArray.getJsonObject(index);
+            String responseFieldName = fieldJsonObject.getString("label");
+            if (fieldName.equalsIgnoreCase(responseFieldName)) {
+                if (fieldJsonObject.has("allowed_values")) {
+                    JsonArray allowedValueJsonArray = fieldJsonObject.getJsonArray("allowed_values");
 
-		String url = QTestSettingStore.getServerUrl(projectDir);
+                    for (int entryIndex = 0; entryIndex < allowedValueJsonArray.length(); entryIndex++) {
+                        JsonObject entryJsonObject = allowedValueJsonArray.getJsonObject(entryIndex);
+                        if (typeName.equalsIgnoreCase(entryJsonObject.getString("label"))) {
+                            FieldValue fieldValue = new FieldValue(fieldJsonObject.getLong(QTestEntity.ID_FIELD),
+                                    entryJsonObject.getString("value"));
+                            return fieldValue;
+                        }
+                    }
+                }
+                return new FieldValue(fieldJsonObject.getLong(QTestEntity.ID_FIELD), null);
+            }
+        }
 
-		return new URL(url + "/p/" + Long.toString(qTestProject.getId()) + "/portal/project#id="
-				+ Long.toString(testCase.getId()) + "&object=" + QTestTestCase.getType() + "&tab=testdesign");
-	}
+        return null;
+    }
 
-	public static long getTestCaseVersionId(String projectDir, long projectId, long testCaseId) throws Exception {
-		String token = QTestSettingStore.getToken(projectDir);
+    public static TestCase getTestCaseFromQTest(String serverUrl, String token, long projectId, long qTestId,
+            long qTestVersionId) throws QTestUnauthorizedException {
+        if (!QTestIntegrationAuthenticationManager.validateToken(token)) {
+            throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
+        }
+        try {
+            QTestCredentials credentials = new BasicQTestCredentials(token);
+            TestDesignServiceClient testDesignService = new TestDesignServiceClient(credentials);
+            testDesignService.setEndpoint(serverUrl);
 
-		if (!QTestIntegrationAuthenticationManager.validateToken(token)) {
-			throw new QTestUnauthorizedException(StringConstants.QTEST_EXC_INVALID_TOKEN);
-		}
+            GetTestCaseRequest getTestCaseRequest = new GetTestCaseRequest().withProjectId(projectId)
+                    .withTestCaseId(qTestId).withTestCaseVersion(qTestVersionId);
 
-		String serverUrl = QTestSettingStore.getServerUrl(projectDir);
+            return testDesignService.getTestCase(getTestCaseRequest);
+        } catch (Exception ex) {
+            return null;
+        }
+    }
 
-		String url = "/p/" + Long.toString(projectId) + "/portal/project/testdesign/testcase/testcase?testcaseId="
-				+ Long.toString(testCaseId);
+    public static URL navigatedUrlToQTestTestCase(QTestProject qTestProject, QTestTestCase testCase, String projectDir)
+            throws QTestIOException {
 
-		String username = QTestSettingStore.getUsername(projectDir);
-		String password = QTestSettingStore.getPassword(projectDir);
+        try {
+            String url = QTestSettingStore.getServerUrl(projectDir);
 
-		String response = QTestHttpRequestHelper.sendGetRequest(serverUrl, url, username, password);
+            return new URL(url + "/p/" + Long.toString(qTestProject.getId()) + "/portal/project#id="
+                    + Long.toString(testCase.getId()) + "&object=" + QTestTestCase.getType() + "&tab=testdesign");
+        } catch (IOException ex) {
+            throw new QTestIOException(ex);
+        }
+    }
 
-		Document htmlDocument = Jsoup.parse(response);
-		Element testCaseVersionIdElement = htmlDocument.getElementById("qas-testdesign-testcase-testcase-propTcvId");
-		return Long.valueOf(testCaseVersionIdElement.text());
-	}
+    public static long getTestCaseVersionId(String projectDir, long projectId, long testCaseId) throws QTestException {
+        String token = QTestSettingStore.getToken(projectDir);
 
-	/**
-	 * Gets list of test steps of a qTestCase via qTest API
-	 * 
-	 * @throws Exception
-	 */
-	public static List<QTestStep> getListSteps(String projectDir, long projectId, QTestTestCase testCase)
-			throws Exception {
-		String token = QTestSettingStore.getToken(projectDir);
-		String serverUrl = QTestSettingStore.getServerUrl(projectDir);
+        if (!QTestIntegrationAuthenticationManager.validateToken(token)) {
+            throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
+        }
 
-		if (!QTestIntegrationAuthenticationManager.validateToken(token)) {
-			throw new QTestUnauthorizedException(StringConstants.QTEST_EXC_INVALID_TOKEN);
-		}
+        String serverUrl = QTestSettingStore.getServerUrl(projectDir);
 
-		if (testCase.getVersionId() <= 0) {
-			long testCaseVersionId = getTestCaseVersionId(projectDir, projectId, testCase.getId());
-			testCase.setVersionId(testCaseVersionId);
+        String url = "/p/" + Long.toString(projectId) + "/portal/project/testdesign/testcase/testcase?testcaseId="
+                + Long.toString(testCaseId);
 
-			TestCase testCaseFromQTest = getTestCaseFromQTest(serverUrl, token, projectId, testCase.getId(),
-					testCaseVersionId);
-			// replace <p> and </p> to empty strings because the returned description
-			// from qTest includes them
-			String description = StringEscapeUtils.unescapeHtml(testCaseFromQTest.getDescription().replace("<p>", "")
-					.replace("</p>", ""));
-			testCase.setDescription(description);
-		}
+        String username = QTestSettingStore.getUsername(projectDir);
+        String password = QTestSettingStore.getPassword(projectDir);
 
-		QTestCredentials credentials = new BasicQTestCredentials(token);
-		TestDesignServiceClient testDesignService = new TestDesignServiceClient(credentials);
-		testDesignService.setEndpoint(serverUrl);
+        String response = QTestHttpRequestHelper.sendGetRequest(serverUrl, url, username, password);
 
-		ListTestStepRequest testStepRequest = new ListTestStepRequest().withProjectId(projectId)
-				.withTestCaseId(testCase.getId()).withTestCaseVersion(testCase.getVersionId());
-		List<TestStep> result = testDesignService.listTestStep(testStepRequest);
+        Document htmlDocument = Jsoup.parse(response);
+        Element testCaseVersionIdElement = htmlDocument.getElementById("qas-testdesign-testcase-testcase-propTcvId");
+        return Long.valueOf(testCaseVersionIdElement.text());
+    }
 
-		List<QTestStep> qTestSteps = new ArrayList<QTestStep>();
-		for (TestStep testStep : result) {
-			QTestStep qTestStep = new QTestStep();
-			qTestStep.setDescription(testStep.getDescription());
-			qTestStep.setExpectedResult(testStep.getExpected());
+    /**
+     * Gets list of test steps of a qTestCase via qTest API
+     */
+    public static List<QTestStep> getListSteps(String projectDir, long projectId, QTestTestCase testCase)
+            throws QTestException {
+        String token = QTestSettingStore.getToken(projectDir);
+        String serverUrl = QTestSettingStore.getServerUrl(projectDir);
 
-			qTestSteps.add(qTestStep);
-		}
+        if (!QTestIntegrationAuthenticationManager.validateToken(token)) {
+            throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
+        }
 
-		return qTestSteps;
-	}
+        if (testCase.getVersionId() <= 0) {
+            long testCaseVersionId = getTestCaseVersionId(projectDir, projectId, testCase.getId());
+            testCase.setVersionId(testCaseVersionId);
+
+            TestCase testCaseFromQTest = getTestCaseFromQTest(serverUrl, token, projectId, testCase.getId(),
+                    testCaseVersionId);
+            // replace <p> and </p> to empty strings because the returned
+            // description
+            // from qTest includes them
+            String description = StringEscapeUtils.unescapeHtml(testCaseFromQTest.getDescription().replace("<p>", "")
+                    .replace("</p>", ""));
+            testCase.setDescription(description);
+        }
+
+        QTestCredentials credentials = new BasicQTestCredentials(token);
+        TestDesignServiceClient testDesignService = new TestDesignServiceClient(credentials);
+        testDesignService.setEndpoint(serverUrl);
+
+        ListTestStepRequest testStepRequest = new ListTestStepRequest().withProjectId(projectId)
+                .withTestCaseId(testCase.getId()).withTestCaseVersion(testCase.getVersionId());
+        List<TestStep> result = testDesignService.listTestStep(testStepRequest);
+
+        List<QTestStep> qTestSteps = new ArrayList<QTestStep>();
+        for (TestStep testStep : result) {
+            QTestStep qTestStep = new QTestStep();
+            qTestStep.setDescription(testStep.getDescription());
+            qTestStep.setExpectedResult(testStep.getExpected());
+
+            qTestSteps.add(qTestStep);
+        }
+
+        return qTestSteps;
+    }
 }

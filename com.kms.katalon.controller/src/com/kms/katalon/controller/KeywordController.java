@@ -67,7 +67,7 @@ public class KeywordController extends EntityController {
 			Class<?> clazz = contributor.getKeywordClass();
 			if (className.equals(clazz.getName()) || className.equals(clazz.getSimpleName())) {
 				return clazz;
-			}
+			}			
 		}
 		return null;
 	}
