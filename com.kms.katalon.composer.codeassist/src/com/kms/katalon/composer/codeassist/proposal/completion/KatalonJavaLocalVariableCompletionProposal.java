@@ -1,20 +1,18 @@
 package com.kms.katalon.composer.codeassist.proposal.completion;
 
-import groovyjarjarasm.asm.Opcodes;
+import org.codehaus.groovy.eclipse.codeassist.proposals.GroovyJavaFieldCompletionProposal;
+import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.swt.graphics.Image;
 
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.FieldNode;
-import org.codehaus.groovy.eclipse.codeassist.proposals.GroovyFieldProposal;
+import com.kms.katalon.composer.codeassist.util.KatalonContextUtil;
+import com.kms.katalon.composer.testcase.constants.ImageConstants;
 
-public class KatalonJavaLocalVariableCompletionProposal extends GroovyFieldProposal {
+public class KatalonJavaLocalVariableCompletionProposal extends GroovyJavaFieldCompletionProposal {
 
-	public static KatalonJavaLocalVariableCompletionProposal createProposal(String variableName, ClassNode declaring) {
-		FieldNode fieldNode = new FieldNode(variableName, Opcodes.ACC_PUBLIC, new ClassNode(Object.class), declaring, null);
-		return new KatalonJavaLocalVariableCompletionProposal(fieldNode);
-	}
-	
-	public KatalonJavaLocalVariableCompletionProposal(FieldNode fieldNode) {
-		super(fieldNode);
-		
-	}
+    private static final Image KATALON_IMAGE = ImageConstants.IMG_16_VARIABLE;
+
+    public KatalonJavaLocalVariableCompletionProposal(KatalonLocalVariableCompletionProposal proposal) {
+        super(proposal, KATALON_IMAGE, new StyledString(proposal.getVariableName()).append(KatalonContextUtil
+                .getKatalonSignature()));
+    }
 }

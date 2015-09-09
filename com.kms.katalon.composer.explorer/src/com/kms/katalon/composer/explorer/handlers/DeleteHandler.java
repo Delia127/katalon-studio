@@ -22,7 +22,6 @@ import com.kms.katalon.composer.explorer.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 
-@SuppressWarnings("restriction")
 public class DeleteHandler implements IHandler {
 
 	@CanExecute
@@ -34,7 +33,7 @@ public class DeleteHandler implements IHandler {
 					try {
 						return ((ITreeEntity) entity).isRemoveable();
 					} catch (Exception e) {
-						LoggerSingleton.getInstance().getLogger().error(e);
+						LoggerSingleton.logError(e);
 					}
 				}
 			}
@@ -70,7 +69,7 @@ public class DeleteHandler implements IHandler {
 				delete(eventBroker, objects);
 			}
 		} catch (Exception e) {
-			LoggerSingleton.getInstance().getLogger().error(e);
+			LoggerSingleton.logError(e);
 		}
 	}
 

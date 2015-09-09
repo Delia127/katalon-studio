@@ -68,7 +68,7 @@ public class OpenKeywordHandler {
 					keywordFile.becomeWorkingCopy(null);
 				}
 				IEditorPart keywordPath = IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-						.getActivePage(), (IFile) keywordFile.getResource());
+						.getActivePage(), (IFile) keywordFile.getResource());				
 				keywordPath.addPropertyListener(new IPropertyListener() {
 
 					@Override

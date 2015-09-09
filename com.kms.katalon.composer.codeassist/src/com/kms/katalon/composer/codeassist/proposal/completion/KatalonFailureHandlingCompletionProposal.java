@@ -8,12 +8,10 @@ import org.eclipse.swt.graphics.Image;
 @SuppressWarnings("restriction")
 public class KatalonFailureHandlingCompletionProposal extends PositionBasedCompletionProposal {
 
-
 	public KatalonFailureHandlingCompletionProposal(String replacementString, Position replacementPosition,
 			int cursorPosition, Image image, String displayString, IContextInformation contextInformation,
 			String additionalProposalInfo, char[] triggers) {
 		super(replacementString, replacementPosition, cursorPosition, image, displayString, contextInformation,
 				additionalProposalInfo, triggers);
-		// TODO Auto-generated constructor stub
 	}
 }
