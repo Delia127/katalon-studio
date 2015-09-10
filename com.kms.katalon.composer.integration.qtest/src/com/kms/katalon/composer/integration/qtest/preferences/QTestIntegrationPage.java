@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.util.ControlUtil;
 import com.kms.katalon.composer.integration.qtest.dialog.GenerateNewTokenDialog;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.integration.qtest.setting.QTestAttachmentSendingType;
@@ -170,30 +171,19 @@ public class QTestIntegrationPage extends PreferencePage {
 
 	private void enableAttachmentsGroup() {
 		if (chckEnableIntegration.getSelection() && chckAutoSubmitTestRun.getSelection()) {
-			recursiveSetEnabled(grpAttachments, true);
+			ControlUtil.recursiveSetEnabled(grpAttachments, true);
 			grpAttachments.setEnabled(true);
 		} else {
-			recursiveSetEnabled(grpAttachments, false);
+		    ControlUtil.recursiveSetEnabled(grpAttachments, false);
 			grpAttachments.setEnabled(false);
 		}
 	}
 
 	private void enableMainComposite() {
 		if (chckEnableIntegration.getSelection()) {
-			recursiveSetEnabled(mainComposite, true);
+		    ControlUtil.recursiveSetEnabled(mainComposite, true);
 		} else {
-			recursiveSetEnabled(mainComposite, false);
-		}
-	}
-
-	public void recursiveSetEnabled(Control ctrl, boolean enabled) {
-		if (ctrl instanceof Composite) {
-			Composite comp = (Composite) ctrl;
-			for (Control c : comp.getChildren()) {
-				recursiveSetEnabled(c, enabled);
-			}
-		} else {
-			ctrl.setEnabled(enabled);
+		    ControlUtil.recursiveSetEnabled(mainComposite, false);
 		}
 	}
 

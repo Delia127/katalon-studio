@@ -63,5 +63,11 @@
             report="com.kms.katalon.composer.integration.qtest.report.QTestIntegrationReporter">
       </client>
    </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.kms.katalon.composer.integration.qtest.preferences.QTestPreferenceDefaultValueInitializer">
+      </initializer>
+   </extension>
 
 </plugin>
