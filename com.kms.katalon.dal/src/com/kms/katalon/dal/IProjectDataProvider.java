@@ -10,7 +10,7 @@ public interface IProjectDataProvider {
 	
 	public ProjectEntity getProjectWithoutClasspath(String projectValue) throws Exception;
 
-	public void updateProject(String name, String description, String projectValue, short pageLoadTimeout)
+	public ProjectEntity updateProject(String name, String description, String projectValue, short pageLoadTimeout)
 			throws Exception;
 	
 	public void updateProject(ProjectEntity projectEntity)

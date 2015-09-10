@@ -348,13 +348,14 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
 
 	private void createTestSuiteParent() {
 		try {
+		    ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
 			if (!isIntegrationActive()) return;
 			List<String> currentInUseParentStrings = new ArrayList<String>();
 			for (QTestSuite qTestSuite : getQTestSuites()) {
 				currentInUseParentStrings.add(Long.toString(qTestSuite.getParent().getId()));
 			}
 
-			TestSuiteRepo repo = QTestIntegrationUtil.getTestSuiteRepo(testSuiteEntity);
+			TestSuiteRepo repo = QTestIntegrationUtil.getTestSuiteRepo(testSuiteEntity, currentProject);
 			if (repo == null) {
 				showTestSuiteNotValidNotification();
 				return;
@@ -446,8 +447,8 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
 			if (!isIntegrationActive()) return;
 			IStructuredSelection selection = (IStructuredSelection) testSuiteParentTableViewer.getSelection();
 			QTestSuite selectedQTestSuite = (QTestSuite) selection.getFirstElement();
-
-			TestSuiteRepo repo = QTestIntegrationUtil.getTestSuiteRepo(testSuiteEntity);
+			ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+			TestSuiteRepo repo = QTestIntegrationUtil.getTestSuiteRepo(testSuiteEntity, currentProject);
 			if (repo == null) {
 				showTestSuiteNotValidNotification();
 				return;
@@ -478,8 +479,8 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
 	private void uploadTestSuite() {
 		try {
 			if (!isIntegrationActive()) return;
-
-			TestSuiteRepo repo = QTestIntegrationUtil.getTestSuiteRepo(testSuiteEntity);
+			ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+			TestSuiteRepo repo = QTestIntegrationUtil.getTestSuiteRepo(testSuiteEntity, currentProject);
 			if (repo == null) {
 				showTestSuiteNotValidNotification();
 				return;

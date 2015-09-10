@@ -129,7 +129,7 @@ public class QTestIntegrationTestCaseManager {
         Map<String, Object> testCasePropertiesMap = new LinkedHashMap<String, Object>();
         testCasePropertiesMap.put(QTestEntity.NAME_FIELD, name);
         testCasePropertiesMap.put("parent_id", parentId);
-        testCasePropertiesMap.put("description", getUploadedDescription(description));
+        //testCasePropertiesMap.put("description", getUploadedDescription(description));
         testCasePropertiesMap.put("properties", new JsonArray());
 
         String url = serverUrl + "/api/v3/projects/" + Long.toString(projectId) + "/test-cases";

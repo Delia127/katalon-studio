@@ -13,6 +13,7 @@ import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.dal.fileservice.FileServiceConstant;
 import com.kms.katalon.dal.state.DataProviderState;
 import com.kms.katalon.entity.file.FileEntity;
+import com.kms.katalon.entity.file.IntegratedFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -225,6 +226,10 @@ public class EntityFileServiceManager {
 			clonedEntity.setName(name);
 			clonedEntity.setParentFolder(destinationFolder);
 			clonedEntity.setProject(destinationFolder.getProject());
+			if (clonedEntity instanceof IntegratedFileEntity) {
+			    IntegratedFileEntity integratedEntity = (IntegratedFileEntity) clonedEntity;
+			    integratedEntity.getIntegratedEntities().clear();
+			}
 			EntityService.getInstance().saveEntity(clonedEntity);
 			return clonedEntity;
 		}
@@ -239,6 +244,7 @@ public class EntityFileServiceManager {
 			clonedFolder.setName(name);
 			clonedFolder.setParentFolder(destinationFolder);
 			clonedFolder.setProject(destinationFolder.getProject());
+			clonedFolder.getIntegratedEntities().clear();
 			EntityService.getInstance().saveEntity(clonedFolder);
 
 			for (FileEntity entity : FolderFileServiceManager.getChildren(folder)) {
@@ -271,6 +277,12 @@ public class EntityFileServiceManager {
 			entity.setParentFolder(destinationFolder);
 			entity.setProject(destinationFolder.getProject());
 			entity.setName(newName);
+			
+			if (entity instanceof IntegratedFileEntity) {
+                IntegratedFileEntity integratedEntity = (IntegratedFileEntity) entity;
+                integratedEntity.getIntegratedEntities().clear();
+            }
+			
 			EntityService.getInstance().saveEntity(entity);
 			return entity;
 		}
@@ -288,7 +300,9 @@ public class EntityFileServiceManager {
 			newFolder.setProject(destinationFolder.getProject());
 			newFolder.setName(newName);
 			newFolder.setFolderType(destinationFolder.getFolderType());
-
+			
+			newFolder.getIntegratedEntities().clear();
+			
 			EntityService.getInstance().saveEntity(newFolder);
 
 			// File sourceFile = new File(folder.getLocation());

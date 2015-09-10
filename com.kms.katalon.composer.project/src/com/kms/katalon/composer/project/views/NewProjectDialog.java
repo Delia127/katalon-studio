@@ -78,7 +78,6 @@ public class NewProjectDialog extends TitleAreaDialog {
 			txtProjectLocation.setText(project.getFolderLocation());
 			txtProjectDescription.setText(project.getDescription());
 			txtProjectLocation.setEnabled(false);
-			txtProjectName.setEnabled(false);
 		}
 		
 		addControlModifyListeners();

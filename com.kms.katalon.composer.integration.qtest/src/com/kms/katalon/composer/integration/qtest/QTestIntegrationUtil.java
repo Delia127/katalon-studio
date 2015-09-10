@@ -149,10 +149,9 @@ public class QTestIntegrationUtil {
      *         {@link ProjectEntity}. Otherwise, <code>null</code>
      * @throws Exception
      */
-    public static TestSuiteRepo getTestSuiteRepo(IntegratedFileEntity entity) throws Exception {
+    public static TestSuiteRepo getTestSuiteRepo(IntegratedFileEntity entity, ProjectEntity projectEntity)
+            throws Exception {
         if (entity == null) return null;
-
-        ProjectEntity projectEntity = entity.getProject();
         IntegratedEntity projectIntegratedEntity = projectEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
         if (projectIntegratedEntity == null) return null;
         List<QTestProject> qTestProjects = QTestIntegrationProjectManager

@@ -11,7 +11,7 @@ public class CSVData extends AbstractTestData {
     private String sourceUrl;
 
     public CSVData(String sourceUrl, boolean containHeader, CSVSeperator seperator) throws Exception {
-        reader = new CSVReader(sourceUrl, seperator, containHeader);
+        reader = new CSVReader(sourceUrl, seperator, true);
         this.sourceUrl = sourceUrl;
     }
 

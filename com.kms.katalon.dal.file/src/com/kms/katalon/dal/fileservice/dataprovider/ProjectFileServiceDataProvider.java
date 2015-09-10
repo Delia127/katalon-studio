@@ -24,9 +24,9 @@ public class ProjectFileServiceDataProvider implements IProjectDataProvider {
 	}
 
 	@Override
-	public void updateProject(String newName, String description, String projectPk, short pageLoadTimeout)
+	public ProjectEntity updateProject(String newName, String description, String projectPk, short pageLoadTimeout)
 			throws Exception {
-		ProjectFileServiceManager.updateProject(newName, description, projectPk, pageLoadTimeout);
+		return ProjectFileServiceManager.updateProject(newName, description, projectPk, pageLoadTimeout);
 	}
 
 	@Override

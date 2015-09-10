@@ -19,7 +19,7 @@
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_RYbW4T-2EeSqW-o8jtXO1g" elementId="com.kms.katalon.composer.keyword.popupmenu.new.dynamicmenucontribution" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.menu.NewKeywordPopupMenuContribution"/>
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_H4j3EEIPEeSPr8gi-fpUXw" elementId="com.kms.katalon.composer.package.popupmenu.new.dynamicmenucontribution" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.menu.NewPackagePopupMenuContribution"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_--KSoD_DEeSqW-o8jtXO1g" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="index:3">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_--KSoD_DEeSqW-o8jtXO1g" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="after:com.kms.katalon.composer.toolbar.folder.newfolder">
     <elements xsi:type="menu:HandledToolItem" xmi:id="_3TAaEEIOEeSPr8gi-fpUXw" elementId="com.kms.katalon.composer.toolbar.handledtoolitem.new.package" label="" iconURI="platform:/plugin/com.kms.katalon.composer.keyword/icons/new_package_28.png" tooltip="New Package for Keyword" command="_ojWuwEIOEeSPr8gi-fpUXw">
       <tags>FORCE_TEXT</tags>
     </elements>

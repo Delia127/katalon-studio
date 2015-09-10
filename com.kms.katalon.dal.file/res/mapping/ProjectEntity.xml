@@ -6,7 +6,7 @@
 			<xml-root-element name="Project" />
 			<java-attributes>
 				<xml-element java-attribute="pageLoadTimeout"/>
-				<xml-element java-attribute="folderLocation"/>
+				<xml-transient java-attribute="folderLocation"/>
 			</java-attributes>
 		</java-type>
 	</java-types>

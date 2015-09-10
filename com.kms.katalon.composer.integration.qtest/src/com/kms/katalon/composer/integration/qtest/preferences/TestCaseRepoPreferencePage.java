@@ -314,7 +314,10 @@ public class TestCaseRepoPreferencePage extends PreferencePage implements EventH
 		try {
 			FolderEntity folderEntity = FolderController.getInstance().getFolderByDisplayId(projectEntity, folderId);
 
-			if (folderEntity == null) removeRepoFromTable(repo);
+			if (folderEntity == null) {
+			    removeRepoFromTable(repo);
+			    return;
+			}
 
 			IntegratedEntity folderIntegratedEntity = folderEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 

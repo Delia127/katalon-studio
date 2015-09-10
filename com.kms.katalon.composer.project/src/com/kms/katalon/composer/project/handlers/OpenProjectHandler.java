@@ -126,10 +126,7 @@ public class OpenProjectHandler {
 									treeEntities.add(new FolderTreeEntity(FolderController.getInstance().getReportRoot(
 											project), null));
 
-									MWindow win = (MWindow) modelService.find(IdConstants.MAIN_WINDOW_ID, app);
-									if (win != null) {
-										win.setLabel(win.getLabel().split(" - ")[0] + " - " + project.getName());
-									}
+									OpenProjectHandler.updateProjectTitle(project, modelService, app);
 								}
 
 								eventBroker.post(EventConstants.EXPLORER_RELOAD_INPUT, treeEntities);
@@ -152,10 +149,8 @@ public class OpenProjectHandler {
 						
 						@Override
 						public void run() {
-
 							MultiStatusErrorDialog.showErrorDialog(e, StringConstants.HAND_ERROR_MSG_CANNOT_OPEN_PROJ, 
-									e.getClass().getSimpleName());
-							
+									e.getClass().getSimpleName());							
 						}
 					});
 					LoggerSingleton.getInstance().getLogger().error(e);
@@ -172,5 +167,10 @@ public class OpenProjectHandler {
 		}
 	}
 
-	
+	public static void updateProjectTitle(ProjectEntity projectEntity, EModelService modelService, MApplication app) {
+	    MWindow win = (MWindow) modelService.find(IdConstants.MAIN_WINDOW_ID, app);
+        if (win != null) {
+            win.setLabel(win.getLabel().split(" - ")[0] + " - " + projectEntity.getName());
+        }
+	}
 }

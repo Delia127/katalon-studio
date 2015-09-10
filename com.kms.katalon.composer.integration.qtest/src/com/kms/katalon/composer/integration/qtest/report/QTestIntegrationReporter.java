@@ -107,7 +107,7 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
     private boolean isSameQTestProject(TestCaseEntity testCaseEntity, TestSuiteEntity testSuiteEntity,
             ProjectEntity projectEntity) throws Exception {
         TestCaseRepo testCaseRepo = QTestIntegrationUtil.getTestCaseRepo(testCaseEntity, projectEntity);
-        TestSuiteRepo testSuiteRepo = QTestIntegrationUtil.getTestSuiteRepo(testSuiteEntity);
+        TestSuiteRepo testSuiteRepo = QTestIntegrationUtil.getTestSuiteRepo(testSuiteEntity, projectEntity);
 
         if (testCaseRepo == null || testSuiteRepo == null) return false;
 

@@ -17,14 +17,20 @@ import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
 public class QTestAPIRequestHelper {
 
     /**
-     * Connects to qTest server via API, sends POST or PUT request and returns the response. 
+     * Connects to qTest server via API, sends POST or PUT request and returns
+     * the response.
      * 
-     * @param url qTest URL as {@link String}
-     * @param token QTest token
-     * @param body String body of the request
-     * @param type <code>PUT<code/> or <code>POST</code>
+     * @param url
+     *            qTest URL as {@link String}
+     * @param token
+     *            QTest token
+     * @param body
+     *            String body of the request
+     * @param type
+     *            <code>PUT<code/> or <code>POST</code>
      * @return response message as {@link String}
-     * @throws QTestException if the connection is invalid.
+     * @throws QTestException
+     *             if the connection is invalid.
      */
     public static String sendPostOrPutRequestViaAPI(String url, String token, String body, String type)
             throws QTestException {
@@ -39,9 +45,11 @@ public class QTestAPIRequestHelper {
             URL obj = new URL(url);
             con = (HttpURLConnection) obj.openConnection();
             con.setRequestMethod(type);
-            con.setRequestProperty(QTestStringConstants.RQ_PROPERTY_USER_AGENT, QTestStringConstants.RQ_DF_VALUE_USER_AGENT);
+            con.setRequestProperty(QTestStringConstants.RQ_PROPERTY_USER_AGENT,
+                    QTestStringConstants.RQ_DF_VALUE_USER_AGENT);
             con.setRequestProperty(QTestStringConstants.RQ_PROPERTY_AUTHORIZATION, token);
-            con.setRequestProperty(QTestStringConstants.RQ_PROPERTY_USER_AGENT, QTestStringConstants.RQ_DF_VALUE_CONTENT_TYPE);
+            con.setRequestProperty(QTestStringConstants.RQ_PROPERTY_CONTENT_TYPE,
+                    QTestStringConstants.RQ_DF_VALUE_CONTENT_TYPE);
             con.setDoOutput(true);
 
             // Send post request
@@ -86,12 +94,16 @@ public class QTestAPIRequestHelper {
     }
 
     /**
-     * Connects to qTest server via API, sends GET request and returns the response. 
+     * Connects to qTest server via API, sends GET request and returns the
+     * response.
      * 
-     * @param url qTest URL as {@link String}
-     * @param token QTest token
+     * @param url
+     *            qTest URL as {@link String}
+     * @param token
+     *            QTest token
      * @return response message as {@link String}
-     * @throws QTestException if the connection is invalid.
+     * @throws QTestException
+     *             if the connection is invalid.
      */
     public static String sendGetRequestViaAPI(String url, String token) throws QTestException {
         if (!QTestIntegrationAuthenticationManager.validateToken(token)) {
@@ -104,7 +116,8 @@ public class QTestAPIRequestHelper {
             URL obj = new URL(url);
             con = (HttpURLConnection) obj.openConnection();
             con.setRequestMethod(QTestStringConstants.CON_GET_METHOD);
-            con.setRequestProperty(QTestStringConstants.RQ_PROPERTY_USER_AGENT, QTestStringConstants.RQ_DF_VALUE_USER_AGENT);
+            con.setRequestProperty(QTestStringConstants.RQ_PROPERTY_USER_AGENT,
+                    QTestStringConstants.RQ_DF_VALUE_USER_AGENT);
             con.setRequestProperty(QTestStringConstants.RQ_PROPERTY_AUTHORIZATION, token);
 
             in = new BufferedReader(new InputStreamReader(con.getInputStream()));
