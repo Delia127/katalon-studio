@@ -33,6 +33,7 @@ public class NewProjectDialog extends TitleAreaDialog {
 
 	private ProjectEntity project;
 	private boolean showError;
+    private Button btnFolderChooser;
 
 	public NewProjectDialog(Shell parentShell) {
 		super(parentShell);
@@ -78,6 +79,7 @@ public class NewProjectDialog extends TitleAreaDialog {
 			txtProjectLocation.setText(project.getFolderLocation());
 			txtProjectDescription.setText(project.getDescription());
 			txtProjectLocation.setEnabled(false);
+			btnFolderChooser.setEnabled(true);
 		}
 		
 		addControlModifyListeners();
@@ -95,12 +97,12 @@ public class NewProjectDialog extends TitleAreaDialog {
 		txtProjectLocation = new Text(container, SWT.BORDER);
 		txtProjectLocation.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		final Button button = new Button(container, SWT.PUSH);
-		button.setText(StringConstants.VIEW_BTN_BROWSE);
-		button.addSelectionListener(new SelectionListener() {
+		btnFolderChooser = new Button(container, SWT.PUSH);
+		btnFolderChooser.setText(StringConstants.VIEW_BTN_BROWSE);
+		btnFolderChooser.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				DirectoryDialog dialog = new DirectoryDialog(button.getShell());
+				DirectoryDialog dialog = new DirectoryDialog(btnFolderChooser.getShell());
 				String path = dialog.open();
 				if (path == null)
 					return;
