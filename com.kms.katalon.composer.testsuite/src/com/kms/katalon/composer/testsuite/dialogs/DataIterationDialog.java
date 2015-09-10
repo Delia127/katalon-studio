@@ -143,7 +143,7 @@ public class DataIterationDialog extends Dialog {
 		lblNewLabel.setText(StringConstants.DIA_LBL_TO_ROW);
 
 		spinnerTo = new Spinner(container, SWT.BORDER);
-		spinnerTo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		spinnerTo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		spinnerTo.setMinimum(1);
 		spinnerTo.setMaximum(Integer.MAX_VALUE);
 		spinnerTo.setIncrement(1);
