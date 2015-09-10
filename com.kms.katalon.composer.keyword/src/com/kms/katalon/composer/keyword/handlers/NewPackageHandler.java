@@ -14,20 +14,20 @@ import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
-import org.eclipse.jdt.internal.ui.wizards.NewPackageCreationWizard;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.window.Window;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
+import com.kms.katalon.composer.components.dialogs.CWizardDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.keyword.constants.StringConstants;
+import com.kms.katalon.composer.keyword.wizard.CNewPackageCreationWizard;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -84,9 +84,9 @@ public class NewPackageHandler {
 				}
         		
 				if (parent != null) {
-					NewPackageCreationWizard newPackageCreationWizard = new NewPackageCreationWizard();
+					CNewPackageCreationWizard newPackageCreationWizard = new CNewPackageCreationWizard();
 					newPackageCreationWizard.init(PlatformUI.getWorkbench(), new StructuredSelection(parent));
-	        		WizardDialog wizardDialog = new WizardDialog(parentShell, newPackageCreationWizard);
+	        		CWizardDialog wizardDialog = new CWizardDialog(parentShell, newPackageCreationWizard);
 	        		wizardDialog.open();
 	        		if (wizardDialog.getReturnCode() == Window.OK) {
 	        			eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);

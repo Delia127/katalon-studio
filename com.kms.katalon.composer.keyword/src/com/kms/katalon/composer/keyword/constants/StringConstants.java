@@ -29,4 +29,11 @@ public class StringConstants extends GlobalStringConstants {
 
 	// NewPackagePopupMenuContribution
 	public static final String MENU_CONTEXT_NEW_PACKAGE = "Package";
+	
+	// CNewPackageCreationWizard
+	public static final String WIZ_TITLE_NEW = "New";
+	
+	// CNewPackageWizardPage
+	public static final String WIZ_TITLE_KEYWORD_PACKAGE = "Keyword Package";
+	public static final String WIZ_DESC_CREATE_KEYWORD_PACKAGE = "Create a new Keyword package.";
 }

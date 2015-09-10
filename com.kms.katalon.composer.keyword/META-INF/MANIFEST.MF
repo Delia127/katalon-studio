@@ -31,6 +31,7 @@ Require-Bundle: org.eclipse.e4.core.services,
  org.eclipse.ui.workbench,
  com.kms.katalon.core,
  org.eclipse.jdt.core.manipulation,
+ org.eclipse.core.filesystem,
  com.kms.katalon,
  com.kms.katalon.composer.folder;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
