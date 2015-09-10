@@ -10,24 +10,35 @@ import org.eclipse.swt.widgets.Shell;
 
 public class CWizardDialog extends WizardDialog {
 
-	public CWizardDialog(Shell parentShell, IWizard newWizard) {
-		super(parentShell, newWizard);
-	}
+    /** Default height of dialog is 250 */
+    private int height = 250;
 
-	@Override
-	protected void createButtonsForButtonBar(Composite parent) {
-		super.createButtonsForButtonBar(parent);
-		Button finishBtn = getButton(IDialogConstants.FINISH_ID);
-		if (finishBtn != null) {
-			// Change Finish button label to OK
-			finishBtn.setText(IDialogConstants.OK_LABEL);
-		}
-	}
+    public CWizardDialog(Shell parentShell, IWizard newWizard) {
+        super(parentShell, newWizard);
+    }
 
-	@Override
-	protected Point getInitialSize() {
-		Point initSize = super.getInitialSize();
-		return new Point(initSize.x, 250);
-	}
-	
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        super.createButtonsForButtonBar(parent);
+        Button finishBtn = getButton(IDialogConstants.FINISH_ID);
+        if (finishBtn != null) {
+            // Change Finish button label to OK
+            finishBtn.setText(IDialogConstants.OK_LABEL);
+        }
+    }
+
+    @Override
+    protected Point getInitialSize() {
+        Point initSize = super.getInitialSize();
+        return new Point(initSize.x, getHeight());
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
 }

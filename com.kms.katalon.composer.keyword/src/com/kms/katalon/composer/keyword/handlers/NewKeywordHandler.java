@@ -5,7 +5,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.codehaus.groovy.eclipse.wizards.NewClassWizard;
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -22,16 +21,17 @@ import org.eclipse.jdt.internal.core.SourceType;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.window.Window;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
+import com.kms.katalon.composer.components.dialogs.CWizardDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.keyword.constants.StringConstants;
+import com.kms.katalon.composer.keyword.wizard.NewKeywordWizard;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
@@ -80,11 +80,11 @@ public class NewKeywordHandler {
 			} else {
 				packageFragment = GroovyUtil.getDefaultPackageForKeyword(ProjectController.getInstance().getCurrentProject());
 			}
-			packageFragment.getJavaProject().findType(packageFragment.getElementName(), "aaa");
 			if (packageFragment != null) {
-				NewClassWizard newGroovyClassWizard = new NewClassWizard();
+				NewKeywordWizard newGroovyClassWizard = new NewKeywordWizard();
 				newGroovyClassWizard.init(PlatformUI.getWorkbench(), new StructuredSelection(packageFragment));
-				WizardDialog wizardDialog = new WizardDialog(parentShell, newGroovyClassWizard);
+				CWizardDialog wizardDialog = new CWizardDialog(parentShell, newGroovyClassWizard);
+				wizardDialog.setHeight(275);
 				if (wizardDialog.open() == Window.OK) {
 					IJavaElement createdElement = newGroovyClassWizard.getCreatedElement();
 					if (createdElement instanceof SourceType && createdElement.getParent() instanceof GroovyCompilationUnit
