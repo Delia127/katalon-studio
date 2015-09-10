@@ -16,14 +16,13 @@ public class RefreshProjectHandler {
 	@Inject
 	private IEventBroker eventBroker;
 	
-	@SuppressWarnings("restriction")
 	@CanExecute
 	public boolean canExecute() {
 		try {
 			return (ProjectController.getInstance().getCurrentProject() != null)
 					&& !LauncherManager.getInstance().isAnyLauncherRunning();
 		} catch (CoreException e) {
-			LoggerSingleton.getInstance().getLogger().error(e);
+			LoggerSingleton.logError(e);
 			return false;
 		}
 	}

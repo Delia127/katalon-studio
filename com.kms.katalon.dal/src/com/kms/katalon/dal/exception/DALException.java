@@ -1,6 +1,6 @@
 package com.kms.katalon.dal.exception;
 
-public abstract class DALException extends Exception {
+public class DALException extends Exception {
 
     /**
      * 
