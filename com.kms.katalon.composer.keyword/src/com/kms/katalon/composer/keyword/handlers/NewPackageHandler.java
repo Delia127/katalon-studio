@@ -27,7 +27,7 @@ import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.keyword.constants.StringConstants;
-import com.kms.katalon.composer.keyword.wizard.CNewPackageCreationWizard;
+import com.kms.katalon.composer.keyword.wizard.NewPackageWizard;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -84,7 +84,7 @@ public class NewPackageHandler {
 				}
         		
 				if (parent != null) {
-					CNewPackageCreationWizard newPackageCreationWizard = new CNewPackageCreationWizard();
+					NewPackageWizard newPackageCreationWizard = new NewPackageWizard();
 					newPackageCreationWizard.init(PlatformUI.getWorkbench(), new StructuredSelection(parent));
 	        		CWizardDialog wizardDialog = new CWizardDialog(parentShell, newPackageCreationWizard);
 	        		wizardDialog.open();

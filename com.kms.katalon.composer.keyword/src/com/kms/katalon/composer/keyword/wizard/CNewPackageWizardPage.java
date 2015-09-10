@@ -57,30 +57,26 @@ public class CNewPackageWizardPage extends NewContainerWizardPage {
 
     private static final String PACKAGE = PAGE_NAME + ".package"; //$NON-NLS-1$
 
-    private StringDialogField fPackageDialogField;
+    private StringDialogField packageDialogField;
 
-    /*
-     * Status of last validation of the package field
-     */
-    private IStatus fPackageStatus;
+    private IPackageFragment createdPackageFragment;
 
-    private IPackageFragment fCreatedPackageFragment;
+    /** Status of last validation of the package field */
+    private IStatus status;
 
     public CNewPackageWizardPage() {
         super(PAGE_NAME);
-
         setTitle(StringConstants.WIZ_TITLE_KEYWORD_PACKAGE);
         setDescription(StringConstants.WIZ_DESC_CREATE_KEYWORD_PACKAGE);
 
-        fCreatedPackageFragment = null;
-
+        createdPackageFragment = null;
         PackageFieldAdapter adapter = new PackageFieldAdapter();
 
-        fPackageDialogField = new StringDialogField();
-        fPackageDialogField.setDialogFieldListener(adapter);
-        fPackageDialogField.setLabelText(NewWizardMessages.NewPackageWizardPage_package_label);
+        packageDialogField = new StringDialogField();
+        packageDialogField.setDialogFieldListener(adapter);
+        packageDialogField.setLabelText(NewWizardMessages.NewPackageWizardPage_package_label);
 
-        fPackageStatus = new StatusInfo();
+        status = new StatusInfo();
     }
 
     // -------- Initialization ---------
@@ -122,7 +118,7 @@ public class CNewPackageWizardPage extends NewContainerWizardPage {
         }
         setPackageText(pName, true);
 
-        updateStatus(new IStatus[] { fContainerStatus, fPackageStatus });
+        updateStatus(new IStatus[] { fContainerStatus, status });
     }
 
     // -------- UI Creation ---------
@@ -163,17 +159,17 @@ public class CNewPackageWizardPage extends NewContainerWizardPage {
      * Sets the focus to the package name input field.
      */
     protected void setFocus() {
-        fPackageDialogField.setFocus();
+        packageDialogField.setFocus();
     }
 
     private void createPackageControls(Composite composite, int nColumns) {
-        fPackageDialogField.doFillIntoGrid(composite, nColumns - 1);
-        Text text = fPackageDialogField.getTextControl(null);
+        packageDialogField.doFillIntoGrid(composite, nColumns - 1);
+        Text text = packageDialogField.getTextControl(null);
         LayoutUtil.setWidthHint(text, getMaxFieldWidth());
         LayoutUtil.setHorizontalGrabbing(text);
         DialogField.createEmptySpace(composite);
         TextFieldNavigationHandler.install(text);
-        BidiUtils.applyBidiProcessing(fPackageDialogField.getTextControl(null), BidiUtils.AUTO);
+        BidiUtils.applyBidiProcessing(packageDialogField.getTextControl(null), BidiUtils.AUTO);
     }
 
     // -------- PackageFieldAdapter --------
@@ -183,7 +179,7 @@ public class CNewPackageWizardPage extends NewContainerWizardPage {
         // --------- IDialogFieldListener
 
         public void dialogFieldChanged(DialogField field) {
-            fPackageStatus = getPackageStatus(getPackageText());
+            status = getPackageStatus(getPackageText());
             // tell all others
             handleFieldChanged(PACKAGE);
         }
@@ -198,10 +194,10 @@ public class CNewPackageWizardPage extends NewContainerWizardPage {
     protected void handleFieldChanged(String fieldName) {
         super.handleFieldChanged(fieldName);
         if (fieldName == CONTAINER) {
-            fPackageStatus = getPackageStatus(getPackageText());
+            status = getPackageStatus(getPackageText());
         }
         // do status line update
-        updateStatus(new IStatus[] { fContainerStatus, fPackageStatus });
+        updateStatus(new IStatus[] { fContainerStatus, status });
     }
 
     // ----------- validation ----------
@@ -286,7 +282,7 @@ public class CNewPackageWizardPage extends NewContainerWizardPage {
      * @return the content of the package input field
      */
     public String getPackageText() {
-        return fPackageDialogField.getText();
+        return packageDialogField.getText();
     }
 
     /**
@@ -296,8 +292,8 @@ public class CNewPackageWizardPage extends NewContainerWizardPage {
      * @param canBeModified if <code>true</code> the package input field can be modified; otherwise it is read-only.
      */
     public void setPackageText(String str, boolean canBeModified) {
-        fPackageDialogField.setText(str);
-        fPackageDialogField.setEnabled(canBeModified);
+        packageDialogField.setText(str);
+        packageDialogField.setEnabled(canBeModified);
     }
 
     /**
@@ -342,7 +338,7 @@ public class CNewPackageWizardPage extends NewContainerWizardPage {
      * @return the created package fragment
      */
     public IPackageFragment getNewPackageFragment() {
-        return fCreatedPackageFragment;
+        return createdPackageFragment;
     }
 
     /**
@@ -362,9 +358,9 @@ public class CNewPackageWizardPage extends NewContainerWizardPage {
         IPackageFragment pack = root.getPackageFragment(getPackageText());
 
         if (pack.exists()) {
-            fCreatedPackageFragment = pack;
+            createdPackageFragment = pack;
         } else {
-            fCreatedPackageFragment = root.createPackageFragment(getPackageText(), true, monitor);
+            createdPackageFragment = root.createPackageFragment(getPackageText(), true, monitor);
         }
 
         // save whether package documentation should be created

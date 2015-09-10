@@ -11,15 +11,15 @@ import org.eclipse.jdt.internal.ui.wizards.NewElementWizard;
 import com.kms.katalon.composer.keyword.constants.StringConstants;
 
 @SuppressWarnings("restriction")
-public class CNewPackageCreationWizard extends NewElementWizard {
+public class NewPackageWizard extends NewElementWizard {
 
     private CNewPackageWizardPage page;
 
-    public CNewPackageCreationWizard() {
+    public NewPackageWizard() {
         this(null);
     }
 
-    public CNewPackageCreationWizard(CNewPackageWizardPage page) {
+    public NewPackageWizard(CNewPackageWizardPage page) {
         super();
         setWindowTitle(StringConstants.WIZ_TITLE_NEW);
         setDefaultPageImageDescriptor(JavaPluginImages.DESC_WIZBAN_NEWPACK);
@@ -29,7 +29,8 @@ public class CNewPackageCreationWizard extends NewElementWizard {
     }
 
     /*
-     * @see Wizard#addPages
+     * (non-Javadoc)
+     * @see org.eclipse.jface.wizard.Wizard#addPages()
      */
     @Override
     public void addPages() {
