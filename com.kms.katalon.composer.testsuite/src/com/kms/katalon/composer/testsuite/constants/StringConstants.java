@@ -8,7 +8,7 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String CONS_ADD_BEFORE = "Add before";
 	public static final String CONS_ADD_AFTER = "Add after";
 	public static final String CONS_ADD_CHILDREN = "Add children";
-	public static final String CONS_REMOVE = REMOVE;
+	public static final String CONS_REMOVE = DELETE;
 	public static final String CONS_UP = UP;
 	public static final String CONS_DOWN = DOWN;
 	public static final String CONS_MAP = "Map";
@@ -96,7 +96,7 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String PA_BTN_DEL = DELETE;
 	public static final String PA_BTN_CLEAR = CLEAR;
 	public static final String PA_TOOLITEM_ADD = ADD;
-	public static final String PA_TOOLITEM_REMOVE = REMOVE;
+	public static final String PA_TOOLITEM_REMOVE = DELETE;
 	public static final String PA_TOOLITEM_UP = UP;
 	public static final String PA_TOOLITEM_DOWN = DOWN;
 	public static final String PA_TITLE_TEST_CASE_BROWSER = "Test Case Browser";

@@ -16,7 +16,7 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String SETT_COL_VALUE = VALUE;
 	public static final String SETT_TOOLITEM_ADD = ADD;
 	public static final String SETT_TOOLITEM_EDIT = EDIT;
-	public static final String SETT_TOOLITEM_REMOVE = REMOVE;
+	public static final String SETT_TOOLITEM_REMOVE = DELETE;
 	public static final String SETT_TOOLITEM_CLEAR = CLEAR;
 	public static final String SETT_TOOLITEM_UP = UP;
 	public static final String SETT_TOOLITEM_DOWN = DOWN;
