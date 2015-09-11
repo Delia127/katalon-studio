@@ -9,159 +9,209 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.TestEnvironmentController;
-import com.kms.katalon.execution.constants.StringConstants;
+import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
+import com.kms.katalon.execution.factory.BuiltinRunConfigurationFactory;
 
 public class ExecutionPreferencePage extends PreferencePage {
-	private Button chckNotifyMe, chckOpenReport;
-	private Text txtPageLoadTimeout;
-	private Composite fieldEditorParent;
+    private Button chckNotifyMe, chckOpenReport;
+    private Text txtPageLoadTimeout;
+    private Composite fieldEditorParent;
+    private Combo executionOptionCombo;
+    private IRunConfigurationContributor[] runConfigs;
 
-	public ExecutionPreferencePage() {
-	}
+    public ExecutionPreferencePage() {
+    }
 
-	@Override
-	protected Control createContents(Composite parent) {
-		fieldEditorParent = new Composite(parent, SWT.NONE);
-		GridLayout layout = new GridLayout();
-		layout.verticalSpacing = 10;
-		layout.marginHeight = 0;
-		layout.marginWidth = 0;
-		fieldEditorParent.setLayout(layout);
+    @Override
+    protected Control createContents(Composite parent) {
+        fieldEditorParent = new Composite(parent, SWT.NONE);
+        GridLayout layout = new GridLayout();
+        layout.verticalSpacing = 10;
+        layout.marginHeight = 0;
+        layout.marginWidth = 0;
+        fieldEditorParent.setLayout(layout);
 
-		Composite composite = new Composite(fieldEditorParent, SWT.NONE);
-		GridLayout glComposite = new GridLayout(2, false);
-		composite.setLayout(glComposite);
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+        Composite defaultExecutionComposite = new Composite(fieldEditorParent, SWT.NONE);
+        GridLayout defaultExecutionCompositeGridLayout = new GridLayout(2, false);
+        defaultExecutionComposite.setLayout(defaultExecutionCompositeGridLayout);
+        defaultExecutionComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
-		Label lblDefaultTimeout = new Label(composite, SWT.NONE);
-		lblDefaultTimeout.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblDefaultTimeout.setText(StringConstants.PREF_LBL_DEFAULT_PAGE_LOAD_TIMEOUT);
+        Label lblDefaultExecution = new Label(defaultExecutionComposite, SWT.NONE);
+        lblDefaultExecution.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+        lblDefaultExecution.setText(StringConstants.PREF_GRP_DEFAULT_EXECUTION_CONFIG);
 
-		txtPageLoadTimeout = new Text(composite, SWT.BORDER);
-		txtPageLoadTimeout.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+        executionOptionCombo = new Combo(defaultExecutionComposite, SWT.DROP_DOWN);
 
-		Group grpAfterExecuting = new Group(fieldEditorParent, SWT.NONE);
-		grpAfterExecuting.setText(StringConstants.PREF_GRP_AFTER_EXECUTING);
-		GridLayout glGrpAfterExecuting = new GridLayout(1, false);
-		glGrpAfterExecuting.marginLeft = 15;
-		grpAfterExecuting.setLayout(glGrpAfterExecuting);
-		grpAfterExecuting.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+        Composite pageLoadTimeOutComposite = new Composite(fieldEditorParent, SWT.NONE);
+        GridLayout glComposite = new GridLayout(2, false);
+        pageLoadTimeOutComposite.setLayout(glComposite);
+        pageLoadTimeOutComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
-		chckNotifyMe = new Button(grpAfterExecuting, SWT.CHECK);
-		chckNotifyMe.setText(StringConstants.PREF_CHKBOX_NOTIFY_ME_AFTER_EXE_COMPLETELY);
+        Label lblDefaultTimeout = new Label(pageLoadTimeOutComposite, SWT.NONE);
+        lblDefaultTimeout.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+        lblDefaultTimeout.setText(StringConstants.PREF_LBL_DEFAULT_PAGE_LOAD_TIMEOUT);
 
-		chckOpenReport = new Button(grpAfterExecuting, SWT.CHECK);
-		chckOpenReport.setText(StringConstants.PREF_CHKBOX_OPEN_RPT_AFTER_EXE_COMPLETELY);
+        txtPageLoadTimeout = new Text(pageLoadTimeOutComposite, SWT.BORDER);
+        txtPageLoadTimeout.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
-		initialize();
+        Group grpAfterExecuting = new Group(fieldEditorParent, SWT.NONE);
+        grpAfterExecuting.setText(StringConstants.PREF_GRP_AFTER_EXECUTING);
+        GridLayout glGrpAfterExecuting = new GridLayout(1, false);
+        glGrpAfterExecuting.marginLeft = 15;
+        grpAfterExecuting.setLayout(glGrpAfterExecuting);
+        grpAfterExecuting.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
-		registerControlModifyListeners();
+        chckNotifyMe = new Button(grpAfterExecuting, SWT.CHECK);
+        chckNotifyMe.setText(StringConstants.PREF_CHKBOX_NOTIFY_ME_AFTER_EXE_COMPLETELY);
 
-		return fieldEditorParent;
-	}
+        chckOpenReport = new Button(grpAfterExecuting, SWT.CHECK);
+        chckOpenReport.setText(StringConstants.PREF_CHKBOX_OPEN_RPT_AFTER_EXE_COMPLETELY);
 
-	private void registerControlModifyListeners() {
-		txtPageLoadTimeout.addModifyListener(new ModifyListener() {
+        initialize();
 
-			@Override
-			public void modifyText(ModifyEvent e) {
-				if (!isTextPageLoadTimeOutValid()) {
-					setErrorMessage(MessageFormat.format(
-							StringConstants.PREF_ERROR_MSG_VAL_MUST_BE_AN_INT_BETWEEN_X_Y,
-							TestEnvironmentController.getInstance().getPageLoadTimeOutMinimumValue(),
-							TestEnvironmentController.getInstance().getPageLoadTimeOutMaximumValue()));
-					getApplyButton().setEnabled(false);
-				} else {
-					setErrorMessage(null);
-					getApplyButton().setEnabled(true);
-				}
-			}
-		});
-	}
+        registerControlModifyListeners();
 
-	private void initialize() {
-		chckNotifyMe.setSelection(getPreferenceStore().getBoolean(
-				PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_NOTIFY_AFTER_EXECUTING));
-		chckOpenReport.setSelection(getPreferenceStore().getBoolean(
-				PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_OPEN_REPORT_AFTER_EXECUTING));
-		txtPageLoadTimeout.setText(Integer.toString(getPreferenceStore().getInt(
-				PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_TIMEOUT)));
-	}
+        return fieldEditorParent;
+    }
 
-	private boolean isTextPageLoadTimeOutValid() {
-		if (txtPageLoadTimeout != null && txtPageLoadTimeout.getText() != null) {
-			try {
-				int value = Integer.parseInt(txtPageLoadTimeout.getText());
-				if (value < TestEnvironmentController.getInstance().getPageLoadTimeOutMinimumValue()
-						|| value > TestEnvironmentController.getInstance().getPageLoadTimeOutMaximumValue()) {
-					return false;
-				}
-				return true;
-			} catch (NumberFormatException e) {
-				return false;
-			}
-		}
-		return true;
-	}
+    private void registerControlModifyListeners() {
+        txtPageLoadTimeout.addModifyListener(new ModifyListener() {
 
-	@Override
-	protected void performDefaults() {
-		if (fieldEditorParent == null)
-			return;
+            @Override
+            public void modifyText(ModifyEvent e) {
+                if (!isTextPageLoadTimeOutValid()) {
+                    setErrorMessage(MessageFormat.format(StringConstants.PREF_ERROR_MSG_VAL_MUST_BE_AN_INT_BETWEEN_X_Y,
+                            TestEnvironmentController.getInstance().getPageLoadTimeOutMinimumValue(),
+                            TestEnvironmentController.getInstance().getPageLoadTimeOutMaximumValue()));
+                    getApplyButton().setEnabled(false);
+                } else {
+                    setErrorMessage(null);
+                    getApplyButton().setEnabled(true);
+                }
+            }
+        });
+    }
 
-		chckNotifyMe.setSelection(getPreferenceStore().getDefaultBoolean(
-				PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_NOTIFY_AFTER_EXECUTING));
-		chckOpenReport.setSelection(getPreferenceStore().getDefaultBoolean(
-				PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_OPEN_REPORT_AFTER_EXECUTING));
-		txtPageLoadTimeout.setText(Integer.toString(getPreferenceStore().getDefaultInt(
-				PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_TIMEOUT)));
+    private void initialize() {
+        chckNotifyMe.setSelection(getPreferenceStore().getBoolean(
+                PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_NOTIFY_AFTER_EXECUTING));
+        chckOpenReport.setSelection(getPreferenceStore().getBoolean(
+                PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_OPEN_REPORT_AFTER_EXECUTING));
+        txtPageLoadTimeout.setText(Integer.toString(getPreferenceStore().getInt(
+                PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_TIMEOUT)));
+        String selectedExecutionConfiguration = getPreferenceStore().getString(
+                PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_CONFIGURATION);
+        runConfigs = BuiltinRunConfigurationFactory.getInstance().getAllRunConfigurationContributors();
+        String[] runConfigIdList = new String[runConfigs.length];
+        int selectedIndex = 0;
+        for (int i = 0; i < runConfigs.length; i++) {
+            runConfigIdList[i] = runConfigs[i].getId();
+            if (runConfigIdList[i].equals(selectedExecutionConfiguration)) {
+                selectedIndex = i;
+            }
+        }
+        executionOptionCombo.setItems(runConfigIdList);
+        executionOptionCombo.select(selectedIndex);
+    }
 
-		super.performDefaults();
-	}
+    private boolean isTextPageLoadTimeOutValid() {
+        if (txtPageLoadTimeout != null && txtPageLoadTimeout.getText() != null) {
+            try {
+                int value = Integer.parseInt(txtPageLoadTimeout.getText());
+                if (value < TestEnvironmentController.getInstance().getPageLoadTimeOutMinimumValue()
+                        || value > TestEnvironmentController.getInstance().getPageLoadTimeOutMaximumValue()) {
+                    return false;
+                }
+                return true;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	@Override
-	public boolean isValid() {
-		return isTextPageLoadTimeOutValid();
-	}
-	
-	@Override
-	protected void performApply() {
-		if (fieldEditorParent == null)
-			return;
+    @Override
+    protected void performDefaults() {
+        if (fieldEditorParent == null) {
+            return;
+        }
 
-		if (chckNotifyMe != null) {
-			getPreferenceStore().setValue(
-					PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_NOTIFY_AFTER_EXECUTING,
-					chckNotifyMe.getSelection());
-		}
+        chckNotifyMe.setSelection(getPreferenceStore().getDefaultBoolean(
+                PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_NOTIFY_AFTER_EXECUTING));
+        chckOpenReport.setSelection(getPreferenceStore().getDefaultBoolean(
+                PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_OPEN_REPORT_AFTER_EXECUTING));
+        txtPageLoadTimeout.setText(Integer.toString(getPreferenceStore().getDefaultInt(
+                PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_TIMEOUT)));
+        String selectedExecutionConfiguration = getPreferenceStore().getDefaultString(
+                PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_CONFIGURATION);
+        runConfigs = BuiltinRunConfigurationFactory.getInstance().getAllRunConfigurationContributors();
+        int selectedIndex = 0;
+        if (runConfigs.length > 0) {
+            String[] runConfigIdList = new String[runConfigs.length];
+            for (int i = 0; i < runConfigs.length; i++) {
+                runConfigIdList[i] = runConfigs[i].getId();
+                if (runConfigIdList[i].equals(selectedExecutionConfiguration)) {
+                    selectedIndex = i;
+                }
+            }
+            executionOptionCombo.setItems(runConfigIdList);
+            executionOptionCombo.select(selectedIndex);
+        }
+        super.performDefaults();
+    }
 
-		if (chckOpenReport != null) {
-			getPreferenceStore().setValue(
-					PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_OPEN_REPORT_AFTER_EXECUTING,
-					chckOpenReport.getSelection());
-		}
+    @Override
+    public boolean isValid() {
+        return isTextPageLoadTimeOutValid();
+    }
 
-		if (txtPageLoadTimeout != null) {
-			getPreferenceStore().setValue(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_TIMEOUT,
-					Integer.parseInt(txtPageLoadTimeout.getText()));
-		}
-	}
+    @Override
+    protected void performApply() {
+        if (fieldEditorParent == null) {
+            return;
+        }
 
-	public boolean performOk() {
-		boolean result = super.performOk();
-		if (result) {
-			if (isValid()) {
-				performApply();
-			}
-		}
-		return true;
-	}
+        if (chckNotifyMe != null) {
+            getPreferenceStore().setValue(
+                    PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_NOTIFY_AFTER_EXECUTING,
+                    chckNotifyMe.getSelection());
+        }
+
+        if (chckOpenReport != null) {
+            getPreferenceStore().setValue(
+                    PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_OPEN_REPORT_AFTER_EXECUTING,
+                    chckOpenReport.getSelection());
+        }
+
+        if (txtPageLoadTimeout != null) {
+            getPreferenceStore().setValue(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_TIMEOUT,
+                    Integer.parseInt(txtPageLoadTimeout.getText()));
+        }
+
+        if (executionOptionCombo != null && runConfigs != null && runConfigs.length > 0) {
+            getPreferenceStore().setValue(
+                    PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_CONFIGURATION,
+                    executionOptionCombo.getText());
+        }
+    }
+
+    public boolean performOk() {
+        boolean result = super.performOk();
+        if (result) {
+            if (isValid()) {
+                performApply();
+            }
+        }
+        return true;
+    }
 }

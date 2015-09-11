@@ -45,4 +45,8 @@ public class BuiltinRunConfigurationFactory {
 		}
 		return null;
 	}
+	
+	public IRunConfigurationContributor[] getAllRunConfigurationContributors() {
+	    return runConfigurationContributors.toArray(new IRunConfigurationContributor[runConfigurationContributors.size()]);
+	}
 }

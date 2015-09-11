@@ -4,11 +4,11 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
-import com.kms.katalon.composer.execution.handlers.ExecuteHandler;
+import com.kms.katalon.composer.execution.handlers.AbstractExecutionHandler;
 import com.kms.katalon.composer.mobile.constants.StringConstants;
 import com.kms.katalon.composer.mobile.dialog.DeviceSelectionDialog;
 
-public abstract class MobileExecutionHandler extends ExecuteHandler {
+public abstract class MobileExecutionHandler extends AbstractExecutionHandler {
 	protected String getDeviceName(String platform) {
 		DeviceSelectionDialog dialog = new DeviceSelectionDialog(Display.getCurrent().getActiveShell(), platform);
 		dialog.open();

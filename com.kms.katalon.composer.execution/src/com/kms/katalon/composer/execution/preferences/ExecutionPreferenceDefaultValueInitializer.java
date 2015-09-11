@@ -6,6 +6,8 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.constants.PreferenceConstants;
+import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
+import com.kms.katalon.execution.factory.BuiltinRunConfigurationFactory;
 
 public class ExecutionPreferenceDefaultValueInitializer extends AbstractPreferenceInitializer {
 	public static final int EXECUTION_DEFAULT_TIMEOUT_VALUE = 30;
@@ -23,7 +25,13 @@ public class ExecutionPreferenceDefaultValueInitializer extends AbstractPreferen
     @Override
     public void initializeDefaultPreferences() {
         IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER); 
+                PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
+        IRunConfigurationContributor[] allBuiltinRunConfigurationContributor = BuiltinRunConfigurationFactory
+                .getInstance().getAllRunConfigurationContributors();
+        if (allBuiltinRunConfigurationContributor.length > 0) {
+            store.setDefault(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_CONFIGURATION,
+                    allBuiltinRunConfigurationContributor[0].getId());
+        }
         store.setDefault(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_TIMEOUT,
                         EXECUTION_DEFAULT_TIMEOUT_VALUE);
         store.setDefault(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_NOTIFY_AFTER_EXECUTING,

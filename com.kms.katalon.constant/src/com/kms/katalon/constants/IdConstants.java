@@ -15,6 +15,9 @@ public interface IdConstants {
     
     //Command
     public static final String QUIT_COMMAND_ID = "com.kms.katalon.composer.quit";
+    
+    //Toolbar
+    public static final String EXECUTION_TOOL_ITEM_ID = "com.kms.katalon.composer.execution.handledtoolitem.run";
 
     // Composer PartStack content
     public static final String COMPOSER_CONTENT_PARTSTACK_ID = "com.kms.katalon.composer.content";

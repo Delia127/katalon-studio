@@ -13,11 +13,15 @@ public class IosRunConfigurationContributor implements IRunConfigurationContribu
 
 	@Override
 	public String getId() {
-		return MobileDriverType.ANDROID_DRIVER.toString();
+		return MobileDriverType.IOS_DRIVER.toString();
 	}
 
 	@Override
 	public IRunConfiguration getRunConfiguration(TestCaseEntity testCase, Map<String, String> runInput) {
+	    if (runInput == null
+                || runInput.get(com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_DEVICE_NAME) == null) {
+            return null;
+        }
 		String deviceName = runInput
 				.get(com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_DEVICE_NAME);
 		return new AndroidRunConfiguration(testCase, deviceName);
@@ -25,6 +29,10 @@ public class IosRunConfigurationContributor implements IRunConfigurationContribu
 
 	@Override
 	public IRunConfiguration getRunConfiguration(TestSuiteEntity testSuite, Map<String, String> runInput) {
+	    if (runInput == null
+                || runInput.get(com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_DEVICE_NAME) == null) {
+            return null;
+        }
 		String deviceName = runInput
 				.get(com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_DEVICE_NAME);
 		return new AndroidRunConfiguration(testSuite, deviceName);
