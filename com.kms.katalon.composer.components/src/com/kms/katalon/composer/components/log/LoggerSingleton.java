@@ -24,6 +24,10 @@ public class LoggerSingleton {
 	}
 	
 	public static void logError(Throwable e) {
-		getInstance().getLogger().error(e);
+	    getInstance().getLogger().error(e);
+	}
+	
+	public static void logError(Throwable e, String msg) {
+		getInstance().getLogger().error(e, msg);
 	}
 }

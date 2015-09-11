@@ -30,10 +30,18 @@ public class StringConstants extends GlobalStringConstants {
 	// NewPackagePopupMenuContribution
 	public static final String MENU_CONTEXT_NEW_PACKAGE = "Package";
 	
-	// CNewPackageCreationWizard
+	// NewPackageWizard
 	public static final String WIZ_TITLE_NEW = "New";
 	
 	// CNewPackageWizardPage
 	public static final String WIZ_TITLE_KEYWORD_PACKAGE = "Keyword Package";
-	public static final String WIZ_DESC_CREATE_KEYWORD_PACKAGE = "Create a new Keyword package.";
+	public static final String WIZ_DESC_CREATE_KEYWORD_PACKAGE = "Create Keyword Package";
+	
+	// NewKeywordWizardPage
+	public static final String WIZ_DESC_CREATE_KEYWORD = "Create Keyword";
+    public static final String WIZ_ERROR_MSG_KEYWORD_ALREADY_EXISTS = "Keyword already exists.";
+	public static final String WIZ_ERROR_MSG_CANNOT_CREATE_KEYWORD_BC_OF_EXCLUSION_PATTERNS = "Cannot create Keyword because of exclusion patterns on the source folder.";
+	public static final String WIZ_ERROR_MSG_EXCEPTION_INSIDE_KEYWORD_WIZ = "Exception inside new Keyword wizard";
+	
+	
 }
