@@ -4,6 +4,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -73,6 +75,15 @@ public class CustomKeywordFolderBrowserTreeEntity extends KeywordFolderBrowserTr
 				keywordFolder.children.add(new KeywordBrowserTreeEntity(simpleName, method.getDeclaringClass()
 						.getName() + "." + method.getName(), true, keywordFolder));
 			}
+			
+			Collections.sort(keywordFolder.children, new Comparator<IKeywordBrowserTreeEntity>() {
+
+	            @Override
+	            public int compare(IKeywordBrowserTreeEntity keywordA, IKeywordBrowserTreeEntity keywordB) {
+	                return keywordA.getName().compareToIgnoreCase(keywordB.getName());
+	            }
+	        });
+			
 			childTreeEntityList.add(keywordFolder);
 		}
 		return childTreeEntityList;
