@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.codehaus.groovy.ast.ClassNode;
@@ -60,6 +61,16 @@ public class CustomKeywordParser {
 		for (IFile file : customKeywordFiles) {
 			allMethods.addAll(parseCustomKeywordFileIntoAst(classLoader, file));
 		}
+		
+		Collections.sort(allMethods, new Comparator<Method>() {
+
+            @Override
+            public int compare(Method arg0, Method arg1) {
+                return arg0.getName().compareToIgnoreCase(arg1.getName());
+            }
+		    
+		});
+		
 		return allMethods;
 	}
 
@@ -176,7 +187,17 @@ public class CustomKeywordParser {
 
 	public List<MethodNode> getAllMethodNodes(IFolder libFolder) throws Exception {
 		if (classNode != null && classNode.getModule() != null && classNode.getModule().getMethods() != null) {
-			return classNode.getModule().getMethods();
+			List<MethodNode> methodNodes = classNode.getModule().getMethods();
+			
+			//Sort by ascending method name
+	        Collections.sort(methodNodes, new Comparator<MethodNode>() {
+
+	            @Override
+	            public int compare(MethodNode methodA, MethodNode methodB) {
+	                return (methodA.getName().compareToIgnoreCase(methodB.getName()));
+	            }
+	        });
+	        return methodNodes;
 		}
 		return Collections.emptyList();
 	}

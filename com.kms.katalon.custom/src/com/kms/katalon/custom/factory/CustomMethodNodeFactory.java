@@ -32,7 +32,7 @@ public class CustomMethodNodeFactory {
     }
 
     /**
-     * get all methods that are in custom keyword file, not in CustomKeywords.groovy
+     * Returns all methods that are in custom keyword file, not in CustomKeywords.groovy
      */
     public List<MethodNode> getAllMethodNodes() {
         List<MethodNode> output = new ArrayList<MethodNode>();

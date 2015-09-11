@@ -394,7 +394,6 @@ public class GroovyUtil {
 
     public static List<IPackageFragment> getAllPackageInKeywordFolder(ProjectEntity projectEntity) throws Exception {
         IProject groovyProject = getGroovyProject(projectEntity);
-        groovyProject.refreshLocal(IResource.DEPTH_INFINITE, null);
         List<IPackageFragment> packageFragments = new ArrayList<IPackageFragment>();
         IPackageFragmentRoot root = JavaCore.create(groovyProject).getPackageFragmentRoot(
                 groovyProject.getFolder(KEYWORD_SOURCE_FOLDER_NAME));
