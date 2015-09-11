@@ -59,7 +59,7 @@ public class NewKeywordHandler {
 				return true;
 			}
 		} catch (Exception e) {
-			LoggerSingleton.getInstance().getLogger().error(e);
+		    LoggerSingleton.logError(e);
 		}
 		return false;
 	}
@@ -107,7 +107,7 @@ public class NewKeywordHandler {
 			}
 
 		} catch (Exception e) {
-			LoggerSingleton.getInstance().getLogger().error(e);
+			LoggerSingleton.logError(e);
 			MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE, 
 					StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_KEYWORD);
 		}
@@ -152,7 +152,7 @@ public class NewKeywordHandler {
 				}
 			}
 		} catch (Exception e) {
-			LoggerSingleton.getInstance().getLogger().error(e);
+		    LoggerSingleton.logError(e);
 		}
 	}
 }
