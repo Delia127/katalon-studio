@@ -23,15 +23,26 @@ import com.kms.katalon.integration.qtest.helper.QTestAPIRequestHelper;
  * Provides a set of utility methods for qTest authentication
  */
 public class QTestIntegrationAuthenticationManager {
-    
+
     private QTestIntegrationAuthenticationManager() {
-        //Disable default constructor
+        // Disable default constructor
     }
 
     private static final String USERNAME_PARAM = "j_username=";
     private static final String PASSWORD_PARAM = "j_password=";
     private static final String LOGIN_URL = "/api/login?";
 
+    /**
+     * Returns qTest token as String after sending an authentication request.
+     * 
+     * @param serverURL
+     * @param username
+     * @param password
+     * @return qTest token
+     * @throws QTestException
+     *             thrown if system cannot send request or the params are
+     *             unauthorized.
+     */
     public static String getToken(String serverURL, String username, String password) throws QTestException {
         String url = serverURL + LOGIN_URL + USERNAME_PARAM + UrlEncoder.encode(username) + "&" + PASSWORD_PARAM
                 + UrlEncoder.encode(password);
@@ -76,15 +87,29 @@ public class QTestIntegrationAuthenticationManager {
         }
     }
 
+    /**
+     * Returns content of the given <code>inputStream</code>
+     * 
+     * @param inputStream
+     * @return
+     * @throws IOException
+     */
     private static String getResponse(InputStream inputStream) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        StringBuffer response = new StringBuffer();
-        String inputLine;
-        while ((inputLine = reader.readLine()) != null) {
-            response.append(inputLine);
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+            StringBuffer response = new StringBuffer();
+            String inputLine;
+            while ((inputLine = reader.readLine()) != null) {
+                response.append(inputLine);
+            }
+
+            return response.toString();
+        } finally {
+            if (reader != null) {
+                reader.close();
+            }
         }
-        reader.close();
-        return response.toString();
     }
 
     public static boolean validateToken(String token) {

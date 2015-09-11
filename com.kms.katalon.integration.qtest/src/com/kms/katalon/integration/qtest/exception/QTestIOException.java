@@ -15,4 +15,8 @@ public class QTestIOException extends QTestException {
     public QTestIOException(IOException ex) {
         super(ex.getMessage());
     }
+    
+    public QTestIOException(IOException ex, String message) {
+        super(message);
+    }
 }

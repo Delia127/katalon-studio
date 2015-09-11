@@ -107,7 +107,9 @@ public class UploadTestCaseJob extends UploadJob {
                 QTestIntegrationFolderManager.updateModule(projectDir, qTestProject.getId(), qTestParentModule, false);
 
                 for (QTestModule siblingQTestModule : qTestParentModule.getChildModules()) {
-                    if (!folderEntity.getName().equalsIgnoreCase(siblingQTestModule.getName())) continue;
+                    if (!folderEntity.getName().equalsIgnoreCase(siblingQTestModule.getName())) {
+                        continue;
+                    }
                     // let user choose merge or not
                     performFolderDuplicatedConfirmation(folderId, siblingQTestModule);
 
@@ -145,7 +147,8 @@ public class UploadTestCaseJob extends UploadJob {
             QTestIntegrationFolderManager.updateModule(projectDir, qTestProject.getId(), qTestParentModule, false);
 
             for (QTestTestCase siblingQTestCase : qTestParentModule.getChildTestCases()) {
-                if (!testCaseEntity.getName().equalsIgnoreCase(siblingQTestCase.getName())) continue;
+                if (!testCaseEntity.getName().equalsIgnoreCase(siblingQTestCase.getName()))
+                    continue;
                 // let user choose merge or not
                 performTestCaseDuplicatedConfirmation(testCaseId, siblingQTestCase);
 
@@ -177,7 +180,7 @@ public class UploadTestCaseJob extends UploadJob {
     private QTestTestCase createNewQTestCase(QTestProject qTestProject, QTestModule qTestParentModule,
             String projectDir, TestCaseEntity testCaseEntity) throws Exception {
         return QTestIntegrationTestCaseManager.addTestCase(qTestProject, qTestParentModule.getId(),
-                testCaseEntity.getName(), testCaseEntity.getDescription(), "", projectDir);
+                testCaseEntity.getName(), testCaseEntity.getDescription(), projectDir);
     }
 
     private QTestModule createNewQTestModule(QTestProject qTestProject, QTestModule qTestParentModule,

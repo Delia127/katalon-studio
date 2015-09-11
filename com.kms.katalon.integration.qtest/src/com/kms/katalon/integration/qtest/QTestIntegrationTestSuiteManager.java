@@ -18,6 +18,8 @@ import org.qas.api.internal.util.json.JsonObject;
 
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.integration.IntegratedType;
+import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.integration.qtest.constants.QTestMessageConstants;
 import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestCycle;
 import com.kms.katalon.integration.qtest.entity.QTestEntity;
@@ -46,6 +48,13 @@ public class QTestIntegrationTestSuiteManager {
         // Disable default constructor
     }
 
+    /**
+     * Finds the selected item in the given <code>qTestSuites</code> The
+     * returned will be used for uploading.
+     * 
+     * @param qTestSuites
+     * @return {@link QTestSuite}
+     */
     public static QTestSuite getSelectedQTestSuiteByIntegratedEntity(List<QTestSuite> qTestSuites) {
         for (QTestSuite qTestSuite : qTestSuites) {
             if (qTestSuite.isSelected()) {
@@ -55,6 +64,16 @@ public class QTestIntegrationTestSuiteManager {
         return null;
     }
 
+    /**
+     * Gets the {@link QTestRun} inside the given <code>qTestSuite</code> that
+     * is an image of {@link QTestTestCase} in {@link QTestSuite}
+     * 
+     * @param qTestSuite
+     * @param testCaseId
+     *            id of the {@link QTestTestCase}
+     * @return the {@link QTestRun} that's id equal the given qTestCaseId
+     * @see {@link QTestRun#getQTestCaseId()}
+     */
     public static QTestRun getTestRunByTestSuiteAndTestCaseId(QTestSuite qTestSuite, long testCaseId) {
         QTestRun testRun = null;
         for (QTestRun childTestRun : qTestSuite.getTestRuns()) {
@@ -66,18 +85,40 @@ public class QTestIntegrationTestSuiteManager {
         return testRun;
     }
 
+    /**
+     * Inserts the given <code>qTestSuite</code> at the given <code>order</code>
+     * of the given <code>testSuiteIntegratedEntity</code>
+     * 
+     * @param qTestSuite
+     * @param testSuiteIntegratedEntity
+     * @param order
+     */
     public static void addQTestSuiteToIntegratedEntity(QTestSuite qTestSuite,
             IntegratedEntity testSuiteIntegratedEntity, int order) {
         testSuiteIntegratedEntity.getProperties().put(Integer.toString(order),
                 getQTestSuitePropertiesString(qTestSuite));
     }
 
+    /**
+     * Returns properties of the given <code>qTestSuite</code> as a JSON String
+     * 
+     * @param qTestSuite
+     * @return JSON String with customized format.
+     */
     public static String getQTestSuitePropertiesString(QTestSuite qTestSuite) {
         StringBuilder testRunMapStringBuilder = new StringBuilder(new JsonObject(qTestSuite.getProperties()).toString());
 
         return testRunMapStringBuilder.toString().replace("\"", "'").replace("},", "},\n");
     }
 
+    /**
+     * Transforms the given <code>qTestSuites</code> to qTest
+     * {@link IntegratedEntity} of a {@link TestSuiteEntity}
+     * 
+     * @param qTestSuites
+     * @return qTest {@link IntegratedEntity} with
+     *         {@link IntegratedType#TESTSUITE}
+     */
     public static IntegratedEntity getIntegratedEntityByTestSuiteList(List<QTestSuite> qTestSuites) {
         IntegratedEntity testSuiteIntegratedEntity = new IntegratedEntity();
         testSuiteIntegratedEntity.setProductName(QTestStringConstants.PRODUCT_NAME);
@@ -90,6 +131,16 @@ public class QTestIntegrationTestSuiteManager {
         return testSuiteIntegratedEntity;
     }
 
+    /**
+     * Returns a list of {@link QTestSuite} by parsing the given qTest
+     * <code>integratedEntity</code> of a {@link TestSuiteEntity}
+     * 
+     * @param integratedEntity
+     *            qTest {@link IntegratedEntity} of a test suite
+     * @return list of {@link QTestSuite}
+     * @throws QTestInvalidFormatException
+     *             thrown if the parameter is invalid format.
+     */
     public static List<QTestSuite> getQTestSuiteListByIntegratedEntity(IntegratedEntity integratedEntity)
             throws QTestInvalidFormatException {
         List<QTestSuite> qTestSuiteCollection = new ArrayList<QTestSuite>();
@@ -126,7 +177,17 @@ public class QTestIntegrationTestSuiteManager {
         return qTestSuiteCollection;
     }
 
-    public static QTestSuiteParent getTestSuiteParentByJsonObject(JsonObject parentJsonObject) throws JsonException {
+    /**
+     * Supporting method of
+     * {@link #getQTestSuiteListByIntegratedEntity(IntegratedEntity)} Returns
+     * {@link QTestSuiteParent} by parsing its JSON format.
+     * 
+     * @param parentJsonObject
+     *            the JSON object will be parsed
+     * @throws JsonException
+     *             if there is any error occurs when using JSON
+     */
+    private static QTestSuiteParent getTestSuiteParentByJsonObject(JsonObject parentJsonObject) throws JsonException {
         long id = parentJsonObject.getLong(QTestEntity.ID_FIELD);
         String name = parentJsonObject.getString(QTestEntity.NAME_FIELD);
         int type = parentJsonObject.getInt(QTestEntity.TYPE_FIELD);
@@ -148,6 +209,17 @@ public class QTestIntegrationTestSuiteManager {
         }
     }
 
+    /**
+     * Returns a list of {@link QTestRun} by parsing the given
+     * <code>testRunJsonArray</code>
+     * 
+     * @param testRunJsonArray
+     *            a {@link JsonArray} that contains {@link QTestRun}
+     *            information.
+     * @return a list of {@link QTestRun}
+     * @throws JsonException
+     *             if there is any error occurs when using JSON
+     */
     public static List<QTestRun> getQTestRunCollection(JsonArray testRunJsonArray) throws JsonException {
         List<QTestRun> qTestRunCollection = new ArrayList<QTestRun>();
         for (int index = 0; index < testRunJsonArray.length(); index++) {
@@ -163,6 +235,15 @@ public class QTestIntegrationTestSuiteManager {
         return qTestRunCollection;
     }
 
+    /**
+     * Used for saving.
+     * 
+     * Returns an qTest {@link IntegratedEntity} of {@link TestSuiteEntity} by
+     * transforming the given <code>qTestTS</code>
+     * 
+     * @param qTestTS
+     * @return
+     */
     public static IntegratedEntity getIntegratedEntityByTestSuite(QTestSuite qTestTS) {
         IntegratedEntity testSuiteIntegratedEntity = new IntegratedEntity();
 
@@ -236,6 +317,21 @@ public class QTestIntegrationTestSuiteManager {
         return "";
     }
 
+    /**
+     * Creates new {@link QTestRun}, an image of a {@link QTestTestCase} to
+     * qTest server via qTest's API.
+     * 
+     * @param testCase
+     *            {@link QTestTestCase} reference of the new {@link QTestRun}
+     * @param testSuite
+     *            location of the new {@link QTestRun}
+     * @param project
+     * @param projectDir
+     * @return a new {@link QTestRun} created by parsing its JSON response
+     * @throws QTestException
+     *             thrown if system cannot send request or the response is not a
+     *             JSON string.
+     */
     public static QTestRun uploadTestCaseInTestSuite(QTestTestCase testCase, QTestSuite testSuite,
             QTestProject project, String projectDir) throws QTestException {
         String token = QTestSettingStore.getToken(projectDir);
@@ -252,7 +348,7 @@ public class QTestIntegrationTestSuiteManager {
         bodyMap.put(QTestEntity.NAME_FIELD, testCase.getName());
         bodyMap.put("test_case", testCaseInfoJsonArray);
         String result = QTestAPIRequestHelper.sendPostRequestViaAPI(url, token, new JsonObject(bodyMap).toString());
-        
+
         try {
             if (result != null && !result.isEmpty()) {
                 JsonObject resultObject = new JsonObject(result);
@@ -269,6 +365,20 @@ public class QTestIntegrationTestSuiteManager {
         }
     }
 
+    /**
+     * Creates new {@link QTestSuite} under the given <code>parent</code>
+     * 
+     * @param projectDir
+     * @param name
+     *            name of the new {@link QTestSuite}
+     * @param parent
+     *            {@link QTestSuiteParent} parent of the returned
+     * @param qTestProject
+     * @return
+     * @throws QTestException
+     *             thrown if system cannot send request or the response is
+     *             invalid JSON format.
+     */
     public static QTestSuite addTestSuite(String projectDir, String name, QTestSuiteParent parent,
             QTestProject qTestProject) throws QTestException {
 
@@ -311,6 +421,14 @@ public class QTestIntegrationTestSuiteManager {
         }
     }
 
+    /**
+     * Deletes the given <code>qTestTS</code> on qTest server
+     * 
+     * @param projectDir
+     * @param qTestTS
+     * @param qTestProject
+     * @throws QTestException
+     */
     public static void deleteTestSuiteOnQTest(String projectDir, QTestSuite qTestTS, QTestProject qTestProject)
             throws QTestException {
         Map<String, Object> bodyProperties = new LinkedHashMap<String, Object>();
@@ -335,6 +453,17 @@ public class QTestIntegrationTestSuiteManager {
         QTestHttpRequestHelper.sendPostRequest(serverUrl, url, username, password, postParams);
     }
 
+    /**
+     * Returns an {@link URL} of the given <code>testSuite</code> on qTest
+     * server
+     * 
+     * @param projectDir
+     * @param testSuite
+     * @param qTestProject
+     * @return
+     * @throws MalformedURLException
+     * @see {@link URL}
+     */
     public static URL navigatedUrlToQTestTestSuite(String projectDir, QTestSuite testSuite, QTestProject qTestProject)
             throws MalformedURLException {
 
@@ -344,12 +473,19 @@ public class QTestIntegrationTestSuiteManager {
                 + QTestSuite.getType() + "&id=" + Long.toString(testSuite.getId()));
     }
 
+    /**
+     * Returns the root release of the given <code>qTestProject</code>
+     * 
+     * @param projectDir
+     * @param qTestProject
+     * @return
+     * @throws QTestException
+     */
     public static QTestReleaseRoot getTestSuiteIdRootOnQTest(String projectDir, QTestProject qTestProject)
             throws QTestException {
 
         if (qTestProject == null) {
-            throw new QTestUnauthorizedException(
-                    "Cannot find qTest project. Please select a qTest project on qTest setting page.");
+            throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_PROJECT_NOT_FOUND);
         }
 
         String serverUrl = QTestSettingStore.getServerUrl(projectDir);
@@ -380,6 +516,16 @@ public class QTestIntegrationTestSuiteManager {
         }
     }
 
+    /**
+     * Gets all {@link QTestRelease} of the given <code>qTestProject</code>
+     * 
+     * @param qTestProject
+     * @param projectDir
+     * @return
+     * @throws QTestException
+     *             throw if system cannot send request or the response is
+     *             invalid JSON format.
+     */
     public static List<QTestSuiteParent> getReleases(QTestProject qTestProject, String projectDir)
             throws QTestException {
         List<QTestSuiteParent> qTestReleases = new ArrayList<QTestSuiteParent>();
@@ -406,6 +552,15 @@ public class QTestIntegrationTestSuiteManager {
         }
     }
 
+    /**
+     * Gets all {@link QTestCycle} under the given <code>release</code>
+     * 
+     * @param qTestProject
+     * @param release
+     * @param projectDir
+     * @return
+     * @throws QTestException
+     */
     public static List<QTestSuiteParent> getCycles(QTestProject qTestProject, QTestRelease release, String projectDir)
             throws QTestException {
         List<QTestSuiteParent> qTestCycles = new ArrayList<QTestSuiteParent>();

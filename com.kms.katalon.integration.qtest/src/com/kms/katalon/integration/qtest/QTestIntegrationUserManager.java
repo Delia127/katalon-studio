@@ -14,11 +14,21 @@ import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
  * Provides a set of utility methods that relate with {@link QTestUser}
  */
 public class QTestIntegrationUserManager {
-    
+
     private QTestIntegrationUserManager() {
         // Disable default constructor
     }
 
+    /**
+     * Returns a {@link QTestUser} by using qTest setting information (user
+     * name, password).
+     * 
+     * @param project
+     * @param projectDir
+     * @return
+     * @throws QTestException
+     *             thrown if the request is invalid
+     */
     public static QTestUser getUser(QTestProject project, String projectDir) throws QTestException {
         String token = QTestSettingStore.getToken(projectDir);
         String username = QTestSettingStore.getUsername(projectDir);

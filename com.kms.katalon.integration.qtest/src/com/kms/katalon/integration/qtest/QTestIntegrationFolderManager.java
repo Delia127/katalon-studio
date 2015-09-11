@@ -20,9 +20,8 @@ import org.qas.qtest.api.services.project.model.Module;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.integration.IntegratedType;
-import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.constants.QTestMessageConstants;
+import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestEntity;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
@@ -38,17 +37,9 @@ import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
  * Provides a set of utility methods that relate with {@link QTestModule}
  */
 public class QTestIntegrationFolderManager {
-    
+
     private QTestIntegrationFolderManager() {
-        //Disable default contructor
-    }
-    
-    public static QTestModule getQTestCaseFolderByTestCaseEntity(String projectDir, TestCaseEntity testCase) {
-        FolderEntity folderEntity = testCase.getParentFolder();
-
-        if (folderEntity == null) return null;
-
-        return getQTestModuleByFolderEntity(projectDir, folderEntity);
+        // Disable default contructor
     }
 
     /**
@@ -61,7 +52,8 @@ public class QTestIntegrationFolderManager {
      * @return
      */
     public static QTestModule getQTestModuleByFolderEntity(String projectDir, FolderEntity folderEntity) {
-        if (folderEntity == null) return null;
+        if (folderEntity == null)
+            return null;
 
         IntegratedEntity folderIntegratedEntity = folderEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
         QTestModule currentQTestTCFolder = null;
@@ -72,15 +64,24 @@ public class QTestIntegrationFolderManager {
         return currentQTestTCFolder;
     }
 
+    /**
+     * Deletes the given <code>qTestModule</code> on qTest server
+     * 
+     * @param qTestModule
+     * @param qTestProject
+     * @param projectDir
+     * @throws QTestException
+     * @throws IOException
+     */
     public static void deleteModuleOnQTest(QTestModule qTestModule, QTestProject qTestProject, String projectDir)
             throws QTestException, IOException {
         if (qTestProject == null) {
-            throw new QTestUnauthorizedException(
-                    "Cannot find qTest project. Please select a qTest project on qTest setting page.");
+            throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_PROJECT_NOT_FOUND);
         }
 
         // cannot return root module of qTest
-        if (qTestModule.getParentId() == 0) return;
+        if (qTestModule.getParentId() == 0)
+            return;
 
         Map<String, Object> bodyProperties = new LinkedHashMap<String, Object>();
         int testCaseType = QTestModule.getType();
@@ -104,12 +105,21 @@ public class QTestIntegrationFolderManager {
         QTestHttpRequestHelper.sendPostRequest(serverUrl, url, username, password, postParams);
     }
 
+    /**
+     * Creates new {@link QTestModule} from the given
+     * <code>integratedEntity</code> with {@link IntegratedType#FOLDER} type
+     * 
+     * @param integratedEntity
+     * @return
+     */
     public static QTestModule getQTestModuleByIntegratedEntity(IntegratedEntity integratedEntity) {
-        if (integratedEntity.getType() != IntegratedType.FOLDER) return null;
+        if (integratedEntity.getType() != IntegratedType.FOLDER)
+            return null;
 
         Map<String, String> properties = integratedEntity.getProperties();
 
-        if (properties == null) return null;
+        if (properties == null)
+            return null;
 
         String id = properties.get(QTestEntity.ID_FIELD);
         String name = properties.get(QTestEntity.NAME_FIELD);
@@ -118,6 +128,13 @@ public class QTestIntegrationFolderManager {
         return new QTestModule(Long.parseLong(id), name, Long.parseLong(parentId));
     }
 
+    /**
+     * Returns qTest {@link IntegratedEntity} of a {@link FolderEntity} from the
+     * given <code>qTestModule</code>
+     * 
+     * @param qTestModule
+     * @return
+     */
     public static IntegratedEntity getFolderIntegratedEntityByQTestModule(QTestModule qTestModule) {
         IntegratedEntity folderIntegratedEntity = new IntegratedEntity();
 
@@ -132,6 +149,14 @@ public class QTestIntegrationFolderManager {
         return folderIntegratedEntity;
     }
 
+    /**
+     * Creates new {@link QTestModule} by using qTest SDK.
+     * 
+     * @param parentId
+     * @param name
+     * @return
+     * @throws QTestUnauthorizedException
+     */
     public static QTestModule createNewQTestTCFolder(String projectDir, long projectId, long parentId, String name)
             throws QTestUnauthorizedException {
         String token = QTestSettingStore.getToken(projectDir);
@@ -164,6 +189,19 @@ public class QTestIntegrationFolderManager {
         return null;
     }
 
+    /**
+     * Return a {@link QTestModule} that represents the root of module of the
+     * {@link QTestProject} that has id equal with the given
+     * <code>projectId</code>
+     * 
+     * @param projectDir
+     * @param projectId
+     * @return
+     * @throws QTestException
+     *             thrown if system cannot send request or the response message
+     *             is not a JSON string
+     * @throws IOException
+     */
     public static QTestModule getModuleRoot(String projectDir, long projectId) throws QTestException, IOException {
         String url = "/p/" + Long.toString(projectId) + "/portal/project/testdesign/rootmodulelazy/get";
 
@@ -186,6 +224,18 @@ public class QTestIntegrationFolderManager {
         }
     }
 
+    /**
+     * Gathers all information of the given <code>qTestParentModule</code> via
+     * qTest API
+     * 
+     * @param projectDir
+     * @param projectId
+     * @param qTestParentModule
+     * @return the updated {@link QTestModule}
+     * @throws QTestException
+     *             thrown if system cannot send request or the response message
+     *             is not a JSON string
+     */
     public static QTestModule updateModuleViaAPI(String projectDir, long projectId, QTestModule qTestParentModule)
             throws QTestException {
         String token = QTestSettingStore.getToken(projectDir);
@@ -210,6 +260,10 @@ public class QTestIntegrationFolderManager {
         }
     }
 
+    /**
+     * Supporting method of
+     * {@link #updateModuleViaAPI(String, long, QTestModule)}
+     */
     private static void updateChildrenForModule(JsonArray jsonArray, QTestModule qTestParentModule)
             throws JsonException {
         for (int index = 0; index < jsonArray.length(); index++) {
@@ -229,10 +283,10 @@ public class QTestIntegrationFolderManager {
      * Updates recursively children of a qTest module. System will fetch
      * module's info from qTest via {@link QTestHttpRequestHelper} and
      * automatically create new children.
-     * 
-     * !!!Note: New test cases have no test case version id because qTest
-     * doesn't return that. System will update test case version id when get
-     * test steps.
+     * <p>
+     * !!!Note: New test cases each one has no test case version id because
+     * qTest doesn't return that. System will update test case version id when
+     * get test steps.
      * 
      * @param projectDir
      * @param projectId

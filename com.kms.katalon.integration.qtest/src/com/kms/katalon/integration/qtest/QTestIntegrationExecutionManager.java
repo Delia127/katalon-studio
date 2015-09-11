@@ -1,47 +1,23 @@
 package com.kms.katalon.integration.qtest;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
-import net.lingala.zip4j.core.ZipFile;
-
-import org.apache.commons.io.FilenameUtils;
-import org.qas.api.internal.util.google.io.BaseEncoding;
 import org.qas.api.internal.util.json.JsonArray;
 import org.qas.api.internal.util.json.JsonException;
 import org.qas.api.internal.util.json.JsonObject;
 
-import com.kms.katalon.core.logging.model.TestCaseLogRecord;
-import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.integration.qtest.constants.QTestMessageConstants;
 import com.kms.katalon.integration.qtest.entity.QTestDefect;
 import com.kms.katalon.integration.qtest.entity.QTestDefectField;
-import com.kms.katalon.integration.qtest.entity.QTestEntity;
-import com.kms.katalon.integration.qtest.entity.QTestExecutionStatus;
 import com.kms.katalon.integration.qtest.entity.QTestLog;
-import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.entity.QTestRun;
 import com.kms.katalon.integration.qtest.entity.QTestStepLog;
-import com.kms.katalon.integration.qtest.entity.QTestTestCase;
-import com.kms.katalon.integration.qtest.entity.QTestUser;
 import com.kms.katalon.integration.qtest.exception.QTestException;
 import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
 import com.kms.katalon.integration.qtest.helper.QTestAPIRequestHelper;
 import com.kms.katalon.integration.qtest.setting.QTestAttachmentSendingType;
-import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
-import com.kms.katalon.integration.qtest.util.DateUtil;
-import com.kms.katalon.integration.qtest.util.ZipUtil;
 
 /**
  * Provides a set of utility methods for qTest execution (includes:
@@ -60,99 +36,6 @@ public class QTestIntegrationExecutionManager {
 
     public static String stringFieldFormat(long fieldId, String fieldValue) {
         return String.format("{ \"field_id\": %s, \"field_value\": \"%s\" }", fieldId, fieldValue);
-    }
-
-    public static String uploadTestLog(String projectDir, QTestProject project, QTestRun testRun,
-            QTestTestCase testCase, TestCaseLogRecord entity, String tempDir, File logFolder) throws QTestException,
-            IOException {
-        SimpleDateFormat sdf = new SimpleDateFormat(DateUtil.DATE_FORMAT);
-        String startDate = sdf.format(entity.getStartTime());
-        String endDate = sdf.format(entity.getEndTime());
-        Long testLongVersionId = testCase.getVersionId();
-        String message = entity.getMessage();
-
-        String serverUrl = QTestSettingStore.getServerUrl(projectDir);
-        String token = QTestSettingStore.getToken(projectDir);
-
-        TestStatusValue testCaseStatus = entity.getStatus().getStatusValue();
-
-        QTestExecutionStatus qTestExStatus = getMappingStatus(project.getId(), serverUrl, token, testCaseStatus);
-        if (qTestExStatus == null) {
-            throw new QTestInvalidFormatException(MessageFormat.format(
-                    QTestMessageConstants.QTEST_EXC_INVALID_LOG_STATUS, entity.getStatus().getStatusValue().name()));
-        }
-
-        Map<String, Object> statusProperties = new HashMap<String, Object>();
-        statusProperties.put(QTestEntity.ID_FIELD, qTestExStatus.getId());
-
-        Map<String, Object> bodyProperties = new HashMap<String, Object>();
-        bodyProperties.put("exe_start_date", startDate);
-        bodyProperties.put("exe_end_date", endDate);
-        bodyProperties.put("status", new JsonObject(statusProperties));
-        bodyProperties.put("test_case_version_id", testLongVersionId);
-        bodyProperties.put("note", message);
-
-        // zip report folder as a attchment
-        File reportZipFile = null;
-        if (isEnableSendAttachmentForTestRun(testCaseStatus, projectDir)) {
-            reportZipFile = new File(tempDir, FilenameUtils.getBaseName(logFolder.getName()) + ".zip");
-
-            ZipFile zipFile = ZipUtil.getZipFile(reportZipFile, logFolder);
-            List<JsonObject> jsonObjects = new ArrayList<JsonObject>();
-
-            JsonObject jsonObject = getAttachmentJsonObject(reportZipFile.getAbsolutePath(), zipFile);
-            jsonObjects.add(jsonObject);
-            bodyProperties.put("attachments", new JsonArray(jsonObjects));
-        }
-
-        // upload result of the given test run
-        String result = uploadTestResult(serverUrl, token, project.getId(), testRun.getId(), new JsonObject(
-                bodyProperties).toString());
-
-        // clean ZIP file
-        if (reportZipFile != null && reportZipFile.exists()) {
-            reportZipFile.delete();
-        }
-
-        return result;
-    }
-
-    private static JsonObject getAttachmentJsonObject(String filePath, ZipFile zipFile) throws IOException {
-        Map<String, Object> attachmentMap = new LinkedHashMap<String, Object>();
-        attachmentMap.put("name", FilenameUtils.getName(filePath));
-        attachmentMap.put("content_type", "application/octet-stream");
-        attachmentMap.put("data", encodeFileContent(filePath));
-
-        return new JsonObject(attachmentMap);
-    }
-
-    private static boolean isEnableSendAttachmentForTestRun(TestStatusValue status, String projectDir) {
-        QTestAttachmentSendingType sendingType = QTestSettingStore.getAttachmentSendingType(projectDir);
-        switch (sendingType) {
-            case ALWAYS_SEND:
-                return true;
-            case NOT_SEND:
-                return false;
-            case SEND_IF_FAILS:
-                return (status == TestStatusValue.FAILED || status == TestStatusValue.ERROR);
-            case SEND_IF_PASSES:
-                return (status == TestStatusValue.PASSED);
-            default:
-                break;
-        }
-        return false;
-    }
-
-    public static String uploadTestResult(String serverUrl, String token, long projectId, long testRunId,
-            String postBody) throws QTestException {
-        String url = String.format(serverUrl + "/api/v3/projects/%s/test-runs/%s/test-logs", projectId, testRunId);
-        String response = QTestAPIRequestHelper.sendPostRequestViaAPI(url, token, postBody);
-        try {
-            JsonObject jo = new JsonObject(response);
-            return jo.getString("id");
-        } catch (JsonException ex) {
-            throw QTestInvalidFormatException.createInvalidJsonFormatException(response);
-        }
     }
 
     public static QTestDefect submitDefect(String serverUrl, String token, long projectId, String postBody)
@@ -224,84 +107,7 @@ public class QTestIntegrationExecutionManager {
         }
     }
 
-    public static QTestExecutionStatus getMappingStatus(long projectId, String serverUrl, String token,
-            TestStatusValue status) throws QTestException {
-        String mappingValue = QTestExecutionStatus.getMappedValue(status.name());
-        for (QTestExecutionStatus qTestStatus : getMappingStatuses(projectId, serverUrl, token)) {
-            if (qTestStatus.getName().equalsIgnoreCase(mappingValue)) {
-                return qTestStatus;
-            }
-        }
-        return null;
-    }
-
-    public static List<QTestExecutionStatus> getMappingStatuses(long projectId, String serverUrl, String token)
-            throws QTestException {
-        if (!QTestIntegrationAuthenticationManager.validateToken(token)) {
-            throw new RuntimeException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
-        }
-        List<QTestExecutionStatus> list = new ArrayList<QTestExecutionStatus>();
-        String jsonString = QTestAPIRequestHelper.sendGetRequestViaAPI(serverUrl + "/api/v3/projects/" + projectId
-                + "/test-runs/execution-statuses", token);
-        try {
-            JsonArray jArr = new JsonArray(jsonString);
-            for (int i = 0; i < jArr.length(); i++) {
-                JsonObject jo = jArr.getJsonObject(i);
-                String name = jo.getString("name");
-                long id = jo.getLong("id");
-                boolean isDefault = jo.getBoolean("is_default");
-                QTestExecutionStatus status = new QTestExecutionStatus(id, name);
-                status.setDefault(isDefault);
-                list.add(status);
-            }
-            return list;
-        } catch (JsonException ex) {
-            throw QTestInvalidFormatException.createInvalidJsonFormatException(jsonString);
-        }
-    }
-
-    public static QTestUser getQTestUser(String serverUrl, String token, long projectId) throws QTestException {
-        if (!QTestIntegrationAuthenticationManager.validateToken(token)) {
-            throw new RuntimeException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
-        }
-        String url = serverUrl + "/api/v3/projects/" + projectId + "/user-profiles/current";
-        String jsonString = QTestAPIRequestHelper.sendGetRequestViaAPI(url, token);
-        try {
-            JsonObject jo = new JsonObject(jsonString);
-            QTestUser user = new QTestUser(jo.getLong("user_id"), "");
-            return user;
-        } catch (JsonException ex) {
-            throw QTestInvalidFormatException.createInvalidJsonFormatException(jsonString);
-        }
-    }
-
-    public static String encodeFileContent(String filePath) throws IOException {
-        InputStream is = null;
-        try {
-            is = new FileInputStream(new File(filePath));
-            return BaseEncoding.base64().encode(getBinaryFromInputStream(is));
-        } finally {
-            if (is != null) {
-                is.close();
-            }
-        }
-    }
-
-    private static byte[] getBinaryFromInputStream(InputStream content) throws IOException {
-        try {
-            ByteArrayOutputStream output = new ByteArrayOutputStream(1024);
-            byte[] buffer = new byte[8096];
-            int length;
-            while ((length = content.read(buffer)) > -1) {
-                output.write(buffer, 0, length);
-            }
-            output.close();
-            return output.toByteArray();
-        } catch (Exception ex) {
-            throw new IOException(MessageFormat.format(QTestMessageConstants.QTEST_EXC_CANNOT_READ_INPUT_STREAM,
-                    ex.getMessage()), ex);
-        }
-    }
+  
 
     private static List<String> parseJsonToGetTestRunURLs(String jsonString) throws QTestInvalidFormatException {
         try {
