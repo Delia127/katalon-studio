@@ -1,5 +1,8 @@
 package com.kms.katalon.composer.integration.qtest.preferences;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
@@ -22,229 +25,282 @@ import com.kms.katalon.composer.components.impl.util.ControlUtil;
 import com.kms.katalon.composer.integration.qtest.dialog.GenerateNewTokenDialog;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.integration.qtest.setting.QTestAttachmentSendingType;
+import com.kms.katalon.integration.qtest.setting.QTestResultSendingType;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class QTestIntegrationPage extends PreferencePage {
-	private Text txtToken;
-	private Button chckAutoSubmitTestRun;
-	private Button chckEnableIntegration;
-	private String projectDir;
+    private Text txtToken;
+    private Button chckAutoSubmitTestRun;
+    private Button chckEnableIntegration;
+    private String projectDir;
 
-	private Button btnOpenGenerateTokenDialog;
-	private Composite container;
-	private Composite mainComposite;
-	private Composite projectComposite;
-	private Group grpAuthentication;
-	private GridData gdTxtToken;
-	private Group grpAttachments;
-	private Button chckEnableCheckBeforeUploading;
+    private Button btnOpenGenerateTokenDialog;
+    private Composite container;
+    private Composite mainComposite;
+    private Composite projectComposite;
+    private Group grpAuthentication;
+    private GridData gdTxtToken;
+    private Button chckEnableCheckBeforeUploading;
+    private Group grpAttachmentOptions;
+    private Group grpResultOptions;
+    private Composite compositeOptions;
 
-	public QTestIntegrationPage() {
-		projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
-	}
+    public QTestIntegrationPage() {
+        projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+    }
 
-	@Override
-	protected Control createContents(Composite parent) {
-		container = new Composite(parent, SWT.NONE);
-		container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		container.setLayout(new GridLayout(1, false));
+    @Override
+    protected Control createContents(Composite parent) {
+        container = new Composite(parent, SWT.NONE);
+        container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        container.setLayout(new GridLayout(1, false));
 
-		chckEnableIntegration = new Button(container, SWT.CHECK);
-		chckEnableIntegration.setText("Enable integration");
+        chckEnableIntegration = new Button(container, SWT.CHECK);
+        chckEnableIntegration.setText("Enable integration");
 
-		mainComposite = new Composite(container, SWT.NONE);
-		mainComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		GridLayout gl_mainComposite = new GridLayout(1, false);
-		gl_mainComposite.marginWidth = 0;
-		gl_mainComposite.marginHeight = 0;
-		mainComposite.setLayout(gl_mainComposite);
+        mainComposite = new Composite(container, SWT.NONE);
+        mainComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        GridLayout gl_mainComposite = new GridLayout(1, false);
+        gl_mainComposite.marginWidth = 0;
+        gl_mainComposite.marginHeight = 0;
+        mainComposite.setLayout(gl_mainComposite);
 
-		grpAuthentication = new Group(mainComposite, SWT.NONE);
-		grpAuthentication.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-		grpAuthentication.setLayout(new GridLayout(4, false));
-		grpAuthentication.setText("Authentication");
+        grpAuthentication = new Group(mainComposite, SWT.NONE);
+        grpAuthentication.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        grpAuthentication.setLayout(new GridLayout(4, false));
+        grpAuthentication.setText("Authentication");
 
-		Label lblToken = new Label(grpAuthentication, SWT.NONE);
-		GridData gd_lblToken = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
-		gd_lblToken.widthHint = 100;
-		gd_lblToken.verticalIndent = 5;
-		lblToken.setLayoutData(gd_lblToken);
-		lblToken.setText("Token");
+        Label lblToken = new Label(grpAuthentication, SWT.NONE);
+        GridData gd_lblToken = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
+        gd_lblToken.widthHint = 100;
+        gd_lblToken.verticalIndent = 5;
+        lblToken.setLayoutData(gd_lblToken);
+        lblToken.setText("Token");
 
-		txtToken = new Text(grpAuthentication, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI);
-		gdTxtToken = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1);
-		gdTxtToken.heightHint = 60;
-		txtToken.setLayoutData(gdTxtToken);
+        txtToken = new Text(grpAuthentication, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI);
+        gdTxtToken = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1);
+        gdTxtToken.heightHint = 60;
+        txtToken.setLayoutData(gdTxtToken);
 
-		btnOpenGenerateTokenDialog = new Button(grpAuthentication, SWT.NONE);
-		btnOpenGenerateTokenDialog.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
-		btnOpenGenerateTokenDialog.setText("Generate");
+        btnOpenGenerateTokenDialog = new Button(grpAuthentication, SWT.NONE);
+        btnOpenGenerateTokenDialog.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
+        btnOpenGenerateTokenDialog.setText("Generate");
 
-		projectComposite = new Composite(mainComposite, SWT.NONE);
-		projectComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-		GridLayout gl_projectComposite = new GridLayout(3, false);
-		gl_projectComposite.verticalSpacing = 10;
-		projectComposite.setLayout(gl_projectComposite);
-		
-		chckEnableCheckBeforeUploading = new Button(projectComposite, SWT.CHECK);
-		chckEnableCheckBeforeUploading.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
-		chckEnableCheckBeforeUploading.setText("Check duplicates before uploading test cases");
+        projectComposite = new Composite(mainComposite, SWT.NONE);
+        projectComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        GridLayout gl_projectComposite = new GridLayout(3, false);
+        gl_projectComposite.verticalSpacing = 10;
+        projectComposite.setLayout(gl_projectComposite);
 
-		chckAutoSubmitTestRun = new Button(projectComposite, SWT.CHECK);
-		chckAutoSubmitTestRun.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
-		chckAutoSubmitTestRun.setText("Auto-submit test run result");
-		
-		grpAttachments = new Group(mainComposite, SWT.NONE);
-		grpAttachments.setText("Send attachments for test run");
-		grpAttachments.setLayout(new GridLayout(4, false));
-		grpAttachments.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-		
-		Button rbtnNotSend = new Button(grpAttachments, SWT.RADIO);
-		rbtnNotSend.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		rbtnNotSend.setText("Do not send");
-		rbtnNotSend.setData(QTestAttachmentSendingType.NOT_SEND);
-		
-		Button rbtnSendIfPassed= new Button(grpAttachments, SWT.RADIO);
-		rbtnSendIfPassed.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		rbtnSendIfPassed.setText("Send if test case passes");
-		rbtnSendIfPassed.setData(QTestAttachmentSendingType.SEND_IF_PASSES);
-		
-		Button rbtnSendIfFailed = new Button(grpAttachments, SWT.RADIO);
-		rbtnSendIfFailed.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		rbtnSendIfFailed.setText("Send if test case fails");
-		rbtnSendIfFailed.setData(QTestAttachmentSendingType.SEND_IF_FAILS);
-		
-		Button rbtnAlwaysSend = new Button(grpAttachments, SWT.RADIO);
-		rbtnAlwaysSend.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		rbtnAlwaysSend.setText("Always send");
-		rbtnAlwaysSend.setData(QTestAttachmentSendingType.ALWAYS_SEND);
+        chckEnableCheckBeforeUploading = new Button(projectComposite, SWT.CHECK);
+        chckEnableCheckBeforeUploading.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
+        chckEnableCheckBeforeUploading.setText("Check duplicates before uploading test cases");
 
-		addToolItemListeners();
-		initilize();
+        chckAutoSubmitTestRun = new Button(projectComposite, SWT.CHECK);
+        chckAutoSubmitTestRun.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
+        chckAutoSubmitTestRun.setText("Automatically submit test run result");
 
-		return container;
-	}
+        compositeOptions = new Composite(mainComposite, SWT.NONE);
+        GridData gd_compositeOptions = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
+        gd_compositeOptions.verticalIndent = -5;
+        compositeOptions.setLayoutData(gd_compositeOptions);
+        GridLayout gl_composite = new GridLayout(1, false);
+        gl_composite.marginLeft = 5;
+        gl_composite.marginWidth = 0;
+        gl_composite.marginHeight = 0;
+        compositeOptions.setLayout(gl_composite);
 
-	private void addToolItemListeners() {
+        grpResultOptions = new Group(compositeOptions, SWT.NONE);
+        grpResultOptions.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+        grpResultOptions.setText("Send result");
+        grpResultOptions.setLayout(new GridLayout(4, false));
 
-		btnOpenGenerateTokenDialog.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				try {
-					GenerateNewTokenDialog dialog = new GenerateNewTokenDialog(btnOpenGenerateTokenDialog.getDisplay()
-							.getActiveShell(), QTestSettingStore.getServerUrl(projectDir), QTestSettingStore
-							.getUsername(projectDir), QTestSettingStore.getPassword(projectDir));
-					if (dialog.open() == Dialog.OK) {
-						txtToken.setText(dialog.getNewToken());
-					}
-				} catch (Exception ex) {
-					MultiStatusErrorDialog
-							.showErrorDialog(ex, "Unable to get qTest projects.", ex.getClass().getSimpleName());
-				}
-			}
-		});
+        for (QTestResultSendingType sendingType : QTestResultSendingType.values()) {
+            Button btnSendingType = new Button(grpResultOptions, SWT.CHECK);
+            btnSendingType.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-		chckEnableIntegration.addSelectionListener(new SelectionAdapter() {
+            btnSendingType.setText(sendingType.toString());
+            btnSendingType.setData(sendingType);
+        }
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				enableMainComposite();
-			}
-		});
+        grpAttachmentOptions = new Group(compositeOptions, SWT.NONE);
+        grpAttachmentOptions.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+        grpAttachmentOptions.setText("Attachment included");
+        grpAttachmentOptions.setLayout(new GridLayout(4, false));
 
-		txtToken.addListener(SWT.Resize, new Listener() {
+        for (QTestAttachmentSendingType sendingType : QTestAttachmentSendingType.values()) {
+            Button btnSendingType = new Button(grpAttachmentOptions, SWT.CHECK);
+            btnSendingType.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-			@Override
-			public void handleEvent(Event event) {
-				gdTxtToken.widthHint = txtToken.getSize().x;
-				container.setSize(container.getParent().getSize().x, container.getSize().y);
-			}
+            btnSendingType.setText(sendingType.toString());
+            btnSendingType.setData(sendingType);
+        }
 
-		});
-		
-		chckAutoSubmitTestRun.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				enableAttachmentsGroup();
-			}
-		});
-	}
+        addToolItemListeners();
+        initilize();
 
-	private void enableAttachmentsGroup() {
-		if (chckEnableIntegration.getSelection() && chckAutoSubmitTestRun.getSelection()) {
-			ControlUtil.recursiveSetEnabled(grpAttachments, true);
-			grpAttachments.setEnabled(true);
-		} else {
-		    ControlUtil.recursiveSetEnabled(grpAttachments, false);
-			grpAttachments.setEnabled(false);
-		}
-	}
+        return container;
+    }
 
-	private void enableMainComposite() {
-		if (chckEnableIntegration.getSelection()) {
-		    ControlUtil.recursiveSetEnabled(mainComposite, true);
-		} else {
-		    ControlUtil.recursiveSetEnabled(mainComposite, false);
-		}
-	}
+    private void addToolItemListeners() {
 
-	private void initilize() {
-		String token = QTestSettingStore.getToken(projectDir);
-		boolean autoSubmitResult = QTestSettingStore.isAutoSubmitResultActive(projectDir);
-		boolean isIntegrationActive = QTestSettingStore.isIntegrationActive(projectDir);
-		boolean isEnableCheckBeforeUploading = QTestSettingStore.isEnableCheckBeforeUploading(projectDir);
-				
-		txtToken.setText(token != null ? token : "");
+        btnOpenGenerateTokenDialog.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                try {
+                    GenerateNewTokenDialog dialog = new GenerateNewTokenDialog(btnOpenGenerateTokenDialog.getDisplay()
+                            .getActiveShell(), QTestSettingStore.getServerUrl(projectDir), QTestSettingStore
+                            .getUsername(projectDir), QTestSettingStore.getPassword(projectDir));
+                    if (dialog.open() == Dialog.OK) {
+                        txtToken.setText(dialog.getNewToken());
+                    }
+                } catch (Exception ex) {
+                    MultiStatusErrorDialog.showErrorDialog(ex, "Unable to get qTest projects.", ex.getClass()
+                            .getSimpleName());
+                }
+            }
+        });
 
-		chckAutoSubmitTestRun.setSelection(autoSubmitResult);
-		chckEnableIntegration.setSelection(isIntegrationActive);
-		chckEnableCheckBeforeUploading.setSelection(isEnableCheckBeforeUploading);
-		
-		//set input for grpAttachments
-		QTestAttachmentSendingType sendingType =  QTestSettingStore.getAttachmentSendingType(projectDir);
-		for (Control radioButton : grpAttachments.getChildren()) {
-			if (radioButton instanceof Button) {
-				if (radioButton.getData() == sendingType) {
-					((Button) radioButton).setSelection(true);
-				} else {
-					((Button) radioButton).setSelection(false);
-				}
-			}
-		}
+        chckEnableIntegration.addSelectionListener(new SelectionAdapter() {
 
-		enableMainComposite();
-		enableAttachmentsGroup();
-		container.pack();
-	}
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                enableMainComposite();
+            }
+        });
 
-	@Override
-	public boolean performOk() {
-		if (container == null)
-			return true;
-		try {
-			QTestSettingStore.saveAutoSubmit(chckAutoSubmitTestRun.getSelection(), projectDir);
-			QTestSettingStore.saveToken(txtToken.getText(), projectDir);
-			QTestSettingStore.saveEnableIntegration(chckEnableIntegration.getSelection(), projectDir);
-			QTestSettingStore.saveEnableCheckBeforeUploading(chckEnableCheckBeforeUploading.getSelection(), projectDir);
-			
-			for (Control radioButtonControl : grpAttachments.getChildren()) {
-				if (radioButtonControl instanceof Button) {
-					Button sendingTypeRadioButton = (Button) radioButtonControl;
-					if (sendingTypeRadioButton.getSelection()) {
-						QTestAttachmentSendingType sendingType = (QTestAttachmentSendingType) sendingTypeRadioButton.getData();
-						QTestSettingStore.saveAttachmentSendingType(sendingType, projectDir);
-					}
-				}
-			}
+        txtToken.addListener(SWT.Resize, new Listener() {
 
-			return true;
-		} catch (Exception e) {
-			MessageDialog.openError(null, "Error", "Unable to save qTest's settings.");
-			return false;
-		}
-	}
+            @Override
+            public void handleEvent(Event event) {
+                gdTxtToken.widthHint = txtToken.getSize().x;
+                container.setSize(container.getParent().getSize().x, container.getSize().y);
+            }
 
-	@Override
-	protected void performDefaults() {
-		initilize();
-	}
+        });
+
+        chckAutoSubmitTestRun.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                enableAttachmentsGroup();
+            }
+        });
+    }
+
+    private void enableAttachmentsGroup() {
+        if (chckEnableIntegration.getSelection() && chckAutoSubmitTestRun.getSelection()) {
+            ControlUtil.recursiveSetEnabled(compositeOptions, true);
+            compositeOptions.setEnabled(true);
+        } else {
+            ControlUtil.recursiveSetEnabled(compositeOptions, false);
+            compositeOptions.setEnabled(false);
+        }
+    }
+
+    private void enableMainComposite() {
+        if (chckEnableIntegration.getSelection()) {
+            ControlUtil.recursiveSetEnabled(mainComposite, true);
+        } else {
+            ControlUtil.recursiveSetEnabled(mainComposite, false);
+        }
+        enableAttachmentsGroup();
+    }
+
+    private void initilize() {
+        String token = QTestSettingStore.getToken(projectDir);
+        boolean autoSubmitResult = QTestSettingStore.isAutoSubmitResultActive(projectDir);
+        boolean isIntegrationActive = QTestSettingStore.isIntegrationActive(projectDir);
+        boolean isEnableCheckBeforeUploading = QTestSettingStore.isEnableCheckBeforeUploading(projectDir);
+
+        txtToken.setText(token != null ? token : "");
+
+        chckAutoSubmitTestRun.setSelection(autoSubmitResult);
+        chckEnableIntegration.setSelection(isIntegrationActive);
+        chckEnableCheckBeforeUploading.setSelection(isEnableCheckBeforeUploading);
+
+        // set input for grpResults
+        List<QTestResultSendingType> selectedResultSendingTypes = QTestSettingStore.getResultSendingTypes(projectDir);
+        for (Control chckButton : grpResultOptions.getChildren()) {
+            if (chckButton instanceof Button) {
+                if (selectedResultSendingTypes.contains(chckButton.getData())) {
+                    ((Button) chckButton).setSelection(true);
+                } else {
+                    ((Button) chckButton).setSelection(false);
+                }
+            }
+        }
+
+        // set input for grpAttachments
+        List<QTestAttachmentSendingType> selectedAttachmentSendingTypes = QTestSettingStore
+                .getAttachmentSendingTypes(projectDir);
+        for (Control chckButton : grpAttachmentOptions.getChildren()) {
+            if (chckButton instanceof Button) {
+                if (selectedAttachmentSendingTypes.contains(chckButton.getData())) {
+                    ((Button) chckButton).setSelection(true);
+                } else {
+                    ((Button) chckButton).setSelection(false);
+                }
+            }
+        }
+
+        enableMainComposite();
+        enableAttachmentsGroup();
+        container.pack();
+    }
+
+    @Override
+    public boolean performOk() {
+        if (container == null) return true;
+        try {
+            QTestSettingStore.saveAutoSubmit(chckAutoSubmitTestRun.getSelection(), projectDir);
+            QTestSettingStore.saveToken(txtToken.getText(), projectDir);
+            QTestSettingStore.saveEnableIntegration(chckEnableIntegration.getSelection(), projectDir);
+            QTestSettingStore.saveEnableCheckBeforeUploading(chckEnableCheckBeforeUploading.getSelection(), projectDir);
+
+            saveAttachmentSendingStatus();
+            
+            saveResultSendingStatus();
+
+            return true;
+        } catch (Exception e) {
+            MessageDialog.openError(null, "Error", "Unable to save qTest's settings.");
+            return false;
+        }
+    }
+    
+    private void saveAttachmentSendingStatus() {
+        List<QTestAttachmentSendingType> selectedAttachmentSendingType = new ArrayList<QTestAttachmentSendingType>();
+        for (Control radioButtonControl : grpAttachmentOptions.getChildren()) {
+            if (radioButtonControl instanceof Button) {
+                Button sendingTypeRadioButton = (Button) radioButtonControl;
+                if (sendingTypeRadioButton.getSelection()) {
+                    QTestAttachmentSendingType attachmentSendingType = (QTestAttachmentSendingType) sendingTypeRadioButton
+                            .getData();
+                    selectedAttachmentSendingType.add(attachmentSendingType);
+                }
+            }
+        }
+        QTestSettingStore.saveAttachmentSendingType(selectedAttachmentSendingType, projectDir);
+    }
+    
+    private void saveResultSendingStatus() {
+        List<QTestResultSendingType> selectedResultSendingType = new ArrayList<QTestResultSendingType>();
+        for (Control radioButtonControl : grpResultOptions.getChildren()) {
+            if (radioButtonControl instanceof Button) {
+                Button sendingTypeRadioButton = (Button) radioButtonControl;
+                if (sendingTypeRadioButton.getSelection()) {
+                    QTestResultSendingType resultSendingType = (QTestResultSendingType) sendingTypeRadioButton
+                            .getData();
+                    selectedResultSendingType.add(resultSendingType);
+                }
+            }
+        }
+        QTestSettingStore.saveResultSendingType(selectedResultSendingType, projectDir);
+    }
+    
+    
+
+    @Override
+    protected void performDefaults() {
+        initilize();
+    }
 }

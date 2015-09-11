@@ -144,7 +144,7 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
         lblAttachment.setText("Attachment");
 
         btnAttachment = new Button(compositeInfo, SWT.CHECK);
-
+        
         intialize();
         addControlModifyListeners();
 
@@ -216,7 +216,8 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
     private QTestSuite getQTestSuite(TestSuiteLogRecord testSuiteLogRecord) {
         try {
             if (testSuiteLogRecord != null) {
-                testSuiteEntity = TestSuiteController.getInstance().getTestSuite(testSuiteLogRecord.getId());
+                testSuiteEntity = TestSuiteController.getInstance().getTestSuiteByDisplayId(testSuiteLogRecord.getId(),
+                        ProjectController.getInstance().getCurrentProject());
                 if (testSuiteEntity != null
                         && testSuiteEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME) != null) {
                     List<QTestSuite> qTestSuiteCollection = QTestIntegrationTestSuiteManager

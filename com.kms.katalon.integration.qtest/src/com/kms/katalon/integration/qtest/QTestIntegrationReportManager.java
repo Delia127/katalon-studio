@@ -42,6 +42,7 @@ import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
 import com.kms.katalon.integration.qtest.helper.QTestAPIRequestHelper;
 import com.kms.katalon.integration.qtest.setting.QTestAttachmentSendingType;
+import com.kms.katalon.integration.qtest.setting.QTestResultSendingType;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 import com.kms.katalon.integration.qtest.util.DateUtil;
 import com.kms.katalon.integration.qtest.util.ZipUtil;
@@ -78,8 +79,7 @@ public class QTestIntegrationReportManager {
 
     public static QTestReport getQTestReportByIntegratedEntity(IntegratedEntity reportIntegratedEntity)
             throws QTestInvalidFormatException {
-        if (reportIntegratedEntity == null)
-            return null;
+        if (reportIntegratedEntity == null) return null;
 
         try {
             Map<String, String> properties = new TreeMap<String, String>(reportIntegratedEntity.getProperties());
@@ -104,8 +104,7 @@ public class QTestIntegrationReportManager {
     }
 
     public static IntegratedEntity getIntegratedEntityByQTestReport(QTestReport qTestReport) {
-        if (qTestReport == null)
-            return null;
+        if (qTestReport == null) return null;
         IntegratedEntity integratedEntity = new IntegratedEntity();
         integratedEntity.setProductName(QTestStringConstants.PRODUCT_NAME);
         integratedEntity.setType(IntegratedType.REPORT);
@@ -180,7 +179,7 @@ public class QTestIntegrationReportManager {
         boolean attachmentIncluded = false;
 
         if ((qTestLog != null && qTestLog.isAttachmentIncluded())
-                || (qTestLog == null && isEnableSendAttachmentForTestRun(testCaseStatus, projectDir))) {
+                || (qTestLog == null && isAvailableForSendingAttachment(testCaseStatus, projectDir))) {
             reportZipFile = new File(tempDir, FilenameUtils.getBaseName(logFolder.getName()) + ".zip");
 
             ZipFile zipFile = ZipUtil.getZipFile(reportZipFile, logFolder);
@@ -228,21 +227,46 @@ public class QTestIntegrationReportManager {
         return new JsonObject(attachmentMap);
     }
 
-    private static boolean isEnableSendAttachmentForTestRun(TestStatusValue status, String projectDir) {
-        QTestAttachmentSendingType sendingType = QTestSettingStore.getAttachmentSendingType(projectDir);
-        switch (sendingType) {
-        case ALWAYS_SEND:
-            return true;
-        case NOT_SEND:
-            return false;
-        case SEND_IF_FAILS:
-            return (status == TestStatusValue.FAILED || status == TestStatusValue.ERROR);
-        case SEND_IF_PASSES:
-            return (status == TestStatusValue.PASSED);
-        default:
-            break;
+    private static boolean isAvailableForSendingAttachment(TestStatusValue status, String projectDir) {
+        QTestAttachmentSendingType statusSendingType = null;
+        switch (status) {
+            case ERROR:
+                statusSendingType = QTestAttachmentSendingType.SEND_IF_FAILS;
+                break;
+            case FAILED:
+                statusSendingType = QTestAttachmentSendingType.SEND_IF_FAILS;
+                break;
+            case PASSED:
+                statusSendingType = QTestAttachmentSendingType.SEND_IF_PASSES;
+                break;
+            default:
+                break;
         }
-        return false;
+
+        return QTestSettingStore.getAttachmentSendingTypes(projectDir).contains(statusSendingType);
+    }
+    
+    public static boolean isAvailableForSendingResult(TestStatusValue status, String projectDir) {
+        QTestResultSendingType statusSendingType = null;
+        switch (status) {
+            case ERROR:
+                statusSendingType = QTestResultSendingType.SEND_IF_FAILS;
+                break;
+            case FAILED:
+                statusSendingType = QTestResultSendingType.SEND_IF_FAILS;
+                break;
+            case PASSED:
+                statusSendingType = QTestResultSendingType.SEND_IF_PASSES;
+                break;
+            default:
+                break;
+        }
+
+        if (statusSendingType == null) {
+            return false;
+        }
+        
+        return QTestSettingStore.getResultSendingTypes(projectDir).contains(statusSendingType);
     }
 
     /**

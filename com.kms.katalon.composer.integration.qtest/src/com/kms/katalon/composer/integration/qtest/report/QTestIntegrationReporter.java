@@ -44,8 +44,10 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
         String projectDir = projectEntity.getFolderLocation();
         TestCaseEntity testCaseEntity = TestCaseController.getInstance().getTestCaseByDisplayId(testLogEntity.getId());
-        IntegratedEntity testSuiteIntegratedEntity = testSuiteEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
-        IntegratedEntity testCaseIntegratedEntity = testCaseEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+        IntegratedEntity testSuiteIntegratedEntity = testSuiteEntity
+                .getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+        IntegratedEntity testCaseIntegratedEntity = testCaseEntity
+                .getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 
         if (testSuiteIntegratedEntity != null && testCaseIntegratedEntity != null
                 && isSameQTestProject(testCaseEntity, testSuiteEntity, projectEntity)) {
@@ -53,7 +55,9 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
                     .getQTestSuiteListByIntegratedEntity(testSuiteIntegratedEntity);
             QTestSuite selectedQTestSuite = QTestIntegrationTestSuiteManager
                     .getSelectedQTestSuiteByIntegratedEntity(qTestSuiteCollection);
-            if (selectedQTestSuite == null) return;
+            if (selectedQTestSuite == null) {
+                return;
+            }
 
             QTestTestCase qTestCase = QTestIntegrationTestCaseManager
                     .getQTestTestCaseByIntegratedEntity(testCaseIntegratedEntity);
@@ -109,7 +113,9 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
         TestCaseRepo testCaseRepo = QTestIntegrationUtil.getTestCaseRepo(testCaseEntity, projectEntity);
         TestSuiteRepo testSuiteRepo = QTestIntegrationUtil.getTestSuiteRepo(testSuiteEntity, projectEntity);
 
-        if (testCaseRepo == null || testSuiteRepo == null) return false;
+        if (testCaseRepo == null || testSuiteRepo == null) {
+            return false;
+        }
 
         QTestProject testCaseProject = testCaseRepo.getQTestProject();
         QTestProject testSuiteProject = testSuiteRepo.getQTestProject();
@@ -125,13 +131,25 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
         String projectDir = projectEntity.getFolderLocation();
         if (QTestSettingStore.isIntegrationActive(projectDir) && QTestSettingStore.isAutoSubmitResultActive(projectDir)) {
-            IntegratedEntity projectIntegratedEntity = projectEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
-            if (projectIntegratedEntity == null) return;
+            IntegratedEntity projectIntegratedEntity = projectEntity
+                    .getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+            if (projectIntegratedEntity == null) {
+                return;
+            }
 
             for (ILogRecord logRecord : suiteLog.getChildRecords()) {
-                if (logRecord instanceof TestCaseLogRecord) {
-                    uploadTestCaseResult(testSuite, projectIntegratedEntity, (TestCaseLogRecord) logRecord, suiteLog);
+                if (!(logRecord instanceof TestCaseLogRecord)) {
+                    continue;
                 }
+
+                TestCaseLogRecord testCaseLogRecord = (TestCaseLogRecord) logRecord;
+
+                if (!QTestIntegrationReportManager.isAvailableForSendingResult(testCaseLogRecord.getStatus()
+                        .getStatusValue(), projectDir)) {
+                    continue;
+                }
+
+                uploadTestCaseResult(testSuite, projectIntegratedEntity, testCaseLogRecord, suiteLog);
             }
         }
     }
