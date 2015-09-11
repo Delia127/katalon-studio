@@ -11,6 +11,7 @@ public class StringConstants extends GlobalStringConstants {
 	// CloseProjectHandler
 	public static final String WARN_TITLE = WARN;
 	public static final String HAND_WARN_MSG_UNABLE_TO_CLOSE_CURRENT_PROJ = "Unable to close current project.";
+	public static final String HAND_WARN_MSG_NO_PROJ_FOUND = "No project found.";
 
 	// NewProjectHandler
 	public static final String ERROR_TITLE = ERROR;
