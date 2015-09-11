@@ -22,6 +22,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 class WebMobileDriverFactory {
 	private static WebMobileDriverFactory factory;
 	private Process appiumServer;
+	private Process webProxyServer;
 	private Map<String, String> androidDevices;
 	private Map<String, String> iosDevices;
 
@@ -47,6 +48,7 @@ class WebMobileDriverFactory {
 			killProcessOnMac("node");
 			killProcessOnMac("instruments");
 			killProcessOnMac("deviceconsole");
+			killProcessOnMac("ios_webkit_debug_proxy");
 		}
 	}
 
@@ -84,6 +86,9 @@ class WebMobileDriverFactory {
 	@SuppressWarnings("rawtypes")
 	AppiumDriver<?> getIosDriver(String deviceName) throws Exception {
 		cleanup();
+        if (!isWebProxyServerStarted()) {
+            startWebProxyServer(deviceName);
+        }
 		if (!isServerStarted()) {
 			startAppiumServer();
 		}
@@ -119,19 +124,40 @@ class WebMobileDriverFactory {
 		}
 		return false;
 	}
+	
+	private boolean isWebProxyServerStarted() {
+        if (webProxyServer == null) {
+            return false;
+        } else {
+            try {
+                webProxyServer.exitValue();
+                return false;
+            } catch (IllegalThreadStateException e) {
+                return true;
+            }
+        }
+    }
 
 	private void startAppiumServer() throws Exception {
-		// String node = System.getenv("NODE_HOME") + "/node";
-		// String appium = System.getenv("APPIUM_HOME") + "/appium.js";
-		String node = "node";
 		String appium = System.getenv("APPIUM_HOME") + "/bin" + "/appium.js";
 		String appiumTemp = System.getProperty("user.home") + File.separator + "Appium_Temp";
-		String[] cmd = { node, appium, "--command-timeout", "3600", "--tmp", appiumTemp };
+		String[] cmd = {"node", appium, "--command-timeout", "3600", "--tmp", appiumTemp };
 		ProcessBuilder pb = new ProcessBuilder(cmd);
 		pb.redirectOutput(new File("bin" + File.separator + "appium.log"));
 		appiumServer = pb.start();
 		while (!isServerStarted()) {
-		}
+        }
+		
+	}
+	
+	private void startWebProxyServer(String deviceId) throws Exception {
+        String webProxyServerLocation = System.getenv("APPIUM_HOME") + "/bin" + "/ios_webkit_debug_proxy";
+        String[] webProxyServerCmd = { webProxyServerLocation, "-c", deviceId + ":27753"};
+        ProcessBuilder webProxyServerProcessBuilder = new ProcessBuilder(webProxyServerCmd);
+        webProxyServerProcessBuilder.redirectOutput(new File("bin" + File.separator + "appium-proxy-server.log"));
+        webProxyServer = webProxyServerProcessBuilder.start();
+        while (!isWebProxyServerStarted()) {
+        }
 	}
 
 	void quitServer() {

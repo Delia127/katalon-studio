@@ -2,11 +2,13 @@ package com.kms.katalon.composer.mobile.dialog;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
@@ -22,6 +24,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.mobile.constants.StringConstants;
 
 public class DeviceSelectionDialog extends TitleAreaDialog {
@@ -50,14 +53,11 @@ public class DeviceSelectionDialog extends TitleAreaDialog {
 		container.setLayout(glContainer);
 
 		// Load devices name
-		try {
-			if (StringConstants.OS_ANDROID.equalsIgnoreCase(platform)) {
-				getAndroidDevices();
-			} else if (StringConstants.OS_IOS.equalsIgnoreCase(platform)) {
-				getIosDevices();
-			}
-		} catch (Exception ex) {
-		}
+		if (StringConstants.OS_ANDROID.equalsIgnoreCase(platform)) {
+            getAndroidDevices();
+        } else if (StringConstants.OS_IOS.equalsIgnoreCase(platform)) {
+            getIosDevices();
+        }
 
 		Label theLabel = new Label(container, SWT.NONE);
 		theLabel.setText(StringConstants.DIA_DEVICE_NAME);
@@ -105,7 +105,16 @@ public class DeviceSelectionDialog extends TitleAreaDialog {
 
 	@Override
 	protected void okPressed() {
-		deviceName = cbbDevices.getText();
+	    if (StringConstants.OS_ANDROID.equalsIgnoreCase(platform)) {
+	        deviceName = cbbDevices.getText();
+        } else if (StringConstants.OS_IOS.equalsIgnoreCase(platform)) {
+            String selectedDevice = cbbDevices.getText();
+            for (Entry<String, String> device : devicesList.entrySet()) {
+                if (device.getValue().equals(selectedDevice)) {
+                    deviceName = device.getKey();
+                }
+            }
+        }
 		super.okPressed();
 	}
 
@@ -117,48 +126,79 @@ public class DeviceSelectionDialog extends TitleAreaDialog {
 		this.deviceName = deviceName;
 	}
 
-	private void getIosDevices() throws Exception {
+	private void getIosDevices() {
 		devicesList.clear();
 		if (System.getProperty("os.name").toLowerCase().contains("mac")) {
 			List<String> deviceIds = new ArrayList<>();
 			String[] cmd = { "idevice_id", "-l" };
 			ProcessBuilder pb = new ProcessBuilder(cmd);
-			Process p = pb.start();
-			p.waitFor();
+			
+			Process p = null;
+            try {
+                p = pb.start();
+                p.waitFor();
+            } catch (IOException | InterruptedException e) {
+                LoggerSingleton.logError(e);
+            }
+            if (p == null) {
+                return;
+            }
 			String line = null;
 			BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			while ((line = br.readLine()) != null) {
-				deviceIds.add(line);
-			}
+			try {
+                while ((line = br.readLine()) != null) {
+                	deviceIds.add(line);
+                }
+            } catch (IOException e) {
+                LoggerSingleton.logError(e);
+            } finally {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    LoggerSingleton.logError(e);
+                }
+            }
 
 			for (String deviceId : deviceIds) {
 				cmd = new String[] { "ideviceinfo", "-u", deviceId };
 				pb.command(cmd);
-				p = pb.start();
-				p.waitFor();
+				p = null;
+				try {
+	                p = pb.start();
+	                p.waitFor();
+	            } catch (IOException | InterruptedException e) {
+	                LoggerSingleton.logError(e);
+	            }
+				if (p == null) {
+				    continue;
+				}
 				br = new BufferedReader(new InputStreamReader(p.getInputStream()));
 				String deviceInfo = "";
-				while ((line = br.readLine()) != null) {
-					if (line.contains("DeviceClass:")) {
-						deviceInfo = line.substring("DeviceClass:".length(), line.length()).trim();
-						continue;
-					}
-					if (line.contains("DeviceName:")) {
-						deviceInfo += " " + line.substring("DeviceName:".length(), line.length()).trim();
-						continue;
-					}
-					if (line.contains("ProductVersion:")) {
-						deviceInfo += " " + line.substring("ProductVersion:".length(), line.length()).trim();
-						continue;
-					}
-				}
+				try {
+                    while ((line = br.readLine()) != null) {
+                    	if (line.contains("DeviceClass:")) {
+                    		deviceInfo = line.substring("DeviceClass:".length(), line.length()).trim();
+                    		continue;
+                    	}
+                    	if (line.contains("DeviceName:")) {
+                    		deviceInfo += " " + line.substring("DeviceName:".length(), line.length()).trim();
+                    		continue;
+                    	}
+                    	if (line.contains("ProductVersion:")) {
+                    		deviceInfo += " " + line.substring("ProductVersion:".length(), line.length()).trim();
+                    		continue;
+                    	}
+                    }
+                } catch (IOException e) {
+                    LoggerSingleton.logError(e);
+                }
 
 				devicesList.put(deviceId, deviceInfo);
 			}
 		}
 	}
 
-	private void getAndroidDevices() throws Exception {
+	private void getAndroidDevices() {
 		devicesList.clear();
 		String adbPath = System.getenv("ANDROID_HOME");
 		if (adbPath != null) {
@@ -166,46 +206,76 @@ public class DeviceSelectionDialog extends TitleAreaDialog {
 			adbPath += File.separator + "platform-tools" + File.separator + "adb";
 			String[] cmd = new String[] { adbPath, "devices" };
 			ProcessBuilder pb = new ProcessBuilder(cmd);
-			Process process = pb.start();
-			process.waitFor();
+			Process process = null;
+            try {
+                process = pb.start();
+                process.waitFor();
+            } catch (IOException | InterruptedException e) {
+                LoggerSingleton.logError(e);
+            }
+            if (process == null) {
+                return;
+            }
 			BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String line, deviceId, deviceName;
-			while ((line = br.readLine()) != null) {
-				if (!line.toLowerCase().trim().contains("list of devices")) {
-					if (line.toLowerCase().trim().contains("device")) {
-						deviceId = line.split("\\s")[0];
-						deviceIds.add(deviceId);
-					}
-				}
-			}
-			br.close();
+			try {
+                while ((line = br.readLine()) != null) {
+                	if (!line.toLowerCase().trim().contains("list of devices")) {
+                		if (line.toLowerCase().trim().contains("device")) {
+                			deviceId = line.split("\\s")[0];
+                			deviceIds.add(deviceId);
+                		}
+                	}
+                }
+                br.close();
+            } catch (IOException e) {
+                LoggerSingleton.logError(e);
+            } finally {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    LoggerSingleton.logError(e);
+                }
+            }
 
 			for (String id : deviceIds) {
-				cmd = new String[] { adbPath, "-s", id, "shell", "getprop", "ro.product.manufacturer" };
-				pb.command(cmd);
-				process = pb.start();
-				process.waitFor();
-				br = new BufferedReader(new InputStreamReader(process.getInputStream()));
-				deviceName = br.readLine();
-				br.close();
+	            try {
+	                cmd = new String[] { adbPath, "-s", id, "shell", "getprop", "ro.product.manufacturer" };
+	                pb.command(cmd);
+	                process = pb.start();
+	                process.waitFor();
 
-				cmd = new String[] { adbPath, "-s", id, "shell", "getprop", "ro.product.model" };
-				pb.command(cmd);
-				process = pb.start();
-				process.waitFor();
-				br = new BufferedReader(new InputStreamReader(process.getInputStream()));
-				deviceName += " " + br.readLine();
-				br.close();
+	                br = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                    deviceName = br.readLine();
+                    cmd = new String[] { adbPath, "-s", id, "shell", "getprop", "ro.product.model" };
+                    pb.command(cmd);
+                    process = pb.start();
+                    process.waitFor();
+                    br = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                    deviceName += " " + br.readLine();
+                    br.close();
 
-				cmd = new String[] { adbPath, "-s", id, "shell", "getprop", "ro.build.version.release" };
-				pb.command(cmd);
-				process = pb.start();
-				process.waitFor();
-				br = new BufferedReader(new InputStreamReader(process.getInputStream()));
-				deviceName += " " + br.readLine();
-				br.close();
+                    cmd = new String[] { adbPath, "-s", id, "shell", "getprop", "ro.build.version.release" };
+                    pb.command(cmd);
+                    process = pb.start();
+                    process.waitFor();
+                    br = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                    deviceName += " " + br.readLine();
+                    br.close();
 
-				devicesList.put(id, deviceName);
+                    devicesList.put(id, deviceName);
+	            } catch (IOException | InterruptedException e) {
+	                LoggerSingleton.logError(e);
+	            } finally {
+	                if (br == null) {
+	                    continue;
+	                }
+                    try {
+                        br.close();
+                    } catch (IOException e) {
+                        LoggerSingleton.logError(e);
+                    }
+                }
 			}
 		}
 	}

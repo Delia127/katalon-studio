@@ -134,7 +134,8 @@ public class MobileDriverFactory {
 	private void startAppiumServer() throws Exception {
 		// String node = System.getenv("NODE_HOME") + "/node";
 		// String appium = System.getenv("APPIUM_HOME") + "/appium.js";
-		String node = "node";
+	    String nodeHome = System.getenv("NODE_HOME") != null ? System.getenv("NODE_HOME") + File.separator : "";
+        String node = nodeHome + "node";
 		String appium = System.getenv("APPIUM_HOME") + "/bin" + "/appium.js";
 		String appiumTemp = System.getProperty("user.home") + File.separator + "Appium_Temp";
 		String[] cmd = { node, appium, "--command-timeout", "3600", "--tmp", appiumTemp };
