@@ -19,7 +19,7 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String DIA_TOOLITEM_TIP_NEW_PAGE_ELEMENT = "New page element";
 	public static final String DIA_TOOLITEM_TIP_NEW_FRAME_ELEMENT = "New frame element";
 	public static final String DIA_TOOLITEM_TIP_NEW_ELEMENT = "New element";
-	public static final String DIA_TOOLITEM_TIP_REMOVE_ELEMENT = "Remove element";
+	public static final String DIA_TOOLITEM_TIP_REMOVE_ELEMENT = "Delete element";
 	public static final String DIA_COL_NAME = NAME;
 	public static final String DIA_COL_VALUE = VALUE;
 	public static final String ERROR_TITLE = ERROR;

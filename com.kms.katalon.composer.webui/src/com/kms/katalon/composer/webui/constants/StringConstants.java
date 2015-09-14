@@ -11,7 +11,7 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String DIA_SHELL_EDIT_PREFERENCE = "Edit preference";
 
 	// BrowserPreferencePage
-	public static final String SETT_COL_PREFERENCE_NAME = "Perference Name";
+	public static final String SETT_COL_PREFERENCE_NAME = "Preference Name";
 	public static final String SETT_COL_TYPE = "Type";
 	public static final String SETT_COL_VALUE = VALUE;
 	public static final String SETT_TOOLITEM_ADD = ADD;
