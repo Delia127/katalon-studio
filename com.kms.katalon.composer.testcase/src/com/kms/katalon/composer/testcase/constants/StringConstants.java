@@ -8,7 +8,7 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String ADAP_MENU_CONTEXT_INSERT = INSERT;
 	public static final String ADAP_MENU_CONTEXT_INSERT_BEFORE = "Insert before";
 	public static final String ADAP_MENU_CONTEXT_INSERT_AFTER = "Insert after";
-	public static final String ADAP_MENU_CONTEXT_REMOVE = REMOVE;
+	public static final String ADAP_MENU_CONTEXT_REMOVE = DELETE;
 	public static final String ADAP_MENU_CONTEXT_COPY = COPY;
 	public static final String ADAP_MENU_CONTEXT_CUT = CUT;
 	public static final String ADAP_MENU_CONTEXT_PASTE = PASTE;
@@ -63,7 +63,7 @@ public class StringConstants extends GlobalStringConstants {
 	// ListInputBuilderDialog
 	public static final String DIA_TITLE_LIST_INPUT = "List Input";
 	public static final String DIA_BTN_INSERT = INSERT;
-	public static final String DIA_BTN_REMOVE = REMOVE;
+	public static final String DIA_BTN_REMOVE = DELETE;
 
 	// MapInputBuilderDialog
 	public static final String DIA_TITLE_MAP_INPUT = "Map Input";
@@ -157,7 +157,7 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String PA_BTN_TIP_INSERT = INSERT;
 	public static final String PA_MENU_SUB_BEFORE = "Insert before";
 	public static final String PA_MENU_SUB_AFTER = "Insert after";
-	public static final String PA_BTN_TIP_REMOVE = REMOVE;
+	public static final String PA_BTN_TIP_REMOVE = DELETE;
 	public static final String PA_BTN_TIP_CLEAR = CLEAR;
 	public static final String PA_BTN_TIP_EDIT = EDIT;
 	public static final String PA_BTN_TIP_MOVE_UP = "Move up";

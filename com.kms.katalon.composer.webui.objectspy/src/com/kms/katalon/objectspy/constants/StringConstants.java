@@ -19,7 +19,7 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String DIA_TOOLITEM_TIP_NEW_PAGE_ELEMENT = "New page element";
 	public static final String DIA_TOOLITEM_TIP_NEW_FRAME_ELEMENT = "New frame element";
 	public static final String DIA_TOOLITEM_TIP_NEW_ELEMENT = "New element";
-	public static final String DIA_TOOLITEM_TIP_REMOVE_ELEMENT = "Remove element";
+	public static final String DIA_TOOLITEM_TIP_REMOVE_ELEMENT = "Delete element";
 	public static final String DIA_COL_NAME = NAME;
 	public static final String DIA_COL_VALUE = VALUE;
 	public static final String ERROR_TITLE = ERROR;
@@ -28,10 +28,10 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String TREE_ERROR_MSG_CONTENT_PROVIDER_IS_REQUIRED = "Content provider is required";
 
 	// HTMLElementLabelProvider
-	public static final String TREE_ELEMENT_TIP_ATTRIBUTES_CHANGED = "Element exists, but some of it's attributes is changed";
+	public static final String TREE_ELEMENT_TIP_ATTRIBUTES_CHANGED = "Element exists, but some of its attributes have been changed";
 	public static final String TREE_ELEMENT_TIP_EXISTED = "Element exists";
 	public static final String TREE_ELEMENT_TIP_MISSING = "Element is missing";
-	public static final String TREE_ELEMENT_TIP_FOUND_MULTIPLE_ELEM = "Multiple element is found";
+	public static final String TREE_ELEMENT_TIP_FOUND_MULTIPLE_ELEM = "Multiple elements are found";
 	public static final String TREE_ELEMENT_TIP_IS_NOT_VERIFIED = "Element is not verified";
 	public static final String TREE_ELEMENT_TIP_INVALID_XPATH = "The xpath of element is not valid";
 

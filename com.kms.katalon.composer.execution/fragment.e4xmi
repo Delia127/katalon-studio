@@ -42,7 +42,7 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_3nN-wN0KEeSl-d63gHk7zg" featurename="children" parentElementId="com.kms.katalon.partstack.outline">
     <elements xsi:type="basic:Part" xmi:id="_-hQYsN0KEeSl-d63gHk7zg" elementId="com.kms.katalon.composer.execution.part.job" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.part.JobViewerPart" label="Job Progress" iconURI="platform:/plugin/com.kms.katalon.composer.execution/icons/progress_16.png">
       <toolbar xmi:id="_oMKcYN3CEeSP-ax1WxE4pw" elementId="com.kms.katalon.composer.execution.toolbar.0">
-        <children xsi:type="menu:DirectToolItem" xmi:id="_pQPvkN3CEeSP-ax1WxE4pw" elementId="com.kms.katalon.composer.execution.directtoolitem.removeAllTerminated" label="" iconURI="platform:/plugin/com.kms.katalon.composer.execution/icons/clear_16.png" tooltip="Remove All Terminated Launches" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.handlers.CleanAllTerminatedHandler"/>
+        <children xsi:type="menu:DirectToolItem" xmi:id="_pQPvkN3CEeSP-ax1WxE4pw" elementId="com.kms.katalon.composer.execution.directtoolitem.removeAllTerminated" label="" iconURI="platform:/plugin/com.kms.katalon.composer.execution/icons/clear_16.png" tooltip="Delete All Terminated Launches" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.handlers.CleanAllTerminatedHandler"/>
       </toolbar>
     </elements>
   </fragments>

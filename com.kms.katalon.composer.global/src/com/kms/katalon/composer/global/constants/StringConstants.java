@@ -13,7 +13,7 @@ public class StringConstants extends GlobalStringConstants {
 
 	// GlobalVariablePart
 	public static final String PA_BTN_TIP_ADD = ADD;
-	public static final String PA_BTN_TIP_REMOVE = REMOVE;
+	public static final String PA_BTN_TIP_REMOVE = DELETE;
 	public static final String PA_BTN_TIP_CLEAR = CLEAR;
 	public static final String PA_BTN_TIP_EDIT = EDIT;
 	public static final String PA_BTN_TIP_REFRESH = REFRESH;

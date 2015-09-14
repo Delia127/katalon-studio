@@ -14,35 +14,47 @@ import com.kms.katalon.execution.webui.util.WebUIExecutionUtil;
 
 public class MixedModeRunConfigurationContributor implements IRunConfigurationContributor {
 
-	@Override
-	public String getId() {
-		return MobileDriverType.ANDROID_DRIVER.toString();
-	}
+    @Override
+    public String getId() {
+        return "Mixed mode";
+    }
 
-	@Override
-	public IRunConfiguration getRunConfiguration(TestCaseEntity testCase, Map<String, String> runInput) {
-		String deviceName = runInput
-				.get(com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_DEVICE_NAME);
-		String devicePlatform = runInput
-				.get(com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_PLATFORM);
-		String browserType = runInput
-				.get(com.kms.katalon.core.webui.constants.StringConstants.CONF_PROPERTY_EXECUTED_BROWSER);
-		return new MixedModeRunConfiguration(testCase, MobileExecutionUtil.getMobileDriverConnector(
-				MobileDriverType.fromStringValue(devicePlatform), deviceName),
-				WebUIExecutionUtil.getBrowserDriverConnector(WebUIDriverType.fromStringValue(browserType)));
-	}
+    @Override
+    public IRunConfiguration getRunConfiguration(TestCaseEntity testCase, Map<String, String> runInput) {
+        if (runInput == null
+                || runInput.get(com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_DEVICE_NAME) == null
+                || runInput.get(com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_PLATFORM) == null
+                || runInput.get(com.kms.katalon.core.webui.constants.StringConstants.CONF_PROPERTY_EXECUTED_BROWSER) == null) {
+            return null;
+        }
+        String deviceName = runInput
+                .get(com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_DEVICE_NAME);
+        String devicePlatform = runInput
+                .get(com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_PLATFORM);
+        String browserType = runInput
+                .get(com.kms.katalon.core.webui.constants.StringConstants.CONF_PROPERTY_EXECUTED_BROWSER);
+        return new MixedModeRunConfiguration(testCase, MobileExecutionUtil.getMobileDriverConnector(
+                MobileDriverType.fromStringValue(devicePlatform), deviceName),
+                WebUIExecutionUtil.getBrowserDriverConnector(WebUIDriverType.fromStringValue(browserType)));
+    }
 
-	@Override
-	public IRunConfiguration getRunConfiguration(TestSuiteEntity testSuite, Map<String, String> runInput) {
-		String deviceName = runInput
-				.get(com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_DEVICE_NAME);
-		String devicePlatform = runInput
-				.get(com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_PLATFORM);
-		String browserType = runInput
-				.get(com.kms.katalon.core.webui.constants.StringConstants.CONF_PROPERTY_EXECUTED_BROWSER);
-		return new MixedModeRunConfiguration(testSuite, MobileExecutionUtil.getMobileDriverConnector(
-				MobileDriverType.fromStringValue(devicePlatform), deviceName),
-				WebUIExecutionUtil.getBrowserDriverConnector(WebUIDriverType.fromStringValue(browserType)));
-	}
+    @Override
+    public IRunConfiguration getRunConfiguration(TestSuiteEntity testSuite, Map<String, String> runInput) {
+        if (runInput == null
+                || runInput.get(com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_DEVICE_NAME) == null
+                || runInput.get(com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_PLATFORM) == null
+                || runInput.get(com.kms.katalon.core.webui.constants.StringConstants.CONF_PROPERTY_EXECUTED_BROWSER) == null) {
+            return null;
+        }
+        String deviceName = runInput
+                .get(com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_DEVICE_NAME);
+        String devicePlatform = runInput
+                .get(com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_PLATFORM);
+        String browserType = runInput
+                .get(com.kms.katalon.core.webui.constants.StringConstants.CONF_PROPERTY_EXECUTED_BROWSER);
+        return new MixedModeRunConfiguration(testSuite, MobileExecutionUtil.getMobileDriverConnector(
+                MobileDriverType.fromStringValue(devicePlatform), deviceName),
+                WebUIExecutionUtil.getBrowserDriverConnector(WebUIDriverType.fromStringValue(browserType)));
+    }
 
 }

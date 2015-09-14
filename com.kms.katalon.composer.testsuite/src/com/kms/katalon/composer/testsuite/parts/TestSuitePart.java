@@ -900,12 +900,14 @@ public class TestSuitePart implements EventHandler {
 		GridData gd_lblReRun = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_lblReRun.widthHint = 85;
 		lblReRun.setLayoutData(gd_lblReRun);
-		lblReRun.setText(StringConstants.PA_LBL_RE_RUN);
+		lblReRun.setText(StringConstants.PA_LBL_RETRY);
+		lblReRun.setToolTipText(StringConstants.PA_LBL_TOOLTIP_RETRY);
 
 		txtRerun = new Text(compositeLastRunAndReRun, SWT.BORDER);
 		GridData gd_txtRerun = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
 		gd_txtRerun.heightHint = 20;
 		txtRerun.setLayoutData(gd_txtRerun);
+		txtRerun.setToolTipText(StringConstants.PA_LBL_TOOLTIP_RETRY);
 
 		compositeMailRecipients = new Composite(compositeExecutionDetails, SWT.NONE);
 		GridData gd_compositeMailRecipients = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);

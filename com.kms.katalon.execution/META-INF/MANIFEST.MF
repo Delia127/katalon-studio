@@ -8,6 +8,7 @@ Bundle-Vendor: KMS
 Export-Package: com.kms.katalon.execution.configuration.contributor,
  com.kms.katalon.execution.constants,
  com.kms.katalon.execution.entity,
+ com.kms.katalon.execution.factory,
  com.kms.katalon.execution.generator,
  com.kms.katalon.execution.integration,
  com.kms.katalon.execution.launcher,

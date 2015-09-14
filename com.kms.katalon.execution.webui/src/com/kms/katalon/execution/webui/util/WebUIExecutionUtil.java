@@ -13,14 +13,6 @@ import com.kms.katalon.execution.entity.IDriverConnector;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class WebUIExecutionUtil {
-	public static WebUIDriverType getDefaultBrowser() {
-		IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-				PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
-		WebUIDriverType driverType = WebUIDriverType.fromStringValue(store
-				.getString(PreferenceConstants.WebUiPreferenceConstants.EXECUTION_DEFAULT_BROWSER));
-		return driverType;
-	}
-	
 	public static int getWaitForIEHanging() {
 		IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
 				PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);

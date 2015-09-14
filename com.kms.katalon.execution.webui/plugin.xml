@@ -3,13 +3,13 @@
    <extension
          point="com.kms.katalon.execution.runConfiguration">
       <client
-            configuration="com.kms.katalon.execution.webui.configuration.contributor.ChromeRunConfigurationContributor">
+            configuration="com.kms.katalon.execution.webui.configuration.contributor.FirefoxRunConfigurationContributor">
       </client>
    </extension>
    <extension
          point="com.kms.katalon.execution.runConfiguration">
       <client
-            configuration="com.kms.katalon.execution.webui.configuration.contributor.FirefoxRunConfigurationContributor">
+            configuration="com.kms.katalon.execution.webui.configuration.contributor.ChromeRunConfigurationContributor">
       </client>
    </extension>
    <extension

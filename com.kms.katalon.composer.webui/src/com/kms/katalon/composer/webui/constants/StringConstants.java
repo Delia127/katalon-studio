@@ -11,12 +11,12 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String DIA_SHELL_EDIT_PREFERENCE = "Edit preference";
 
 	// BrowserPreferencePage
-	public static final String SETT_COL_PREFERENCE_NAME = "Perference Name";
+	public static final String SETT_COL_PREFERENCE_NAME = "Preference Name";
 	public static final String SETT_COL_TYPE = "Type";
 	public static final String SETT_COL_VALUE = VALUE;
 	public static final String SETT_TOOLITEM_ADD = ADD;
 	public static final String SETT_TOOLITEM_EDIT = EDIT;
-	public static final String SETT_TOOLITEM_REMOVE = REMOVE;
+	public static final String SETT_TOOLITEM_REMOVE = DELETE;
 	public static final String SETT_TOOLITEM_CLEAR = CLEAR;
 	public static final String SETT_TOOLITEM_UP = UP;
 	public static final String SETT_TOOLITEM_DOWN = DOWN;
@@ -26,4 +26,7 @@ public class StringConstants extends GlobalStringConstants {
 	//RemoteWebDriverExecutionHandler
 	public static final String DIA_REMOTE_SERVER_URL_TITLE = "Remote web driver";
 	public static final String DIA_REMOTE_SERVER_URL_MESSAGE = "Please enter the remote web driver server url";
+	
+	//WebUiExecutionPreferencePage
+	public static final String PREF_LBL_DEFAULT_WAIT_FOR_IE_HANGING_TIMEOUT = "Default wait for IE hanging timeout (in seconds):";
 }

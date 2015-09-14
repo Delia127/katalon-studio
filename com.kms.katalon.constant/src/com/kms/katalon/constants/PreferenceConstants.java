@@ -44,6 +44,7 @@ public interface PreferenceConstants {
         public static final String QUALIFIER = "com.kms.katalon.composer.execution";
 
         //Setting
+        public static final String EXECUTION_DEFAULT_CONFIGURATION = "execution.defaultExecutionConfiguration";
         public static final String EXECUTION_DEFAULT_TIMEOUT = "execution.defaultTimeout";
         public static final String EXECUTION_NOTIFY_AFTER_EXECUTING = "execution.notifyAfterExecuting";
         public static final String EXECUTION_OPEN_REPORT_AFTER_EXECUTING = "execution.openReportAfterExecuting";
@@ -59,8 +60,6 @@ public interface PreferenceConstants {
 	
 	public interface WebUiPreferenceConstants extends IPluginPreferenceConstants {
 		public static final String QUALIFIER = "com.kms.katalon.composer.webui";
-
-        public static final String EXECUTION_DEFAULT_BROWSER = "execution.defaultBrowser";
         public static final String EXECUTION_WAIT_FOR_IE_HANGING = "execution.waitForIEHanging";
 	}
 	

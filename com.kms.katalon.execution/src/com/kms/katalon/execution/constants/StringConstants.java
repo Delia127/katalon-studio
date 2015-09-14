@@ -36,19 +36,6 @@ public class StringConstants extends GlobalStringConstants {
 	// LauncherResult
 	public static final String MODEL_TOTAL_PASSED_FAILED_ERRORS = "Total: {0}, Passed: {1}, Failed: {2}, Errors: {3}.";
 
-	// ExecutionPreferencePage
-	public static final String PREF_GRP_DEFAULT_BROWSER = "Default browser";
-	public static final String PREF_RADIO_FIREFOX = "Mozilla Firefox";
-	public static final String PREF_RADIO_CHROME = "Google Chrome";
-	public static final String PREF_RADIO_IE = "Internet Explorer";
-	public static final String PREF_RADIO_SAFARI = "Safari";
-	public static final String PREF_LBL_DEFAULT_PAGE_LOAD_TIMEOUT = "Default page load timeout (in seconds):";
-	public static final String PREF_LBL_DEFAULT_WAIT_FOR_IE_HANGING_TIMEOUT = "Default wait for IE hanging timeout (in seconds):";
-	public static final String PREF_GRP_AFTER_EXECUTING = "After executing";
-	public static final String PREF_CHKBOX_NOTIFY_ME_AFTER_EXE_COMPLETELY = "Notify me after executing completely";
-	public static final String PREF_CHKBOX_OPEN_RPT_AFTER_EXE_COMPLETELY = "Open report after executing completely";
-	public static final String PREF_ERROR_MSG_VAL_MUST_BE_AN_INT_BETWEEN_X_Y = "Value must be an Integer between {0} and {1}";
-
 	// ExecutionUtil
 	public static final String UTIL_EXC_TEST_CASE_X_NOT_FOUND = "Test case: {0} not found.";
 	public static final String UTIL_EXC_TD_DATA_SRC_X_UNAVAILABLE = "Data source of test data: {0} is not available.";

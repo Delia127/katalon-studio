@@ -24,7 +24,7 @@ public class KeywordTreeLabelProvider extends StyledCellLabelProvider implements
 	public KeywordTreeLabelProvider() {
 		super();
 		if (KEYWORD_ICON == null || KEYWORD_ICON.isDisposed()) {
-			KEYWORD_ICON = ImageConstants.IMG_16_FAILED_CONTINUE;
+			KEYWORD_ICON = ImageConstants.IMG_16_KEYWORD;
 		}
 		if (FOLDER_ICON == null || FOLDER_ICON.isDisposed()) {
 			FOLDER_ICON = ImageConstants.IMG_16_FOLDER;

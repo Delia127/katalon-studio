@@ -4,14 +4,14 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.widgets.Display;
 
-import com.kms.katalon.execution.webui.configuration.RemoteWebRunConfiguration;
-import com.kms.katalon.composer.execution.handlers.ExecuteHandler;
+import com.kms.katalon.composer.execution.handlers.AbstractExecutionHandler;
 import com.kms.katalon.composer.webui.constants.StringConstants;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.entity.IRunConfiguration;
+import com.kms.katalon.execution.webui.configuration.RemoteWebRunConfiguration;
 
-public class RemoteWebDriverExecutionHandler extends ExecuteHandler {
+public class RemoteWebDriverExecutionHandler extends AbstractExecutionHandler {
 
 	protected IRunConfiguration getRunConfigurationForExecution(TestCaseEntity testCase) throws Exception {
 		if (testCase == null) {
