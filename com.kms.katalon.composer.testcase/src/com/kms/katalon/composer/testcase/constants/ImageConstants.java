@@ -64,4 +64,7 @@ public class ImageConstants {
 	
 	// AstForStatementTreeTableNode
 	public static final Image IMG_16_LOOP = ImageUtil.loadImage(currentBundle, "/icons/loop_16.png");
+	
+	// KeywordTreeLabelProvider
+	public static final Image IMG_16_KEYWORD = ImageUtil.loadImage(currentBundle, "/icons/keyword_16.png");
 }
