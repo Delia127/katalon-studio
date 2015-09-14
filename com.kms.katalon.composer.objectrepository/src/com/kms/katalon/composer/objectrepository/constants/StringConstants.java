@@ -43,7 +43,7 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String VIEW_COL_NAME = NAME;
 	public static final String VIEW_COL_MATCH_COND = "Match Condition";
 	public static final String VIEW_COL_VALUE = VALUE;
-	public static final String VIEW_COL_CHKBOX = "";
+	public static final String VIEW_COL_CHKBOX = "Detect object by?";
 	public static final String VIEW_LBL_INFO = INFORMATION;
 	public static final String VIEW_LBL_ID = ID;
 	public static final String VIEW_LBL_IMAGE = IMAGE;

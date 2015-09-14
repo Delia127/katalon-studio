@@ -351,7 +351,7 @@ public class ObjectPropertyView {
 
 		trclmnColumnSelected = treeViewerColumnSelected.getColumn();
 		trclmnColumnSelected.setText(StringConstants.VIEW_COL_CHKBOX);
-		trclmnColumnSelected.setWidth(100);
+		trclmnColumnSelected.setWidth(120);
 
 		treeViewer.setContentProvider(ArrayContentProvider.getInstance());
 	}
