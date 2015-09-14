@@ -71,7 +71,7 @@ public class ObjectPropertyView {
 
 	private Composite layoutComposite, compositeInfo, compositeInfoDetails, compositeTable;
 
-	private ToolItem toolItemAdd, toolItemDelete, toolItemHighlight;
+	private ToolItem toolItemAdd, toolItemDelete;
 
 	private ObjectPropetiesTableViewer treeViewer;
 
@@ -284,11 +284,6 @@ public class ObjectPropertyView {
 		toolItemDelete.setText(StringConstants.VIEW_LBL_DELETE);
 		toolItemDelete.setToolTipText(StringConstants.VIEW_LBL_DELETE);
 		toolItemDelete.setImage(ImageConstants.IMG_24_REMOVE);
-
-		toolItemHighlight = new ToolItem(tableToolbar, SWT.NONE);
-		toolItemHighlight.setText(StringConstants.VIEW_LBL_HIGHLIGHT);
-		toolItemHighlight.setToolTipText(StringConstants.VIEW_LBL_HIGHLIGHT);
-		toolItemHighlight.setImage(ImageConstants.IMG_24_HIGHLIGHT);
 	}
 
 	private void createTableDetails() {
@@ -452,11 +447,6 @@ public class ObjectPropertyView {
 				} catch (Exception e1) {
 					LoggerSingleton.logError(e1);
 				}
-			}
-		});
-
-		toolItemHighlight.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
 			}
 		});
 
