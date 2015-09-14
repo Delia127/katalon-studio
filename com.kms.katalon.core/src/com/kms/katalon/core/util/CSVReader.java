@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.supercsv.io.CsvListReader;
 import org.supercsv.io.ICsvListReader;
 import org.supercsv.prefs.CsvPreference;
@@ -55,6 +56,9 @@ public class CSVReader {
     }
     
     public String[] getColumnNames() {
+        if (columnNames == null) {
+            columnNames = ArrayUtils.EMPTY_STRING_ARRAY;
+        }
         return columnNames;
     }
     
@@ -64,8 +68,8 @@ public class CSVReader {
     
     public int getColumnIndex(String columnName) {
         if (columnName != null && !columnName.isEmpty()) {
-            for (int i = 0;  i < columnNames.length; i++) {
-                if (columnNames[i] != null && columnNames[i].equals(columnName)) {
+            for (int i = 0;  i < getColumnNames().length; i++) {
+                if (columnNames[i] != null && getColumnNames()[i].equals(columnName)) {
                     return i;
                 }
             }
@@ -75,7 +79,7 @@ public class CSVReader {
     
     public int getColumnCount() throws IOException {
         if (containsHeader) {
-            return columnNames.length;
+            return getColumnNames().length;
         } else {
             if (data != null && data.size() > 0) {
                 return data.get(0).length;

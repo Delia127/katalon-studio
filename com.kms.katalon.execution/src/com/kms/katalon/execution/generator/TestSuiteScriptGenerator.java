@@ -127,9 +127,15 @@ public class TestSuiteScriptGenerator {
 											% testDataExecutedEntity.getRowIndexes().length;
 								}
 								
-								try {
-									variableValue = "'" + GroovyStringUtil.escapeGroovy(testData.getValue(variableValue,
-													testDataExecutedEntity.getRowIndexes()[rowIndex])) + "'";
+								try {								    
+									variableValue = GroovyStringUtil.escapeGroovy(testData.getValue(variableValue,
+													testDataExecutedEntity.getRowIndexes()[rowIndex]));
+									if (variableValue != null) {
+									    variableValue = "'" + variableValue + "'";
+									} else {
+									    variableValue = "null";
+									}
+									
 								} catch (IllegalArgumentException ex) {
 									syntaxErrorCollector.append(
 											"Wrong syntax at [TestCaseID: " + testCaseLink.getTestCaseId() + ", VariableName: "

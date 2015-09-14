@@ -3,7 +3,6 @@ package com.kms.katalon.core.testdata;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +17,7 @@ import com.kms.katalon.core.exception.ExceptionsUtil;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.util.CSVSeperator;
+import com.kms.katalon.core.util.PathUtils;
 
 public class TestDataFactory {
 	private static final String TEST_DATA_FILE_EXTENSION = ".dat";
@@ -106,7 +106,7 @@ public class TestDataFactory {
 			isRelativePath = Boolean.valueOf(testDataElement.elementText(IS_RELATIVE_PATH_NODE));
 		}
 		if (isRelativePath) {
-			sourceUrl = relativeToAbsolutePath(sourceUrl, projectDir);
+			sourceUrl = PathUtils.relativeToAbsolutePath(sourceUrl, projectDir);
 		}
 		logger.logInfo(MessageFormat.format(StringConstants.XML_LOG_TEST_DATA_READING_EXCEL_DATA_WITH_SOURCE_X_SHEET_Y,
 				sourceUrl, sheetName));
@@ -160,26 +160,14 @@ public class TestDataFactory {
 		if (testDataElement.element(IS_RELATIVE_PATH_NODE) != null) {
 			isRelativePath = Boolean.valueOf(testDataElement.elementText(IS_RELATIVE_PATH_NODE));
 		}
+		
 		if (isRelativePath) {
-			sourceUrl = relativeToAbsolutePath(sourceUrl, projectDir);
+			sourceUrl = PathUtils.relativeToAbsolutePath(sourceUrl, projectDir);
 		}
+		
 		logger.logInfo(MessageFormat.format(
 				StringConstants.XML_LOG_TEST_DATA_READING_CSV_DATA_WITH_SOURCE_X_SEPERATOR_Y_AND_Z,
 				seperator.toString(), containsHeader ? "containing header" : "not containing header"));
 		return new CSVData(sourceUrl, containsHeader, seperator);
-	}
-
-	public static String absoluteToRelativePath(String absolutePath, String projectPath) {
-		return new File(projectPath).toURI().relativize(new File(absolutePath).toURI()).getPath();
-	}
-
-	public static String relativeToAbsolutePath(String relativePath, String projectAbsolutePath) throws Exception {
-		Path path = new File(relativePath).toPath();
-		if (path.isAbsolute()) {
-			return path.toAbsolutePath().toString();
-		} else {
-			Path projectPath = new File(projectAbsolutePath).toPath();
-			return projectPath.resolve(path).normalize().toString();
-		}
 	}
 }

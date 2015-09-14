@@ -32,6 +32,9 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String DIA_TITLE_TEST_SUITE = TEST_SUITE;
 	public static final String DIA_MSG_CREATE_NEW_TEST_SUITE = "Create Test Suite";
 
+    //TestDataColumnChooserDialog
+    public static final String DIA_MSG_CHOOSE_DATA_COLUMN = "Choose a column";
+	
 	// TestDataLinkFinderDialog
 	public static final String DIA_SHELL_TEST_DATA_LINK_BROWSER = "Test Data Link Browser";
 	public static final String DIA_TREE_VIEWER_COL_ID = ID;
@@ -40,6 +43,7 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String EDI_TITLE_TEST_DATA_BROWSER = "Test Data Browser";
 	public static final String ERROR_TITLE = ERROR;
 	public static final String EDI_ERROR_MSG_CANNOT_OPEN_DIA = "Cannot open dialog.";
+	
 
 	// DeleteTestSuiteHandler
 	public static final String HAND_ERROR_MSG_UNABLE_TO_DEL_TEST_SUITE = "Unable to delete Test Suite";

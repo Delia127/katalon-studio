@@ -38,7 +38,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.core.testdata.ExcelData;
-import com.kms.katalon.core.testdata.TestDataFactory;
+import com.kms.katalon.core.util.PathUtils;
 import com.kms.katalon.entity.dal.exception.DuplicatedFileNameException;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testdata.DataFilePropertyInputEntity;
@@ -164,7 +164,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
     private String getSourceUrlAbsolutePath() throws Exception {
         String sourceUrl = txtFileName.getText();
         if (ckcbUseRelativePath.getSelection()) {
-            sourceUrl = TestDataFactory.relativeToAbsolutePath(sourceUrl, getProjectFolderLocation());
+            sourceUrl = PathUtils.relativeToAbsolutePath(sourceUrl, getProjectFolderLocation());
         }
         return sourceUrl;
     }
@@ -219,7 +219,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 String absolutePath = dialog.open();
                 if (absolutePath == null) return;
                 if (ckcbUseRelativePath.getSelection()) {
-                    txtFileName.setText(TestDataFactory
+                    txtFileName.setText(PathUtils
                             .absoluteToRelativePath(absolutePath, getProjectFolderLocation()));
                 } else {
                     txtFileName.setText(absolutePath);
@@ -247,10 +247,10 @@ public class ExcelTestDataPart extends TestDataMainPart {
                     if (txtFileName.getText() != null) {
                         String sourceUrl = txtFileName.getText();
                         if (ckcbUseRelativePath.getSelection()) {
-                            txtFileName.setText(TestDataFactory.absoluteToRelativePath(sourceUrl,
+                            txtFileName.setText(PathUtils.absoluteToRelativePath(sourceUrl,
                                     getProjectFolderLocation()));
                         } else {
-                            txtFileName.setText(TestDataFactory.relativeToAbsolutePath(sourceUrl,
+                            txtFileName.setText(PathUtils.relativeToAbsolutePath(sourceUrl,
                                     getProjectFolderLocation()));
                         }
                     }

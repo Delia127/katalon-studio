@@ -24,7 +24,7 @@ import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.core.logging.XmlLogRecordException;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.reporting.ReportUtil;
-import com.kms.katalon.core.testdata.TestDataFactory;
+import com.kms.katalon.core.util.PathUtils;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -229,7 +229,7 @@ public class ConsoleLauncher extends AbstractLauncher {
 		if (testSuiteExecutedEntity.getReportFolderPath() == null)
 			return null;
 		try {
-			File reportFolder = new File(TestDataFactory.relativeToAbsolutePath(
+			File reportFolder = new File(PathUtils.relativeToAbsolutePath(
 					testSuiteExecutedEntity.getReportFolderPath(), testSuite.getProject().getFolderLocation()));
 
 			if (reportFolder != null && !reportFolder.exists()) {
