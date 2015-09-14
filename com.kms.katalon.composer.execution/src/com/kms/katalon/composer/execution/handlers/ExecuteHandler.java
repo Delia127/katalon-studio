@@ -2,6 +2,7 @@ package com.kms.katalon.composer.execution.handlers;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.ui.menu.MHandledMenuItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
@@ -29,7 +30,8 @@ public class ExecuteHandler extends AbstractExecutionHandler {
 
     @Override
     public void execute() {
-        HandledToolItemImpl toolItem = (HandledToolItemImpl) modelService.find(IdConstants.EXECUTION_TOOL_ITEM_ID, application);
+        HandledToolItemImpl toolItem = (HandledToolItemImpl) modelService.find(IdConstants.EXECUTION_TOOL_ITEM_ID,
+                application);
         if (toolItem == null || toolItem.getMenu() == null) {
             return;
         }
@@ -41,12 +43,12 @@ public class ExecuteHandler extends AbstractExecutionHandler {
             if (menuItem instanceof MHandledMenuItem) {
                 MHandledMenuItem handledMenuItem = (MHandledMenuItem) menuItem;
                 if (handledMenuItem.getLabel().equals(defaultRunContributor.getId())
-                        && handledMenuItem.getWbCommand() != null) {
-                    handlerService.executeHandler(handledMenuItem.getWbCommand());
+                        && handledMenuItem.getCommand() != null) {
+                    ParameterizedCommand executionCommand = commandService.createCommand(handledMenuItem.getCommand().getElementId(), null);
+                    handlerService.executeHandler(executionCommand);
                     break;
                 }
             }
         }
-        toolItem.getMenu();
     }
 }

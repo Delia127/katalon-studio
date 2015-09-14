@@ -45,5 +45,6 @@ Require-Bundle: org.eclipse.e4.core.di,
  org.eclipse.jdt.debug,
  org.eclipse.jdt.launching,
  org.eclipse.e4.core.commands,
- org.eclipse.e4.core.contexts
+ org.eclipse.e4.core.contexts,
+ org.eclipse.e4.ui.workbench.renderers.swt
 Export-Package: com.kms.katalon.composer.execution.handlers
