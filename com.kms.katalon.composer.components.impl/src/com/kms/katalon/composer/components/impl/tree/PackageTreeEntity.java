@@ -23,172 +23,176 @@ import com.kms.katalon.groovy.util.GroovyUtil;
 @SuppressWarnings("restriction")
 public class PackageTreeEntity implements ITreeEntity {
 
-	private static final long serialVersionUID = 2019661366633516087L;
+    private static final long serialVersionUID = 2019661366633516087L;
 
-	private static final String PACKAGE_TYPE_NAME = StringConstants.TREE_PACKAGE_TYPE_NAME;
+    private static final String PACKAGE_TYPE_NAME = StringConstants.TREE_PACKAGE_TYPE_NAME;
 
-	private static final String DEFAULT_PACKAGE_LABEL = StringConstants.TREE_PACKAGE_DEFAULT_LBL;
-	private IPackageFragment packageFragment;
-	private String packageName;
-	private boolean isDefaultPackage;
+    private static final String DEFAULT_PACKAGE_LABEL = StringConstants.TREE_PACKAGE_DEFAULT_LBL;
+    private IPackageFragment packageFragment;
+    private String packageName;
+    private boolean isDefaultPackage;
 
-	private ITreeEntity parentTreeEntity;
+    private ITreeEntity parentTreeEntity;
 
-	public PackageTreeEntity(IPackageFragment packageFragment, ITreeEntity parentTreeEntity) {
-		this.packageFragment = packageFragment;
-		this.packageName = packageFragment.getElementName();
-		this.isDefaultPackage = packageName.equals(IPackageFragment.DEFAULT_PACKAGE_NAME);
-		this.parentTreeEntity = parentTreeEntity;
-	}
+    public PackageTreeEntity(IPackageFragment packageFragment, ITreeEntity parentTreeEntity) {
+        this.packageFragment = packageFragment;
+        this.packageName = packageFragment.getElementName();
+        this.isDefaultPackage = packageName.equals(IPackageFragment.DEFAULT_PACKAGE_NAME);
+        this.parentTreeEntity = parentTreeEntity;
+    }
 
-	@Override
-	public Object[] getChildren() throws Exception {
-		List<Object> children = new ArrayList<Object>();
-		for (ICompilationUnit childGroovyClass : GroovyUtil.getAllGroovyClasses(packageFragment)) {
-			if (childGroovyClass.exists()) {
-				children.add(new KeywordTreeEntity(childGroovyClass, this));
-			}
-		}
+    @Override
+    public Object[] getChildren() throws Exception {
+        List<Object> children = new ArrayList<Object>();
+        for (ICompilationUnit childGroovyClass : GroovyUtil.getAllGroovyClasses(packageFragment)) {
+            if (childGroovyClass.exists()) {
+                children.add(new KeywordTreeEntity(childGroovyClass, this));
+            }
+        }
 
-		Collections.sort(children, new Comparator<Object>() {
-			@Override
-			public int compare(Object arg0, Object arg1) {
-				if (arg0 instanceof KeywordTreeEntity && arg1 instanceof KeywordTreeEntity) {
-					KeywordTreeEntity keyword0 = (KeywordTreeEntity) arg0;
-					KeywordTreeEntity keyword1 = (KeywordTreeEntity) arg1;
-					try {
-						return keyword0.getText().compareTo(keyword1.getText());
-					} catch (Exception e) {
-						return 0;
-					}
-				}
-				return 0;
-			}
+        Collections.sort(children, new Comparator<Object>() {
+            @Override
+            public int compare(Object arg0, Object arg1) {
+                if (arg0 instanceof KeywordTreeEntity && arg1 instanceof KeywordTreeEntity) {
+                    KeywordTreeEntity keyword0 = (KeywordTreeEntity) arg0;
+                    KeywordTreeEntity keyword1 = (KeywordTreeEntity) arg1;
+                    try {
+                        return keyword0.getText().compareTo(keyword1.getText());
+                    } catch (Exception e) {
+                        return 0;
+                    }
+                }
+                return 0;
+            }
 
-		});
-		return children.toArray();
-	}
+        });
+        return children.toArray();
+    }
 
-	@Override
-	public ITreeEntity getParent() throws Exception {
-		return parentTreeEntity;
-	}
+    @Override
+    public ITreeEntity getParent() throws Exception {
+        return parentTreeEntity;
+    }
 
-	@Override
-	public boolean hasChildren() throws Exception {
-		return true;
-	}
+    @Override
+    public boolean hasChildren() throws Exception {
+        return true;
+    }
 
-	@Override
-	public String getText() throws Exception {
-		return packageName.isEmpty() ? DEFAULT_PACKAGE_LABEL : packageName;
-	}
+    @Override
+    public String getText() throws Exception {
+        return packageName.isEmpty() ? DEFAULT_PACKAGE_LABEL : packageName;
+    }
 
-	@Override
-	public Image getImage() throws Exception {
-		return ImageConstants.IMG_16_PACKAGE;
-	}
+    @Override
+    public Image getImage() throws Exception {
+        return ImageConstants.IMG_16_PACKAGE;
+    }
 
-	@Override
-	public String getTypeName() throws Exception {
-		return PACKAGE_TYPE_NAME;
-	}
+    @Override
+    public String getTypeName() throws Exception {
+        return PACKAGE_TYPE_NAME;
+    }
 
-	@Override
-	public boolean isRemoveable() throws Exception {
-		return true;
-	}
+    @Override
+    public boolean isRemoveable() throws Exception {
+        if (packageFragment == null || packageFragment.isDefaultPackage()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
-	@Override
-	public Object getObject() throws Exception {
-		return packageFragment;
-	}
+    @Override
+    public Object getObject() throws Exception {
+        return packageFragment;
+    }
 
-	@Override
-	public boolean isRenamable() throws Exception {
-		return isRemoveable();
-	}
+    @Override
+    public boolean isRenamable() throws Exception {
+        return isRemoveable();
+    }
 
-	@Override
-	public Transfer getEntityTransfer() throws Exception {
-		return TreeEntityTransfer.getInstance();
-	}
+    @Override
+    public Transfer getEntityTransfer() throws Exception {
+        return TreeEntityTransfer.getInstance();
+    }
 
-	@Override
-	public String getCopyTag() throws Exception {
-		return FolderType.KEYWORD.toString();
-	}
+    @Override
+    public String getCopyTag() throws Exception {
+        return FolderType.KEYWORD.toString();
+    }
 
-	@Override
-	public boolean equals(Object object) {
-		try {
-			if (object == null || !(object instanceof PackageTreeEntity)) {
-				return false;
-			}
-			PackageTreeEntity anotherPackageTreeEntity = (PackageTreeEntity) object;
-			if (anotherPackageTreeEntity.getObject() == null
-					|| !(anotherPackageTreeEntity.getObject() instanceof IPackageFragment)) {
-				return false;
-			}
-			IPackageFragment anotherPackageFragment = (IPackageFragment) anotherPackageTreeEntity.getObject();
-			if (!anotherPackageFragment.getPath().toString().equalsIgnoreCase(packageFragment.getPath().toString())) {
-				return false;
-			}
-			return true;
-		} catch (Exception e) {
-			LoggerSingleton.getInstance().getLogger().error(e);
-		}
-		return false;
-	}
+    @Override
+    public boolean equals(Object object) {
+        try {
+            if (object == null || !(object instanceof PackageTreeEntity)) {
+                return false;
+            }
+            PackageTreeEntity anotherPackageTreeEntity = (PackageTreeEntity) object;
+            if (anotherPackageTreeEntity.getObject() == null
+                    || !(anotherPackageTreeEntity.getObject() instanceof IPackageFragment)) {
+                return false;
+            }
+            IPackageFragment anotherPackageFragment = (IPackageFragment) anotherPackageTreeEntity.getObject();
+            if (!anotherPackageFragment.getPath().toString().equalsIgnoreCase(packageFragment.getPath().toString())) {
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            LoggerSingleton.getInstance().getLogger().error(e);
+        }
+        return false;
+    }
 
-	@Override
-	public int hashCode() {
-		return new HashCodeBuilder(7, 31).append(packageFragment.getPath().toString() + (isDefaultPackage ? "\\defaultPackage" : ""))
-				.toHashCode();
-	}
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(7, 31).append(
+                packageFragment.getPath().toString() + (isDefaultPackage ? "\\defaultPackage" : "")).toHashCode();
+    }
 
-	@Override
-	public void setObject(Object object) throws Exception {
-		if (object instanceof IPackageFragment) {
-			this.packageFragment = (IPackageFragment) object;
-			this.packageName = ((IPackageFragment) object).getElementName();
-			this.isDefaultPackage = packageName.equals(IPackageFragment.DEFAULT_PACKAGE_NAME);
-		}
-	}
+    @Override
+    public void setObject(Object object) throws Exception {
+        if (object instanceof IPackageFragment) {
+            this.packageFragment = (IPackageFragment) object;
+            this.packageName = ((IPackageFragment) object).getElementName();
+            this.isDefaultPackage = packageName.equals(IPackageFragment.DEFAULT_PACKAGE_NAME);
+        }
+    }
 
-	@Override
-	public String getKeyWord() throws Exception {
-		return KeywordTreeEntity.KEY_WORD;
-	}
+    @Override
+    public String getKeyWord() throws Exception {
+        return KeywordTreeEntity.KEY_WORD;
+    }
 
-	@Override
-	public String[] getSearchTags() throws Exception {
-		return KeywordTreeEntity.SEARCH_TAGS;
-	}
+    @Override
+    public String[] getSearchTags() throws Exception {
+        return KeywordTreeEntity.SEARCH_TAGS;
+    }
 
-	/**
-	 * key: search tag
-	 */
-	@Override
-	public String getPropertyValue(String key) {
-		if (key.equals("name")) {
-			if (isDefaultPackage) {
-				return DEFAULT_PACKAGE_LABEL;
-			}
-			return packageName;
-		}
-		return StringUtils.EMPTY;
-	}
+    /**
+     * key: search tag
+     */
+    @Override
+    public String getPropertyValue(String key) {
+        if (key.equals("name")) {
+            if (isDefaultPackage) {
+                return DEFAULT_PACKAGE_LABEL;
+            }
+            return packageName;
+        }
+        return StringUtils.EMPTY;
+    }
 
-	@Override
-	public Image getEntryImage() throws Exception {
-		return ImageConstants.IMG_16_KEYWORD;
-	}
+    @Override
+    public Image getEntryImage() throws Exception {
+        return ImageConstants.IMG_16_KEYWORD;
+    }
 
-	@Override
-	public void loadAllDescentdantEntities() throws Exception {
-		// TODO Auto-generated method stub
+    @Override
+    public void loadAllDescentdantEntities() throws Exception {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
 }

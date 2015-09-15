@@ -31,12 +31,11 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.groovy.util.GroovyRefreshUtil;
 
-@SuppressWarnings("restriction")
 public class RenamePackageHandler {
 
     @Inject
     private IEventBroker eventBroker;
-    
+
     @Inject
     private EPartService partService;
 
@@ -49,8 +48,20 @@ public class RenamePackageHandler {
             @Override
             public void handleEvent(Event event) {
                 Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-                if (object != null && object instanceof PackageTreeEntity) {
+                
+                if (object == null || !(object instanceof PackageTreeEntity)) { return; }
+                
+                try {
+                    PackageTreeEntity packageTreeEntity = (PackageTreeEntity) object;
+                    IPackageFragment packageFragment = (IPackageFragment) packageTreeEntity.getObject();
+
+                    // Rename function is not applied for default package
+                    if (packageFragment.isDefaultPackage()) {
+                        return;
+                    }
                     execute((PackageTreeEntity) object);
+                } catch (Exception e) {
+                    LoggerSingleton.logError(e);
                 }
             }
         });
@@ -58,69 +69,74 @@ public class RenamePackageHandler {
 
     private void execute(PackageTreeEntity packageTreeEntity) {
         try {
-        	IPackageFragment packageFragment = (IPackageFragment) packageTreeEntity.getObject();
-        	
-        	ITreeEntity parentTreeEntity = packageTreeEntity.getParent();
-        	IFolder parentPackageFragmentFolder = (IFolder) packageFragment.getParent().getResource();
-        	
-        	List<String> childrenEntityPathBeforeRenaming = new ArrayList<String>();
-        	for (Object object : parentTreeEntity.getChildren()) {
-        		if (!packageTreeEntity.equals(object)) {
-        			String treeEntityPath = "";
-	        		if (object instanceof PackageTreeEntity) {
-	        			IPackageFragment childPackageFragment = (IPackageFragment) ((PackageTreeEntity) object).getObject();
-	        			treeEntityPath = childPackageFragment.getResource().getFullPath().toString();
-	        		}
-	        		childrenEntityPathBeforeRenaming.add(treeEntityPath);
-        		}
-        	}
-        	String oldPackagePath = parentPackageFragmentFolder.getName() + IPath.SEPARATOR + packageFragment.getElementName();
-            RenameSupport support = RenameSupport.create(packageFragment, null,
-                    RenameSupport.UPDATE_REFERENCES);
+            IPackageFragment packageFragment = (IPackageFragment) packageTreeEntity.getObject();
+
+            ITreeEntity parentTreeEntity = packageTreeEntity.getParent();
+            IFolder parentPackageFragmentFolder = (IFolder) packageFragment.getParent().getResource();
+
+            List<String> childrenEntityPathBeforeRenaming = new ArrayList<String>();
+            for (Object object : parentTreeEntity.getChildren()) {
+                if (!packageTreeEntity.equals(object)) {
+                    String treeEntityPath = "";
+                    if (object instanceof PackageTreeEntity) {
+                        IPackageFragment childPackageFragment = (IPackageFragment) ((PackageTreeEntity) object)
+                                .getObject();
+                        treeEntityPath = childPackageFragment.getResource().getFullPath().toString();
+                    }
+                    childrenEntityPathBeforeRenaming.add(treeEntityPath);
+                }
+            }
+            String oldPackagePath = parentPackageFragmentFolder.getName() + IPath.SEPARATOR
+                    + packageFragment.getElementName();
+            RenameSupport support = RenameSupport.create(packageFragment, null, RenameSupport.UPDATE_REFERENCES);
             if (support != null && support.preCheck().isOK()) {
-            	//oldScript: custom keyword scripts that contain the current package before renaming.
-            	String oldScript = "CustomKeywords.'" + packageFragment.getElementName() + ".";
-            	
-                support.openDialog(parentShell);
+                // oldScript: custom keyword scripts that contain the current
+                // package before renaming.
+                String oldScript = "CustomKeywords.'" + packageFragment.getElementName() + ".";
                 
-                //refresh explorer.
+                //Returns if user canceled the dialog
+                if (!support.openDialog(parentShell, false)) { return; }
+                
+                // refresh explorer.
                 eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
                 ProjectEntity project = ProjectController.getInstance().getCurrentProject();
-                
-                //regenerate CustomKeywords.groovy file.
+
+                // regenerate CustomKeywords.groovy file.
                 KeywordController.getInstance().parseAllCustomKeywords(project, null);
-                
-                //refresh project to all editors know that change.
-                parentPackageFragmentFolder.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());                
+
+                // refresh project to all editors know that change.
+                parentPackageFragmentFolder.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
                 String newPkName = "";
-                //after renaming completely, update references of the renamed package.
+                // after renaming completely, update references of the renamed
+                // package.
                 for (Object object : parentTreeEntity.getChildren()) {
-					String treeEntityPathAfterRenaming = "";
-					String newPackageName = ""; 
-					if (object instanceof PackageTreeEntity) {
-						IPackageFragment childPackageFragment = (IPackageFragment) ((PackageTreeEntity) object)
-								.getObject();
-						treeEntityPathAfterRenaming = childPackageFragment.getResource().getFullPath().toString();
-						newPackageName = childPackageFragment.getElementName();
-					}
-					
-					if (!childrenEntityPathBeforeRenaming.contains(treeEntityPathAfterRenaming)) {
-						newPkName = newPackageName;
-						//newScript: custom keyword scripts that contain the current package before renaming. 
-		        		String newScript = "CustomKeywords.'" + newPackageName + ".";
-		        		GroovyRefreshUtil.updateScriptReferencesInTestCaseAndCustomScripts(oldScript, newScript, 
-		        				ProjectController.getInstance().getCurrentProject());
-		        		partService.saveAll(false);
-						break;
-					}
-            	}               		
-				eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] { oldPackagePath,
-						parentPackageFragmentFolder.getName() + IPath.SEPARATOR + newPkName });
+                    String treeEntityPathAfterRenaming = "";
+                    String newPackageName = "";
+                    if (object instanceof PackageTreeEntity) {
+                        IPackageFragment childPackageFragment = (IPackageFragment) ((PackageTreeEntity) object)
+                                .getObject();
+                        treeEntityPathAfterRenaming = childPackageFragment.getResource().getFullPath().toString();
+                        newPackageName = childPackageFragment.getElementName();
+                    }
+
+                    if (!childrenEntityPathBeforeRenaming.contains(treeEntityPathAfterRenaming)) {
+                        newPkName = newPackageName;
+                        // newScript: custom keyword scripts that contain the
+                        // current package before renaming.
+                        String newScript = "CustomKeywords.'" + newPackageName + ".";
+                        GroovyRefreshUtil.updateScriptReferencesInTestCaseAndCustomScripts(oldScript, newScript,
+                                ProjectController.getInstance().getCurrentProject());
+                        partService.saveAll(false);
+                        break;
+                    }
+                }
+                eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] { oldPackagePath,
+                        parentPackageFragmentFolder.getName() + IPath.SEPARATOR + newPkName });
             }
         } catch (Exception e) {
-        	MessageDialog.openError(null, StringConstants.ERROR_TITLE, 
-        			StringConstants.HAND_ERROR_MSG_UNABLE_TO_RENAME_PACKAGE);
-            LoggerSingleton.getInstance().getLogger().error(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.HAND_ERROR_MSG_UNABLE_TO_RENAME_PACKAGE);
+            LoggerSingleton.logError(e);
         }
     }
 
