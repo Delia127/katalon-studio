@@ -553,7 +553,7 @@ public class TestCasePart implements EventHandler {
             }
         });
         
-        //enable tooltip support for treeTable
+        //Enable tool-tip support for treeTable
         treeTable.getTree().setToolTipText("");
         ColumnViewerToolTipSupport.enableFor(treeTable);
         
