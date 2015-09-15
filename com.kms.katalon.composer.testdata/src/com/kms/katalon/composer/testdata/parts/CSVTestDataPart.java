@@ -11,9 +11,11 @@ import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -26,6 +28,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
@@ -68,9 +71,6 @@ public class CSVTestDataPart extends TestDataMainPart {
         super.createControls(parent, mpart);
     }
 
-    /**
-     * @wbp.parser.entryPoint
-     */
     @Override
     protected Composite createFileInfoPart(Composite parent) {
         compositeFileInfo = new Composite(parent, SWT.NONE);
@@ -176,6 +176,19 @@ public class CSVTestDataPart extends TestDataMainPart {
         tableViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         tableViewer.getTable().setLinesVisible(true);
 
+        TableViewerColumn tbvclmnNo = new TableViewerColumn(tableViewer, SWT.NONE);
+        TableColumn tbclmnNo = tbvclmnNo.getColumn();
+        tbclmnNo.setText(StringConstants.NO_);
+        tbclmnNo.setWidth(40);
+        tbvclmnNo.setLabelProvider(new CellLabelProvider() {
+
+            @Override
+            public void update(ViewerCell cell) {
+                int order = tableViewer.getTable().indexOf((TableItem) cell.getItem()) + 1;
+                cell.setText(Integer.toString(order));
+            }
+        });
+
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
         addListeners();
@@ -203,7 +216,7 @@ public class CSVTestDataPart extends TestDataMainPart {
 
             }
         });
-        
+
         cbSeperator.addSelectionListener(new SelectionAdapter() {
 
             @Override
@@ -221,11 +234,9 @@ public class CSVTestDataPart extends TestDataMainPart {
                     if (txtFileName.getText() != null) {
                         String sourceUrl = txtFileName.getText();
                         if (chckIsRelativePath.getSelection()) {
-                            txtFileName.setText(PathUtils.absoluteToRelativePath(sourceUrl,
-                                    getProjectFolderLocation()));
+                            txtFileName.setText(PathUtils.absoluteToRelativePath(sourceUrl, getProjectFolderLocation()));
                         } else {
-                            txtFileName.setText(PathUtils.relativeToAbsolutePath(sourceUrl,
-                                    getProjectFolderLocation()));
+                            txtFileName.setText(PathUtils.relativeToAbsolutePath(sourceUrl, getProjectFolderLocation()));
                         }
                     }
                     dirtyable.setDirty(true);
@@ -299,8 +310,8 @@ public class CSVTestDataPart extends TestDataMainPart {
     }
 
     private void clearTable() {
-        while (tableViewer.getTable().getColumnCount() > 0) {
-            tableViewer.getTable().getColumns()[0].dispose();
+        while (tableViewer.getTable().getColumnCount() > 1) {
+            tableViewer.getTable().getColumns()[1].dispose();
         }
     }
 
@@ -329,25 +340,26 @@ public class CSVTestDataPart extends TestDataMainPart {
                     column.setLabelProvider(new ColumnLabelProvider() {
                         @Override
                         public String getText(Object element) {
-                            if (element != null) {
-                                if (element instanceof String[]) {
-                                    return ((String[]) element)[idx];
+                            if (element != null && element instanceof String[]) {
+                                String[] rowData = ((String[]) element);
+                                if (rowData.length > idx) {
+                                    return rowData[idx];
                                 }
                             }
-                            return element != null ? element.toString() : StringUtils.EMPTY;
+                            return StringUtils.EMPTY;
                         }
                     });
                 }
 
-                for (int i = 0; i < tableViewer.getTable().getColumnCount(); i++) {
-                    TableColumn column = tableViewer.getTable().getColumns()[i];
+                for (int i = 0; i < tableViewer.getTable().getColumnCount() - 1; i++) {
+                    TableColumn column = tableViewer.getTable().getColumns()[i + 1];
                     String header = reader.getColumnNames()[i];
                     if (header == null) {
                         header = StringUtils.EMPTY;
                     }
                     column.setText(header);
                 }
-                
+
                 tableViewer.setInput(data);
             }
 
@@ -367,6 +379,7 @@ public class CSVTestDataPart extends TestDataMainPart {
             dataFile = updateDataFileProperty(dataFile.getLocation(), txtName.getText(), txtDesc.getText(),
                     DataFileDriverType.CSV, txtFileName.getText(), cbSeperator.getText(),
                     chckIsRelativePath.getSelection());
+
             updateDataFile(dataFile);
             dirtyable.setDirty(false);
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);

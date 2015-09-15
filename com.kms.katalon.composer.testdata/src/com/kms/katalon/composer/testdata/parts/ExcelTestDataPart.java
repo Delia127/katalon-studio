@@ -12,9 +12,11 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -26,6 +28,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
@@ -41,8 +45,8 @@ import com.kms.katalon.core.testdata.ExcelData;
 import com.kms.katalon.core.util.PathUtils;
 import com.kms.katalon.entity.dal.exception.DuplicatedFileNameException;
 import com.kms.katalon.entity.testdata.DataFileEntity;
-import com.kms.katalon.entity.testdata.DataFilePropertyInputEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity.DataFileDriverType;
+import com.kms.katalon.entity.testdata.DataFilePropertyInputEntity;
 
 public class ExcelTestDataPart extends TestDataMainPart {
     private static final String[] FILTER_NAMES = { "Microsoft Excel Spreadsheet Files (*.xls, *.xlsx)" };
@@ -184,6 +188,19 @@ public class ExcelTestDataPart extends TestDataMainPart {
         tableViewer = new TableViewer(compositeTable, SWT.VIRTUAL | SWT.FULL_SELECTION);
         tableViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
+        TableViewerColumn tbviewerClmnNo = new TableViewerColumn(tableViewer, SWT.NONE);
+        TableColumn tbclmnNo = tbviewerClmnNo.getColumn();
+        tbclmnNo.setText(StringConstants.NO_);
+        tbclmnNo.setWidth(40);
+        tbviewerClmnNo.setLabelProvider(new CellLabelProvider() {
+
+            @Override
+            public void update(ViewerCell cell) {
+                int order = tableViewer.getTable().indexOf((TableItem) cell.getItem()) + 1;
+                cell.setText(Integer.toString(order));
+            }
+        });
+        
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
         return compositeTable;
@@ -193,7 +210,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
         txtFileName.setText(dataFile.getDataSourceUrl());
         ckcbUseRelativePath.setSelection(dataFile.getIsInternalPath());
 
-        Display.getCurrent().asyncExec(new Runnable() {
+        Thread loadSheetThread = new Thread(new Runnable() {
 
             @Override
             public void run() {
@@ -204,6 +221,9 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 loadExcelData();
             }
         });
+
+        currentThreads.add(loadSheetThread);
+        Display.getCurrent().asyncExec(loadSheetThread);
 
     }
 
@@ -219,8 +239,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 String absolutePath = dialog.open();
                 if (absolutePath == null) return;
                 if (ckcbUseRelativePath.getSelection()) {
-                    txtFileName.setText(PathUtils
-                            .absoluteToRelativePath(absolutePath, getProjectFolderLocation()));
+                    txtFileName.setText(PathUtils.absoluteToRelativePath(absolutePath, getProjectFolderLocation()));
                 } else {
                     txtFileName.setText(absolutePath);
                 }
@@ -247,11 +266,9 @@ public class ExcelTestDataPart extends TestDataMainPart {
                     if (txtFileName.getText() != null) {
                         String sourceUrl = txtFileName.getText();
                         if (ckcbUseRelativePath.getSelection()) {
-                            txtFileName.setText(PathUtils.absoluteToRelativePath(sourceUrl,
-                                    getProjectFolderLocation()));
+                            txtFileName.setText(PathUtils.absoluteToRelativePath(sourceUrl, getProjectFolderLocation()));
                         } else {
-                            txtFileName.setText(PathUtils.relativeToAbsolutePath(sourceUrl,
-                                    getProjectFolderLocation()));
+                            txtFileName.setText(PathUtils.relativeToAbsolutePath(sourceUrl, getProjectFolderLocation()));
                         }
                     }
                     dirtyable.setDirty(true);
@@ -301,6 +318,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
     private void loadSheetNames() {
         try {
+            if (cbbSheets.isDisposed()) { return; }
             cbbSheets.setItems(Util.loadSheetName(getSourceUrlAbsolutePath()).toArray(new String[] {}));
             cbbSheets.select(0);
         } catch (Exception e) {
@@ -310,8 +328,8 @@ public class ExcelTestDataPart extends TestDataMainPart {
     }
 
     private void clearTable() {
-        while (tableViewer.getTable().getColumnCount() > 0) {
-            tableViewer.getTable().getColumns()[0].dispose();
+        while (tableViewer.getTable().getColumnCount() > 1) {
+            tableViewer.getTable().getColumns()[1].dispose();
         }
         tableViewer.getTable().clearAll();
     }
