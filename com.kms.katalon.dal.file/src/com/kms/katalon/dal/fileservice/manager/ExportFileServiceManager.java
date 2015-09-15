@@ -139,7 +139,8 @@ public class ExportFileServiceManager {
                 Node kindAttributeNode = classPathEntry.getAttributes().getNamedItem("kind");
                 if (kindAttributeNode != null && kindAttributeNode.getNodeValue().equals("lib")) {
                     Node pathAttributeNode = classPathEntry.getAttributes().getNamedItem("path");
-                    if (pathAttributeNode != null) {
+                    if (pathAttributeNode != null && libsChangedLocation.get(pathAttributeNode.getNodeValue()) != null
+                            && !libsChangedLocation.get(pathAttributeNode.getNodeValue()).isEmpty()) {
                         pathAttributeNode.setNodeValue(libsChangedLocation.get(pathAttributeNode.getNodeValue()));
                     }
                 }
