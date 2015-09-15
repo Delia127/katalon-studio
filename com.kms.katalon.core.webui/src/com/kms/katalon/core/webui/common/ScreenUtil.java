@@ -1,6 +1,7 @@
 package com.kms.katalon.core.webui.common;
 
 import java.io.File;
+import java.text.MessageFormat;
 
 import org.sikuli.api.DesktopScreenRegion;
 import org.sikuli.api.ImageTarget;
@@ -11,7 +12,11 @@ import org.sikuli.api.robot.Mouse;
 import org.sikuli.api.robot.desktop.DesktopKeyboard;
 import org.sikuli.api.robot.desktop.DesktopMouse;
 
+import com.kms.katalon.core.exception.StepFailedException;
+import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.webui.constants.StringConstants;
+import com.kms.katalon.core.webui.driver.DriverFactory;
+import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.core.webui.util.FileUtil;
 
 public class ScreenUtil {
@@ -78,24 +83,29 @@ public class ScreenUtil {
 		String usrImg = "";
 		String passImg = "";
 		String okImg = "";
-		if("FIREFOX_DRIVER".equals(System.getProperty("qAutomate.browserExecuted"))){
-			usrImg = "auth_dlg_usr_win7_ff.png";
-			passImg = "auth_dlg_pass_win7_ff.png";
-			okImg = "auth_dlg_ok_win7_ff.png";
-		}
-		else if("IE_DRIVER".equals(System.getProperty("qAutomate.browserExecuted"))){
-			usrImg = "auth_dlg_usr_win7_ie.png";
-			passImg = "auth_dlg_pass_win7_ie.png";
-			okImg = "auth_dlg_ok_win7_ie.png";
-		}
-		else if("CHROME_DRIVER".equals(System.getProperty("qAutomate.browserExecuted"))){
-			usrImg = "auth_dlg_usr_win7_chrome.png";
-			passImg = "auth_dlg_pass_win7_chrome.png";
-			okImg = "auth_dlg_ok_win7_chrome.png";
-		}
-		else{
-			throw new Exception(StringConstants.COMM_EXC_BROWSER_IS_NOT_SUPPORTED); 
-		}		
+		WebUIDriverType driver = (WebUIDriverType) DriverFactory.getExecutedBrowser();
+        if (driver == null) {
+            throw new StepFailedException(StringConstants.DRI_ERROR_MSG_NO_BROWSER_SET);
+        }
+        switch (driver) {
+        case FIREFOX_DRIVER:
+            usrImg = "auth_dlg_usr_win7_ff.png";
+            passImg = "auth_dlg_pass_win7_ff.png";
+            okImg = "auth_dlg_ok_win7_ff.png";
+            break;
+        case IE_DRIVER:
+            usrImg = "auth_dlg_usr_win7_ie.png";
+            passImg = "auth_dlg_pass_win7_ie.png";
+            okImg = "auth_dlg_ok_win7_ie.png";
+            break;
+        case CHROME_DRIVER:
+            usrImg = "auth_dlg_usr_win7_chrome.png";
+            passImg = "auth_dlg_pass_win7_chrome.png";
+            okImg = "auth_dlg_ok_win7_chrome.png";
+            break;
+        default:
+            throw new Exception(StringConstants.COMM_EXC_BROWSER_IS_NOT_SUPPORTED);
+        }
 		File screenFolder = FileUtil.extractScreenFiles();
 		typeOnImage(screenFolder + File.separator + usrImg, userName);
 		typeOnImage(screenFolder + File.separator + passImg, password);
