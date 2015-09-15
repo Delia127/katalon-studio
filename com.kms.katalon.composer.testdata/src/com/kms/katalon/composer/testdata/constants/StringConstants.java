@@ -35,11 +35,12 @@ public class StringConstants extends GlobalStringConstants {
 	// InternalTestDataPart
 	public static final String PA_MENU_CONTEXT_INSERT_COL_TO_THE_LEFT = "Insert column to the left";
 	public static final String PA_MENU_CONTEXT_INSERT_COL_TO_THE_RIGHT = "Insert column to the right";
-	public static final String PA_MENU_CONTEXT_EDIT_COL = "Edit column";
+	public static final String PA_MENU_CONTEXT_RENAME_COL = "Rename column";
 	public static final String PA_MENU_CONTEXT_DEL_COL = "Delete column";
 	public static final String PA_MENU_CONTEXT_INSERT_ROW = "Insert row";
 	public static final String PA_MENU_CONTEXT_DEL_ROWS = "Delete row(s)";
 	public static final String PA_COL_NO = NO_;
+	public static final String PA_TOOL_TIP_ADD_COLUMN = "Add column";
 
 	// TestDataMainPart
 	public static final String PA_LBL_GENERAL_INFO = "General Information";
@@ -59,8 +60,9 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String VIEW_SHELL_DATA_COL_DEFINITION = "Data Column Definition";
 	public static final String VIEW_INFO_TITLE_INVALID_DATA = "Data Column Definition";
 	public static final String VIEW_INFO_MSG_ENTER_COL_NAME = "Please give a column name";
-	public static final String VIEW_INFO_MSG_SELECT_DATA_TYPE = "Please select a data type";
-
+	public static final String VIEW_WARN_MSG_DUPLICATED_NAME = "Name duplication";
+	public static final String VIEW_WARN_MSG_NAME_IS_EMPTY = "Name cannot be empty";
+	
 	// NewTestDataDialog
 	public static final String VIEW_LBL_NAME = NAME;
 	public static final String VIEW_LBL_DATA_TYPE = "Data Type";
