@@ -911,7 +911,7 @@ public class AstTreeTableInputUtil {
 			}
 		}
 		if (existingParam instanceof VariableExpression || existingParam instanceof MapExpression
-				|| existingParam instanceof CastExpression) {
+				|| existingParam instanceof CastExpression || existingParam instanceof BinaryExpression) {
 			return existingParam;
 		}
 		if (classFullName.equals(List.class.getName()) || isArray) {
