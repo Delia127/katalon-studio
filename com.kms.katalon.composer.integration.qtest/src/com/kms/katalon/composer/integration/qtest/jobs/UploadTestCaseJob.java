@@ -50,7 +50,7 @@ public class UploadTestCaseJob extends UploadJob {
 
         for (FileEntity fileEntity : getFileEntities()) {
             try {
-                if (isUserCanceled) {
+                if (isUserCanceled || monitor.isCanceled()) {
                     return Status.CANCEL_STATUS;
                 }
 

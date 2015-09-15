@@ -9,6 +9,7 @@ import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Event;
 
 import com.kms.katalon.composer.components.impl.providers.IEntityLabelProvider;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -85,4 +86,12 @@ public class KeywordTreeLabelProvider extends StyledCellLabelProvider implements
 	public void setSearchString(String searchString) {
 		this.searchString = searchString;
 	}
+	
+	@Override
+    protected void measure(Event event, Object element) {
+       super.measure(event, element);
+       
+       //increase 1 pixel to prevent the last character of cell's text cut
+       event.width++;
+    }
 }

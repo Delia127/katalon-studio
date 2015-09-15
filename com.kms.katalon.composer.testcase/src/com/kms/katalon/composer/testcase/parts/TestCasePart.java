@@ -1,7 +1,5 @@
 package com.kms.katalon.composer.testcase.parts;
 
-import groovy.json.StringEscapeUtils;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.EventObject;
@@ -28,10 +26,10 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.CellLabelProvider;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -51,7 +49,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -96,6 +93,7 @@ import com.kms.katalon.composer.testcase.keywords.KeywordBrowserTreeEntityTransf
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
+import com.kms.katalon.composer.testcase.providers.AstTreeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstTreeTableContentProvider;
 import com.kms.katalon.composer.testcase.providers.TestCaseSelectionListener;
 import com.kms.katalon.composer.testcase.providers.TestStepTableDropListener;
@@ -110,7 +108,6 @@ import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransfer;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransferData;
 import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
-import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
@@ -512,72 +509,17 @@ public class TestCasePart implements EventHandler {
         TreeColumnLayout treeColumnLayout = new TreeColumnLayout();
         compositeTable.setLayout(treeColumnLayout);
 
-        addTreeTableColumn(treeTable, treeColumnLayout, StringConstants.PA_COL_ITEM, 200, 0, new ColumnLabelProvider() {
-            @Override
-            public String getText(Object element) {
-                if (element instanceof AstTreeTableNode) {
-                    AstTreeTableNode treeTableNode = (AstTreeTableNode) element;
-                    return ((treeTableNode instanceof AstStatementTreeTableNode) ? (treeTableNode
-                                    .getIndex() + " - ") : "") + treeTableNode.getItemText();
-                }
-                return "";
-            }
+        addTreeTableColumn(treeTable, treeColumnLayout, StringConstants.PA_COL_ITEM, 200, 0,
+                new AstTreeLabelProvider(), new ItemColumnEditingSupport(treeTable, this));
 
-            @Override
-            public Image getImage(Object element) {
-                if (element instanceof AstTreeTableNode) {
-                    return ((AstTreeTableNode) element).getNodeIcon();
-                }
-                return null;
-            }
-        }, new ItemColumnEditingSupport(treeTable, this));
-
-        addTreeTableColumn(treeTable, treeColumnLayout, StringConstants.PA_COL_OBJ, 200, 0, new ColumnLabelProvider() {
-            @Override
-            public String getText(Object element) {
-                if (element instanceof AstTreeTableNode) {
-                    return ((AstTreeTableNode) element).getTestObjectText();
-                }
-                return "";
-            }
-        }, new TestObjectEditingSupport(treeTable, this));
+        addTreeTableColumn(treeTable, treeColumnLayout, StringConstants.PA_COL_OBJ, 200, 0, new AstTreeLabelProvider(),
+                new TestObjectEditingSupport(treeTable, this));
         addTreeTableColumn(treeTable, treeColumnLayout, StringConstants.PA_COL_INPUT, 200, 0,
-                new ColumnLabelProvider() {
-                    @Override
-                    public String getText(Object element) {
-                        if (element instanceof AstTreeTableNode) {
-                            return ((AstTreeTableNode) element).getInputText();
-                        }
-                        return "";
-                    }
-                }, new InputColumnEditingSupport(treeTable, this));
+                new AstTreeLabelProvider(), new InputColumnEditingSupport(treeTable, this));
         addTreeTableColumn(treeTable, treeColumnLayout, StringConstants.PA_COL_OUTPUT, 200, 0,
-                new ColumnLabelProvider() {
-                    @Override
-                    public String getText(Object element) {
-                        if (element instanceof AstTreeTableNode) {
-                            return ((AstTreeTableNode) element).getOutputText();
-                        }
-                        return "";
-                    }
-                }, new OutputColumnEditingSupport(treeTable, this));
+                new AstTreeLabelProvider(), new OutputColumnEditingSupport(treeTable, this));
         addTreeTableColumn(treeTable, treeColumnLayout, StringConstants.PA_COL_DESCRIPTION, 400, 100,
-                new ColumnLabelProvider() {
-                    @Override
-                    public String getText(Object element) {
-                        if (element instanceof AstStatementTreeTableNode
-                                && ((AstStatementTreeTableNode) element).hasDescription()) {
-                            AstStatementTreeTableNode statementNode = ((AstStatementTreeTableNode) element);
-                            Object descriptionValue = AstTreeTableValueUtil.getValue(statementNode.getDescription(),
-                                    statementNode.getScriptClass());
-                            if (descriptionValue instanceof String) {
-                                String description = (String) descriptionValue;
-                                return StringEscapeUtils.escapeJava(description);
-                            }
-                        }
-                        return "";
-                    }
-                }, new DescriptionColumnEditingSupport(treeTable, this));
+                new AstTreeLabelProvider(), new DescriptionColumnEditingSupport(treeTable, this));
 
         treeTable.setContentProvider(new AstTreeTableContentProvider());
 
@@ -610,6 +552,11 @@ public class TestCasePart implements EventHandler {
 
             }
         });
+        
+        //enable tooltip support for treeTable
+        treeTable.getTree().setToolTipText("");
+        ColumnViewerToolTipSupport.enableFor(treeTable);
+        
         createContextMenu();
         hookDragEvent();
         hookDropEvent();
