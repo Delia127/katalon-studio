@@ -5,12 +5,12 @@ import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
-import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.testcase.editors.TestStepDescriptionBuilderCellEditor;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
 import com.kms.katalon.composer.testcase.treetable.AstStatementTreeTableNode;
@@ -29,7 +29,7 @@ public class DescriptionColumnEditingSupport extends EditingSupport {
 	@Override
 	protected CellEditor getCellEditor(Object element) {
 		if (element instanceof AstStatementTreeTableNode) {
-			return new TextCellEditor(treeViewer.getTree());
+			return new TestStepDescriptionBuilderCellEditor(treeViewer.getTree());
 		}
 		return null;
 	}

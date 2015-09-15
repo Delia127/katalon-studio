@@ -107,6 +107,10 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String PA_LBL_TEAR_DOWN_FAILED_BUTTON = "Tear Down If FAILED";
 	public static final String PA_LBL_TEAR_DOWN_PASSED_BUTTON = "Tear Down If PASSED";
 	public static final String PA_LBL_TEAR_DOWN_ERROR_BUTTON = "Tear Down If ERROR";
+	
+	// TestStepDescriptionBuilderDialog
+    public static final String DIA_TITLE_EDIT_DESCRIPTION = "Edit Description";
+    public static final String DIA_MESSAGE_EDIT_DESCRIPTION = "Edit Description for Test Step";
 
 	// AbstractDialogCellEditor
 	public static final String EDI_MSG_VALIDATOR_REQUIRE_MESSAGE = "The cell editor required object as type {0} to work.";

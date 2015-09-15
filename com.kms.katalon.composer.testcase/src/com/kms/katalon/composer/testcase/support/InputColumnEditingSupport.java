@@ -6,6 +6,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
+import com.kms.katalon.composer.testcase.treetable.AstForStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.treetable.AstTreeTableNode;
 
 public class InputColumnEditingSupport extends EditingSupport {
@@ -47,7 +48,11 @@ public class InputColumnEditingSupport extends EditingSupport {
 		if (element instanceof AstTreeTableNode && ((AstTreeTableNode) element).setInput(value)) {
 			try {
 				parentTestCasePart.getTreeTableInput().setDirty(true);
-				parentTestCasePart.getTreeTableInput().refresh(element);
+				if (element instanceof AstForStatementTreeTableNode) {
+				    parentTestCasePart.getTreeTableInput().refresh(((AstForStatementTreeTableNode) element).getParent());
+				} else {
+	                parentTestCasePart.getTreeTableInput().refresh(element);
+				}
 			} catch (Exception e) {
 				LoggerSingleton.logError(e);
 			}

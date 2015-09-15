@@ -56,7 +56,7 @@ public class AstForStatementTreeTableNode extends AstStatementTreeTableNode {
 	public boolean setInput(Object input) {
 		if (input instanceof ForStatement) {
 			ForStatement newForStatement = (ForStatement) input;
-			if (!AstTreeTableValueUtil.compareAstNode(newForStatement, newForStatement) && getParent() != null) {
+			if (!AstTreeTableValueUtil.compareAstNode(forStatement, newForStatement) && getParent() != null) {
 				AstTreeTableNode parentNode = getParent();
 				int index = parentNode.getChildObjectIndex(forStatement);
 				parentNode.removeChildObject(forStatement);
