@@ -26,47 +26,51 @@ import com.kms.katalon.entity.project.ProjectEntity;
 
 @SuppressWarnings("restriction")
 public class RecentProjectsMenuContribution {
-	@Inject
-	private ECommandService commandService;
+    @Inject
+    private ECommandService commandService;
 
-	@Inject EModelService modelService;
-	
-	@AboutToShow
-	public void aboutToShow(List<MMenuElement> menuItems) {
-		try {
-			for (ProjectEntity project : ProjectController.getInstance().getRecentProjects()) {
-				 //Add temp command to avoid warning message
-				 MCommand command = MCommandsFactory.INSTANCE.createCommand();
-				 command.setCommandName("Temp");
-				
-				 // Create menu item
-				 MHandledMenuItem recentProjectMenuItem =
-				 MMenuFactory.INSTANCE.createHandledMenuItem();
-				 recentProjectMenuItem.setLabel(project.getName());
-				 recentProjectMenuItem.setContributorURI(ConstantsHelper.getApplicationURI());
-				 recentProjectMenuItem.setCommand(command);
-				
-				 // Create parameterized command
-				 Command recentProjectCommand =
-				 commandService.getCommand(IdConstants.OPEN_RECENT_PROJECT_COMMAND_ID);
-				 List<Parameterization> parameterization = new
-				 ArrayList<Parameterization>();
-				 IParameter param =
-				 recentProjectCommand.getParameter(IdConstants.OPEN_RECENT_PROJECT_COMMAND_PARAMETER_ID);
-				 Parameterization params = new Parameterization(param,
-				 project.getId());
-				 parameterization.add(params);
-				 ParameterizedCommand parameterizedCommand = new
-				 ParameterizedCommand(recentProjectCommand,
-				 parameterization.toArray(new
-				 Parameterization[parameterization.size()]));
-				 recentProjectMenuItem.setWbCommand(parameterizedCommand);
-				
-				 menuItems.add(recentProjectMenuItem);
-			}
-		} catch (Exception e) {
-			LoggerSingleton.getInstance().getLogger().error(e);
-		}
+    @Inject
+    EModelService modelService;
 
-	}
+    @AboutToShow
+    public void aboutToShow(List<MMenuElement> menuItems) {
+        try {
+            for (ProjectEntity project : ProjectController.getInstance().getRecentProjects()) {
+                // Add temp command to avoid warning message
+                MCommand command = MCommandsFactory.INSTANCE.createCommand();
+                command.setCommandName("Temp");
+
+                String labelName = project.getName() + "\t" + getLocationStringLabel(project.getLocation());
+
+                // Create menu item
+                MHandledMenuItem recentProjectMenuItem = MMenuFactory.INSTANCE.createHandledMenuItem();
+                recentProjectMenuItem.setLabel(labelName);
+                recentProjectMenuItem.setContributorURI(ConstantsHelper.getApplicationURI());
+                recentProjectMenuItem.setCommand(command);
+
+                // Create parameterized command
+                Command recentProjectCommand = commandService.getCommand(IdConstants.OPEN_RECENT_PROJECT_COMMAND_ID);
+                List<Parameterization> parameterization = new ArrayList<Parameterization>();
+                IParameter param = recentProjectCommand
+                        .getParameter(IdConstants.OPEN_RECENT_PROJECT_COMMAND_PARAMETER_ID);
+                Parameterization params = new Parameterization(param, project.getId());
+                parameterization.add(params);
+                ParameterizedCommand parameterizedCommand = new ParameterizedCommand(recentProjectCommand,
+                        parameterization.toArray(new Parameterization[parameterization.size()]));
+                recentProjectMenuItem.setWbCommand(parameterizedCommand);
+
+                menuItems.add(recentProjectMenuItem);
+            }
+        } catch (Exception e) {
+            LoggerSingleton.getInstance().getLogger().error(e);
+        }
+    }
+
+    private String getLocationStringLabel(String location) {
+        if (location.length() > 60) {
+            return location.substring(0, 60) + "...";
+        } else {
+            return location;
+        }
+    }
 }

@@ -17,6 +17,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -89,16 +90,16 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
     @Override
     public Composite createContainer(Composite parent) {
         Composite container = new Composite(parent, SWT.NONE);
-        GridLayout gl_container = new GridLayout(1, false);
-        gl_container.marginWidth = 0;
-        gl_container.marginHeight = 0;
-        container.setLayout(gl_container);
+        GridLayout glContainer = new GridLayout(1, false);
+        glContainer.marginWidth = 0;
+        glContainer.marginHeight = 0;
+        container.setLayout(glContainer);
 
         Composite compositeButton = new Composite(container, SWT.NONE);
-        GridLayout gl_compositeButton = new GridLayout(3, false);
-        gl_compositeButton.marginHeight = 0;
-        gl_compositeButton.marginWidth = 0;
-        compositeButton.setLayout(gl_compositeButton);
+        GridLayout glCompositeButton = new GridLayout(3, false);
+        glCompositeButton.marginHeight = 0;
+        glCompositeButton.marginWidth = 0;
+        compositeButton.setLayout(glCompositeButton);
         compositeButton.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
         btnUpload = new Button(compositeButton, SWT.NONE);
@@ -111,9 +112,9 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
         btnDisintegrate.setText("Disintegrate");
 
         Composite compositeInfo = new Composite(container, SWT.NONE);
-        GridLayout gl_compositeInfo = new GridLayout(2, false);
-        gl_compositeInfo.horizontalSpacing = 10;
-        compositeInfo.setLayout(gl_compositeInfo);
+        GridLayout glCompositeInfo = new GridLayout(2, false);
+        glCompositeInfo.horizontalSpacing = 10;
+        compositeInfo.setLayout(glCompositeInfo);
         compositeInfo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
         Label lblQTestId = new Label(compositeInfo, SWT.NONE);
@@ -177,6 +178,15 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
             public void widgetSelected(SelectionEvent e) {
                 // TODO Auto-generated method stub
                 disintegrateTestCaseLog();
+            }
+        });
+        
+        btnAttachment.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                btnAttachment.setSelection(!btnAttachment.getSelection());
+                Display.getCurrent().beep();
             }
         });
     }
