@@ -73,6 +73,6 @@ public class TestStepDescriptionBuilderDialog extends TitleAreaDialog {
     }
 
     public String getDescription() {
-        return description;
+        return description == null ? "" : description;
     }
 }

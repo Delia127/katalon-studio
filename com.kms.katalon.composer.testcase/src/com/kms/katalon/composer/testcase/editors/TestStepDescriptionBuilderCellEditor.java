@@ -17,7 +17,7 @@ public class TestStepDescriptionBuilderCellEditor extends AbstractDialogCellEdit
     protected Object openDialogBox(Control cellEditorWindow) {
         if (getValue() instanceof String) {
             TestStepDescriptionBuilderDialog dialog = new TestStepDescriptionBuilderDialog(Display.getCurrent().getActiveShell(), (String) getValue());
-            if (dialog.open() == Window.OK && !dialog.getDescription().isEmpty()) {
+            if (dialog.open() == Window.OK && dialog.getDescription() != null) {
                 return dialog.getDescription();
             }
         }
