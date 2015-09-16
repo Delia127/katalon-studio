@@ -1,18 +1,26 @@
 package com.kms.katalon.composer.testsuite.dialogs;
 
+import java.util.regex.Pattern;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
@@ -20,6 +28,9 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.entity.link.IterationEntity;
 import com.kms.katalon.entity.link.IterationType;
+
+import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 
 public class DataIterationDialog extends Dialog {
 
@@ -30,6 +41,7 @@ public class DataIterationDialog extends Dialog {
     private Button btnRunFromRow;
     private Button btnRunSpecificRows;
     private Text textSpecificRow;
+    private ControlDecoration controlDecoration;
 
     public DataIterationDialog(Shell parentShell, IterationEntity iterationEntity) {
         super(parentShell);
@@ -97,7 +109,7 @@ public class DataIterationDialog extends Dialog {
 
             @Override
             public void modifyText(ModifyEvent e) {
-                validateIteration();
+                validateRangeIteration();
             }
         });
 
@@ -105,7 +117,23 @@ public class DataIterationDialog extends Dialog {
 
             @Override
             public void modifyText(ModifyEvent e) {
-                validateIteration();
+                validateRangeIteration();
+            }
+        });
+
+        spinnerFrom.addListener(SWT.Verify, new Listener() {
+
+            @Override
+            public void handleEvent(Event event) {
+                verifySpinnerEvent(event);
+            }
+        });
+
+        spinnerTo.addListener(SWT.Verify, new Listener() {
+
+            @Override
+            public void handleEvent(Event event) {
+                verifySpinnerEvent(event);
             }
         });
 
@@ -117,6 +145,44 @@ public class DataIterationDialog extends Dialog {
                 spinnerTo.setEnabled(false);
             }
         });
+        
+        textSpecificRow.addVerifyListener(new VerifyListener() {
+            
+            @Override
+            public void verifyText(VerifyEvent e) {
+                verifySpecificTextEvent(e);
+            }
+        });
+        
+        textSpecificRow.addModifyListener(new ModifyListener() {
+            
+            @Override
+            public void modifyText(ModifyEvent e) {
+                validateSpecificInteration();
+            }
+        });
+    }
+    
+    private void verifySpinnerEvent(Event event) {
+        Spinner spinner = (Spinner) event.widget;
+        StringBuilder builder = new StringBuilder(spinner.getText());
+        builder.replace(event.start, event.end, event.text);
+        String newSpinnerText = builder.toString();
+        if (!newSpinnerText.isEmpty() && !isInteger(newSpinnerText)) {
+            Display.getCurrent().beep();
+            event.doit = false;
+        }
+    }
+    
+    private void verifySpecificTextEvent(VerifyEvent event) {
+        Text txt = (Text) event.widget;
+        StringBuilder builder = new StringBuilder(txt.getText());
+        builder.replace(event.start, event.end, event.text);
+        String newSpinnerText = builder.toString().replace(" ", "");
+        if (!newSpinnerText.isEmpty() && !Pattern.matches("(\\d+|\\-|,)*", newSpinnerText)) {
+            Display.getCurrent().beep();
+            event.doit = false;
+        }
     }
 
     @Override
@@ -139,6 +205,14 @@ public class DataIterationDialog extends Dialog {
         spinnerFrom.setMinimum(1);
         spinnerFrom.setMaximum(Integer.MAX_VALUE);
         spinnerFrom.setIncrement(1);
+        spinnerFrom.setTextLimit(Integer.MAX_VALUE);
+        
+        controlDecoration = new ControlDecoration(spinnerFrom, SWT.LEFT | SWT.TOP);
+        Image imgNotification = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_WARNING)
+                .getImage();
+        controlDecoration.setImage(imgNotification);
+        controlDecoration.setDescriptionText(StringConstants.DIA_MSG_START_ROW_BIGGER_THAN_END_ROW);
+        controlDecoration.hide();
 
         Label lblNewLabel = new Label(container, SWT.NONE);
         lblNewLabel.setText(StringConstants.DIA_LBL_TO_ROW);
@@ -148,6 +222,7 @@ public class DataIterationDialog extends Dialog {
         spinnerTo.setMinimum(1);
         spinnerTo.setMaximum(Integer.MAX_VALUE);
         spinnerTo.setIncrement(1);
+        spinnerTo.setTextLimit(Integer.MAX_VALUE);
 
         btnRunSpecificRows = new Button(container, SWT.RADIO);
         btnRunSpecificRows.setText(StringConstants.DIA_BTN_RUN_SPECIFIC_ROWS);
@@ -184,21 +259,54 @@ public class DataIterationDialog extends Dialog {
     protected Point getInitialSize() {
         return new Point(500, 200);
     }
-    
+
     @Override
     protected void setShellStyle(int arg) {
         super.setShellStyle(SWT.CLOSE | SWT.TITLE | SWT.RESIZE);
     }
 
-    private void validateIteration() {
-        if (spinnerFrom.getSelection() > spinnerTo.getSelection()) {
+    private void validateRangeIteration() {
+        if (!isInteger(spinnerFrom.getText()) || !isInteger(spinnerTo.getText())) {
             getButton(Dialog.OK).setEnabled(false);
+            return;
+        }
+
+        if (Integer.valueOf(spinnerFrom.getText()) > Integer.valueOf(spinnerTo.getText())) {
+            getButton(Dialog.OK).setEnabled(false);
+            controlDecoration.show();
         } else {
             getButton(Dialog.OK).setEnabled(true);
+            controlDecoration.hide();
+        }
+    }
+    
+    private void validateSpecificInteration() {
+        String textSpecific = textSpecificRow.getText().replace(" ", "");
+        if (Pattern.matches("(\\d+\\-\\d+|\\d+)(,(\\d+\\-\\d+|\\d+))*,?", textSpecific)) {
+            getButton(Dialog.OK).setEnabled(true);
+        } else {
+            getButton(Dialog.OK).setEnabled(false);
         }
     }
 
     public IterationEntity getIterationEntity() {
         return iterationEntity;
+    }
+
+    public boolean isInteger(String s) {
+        try {
+            int value = Integer.parseInt(s);
+            return value >= 1;
+        } catch (NumberFormatException e) {
+            return false;
+        } catch (NullPointerException e) {
+            return false;
+        }
+    }
+    
+    public boolean isNumberFormat(String s) {
+        if (s == null || s.isEmpty()) return false;
+        
+        return Pattern.matches("[0-9][1-9]*", s);
     }
 }
