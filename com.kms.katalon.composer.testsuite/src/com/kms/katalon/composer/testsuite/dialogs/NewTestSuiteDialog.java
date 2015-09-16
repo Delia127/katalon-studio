@@ -8,10 +8,10 @@ import com.kms.katalon.entity.folder.FolderEntity;
 
 public class NewTestSuiteDialog extends NewEntityDialog {
 
-	public NewTestSuiteDialog(Shell parentShell, FolderEntity parentFolder) {
-		super(parentShell, parentFolder);
-		setDialogTitle(StringConstants.DIA_TITLE_TEST_SUITE);
-		setDialogMsg(StringConstants.DIA_MSG_CREATE_NEW_TEST_SUITE);
-	}
+    public NewTestSuiteDialog(Shell parentShell, FolderEntity parentFolder) {
+        super(parentShell, parentFolder);
+        setDialogTitle(StringConstants.DIA_TITLE_TEST_SUITE);
+        setDialogMsg(StringConstants.DIA_MSG_CREATE_NEW_TEST_SUITE);
+    }
 
 }

@@ -34,130 +34,135 @@ import com.kms.katalon.composer.testsuite.tree.TestDataLinkTreeNode;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
 
 public class TestDataLinkFinderDialog extends Dialog {
-	private Text textSearch;
-	private List<TestCaseTestDataLink> testDataLinks;
-	private TreeViewer treeViewer;
+    private Text textSearch;
+    private List<TestCaseTestDataLink> testDataLinks;
+    private TreeViewer treeViewer;
 
-	private TestDataLinkTreeNode selectedTreeNode;
-	private TestCaseTestDataLink initSelectedTestDataLink;
-	private TestDataTreeContentProvider contentProvider;
-	private TestDataTreeViewerFilter treeViewerFilter;
+    private TestDataLinkTreeNode selectedTreeNode;
+    private TestCaseTestDataLink initSelectedTestDataLink;
+    private TestDataTreeContentProvider contentProvider;
+    private TestDataTreeViewerFilter treeViewerFilter;
 
-	public TestDataLinkFinderDialog(Shell parentShell, TestCaseTestDataLink testDataLink,
-			List<TestCaseTestDataLink> testDataLinks) {
-		super(parentShell);
-		this.testDataLinks = testDataLinks;
-		this.initSelectedTestDataLink = testDataLink;
-	}
+    public TestDataLinkFinderDialog(Shell parentShell, TestCaseTestDataLink testDataLink,
+            List<TestCaseTestDataLink> testDataLinks) {
+        super(parentShell);
+        this.testDataLinks = testDataLinks;
+        this.initSelectedTestDataLink = testDataLink;
+    }
 
-	protected void configureShell(Shell shell) {
-		super.configureShell(shell);
-		shell.setText(StringConstants.DIA_SHELL_TEST_DATA_LINK_BROWSER);
-	}
+    protected void configureShell(Shell shell) {
+        super.configureShell(shell);
+        shell.setText(StringConstants.DIA_SHELL_TEST_DATA_LINK_BROWSER);
+    }
 
-	@Override
-	public void create() {
-		super.create();
-		treeViewer.setInput(testDataLinks);
-		registerListeners();
-		initSelection();
-	}
+    @Override
+    public void create() {
+        super.create();
+        treeViewer.setInput(testDataLinks);
+        registerListeners();
+        initSelection();
+    }
 
-	private void registerListeners() {
+    private void registerListeners() {
 
-		textSearch.addModifyListener(new ModifyListener() {
+        textSearch.addModifyListener(new ModifyListener() {
 
-			@Override
-			public void modifyText(ModifyEvent e) {
-				// TODO Auto-generated method stub
-				String searchString = ((Text) e.getSource()).getText();
-				treeViewerFilter.setSearchText(searchString);
-				treeViewer.refresh();
-				treeViewer.expandAll();
-			}
-		});
+            @Override
+            public void modifyText(ModifyEvent e) {
+                // TODO Auto-generated method stub
+                String searchString = ((Text) e.getSource()).getText();
+                treeViewerFilter.setSearchText(searchString);
+                treeViewer.refresh();
+                treeViewer.expandAll();
+            }
+        });
 
-		treeViewer.addPostSelectionChangedListener(new ISelectionChangedListener() {
+        treeViewer.addPostSelectionChangedListener(new ISelectionChangedListener() {
 
-			@Override
-			public void selectionChanged(SelectionChangedEvent event) {
-				IStructuredSelection selection = (IStructuredSelection) treeViewer.getSelection();
-				selectedTreeNode = (TestDataLinkTreeNode) selection.getFirstElement();
-			}
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                IStructuredSelection selection = (IStructuredSelection) treeViewer.getSelection();
+                selectedTreeNode = (TestDataLinkTreeNode) selection.getFirstElement();
+            }
 
-		});
+        });
 
-		treeViewer.addDoubleClickListener(new IDoubleClickListener() {
-			@Override
-			public void doubleClick(DoubleClickEvent event) {
-				IStructuredSelection selection = (IStructuredSelection) treeViewer.getSelection();
-				selectedTreeNode = (TestDataLinkTreeNode) selection.getFirstElement();
-				okPressed();
-			}
-		});
-	}
+        treeViewer.addDoubleClickListener(new IDoubleClickListener() {
+            @Override
+            public void doubleClick(DoubleClickEvent event) {
+                IStructuredSelection selection = (IStructuredSelection) treeViewer.getSelection();
+                selectedTreeNode = (TestDataLinkTreeNode) selection.getFirstElement();
+                okPressed();
+            }
+        });
+    }
 
-	@Override
-	protected Control createDialogArea(Composite parent) {
-		Composite container = (Composite) super.createDialogArea(parent);
+    @Override
+    protected Control createDialogArea(Composite parent) {
+        Composite container = (Composite) super.createDialogArea(parent);
 
-		Composite compositeSearch = new Composite(container, SWT.NONE);
-		GridLayout gl_compositeSearch = new GridLayout(1, false);
-		compositeSearch.setLayout(gl_compositeSearch);
-		compositeSearch.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+        Composite compositeSearch = new Composite(container, SWT.NONE);
+        GridLayout gl_compositeSearch = new GridLayout(1, false);
+        compositeSearch.setLayout(gl_compositeSearch);
+        compositeSearch.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
-		textSearch = new Text(compositeSearch, SWT.BORDER);
-		GridData gd_textSearch = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-		gd_textSearch.heightHint = 18;
-		textSearch.setLayoutData(gd_textSearch);
-		textSearch.setMessage(StringConstants.DIA_TXT_ENTER_TEXT_TO_SEARCH);
+        textSearch = new Text(compositeSearch, SWT.BORDER);
+        GridData gd_textSearch = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        gd_textSearch.heightHint = 18;
+        textSearch.setLayoutData(gd_textSearch);
+        textSearch.setMessage(StringConstants.DIA_TXT_ENTER_TEXT_TO_SEARCH);
 
-		Composite compositeTree = new Composite(container, SWT.NONE);
-		compositeTree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		compositeTree.setLayout(new GridLayout(1, false));
+        Composite compositeTree = new Composite(container, SWT.NONE);
+        compositeTree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        compositeTree.setLayout(new GridLayout(1, false));
 
-		Label lblTestDatasHierarachy = new Label(compositeTree, SWT.NONE);
-		lblTestDatasHierarachy.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		lblTestDatasHierarachy.setText(StringConstants.DIA_LBL_TEST_DATA_HIERARCHY);
+        Label lblTestDatasHierarachy = new Label(compositeTree, SWT.NONE);
+        lblTestDatasHierarachy.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        lblTestDatasHierarachy.setText(StringConstants.DIA_LBL_TEST_DATA_HIERARCHY);
 
-		treeViewer = new TreeViewer(compositeTree, SWT.BORDER);
-		Tree tree = treeViewer.getTree();
-		tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        treeViewer = new TreeViewer(compositeTree, SWT.BORDER);
+        Tree tree = treeViewer.getTree();
+        tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-		TreeViewerColumn treeViewerColumn = new TreeViewerColumn(treeViewer, SWT.NONE);
-		TreeColumn trclmnTestDataID = treeViewerColumn.getColumn();
-		trclmnTestDataID.setWidth(380);
-		trclmnTestDataID.setText(StringConstants.DIA_TREE_VIEWER_COL_ID);
-		treeViewerColumn.setLabelProvider(new TestDataIDColumnLabelProvider(textSearch));
+        TreeViewerColumn treeViewerColumn = new TreeViewerColumn(treeViewer, SWT.NONE);
+        TreeColumn trclmnTestDataID = treeViewerColumn.getColumn();
+        trclmnTestDataID.setWidth(380);
+        trclmnTestDataID.setText(StringConstants.DIA_TREE_VIEWER_COL_ID);
+        treeViewerColumn.setLabelProvider(new TestDataIDColumnLabelProvider(textSearch));
 
-		contentProvider = new TestDataTreeContentProvider();
-		treeViewer.setContentProvider(contentProvider);
+        contentProvider = new TestDataTreeContentProvider();
+        treeViewer.setContentProvider(contentProvider);
 
-		treeViewerFilter = new TestDataTreeViewerFilter();
-		treeViewer.setFilters(new ViewerFilter[] { treeViewerFilter });
+        treeViewerFilter = new TestDataTreeViewerFilter();
+        treeViewer.setFilters(new ViewerFilter[] { treeViewerFilter });
 
-		return container;
-	}
+        return container;
+    }
 
-	private void initSelection() {
-		if (initSelectedTestDataLink == null)
-			return;
+    private void initSelection() {
+        if (initSelectedTestDataLink == null)
+            return;
 
-		TestDataLinkTreeNode initSelectedTreeNode = contentProvider.getTreeNode(initSelectedTestDataLink);
+        TestDataLinkTreeNode initSelectedTreeNode = contentProvider.getTreeNode(initSelectedTestDataLink);
 
-		if (initSelectedTreeNode != null) {
-			treeViewer.getTree().forceFocus();
-			treeViewer.setSelection(new StructuredSelection(initSelectedTreeNode));
-		}
-	}
+        if (initSelectedTreeNode != null) {
+            treeViewer.getTree().forceFocus();
+            treeViewer.setSelection(new StructuredSelection(initSelectedTreeNode));
+        }
+    }
 
-	@Override
-	protected Point getInitialSize() {
-		return new Point(500, 400);
-	}
+    @Override
+    protected Point getInitialSize() {
+        return new Point(500, 400);
+    }
+    
+    @Override
+    protected void setShellStyle(int arg) {
+        super.setShellStyle(SWT.CLOSE | SWT.TITLE | SWT.RESIZE);
+    }
 
-	public TestCaseTestDataLink getSelectedTestDataLink() {
-		return (selectedTreeNode != null) ? selectedTreeNode.getTestDataLink() : null;
-	}
+    public TestCaseTestDataLink getSelectedTestDataLink() {
+        return (selectedTreeNode != null) ? selectedTreeNode.getTestDataLink() : null;
+    }
 
 }

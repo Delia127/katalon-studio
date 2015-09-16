@@ -48,231 +48,231 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 
 public class DataColumnFinderDialog extends Dialog {
-	private IEntityLabelProvider labelProvider;
-	private ITreeContentProvider contentProvider;
-	private AbstractEntityViewerFilter entityViewerFilter;
-	private Text searchTestDataText, searchColumnNameText;
-	private TreeViewer treeViewer;
-	private Object[] testDataTreeEntities;
-	private TableViewer dataColumnViewer;
-	private DataColumnViewerFilter columnNameFilter;
-	private DataColumnLabelProvider dataColumnLabelProvider;
+    private IEntityLabelProvider labelProvider;
+    private ITreeContentProvider contentProvider;
+    private AbstractEntityViewerFilter entityViewerFilter;
+    private Text searchTestDataText, searchColumnNameText;
+    private TreeViewer treeViewer;
+    private Object[] testDataTreeEntities;
+    private TableViewer dataColumnViewer;
+    private DataColumnViewerFilter columnNameFilter;
+    private DataColumnLabelProvider dataColumnLabelProvider;
 
-	private String returnValue;
-	private String[] selection;
+    private String returnValue;
+    private String[] selection;
 
-	public DataColumnFinderDialog(Shell parentShell, IEntityLabelProvider labelProvider,
-			ITreeContentProvider contentProvider, AbstractEntityViewerFilter entityViewerFilter,
-			Object[] testDataTreeEntities, String[] initSelection) {
-		super(parentShell);
-		this.labelProvider = labelProvider;
-		this.contentProvider = contentProvider;
-		this.entityViewerFilter = entityViewerFilter;
-		this.testDataTreeEntities = testDataTreeEntities;
-		this.selection = initSelection;
-	}
+    public DataColumnFinderDialog(Shell parentShell, IEntityLabelProvider labelProvider,
+            ITreeContentProvider contentProvider, AbstractEntityViewerFilter entityViewerFilter,
+            Object[] testDataTreeEntities, String[] initSelection) {
+        super(parentShell);
+        this.labelProvider = labelProvider;
+        this.contentProvider = contentProvider;
+        this.entityViewerFilter = entityViewerFilter;
+        this.testDataTreeEntities = testDataTreeEntities;
+        this.selection = initSelection;
+    }
 
-	@Override
-	public void create() {
-		super.create();
-		treeViewer.setInput(testDataTreeEntities);
-		registerListeners();
-		initSelection();
-	}
+    @Override
+    public void create() {
+        super.create();
+        treeViewer.setInput(testDataTreeEntities);
+        registerListeners();
+        initSelection();
+    }
 
-	private void initSelection() {
-		Display.getCurrent().asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					if (selection != null && selection.length == 2) {
-						String testDataId = selection[0];
-						String columnName = selection[1];
-						DataFileEntity dataFileEntity = TestDataController.getInstance().getTestDataByDisplayId(
-								testDataId);
-						FolderEntity rootFolder = FolderController.getInstance().getTestDataRoot(
-								ProjectController.getInstance().getCurrentProject());
-						FolderTreeEntity parentTreeEntity = createSelectedTreeEntityHierachy(
-								dataFileEntity.getParentFolder(), rootFolder);
+    private void initSelection() {
+        Display.getCurrent().asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (selection != null && selection.length == 2) {
+                        String testDataId = selection[0];
+                        String columnName = selection[1];
+                        DataFileEntity dataFileEntity = TestDataController.getInstance().getTestDataByDisplayId(
+                                testDataId);
+                        FolderEntity rootFolder = FolderController.getInstance().getTestDataRoot(
+                                ProjectController.getInstance().getCurrentProject());
+                        FolderTreeEntity parentTreeEntity = createSelectedTreeEntityHierachy(
+                                dataFileEntity.getParentFolder(), rootFolder);
 
-						TestDataTreeEntity selectedTreeEntity = new TestDataTreeEntity(dataFileEntity, parentTreeEntity);
-						treeViewer.setSelection(new StructuredSelection(selectedTreeEntity));
+                        TestDataTreeEntity selectedTreeEntity = new TestDataTreeEntity(dataFileEntity, parentTreeEntity);
+                        treeViewer.setSelection(new StructuredSelection(selectedTreeEntity));
 
-						dataColumnViewer.setSelection(new StructuredSelection(columnName));
-					} else {
-						getButton(Dialog.OK).setEnabled(false);
-					}
-				} catch (Exception e) {
-					LoggerSingleton.logError(e);
-				}
-			}
-		});
+                        dataColumnViewer.setSelection(new StructuredSelection(columnName));
+                    } else {
+                        getButton(Dialog.OK).setEnabled(false);
+                    }
+                } catch (Exception e) {
+                    LoggerSingleton.logError(e);
+                }
+            }
+        });
 
-	}
+    }
 
-	private FolderTreeEntity createSelectedTreeEntityHierachy(FolderEntity folderEntity, FolderEntity rootFolder) {
-		if (folderEntity == null || folderEntity.equals(rootFolder)) {
-			return null;
-		}
-		return new FolderTreeEntity(folderEntity, createSelectedTreeEntityHierachy(folderEntity.getParentFolder(),
-				rootFolder));
-	}
+    private FolderTreeEntity createSelectedTreeEntityHierachy(FolderEntity folderEntity, FolderEntity rootFolder) {
+        if (folderEntity == null || folderEntity.equals(rootFolder)) {
+            return null;
+        }
+        return new FolderTreeEntity(folderEntity, createSelectedTreeEntityHierachy(folderEntity.getParentFolder(),
+                rootFolder));
+    }
 
-	private void registerListeners() {
-		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			@Override
-			public void selectionChanged(SelectionChangedEvent event) {
-				ITreeEntity entity = (ITreeEntity) ((TreeSelection) event.getSelection()).getFirstElement();
-				if (entity != null) {
-					try {
-						DataFileEntity dataFile = (DataFileEntity) entity.getObject();
-						String testDataId = TestDataController.getInstance().getIdForDisplay(dataFile);
-						String[] columnNames = TestDataFactory.findTestDataForExternalBundleCaller(testDataId,
-								dataFile.getProject().getFolderLocation()).getColumnNames();
-						dataColumnViewer.setInput(columnNames);
-						getButton(Dialog.OK).setEnabled(false);
-					} catch (Exception e) {
-						dataColumnViewer.setInput(Collections.EMPTY_LIST);
-						getButton(Dialog.OK).setEnabled(false);
-					}
-				}
-			}
-		});
+    private void registerListeners() {
+        treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                ITreeEntity entity = (ITreeEntity) ((TreeSelection) event.getSelection()).getFirstElement();
+                if (entity != null) {
+                    try {
+                        DataFileEntity dataFile = (DataFileEntity) entity.getObject();
+                        String testDataId = TestDataController.getInstance().getIdForDisplay(dataFile);
+                        String[] columnNames = TestDataFactory.findTestDataForExternalBundleCaller(testDataId,
+                                dataFile.getProject().getFolderLocation()).getColumnNames();
+                        dataColumnViewer.setInput(columnNames);
+                        getButton(Dialog.OK).setEnabled(false);
+                    } catch (Exception e) {
+                        dataColumnViewer.setInput(Collections.EMPTY_LIST);
+                        getButton(Dialog.OK).setEnabled(false);
+                    }
+                }
+            }
+        });
 
-		dataColumnViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+        dataColumnViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
-			@Override
-			public void selectionChanged(SelectionChangedEvent event) {
-				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-				if (selection != null && selection.size() == 1) {
-					String selectedColumnName = (String) selection.getFirstElement();
-					if (selectedColumnName != null) {
-						getButton(Dialog.OK).setEnabled(true);
-					} else {
-						getButton(Dialog.OK).setEnabled(false);
-					}
-				} else {
-					getButton(Dialog.OK).setEnabled(false);
-				}
-			}
-		});
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+                if (selection != null && selection.size() == 1) {
+                    String selectedColumnName = (String) selection.getFirstElement();
+                    if (selectedColumnName != null) {
+                        getButton(Dialog.OK).setEnabled(true);
+                    } else {
+                        getButton(Dialog.OK).setEnabled(false);
+                    }
+                } else {
+                    getButton(Dialog.OK).setEnabled(false);
+                }
+            }
+        });
 
-		searchColumnNameText.addModifyListener(new ModifyListener() {
+        searchColumnNameText.addModifyListener(new ModifyListener() {
 
-			@Override
-			public void modifyText(ModifyEvent e) {
-				String searchString = ((Text) e.getSource()).getText();
-				columnNameFilter.setSearchString(searchString);
-				dataColumnLabelProvider.setSearchString(searchString);
+            @Override
+            public void modifyText(ModifyEvent e) {
+                String searchString = ((Text) e.getSource()).getText();
+                columnNameFilter.setSearchString(searchString);
+                dataColumnLabelProvider.setSearchString(searchString);
 
-				dataColumnViewer.refresh();
-				dataColumnViewer.setSelection(null);
-			}
-		});
+                dataColumnViewer.refresh();
+                dataColumnViewer.setSelection(null);
+            }
+        });
 
-		searchTestDataText.addModifyListener(new ModifyListener() {
+        searchTestDataText.addModifyListener(new ModifyListener() {
 
-			@Override
-			public void modifyText(ModifyEvent e) {
-				String searchString = ((Text) e.getSource()).getText();
+            @Override
+            public void modifyText(ModifyEvent e) {
+                String searchString = ((Text) e.getSource()).getText();
 
-				entityViewerFilter.setSearchString(searchString);
-				labelProvider.setSearchString(searchString);
-				entityViewerFilter.setSearchString(searchString);
+                entityViewerFilter.setSearchString(searchString);
+                labelProvider.setSearchString(searchString);
+                entityViewerFilter.setSearchString(searchString);
 
-				treeViewer.refresh();
-				treeViewer.setSelection(null);
-			}
-		});
-	}
+                treeViewer.refresh();
+                treeViewer.setSelection(null);
+            }
+        });
+    }
 
-	@Override
-	protected Control createDialogArea(Composite parent) {
-		Composite container = (Composite) super.createDialogArea(parent);
+    @Override
+    protected Control createDialogArea(Composite parent) {
+        Composite container = (Composite) super.createDialogArea(parent);
 
-		SashForm sashForm = new SashForm(container, SWT.NONE);
-		sashForm.setSashWidth(5);
-		sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        SashForm sashForm = new SashForm(container, SWT.NONE);
+        sashForm.setSashWidth(5);
+        sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-		Composite testDataHierarchyComposite = new Composite(sashForm, SWT.NONE);
-		testDataHierarchyComposite.setLayout(new GridLayout(1, false));
+        Composite testDataHierarchyComposite = new Composite(sashForm, SWT.NONE);
+        testDataHierarchyComposite.setLayout(new GridLayout(1, false));
 
-		Label lblSelectTestData = new Label(testDataHierarchyComposite, SWT.NONE);
-		lblSelectTestData.setText(StringConstants.DIA_LBL_SELECT_TEST_DATA);
+        Label lblSelectTestData = new Label(testDataHierarchyComposite, SWT.NONE);
+        lblSelectTestData.setText(StringConstants.DIA_LBL_SELECT_TEST_DATA);
 
-		searchTestDataText = new Text(testDataHierarchyComposite, SWT.BORDER);
-		searchTestDataText.setMessage(StringConstants.DIA_TXT_ENTER_TEXT_TO_SEARCH);
-		searchTestDataText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        searchTestDataText = new Text(testDataHierarchyComposite, SWT.BORDER);
+        searchTestDataText.setMessage(StringConstants.DIA_TXT_ENTER_TEXT_TO_SEARCH);
+        searchTestDataText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-		Label lblTestDataHierarchy = new Label(testDataHierarchyComposite, SWT.NONE);
-		lblTestDataHierarchy.setText(StringConstants.DIA_LBL_TEST_DATA_HIERARCHY);
+        Label lblTestDataHierarchy = new Label(testDataHierarchyComposite, SWT.NONE);
+        lblTestDataHierarchy.setText(StringConstants.DIA_LBL_TEST_DATA_HIERARCHY);
 
-		treeViewer = new TreeViewer(testDataHierarchyComposite, SWT.BORDER);
-		Tree tree = treeViewer.getTree();
-		tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		treeViewer.setContentProvider(contentProvider);
-		treeViewer.setLabelProvider(labelProvider);
-		treeViewer.addFilter(entityViewerFilter);
+        treeViewer = new TreeViewer(testDataHierarchyComposite, SWT.BORDER);
+        Tree tree = treeViewer.getTree();
+        tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        treeViewer.setContentProvider(contentProvider);
+        treeViewer.setLabelProvider(labelProvider);
+        treeViewer.addFilter(entityViewerFilter);
 
-		Composite columnNameComposite = new Composite(sashForm, SWT.NONE);
-		columnNameComposite.setLayout(new GridLayout(1, false));
+        Composite columnNameComposite = new Composite(sashForm, SWT.NONE);
+        columnNameComposite.setLayout(new GridLayout(1, false));
 
-		Label lblSelectAColumn = new Label(columnNameComposite, SWT.NONE);
-		lblSelectAColumn.setText(StringConstants.DIA_LBL_SELECT_A_COL);
+        Label lblSelectAColumn = new Label(columnNameComposite, SWT.NONE);
+        lblSelectAColumn.setText(StringConstants.DIA_LBL_SELECT_A_COL);
 
-		searchColumnNameText = new Text(columnNameComposite, SWT.BORDER);
-		searchColumnNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		searchColumnNameText.setMessage(StringConstants.DIA_TXT_ENTER_TEXT_TO_SEARCH);
+        searchColumnNameText = new Text(columnNameComposite, SWT.BORDER);
+        searchColumnNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        searchColumnNameText.setMessage(StringConstants.DIA_TXT_ENTER_TEXT_TO_SEARCH);
 
-		Label lblListOfColumn = new Label(columnNameComposite, SWT.NONE);
-		lblListOfColumn.setText(StringConstants.DIA_LBL_LIST_OF_COL_NAMES);
+        Label lblListOfColumn = new Label(columnNameComposite, SWT.NONE);
+        lblListOfColumn.setText(StringConstants.DIA_LBL_LIST_OF_COL_NAMES);
 
-		dataColumnViewer = new TableViewer(columnNameComposite, SWT.BORDER | SWT.V_SCROLL);
-		Table dataColumnTable = dataColumnViewer.getTable();
-		dataColumnTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		dataColumnViewer.setContentProvider(ArrayContentProvider.getInstance());
+        dataColumnViewer = new TableViewer(columnNameComposite, SWT.BORDER | SWT.V_SCROLL);
+        Table dataColumnTable = dataColumnViewer.getTable();
+        dataColumnTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        dataColumnViewer.setContentProvider(ArrayContentProvider.getInstance());
 
-		TableViewerColumn tableViewerColumn = new TableViewerColumn(dataColumnViewer, SWT.NONE);
-		TableColumn tblclmnNewColumn = tableViewerColumn.getColumn();
-		tblclmnNewColumn.setWidth(250);
-		tableViewerColumn.setLabelProvider(new DataColumnLabelProvider());
-		dataColumnLabelProvider = new DataColumnLabelProvider();
-		tableViewerColumn.setLabelProvider(dataColumnLabelProvider);
+        TableViewerColumn tableViewerColumn = new TableViewerColumn(dataColumnViewer, SWT.NONE);
+        TableColumn tblclmnNewColumn = tableViewerColumn.getColumn();
+        tblclmnNewColumn.setWidth(250);
+        tableViewerColumn.setLabelProvider(new DataColumnLabelProvider());
+        dataColumnLabelProvider = new DataColumnLabelProvider();
+        tableViewerColumn.setLabelProvider(dataColumnLabelProvider);
 
-		columnNameFilter = new DataColumnViewerFilter();
-		dataColumnViewer.addFilter(columnNameFilter);
+        columnNameFilter = new DataColumnViewerFilter();
+        dataColumnViewer.addFilter(columnNameFilter);
 
-		sashForm.setWeights(new int[] { 1, 1 });
-		return container;
-	}
+        sashForm.setWeights(new int[] { 1, 1 });
+        return container;
+    }
 
-	@Override
-	protected Point getInitialSize() {
-		return new Point(600, 500);
-	}
+    @Override
+    protected Point getInitialSize() {
+        return new Point(600, 500);
+    }
 
-	@Override
-	protected void okPressed() {
-		prepareReturnValue();
-		super.okPressed();
-	}
+    @Override
+    protected void okPressed() {
+        prepareReturnValue();
+        super.okPressed();
+    }
 
-	private void prepareReturnValue() {
-		try {
-			ITreeEntity entity = (ITreeEntity) ((TreeSelection) treeViewer.getSelection()).getFirstElement();
-			DataFileEntity dataFile = (DataFileEntity) entity.getObject();
-			String testDataId = TestDataController.getInstance().getIdForDisplay(dataFile);
+    private void prepareReturnValue() {
+        try {
+            ITreeEntity entity = (ITreeEntity) ((TreeSelection) treeViewer.getSelection()).getFirstElement();
+            DataFileEntity dataFile = (DataFileEntity) entity.getObject();
+            String testDataId = TestDataController.getInstance().getIdForDisplay(dataFile);
 
-			IStructuredSelection selection = (IStructuredSelection) dataColumnViewer.getSelection();
-			String selectedColumnName = (String) selection.getFirstElement();
-			returnValue = Arrays.toString(new String[] { testDataId, selectedColumnName });
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-	}
+            IStructuredSelection selection = (IStructuredSelection) dataColumnViewer.getSelection();
+            String selectedColumnName = (String) selection.getFirstElement();
+            returnValue = Arrays.toString(new String[] { testDataId, selectedColumnName });
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
 
-	public String getReturnValue() {
-		return returnValue;
-	}
+    public String getReturnValue() {
+        return returnValue;
+    }
 
 }
