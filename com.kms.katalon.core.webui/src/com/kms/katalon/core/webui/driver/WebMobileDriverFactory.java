@@ -151,7 +151,7 @@ class WebMobileDriverFactory {
 	}
 	
 	private void startWebProxyServer(String deviceId) throws Exception {
-        String webProxyServerLocation = System.getenv("APPIUM_HOME") + "/bin" + "/ios_webkit_debug_proxy";
+        String webProxyServerLocation = "ios_webkit_debug_proxy";
         String[] webProxyServerCmd = { webProxyServerLocation, "-c", deviceId + ":27753"};
         ProcessBuilder webProxyServerProcessBuilder = new ProcessBuilder(webProxyServerCmd);
         webProxyServerProcessBuilder.redirectOutput(new File("bin" + File.separator + "appium-proxy-server.log"));
