@@ -10,16 +10,16 @@ public class PathUtils {
         // Disable default constructor
     }
 
-    public static String absoluteToRelativePath(String absolutePath, String projectPath) {
-        return PathUtils.getRelativePath(absolutePath, projectPath, File.separator);
+    public static String absoluteToRelativePath(String absolutePath, String projectFolderPath) {
+        return PathUtils.getRelativePath(absolutePath, projectFolderPath, File.separator);
     }
 
-    public static String relativeToAbsolutePath(String relativePath, String projectAbsolutePath) throws Exception {
+    public static String relativeToAbsolutePath(String relativePath, String projectFolderPath) {
         Path path = new File(relativePath).toPath();
         if (path.isAbsolute()) {
             return path.toAbsolutePath().toString();
         } else {
-            Path projectPath = new File(projectAbsolutePath).toPath();
+            Path projectPath = new File(projectFolderPath).toPath();
             return projectPath.resolve(path).normalize().toString();
         }
     }

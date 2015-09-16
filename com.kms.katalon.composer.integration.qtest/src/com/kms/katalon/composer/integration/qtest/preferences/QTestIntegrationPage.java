@@ -172,10 +172,10 @@ public class QTestIntegrationPage extends PreferencePage {
 
             @Override
             public void handleEvent(Event event) {
-                gdTxtToken.widthHint = txtToken.getSize().x;
+                gdTxtToken.widthHint = Math.max(300, txtToken.getSize().x);
                 container.setSize(container.getParent().getSize().x, container.getSize().y);
+                container.layout(true, true);
             }
-
         });
 
         chckAutoSubmitTestRun.addSelectionListener(new SelectionAdapter() {

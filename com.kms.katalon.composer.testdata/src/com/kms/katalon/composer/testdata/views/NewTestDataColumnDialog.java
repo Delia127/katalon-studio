@@ -70,9 +70,9 @@ public class NewTestDataColumnDialog extends Dialog {
         txtName.setSize(200, SWT.DEFAULT);
 
         controlDecoration = new ControlDecoration(txtName, SWT.LEFT | SWT.TOP);
-        Image imgInfo = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_WARNING)
+        Image imgNotification = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_WARNING)
                 .getImage();
-        controlDecoration.setImage(imgInfo);
+        controlDecoration.setImage(imgNotification);
         controlDecoration.setShowHover(true);
 
         // Build the separator line

@@ -27,10 +27,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.composer.components.control.ImageButton;
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -62,10 +64,20 @@ public class CSVTestDataPart extends TestDataMainPart {
     private Composite compositeFileInfoDetails;
     private Composite compositeFileInfoHeader;
     private Composite compositeTable;
-    private Button btnExpandFileInfoComposite;
+    private ImageButton btnExpandFileInfoComposite;
     private Label lblFileInfo;
     private boolean isFileInfoExpanded;
 
+
+    private Listener layoutFileInfoCompositeListener = new Listener() {
+
+        @Override
+        public void handleEvent(org.eclipse.swt.widgets.Event event) {
+            layoutFileInfoComposite();
+        }
+    };
+    
+    
     @PostConstruct
     public void createControls(Composite parent, MPart mpart) {
         super.createControls(parent, mpart);
@@ -88,15 +100,14 @@ public class CSVTestDataPart extends TestDataMainPart {
         glCompositeFileInfoHeader.marginWidth = 0;
         glCompositeFileInfoHeader.marginHeight = 0;
         compositeFileInfoHeader.setLayout(glCompositeFileInfoHeader);
+        compositeFileInfoHeader.setCursor(compositeFileInfoHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
 
-        btnExpandFileInfoComposite = new Button(compositeFileInfoHeader, SWT.NONE);
+        btnExpandFileInfoComposite = new ImageButton(compositeFileInfoHeader, SWT.NONE);
         GridData gdBtnExpandFileInfoComposite = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdBtnExpandFileInfoComposite.widthHint = 18;
-        gdBtnExpandFileInfoComposite.heightHint = 18;
         btnExpandFileInfoComposite.setLayoutData(gdBtnExpandFileInfoComposite);
 
         lblFileInfo = new Label(compositeFileInfoHeader, SWT.NONE);
-        lblFileInfo.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+        lblFileInfo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         lblFileInfo.setText(StringConstants.PA_LBL_FILE_INFO);
         lblFileInfo.setFont(JFaceResources.getFontRegistry().getBold(""));
 
@@ -196,6 +207,9 @@ public class CSVTestDataPart extends TestDataMainPart {
     }
 
     private void addListeners() {
+        btnExpandFileInfoComposite.addListener(SWT.MouseDown, layoutFileInfoCompositeListener);
+        lblFileInfo.addListener(SWT.MouseDown, layoutFileInfoCompositeListener);
+        
         btnBrowse.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -245,29 +259,25 @@ public class CSVTestDataPart extends TestDataMainPart {
                 }
             }
         });
+    }
+    
+    private void layoutFileInfoComposite() {
+        Display.getDefault().timerExec(10, new Runnable() {
 
-        btnExpandFileInfoComposite.addSelectionListener(new SelectionAdapter() {
             @Override
-            public void widgetSelected(SelectionEvent e) {
-                Display.getDefault().timerExec(10, new Runnable() {
-
-                    @Override
-                    public void run() {
-                        isFileInfoExpanded = !isFileInfoExpanded;
-                        compositeFileInfoDetails.setVisible(isFileInfoExpanded);
-                        if (!isFileInfoExpanded) {
-                            ((GridData) compositeFileInfoDetails.getLayoutData()).exclude = true;
-                            compositeFileInfo.setSize(compositeFileInfo.getSize().x, compositeFileInfo.getSize().y
-                                    - compositeTable.getSize().y);
-                        } else {
-                            ((GridData) compositeFileInfoDetails.getLayoutData()).exclude = false;
-                        }
-                        compositeFileInfo.layout(true, true);
-                        compositeFileInfo.getParent().layout();
-                        redrawBtnExpandFileInfo();
-                    }
-                });
-
+            public void run() {
+                isFileInfoExpanded = !isFileInfoExpanded;
+                compositeFileInfoDetails.setVisible(isFileInfoExpanded);
+                if (!isFileInfoExpanded) {
+                    ((GridData) compositeFileInfoDetails.getLayoutData()).exclude = true;
+                    compositeFileInfo.setSize(compositeFileInfo.getSize().x, compositeFileInfo.getSize().y
+                            - compositeTable.getSize().y);
+                } else {
+                    ((GridData) compositeFileInfoDetails.getLayoutData()).exclude = false;
+                }
+                compositeFileInfo.layout(true, true);
+                compositeFileInfo.getParent().layout();
+                redrawBtnExpandFileInfo();
             }
         });
     }

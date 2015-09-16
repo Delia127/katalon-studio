@@ -27,6 +27,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_BTN_RUN_FROM_ROW = "Run from row";
     public static final String DIA_LBL_TO_ROW = "to row";
     public static final String DIA_BTN_RUN_SPECIFIC_ROWS = "Run with specific rows";
+    public static final String DIA_MSG_START_ROW_BIGGER_THAN_END_ROW = "Start row cannot be bigger than end row";
 
     // NewTestSuiteDialog
     public static final String DIA_TITLE_TEST_SUITE = TEST_SUITE;
@@ -36,9 +37,9 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_SHELL_TEST_DATA_LINK_BROWSER = "Test Data Link Browser";
     public static final String DIA_TREE_VIEWER_COL_ID = ID;
 
-    //TestDataColumnChooserDialog
+    // TestDataColumnChooserDialog
     public static final String DIA_MSG_CHOOSE_DATA_COLUMN = "Choose a column";
-    
+
     // TestDataCellEditor
     public static final String EDI_TITLE_TEST_DATA_BROWSER = "Test Data Browser";
     public static final String ERROR_TITLE = ERROR;

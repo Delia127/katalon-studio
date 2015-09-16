@@ -29,7 +29,8 @@ Require-Bundle: com.kms.katalon.composer.explorer;bundle-version="1.0.0",
  org.eclipse.e4.core.commands,
  org.eclipse.equinox.registry,
  com.kms.katalon.composer.testdata;bundle-version="1.0.0",
- com.kms.katalon.composer.webui.objectspy;bundle-version="1.0.0"
+ com.kms.katalon.composer.webui.objectspy;bundle-version="1.0.0",
+ com.kms.katalon.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Import-Package: javax.annotation;version="1.2.0"

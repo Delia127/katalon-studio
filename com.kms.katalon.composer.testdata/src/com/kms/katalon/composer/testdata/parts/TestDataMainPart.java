@@ -22,19 +22,18 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 import org.xml.sax.SAXParseException;
 
+import com.kms.katalon.composer.components.control.ImageButton;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
@@ -50,16 +49,8 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 
 public abstract class TestDataMainPart implements EventHandler {
-    public static int MAX_LABEL_WIDTH = 70;
-
-    protected Text txtName, txtId, txtDesc, txtDataType;
-
-    protected MPart mpart;
-
-    protected DataFileEntity dataFile;
-
-    protected DataFileEntity cloneDataFile;
-
+    public static final int MAX_LABEL_WIDTH = 70;
+    
     @Inject
     protected IEventBroker eventBroker;
 
@@ -71,6 +62,14 @@ public abstract class TestDataMainPart implements EventHandler {
 
     @Inject
     protected MApplication application;
+
+    protected Text txtName, txtId, txtDesc, txtDataType;
+
+    protected MPart mpart;
+
+    protected DataFileEntity dataFile;
+
+    protected DataFileEntity cloneDataFile;
 
     private static boolean isConfirmDialogShowed = false;
 
@@ -91,9 +90,17 @@ public abstract class TestDataMainPart implements EventHandler {
     private Composite compositeGeneralInfo;
     private Composite compositeFileInfo;
     private Composite compositeDataTable;
-    private Button btnExpandInformation;
+    private ImageButton btnExpandGeneralInformation;
     private Label lblInformations;
     private boolean isInfoCompositeExpanded = true;
+    
+    private Listener layoutGeneralCompositeListener = new Listener() {
+
+        @Override
+        public void handleEvent(org.eclipse.swt.widgets.Event event) {
+            layoutGeneralComposite();
+        }
+    };
 
     public void createControls(Composite parent, MPart mpart) {
         this.mpart = mpart;
@@ -105,15 +112,50 @@ public abstract class TestDataMainPart implements EventHandler {
         compositeFileInfo = createFileInfoPart(parent);
         compositeDataTable = createDataTablePart(parent);
         registerEventHandlers();
+        registerControlModifyListeners();
 
         updateDataFile((DataFileEntity) mpart.getObject());
 
         dirtyable.setDirty(false);
     }
 
+    private void registerControlModifyListeners() {
+        // TODO Auto-generated method stub
+
+        btnExpandGeneralInformation.addListener(SWT.MouseDown, layoutGeneralCompositeListener);
+        lblInformations.addListener(SWT.MouseDown, layoutGeneralCompositeListener);
+    }
+
     private void registerEventHandlers() {
         eventBroker.subscribe(EventConstants.TEST_DATA_UPDATED, this);
         eventBroker.subscribe(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, this);
+    }
+
+    protected void layoutGeneralComposite() {
+        Display.getDefault().timerExec(10, new Runnable() {
+
+            @Override
+            public void run() {
+                isInfoCompositeExpanded = !isInfoCompositeExpanded;
+
+                compositeInfoDetails.setVisible(isInfoCompositeExpanded);
+                if (!isInfoCompositeExpanded) {
+                    ((GridData) compositeInfoDetails.getLayoutData()).exclude = true;
+                    int detailSize = compositeDataTable.getSize().y;
+                    if (compositeFileInfo != null) {
+                        detailSize += compositeFileInfo.getSize().y;
+                    }
+                    compositeGeneralInfo.setSize(compositeGeneralInfo.getSize().x, compositeGeneralInfo.getSize().y
+                            - detailSize);
+                } else {
+                    ((GridData) compositeInfoDetails.getLayoutData()).exclude = false;
+                }
+                compositeGeneralInfo.layout(true, true);
+                compositeGeneralInfo.getParent().layout();
+                redrawBtnExpandInfo();
+            }
+
+        });
     }
 
     /**
@@ -136,45 +178,17 @@ public abstract class TestDataMainPart implements EventHandler {
         gl_compositeInfoHeader.marginHeight = 0;
         compositeInfoHeader.setLayout(gl_compositeInfoHeader);
         compositeInfoHeader.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        compositeInfoHeader.setCursor(compositeInfoHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
 
-        btnExpandInformation = new Button(compositeInfoHeader, SWT.NONE);
+        btnExpandGeneralInformation = new ImageButton(compositeInfoHeader, SWT.NONE);
         GridData gd_btnExpandInformation = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gd_btnExpandInformation.widthHint = 18;
         gd_btnExpandInformation.heightHint = 18;
-        btnExpandInformation.setLayoutData(gd_btnExpandInformation);
+        btnExpandGeneralInformation.setLayoutData(gd_btnExpandInformation);
         redrawBtnExpandInfo();
-        btnExpandInformation.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                Display.getDefault().timerExec(10, new Runnable() {
-
-                    @Override
-                    public void run() {
-                        isInfoCompositeExpanded = !isInfoCompositeExpanded;
-
-                        compositeInfoDetails.setVisible(isInfoCompositeExpanded);
-                        if (!isInfoCompositeExpanded) {
-                            ((GridData) compositeInfoDetails.getLayoutData()).exclude = true;
-                            int detailSize = compositeDataTable.getSize().y;
-                            if (compositeFileInfo != null) {
-                                detailSize += compositeFileInfo.getSize().y;
-                            }
-                            compositeGeneralInfo.setSize(compositeGeneralInfo.getSize().x,
-                                    compositeGeneralInfo.getSize().y - detailSize);
-                        } else {
-                            ((GridData) compositeInfoDetails.getLayoutData()).exclude = false;
-                        }
-                        compositeGeneralInfo.layout(true, true);
-                        compositeGeneralInfo.getParent().layout();
-                        redrawBtnExpandInfo();
-                    }
-
-                });
-            }
-        });
 
         lblInformations = new Label(compositeInfoHeader, SWT.NONE);
+        lblInformations.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         lblInformations.setText(StringConstants.PA_LBL_GENERAL_INFO);
         lblInformations.setFont(JFaceResources.getFontRegistry().getBold(""));
 
@@ -214,9 +228,7 @@ public abstract class TestDataMainPart implements EventHandler {
         infoCompositeDescription.setLayout(glcompositeDescription);
 
         labelDescription = new Label(infoCompositeDescription, SWT.NONE);
-        GridData gdLabelDesc = new GridData(SWT.FILL, SWT.CENTER, false, true, 1, 1);
-        gdLabelDesc.widthHint = MAX_LABEL_WIDTH;
-        labelDescription.setLayoutData(gdLabelDesc);
+        labelDescription.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, true, 1, 1));
         labelDescription.setText(StringConstants.PA_LBL_DESCRIPTION);
 
         txtDesc = new Text(infoCompositeDescription, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI);
@@ -268,13 +280,13 @@ public abstract class TestDataMainPart implements EventHandler {
     }
 
     private void redrawBtnExpandInfo() {
-        btnExpandInformation.getParent().setRedraw(false);
+        btnExpandGeneralInformation.getParent().setRedraw(false);
         if (isInfoCompositeExpanded) {
-            btnExpandInformation.setImage(ImageConstants.IMG_16_ARROW_UP_BLACK);
+            btnExpandGeneralInformation.setImage(ImageConstants.IMG_16_ARROW_UP_BLACK);
         } else {
-            btnExpandInformation.setImage(ImageConstants.IMG_16_ARROW_DOWN_BLACK);
+            btnExpandGeneralInformation.setImage(ImageConstants.IMG_16_ARROW_DOWN_BLACK);
         }
-        btnExpandInformation.getParent().setRedraw(true);
+        btnExpandGeneralInformation.getParent().setRedraw(true);
     }
 
     // Will be overridden in sub-class
@@ -459,7 +471,7 @@ public abstract class TestDataMainPart implements EventHandler {
         eventBroker.unsubscribe(this);
         Iterator<Thread> threadIterator = currentThreads.iterator();
         while (threadIterator.hasNext()) {
-            Thread currentThread = threadIterator.next(); 
+            Thread currentThread = threadIterator.next();
             if (currentThread.isAlive()) {
                 currentThread.interrupt();
             }

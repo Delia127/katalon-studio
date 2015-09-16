@@ -282,6 +282,7 @@ public class ExecutionUtil {
 
             List<Integer> rowIndexArray = new ArrayList<Integer>();
             for (int index = 0; index < rowCount; index++) {
+                if (rowIndexesString[index].isEmpty()) { continue; }
                 if (rowIndexesString[index].contains("-")) {
                     int rowStart = Integer.valueOf(rowIndexesString[index].split("-")[0]);
                     int rowEnd = Integer.valueOf(rowIndexesString[index].split("-")[1]);

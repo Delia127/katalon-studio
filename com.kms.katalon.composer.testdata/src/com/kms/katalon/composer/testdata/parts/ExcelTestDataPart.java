@@ -28,10 +28,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.composer.components.control.ImageButton;
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -59,16 +61,47 @@ public class ExcelTestDataPart extends TestDataMainPart {
     private Label lblSheetName;
     private Button ckcbUseRelativePath;
     private Button btnBrowse;
-    private Button btnExpandFileInfo;
+    private ImageButton btnExpandFileInfo;
     private Composite compositeFileInfoDetails;
     private Composite compositeFileInfoHeader;
     private Composite compositeTable;
     private Composite compositeFileInfo;
     private boolean isFileInfoExpanded;
 
+    private Listener layoutFileInfoCompositeListener = new Listener() {
+
+        @Override
+        public void handleEvent(org.eclipse.swt.widgets.Event event) {
+            layoutFileInfoComposite();
+        }
+    };
+
+    private Label lblFileInfo;
+
     @PostConstruct
     public void createControls(Composite parent, MPart mpart) {
         super.createControls(parent, mpart);
+    }
+
+    protected void layoutFileInfoComposite() {
+        Display.getDefault().timerExec(10, new Runnable() {
+
+            @Override
+            public void run() {
+                isFileInfoExpanded = !isFileInfoExpanded;
+                compositeFileInfoDetails.setVisible(isFileInfoExpanded);
+                if (!isFileInfoExpanded) {
+                    ((GridData) compositeFileInfoDetails.getLayoutData()).exclude = true;
+                    compositeFileInfo.setSize(compositeFileInfo.getSize().x, compositeFileInfo.getSize().y
+                            - compositeTable.getSize().y);
+                } else {
+                    ((GridData) compositeFileInfoDetails.getLayoutData()).exclude = false;
+                }
+                compositeFileInfo.layout(true, true);
+                compositeFileInfo.getParent().layout();
+                redrawBtnExpandFileInfo();
+            }
+        });
     }
 
     /**
@@ -80,10 +113,10 @@ public class ExcelTestDataPart extends TestDataMainPart {
         compositeFileInfo = new Composite(parent, SWT.NONE);
         compositeFileInfo.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
 
-        GridLayout gl_fileComposite = new GridLayout(1, true);
-        gl_fileComposite.marginWidth = 0;
-        gl_fileComposite.marginHeight = 0;
-        compositeFileInfo.setLayout(gl_fileComposite);
+        GridLayout glFileComposite = new GridLayout(1, true);
+        glFileComposite.marginWidth = 0;
+        glFileComposite.marginHeight = 0;
+        compositeFileInfo.setLayout(glFileComposite);
         compositeFileInfo.setBackground(ColorUtil.getCompositeBackgroundColor());
 
         compositeFileInfoHeader = new Composite(compositeFileInfo, SWT.NONE);
@@ -92,15 +125,14 @@ public class ExcelTestDataPart extends TestDataMainPart {
         glFileCompositeHeader.marginWidth = 0;
         glFileCompositeHeader.marginHeight = 0;
         compositeFileInfoHeader.setLayout(glFileCompositeHeader);
+        compositeFileInfoHeader.setCursor(compositeFileInfoHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
 
-        btnExpandFileInfo = new Button(compositeFileInfoHeader, SWT.NONE);
-        GridData gd_btnExpandFileInfo = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gd_btnExpandFileInfo.widthHint = 18;
-        gd_btnExpandFileInfo.heightHint = 18;
-        btnExpandFileInfo.setLayoutData(gd_btnExpandFileInfo);
+        btnExpandFileInfo = new ImageButton(compositeFileInfoHeader, SWT.NONE);
+        GridData gdBtnExpandFileInfo = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        btnExpandFileInfo.setLayoutData(gdBtnExpandFileInfo);
 
-        Label lblFileInfo = new Label(compositeFileInfoHeader, SWT.NONE);
-        lblFileInfo.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+        lblFileInfo = new Label(compositeFileInfoHeader, SWT.NONE);
+        lblFileInfo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         lblFileInfo.setText(StringConstants.PA_LBL_FILE_INFO);
         lblFileInfo.setFont(JFaceResources.getFontRegistry().getBold(""));
 
@@ -115,10 +147,10 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
         Composite compositeFileName = new Composite(compositeFileInfoDetails, SWT.NONE);
         compositeFileName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        GridLayout gl_compositeFileName = new GridLayout(3, false);
-        gl_compositeFileName.marginRight = 5;
-        gl_compositeFileName.marginWidth = 0;
-        compositeFileName.setLayout(gl_compositeFileName);
+        GridLayout glCompositeFileName = new GridLayout(3, false);
+        glCompositeFileName.marginRight = 5;
+        glCompositeFileName.marginWidth = 0;
+        compositeFileName.setLayout(glCompositeFileName);
 
         Label lblFileName = new Label(compositeFileName, SWT.NONE);
         GridData gdLblFileName = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -139,9 +171,8 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
         lblSheetName = new Label(compositeSheetName, SWT.NONE);
         GridData gdLblSheetName = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdLblSheetName.widthHint = TestDataMainPart.MAX_LABEL_WIDTH;
         lblSheetName.setLayoutData(gdLblSheetName);
-        lblSheetName.setText("Sheet Name:");
+        lblSheetName.setText(StringConstants.PA_LBL_SHEET_NAME);
 
         cbbSheets = new Combo(compositeSheetName, SWT.READ_ONLY);
         GridData gdCbbSheets = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
@@ -150,10 +181,10 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
         Composite compositeCheckBoxes = new Composite(compositeFileInfoDetails, SWT.NONE);
         compositeCheckBoxes.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
-        GridLayout gl_compositeCheckBoxes = new GridLayout(2, false);
-        gl_compositeCheckBoxes.horizontalSpacing = 15;
-        gl_compositeCheckBoxes.marginWidth = 0;
-        compositeCheckBoxes.setLayout(gl_compositeCheckBoxes);
+        GridLayout glCompositeCheckBoxes = new GridLayout(2, false);
+        glCompositeCheckBoxes.horizontalSpacing = 15;
+        glCompositeCheckBoxes.marginWidth = 0;
+        compositeCheckBoxes.setLayout(glCompositeCheckBoxes);
 
         ckcbUseRelativePath = new Button(compositeCheckBoxes, SWT.CHECK);
         ckcbUseRelativePath.setText(StringConstants.PA_CHKBOX_USE_RELATIVE_PATH);
@@ -200,7 +231,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 cell.setText(Integer.toString(order));
             }
         });
-        
+
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
         return compositeTable;
@@ -237,7 +268,8 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 dialog.setFilterPath(getProjectFolderLocation());
 
                 String absolutePath = dialog.open();
-                if (absolutePath == null) return;
+                if (absolutePath == null)
+                    return;
                 if (ckcbUseRelativePath.getSelection()) {
                     txtFileName.setText(PathUtils.absoluteToRelativePath(absolutePath, getProjectFolderLocation()));
                 } else {
@@ -262,47 +294,21 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                try {
-                    if (txtFileName.getText() != null) {
-                        String sourceUrl = txtFileName.getText();
-                        if (ckcbUseRelativePath.getSelection()) {
-                            txtFileName.setText(PathUtils.absoluteToRelativePath(sourceUrl, getProjectFolderLocation()));
-                        } else {
-                            txtFileName.setText(PathUtils.relativeToAbsolutePath(sourceUrl, getProjectFolderLocation()));
-                        }
+                if (txtFileName.getText() != null) {
+                    String sourceUrl = txtFileName.getText();
+                    if (ckcbUseRelativePath.getSelection()) {
+                        txtFileName.setText(PathUtils.absoluteToRelativePath(sourceUrl, getProjectFolderLocation()));
+                    } else {
+                        txtFileName.setText(PathUtils.relativeToAbsolutePath(sourceUrl, getProjectFolderLocation()));
                     }
-                    dirtyable.setDirty(true);
-                } catch (Exception e1) {
-                    LoggerSingleton.logError(e1);
                 }
+                dirtyable.setDirty(true);
             }
         });
 
-        btnExpandFileInfo.addSelectionListener(new SelectionAdapter() {
+        btnExpandFileInfo.addListener(SWT.MouseDown, layoutFileInfoCompositeListener);
+        lblFileInfo.addListener(SWT.MouseDown, layoutFileInfoCompositeListener);
 
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                Display.getDefault().timerExec(10, new Runnable() {
-
-                    @Override
-                    public void run() {
-                        isFileInfoExpanded = !isFileInfoExpanded;
-                        compositeFileInfoDetails.setVisible(isFileInfoExpanded);
-                        if (!isFileInfoExpanded) {
-                            ((GridData) compositeFileInfoDetails.getLayoutData()).exclude = true;
-                            compositeFileInfo.setSize(compositeFileInfo.getSize().x, compositeFileInfo.getSize().y
-                                    - compositeTable.getSize().y);
-                        } else {
-                            ((GridData) compositeFileInfoDetails.getLayoutData()).exclude = false;
-                        }
-                        compositeFileInfo.layout(true, true);
-                        compositeFileInfo.getParent().layout();
-                        redrawBtnExpandFileInfo();
-                    }
-                });
-
-            }
-        });
     }
 
     private void redrawBtnExpandFileInfo() {
@@ -318,7 +324,9 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
     private void loadSheetNames() {
         try {
-            if (cbbSheets.isDisposed()) { return; }
+            if (cbbSheets.isDisposed()) {
+                return;
+            }
             cbbSheets.setItems(Util.loadSheetName(getSourceUrlAbsolutePath()).toArray(new String[] {}));
             cbbSheets.select(0);
         } catch (Exception e) {

@@ -95,7 +95,7 @@ public class GlobalStringConstants {
 	public static final String VALUE = "Value";
 	public static final String IMAGE = "Image";
 	public static final String DESCRIPTION = "Description";
-	public static final String INFORMATION = "Information";
+	public static final String INFORMATION = "General Information";
 	public static final String COMMENT = "Comment";
 	public static final String TAG = "Tag";
 	public static final String INPUT = "Input";
