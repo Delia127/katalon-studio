@@ -102,7 +102,7 @@ public class JobViewerPart implements EventHandler {
 		listCompositeLauncher = new Composite(scrolledComposite, SWT.NONE);
 		scrolledComposite.setContent(listCompositeLauncher);
 
-		listCompositeLauncher.setBackground(ColorUtil.getWhiteBackGroundColor());
+		listCompositeLauncher.setBackground(ColorUtil.getWhiteBackgroundColor());
 		GridLayout gl_composite_listLauncher = new GridLayout(1, false);
 		gl_composite_listLauncher.marginHeight = 0;
 		gl_composite_listLauncher.marginWidth = 0;
@@ -148,7 +148,7 @@ public class JobViewerPart implements EventHandler {
 		compositeLauncher.setData(CONTROL_ID, launcher.getId());
 
 		compositeLauncher.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-		compositeLauncher.setBackground(ColorUtil.getWhiteBackGroundColor());
+		compositeLauncher.setBackground(ColorUtil.getWhiteBackgroundColor());
 		GridLayout glCompositeLauncher = new GridLayout(3, false);
 		glCompositeLauncher.marginHeight = 0;
 		compositeLauncher.setLayout(glCompositeLauncher);

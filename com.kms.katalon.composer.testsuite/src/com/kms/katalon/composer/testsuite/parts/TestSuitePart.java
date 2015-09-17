@@ -1057,7 +1057,7 @@ public class TestSuitePart implements EventHandler {
     private void createCompositeTestCaseSearch() {
         compositeTableSearch = new Composite(compositeTestCase, SWT.BORDER);
         compositeTableSearch.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        compositeTableSearch.setBackground(ColorUtil.getWhiteBackGroundColor());
+        compositeTableSearch.setBackground(ColorUtil.getWhiteBackgroundColor());
         GridLayout glCompositeTableSearch = new GridLayout(4, false);
         glCompositeTableSearch.marginWidth = 0;
         glCompositeTableSearch.marginHeight = 0;

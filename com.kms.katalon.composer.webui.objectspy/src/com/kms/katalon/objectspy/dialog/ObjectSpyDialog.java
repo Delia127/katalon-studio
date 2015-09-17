@@ -272,7 +272,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
 		domExplorerComposite.setLayout(new GridLayout());
 
 		Composite searchComposite = new Composite(domExplorerComposite, SWT.BORDER);
-		searchComposite.setBackground(ColorUtil.getWhiteBackGroundColor());
+		searchComposite.setBackground(ColorUtil.getWhiteBackgroundColor());
 		GridLayout glSearchComposite = new GridLayout(6, false);
 		glSearchComposite.verticalSpacing = 0;
 		glSearchComposite.horizontalSpacing = 0;

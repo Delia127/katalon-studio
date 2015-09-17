@@ -111,7 +111,7 @@ public class KeywordBrowserPart implements EventHandler {
 		parent.setLayout(new GridLayout(1, false));
 
 		Composite searchComposite = new Composite(parent, SWT.BORDER);
-		searchComposite.setBackground(ColorUtil.getWhiteBackGroundColor());
+		searchComposite.setBackground(ColorUtil.getWhiteBackgroundColor());
 		GridLayout glSearchComposite = new GridLayout(1, false);
 		glSearchComposite.verticalSpacing = 0;
 		glSearchComposite.horizontalSpacing = 0;

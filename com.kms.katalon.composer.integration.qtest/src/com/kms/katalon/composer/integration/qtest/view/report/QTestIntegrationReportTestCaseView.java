@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.integration.qtest.view.report;
 
-import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,18 +9,19 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 
@@ -30,7 +30,6 @@ import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.dialog.ListReportUploadingPreviewDialog;
-import com.kms.katalon.composer.integration.qtest.dialog.ReportUploadingPreviewDialog;
 import com.kms.katalon.composer.integration.qtest.jobs.UploadTestCaseResultJob;
 import com.kms.katalon.composer.integration.qtest.model.QTestLogEvaluation;
 import com.kms.katalon.composer.integration.qtest.view.testsuite.providers.QTestSuiteTableLabelProvider;
@@ -60,21 +59,17 @@ import com.kms.katalon.integration.qtest.entity.QTestSuite;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
 
 public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIntegrationView {
-    private Text txtQTestId;
-    private Text txtQTestName;
-    private Text txtQTestTestCaseId;
-    private Text txtTestCaseRunId;
-
-    private Button btnUpload;
-    private Button btnNavigate;
-    private Button btnDisintegrate;
+    private StyledText txtQTestId;
+    private StyledText txtQTestName;
+    private StyledText txtQTestTestCaseId;
+    private StyledText txtTestCaseRunId;
 
     private TestSuiteEntity testSuiteEntity;
     private TestSuiteLogRecord testSuiteLogRecord;
     private QTestTestCase qTestCase;
     private QTestSuite qTestSuite;
     private QTestRun qTestRun;
-    private Button btnAttachment;
+    private StyledText txtAttachment;
     private TestCaseLogRecord testCaseLogRecord;
     private QTestReport qTestReport;
     private QTestLog qTestCaseLog;
@@ -95,122 +90,45 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
         glContainer.marginHeight = 0;
         container.setLayout(glContainer);
 
-        Composite compositeButton = new Composite(container, SWT.NONE);
-        GridLayout glCompositeButton = new GridLayout(3, false);
-        glCompositeButton.marginHeight = 0;
-        glCompositeButton.marginWidth = 0;
-        compositeButton.setLayout(glCompositeButton);
-        compositeButton.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-
-        btnUpload = new Button(compositeButton, SWT.NONE);
-        btnUpload.setText("Upload");
-
-        btnNavigate = new Button(compositeButton, SWT.NONE);
-        btnNavigate.setText("Navigate");
-
-        btnDisintegrate = new Button(compositeButton, SWT.NONE);
-        btnDisintegrate.setText("Disintegrate");
-
         Composite compositeInfo = new Composite(container, SWT.NONE);
         GridLayout glCompositeInfo = new GridLayout(2, false);
-        glCompositeInfo.horizontalSpacing = 10;
+        glCompositeInfo.verticalSpacing = 10;
+        glCompositeInfo.horizontalSpacing = 25;
         compositeInfo.setLayout(glCompositeInfo);
         compositeInfo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
         Label lblQTestId = new Label(compositeInfo, SWT.NONE);
         lblQTestId.setText("QTest ID");
 
-        txtQTestId = new Text(compositeInfo, SWT.BORDER | SWT.READ_ONLY);
+        txtQTestId = new StyledText(compositeInfo, SWT.READ_ONLY);
         txtQTestId.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Label lblQTestName = new Label(compositeInfo, SWT.NONE);
         lblQTestName.setText("QTest Name");
 
-        txtQTestName = new Text(compositeInfo, SWT.BORDER | SWT.READ_ONLY);
+        txtQTestName = new StyledText(compositeInfo, SWT.READ_ONLY);
         txtQTestName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Label lblTestCaseId = new Label(compositeInfo, SWT.NONE);
         lblTestCaseId.setText("Test Case ID");
 
-        txtQTestTestCaseId = new Text(compositeInfo, SWT.BORDER | SWT.READ_ONLY);
+        txtQTestTestCaseId = new StyledText(compositeInfo, SWT.READ_ONLY);
         txtQTestTestCaseId.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Label lblTestRunId = new Label(compositeInfo, SWT.NONE);
         lblTestRunId.setText("Test Run ID");
 
-        txtTestCaseRunId = new Text(compositeInfo, SWT.BORDER | SWT.READ_ONLY);
+        txtTestCaseRunId = new StyledText(compositeInfo, SWT.READ_ONLY);
         txtTestCaseRunId.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Label lblAttachment = new Label(compositeInfo, SWT.NONE);
         lblAttachment.setText("Attachment");
 
-        btnAttachment = new Button(compositeInfo, SWT.CHECK);
-        
+        txtAttachment = new StyledText(compositeInfo, SWT.NONE);
+
         intialize();
-        addControlModifyListeners();
 
         return container;
-    }
-
-    private void addControlModifyListeners() {
-        // TODO Auto-generated method stub
-        btnUpload.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                // TODO Auto-generated method stub
-                uploadTestCaseLog();
-            }
-        });
-
-        btnNavigate.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                // TODO Auto-generated method stub
-                navigateToTestCaseLog();
-            }
-        });
-
-        btnDisintegrate.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                // TODO Auto-generated method stub
-                disintegrateTestCaseLog();
-            }
-        });
-        
-        btnAttachment.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                btnAttachment.setSelection(!btnAttachment.getSelection());
-                Display.getCurrent().beep();
-            }
-        });
-    }
-
-    private void disintegrateTestCaseLog() {
-        // TODO Auto-generated method stub
-        qTestReport.getTestLogMap().remove(getTestCaseLogIndex(testCaseLogRecord));
-        saveReportEntity();
-        qTestCaseLog = null;
-        EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.REPORT_UPDATED, reportEntity.getId());
-    }
-
-    private void navigateToTestCaseLog() {
-        try {
-            ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-            String projectDir = projectEntity.getFolderLocation();
-            QTestProject qTestProject = QTestIntegrationUtil.getTestSuiteRepo(testSuiteEntity, projectEntity)
-                    .getQTestProject();
-            URL url = QTestIntegrationReportManager.getTestLogURL(projectDir, qTestProject, qTestRun, qTestCaseLog);
-            IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser();
-            browser.openURL(url);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-        }
     }
 
     private void intialize() {
@@ -248,14 +166,12 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
         try {
             txtQTestId.setText("");
             txtQTestName.setText("");
-            btnAttachment.setSelection(false);
+            txtAttachment.setText("");
             txtQTestTestCaseId.setText("");
             txtTestCaseRunId.setText("");
+            clearMouseDownListener(txtQTestId);
 
-            if (qTestSuite == null || qTestCase == null) {
-                btnUpload.setEnabled(false);
-                btnNavigate.setEnabled(false);
-                btnDisintegrate.setEnabled(false);
+            if (qTestCase == null || qTestSuite == null) {
                 return;
             }
 
@@ -276,87 +192,64 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
 
                 qTestCaseLog = qTestReport.getTestLogMap().get(getTestCaseLogIndex(testCaseLogRecord));
                 if (qTestCaseLog != null) {
-                    btnUpload.setEnabled(false);
-                    btnNavigate.setEnabled(true);
-                    btnDisintegrate.setEnabled(true);
-
                     txtQTestId.setText(Long.toString(qTestCaseLog.getId()));
                     txtQTestName.setText(qTestCaseLog.getName());
-                    btnAttachment.setSelection(qTestCaseLog.isAttachmentIncluded());
+                    registerTxtQTestIdClickListener();
+
+                    String attachmentString = qTestCaseLog.isAttachmentIncluded() ? "Yes" : "No";
+                    txtAttachment.setText(attachmentString);
                     return;
                 }
             }
-
-            btnUpload.setEnabled(true);
-            btnNavigate.setEnabled(false);
-            btnDisintegrate.setEnabled(false);
 
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
     }
 
-    private void uploadTestCaseLog() {
+    public void clearMouseDownListener(StyledText styleText) {
+        while (styleText.getListeners(SWT.MouseDown).length > 1) {
+            styleText.removeListener(SWT.MouseDown,
+                    styleText.getListeners(SWT.MouseDown)[styleText.getListeners(SWT.MouseDown).length - 1]);
+        }
+    }
+
+    private void registerTxtQTestIdClickListener() {
+        StyleRange range = new StyleRange();
+        range.start = 0;
+        range.length = txtQTestId.getText().length();
+        range.underline = true;
+        range.data = txtQTestId.getText();
+        range.underlineStyle = SWT.UNDERLINE_LINK;
+
+        txtQTestId.setStyleRanges(new StyleRange[] { range });
+
+        txtQTestId.addListener(SWT.MouseDown, new Listener() {
+            @Override
+            public void handleEvent(org.eclipse.swt.widgets.Event event) {
+                try {
+                    int offset = txtQTestId.getOffsetAtLocation(new Point(event.x, event.y));
+                    StyleRange style = txtQTestId.getStyleRangeAtOffset(offset);
+                    if (style != null && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK) {
+                        navigateToTestCaseLog();
+                    }
+
+                } catch (IllegalArgumentException e) {
+                    // no character under event.x, event.y
+                }
+            }
+        });
+    }
+
+    private void navigateToTestCaseLog() {
         try {
             ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
             String projectDir = projectEntity.getFolderLocation();
             QTestProject qTestProject = QTestIntegrationUtil.getTestSuiteRepo(testSuiteEntity, projectEntity)
                     .getQTestProject();
-
-            ReportUploadingPreviewDialog dialog = new ReportUploadingPreviewDialog(btnUpload.getDisplay()
-                    .getActiveShell(), testCaseLogRecord);
-            if (dialog.open() == Dialog.OK) {
-                if (qTestRun == null) {
-                    qTestRun = QTestIntegrationTestSuiteManager.uploadTestCaseInTestSuite(qTestCase, qTestSuite,
-                            qTestProject, projectDir);
-                    qTestSuite.getTestRuns().add(qTestRun);
-                    saveTestRunInTestSuite();
-                }
-
-                QTestLogUploadedPreview uploadedPreview = new QTestLogUploadedPreview();
-                uploadedPreview.setQTestProject(qTestProject);
-                uploadedPreview.setQTestCase(qTestCase);
-                uploadedPreview.setQTestSuite(qTestSuite);
-                uploadedPreview.setQTestRun(qTestRun);
-                uploadedPreview.setQTestLog(dialog.getPreparedQTestLog());
-                uploadedPreview.setTestLogIndex(getTestCaseLogIndex(testCaseLogRecord));
-                uploadedPreview.setTestCaseLogRecord(testCaseLogRecord);
-
-                qTestCaseLog = QTestIntegrationReportManager.uploadTestLog(projectDir, uploadedPreview,
-                        QTestIntegrationUtil.getTempDirPath(), new File(reportEntity.getLocation()));
-
-                uploadedPreview.setQTestLog(qTestCaseLog);
-
-                QTestIntegrationUtil.saveReportEntity(reportEntity, uploadedPreview);
-
-                EventBrokerSingleton.getInstance().getEventBroker()
-                        .post(EventConstants.REPORT_UPDATED, reportEntity.getId());
-            }
-
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-        }
-    }
-
-    private void saveTestRunInTestSuite() {
-        try {
-            IntegratedEntity testSuiteIntegratedEntity = testSuiteEntity
-                    .getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
-            List<QTestSuite> qTestSuites = QTestIntegrationTestSuiteManager
-                    .getQTestSuiteListByIntegratedEntity(testSuiteIntegratedEntity);
-            for (int index = 0; index < qTestSuites.size(); index++) {
-                if (qTestSuites.get(index).getId() == qTestSuite.getId()) {
-                    QTestIntegrationTestSuiteManager.addQTestSuiteToIntegratedEntity(qTestSuite,
-                            testSuiteIntegratedEntity, index);
-                    break;
-                }
-            }
-
-            testSuiteEntity = (TestSuiteEntity) QTestIntegrationUtil.updateFileIntegratedEntity(testSuiteEntity,
-                    testSuiteIntegratedEntity);
-            TestSuiteController.getInstance().updateTestSuite(testSuiteEntity);
-            EventBrokerSingleton.getInstance().getEventBroker()
-                    .post(EventConstants.TEST_SUITE_UPDATED, new Object[] { testSuiteEntity.getId(), testSuiteEntity });
+            URL url = QTestIntegrationReportManager.getTestLogURL(projectDir, qTestProject, qTestRun, qTestCaseLog);
+            IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser();
+            browser.openURL(url);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }

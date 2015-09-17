@@ -31,8 +31,12 @@ public class ColorUtil {
        return Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW);
     }
     
-    public static Color getWhiteBackGroundColor() {
+    public static Color getWhiteBackgroundColor() {
         return new Color(Display.getCurrent(), 255, 255, 255);
+    }
+    
+    public static Color getBlackBackgroundColor() {
+        return new Color(Display.getCurrent(), 0, 0, 0);
     }
     
     // #E8E8E8

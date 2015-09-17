@@ -3,6 +3,7 @@ package com.kms.katalon.composer.report.parts;
 import java.io.File;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TreeColumnLayout;
@@ -110,7 +111,7 @@ public class ReportPartTestLogView {
                 compositeTestCaseInformation.layout(true, true);
             }
         });
-        
+
         compositeSTLInformation.addListener(SWT.Resize, new Listener() {
 
             @Override
@@ -275,7 +276,7 @@ public class ReportPartTestLogView {
         btnFilterTestStepError.setSelection(true);
 
         Composite compositeTestLogSearch = new Composite(compositeTestLogFilter, SWT.BORDER);
-        compositeTestLogSearch.setBackground(ColorUtil.getWhiteBackGroundColor());
+        compositeTestLogSearch.setBackground(ColorUtil.getWhiteBackgroundColor());
         compositeTestLogSearch.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         GridLayout glCompositeTestLogSearch = new GridLayout(2, false);
         glCompositeTestLogSearch.marginWidth = 0;
@@ -444,35 +445,38 @@ public class ReportPartTestLogView {
 
         compositeTestCaseInformation = new Composite(tabFolder, SWT.NONE);
         tbtmGeneralInformation.setControl(compositeTestCaseInformation);
-        compositeTestCaseInformation.setBackground(ColorUtil.getWhiteBackGroundColor());
-        compositeTestCaseInformation.setLayout(new GridLayout(2, false));
+        compositeTestCaseInformation.setBackground(ColorUtil.getWhiteBackgroundColor());
+        GridLayout gl_compositeTestCaseInformation = new GridLayout(6, false);
+        gl_compositeTestCaseInformation.verticalSpacing = 7;
+        gl_compositeTestCaseInformation.horizontalSpacing = 15;
+        compositeTestCaseInformation.setLayout(gl_compositeTestCaseInformation);
 
         Label lblSTestCaseId = new Label(compositeTestCaseInformation, SWT.NONE);
         lblSTestCaseId.setText("Test Case ID");
         parentPart.setLabelToBeBold(lblSTestCaseId);
 
-        txtSTestCaseId = new StyledText(compositeTestCaseInformation, SWT.BORDER);
-        txtSTestCaseId.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        txtSTestCaseId = new StyledText(compositeTestCaseInformation, SWT.NONE);
+        txtSTestCaseId.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 5, 1));
 
         Label lblSTCStart = new Label(compositeTestCaseInformation, SWT.NONE);
         lblSTCStart.setText("Start");
         parentPart.setLabelToBeBold(lblSTCStart);
 
-        txtSTestCaseStartTime = new StyledText(compositeTestCaseInformation, SWT.BORDER | SWT.READ_ONLY);
+        txtSTestCaseStartTime = new StyledText(compositeTestCaseInformation, SWT.READ_ONLY);
         txtSTestCaseStartTime.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
         Label lblSTCEndTime = new Label(compositeTestCaseInformation, SWT.NONE);
         lblSTCEndTime.setText("End");
         parentPart.setLabelToBeBold(lblSTCEndTime);
 
-        txtSTestCaseEndTime = new StyledText(compositeTestCaseInformation, SWT.BORDER | SWT.READ_ONLY);
+        txtSTestCaseEndTime = new StyledText(compositeTestCaseInformation, SWT.READ_ONLY);
         txtSTestCaseEndTime.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
         Label lblSTCElapsedTime = new Label(compositeTestCaseInformation, SWT.NONE);
         lblSTCElapsedTime.setText("Elapsed");
         parentPart.setLabelToBeBold(lblSTCElapsedTime);
 
-        txtSTestCaseElapsedTime = new StyledText(compositeTestCaseInformation, SWT.BORDER | SWT.READ_ONLY);
+        txtSTestCaseElapsedTime = new StyledText(compositeTestCaseInformation, SWT.READ_ONLY);
         txtSTestCaseElapsedTime.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
         Label lblSTCDescription = new Label(compositeTestCaseInformation, SWT.NONE);
@@ -480,18 +484,20 @@ public class ReportPartTestLogView {
         lblSTCDescription.setText("Description");
         parentPart.setLabelToBeBold(lblSTCDescription);
 
-        txtSTestCaseDescription = new StyledText(compositeTestCaseInformation, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP
-                | SWT.V_SCROLL);
-        txtSTestCaseDescription.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        txtSTestCaseDescription = new StyledText(compositeTestCaseInformation, SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
+        txtSTestCaseDescription.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 5, 1));
+        txtSTestCaseDescription.setMarginColor(ColorUtil.getTextPlaceholderColor());
+        enebleMargin(txtSTestCaseDescription, false);
 
         Label lblSTCMessage = new Label(compositeTestCaseInformation, SWT.NONE);
         lblSTCMessage.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
         lblSTCMessage.setText("Message");
         parentPart.setLabelToBeBold(lblSTCMessage);
 
-        txtSTestCaseMessage = new StyledText(compositeTestCaseInformation, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP
-                | SWT.V_SCROLL);
-        txtSTestCaseMessage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        txtSTestCaseMessage = new StyledText(compositeTestCaseInformation, SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
+        txtSTestCaseMessage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 5, 1));
+        txtSTestCaseMessage.setMarginColor(ColorUtil.getTextPlaceholderColor());
+        enebleMargin(txtSTestCaseMessage, false);
     }
 
     private void createTestCaseIntegrationTabItem(CTabFolder tabFolder) {
@@ -500,7 +506,7 @@ public class ReportPartTestLogView {
 
         Composite compositeTestCaseIntegration = new Composite(tabFolder, SWT.NONE);
         tbtmTestCaseIntegration.setControl(compositeTestCaseIntegration);
-        compositeTestCaseIntegration.setBackground(ColorUtil.getWhiteBackGroundColor());
+        compositeTestCaseIntegration.setBackground(ColorUtil.getWhiteBackgroundColor());
         GridLayout glCompositeTestCaseIntegration = new GridLayout(2, false);
         glCompositeTestCaseIntegration.horizontalSpacing = 20;
         compositeTestCaseIntegration.setLayout(glCompositeTestCaseIntegration);
@@ -540,34 +546,34 @@ public class ReportPartTestLogView {
         GridLayout glCompositeSTLInformation = new GridLayout(6, false);
         glCompositeSTLInformation.horizontalSpacing = 15;
         compositeSTLInformation.setLayout(glCompositeSTLInformation);
-        compositeSTLInformation.setBackground(ColorUtil.getWhiteBackGroundColor());
+        compositeSTLInformation.setBackground(ColorUtil.getWhiteBackgroundColor());
 
         Label lblSTLName = new Label(compositeSTLInformation, SWT.NONE);
         lblSTLName.setText("Name");
         parentPart.setLabelToBeBold(lblSTLName);
 
-        txtSTLName = new StyledText(compositeSTLInformation, SWT.BORDER | SWT.READ_ONLY);
+        txtSTLName = new StyledText(compositeSTLInformation, SWT.READ_ONLY);
         txtSTLName.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 5, 1));
 
         Label lblSTLStart = new Label(compositeSTLInformation, SWT.NONE);
         lblSTLStart.setText("Start");
         parentPart.setLabelToBeBold(lblSTLStart);
 
-        txtSTLStartTime = new StyledText(compositeSTLInformation, SWT.BORDER | SWT.READ_ONLY);
+        txtSTLStartTime = new StyledText(compositeSTLInformation, SWT.READ_ONLY);
         txtSTLStartTime.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
         Label lblSTLEndTime = new Label(compositeSTLInformation, SWT.NONE);
         lblSTLEndTime.setText("End");
         parentPart.setLabelToBeBold(lblSTLEndTime);
 
-        txtSTLEndTime = new StyledText(compositeSTLInformation, SWT.BORDER | SWT.READ_ONLY);
+        txtSTLEndTime = new StyledText(compositeSTLInformation, SWT.READ_ONLY);
         txtSTLEndTime.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
         Label lblSTLElapsedTime = new Label(compositeSTLInformation, SWT.NONE);
         lblSTLElapsedTime.setText("Elapsed");
         parentPart.setLabelToBeBold(lblSTLElapsedTime);
 
-        txtSTLElapsedTime = new StyledText(compositeSTLInformation, SWT.BORDER | SWT.READ_ONLY);
+        txtSTLElapsedTime = new StyledText(compositeSTLInformation, SWT.READ_ONLY);
         txtSTLElapsedTime.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
         Label lblSTLDescription = new Label(compositeSTLInformation, SWT.NONE);
@@ -575,17 +581,20 @@ public class ReportPartTestLogView {
         lblSTLDescription.setText("Description");
         parentPart.setLabelToBeBold(lblSTLDescription);
 
-        txtSTLDescription = new StyledText(compositeSTLInformation, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP
-                | SWT.V_SCROLL);
+        txtSTLDescription = new StyledText(compositeSTLInformation, SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
         txtSTLDescription.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 5, 1));
+        txtSTLDescription.setMarginColor(ColorUtil.getTextPlaceholderColor());
+        enebleMargin(txtSTLDescription, false);
 
         Label lblSTLMessage = new Label(compositeSTLInformation, SWT.NONE);
         lblSTLMessage.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
         lblSTLMessage.setText("Message");
         parentPart.setLabelToBeBold(lblSTLMessage);
 
-        txtSTLMessage = new StyledText(compositeSTLInformation, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
+        txtSTLMessage = new StyledText(compositeSTLInformation, SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
         txtSTLMessage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 5, 1));
+        txtSTLMessage.setMarginColor(ColorUtil.getTextPlaceholderColor());
+        enebleMargin(txtSTLMessage, false);
 
         tabFolder.setSelection(0);
     }
@@ -598,7 +607,7 @@ public class ReportPartTestLogView {
         Composite compositeSTLStackTrace = new Composite(tabFolder, SWT.NONE);
         tbtmSTLStackStrace.setControl(compositeSTLStackTrace);
         compositeSTLStackTrace.setLayout(new FillLayout(SWT.HORIZONTAL));
-        compositeSTLStackTrace.setBackground(ColorUtil.getWhiteBackGroundColor());
+        compositeSTLStackTrace.setBackground(ColorUtil.getWhiteBackgroundColor());
 
         txtSTLStackTrace = new StyledText(compositeSTLStackTrace, SWT.NONE);
     }
@@ -613,10 +622,10 @@ public class ReportPartTestLogView {
 
         tbtmSTLImageView.setControl(compositeSTLSImageView);
         compositeSTLSImageView.setLayout(new FillLayout(SWT.HORIZONTAL));
-        compositeSTLSImageView.setBackground(ColorUtil.getWhiteBackGroundColor());
+        compositeSTLSImageView.setBackground(ColorUtil.getWhiteBackgroundColor());
 
         selectedTestLogCanvas = new Canvas(compositeSTLSImageView, SWT.NONE);
-        selectedTestLogCanvas.setBackground(ColorUtil.getWhiteBackGroundColor());
+        selectedTestLogCanvas.setBackground(ColorUtil.getWhiteBackgroundColor());
         selectedTestLogCanvas.setLayout(new FillLayout(SWT.HORIZONTAL));
 
         selectedTestLogCanvas.addPaintListener(new PaintListener() {
@@ -717,24 +726,30 @@ public class ReportPartTestLogView {
             txtSTestCaseElapsedTime.setText("");
         }
 
-        if (selectedLogRecord != null && selectedLogRecord.getDescription() != null) {
+        if (selectedLogRecord != null && selectedLogRecord.getDescription() != null
+                && !selectedLogRecord.getDescription().isEmpty()) {
             txtSTestCaseDescription.setText(selectedLogRecord.getDescription());
+            enebleMargin(txtSTestCaseDescription, true);
         } else {
             txtSTestCaseDescription.setText("");
+            enebleMargin(txtSTestCaseDescription, false);
         }
 
         if (selectedLogRecord != null && selectedLogRecord.getMessage() != null) {
             txtSTestCaseMessage.setText(selectedLogRecord.getMessage());
+            enebleMargin(txtSTestCaseMessage, true);
         } else {
             txtSTestCaseMessage.setText("");
+            enebleMargin(txtSTestCaseMessage, false);
         }
+        
+        compositeTestCaseInformation.layout();
 
         if (selectedLogRecord != null) {
             treeViewerTestSteps.setInput(selectedLogRecord.getChildRecords());
         } else {
             treeViewerTestSteps.setInput(null);
         }
-
         selectedReportTestCaseIntegrationView.changeTestCase((TestCaseLogRecord) parentPart
                 .getTestCaseSelectedLogRecord());
         updateSelectedTestStep(null);
@@ -810,21 +825,23 @@ public class ReportPartTestLogView {
             txtSTLElapsedTime.setText("");
         }
 
-        if (selectedLogRecord != null && selectedLogRecord.getDescription() != null) {
+        if (selectedLogRecord != null && StringUtils.isNotEmpty(selectedLogRecord.getDescription())) {
             txtSTLDescription.setText(selectedLogRecord.getDescription());
+            enebleMargin(txtSTLDescription, true);
         } else {
             txtSTLDescription.setText("");
+            enebleMargin(txtSTLDescription, false);
         }
 
-        if (selectedLogRecord != null && selectedLogRecord.getMessage() != null) {
+        if (selectedLogRecord != null && StringUtils.isNotEmpty(selectedLogRecord.getMessage())) {
             txtSTLMessage.setText(selectedLogRecord.getMessage());
+            enebleMargin(txtSTLMessage, true);
         } else {
             txtSTLMessage.setText("");
+            enebleMargin(txtSTLMessage, false);
         }
 
-        // if (selectedLogRecord.getStatus().getStackTrace() != null) {
-        // txtSTLStackTrace.setText(selectedLogRecord.getStatus().getStackTrace());
-        // }
+        compositeSTLInformation.layout();
 
         if (selectedTestLogImage != null) {
             selectedTestLogImage.dispose();
@@ -852,4 +869,22 @@ public class ReportPartTestLogView {
     public ReportEntity getReport() {
         return parentPart.getReport();
     }
+    
+    public void enebleMargin(StyledText styledText, boolean enable) {
+        styledText.setRedraw(false);
+        if (enable) {
+            styledText.getVerticalBar().setVisible(true);
+            styledText.setTopMargin(1);
+            styledText.setBottomMargin(1);
+            styledText.setLeftMargin(1);
+        } else {
+            styledText.getVerticalBar().setVisible(false);
+            styledText.setTopMargin(0);
+            styledText.setBottomMargin(0);
+            styledText.setLeftMargin(0);
+        }
+        styledText.setRedraw(true);
+        styledText.layout(true);
+    }
+
 }

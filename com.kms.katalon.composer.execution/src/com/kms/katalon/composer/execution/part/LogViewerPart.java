@@ -485,7 +485,7 @@ public class LogViewerPart implements EventHandler {
 	private void createTreeNodePropertiesComposite(SashForm sashForm) {
 		Composite compositeTreeNodeProperties = new Composite(sashForm, SWT.BORDER);
 		compositeTreeNodeProperties.setLayout(new GridLayout(2, false));
-		compositeTreeNodeProperties.setBackground(ColorUtil.getWhiteBackGroundColor());
+		compositeTreeNodeProperties.setBackground(ColorUtil.getWhiteBackgroundColor());
 
 		Label lblLogStart = new Label(compositeTreeNodeProperties, SWT.NONE);
 		lblLogStart.setFont(JFaceResources.getFontRegistry().getBold(""));

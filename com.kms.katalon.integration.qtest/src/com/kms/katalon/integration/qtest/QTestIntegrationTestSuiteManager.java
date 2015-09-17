@@ -75,6 +75,8 @@ public class QTestIntegrationTestSuiteManager {
      * @see {@link QTestRun#getQTestCaseId()}
      */
     public static QTestRun getTestRunByTestSuiteAndTestCaseId(QTestSuite qTestSuite, long testCaseId) {
+        if (qTestSuite == null) { return null; }
+        
         QTestRun testRun = null;
         for (QTestRun childTestRun : qTestSuite.getTestRuns()) {
             if (childTestRun.getQTestCaseId() == testCaseId) {

@@ -7,6 +7,8 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String HAND_ERROR_MSG_UNABLE_TO_DELETE_REPORT = "Unable to delete Report";
 	
 	// ReportPart
+	public static final String TITLE_SUMMARY = "Summary";
+	
 	public static final String LBL_EXECUTION_ENVIRONMENT = "Execution Infomation";
 	public static final String LBL_HOST_NAME = "Host name";
 	public static final String LBL_OS = "OS";
@@ -14,6 +16,7 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String LBL_SOURCE_NAME = "Source";
 	public static final String LBL_STATUS = "Status";
 	public static final String HAND_ERROR_MSG_UNABLE_TO_OPEN_REPORT = "Unable to open Report";
+	public static final String HAND_ERROR_MSG_TEST_CASE_NOT_FOUND = "Unable to open Report";
 	public static final String REPORT_TABLE_ITEM_COLUMN_HEADER = "Item";
 	public static final String REPORT_TABLE_START_TIME_COLUMN_HEADER = "Start";
 	public static final String REPORT_TABLE_END_TIME_COLUMN_HEADER = "End";

@@ -137,7 +137,7 @@ public class ExplorerPart {
 		parent.setLayout(new GridLayout(2, false));
 
 		searchComposite = new Composite(parent, SWT.BORDER);
-		searchComposite.setBackground(ColorUtil.getWhiteBackGroundColor());
+		searchComposite.setBackground(ColorUtil.getWhiteBackgroundColor());
 		GridLayout glSearchComposite = new GridLayout(6, false);
 		glSearchComposite.verticalSpacing = 0;
 		glSearchComposite.horizontalSpacing = 0;
