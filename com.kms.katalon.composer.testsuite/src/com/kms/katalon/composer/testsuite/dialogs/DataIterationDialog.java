@@ -58,29 +58,29 @@ public class DataIterationDialog extends Dialog {
 
     private void initSelection() {
         switch (iterationEntity.getIterationType()) {
-        case ALL:
-            btnRunAllRows.setSelection(true);
-            spinnerFrom.setEnabled(false);
-            spinnerTo.setEnabled(false);
-            textSpecificRow.setEnabled(false);
-            break;
-        case RANGE:
-            btnRunFromRow.setSelection(true);
-            spinnerFrom.setEnabled(true);
-            spinnerTo.setEnabled(true);
-            textSpecificRow.setEnabled(false);
+            case ALL:
+                btnRunAllRows.setSelection(true);
+                spinnerFrom.setEnabled(false);
+                spinnerTo.setEnabled(false);
+                textSpecificRow.setEnabled(false);
+                break;
+            case RANGE:
+                btnRunFromRow.setSelection(true);
+                spinnerFrom.setEnabled(true);
+                spinnerTo.setEnabled(true);
+                textSpecificRow.setEnabled(false);
 
-            spinnerFrom.setSelection(iterationEntity.getFrom());
-            spinnerTo.setSelection(iterationEntity.getTo());
-            break;
-        case SPECIFIC:
-            btnRunSpecificRows.setSelection(true);
-            spinnerFrom.setEnabled(false);
-            spinnerTo.setEnabled(false);
+                spinnerFrom.setSelection(iterationEntity.getFrom());
+                spinnerTo.setSelection(iterationEntity.getTo());
+                break;
+            case SPECIFIC:
+                btnRunSpecificRows.setSelection(true);
+                spinnerFrom.setEnabled(false);
+                spinnerTo.setEnabled(false);
 
-            textSpecificRow.setEnabled(true);
-            textSpecificRow.setText(iterationEntity.getValue());
-            break;
+                textSpecificRow.setEnabled(true);
+                textSpecificRow.setText(iterationEntity.getValue());
+                break;
         }
     }
 
@@ -145,24 +145,24 @@ public class DataIterationDialog extends Dialog {
                 spinnerTo.setEnabled(false);
             }
         });
-        
+
         textSpecificRow.addVerifyListener(new VerifyListener() {
-            
+
             @Override
             public void verifyText(VerifyEvent e) {
                 verifySpecificTextEvent(e);
             }
         });
-        
+
         textSpecificRow.addModifyListener(new ModifyListener() {
-            
+
             @Override
             public void modifyText(ModifyEvent e) {
                 validateSpecificInteration();
             }
         });
     }
-    
+
     private void verifySpinnerEvent(Event event) {
         Spinner spinner = (Spinner) event.widget;
         StringBuilder builder = new StringBuilder(spinner.getText());
@@ -173,7 +173,7 @@ public class DataIterationDialog extends Dialog {
             event.doit = false;
         }
     }
-    
+
     private void verifySpecificTextEvent(VerifyEvent event) {
         Text txt = (Text) event.widget;
         StringBuilder builder = new StringBuilder(txt.getText());
@@ -206,10 +206,10 @@ public class DataIterationDialog extends Dialog {
         spinnerFrom.setMaximum(Integer.MAX_VALUE);
         spinnerFrom.setIncrement(1);
         spinnerFrom.setTextLimit(Integer.MAX_VALUE);
-        
+
         controlDecoration = new ControlDecoration(spinnerFrom, SWT.LEFT | SWT.TOP);
-        Image imgNotification = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_WARNING)
-                .getImage();
+        Image imgNotification = FieldDecorationRegistry.getDefault()
+                .getFieldDecoration(FieldDecorationRegistry.DEC_WARNING).getImage();
         controlDecoration.setImage(imgNotification);
         controlDecoration.setDescriptionText(StringConstants.DIA_MSG_START_ROW_BIGGER_THAN_END_ROW);
         controlDecoration.hide();
@@ -279,10 +279,13 @@ public class DataIterationDialog extends Dialog {
             controlDecoration.hide();
         }
     }
-    
+
     private void validateSpecificInteration() {
         String textSpecific = textSpecificRow.getText().replace(" ", "");
-        if (Pattern.matches("(\\d+\\-\\d+|\\d+)(,(\\d+\\-\\d+|\\d+))*,?", textSpecific)) {
+        String positiveNumber = "[1-9][0-9]*";
+        String positiveNumberCorePattern = "(" + positiveNumber + "\\-" + positiveNumber + "|" + positiveNumber + ")";
+        if (Pattern.matches(positiveNumberCorePattern + "(," +positiveNumberCorePattern + ")*,?",
+                textSpecific)) {
             getButton(Dialog.OK).setEnabled(true);
         } else {
             getButton(Dialog.OK).setEnabled(false);
@@ -302,11 +305,5 @@ public class DataIterationDialog extends Dialog {
         } catch (NullPointerException e) {
             return false;
         }
-    }
-    
-    public boolean isNumberFormat(String s) {
-        if (s == null || s.isEmpty()) return false;
-        
-        return Pattern.matches("[0-9][1-9]*", s);
     }
 }

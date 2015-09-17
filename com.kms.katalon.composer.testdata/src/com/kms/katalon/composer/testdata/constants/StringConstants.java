@@ -35,12 +35,14 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_WARN_MSG_UNABLE_TO_LOAD_SOURCE_FILE = "Unable to load selected file.";
 
     // InternalTestDataPart
-    public static final String PA_MENU_CONTEXT_INSERT_COL_TO_THE_LEFT = "Insert column to the left";
-    public static final String PA_MENU_CONTEXT_INSERT_COL_TO_THE_RIGHT = "Insert column to the right";
-    public static final String PA_MENU_CONTEXT_RENAME_COL = "Rename column";
-    public static final String PA_MENU_CONTEXT_DEL_COL = "Delete column";
+    public static final String PA_MENU_CONTEXT_INSERT_COL = "Insert column";
+    public static final String PA_MENU_CONTEXT_INSERT_COL_TO_THE_LEFT = "To the left";
+    public static final String PA_MENU_CONTEXT_INSERT_COL_TO_THE_RIGHT = "To the right";
+    public static final String PA_MENU_CONTEXT_RENAME_COL = "Rename column";    
     public static final String PA_MENU_CONTEXT_INSERT_ROW = "Insert row";
-    public static final String PA_MENU_CONTEXT_DEL_ROWS = "Delete row(s)";
+    public static final String PA_MENU_CONTEXT_DEL = "Delete";
+    public static final String PA_MENU_CONTEXT_DEL_COL = "Column";
+    public static final String PA_MENU_CONTEXT_DEL_ROWS = "Row(s)";
     public static final String PA_COL_NO = NO_;
     public static final String PA_TOOL_TIP_ADD_COLUMN = "Add column";
 
