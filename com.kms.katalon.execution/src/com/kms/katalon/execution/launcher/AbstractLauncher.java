@@ -34,212 +34,221 @@ import com.kms.katalon.execution.launcher.model.LauncherResult;
 import com.kms.katalon.execution.launcher.model.LauncherStatus;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.execution.util.MailUtil.EmailConfig;
+import com.kms.katalon.execution.util.MailUtil.MailSecurityProtocolType;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public abstract class AbstractLauncher {
-	protected LauncherStatus status;
-	protected IRunConfiguration runConfig;
-	protected boolean stopSignal = false;
-	protected boolean forcedStop = false;
-	protected IFile scriptFile;
-	protected IFileEntity executedEntity;
-	protected List<XmlLogRecord> logRecords;
-	protected boolean isObserved;
-	protected ILaunch launch;
-	protected File logFilePath;
-	protected int logDepth = 0;
-	protected TestSuiteExecutedEntity testSuiteExecutedEntity;
-	protected LauncherResult launcherResult;
+    protected LauncherStatus status;
+    protected IRunConfiguration runConfig;
+    protected boolean stopSignal = false;
+    protected boolean forcedStop = false;
+    protected IFile scriptFile;
+    protected IFileEntity executedEntity;
+    protected List<XmlLogRecord> logRecords;
+    protected boolean isObserved;
+    protected ILaunch launch;
+    protected File logFilePath;
+    protected int logDepth = 0;
+    protected TestSuiteExecutedEntity testSuiteExecutedEntity;
+    protected LauncherResult launcherResult;
 
-	public AbstractLauncher(IRunConfiguration runConfig) {
-		this.runConfig = runConfig;
-		logFilePath = new File(runConfig.getLogFilePath());
-	}
-	
-	protected CustomGroovyScriptLaunchShortcut getLauncher() {
-		return new CustomGroovyScriptLaunchShortcut();
-	}
+    public AbstractLauncher(IRunConfiguration runConfig) {
+        this.runConfig = runConfig;
+        logFilePath = new File(runConfig.getLogFilePath());
+    }
 
-	protected void updateLastRun(TestSuiteEntity testSuite, File logFile) throws Exception {
-		if (testSuite != null) {
-			String reportFolderName = FilenameUtils.getBaseName(logFile.getParent());
-			Date logFileDate = ReportController.getInstance().getDateFromReportFolderName(reportFolderName);
-			if (testSuite.getLastRun() == null || logFileDate.after(testSuite.getLastRun())) {
-				testSuite.setLastRun(logFileDate);
-				TestSuiteController.getInstance().updateTestSuite(testSuite);
-			}
-		}
-	}
+    protected CustomGroovyScriptLaunchShortcut getLauncher() {
+        return new CustomGroovyScriptLaunchShortcut();
+    }
 
-	public static void sendReportEmail(TestSuiteEntity testSuite, File logFile) throws Exception {
-		// Send report email
-		if (testSuite.getMailRecipient() != null && !testSuite.getMailRecipient().equals("")) {
-			IPreferenceStore prefs = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-					PreferenceConstants.DALPreferenceConstans.QUALIFIER);
+    protected void updateLastRun(TestSuiteEntity testSuite, File logFile) throws Exception {
+        if (testSuite != null) {
+            String reportFolderName = FilenameUtils.getBaseName(logFile.getParent());
+            Date logFileDate = ReportController.getInstance().getDateFromReportFolderName(reportFolderName);
+            if (testSuite.getLastRun() == null || logFileDate.after(testSuite.getLastRun())) {
+                testSuite.setLastRun(logFileDate);
+                TestSuiteController.getInstance().updateTestSuite(testSuite);
+            }
+        }
+    }
 
-			EmailConfig conf = new EmailConfig();
-			conf.tos = testSuite.getMailRecipient().split(";");
-			conf.host = prefs.getString(PreferenceConstants.DALPreferenceConstans.MAIL_CONFIG_HOST);
-			conf.port = prefs.getString(PreferenceConstants.DALPreferenceConstans.MAIL_CONFIG_PORT);
-			conf.from = prefs.getString(PreferenceConstants.DALPreferenceConstans.MAIL_CONFIG_USERNAME);
-			conf.signature = prefs.getString(PreferenceConstants.DALPreferenceConstans.MAIL_CONFIG_SIGNATURE);
-			conf.sendAttachment = prefs.getBoolean(PreferenceConstants.DALPreferenceConstans.MAIL_ATTACHMENT);
-			conf.suitePath = testSuite.getRelativePathForUI();
-			conf.logFile = logFile;
+    public static void sendReportEmail(TestSuiteEntity testSuite, File logFile) throws Exception {
+        // Send report email
+        if (testSuite.getMailRecipient() != null && !testSuite.getMailRecipient().equals("")) {
+            IPreferenceStore prefs = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
+                    PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
 
-			MailUtil.sendHtmlMail(conf);
-		}
-	}
+            EmailConfig conf = new EmailConfig();
+            conf.tos = testSuite.getMailRecipient().split(";");
+            conf.host = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_HOST);
+            conf.port = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_PORT);
+            conf.from = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_USERNAME);
+            conf.securityProtocol = MailSecurityProtocolType.valueOf(prefs
+                    .getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_SECURITY_PROTOCOL));
+            conf.username = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_USERNAME);
+            conf.password = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_PASSWORD);
+            conf.signature = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_SIGNATURE);
+            conf.sendAttachment = prefs.getBoolean(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_ATTACHMENT);
+            conf.suitePath = testSuite.getRelativePathForUI();
+            conf.logFile = logFile;
 
-	public static void sendSummaryEmail(File csvFile, List<Object[]> suitesSummaryForEmail) throws Exception {
-		String prefFile = Platform
-				.getInstallLocation()
-				.getDataArea("config/.metadata/.plugins/org.eclipse.core.runtime/.settings/com.kms.katalon.dal.prefs")
-				.getFile();
-		if ((new File(prefFile)).exists()) {
-			PreferenceStore prefs = new PreferenceStore(prefFile);
-			prefs.load();
-			EmailConfig conf = new EmailConfig();
-			String receipts = prefs.getString(PreferenceConstants.DALPreferenceConstans.MAIL_CONFIG_REPORT_RECIPIENTS);
-			if (receipts != null && !receipts.trim().equals("")) {
-				conf.tos = receipts.trim().split(";");
-			}
-			conf.host = prefs.getString(PreferenceConstants.DALPreferenceConstans.MAIL_CONFIG_HOST);
-			conf.port = prefs.getString(PreferenceConstants.DALPreferenceConstans.MAIL_CONFIG_PORT);
-			conf.from = prefs.getString(PreferenceConstants.DALPreferenceConstans.MAIL_CONFIG_USERNAME);
-			conf.signature = prefs.getString(PreferenceConstants.DALPreferenceConstans.MAIL_CONFIG_SIGNATURE);
-			conf.sendAttachment = prefs.getBoolean(PreferenceConstants.DALPreferenceConstans.MAIL_ATTACHMENT);
+            MailUtil.sendHtmlMail(conf);
+        }
+    }
 
-			if (conf.host != null && !conf.host.equals("") && conf.port != null && !conf.port.equals("")
-					&& conf.tos != null && conf.tos.length > 0 && conf.from != null && !conf.from.equals("")) {
+    public static void sendSummaryEmail(File csvFile, List<Object[]> suitesSummaryForEmail) throws Exception {
+        String prefFile = Platform.getInstallLocation()
+                .getDataArea("config/.metadata/.plugins/org.eclipse.core.runtime/.settings/com.kms.katalon.dal.prefs")
+                .getFile();
+        if ((new File(prefFile)).exists()) {
+            PreferenceStore prefs = new PreferenceStore(prefFile);
+            prefs.load();
+            EmailConfig conf = new EmailConfig();
+            String receipts = prefs
+                    .getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_REPORT_RECIPIENTS);
+            if (receipts != null && !receipts.trim().equals("")) {
+                conf.tos = receipts.trim().split(";");
+            }
+            conf.host = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_HOST);
+            conf.port = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_PORT);
+            conf.from = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_USERNAME);
+            conf.securityProtocol = MailSecurityProtocolType.valueOf(prefs
+                    .getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_SECURITY_PROTOCOL));
+            conf.username = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_USERNAME);
+            conf.password = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_PASSWORD);
+            conf.signature = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_SIGNATURE);
+            conf.sendAttachment = prefs.getBoolean(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_ATTACHMENT);
 
-				MailUtil.sendSummaryMail(conf, csvFile, suitesSummaryForEmail);
-			}
-		}
-	}
+            if (conf.host != null && !conf.host.equals("") && conf.port != null && !conf.port.equals("")
+                    && conf.tos != null && conf.tos.length > 0 && conf.from != null && !conf.from.equals("")) {
 
-	public LauncherStatus getStatus() {
-		return status;
-	}
+                MailUtil.sendSummaryMail(conf, csvFile, suitesSummaryForEmail);
+            }
+        }
+    }
 
-	public void setStatus(LauncherStatus status) {
-		this.status = status;
-	}
+    public LauncherStatus getStatus() {
+        return status;
+    }
 
-	public IRunConfiguration getRunConfiguration() {
-		return runConfig;
-	}
+    public void setStatus(LauncherStatus status) {
+        this.status = status;
+    }
 
-	public void forceStop() {
-		forcedStop = true;
-		stopSignal = true;
-	}
+    public IRunConfiguration getRunConfiguration() {
+        return runConfig;
+    }
 
-	public abstract void execute();
+    public void forceStop() {
+        forcedStop = true;
+        stopSignal = true;
+    }
 
-	public String getEntityId() throws Exception {
-		if (executedEntity != null) {
-			if (executedEntity instanceof TestCaseEntity) {
-				return TestCaseController.getInstance().getIdForDisplay((TestCaseEntity) executedEntity);
-			} else {
-				return TestSuiteController.getInstance().getIdForDisplay((TestSuiteEntity) executedEntity);
-			}
-		}
-		return "";
-	}
+    public abstract void execute();
 
-	public String getId() throws Exception {
-		if (getCurrentLogFile().exists()) {
-			return getEntityId() + " - " + FilenameUtils.getBaseName(getCurrentLogFile().getParent());
-		}
-		return getEntityId();
-	}
+    public String getEntityId() throws Exception {
+        if (executedEntity != null) {
+            if (executedEntity instanceof TestCaseEntity) {
+                return TestCaseController.getInstance().getIdForDisplay((TestCaseEntity) executedEntity);
+            } else {
+                return TestSuiteController.getInstance().getIdForDisplay((TestSuiteEntity) executedEntity);
+            }
+        }
+        return "";
+    }
 
-	public int getTotalTestCase() {
-		return launcherResult.getTotalTestCases();
-	}
+    public String getId() throws Exception {
+        if (getCurrentLogFile().exists()) {
+            return getEntityId() + " - " + FilenameUtils.getBaseName(getCurrentLogFile().getParent());
+        }
+        return getEntityId();
+    }
 
-	public void setTotalTestCase(int numberExecutedTestCase) {
-		launcherResult = new LauncherResult(numberExecutedTestCase);
-	}
+    public int getTotalTestCase() {
+        return launcherResult.getTotalTestCases();
+    }
 
-	public int getNumberExecutedTestCase() {
-		return launcherResult.getExecutedTestCases();
-	}
+    public void setTotalTestCase(int numberExecutedTestCase) {
+        launcherResult = new LauncherResult(numberExecutedTestCase);
+    }
 
-	public abstract List<XmlLogRecord> getAllRecords();
+    public int getNumberExecutedTestCase() {
+        return launcherResult.getExecutedTestCases();
+    }
 
-	public abstract void addRecords(List<XmlLogRecord> records);
+    public abstract List<XmlLogRecord> getAllRecords();
 
-	public void setObserved(boolean observed) {
-		isObserved = observed;
-	}
+    public abstract void addRecords(List<XmlLogRecord> records);
 
-	public boolean isObserved() {
-		return isObserved;
-	}
+    public void setObserved(boolean observed) {
+        isObserved = observed;
+    }
 
-	public void cleanLauncher() {
-		if (launch != null) {
-			CustomGroovyScriptLaunchShortcut.cleanConfiguration(launch);
-		}
+    public boolean isObserved() {
+        return isObserved;
+    }
 
-		if (scriptFile != null) {
-			deleteScriptFile();
-		}
-	}
+    public void cleanLauncher() {
+        if (launch != null) {
+            CustomGroovyScriptLaunchShortcut.cleanConfiguration(launch);
+        }
 
-	protected abstract void deleteScriptFile();
+        if (scriptFile != null) {
+            deleteScriptFile();
+        }
+    }
 
-	public ILaunch getLaunch() {
-		return launch;
-	}
+    protected abstract void deleteScriptFile();
 
-	protected CustomGroovyScriptLaunchShortcut execute(ProjectEntity project, IFile scriptFile, LaunchMode launchMode)
-			throws Exception {
-		CustomGroovyScriptLaunchShortcut launchShortcut = getLauncher();
-		launchShortcut.launch(scriptFile, project, launchMode);
-		String name = FilenameUtils.getBaseName(scriptFile.getName());
+    public ILaunch getLaunch() {
+        return launch;
+    }
 
-		while (launch == null) {
-			for (ILaunch launch : CustomGroovyScriptLaunchShortcut.getLaunchManager().getLaunches()) {
-				if (launch.getLaunchConfiguration() != null) {
-					if (launch.getLaunchConfiguration().getName().equals(name)) {
-						this.launch = launch;
-					}
-				}
-			}
-		}
-		return launchShortcut;
-	}
+    protected CustomGroovyScriptLaunchShortcut execute(ProjectEntity project, IFile scriptFile, LaunchMode launchMode)
+            throws Exception {
+        CustomGroovyScriptLaunchShortcut launchShortcut = getLauncher();
+        launchShortcut.launch(scriptFile, project, launchMode);
+        String name = FilenameUtils.getBaseName(scriptFile.getName());
 
-	protected void stopAndSchedule() throws CoreException, InterruptedException {
-		LauncherManager.getInstance().stopRunningAndSchedule(this);
-	}
+        while (launch == null) {
+            for (ILaunch launch : CustomGroovyScriptLaunchShortcut.getLaunchManager().getLaunches()) {
+                if (launch.getLaunchConfiguration() != null) {
+                    if (launch.getLaunchConfiguration().getName().equals(name)) {
+                        this.launch = launch;
+                    }
+                }
+            }
+        }
+        return launchShortcut;
+    }
 
-	public String getProgressStatus() {
-		return status.name() + " - " + Integer.toString(launcherResult.getExecutedTestCases()) + "/"
-				+ Integer.toString(launcherResult.getTotalTestCases());
-	}
+    protected void stopAndSchedule() throws CoreException, InterruptedException {
+        LauncherManager.getInstance().stopRunningAndSchedule(this);
+    }
 
-	public boolean isForcedStop() {
-		return forcedStop;
-	}
+    public String getProgressStatus() {
+        return status.name() + " - " + Integer.toString(launcherResult.getExecutedTestCases()) + "/"
+                + Integer.toString(launcherResult.getTotalTestCases());
+    }
 
-	public File getCurrentLogFile() {
-		return logFilePath;
-	}
+    public boolean isForcedStop() {
+        return forcedStop;
+    }
 
-	public LauncherResult getResult() {
-		return launcherResult;
-	}
+    public File getCurrentLogFile() {
+        return logFilePath;
+    }
 
-	protected void uploadReportToIntegratingProduct(TestSuiteLogRecord suiteLog) throws Exception {
-		if (executedEntity instanceof TestSuiteEntity) {
-			for (Entry<String, ReportIntegrationContribution> reportContributorEntry : ReportIntegrationFactory
-					.getInstance().getIntegrationContributorMap().entrySet()) {
-				reportContributorEntry.getValue().uploadTestSuiteResult((TestSuiteEntity) executedEntity, suiteLog);
-			}
-		}
-	}
+    public LauncherResult getResult() {
+        return launcherResult;
+    }
+
+    protected void uploadReportToIntegratingProduct(TestSuiteLogRecord suiteLog) throws Exception {
+        if (executedEntity instanceof TestSuiteEntity) {
+            for (Entry<String, ReportIntegrationContribution> reportContributorEntry : ReportIntegrationFactory
+                    .getInstance().getIntegrationContributorMap().entrySet()) {
+                reportContributorEntry.getValue().uploadTestSuiteResult((TestSuiteEntity) executedEntity, suiteLog);
+            }
+        }
+    }
 }

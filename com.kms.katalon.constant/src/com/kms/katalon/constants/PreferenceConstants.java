@@ -7,32 +7,6 @@ public interface PreferenceConstants {
 		public static final String QUALIFIER = "com.kms.katalon";
 	}
 	
-	public interface EnginePreferenceConstants extends IPluginPreferenceConstants {
-		public static final String QUALIFIER = "com.kms.katalon.engine";
-		
-		// Remote call preferences
-		public static final String REMOTE_CALL_IS_ALLOWED = "remoteCall.isAllowed";
-		public static final String REMOTE_CALL_NUMBER_OF_REMOTE_CALL = "remoteCall.numberOfRemoteCall";
-		
-		// Host configuration preferences 
-		public static final String HOST_CONFIG_HOST_NAME = "hostConfig.hostName";
-		public static final String HOST_CONFIG_HOST_IP = "hostConfig.hostIp";
-		public static final String HOST_CONFIG_SUPPORTED_BROWSER = "hostConfig.supportedBrowser";
-	}
-	
-	public interface DALPreferenceConstans extends IPluginPreferenceConstants {
-		public static final String QUALIFIER = "com.kms.katalon.dal";
-
-		// Mail configuration preferences
-		public static final String MAIL_CONFIG_HOST = "mailConfig.host";
-		public static final String MAIL_CONFIG_PORT = "mailConfig.port";
-		public static final String MAIL_CONFIG_USERNAME = "mailConfig.username";
-		public static final String MAIL_CONFIG_PASSWORD = "mailConfig.password";
-		public static final String MAIL_CONFIG_REPORT_RECIPIENTS = "mailConfig.reportRecipients";
-		public static final String MAIL_CONFIG_SIGNATURE = "mailConfig.signature";
-		public static final String MAIL_ATTACHMENT = "mailConfig.attachment";
-	}
-	
 	public interface ProjectPreferenceConstans extends IPluginPreferenceConstants {
 		public static final String QUALIFIER = "com.kms.katalon.composer.project";
 
@@ -56,6 +30,16 @@ public interface PreferenceConstants {
         public static final String EXECUTION_SHOW_ERROR_LOGS = "log.showErrors";        
         public static final String EXECUTION_SHOW_LOGS_AS_TREE = "log.treeView";
         public static final String EXECUTION_PIN_LOG = "log.pinView";
+        
+        // Mail configuration preferences
+        public static final String MAIL_CONFIG_HOST = "mailConfig.host";
+        public static final String MAIL_CONFIG_SECURITY_PROTOCOL = "mailConfig.securityProtocol";
+        public static final String MAIL_CONFIG_PORT = "mailConfig.port";
+        public static final String MAIL_CONFIG_USERNAME = "mailConfig.username";
+        public static final String MAIL_CONFIG_PASSWORD = "mailConfig.password";
+        public static final String MAIL_CONFIG_REPORT_RECIPIENTS = "mailConfig.reportRecipients";
+        public static final String MAIL_CONFIG_SIGNATURE = "mailConfig.signature";
+        public static final String MAIL_CONFIG_ATTACHMENT = "mailConfig.attachment";
     }
 	
 	public interface WebUiPreferenceConstants extends IPluginPreferenceConstants {

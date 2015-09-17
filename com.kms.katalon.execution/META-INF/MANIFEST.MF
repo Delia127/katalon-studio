@@ -45,4 +45,5 @@ Require-Bundle: org.eclipse.e4.core.contexts,
  org.apache.commons.email,
  org.eclipse.e4.core.services,
  org.eclipse.debug.ui,
- org.eclipse.e4.ui.workbench
+ org.eclipse.e4.ui.workbench,
+ javax.mail

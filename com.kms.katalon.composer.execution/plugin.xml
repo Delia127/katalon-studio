@@ -51,4 +51,22 @@
             class="com.kms.katalon.composer.execution.preferences.ExecutionPreferenceDefaultValueInitializer">
       </initializer>
    </extension>
+   
+	<extension
+         point="com.kms.katalon.preferences.PreferencePages">      
+      <page
+            class="com.kms.katalon.composer.execution.preferences.MailPreferencePage"
+            id="com.kms.katalon.composer.execution.mail"
+            category="com.kms.katalon.composer.execution"
+            name="Email">
+      </page>   
+   	</extension>
+   	
+   	<extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.kms.katalon.composer.execution.preferences.MailPreferenceDefaultValueInitializer">
+      </initializer>
+   </extension>
+   
 </plugin>
