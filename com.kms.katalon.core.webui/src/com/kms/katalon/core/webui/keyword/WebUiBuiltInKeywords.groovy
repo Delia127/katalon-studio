@@ -524,7 +524,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 				WebElement element = findWebElement(to);
 				logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_GETTING_OBJ_TXT, to.getObjectId()));
 				text = element.getText();
-				logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_TXT_IS, to, text));
+				logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_TXT_IS, to.getObjectId(), text));
 			} finally {
 				if (isSwitchIntoFrame) {
 					switchToDefaultContent();
