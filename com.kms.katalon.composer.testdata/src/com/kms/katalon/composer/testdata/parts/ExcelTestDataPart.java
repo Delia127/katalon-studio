@@ -268,8 +268,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 dialog.setFilterPath(getProjectFolderLocation());
 
                 String absolutePath = dialog.open();
-                if (absolutePath == null)
-                    return;
+                if (absolutePath == null) return;
                 if (ckcbUseRelativePath.getSelection()) {
                     txtFileName.setText(PathUtils.absoluteToRelativePath(absolutePath, getProjectFolderLocation()));
                 } else {
@@ -348,20 +347,21 @@ public class ExcelTestDataPart extends TestDataMainPart {
             List<String[]> data = new ArrayList<>();
 
             if (cbbSheets.getSelectionIndex() >= 0) {
-                try {
-                    ExcelData excelData = new ExcelData(cbbSheets.getText(), getSourceUrlAbsolutePath());
-                    headers = excelData.getColumnNames();
-                    if (headers.length > 0) {
-                        for (int i = 1; i <= excelData.getRowNumbers(); i++) {
-                            List<String> arrayValues = new ArrayList<>();
+                ExcelData excelData = new ExcelData(cbbSheets.getText(), getSourceUrlAbsolutePath());
+                headers = excelData.getColumnNames();
+                if (headers.length > 0) {
+                    for (int i = 1; i <= excelData.getRowNumbers(); i++) {
+                        List<String> arrayValues = new ArrayList<>();
+                        try {
                             for (int columnIndex = 1; columnIndex <= excelData.getColumnNumbers(); columnIndex++) {
-                                arrayValues.add(excelData.getValue(columnIndex, i));
+                                String cellValue = excelData.getValue(columnIndex, i);
+                                arrayValues.add(cellValue);
                             }
-                            data.add(arrayValues.toArray(new String[arrayValues.size()]));
+                        } catch (IllegalArgumentException ex) {
+                            continue;
                         }
+                        data.add(arrayValues.toArray(new String[arrayValues.size()]));
                     }
-                } catch (Exception e) {
-                    LoggerSingleton.logError(e);
                 }
             }
 

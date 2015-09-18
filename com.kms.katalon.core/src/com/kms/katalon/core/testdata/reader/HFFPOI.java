@@ -95,9 +95,9 @@ public class HFFPOI extends SheetPOI {
                         String cellFormatString = curCell.getCellStyle().getDataFormatString();
                         return new CellDateFormatter(cellFormatString).simpleFormat(curCell.getDateCellValue());
                     } else {
-                        double cel_value = curCell.getNumericCellValue();
-                        if (cel_value == (long) cel_value)
-                            return Integer.toString((int) cel_value);
+                        double cellVue = curCell.getNumericCellValue();
+                        if (cellVue == (long) cellVue)
+                            return Integer.toString((int) cellVue);
                         else
                             return Double.toString(curCell.getNumericCellValue());
                     }

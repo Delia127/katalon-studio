@@ -73,9 +73,9 @@ public class XSSPOI extends SheetPOI {
                                 String cellFormatString = curCell.getCellStyle().getDataFormatString();
                                 return new CellDateFormatter(cellFormatString).simpleFormat(curCell.getDateCellValue());
                             } else {
-                                double cel_value = cellVal.getNumberValue();
-                                if (cel_value == (long) cel_value)
-                                    return Integer.toString((int) cel_value);
+                                double celValue = cellVal.getNumberValue();
+                                if (celValue == (long) celValue)
+                                    return Integer.toString((int) celValue);
                                 else
                                     return Double.toString(curCell.getNumericCellValue());
                             }
@@ -89,15 +89,15 @@ public class XSSPOI extends SheetPOI {
                     if (DateUtil.isCellDateFormatted(curCell)) {
                         return curCell.getDateCellValue().toString();
                     } else {
-                        double cel_value = curCell.getNumericCellValue();
-                        if (cel_value == (long) cel_value)
-                            return Integer.toString((int) cel_value);
+                        double cellValue = curCell.getNumericCellValue();
+                        if (cellValue == (long) cellValue)
+                            return Integer.toString((int) cellValue);
                         else
                             return Double.toString(curCell.getNumericCellValue());
                     }
                 } catch (Exception e1) {
                 }
-                // try with bool
+                // try with Boolean
                 try {
                     return Boolean.toString(curCell.getBooleanCellValue());
                 } catch (Exception e) {
