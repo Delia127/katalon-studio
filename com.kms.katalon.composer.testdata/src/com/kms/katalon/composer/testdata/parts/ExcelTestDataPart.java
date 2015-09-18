@@ -248,8 +248,8 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 loadSheetNames();
                 if (!cbbSheets.isDisposed()) {
                     cbbSheets.setText(dataFile.getSheetName());
+                    loadExcelData();
                 }
-                loadExcelData();
             }
         });
 
@@ -369,7 +369,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
             clearTable();
             for (int i = 0; i < headers.length; i++) {
                 final int idx = i;
-                if (idx >= tableViewer.getTable().getColumnCount()) {
+                if (idx >= tableViewer.getTable().getColumnCount() - 1) {
                     TableViewerColumn columnViewer = new TableViewerColumn(tableViewer, SWT.NONE);
                     String header = headers[i];
                     if (header != null) {

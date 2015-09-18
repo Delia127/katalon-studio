@@ -1,4 +1,4 @@
-package com.kms.katalon.core.util;
+package com.kms.katalon.core.testdata.reader;
 
 import java.io.File;
 import java.io.FileReader;

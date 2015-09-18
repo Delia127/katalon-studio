@@ -44,14 +44,19 @@ public class StringConstants {
 	public static final String TD_COLUMN_INDEX_X_FOR_TEST_DATA_Y_INVALID = "Invalid column index {0} for test data ''{1}''. Column index must be between 1..{2}";
 	public static final String TD_COLUMN_NAME_X_FOR_TEST_DATA_Y_INVALID = "Invalid column name ''{0}'' for test data ''{1}''. Possible values are ''{2}''";
 
+	// AppPOI
+    public static final String UTIL_EXC_FILE_IS_UNSUPPORTED = "File is unsupported: {0}";
+    
+    //ShettPOI
+    public static final String EXCEL_INVALID_ROW_NUMBER = "Invalid row index: {0}. Posible index cannot be greater than {1}.";
+    public static final String EXCEL_INVALID_COL_NUMBER = "Invalid column index: {0}. Posible index cannot be greater than {1}.";
+    
+    
 	// ObjectRepository
 	public static final String TO_LOG_WARNING_TEST_OBJ_NULL = "Test object id is null";
 	public static final String TO_LOG_INFO_FINDING_TEST_OBJ_W_ID = "Finding Test Object with id ''{0}''";
 	public static final String TO_LOG_WARNING_TEST_OBJ_DOES_NOT_EXIST = "Test object with id ''{0}'' does not exist";
 	public static final String TO_LOG_WARNING_CANNOT_GET_TEST_OBJECT_X_BECAUSE_OF_Y = "Cannot find test object with id ''{0}'' because of ''{1}''";
-
-	// AppPOI
-	public static final String UTIL_EXC_FILE_IS_UNSUPPORTED = "File is unsupported: {0}";
 
 	// BuiltinKeywords
 	public static final String KW_LOG_INFO_MATCHING_ACTUAL_TXT_W_EXPECTED_TXT = "Matching actual text ''{0}'' with expected text ''{1}''{2}";

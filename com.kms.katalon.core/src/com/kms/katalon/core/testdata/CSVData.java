@@ -2,8 +2,8 @@ package com.kms.katalon.core.testdata;
 
 import java.io.IOException;
 
-import com.kms.katalon.core.util.CSVReader;
-import com.kms.katalon.core.util.CSVSeperator;
+import com.kms.katalon.core.testdata.reader.CSVReader;
+import com.kms.katalon.core.testdata.reader.CSVSeperator;
 
 public class CSVData extends AbstractTestData {
 

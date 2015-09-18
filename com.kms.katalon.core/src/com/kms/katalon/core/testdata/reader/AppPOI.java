@@ -1,4 +1,4 @@
-package com.kms.katalon.core.util;
+package com.kms.katalon.core.testdata.reader;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -55,10 +55,10 @@ public class AppPOI {
 		sheets.clear();
 		if (xls_instance != null) {
 			for (int i = 0; i < xls_instance.getNumberOfSheets(); i++)
-				sheets.add(new SheetPOI(xls_instance, xls_instance.getSheetAt(i), xls_instance.getSheetName(i)));
+				sheets.add(new HFFPOI(xls_instance, xls_instance.getSheetAt(i), xls_instance.getSheetName(i)));
 		} else if (xlsx_instance != null) {
 			for (int i = 0; i < xlsx_instance.getNumberOfSheets(); i++)
-				sheets.add(new SheetPOI(xlsx_instance, xlsx_instance.getSheetAt(i), xlsx_instance.getSheetName(i)));
+				sheets.add(new XSSPOI(xlsx_instance, xlsx_instance.getSheetAt(i), xlsx_instance.getSheetName(i)));
 		}
 	}
 
@@ -67,7 +67,7 @@ public class AppPOI {
 			CellReference cellRef = new CellReference(cellAddress);
 			String sheetName = cellRef.getSheetName();
 			for (SheetPOI sheet : sheets) {
-				if (sheet.get_Name().equals(sheetName)) {
+				if (sheet.getSheetName().equals(sheetName)) {
 					String text = sheet.getCellText(cellAddress);
 					return text;
 				}
@@ -82,7 +82,7 @@ public class AppPOI {
 		try {
 			String sheetName = cellRef.getSheetName();
 			for (SheetPOI sheet : sheets) {
-				if (sheet.get_Name().equals(sheetName)) {
+				if (sheet.getSheetName().equals(sheetName)) {
 					int row = cellRef.getRow();
 					int col = cellRef.getCol();
 					String text = sheet.getCellText(col, row);
