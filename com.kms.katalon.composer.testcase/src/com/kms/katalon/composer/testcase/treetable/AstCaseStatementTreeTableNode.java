@@ -16,6 +16,7 @@ public class AstCaseStatementTreeTableNode extends AstStatementTreeTableNode {
 	public AstCaseStatementTreeTableNode(CaseStatement statement, AstTreeTableNode parentNode,
 			SwitchStatement switchStatement, ClassNode scriptClass) {
 		super(statement, parentNode, switchStatement, scriptClass);
+		this.caseStatement = statement;
 	}
 
 	@Override

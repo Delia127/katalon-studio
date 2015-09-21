@@ -274,6 +274,9 @@ public class StringConstants extends GlobalStringConstants {
 	
 	// AstBinaryStatementTreeTableNode
 	public static final String TREE_METHOD_CALL_STATEMENT = "Method Call Statement";
+	
+	// AstFinallyStatementTreeTableNode
+    public static final String TREE_FINALLY_STATEMENT = "Finally Statement";
 
 	// KeywordBrowserPart
 	public static final String KEYWORD_BROWSER_BUILTIN_KEYWORD_ROOT_TREE_ITEM_LABEL = "Built-in Keywords";
