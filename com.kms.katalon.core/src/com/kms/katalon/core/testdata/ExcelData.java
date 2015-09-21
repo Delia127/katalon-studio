@@ -1,11 +1,10 @@
 package com.kms.katalon.core.testdata;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 
 import com.kms.katalon.core.constants.StringConstants;
-import com.kms.katalon.core.util.AppPOI;
-import com.kms.katalon.core.util.SheetPOI;
+import com.kms.katalon.core.testdata.reader.AppPOI;
+import com.kms.katalon.core.testdata.reader.SheetPOI;
 
 public class ExcelData extends AbstractTestData {
 	private String sourceUrl;
@@ -17,7 +16,7 @@ public class ExcelData extends AbstractTestData {
 		this.appPoi = new AppPOI(new String(sourceUrl));
 
 		for (SheetPOI sheet : this.appPoi.getSheets()) {
-			if (sheet.get_Name().equals(sheetName)) {
+			if (sheet.getSheetName().equals(sheetName)) {
 				sheetPoi = sheet;
 			}
 		}
@@ -30,8 +29,7 @@ public class ExcelData extends AbstractTestData {
 
 	@Override
 	public String[] getColumnNames() {
-		ArrayList<String> columnNames = sheetPoi.getColumnNames();
-		return columnNames.toArray(new String[columnNames.size()]);
+		return sheetPoi.getColumnNames();
 	}
 
 	@Override
@@ -60,7 +58,7 @@ public class ExcelData extends AbstractTestData {
 
 	@Override
 	public int getRowNumbers() {
-		return sheetPoi.get_max_row();
+		return sheetPoi.getMaxRow();
 	}
 
 	@Override

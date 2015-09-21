@@ -42,8 +42,8 @@ public class ProjectController extends EntityController {
         ProjectEntity newProject = dataProviderSetting.getProjectDataProvider().addNewProject(name, description,
                 TestEnvironmentController.getInstance().getPageLoadTimeOutDefaultValue(), projectLocation);
         addRecentProject(newProject);
-        KeywordController.getInstance().parseAllCustomKeywordsWithoutRefreshing(newProject);
         GlobalVariableController.getInstance().generateGlobalVariableLibFile(newProject, null);
+        KeywordController.getInstance().parseAllCustomKeywordsWithoutRefreshing(newProject);
         return newProject;
     }
 
@@ -57,9 +57,9 @@ public class ProjectController extends EntityController {
             GroovyUtil.initGroovyProject(project, FolderController.getInstance().getTestCaseRoot(project),
                     new SubProgressMonitor(monitor, 8));
             addRecentProject(project);
-            KeywordController.getInstance().parseAllCustomKeywords(project, new SubProgressMonitor(monitor, 1));
             GlobalVariableController.getInstance().generateGlobalVariableLibFile(project,
                     new SubProgressMonitor(monitor, 1));
+            KeywordController.getInstance().parseAllCustomKeywords(project, new SubProgressMonitor(monitor, 1));
             monitor.done();
         }
         return project;

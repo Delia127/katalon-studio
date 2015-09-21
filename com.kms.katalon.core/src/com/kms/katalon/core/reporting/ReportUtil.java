@@ -36,7 +36,7 @@ import com.kms.katalon.core.logging.model.TestStepLogRecord;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.reporting.template.ResourceLoader;
-import com.kms.katalon.core.util.CsvWriter;
+import com.kms.katalon.core.testdata.reader.CsvWriter;
 
 public class ReportUtil {
 

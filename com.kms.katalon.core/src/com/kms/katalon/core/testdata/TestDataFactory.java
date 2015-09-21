@@ -16,7 +16,7 @@ import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.exception.ExceptionsUtil;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
-import com.kms.katalon.core.util.CSVSeperator;
+import com.kms.katalon.core.testdata.reader.CSVSeperator;
 import com.kms.katalon.core.util.PathUtils;
 
 public class TestDataFactory {
