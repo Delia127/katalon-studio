@@ -81,4 +81,9 @@ public class ColorUtil {
     public static Color getDefaultBackgroundColor() {
     	return new Color(Display.getCurrent(), 240, 240, 240);
     }
+    
+    //#F8CBCB
+    public static Color getErrorTableItemBackgroundColor() {
+        return new Color(Display.getCurrent(), 248, 203, 203);
+    }
 }

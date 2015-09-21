@@ -98,7 +98,6 @@ import com.kms.katalon.composer.testsuite.constants.TestSuiteEventConstants;
 import com.kms.katalon.composer.testsuite.listeners.TestCaseTableDropListener;
 import com.kms.katalon.composer.testsuite.listeners.TestCaseTableKeyListener;
 import com.kms.katalon.composer.testsuite.listeners.TestDataToolItemListener;
-import com.kms.katalon.composer.testsuite.providers.IsRunColumnLabelProvider;
 import com.kms.katalon.composer.testsuite.providers.TestCaseTableLabelProvider;
 import com.kms.katalon.composer.testsuite.providers.TestCaseTableViewer;
 import com.kms.katalon.composer.testsuite.providers.TestCaseTableViewerFilter;
@@ -143,8 +142,6 @@ public class TestSuitePart implements EventHandler {
     private static final String PK_COLUMN_HEADER = StringConstants.PA_COL_ID;
 
     private static final String NUMBER_COLUMN_HEADER = StringConstants.PA_COL_NO;
-
-    private static final String TEST_CASE_NAME_COLUMN_HEADER = StringConstants.PA_COL_NAME;
 
     private static final String DESCRIPTION_COLUMN_HEADER = StringConstants.PA_COL_DESC;
 
@@ -555,8 +552,7 @@ public class TestSuitePart implements EventHandler {
     }
 
     public void loadTestSuite(final TestSuiteEntity testSuite) {
-        Display.getCurrent().syncExec(new Runnable() {
-
+        Display.getCurrent().asyncExec(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -592,10 +588,6 @@ public class TestSuitePart implements EventHandler {
                     }
 
                     txtRerun.setText(String.valueOf(testSuite.getNumberOfRerun()));
-
-                    // if (testSuite.getDataFileId() != null) {
-                    // textTestDataId.setText(testSuite.getDataFileId());
-                    // }
 
                     // binding mailRecipient
                     listMailRcpViewer.setInput(TestSuiteController.getInstance().mailRcpStringToArray(
@@ -1148,10 +1140,13 @@ public class TestSuitePart implements EventHandler {
         TableViewerColumn tableViewerColumnPK = new TableViewerColumn(testCaseTableViewer, SWT.NONE);
         TableColumn tblclmnPK = tableViewerColumnPK.getColumn();
         tblclmnPK.setText(PK_COLUMN_HEADER);
+        tblclmnPK.addListener(SWT.Resize, new Listener() {
 
-        TableViewerColumn tableViewerColumnName = new TableViewerColumn(testCaseTableViewer, SWT.NONE);
-        TableColumn tblclmnName = tableViewerColumnName.getColumn();
-        tblclmnName.setText(TEST_CASE_NAME_COLUMN_HEADER);
+            @Override
+            public void handleEvent(org.eclipse.swt.widgets.Event event) {
+                testCaseTableViewer.refresh(true);
+            }
+        });
 
         TableViewerColumn tableViewerColumnDescription = new TableViewerColumn(testCaseTableViewer, SWT.NONE);
         TableColumn tblclmnDescription = tableViewerColumnDescription.getColumn();
@@ -1171,8 +1166,7 @@ public class TestSuitePart implements EventHandler {
         // set layout of table composite
         TableColumnLayout tableLayout = new TableColumnLayout();
         tableLayout.setColumnData(tblclmnNo, new ColumnWeightData(0, 40));
-        tableLayout.setColumnData(tblclmnPK, new ColumnWeightData(15, 100));
-        tableLayout.setColumnData(tblclmnName, new ColumnWeightData(15, 100));
+        tableLayout.setColumnData(tblclmnPK, new ColumnWeightData(40, 100));
         tableLayout.setColumnData(tblclmnDescription, new ColumnWeightData(15, 100));
         tableLayout.setColumnData(tblclmnIsRun, new ColumnWeightData(0, 80));
 
@@ -1187,12 +1181,12 @@ public class TestSuitePart implements EventHandler {
                 .setLabelProvider(new TestCaseTableLabelProvider(TestCaseTableLabelProvider.COLUMN_NO_INDEX));
         tableViewerColumnPK
                 .setLabelProvider(new TestCaseTableLabelProvider(TestCaseTableLabelProvider.COLUMN_ID_INDEX));
-        tableViewerColumnName.setLabelProvider(new TestCaseTableLabelProvider(
-                TestCaseTableLabelProvider.COLUMN_NAME_INDEX));
+
         tableViewerColumnDescription.setLabelProvider(new TestCaseTableLabelProvider(
                 TestCaseTableLabelProvider.COLUMN_DESCRIPTION_INDEX));
 
-        tableViewerColumnIsRun.setLabelProvider(new IsRunColumnLabelProvider());
+        tableViewerColumnIsRun.setLabelProvider(new TestCaseTableLabelProvider(
+                TestCaseTableLabelProvider.COLUMN_RUN_INDEX));
         tableViewerColumnIsRun
                 .setEditingSupport(new TestCaseIsRunColumnEditingSupport(testCaseTableViewer, eventBroker));
 
@@ -1259,10 +1253,8 @@ public class TestSuitePart implements EventHandler {
     }
 
     private void processTestSuteTestCaseLinkSelected() {
-        if (testCaseTableViewer.getSelection() == null)
-            return;
-        if (!(testCaseTableViewer.getSelection() instanceof IStructuredSelection))
-            return;
+        if (testCaseTableViewer.getSelection() == null) return;
+        if (!(testCaseTableViewer.getSelection() instanceof IStructuredSelection)) return;
 
         IStructuredSelection selection = (IStructuredSelection) testCaseTableViewer.getSelection();
 
@@ -1672,12 +1664,10 @@ public class TestSuitePart implements EventHandler {
     }
 
     public void afterSaving() {
-        if (testCaseTableViewer == null)
-            return;
+        if (testCaseTableViewer == null) return;
 
         Table testCaseTable = testCaseTableViewer.getTable();
-        if (testCaseTable == null || testCaseTable.isDisposed())
-            return;
+        if (testCaseTable == null || testCaseTable.isDisposed()) return;
 
         if (testSuiteTestCaseSelectedIdx >= 0
                 && testSuiteTestCaseSelectedIdx < testCaseTableViewer.getTable().getItemCount()) {
