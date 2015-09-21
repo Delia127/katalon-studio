@@ -2,22 +2,23 @@ package com.kms.katalon.core.testdata.reader;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.AreaReference;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.kms.katalon.core.constants.StringConstants;
 
 public class AppPOI {
 
-    private HSSFWorkbook xlsInstance = null;
-    private XSSFWorkbook xlsxInstance = null;
+    private HSSFWorkbook xlsInstance  = null; // for XLS format  (Office 2003)
+    private XSSFWorkbook xlsxInstance = null; // for XLSX format (Office 2007 or higher)
 
     private ArrayList<SheetPOI> sheets = new ArrayList<SheetPOI>();
 
@@ -25,29 +26,37 @@ public class AppPOI {
         return sheets;
     }
 
-    public AppPOI(String fullFilePath) throws Exception {
+    /**
+     * Creates an APPOI instance by reading excel file with
+     * <code> fullFilePath <code> absolute path.
+     * 
+     * @param fullFilePath
+     *            absolute path of the excel file.
+     * @throws IOException
+     *             if system is unable to read the <code>File</code>
+     */
+    public AppPOI(String fullFilePath) throws IOException {
         InputStream is = null;
         try {
             File inputFile = new File(fullFilePath);
-            if (inputFile.exists()) {
-                int dot = fullFilePath.lastIndexOf('.');
-                String file_ext = fullFilePath.substring(dot + 1);
-                if (file_ext.toLowerCase().equals("xls")) {
+            if (inputFile != null && inputFile.exists()) {
+                String fileExt = FilenameUtils.getExtension(fullFilePath);
+                if (fileExt.toLowerCase().equals("xls")) {
                     is = new FileInputStream(inputFile);
                     POIFSFileSystem fs = new POIFSFileSystem(is);
                     xlsInstance = new HSSFWorkbook(fs);
                     loadSheets();
-                } else if (file_ext.toLowerCase().equals("xlsx")) {
+                } else if (fileExt.toLowerCase().equals("xlsx")) {
                     is = new FileInputStream(inputFile);
                     xlsxInstance = new XSSFWorkbook(is);
                     loadSheets();
                 } else {
-                    throw new Exception(
-                            MessageFormat.format(StringConstants.UTIL_EXC_FILE_IS_UNSUPPORTED, fullFilePath));
+                    throw new IllegalArgumentException(MessageFormat.format(
+                            StringConstants.UTIL_EXC_FILE_IS_UNSUPPORTED, fullFilePath));
                 }
+            } else {
+                throw new FileNotFoundException(fullFilePath);
             }
-        } catch (Exception ex) {
-            throw ex;
         } finally {
             if (is != null) {
                 is.close();
@@ -63,56 +72,6 @@ public class AppPOI {
         } else if (xlsxInstance != null) {
             for (int i = 0; i < xlsxInstance.getNumberOfSheets(); i++)
                 sheets.add(new XSSPOI(xlsxInstance, xlsxInstance.getSheetAt(i), xlsxInstance.getSheetName(i)));
-        }
-    }
-
-    public String getCellText(String cellAddress) {
-        try {
-            CellReference cellRef = new CellReference(cellAddress);
-            String sheetName = cellRef.getSheetName();
-            for (SheetPOI sheet : sheets) {
-                if (sheet.getSheetName().equals(sheetName)) {
-                    String text = sheet.getCellText(cellAddress);
-                    return text;
-                }
-            }
-        } catch (Exception ex) {
-            throw ex;
-        }
-        return null;
-    }
-
-    public String getCellText(CellReference cellRef) {
-        try {
-            String sheetName = cellRef.getSheetName();
-            for (SheetPOI sheet : sheets) {
-                if (sheet.getSheetName().equals(sheetName)) {
-                    int row = cellRef.getRow();
-                    int col = cellRef.getCol();
-                    String text = sheet.getCellText(col, row);
-                    return text;
-                }
-            }
-        } catch (Exception ex) {
-            throw ex;
-        }
-        return null;
-    }
-
-    public ArrayList<String> getRangeText(String rangeAddress) {
-        try {
-            AreaReference aref = new AreaReference(rangeAddress);
-            CellReference[] crefs = aref.getAllReferencedCells();
-            ArrayList<String> values = new ArrayList<String>();
-
-            for (int i = 0; i < crefs.length; i++) {
-                CellReference cellRef = crefs[i];
-                String text = getCellText(cellRef);
-                values.add(text);
-            }
-            return values;
-        } catch (Exception ex) {
-            throw ex;
         }
     }
 }

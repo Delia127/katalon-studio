@@ -46,6 +46,7 @@ public class StringConstants {
 
 	// AppPOI
     public static final String UTIL_EXC_FILE_IS_UNSUPPORTED = "File is unsupported: {0}";
+    public static final String UTIL_EXC_FILE_NOT_FOUND = "File: {0} not found.";
     
     //ShettPOI
     public static final String EXCEL_INVALID_ROW_NUMBER = "Invalid row index: {0}. Posible index cannot be greater than {1}.";
