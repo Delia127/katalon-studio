@@ -132,6 +132,7 @@ public class StringConstants {
 	public static final String XML_LOG_DEVICE_NAME_PROPERTY = "deviceName";
 	public static final String XML_LOG_DEVICE_PLATFORM_PROPERTY = "devicePlatform";
 	public static final String XML_LOG_START_LINE_PROPERTY = "startLine";
+	public static final String XML_LOG_STEP_INDEX = "stepIndex";
 	public static final String XML_LOG_OS_PROPERTY = "os";
 	public static final String XML_LOG_HOST_NAME_PROPERTY = "hostName";
 	

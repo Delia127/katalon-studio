@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.kms.katalon.core.logging.XmlLogRecord;
 
-public interface ILogParentTreeNode {
+public interface ILogParentTreeNode extends ILogTreeNode {
 	String getElapsedTime();
 	String getFullElapsedTime();
 	XmlLogRecord getResult();
@@ -13,5 +13,5 @@ public interface ILogParentTreeNode {
 	XmlLogRecord getRecordStart();
 	void addChild(ILogTreeNode childNode);
 	void setRecordEnd(XmlLogRecord recordEnd);
-	void setResult(XmlLogRecord result);	
+	void setResult(XmlLogRecord result);
 }

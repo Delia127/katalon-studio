@@ -1,5 +1,8 @@
 package com.kms.katalon.core.ast;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import groovy.transform.CompileStatic
 
 import org.codehaus.groovy.ast.ASTNode
@@ -122,7 +125,8 @@ public class AstTestStepTransformation implements ASTTransformation {
     }
 
     @CompileStatic
-    public void visit(Statement statement, Stack<Statement> deferedStatements = new Stack<Statement>(), int nestedLevel) {
+    public void visit(Statement statement, Stack<Statement> deferedStatements = new Stack<Statement>(),
+            Map<Statement, Integer> indexMap = new HashMap<Statement, Integer>(), int nestedLevel) {
         if (statement instanceof BlockStatement) {
             visit((BlockStatement) statement, deferedStatements, nestedLevel);
         } else if (statement instanceof ForStatement) {
@@ -130,15 +134,11 @@ public class AstTestStepTransformation implements ASTTransformation {
         } else if (statement instanceof WhileStatement) {
             visit((WhileStatement) statement, nestedLevel);
         } else if (statement instanceof IfStatement) {
-            visit((IfStatement) statement, deferedStatements, nestedLevel);
+            visit((IfStatement) statement, deferedStatements, indexMap, nestedLevel);
         } else if (statement instanceof TryCatchStatement) {
-            visit((TryCatchStatement) statement, nestedLevel);
-        } else if (statement instanceof CatchStatement) {
-            visit((CatchStatement) statement, nestedLevel);
+            visit((TryCatchStatement) statement, indexMap, nestedLevel);
         } else if (statement instanceof SwitchStatement) {
-            visit((SwitchStatement) statement, nestedLevel);
-        } else if (statement instanceof CaseStatement) {
-            visit((CaseStatement) statement, nestedLevel);
+            visit((SwitchStatement) statement, indexMap, nestedLevel);
         }
     }
 
@@ -148,7 +148,7 @@ public class AstTestStepTransformation implements ASTTransformation {
     }
 
     @CompileStatic
-    public void visit(IfStatement ifStatement, Stack<Statement> deferedStatements = new Stack<Statement>(), int nestedLevel) {
+    public void visit(IfStatement ifStatement, Stack<Statement> deferedStatements = new Stack<Statement>(), Map<Statement, Integer> indexMap, int nestedLevel) {
         visit(ifStatement.getIfBlock(), deferedStatements, nestedLevel);
         if (ifStatement.getElseBlock() == null) {
             return;
@@ -157,18 +157,18 @@ public class AstTestStepTransformation implements ASTTransformation {
             deferedStatements.push(
                     new ExpressionStatement(createNewStartKeywordMethodCall(KEYWORD_DEFAULT_NAME + " - Else " +
                     AstTextValueUtil.getTextValue(ifStatement.getElseBlock()),
-                    ifStatement.getElseBlock(), nestedLevel - 1)));
+                    ifStatement.getElseBlock(), indexMap, nestedLevel - 1)));
         } else {
             deferedStatements.push(
                     new ExpressionStatement(createNewStartKeywordMethodCall(KEYWORD_DEFAULT_NAME + " - Else",
-                    ifStatement.getElseBlock(), nestedLevel - 1)));
+                    ifStatement.getElseBlock(), indexMap, nestedLevel - 1)));
             if (!(ifStatement.getElseBlock() instanceof BlockStatement)) {
                 BlockStatement elseBlock = new BlockStatement();
                 elseBlock.getStatements().add(ifStatement.getElseBlock());
                 ifStatement.setElseBlock(elseBlock);
             }
         }
-        visit(ifStatement.getElseBlock(), deferedStatements, nestedLevel);
+        visit(ifStatement.getElseBlock(), deferedStatements, indexMap, nestedLevel);
     }
 
     @CompileStatic
@@ -182,10 +182,14 @@ public class AstTestStepTransformation implements ASTTransformation {
     }
 
     @CompileStatic
-    public void visit(TryCatchStatement tryCatchStatement, int nestedLevel) {
+    public void visit(TryCatchStatement tryCatchStatement, Map<Statement, Integer> indexMap, int nestedLevel) {
         visit(tryCatchStatement.getTryStatement(), nestedLevel);
         for (CatchStatement catchStatement : tryCatchStatement.getCatchStatements()) {
-            visit(catchStatement, nestedLevel);
+            Stack<Statement> deferedStatements = new Stack<Statement>();
+            deferedStatements.push(
+                    new ExpressionStatement(createNewStartKeywordMethodCall(getKeywordNameForStatement(catchStatement),
+                    catchStatement, indexMap, nestedLevel - 1)));
+            visit(catchStatement.getCode(), deferedStatements, nestedLevel);
         }
         if (tryCatchStatement.getFinallyStatement() == null) {
             return;
@@ -193,30 +197,18 @@ public class AstTestStepTransformation implements ASTTransformation {
         Stack<Statement> deferedStatements = new Stack<Statement>();
         deferedStatements.push(
                 new ExpressionStatement(createNewStartKeywordMethodCall(KEYWORD_DEFAULT_NAME + " - Finally",
-                tryCatchStatement.getFinallyStatement(), nestedLevel - 1)));
+                tryCatchStatement.getFinallyStatement(), indexMap, nestedLevel - 1)));
         visit(tryCatchStatement.getFinallyStatement(), deferedStatements, nestedLevel);
     }
 
     @CompileStatic
-    public void visit(CatchStatement catchStatement, Stack<Statement> deferedStatements = new Stack<Statement>(), int nestedLevel) {
-        deferedStatements.push(
-                new ExpressionStatement(createNewStartKeywordMethodCall(getKeywordNameForStatement(catchStatement),
-                catchStatement, nestedLevel - 1)));
-        visit(catchStatement.getCode(), deferedStatements, nestedLevel);
-    }
-
-    @CompileStatic
-    public void visit(CaseStatement caseStatement, Stack<Statement> deferedStatements = new Stack<Statement>(), int nestedLevel) {
-        deferedStatements.push(
-                new ExpressionStatement(createNewStartKeywordMethodCall(getKeywordNameForStatement(caseStatement),
-                caseStatement, nestedLevel - 1)));
-        visit(caseStatement.getCode(), deferedStatements, nestedLevel);
-    }
-
-    @CompileStatic
-    public void visit(SwitchStatement switchStatement, int nestedLevel) {
+    public void visit(SwitchStatement switchStatement, Map<Statement, Integer> indexMap, int nestedLevel) {
         for (CaseStatement caseStatement : switchStatement.getCaseStatements()) {
-            visit(caseStatement, nestedLevel + 1);
+            Stack<Statement> deferedStatements = new Stack<Statement>();
+            deferedStatements.push(
+                    new ExpressionStatement(createNewStartKeywordMethodCall(getKeywordNameForStatement(caseStatement),
+                    caseStatement, indexMap, nestedLevel)));
+            visit(caseStatement.getCode(), deferedStatements, nestedLevel + 1);
         }
         if (switchStatement.getDefaultStatement() == null) {
             return;
@@ -224,13 +216,14 @@ public class AstTestStepTransformation implements ASTTransformation {
         Stack<Statement> deferedStatements = new Stack<Statement>();
         deferedStatements.push(
                 new ExpressionStatement(createNewStartKeywordMethodCall(KEYWORD_DEFAULT_NAME + " - Default",
-                switchStatement.getDefaultStatement(), nestedLevel)));
+                switchStatement.getDefaultStatement(), indexMap, nestedLevel)));
         visit(switchStatement.getDefaultStatement(), deferedStatements, nestedLevel + 1);
     }
 
     @CompileStatic
     public void visit(BlockStatement blockStatement, Stack<Statement> deferedStatements, int nestedLevel) {
         int index = 0;
+        Map<Statement, Integer> indexMap = getIndexMapForBlockStatement(blockStatement);
         if (deferedStatements != null) {
             Stack<Statement> copyDeferedStatements = (Stack<Statement>) deferedStatements.clone();
             while (!copyDeferedStatements.isEmpty()) {
@@ -252,23 +245,23 @@ public class AstTestStepTransformation implements ASTTransformation {
                     Statement descriptionStatement = commentStatementsStack.pop();
                     String commentContent = getComment(descriptionStatement);
                     blockStatement.getStatements().add(index, new ExpressionStatement(createNewAddDescriptionMethodCall(commentContent)));
-                    index += (popCommentStatements(commentStatementsStack, blockStatement, index, nestedLevel) + 1);
+                    index += (popCommentStatements(commentStatementsStack, blockStatement, index, indexMap, nestedLevel) + 1);
                 }
                 String keywordName = getKeywordNameForStatement(statement);
-                blockStatement.getStatements().add(index, new ExpressionStatement(createNewStartKeywordMethodCall(keywordName, statement, nestedLevel)));
+                blockStatement.getStatements().add(index, new ExpressionStatement(createNewStartKeywordMethodCall(keywordName, statement, indexMap, nestedLevel)));
             }
-            visit(statement, nestedLevel + 1);
+            visit(statement, new Stack<Statement>(), indexMap, nestedLevel + 1);
             index += 2;
         }
     }
 
     @CompileStatic
-    private int popCommentStatements(Stack<Statement> commentStatementsStack, BlockStatement blockStatement, int index, int nestedLevel) {
+    private int popCommentStatements(Stack<Statement> commentStatementsStack, BlockStatement blockStatement, int index, Map<Statement, Integer> indexMap, int nestedLevel) {
         int commentNumber = 0;
         while (commentStatementsStack != null && !commentStatementsStack.isEmpty()) {
             Statement commentStatement = commentStatementsStack.pop();
             blockStatement.getStatements().add(index, new ExpressionStatement(createNewStartKeywordMethodCall(
-                    COMMENT_STATEMENT_KEYWORD_NAME + " - " + AstTextValueUtil.getTextValue(commentStatement), commentStatement, nestedLevel)));
+                    COMMENT_STATEMENT_KEYWORD_NAME + " - " + AstTextValueUtil.getTextValue(commentStatement), commentStatement, indexMap, nestedLevel)));
             commentNumber++;
         }
         return commentNumber;
@@ -338,14 +331,14 @@ public class AstTestStepTransformation implements ASTTransformation {
     }
 
     @CompileStatic
-    private MethodCallExpression createNewStartKeywordMethodCall(String keywordName, Statement statement, int nestedLevel) {
+    private MethodCallExpression createNewStartKeywordMethodCall(String keywordName, Statement statement, Map<Statement, Integer> indexMap, int nestedLevel) {
         List<Expression> expressionArguments = new ArrayList<Expression>();
         MethodCallExpression loggerGetInstanceMethodCall = new MethodCallExpression(
                 new ClassExpression(new ClassNode(KeywordLogger.class)), KEYWORD_LOGGER_GET_INSTANCE_METHOD_NAME,
                 new ArgumentListExpression(expressionArguments));
         expressionArguments = new ArrayList<Expression>();
         expressionArguments.add(new ConstantExpression(keywordName));
-        expressionArguments.add(createPropertiesMapExpressionForKeyword(statement));
+        expressionArguments.add(createPropertiesMapExpressionForKeyword(statement, indexMap));
         expressionArguments.add(new ConstantExpression(nestedLevel));
         MethodCallExpression methodCall = new MethodCallExpression(loggerGetInstanceMethodCall,
                 StringConstants.LOG_START_KEYWORD_METHOD, new ArgumentListExpression(expressionArguments))
@@ -353,10 +346,80 @@ public class AstTestStepTransformation implements ASTTransformation {
     }
 
     @CompileStatic
-    private MapExpression createPropertiesMapExpressionForKeyword(Statement statement) {
+    private MapExpression createPropertiesMapExpressionForKeyword(Statement statement, Map<Statement, Integer> indexMap) {
         List<MapEntryExpression> mapEntryList = new ArrayList<MapEntryExpression>();
         mapEntryList.add(new MapEntryExpression(new ConstantExpression(StringConstants.XML_LOG_START_LINE_PROPERTY), new ConstantExpression(statement.getLineNumber().toString())));
+        mapEntryList.add(new MapEntryExpression(new ConstantExpression(StringConstants.XML_LOG_STEP_INDEX), new ConstantExpression(indexMap.get(statement).toString())));
         MapExpression map = new MapExpression(mapEntryList)
         return map
+    }
+
+    @CompileStatic
+    private static Map<Statement, Integer> getIndexMapForBlockStatement(BlockStatement blockStatement) {
+        Map<Statement, Integer> indexMap = new HashMap<Statement, Integer>();
+        Statement pendingDescriptionStatement = null;
+        int pendingDescriptionIndex = -1;
+        int index = 1;
+        for (Statement statement : blockStatement.getStatements()) {
+            if (statement instanceof IfStatement) {
+                IfStatement ifStatement = (IfStatement) statement;
+                indexMap.put(ifStatement, index);
+                index++;
+                while (ifStatement.getElseBlock() instanceof IfStatement) {
+                    ifStatement = (IfStatement) ifStatement.getElseBlock();
+                    indexMap.put(ifStatement, index);
+                    index++;
+                }
+                if (ifStatement.getElseBlock() == null) {
+                    continue;
+                }
+                indexMap.put(ifStatement.getElseBlock(), index);
+                index++;
+                pendingDescriptionStatement = null;
+            } else if (statement instanceof TryCatchStatement) {
+                TryCatchStatement tryCatchStatement = (TryCatchStatement) statement;
+                indexMap.put(tryCatchStatement, index);
+                index++;
+                for (CatchStatement catchStatement : tryCatchStatement.getCatchStatements()) {
+                    indexMap.put(catchStatement, index);
+                    index++;
+                }
+                if (tryCatchStatement.getFinallyStatement() == null) {
+                    continue;
+                }
+                indexMap.put(tryCatchStatement.getFinallyStatement(), index);
+                index++;
+                pendingDescriptionStatement = null;
+            } else if (statement instanceof SwitchStatement) {
+                SwitchStatement switchStatement = (SwitchStatement) statement;
+                indexMap.put(switchStatement, index);
+                String caseStringPrefix = index + ".";
+                index++;
+                int caseIndex = 1;
+                for (CaseStatement caseStatement : switchStatement.getCaseStatements()) {
+                    indexMap.put(caseStatement, caseIndex);
+                    caseIndex++;
+                }
+                if (switchStatement.getDefaultStatement() == null) {
+                    continue;
+                }
+                indexMap.put(switchStatement.getDefaultStatement(), caseIndex);
+                pendingDescriptionStatement = null;
+            } else if (statement instanceof ExpressionStatement
+            && ((ExpressionStatement) statement).getExpression() instanceof ConstantExpression
+            && ((ConstantExpression) ((ExpressionStatement) statement).getExpression()).getValue() instanceof String) {
+                if (pendingDescriptionStatement != null) {
+                    indexMap.put(pendingDescriptionStatement, pendingDescriptionIndex);
+                    index++
+                }
+                pendingDescriptionStatement = statement;
+                pendingDescriptionIndex = index;
+            } else {
+                indexMap.put(statement, index);
+                index++;
+                pendingDescriptionStatement = null;
+            }
+        }
+        return indexMap;
     }
 }

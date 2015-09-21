@@ -11,8 +11,8 @@ public class TestStepLogRecord extends AbstractLogRecord {
 	private String attachment;
 	private FailureHandling flowControl;
 	private int index;
-
-	public TestStepLogRecord(String name) {
+	
+    public TestStepLogRecord(String name) {
 		super(name);
 	}
 
@@ -76,4 +76,22 @@ public class TestStepLogRecord extends AbstractLogRecord {
 	public void setIndex(int index) {
 		this.index = index;
 	}
+	
+	public String getIndexString() {
+	    int stepIndex = index;
+	    if (stepIndex == -1 && parentLogRecord != null) {
+	        for (int i = 0; i < parentLogRecord.getChildRecords().length; i++) {
+	            if (parentLogRecord.getChildRecords()[i] == this) {
+	                stepIndex = i + 1;
+	                break;
+	            }
+	        }
+	    }
+	    if (parentLogRecord == null || !(parentLogRecord instanceof TestStepLogRecord)) {
+	        return String.valueOf(stepIndex);
+	    } else {
+	        return ((TestStepLogRecord) parentLogRecord).getIndexString() + "." + stepIndex;
+	    }
+	}
+
 }

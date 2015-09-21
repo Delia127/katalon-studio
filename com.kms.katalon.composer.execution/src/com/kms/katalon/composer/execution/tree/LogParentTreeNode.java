@@ -6,17 +6,16 @@ import java.util.List;
 import com.kms.katalon.composer.components.util.DateUtil;
 import com.kms.katalon.core.logging.XmlLogRecord;
 
-public class LogParentTreeNode implements ILogTreeNode, ILogParentTreeNode {
+public class LogParentTreeNode extends LogChildTreeNode implements ILogParentTreeNode {
 	
 	private XmlLogRecord recordStart;
 	private XmlLogRecord recordEnd;
 	private List<ILogTreeNode> children;
 	private XmlLogRecord recordResult;
-	private ILogParentTreeNode parentTreeNode;
 	
-	public LogParentTreeNode(ILogParentTreeNode parent, XmlLogRecord recordStart) {
+	public LogParentTreeNode(ILogParentTreeNode parentTreeNode, XmlLogRecord recordStart) {
+	    super(parentTreeNode, recordStart);
 		this.recordStart = recordStart;
-		parentTreeNode = parent;
 		children = new ArrayList<ILogTreeNode>();
 	}
 
@@ -66,11 +65,6 @@ public class LogParentTreeNode implements ILogTreeNode, ILogParentTreeNode {
 	public void addChild(ILogTreeNode childNode) {
 		children.add(childNode);
 	}
-
-	@Override
-	public ILogParentTreeNode getParent() {
-		return parentTreeNode;
-	}
 	
 	public XmlLogRecord getRecordStart() {
 		return recordStart;
@@ -84,5 +78,4 @@ public class LogParentTreeNode implements ILogTreeNode, ILogParentTreeNode {
 			return DateUtil.getElapsedTime(recordStart.getMillis(), recordEnd.getMillis());
 		}		
 	}
-	
 }
