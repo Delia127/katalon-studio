@@ -53,34 +53,31 @@ public class VariableLink implements Serializable {
     }
 
     public enum VariableType {
-        DATA_COLUMN, SCRIPT;
+        DATA_COLUMN("Data Column"), SCRIPT("Script");
 
-        public String value() {
-            return name();
+        private final String text;
+
+        private VariableType(final String text) {
+            this.text = text;
+        }
+
+        @Override
+        public String toString() {
+            return text;
         }
 
         public static VariableType fromValue(String v) {
-            if (v.equals("Data Column")) return DATA_COLUMN;
-            if (v.equals("Script")) return SCRIPT;
+            if (v.equals(DATA_COLUMN.toString())) return DATA_COLUMN;
+            if (v.equals(SCRIPT.toString())) return SCRIPT;
             return valueOf(v);
         }
 
         public static List<String> getValueStrings() {
             List<String> valueStrings = new ArrayList<>();
             for (VariableType type : values()) {
-                valueStrings.add(type.getDisplayName());
+                valueStrings.add(type.toString());
             }
             return valueStrings;
-        }
-
-        public String getDisplayName() {
-            String valueName = "";
-            if (this == DATA_COLUMN) {
-                valueName = "Data Column";
-            } else if (this == SCRIPT) {
-                valueName = "Script";
-            }
-            return valueName;
         }
     }
 
