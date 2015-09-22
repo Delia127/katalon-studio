@@ -80,6 +80,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PREF_ERROR_MSG_VAL_MUST_BE_AN_INT_BETWEEN_X_Y = "Value must be an Integer between {0} and {1}";
     
     // MailPreferencePage
+    public static final String PREF_GROUP_LBL_MAIL_SERVER = "Mail Server Settings";
     public static final String PREF_LBL_HOST = "Host";
     public static final String PREF_LBL_SECURITY_PROTOCOL = "Protocol";
     public static final String PREF_LBL_PORT = "Port";
@@ -88,4 +89,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PREF_LBL_REPORT_RECIPIENTS = "Report Recipients";
     public static final String PREF_LBL_SIGNATURE = "Signature";
     public static final String PREF_LBL_SEND_ATTACHMENT = "Send attachment";
+    
+    public static final String PREF_GROUP_LBL_EXECUTION_MAIL = "Post-Execution Options";
 }
