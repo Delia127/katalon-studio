@@ -128,8 +128,6 @@ public class ExcelTestDataPart extends TestDataMainPart {
         compositeFileInfoHeader.setCursor(compositeFileInfoHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
 
         btnExpandFileInfo = new ImageButton(compositeFileInfoHeader, SWT.NONE);
-        GridData gdBtnExpandFileInfo = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        btnExpandFileInfo.setLayoutData(gdBtnExpandFileInfo);
 
         lblFileInfo = new Label(compositeFileInfoHeader, SWT.NONE);
         lblFileInfo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
@@ -162,7 +160,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
         gdTxtFileName.heightHint = 18;
         txtFileName.setLayoutData(gdTxtFileName);
         txtFileName.setEditable(false);
-        btnBrowse = new Button(compositeFileName, SWT.PUSH);
+        btnBrowse = new Button(compositeFileName, SWT.FLAT);
         btnBrowse.setText(StringConstants.PA_BTN_BROWSE);
 
         Composite compositeSheetName = new Composite(compositeFileInfoDetails, SWT.NONE);
@@ -170,12 +168,10 @@ public class ExcelTestDataPart extends TestDataMainPart {
         compositeSheetName.setLayout(new GridLayout(2, false));
 
         lblSheetName = new Label(compositeSheetName, SWT.NONE);
-        GridData gdLblSheetName = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        lblSheetName.setLayoutData(gdLblSheetName);
         lblSheetName.setText(StringConstants.PA_LBL_SHEET_NAME);
 
         cbbSheets = new Combo(compositeSheetName, SWT.READ_ONLY);
-        GridData gdCbbSheets = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        GridData gdCbbSheets = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
         gdCbbSheets.heightHint = 20;
         cbbSheets.setLayoutData(gdCbbSheets);
 
@@ -188,6 +184,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
         ckcbUseRelativePath = new Button(compositeCheckBoxes, SWT.CHECK);
         ckcbUseRelativePath.setText(StringConstants.PA_CHKBOX_USE_RELATIVE_PATH);
+        new Label(compositeCheckBoxes, SWT.NONE);
 
         isFileInfoExpanded = true;
         redrawBtnExpandFileInfo();

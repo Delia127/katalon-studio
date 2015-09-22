@@ -9,10 +9,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;
-import org.eclipse.jface.viewers.ViewerRow;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Table;
@@ -102,8 +100,6 @@ public class TestCaseTableLabelProvider extends StyledCellLabelProvider {
         cell.setText(cellText);
 
         if (columnIndex == COLUMN_ID_INDEX) {
-            Rectangle textBounds = cell.getTextBounds();
-
             TextLayout textLayout = new TextLayout(cell.getControl().getDisplay());
             textLayout.setText(cellText);
             

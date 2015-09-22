@@ -910,15 +910,15 @@ public class TestSuitePart implements EventHandler {
         glCompositeMailRcpButtons.marginHeight = 0;
         compositeMailRcpButtons.setLayout(glCompositeMailRcpButtons);
 
-        btnAddMailRcp = new Button(compositeMailRcpButtons, SWT.NONE);
+        btnAddMailRcp = new Button(compositeMailRcpButtons, SWT.FLAT);
         btnAddMailRcp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         btnAddMailRcp.setText(StringConstants.PA_BTN_ADD);
 
-        btnDeleteMailRcp = new Button(compositeMailRcpButtons, SWT.NONE);
+        btnDeleteMailRcp = new Button(compositeMailRcpButtons, SWT.FLAT);
         btnDeleteMailRcp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
         btnDeleteMailRcp.setText(StringConstants.PA_BTN_DEL);
 
-        btnClearMailRcp = new Button(compositeMailRcpButtons, SWT.NONE);
+        btnClearMailRcp = new Button(compositeMailRcpButtons, SWT.FLAT);
         btnClearMailRcp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
         btnClearMailRcp.setText(StringConstants.PA_BTN_CLEAR);
     }

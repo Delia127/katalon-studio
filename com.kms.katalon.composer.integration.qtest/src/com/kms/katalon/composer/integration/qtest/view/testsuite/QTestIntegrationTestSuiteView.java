@@ -92,33 +92,33 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
         gl_compositeButton.marginWidth = 0;
         compositeButton.setLayout(gl_compositeButton);
 
-        btnUpload = new Button(compositeButton, SWT.NONE);
+        btnUpload = new Button(compositeButton, SWT.FLAT);
         btnUpload.setToolTipText("Upload this test suite to qTest");
         btnUpload.setText("Upload");
 
-        btnDisintegrate = new Button(compositeButton, SWT.NONE);
+        btnDisintegrate = new Button(compositeButton, SWT.FLAT);
         btnDisintegrate
                 .setToolTipText("Delete the integrated test suite on qTest server and also remove its information from the file system.");
         btnDisintegrate.setText("Disintegrate");
 
-        btnDisintegrateAll = new Button(compositeButton, SWT.NONE);
+        btnDisintegrateAll = new Button(compositeButton, SWT.FLAT);
         btnDisintegrateAll.setText("Disintegrate All");
 
-        btnNavigate = new Button(compositeButton, SWT.NONE);
+        btnNavigate = new Button(compositeButton, SWT.FLAT);
         btnNavigate.setToolTipText("Navigate to the integrated test suite page on qTest");
         btnNavigate.setText("Navigate");
 
-        btnUpdateParent = new Button(compositeButton, SWT.NONE);
+        btnUpdateParent = new Button(compositeButton, SWT.FLAT);
         btnUpdateParent
                 .setToolTipText("To upload this test suite to qTest, you need to choose a parent (qTest release, cycle,...) for the integration.");
         btnUpdateParent.setText("New Parent");
 
-        btnSetDefault = new Button(compositeButton, SWT.NONE);
+        btnSetDefault = new Button(compositeButton, SWT.FLAT);
         btnSetDefault
                 .setToolTipText("Use the integrated test suite in this parent to upload result after the execution completed.");
         btnSetDefault.setText("Set as default");
 
-        btnRemove = new Button(compositeButton, SWT.NONE);
+        btnRemove = new Button(compositeButton, SWT.FLAT);
         btnRemove.setToolTipText("Remove selected parent from the list.");
         btnRemove.setText("Remove parent");
         btnRemove.setEnabled(false);
