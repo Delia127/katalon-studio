@@ -24,52 +24,52 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class DeleteTestSuiteHandler {
 
-	@Inject
-	IEventBroker eventBroker;
+    @Inject
+    IEventBroker eventBroker;
 
-	@Inject
-	MApplication application;
+    @Inject
+    MApplication application;
 
-	@Inject
-	EModelService modelService;
+    @Inject
+    EModelService modelService;
 
-	@PostConstruct
-	private void registerEventHandler() {
-		eventBroker.subscribe(EventConstants.EXPLORER_DELETE_SELECTED_ITEM, new EventHandler() {
+    @PostConstruct
+    private void registerEventHandler() {
+        eventBroker.subscribe(EventConstants.EXPLORER_DELETE_SELECTED_ITEM, new EventHandler() {
 
-			@Override
-			public void handleEvent(Event event) {
-				// Do nothing
-				Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-				if (object != null && object instanceof TestSuiteTreeEntity) {
-					excute((TestSuiteTreeEntity) object);
-				}
-			}
-		});
-	}
+            @Override
+            public void handleEvent(Event event) {
+                // Do nothing
+                Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+                if (object != null && object instanceof TestSuiteTreeEntity) {
+                    excute((TestSuiteTreeEntity) object);
+                }
+            }
+        });
+    }
 
-	private void excute(TestSuiteTreeEntity testSuiteTreeEntity) {
-		try {
-			TestSuiteEntity testSuite = (TestSuiteEntity) testSuiteTreeEntity.getObject();
-			TestSuiteController.getInstance().deleteTestSuite(testSuite);
+    private void excute(TestSuiteTreeEntity testSuiteTreeEntity) {
+        try {
+            TestSuiteEntity testSuite = (TestSuiteEntity) testSuiteTreeEntity.getObject();
+            TestSuiteController.getInstance().deleteTestSuite(testSuite);
 
-			// remove TestSuite part from its partStack if it exists
-			String partId = EntityPartUtil.getTestSuiteCompositePartId(testSuite.getId());
-			MPartStack mStackPart = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID,
-					application);
-			MPart mPart = (MPart) modelService.find(partId, application);
-			if (mPart != null) {
-				mStackPart.getChildren().remove(mPart);
-			}
+            // remove TestSuite part from its partStack if it exists
+            String partId = EntityPartUtil.getTestSuiteCompositePartId(testSuite.getId());
+            MPartStack mStackPart = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID,
+                    application);
+            MPart mPart = (MPart) modelService.find(partId, application);
+            if (mPart != null) {
+                mStackPart.getChildren().remove(mPart);
+            }
 
-			eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, TestSuiteController.getInstance()
-					.getIdForDisplay(testSuite));
-			eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, testSuiteTreeEntity.getParent());
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-			MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, 
-					StringConstants.HAND_ERROR_MSG_UNABLE_TO_DEL_TEST_SUITE);
-		}
-	}
+            eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, TestSuiteController.getInstance()
+                    .getIdForDisplay(testSuite));
+            eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, testSuiteTreeEntity.getParent());
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                    StringConstants.HAND_ERROR_MSG_UNABLE_TO_DEL_TEST_SUITE);
+        }
+    }
 
 }

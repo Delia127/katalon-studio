@@ -28,7 +28,6 @@ public class TestDataTreeContentProvider implements ITreeContentProvider {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		// TODO Auto-generated method stub
 		if (newInput != null && newInput instanceof List) {
 			dataLinks = (List<TestCaseTestDataLink>) newInput;
 		}

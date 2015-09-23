@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Composite;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testsuite.editors.TestDataCellEditor;
-import com.kms.katalon.composer.testsuite.parts.TestSuitePart;
+import com.kms.katalon.composer.testsuite.parts.TestSuitePartDataBindingView;
 import com.kms.katalon.composer.testsuite.tree.TestDataLinkTreeNode;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
@@ -19,74 +19,74 @@ import com.kms.katalon.entity.testdata.DataFileEntity;
 
 public class TestDataIDColumnEditingSupport extends EditingSupport {
 
-	private TestSuitePart mpart;
+    private TestSuitePartDataBindingView mpart;
 
-	public TestDataIDColumnEditingSupport(ColumnViewer viewer, TestSuitePart testSuitePart) {
-		super(viewer);
-		this.mpart = testSuitePart;
-	}
+    public TestDataIDColumnEditingSupport(ColumnViewer viewer, TestSuitePartDataBindingView view) {
+        super(viewer);
+        this.mpart = view;
+    }
 
-	@Override
-	protected CellEditor getCellEditor(Object element) {
-		if (element != null && element instanceof TestDataLinkTreeNode) {
-			TestDataLinkTreeNode linkTreeNode = (TestDataLinkTreeNode) element;
-			TestCaseTestDataLink link = linkTreeNode.getTestDataLink();
-			return new TestDataCellEditor((Composite) getViewer().getControl(), link.getTestDataId(),
-					link.getTestDataId());
-		}
-		return null;
-	}
+    @Override
+    protected CellEditor getCellEditor(Object element) {
+        if (element != null && element instanceof TestDataLinkTreeNode) {
+            TestDataLinkTreeNode linkTreeNode = (TestDataLinkTreeNode) element;
+            TestCaseTestDataLink link = linkTreeNode.getTestDataLink();
+            return new TestDataCellEditor((Composite) getViewer().getControl(), link.getTestDataId(),
+                    link.getTestDataId());
+        }
+        return null;
+    }
 
-	@Override
-	protected boolean canEdit(Object element) {
-		return (element != null && element instanceof TestDataLinkTreeNode);
-	}
+    @Override
+    protected boolean canEdit(Object element) {
+        return (element != null && element instanceof TestDataLinkTreeNode);
+    }
 
-	@Override
-	protected Object getValue(Object element) {
-		if (element != null && element instanceof TestDataLinkTreeNode) {
-			TestDataLinkTreeNode linkTreeNode = (TestDataLinkTreeNode) element;
-			TestCaseTestDataLink link = linkTreeNode.getTestDataLink();
-			return link.getTestDataId();
-		}
-		return StringUtils.EMPTY;
-	}
+    @Override
+    protected Object getValue(Object element) {
+        if (element != null && element instanceof TestDataLinkTreeNode) {
+            TestDataLinkTreeNode linkTreeNode = (TestDataLinkTreeNode) element;
+            TestCaseTestDataLink link = linkTreeNode.getTestDataLink();
+            return link.getTestDataId();
+        }
+        return StringUtils.EMPTY;
+    }
 
-	@Override
-	protected void setValue(Object element, Object value) {
-		try {
-			if (element != null && element instanceof TestDataLinkTreeNode && value instanceof TestDataTreeEntity) {
+    @Override
+    protected void setValue(Object element, Object value) {
+        try {
+            if (element != null && element instanceof TestDataLinkTreeNode && value instanceof TestDataTreeEntity) {
 
-				TestDataLinkTreeNode linkTreeNode = (TestDataLinkTreeNode) element;
-				TestCaseTestDataLink link = linkTreeNode.getTestDataLink();
+                TestDataLinkTreeNode linkTreeNode = (TestDataLinkTreeNode) element;
+                TestCaseTestDataLink link = linkTreeNode.getTestDataLink();
 
-				TestDataTreeEntity treeEntity = (TestDataTreeEntity) value;
-				DataFileEntity testDataEntity = (DataFileEntity) treeEntity.getObject();
-				String testDataId = TestDataController.getInstance().getIdForDisplay(testDataEntity);
-				if (testDataId != null && !testDataId.equals(link.getTestDataId())) {
-					link.setTestDataId(testDataId);
+                TestDataTreeEntity treeEntity = (TestDataTreeEntity) value;
+                DataFileEntity testDataEntity = (DataFileEntity) treeEntity.getObject();
+                String testDataId = TestDataController.getInstance().getIdForDisplay(testDataEntity);
+                if (testDataId != null && !testDataId.equals(link.getTestDataId())) {
+                    link.setTestDataId(testDataId);
 
-					getViewer().update(element, null);
-					refreshVariableLink(link.getId());
-					mpart.setDirty(true);
-				}
+                    getViewer().update(element, null);
+                    refreshVariableLink(link.getId());
+                    mpart.setDirty(true);
+                }
 
-			}
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-	}
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
 
-	private void refreshVariableLink(String testDataLinkId) {
-		if (mpart.getSelectedTestCaseLink() == null) return;
-		for (VariableLink variableLink : mpart.getSelectedTestCaseLink().getVariableLinks()) {
-			if (variableLink.getType() == VariableType.DATA_COLUMN
-					&& testDataLinkId.equals(variableLink.getTestDataLinkId())) {
+    private void refreshVariableLink(String testDataLinkId) {
+        if (mpart.getSelectedTestCaseLink() == null) return;
+        for (VariableLink variableLink : mpart.getSelectedTestCaseLink().getVariableLinks()) {
+            if (variableLink.getType() == VariableType.DATA_COLUMN
+                    && testDataLinkId.equals(variableLink.getTestDataLinkId())) {
 
-				variableLink.setValue(StringUtils.EMPTY);
-				mpart.refreshVariableLink(variableLink);
-			}
-		}
-	}
+                variableLink.setValue(StringUtils.EMPTY);
+                mpart.refreshVariableLink(variableLink);
+            }
+        }
+    }
 
 }

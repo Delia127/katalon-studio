@@ -7,18 +7,18 @@ import com.kms.katalon.composer.testsuite.parts.TestSuiteIntegrationPart;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public abstract class AbstractTestSuiteIntegrationView {
-	protected TestSuiteEntity testSuiteEntity;
-	protected MPart mpart;
-	
-	public AbstractTestSuiteIntegrationView(TestSuiteEntity testCaseEntity, MPart mpart) {
-		this.testSuiteEntity = testCaseEntity;
-		this.mpart = mpart;
-	}
-	
-	public abstract Composite createContainer(Composite parent);
-	
-	public void setDirty(boolean dirty) {
-		TestSuiteIntegrationPart integrationPart = (TestSuiteIntegrationPart) mpart.getObject();
-		integrationPart.setDirty(dirty);
-	}
+    protected TestSuiteEntity testSuiteEntity;
+    protected MPart mpart;
+
+    public AbstractTestSuiteIntegrationView(TestSuiteEntity testCaseEntity, MPart mpart) {
+        this.testSuiteEntity = testCaseEntity;
+        this.mpart = mpart;
+    }
+
+    public abstract Composite createContainer(Composite parent);
+
+    public void setDirty(boolean dirty) {
+        TestSuiteIntegrationPart integrationPart = (TestSuiteIntegrationPart) mpart.getObject();
+        integrationPart.setDirty(dirty);
+    }
 }

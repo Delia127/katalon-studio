@@ -7,32 +7,29 @@ import com.kms.katalon.composer.testsuite.tree.TestDataLinkTreeNode;
 
 public class TestDataTreeViewerFilter extends ViewerFilter {
 
-	private String searchString;
+    private String searchString;
 
-	public void setSearchText(String s) {
-		// ensure that the value can be used for matching
-		this.searchString = ".*" + s.toLowerCase() + ".*";
-	}
+    public void setSearchText(String s) {
+        this.searchString = ".*" + s.toLowerCase() + ".*";
+    }
 
-	@Override
-	public boolean select(Viewer viewer, Object parentElement, Object element) {
-		// TODO Auto-generated method stub
-		if (element == null || !(element instanceof TestDataLinkTreeNode))
-			return false;
-		if (searchString == null || searchString.length() == 0) {
-			return true;
-		}
+    @Override
+    public boolean select(Viewer viewer, Object parentElement, Object element) {
+        if (element == null || !(element instanceof TestDataLinkTreeNode)) { return false; }
+        if (searchString == null || searchString.length() == 0) {
+            return true;
+        }
 
-		TestDataLinkTreeNode treeNode = (TestDataLinkTreeNode) element;
-		if (treeNode.getTestDataLink().getTestDataId().toLowerCase().matches(searchString)) {
-			return true;
-		}
-		
-		boolean isChildrenMatched = false;
-		for (TestDataLinkTreeNode childNode : treeNode.getChildrenNode()) {
-			isChildrenMatched |= select(viewer, element, childNode);
-		}
-		return isChildrenMatched;
-	}
+        TestDataLinkTreeNode treeNode = (TestDataLinkTreeNode) element;
+        if (treeNode.getTestDataLink().getTestDataId().toLowerCase().matches(searchString)) {
+            return true;
+        }
+
+        boolean isChildrenMatched = false;
+        for (TestDataLinkTreeNode childNode : treeNode.getChildrenNode()) {
+            isChildrenMatched |= select(viewer, element, childNode);
+        }
+        return isChildrenMatched;
+    }
 
 }

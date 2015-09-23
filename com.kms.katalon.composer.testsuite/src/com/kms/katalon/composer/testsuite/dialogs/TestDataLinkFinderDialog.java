@@ -64,12 +64,10 @@ public class TestDataLinkFinderDialog extends Dialog {
     }
 
     private void registerListeners() {
-
         textSearch.addModifyListener(new ModifyListener() {
 
             @Override
             public void modifyText(ModifyEvent e) {
-                // TODO Auto-generated method stub
                 String searchString = ((Text) e.getSource()).getText();
                 treeViewerFilter.setSearchText(searchString);
                 treeViewer.refresh();

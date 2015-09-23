@@ -51,7 +51,7 @@ public class IterationEntity implements Serializable {
         if (value == null) {
             value = "";
         }
-        return value;
+        return value.replace("..", "-");
     }
 
     public void setValue(String value) {
@@ -63,12 +63,12 @@ public class IterationEntity implements Serializable {
     }
 
     public int getFrom() {
-        String stringFrom = getValue().split("\\.\\.")[0];
+        String stringFrom = getValue().split("-")[0];
         return Integer.valueOf(stringFrom);
     }
 
     public int getTo() {
-        String stringTo = getValue().split("\\.\\.")[1];
+        String stringTo = getValue().split("-")[1];
         return Integer.valueOf(stringTo);
     }
 

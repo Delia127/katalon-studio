@@ -7,7 +7,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.testsuite.parts.TestSuitePart;
+import com.kms.katalon.composer.testsuite.parts.TestSuitePartDataBindingView;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
@@ -26,11 +26,11 @@ public class VariableTableLabelProvider extends LabelProvider implements ITableL
     private static TestSuiteController testSuiteController = TestSuiteController.getInstance();
 
     private TableViewer viewer;
-    private TestSuitePart testSuitePart;
+    private TestSuitePartDataBindingView testSuitePart;
 
-    public VariableTableLabelProvider(TableViewer viewer, TestSuitePart testSuitePart) {
+    public VariableTableLabelProvider(TableViewer viewer, TestSuitePartDataBindingView testDataTreeView) {
         this.viewer = viewer;
-        this.testSuitePart = testSuitePart;
+        this.testSuitePart = testDataTreeView;
     }
 
     @Override
@@ -83,5 +83,4 @@ public class VariableTableLabelProvider extends LabelProvider implements ITableL
         }
         return StringUtils.EMPTY;
     }
-
 }

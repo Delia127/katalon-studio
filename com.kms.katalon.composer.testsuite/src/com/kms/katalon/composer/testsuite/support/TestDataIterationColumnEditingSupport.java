@@ -7,16 +7,16 @@ import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.testsuite.editors.DataIterationCellEditor;
-import com.kms.katalon.composer.testsuite.parts.TestSuitePart;
+import com.kms.katalon.composer.testsuite.parts.TestSuitePartDataBindingView;
 import com.kms.katalon.composer.testsuite.tree.TestDataLinkTreeNode;
 import com.kms.katalon.entity.link.IterationEntity;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
 
 public class TestDataIterationColumnEditingSupport extends EditingSupport {
 
-    private TestSuitePart mpart;
+    private TestSuitePartDataBindingView mpart;
 
-    public TestDataIterationColumnEditingSupport(ColumnViewer viewer, TestSuitePart mpart) {
+    public TestDataIterationColumnEditingSupport(ColumnViewer viewer, TestSuitePartDataBindingView mpart) {
         super(viewer);
         this.mpart = mpart;
     }
@@ -56,7 +56,7 @@ public class TestDataIterationColumnEditingSupport extends EditingSupport {
             if (testDataLink.getIterationEntity() != null) {
                 switch (testDataLink.getIterationEntity().getIterationType()) {
                     case ALL:
-                        return "All";
+                        return testDataLink.getIterationEntity().getIterationType().name();
                     default:
                         return testDataLink.getIterationEntity().getValue();
                 }

@@ -12,27 +12,27 @@ import com.kms.katalon.composer.testsuite.parts.integration.TestSuiteIntegration
 import com.kms.katalon.custom.contribution.IntegrationContributor;
 
 public class EvaluateIntegrationContributionViewHandler {
-	private static final String TESTSUITE_INTEGRATION_CONTRIBUTOR_ID = "com.kms.katalon.composer.testsuite.integration";
+    private static final String TESTSUITE_INTEGRATION_CONTRIBUTOR_ID = "com.kms.katalon.composer.testsuite.integration";
 
-	@Inject
-	public void execute(IExtensionRegistry registry) {
-		evaluate(registry);
-	}
+    @Inject
+    public void execute(IExtensionRegistry registry) {
+        evaluate(registry);
+    }
 
-	private void evaluate(IExtensionRegistry registry) {
-		IConfigurationElement[] config = registry.getConfigurationElementsFor(TESTSUITE_INTEGRATION_CONTRIBUTOR_ID);
-		try {
-			for (IConfigurationElement e : config) {
-				IntegrationContributor integrationContributor = (IntegrationContributor) e
-						.createExecutableExtension("product");
-				String productName = integrationContributor.getProductName();
-				TestSuiteIntegrationViewBuilder contributionView = (TestSuiteIntegrationViewBuilder) e
-						.createExecutableExtension("view");
-				TestSuiteIntegrationFactory.getInstance().addNewIntegrationView(productName, contributionView);
+    private void evaluate(IExtensionRegistry registry) {
+        IConfigurationElement[] config = registry.getConfigurationElementsFor(TESTSUITE_INTEGRATION_CONTRIBUTOR_ID);
+        try {
+            for (IConfigurationElement e : config) {
+                IntegrationContributor integrationContributor = (IntegrationContributor) e
+                        .createExecutableExtension("product");
+                String productName = integrationContributor.getProductName();
+                TestSuiteIntegrationViewBuilder contributionView = (TestSuiteIntegrationViewBuilder) e
+                        .createExecutableExtension("view");
+                TestSuiteIntegrationFactory.getInstance().addNewIntegrationView(productName, contributionView);
 
-			}
-		} catch (CoreException ex) {
-			LoggerSingleton.logError(ex);
-		}
-	}
+            }
+        } catch (CoreException ex) {
+            LoggerSingleton.logError(ex);
+        }
+    }
 }

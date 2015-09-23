@@ -1,7 +1,7 @@
 package com.kms.katalon.composer.testsuite.constants;
 
 
-public class TestDataToolItemConstants {
+public class ToolItemConstants {
 	public static final String ADD = StringConstants.CONS_ADD;
 	public static final String ADD_BEFORE = StringConstants.CONS_ADD_BEFORE;
 	public static final String ADD_AFTER = StringConstants.CONS_ADD_AFTER;

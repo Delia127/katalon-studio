@@ -6,6 +6,8 @@ import java.util.List;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -58,6 +60,16 @@ public class TestDataColumnChooserDialog extends Dialog {
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 validate();
+            }
+        });
+        
+        tableViewer.addDoubleClickListener(new IDoubleClickListener() {
+            
+            @Override
+            public void doubleClick(DoubleClickEvent event) {
+                if (getButton(Dialog.OK).isEnabled()) {
+                    okPressed();
+                }
             }
         });
     }
