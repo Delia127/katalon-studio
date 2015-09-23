@@ -87,10 +87,10 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
         container.setLayout(new GridLayout(1, false));
 
         Composite compositeButton = new Composite(container, SWT.NONE);
-        GridLayout gl_compositeButton = new GridLayout(7, false);
-        gl_compositeButton.marginHeight = 0;
-        gl_compositeButton.marginWidth = 0;
-        compositeButton.setLayout(gl_compositeButton);
+        GridLayout glCompositeButton = new GridLayout(7, false);
+        glCompositeButton.marginHeight = 0;
+        glCompositeButton.marginWidth = 0;
+        compositeButton.setLayout(glCompositeButton);
 
         btnUpload = new Button(compositeButton, SWT.FLAT);
         btnUpload.setToolTipText("Upload this test suite to qTest");
@@ -131,16 +131,16 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
 
         compositeSelectedParent = new Composite(sashForm, SWT.NONE);
         compositeSelectedParent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        GridLayout gl_compositeSelectedParent = new GridLayout(1, false);
-        gl_compositeSelectedParent.marginWidth = 0;
-        gl_compositeSelectedParent.marginHeight = 0;
-        compositeSelectedParent.setLayout(gl_compositeSelectedParent);
+        GridLayout glCompositeSelectedParent = new GridLayout(1, false);
+        glCompositeSelectedParent.marginWidth = 0;
+        glCompositeSelectedParent.marginHeight = 0;
+        compositeSelectedParent.setLayout(glCompositeSelectedParent);
 
         Composite compositeSelectedParentHeader = new Composite(compositeSelectedParent, SWT.NONE);
         compositeSelectedParentHeader.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        GridLayout gl_compositeSelectedParentHeader = new GridLayout(1, false);
-        gl_compositeSelectedParentHeader.marginWidth = 0;
-        compositeSelectedParentHeader.setLayout(gl_compositeSelectedParentHeader);
+        GridLayout glCompositeSelectedParentHeader = new GridLayout(1, false);
+        glCompositeSelectedParentHeader.marginWidth = 0;
+        compositeSelectedParentHeader.setLayout(glCompositeSelectedParentHeader);
 
         Label lblSelectedParentHeader = new Label(compositeSelectedParentHeader, SWT.NONE);
         lblSelectedParentHeader.setFont(JFaceResources.getFontRegistry().getBold(""));
@@ -192,16 +192,16 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
 
         compositeParent = new Composite(compositeInfo, SWT.NONE);
         compositeParent.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true, 1, 1));
-        GridLayout gl_compositeParent = new GridLayout(1, false);
-        gl_compositeParent.marginWidth = 0;
-        gl_compositeParent.marginHeight = 0;
-        compositeParent.setLayout(gl_compositeParent);
+        GridLayout glCompositeParent = new GridLayout(1, false);
+        glCompositeParent.marginWidth = 0;
+        glCompositeParent.marginHeight = 0;
+        compositeParent.setLayout(glCompositeParent);
 
         Composite compositeTableHeader = new Composite(compositeParent, SWT.NONE);
         compositeTableHeader.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        GridLayout gl_compositeTableHeader = new GridLayout(1, false);
-        gl_compositeTableHeader.marginWidth = 0;
-        compositeTableHeader.setLayout(gl_compositeTableHeader);
+        GridLayout glCompositeTableHeader = new GridLayout(1, false);
+        glCompositeTableHeader.marginWidth = 0;
+        compositeTableHeader.setLayout(glCompositeTableHeader);
 
         lblTableParentLabel = new Label(compositeTableHeader, SWT.NONE);
         lblTableParentLabel.setFont(JFaceResources.getFontRegistry().getBold(""));

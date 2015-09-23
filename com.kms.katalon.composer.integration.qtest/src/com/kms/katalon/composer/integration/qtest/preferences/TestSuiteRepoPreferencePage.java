@@ -1,11 +1,12 @@
 package com.kms.katalon.composer.integration.qtest.preferences;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.Dialog;
@@ -29,16 +30,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.dialog.TestSuiteRepoDialog;
 import com.kms.katalon.composer.integration.qtest.model.TestSuiteRepo;
 import com.kms.katalon.composer.integration.qtest.preferences.providers.TestSuiteRepoTableLabelProvider;
-import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -46,277 +43,267 @@ import com.kms.katalon.integration.qtest.QTestIntegrationProjectManager;
 import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 
-public class TestSuiteRepoPreferencePage extends PreferencePage implements EventHandler {
+public class TestSuiteRepoPreferencePage extends PreferencePage {
 
-	private IEventBroker eventBroker;
+    @Inject
+    UISynchronize sync;
 
-	@Inject
-	UISynchronize sync;
+    private Composite container;
+    private TableViewer tableViewer;
+    private Button btnAdd;
+    private Button btnEdit;
+    private Button btnRemove;
+    private List<QTestProject> qTestProjects;
+    private List<TestSuiteRepo> testSuiteRepositories;
 
-	private Composite container;
-	private TableViewer tableViewer;
-	private Button btnAdd;
-	private Button btnEdit;
-	private Button btnRemove;
-	private List<QTestProject> qTestProjects;
-	private List<TestSuiteRepo> testSuiteRepositories;
+    public TestSuiteRepoPreferencePage() {
+    }
 
-	private static boolean needToInitialize;
+    @Override
+    protected Control createContents(Composite parent) {
+        container = new Composite(parent, SWT.NONE);
+        container.setLayout(new GridLayout(2, false));
 
-	public TestSuiteRepoPreferencePage() {
-		eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
-		needToInitialize = true;
-		registerEventListeners();
-	}
+        Composite compositeTable = new Composite(container, SWT.NONE);
+        compositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-	private void registerEventListeners() {
-		eventBroker.subscribe(EventConstants.PROJECT_UPDATED, this);
-	}
+        tableViewer = new TableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION);
+        Table table = tableViewer.getTable();
+        table.setLinesVisible(true);
+        table.setHeaderVisible(true);
+        table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-	@Override
-	protected Control createContents(Composite parent) {
-		container = new Composite(parent, SWT.NONE);
-		container.setLayout(new GridLayout(2, false));
+        TableViewerColumn tableViewerColumnQTestProject = new TableViewerColumn(tableViewer, SWT.NONE);
+        TableColumn tblclmnQTestProject = tableViewerColumnQTestProject.getColumn();
+        tblclmnQTestProject.setText("qTest Project");
 
-		Composite compositeTable = new Composite(container, SWT.NONE);
-		compositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        TableViewerColumn tableViewerColumnKatalonFolder = new TableViewerColumn(tableViewer, SWT.NONE);
+        TableColumn tblclmnKatalonFolder = tableViewerColumnKatalonFolder.getColumn();
+        tblclmnKatalonFolder.setText("Katalon Folder");
 
-		tableViewer = new TableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION);
-		Table table = tableViewer.getTable();
-		table.setLinesVisible(true);
-		table.setHeaderVisible(true);
-		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        tableViewer.setLabelProvider(new TestSuiteRepoTableLabelProvider());
+        tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
-		TableViewerColumn tableViewerColumnQTestProject = new TableViewerColumn(tableViewer, SWT.NONE);
-		TableColumn tblclmnQTestProject = tableViewerColumnQTestProject.getColumn();
-		tblclmnQTestProject.setText("qTest Project");
+        TableColumnLayout tableLayout = new TableColumnLayout();
+        tableLayout.setColumnData(tblclmnQTestProject, new ColumnWeightData(0, 100));
+        tableLayout.setColumnData(tblclmnKatalonFolder, new ColumnWeightData(90, 100));
+        compositeTable.setLayout(tableLayout);
 
-		TableViewerColumn tableViewerColumnKatalonFolder = new TableViewerColumn(tableViewer, SWT.NONE);
-		TableColumn tblclmnKatalonFolder = tableViewerColumnKatalonFolder.getColumn();
-		tblclmnKatalonFolder.setText("Katalon Folder");
+        Composite compositeButton = new Composite(container, SWT.NONE);
+        compositeButton.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true, 1, 1));
+        GridLayout gl_compositeButton = new GridLayout(1, false);
+        gl_compositeButton.marginHeight = 0;
+        compositeButton.setLayout(gl_compositeButton);
 
-		tableViewer.setLabelProvider(new TestSuiteRepoTableLabelProvider());
-		tableViewer.setContentProvider(ArrayContentProvider.getInstance());
+        btnAdd = new Button(compositeButton, SWT.NONE);
+        btnAdd.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+        btnAdd.setText("Add");
 
-		TableColumnLayout tableLayout = new TableColumnLayout();
-		tableLayout.setColumnData(tblclmnQTestProject, new ColumnWeightData(0, 100));
-		tableLayout.setColumnData(tblclmnKatalonFolder, new ColumnWeightData(90, 100));
-		compositeTable.setLayout(tableLayout);
+        btnEdit = new Button(compositeButton, SWT.NONE);
+        btnEdit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+        btnEdit.setText("Edit");
+        btnEdit.setEnabled(false);
 
-		Composite compositeButton = new Composite(container, SWT.NONE);
-		compositeButton.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true, 1, 1));
-		GridLayout gl_compositeButton = new GridLayout(1, false);
-		gl_compositeButton.marginHeight = 0;
-		compositeButton.setLayout(gl_compositeButton);
+        btnRemove = new Button(compositeButton, SWT.NONE);
+        btnRemove.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+        btnRemove.setText("Remove");
+        btnRemove.setEnabled(false);
 
-		btnAdd = new Button(compositeButton, SWT.NONE);
-		btnAdd.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		btnAdd.setText("Add");
+        addButtonSelectionListeners();
+        initilize();
 
-		btnEdit = new Button(compositeButton, SWT.NONE);
-		btnEdit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		btnEdit.setText("Edit");
-		btnEdit.setEnabled(false);
+        return container;
+    }
 
-		btnRemove = new Button(compositeButton, SWT.NONE);
-		btnRemove.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		btnRemove.setText("Remove");
-		btnRemove.setEnabled(false);
+    private void initilize() {
+        ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
+        IntegratedEntity integratedProjectEntity = projectEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 
-		addButtonSelectionListeners();
-		initilize();
+        try {
+            if (integratedProjectEntity != null) {
+                qTestProjects = QTestIntegrationProjectManager
+                        .getQTestProjectsByIntegratedEntity(integratedProjectEntity);
+            } else {
+                qTestProjects = new ArrayList<QTestProject>();
+            }
+        } catch (Exception ex) {
+            LoggerSingleton.logError(ex);
+            MessageDialog.openWarning(null, "Unable to get qTest projects's information.", ex.getMessage());
+            return;
+        }
 
-		return container;
-	}
+        testSuiteRepositories = QTestIntegrationUtil.getTestSuiteRepositories(projectEntity, qTestProjects);
 
-	private void initilize() {
-		if (!needToInitialize || container == null || container.isDisposed()) return;
-		ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-		IntegratedEntity integratedProjectEntity = projectEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+        tableViewer.setInput(testSuiteRepositories);
+    }
 
-		try {
-			if (integratedProjectEntity != null) {
-				qTestProjects = QTestIntegrationProjectManager
-						.getQTestProjectsByIntegratedEntity(integratedProjectEntity);
-			} else {
-				qTestProjects = new ArrayList<QTestProject>();
-			}
-		} catch (Exception ex) {
-			LoggerSingleton.logError(ex);
-			MessageDialog.openWarning(null, "Unable to get qTest projects's information.", ex.getMessage());
-			return;
-		}
+    private void addButtonSelectionListeners() {
+        btnAdd.addSelectionListener(new SelectionAdapter() {
 
-		testSuiteRepositories = QTestIntegrationUtil.getTestSuiteRepositories(projectEntity, qTestProjects);
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                addNewTestSuiteRepo();
+            }
+        });
 
-		tableViewer.setInput(testSuiteRepositories);
-	}
+        btnEdit.addSelectionListener(new SelectionAdapter() {
 
-	private void addButtonSelectionListeners() {
-		btnAdd.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                editTestSuiteRepo();
+            }
+        });
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				addNewTestSuiteRepo();
-			}
-		});
+        btnRemove.addSelectionListener(new SelectionAdapter() {
 
-		btnEdit.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                removeTestSuiteRepo();
+            }
+        });
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				editTestSuiteRepo();
-			}
-		});
+        tableViewer.addPostSelectionChangedListener(new ISelectionChangedListener() {
 
-		btnRemove.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+                if (selection == null || selection.isEmpty()) {
+                    btnEdit.setEnabled(false);
+                    btnRemove.setEnabled(false);
+                } else {
+                    btnEdit.setEnabled(true);
+                    btnRemove.setEnabled(true);
+                }
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				removeTestSuiteRepo();
-			}
-		});
+            }
+        });
+    }
 
-		tableViewer.addPostSelectionChangedListener(new ISelectionChangedListener() {
+    @Focus
+    public void focus() {
+        initilize();
+    }
 
-			@Override
-			public void selectionChanged(SelectionChangedEvent event) {
-				IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-				if (selection == null || selection.isEmpty()) {
-					btnEdit.setEnabled(false);
-					btnRemove.setEnabled(false);
-				} else {
-					btnEdit.setEnabled(true);
-					btnRemove.setEnabled(true);
-				}
+    protected void removeTestSuiteRepo() {
+        // TODO Auto-generated method stub
+        IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+        if (selection == null || selection.isEmpty()) return;
 
-			}
-		});
-	}
+        final TestSuiteRepo repo = (TestSuiteRepo) selection.getFirstElement();
+        testSuiteRepositories.remove(repo);
 
-	@Focus
-	public void focus() {
-		initilize();
-	}
+        tableViewer.refresh();
+    }
 
-	protected void removeTestSuiteRepo() {
-		// TODO Auto-generated method stub
-		IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-		if (selection == null || selection.isEmpty()) return;
+    private void insertNewRepoToTable(int index, TestSuiteRepo newRepo) {
+        testSuiteRepositories.remove(index);
+        if (index >= testSuiteRepositories.size()) {
+            testSuiteRepositories.add(newRepo);
+        } else {
+            testSuiteRepositories.add(index, newRepo);
+        }
+        tableViewer.refresh();
+    }
 
-		final TestSuiteRepo repo = (TestSuiteRepo) selection.getFirstElement();
-		testSuiteRepositories.remove(repo);
+    protected void editTestSuiteRepo() {
+        IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+        if (selection == null || selection.isEmpty()) return;
 
-		tableViewer.refresh();
-	}
+        final TestSuiteRepo repo = (TestSuiteRepo) selection.getFirstElement();
+        List<String> currentFolderIds = getRegisteredFolderIds();
+        currentFolderIds.remove(repo.getFolderId());
+        TestSuiteRepoDialog dialog = new TestSuiteRepoDialog(btnAdd.getDisplay().getActiveShell(), qTestProjects,
+                currentFolderIds, repo);
+        if (dialog.open() == Dialog.OK) {
+            TestSuiteRepo newRepo = dialog.getTestSuiteRepo();
+            final int index = testSuiteRepositories.indexOf(repo);
+            if (!repo.equals(newRepo)) {
+                insertNewRepoToTable(index, newRepo);
+            }
+        }
+    }
 
-	private void insertNewRepoToTable(int index, TestSuiteRepo newRepo) {
-		testSuiteRepositories.remove(index);
-		if (index >= testSuiteRepositories.size()) {
-			testSuiteRepositories.add(newRepo);
-		} else {
-			testSuiteRepositories.add(index, newRepo);
-		}
-		tableViewer.refresh();
-	}
+    private List<String> getRegisteredFolderIds() {
+        List<String> currentFolderIds = new ArrayList<String>();
+        for (TestSuiteRepo testSuiteRepo : testSuiteRepositories) {
+            currentFolderIds.add(testSuiteRepo.getFolderId());
+        }
 
-	protected void editTestSuiteRepo() {
-		IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-		if (selection == null || selection.isEmpty()) return;
+        return currentFolderIds;
+    }
 
-		final TestSuiteRepo repo = (TestSuiteRepo) selection.getFirstElement();
-		List<String> currentFolderIds = getRegisteredFolderIds();
-		currentFolderIds.remove(repo.getFolderId());
-		TestSuiteRepoDialog dialog = new TestSuiteRepoDialog(btnAdd.getDisplay().getActiveShell(), qTestProjects,
-				currentFolderIds, repo);
-		if (dialog.open() == Dialog.OK) {
-			TestSuiteRepo newRepo = dialog.getTestSuiteRepo();
-			final int index = testSuiteRepositories.indexOf(repo);
-			if (!repo.equals(newRepo)) {
-				insertNewRepoToTable(index, newRepo);
-			}
-		}
-	}
+    protected void addNewTestSuiteRepo() {
+        List<String> currentFolderIds = getRegisteredFolderIds();
 
-	private List<String> getRegisteredFolderIds() {
-		List<String> currentFolderIds = new ArrayList<String>();
-		for (TestSuiteRepo testSuiteRepo : testSuiteRepositories) {
-			currentFolderIds.add(testSuiteRepo.getFolderId());
-		}
+        TestSuiteRepoDialog dialog = new TestSuiteRepoDialog(btnAdd.getDisplay().getActiveShell(), qTestProjects,
+                currentFolderIds, null);
+        if (dialog.open() == Dialog.OK) {
+            TestSuiteRepo repo = dialog.getTestSuiteRepo();
+            testSuiteRepositories.add(repo);
 
-		return currentFolderIds;
-	}
+            qTestProjects.clear();
+            for (QTestProject qTestProject : dialog.getQTestProjectsMap().values()) {
+                if (qTestProject.equals(repo.getQTestProject())) {
+                    qTestProject.getTestSuiteFolderIds().add(repo.getFolderId());
+                }
 
-	protected void addNewTestSuiteRepo() {
-		List<String> currentFolderIds = getRegisteredFolderIds();
+                qTestProjects.add(qTestProject);
+            }
+            tableViewer.refresh();
+        }
+    }
 
-		TestSuiteRepoDialog dialog = new TestSuiteRepoDialog(btnAdd.getDisplay().getActiveShell(), qTestProjects,
-				currentFolderIds, null);
-		if (dialog.open() == Dialog.OK) {
-			TestSuiteRepo repo = dialog.getTestSuiteRepo();
-			testSuiteRepositories.add(repo);
+    @Override
+    public boolean performOk() {
+        // if it never be opened, just returns to the parent class
+        if (container == null) return true;
 
-			qTestProjects.clear();
-			for (QTestProject qTestProject : dialog.getQTestProjectsMap().values()) {
-				if (qTestProject.equals(repo.getQTestProject())) {
-					qTestProject.getTestSuiteFolderIds().add(repo.getFolderId());
-				}
+        ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
+        
+        // Sync with the current project
+        Set<QTestProject> currentProjects = new LinkedHashSet<QTestProject>();
+        IntegratedEntity projectIntegratedEntity = projectEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+        if (projectIntegratedEntity != null) {
+            currentProjects.addAll(QTestIntegrationProjectManager
+                    .getQTestProjectsByIntegratedEntity(projectIntegratedEntity));
+        }
+        currentProjects.addAll(qTestProjects);
 
-				qTestProjects.add(qTestProject);
-			}
-			tableViewer.refresh();
-		}
-	}
+        for (QTestProject qTestProject : currentProjects) {
+            qTestProject.getTestSuiteFolderIds().clear();
+        }
 
-	@Override
-	public boolean performOk() {
-		// if it never be opened, just returns to the parent class
-		if (container == null) return true;
+        for (TestSuiteRepo repo : testSuiteRepositories) {
+            for (QTestProject qTestProject : currentProjects) {
+                if (repo.getQTestProject().equals(qTestProject)) {
+                    qTestProject.getTestSuiteFolderIds().add(repo.getFolderId());
+                }
+            }
+        }
 
-		ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
+        qTestProjects.clear();
+        qTestProjects.addAll(currentProjects);
 
-		for (QTestProject qTestProject : qTestProjects) {
-			qTestProject.getTestSuiteFolderIds().clear();
-		}
+        saveProject(projectEntity);
+        return true;
+    }
 
-		for (TestSuiteRepo repo : testSuiteRepositories) {
-			for (QTestProject qTestProject : qTestProjects) {
-				if (repo.getQTestProject().equals(qTestProject)) {
-					qTestProject.getTestSuiteFolderIds().add(repo.getFolderId());
-				}
-			}
-		}
+    private void saveProject(ProjectEntity projectEntity) {
+        IntegratedEntity projectNewIntegratedEntity = QTestIntegrationProjectManager
+                .getIntegratedEntityByQTestProjects(qTestProjects);
 
-		saveProject(projectEntity);
-		return true;
-	}
+        ProjectEntity currentProject = (ProjectEntity) QTestIntegrationUtil.updateFileIntegratedEntity(projectEntity,
+                projectNewIntegratedEntity);
 
-	private void saveProject(ProjectEntity projectEntity) {
-		IntegratedEntity projectNewIntegratedEntity = QTestIntegrationProjectManager
-				.getIntegratedEntityByQTestProjects(qTestProjects);
+        try {
+            ProjectController.getInstance().updateProject(currentProject);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
 
-		ProjectEntity currentProject = (ProjectEntity) QTestIntegrationUtil.updateFileIntegratedEntity(projectEntity,
-				projectNewIntegratedEntity);
-
-		try {
-			needToInitialize = false;
-			ProjectController.getInstance().updateProject(currentProject);
-			eventBroker.post(EventConstants.PROJECT_UPDATED, null);
-			needToInitialize = true;
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-	}
-
-	@Override
-	public void handleEvent(Event event) {
-		if (event.getTopic().equals(EventConstants.PROJECT_UPDATED)) {
-			initilize();
-		}
-	}
-
-	@Override
-	protected void performDefaults() {
-		initilize();
-	}
+    @Override
+    protected void performDefaults() {
+        initilize();
+    }
 }

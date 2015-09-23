@@ -20,6 +20,7 @@ import org.qas.qtest.api.auth.BasicQTestCredentials;
 import org.qas.qtest.api.auth.QTestCredentials;
 import org.qas.qtest.api.internal.model.FieldValue;
 import org.qas.qtest.api.services.design.TestDesignServiceClient;
+import org.qas.qtest.api.services.design.model.CreateTestCaseRequest;
 import org.qas.qtest.api.services.design.model.GetTestCaseRequest;
 import org.qas.qtest.api.services.design.model.ListTestStepRequest;
 import org.qas.qtest.api.services.design.model.TestCase;
@@ -54,8 +55,8 @@ public class QTestIntegrationTestCaseManager {
     }
 
     /**
-     * Returns {@link QTestTestCase} by parsing the given
-     * <code>integratedEntity</code> that's type {@link IntegratedType#TESTCASE}
+     * Returns {@link QTestTestCase} by parsing the given <code>integratedEntity</code> that's type
+     * {@link IntegratedType#TESTCASE}
      * 
      * @param integratedEntity
      *            qTest {@link IntegratedEntity} of a {@link TestCaseEntity}
@@ -68,8 +69,7 @@ public class QTestIntegrationTestCaseManager {
 
         Map<String, String> properties = integratedEntity.getProperties();
 
-        if (properties == null)
-            return null;
+        if (properties == null) return null;
 
         String id = properties.get(QTestEntity.ID_FIELD);
         String name = properties.get(QTestEntity.NAME_FIELD);
@@ -83,8 +83,7 @@ public class QTestIntegrationTestCaseManager {
     }
 
     /**
-     * Returns {@link IntegratedEntity} with {@link IntegratedType#TESTCASE} by
-     * parsing the given <code>qTestTC</code>
+     * Returns {@link IntegratedEntity} with {@link IntegratedType#TESTCASE} by parsing the given <code>qTestTC</code>
      * 
      * @param qTestTC
      * @return qTest {@link IntegratedEntity} of a {@link TestCaseEntity}
@@ -143,8 +142,7 @@ public class QTestIntegrationTestCaseManager {
     /**
      * Creates new {@link QTestTestCase} that:
      * <ul>
-     * <li>Locates under the {@link QTestModule} that's id equal with the given
-     * <code>parentId</code></li>
+     * <li>Locates under the {@link QTestModule} that's id equal with the given <code>parentId</code></li>
      * <li>Its name's equal with the given <code>name</code></li>
      * <li>Its description's equal with the given <code>description</code></li>
      * </ul>
@@ -166,47 +164,46 @@ public class QTestIntegrationTestCaseManager {
             throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
         }
 
+        QTestCredentials credentials = new BasicQTestCredentials(token);
+        TestDesignServiceClient testDesignService = new TestDesignServiceClient(credentials);
+        testDesignService.setEndpoint(serverUrl);
         long projectId = qTestProject.getId();
 
-        Map<String, Object> testCasePropertiesMap = new LinkedHashMap<String, Object>();
-        testCasePropertiesMap.put(QTestEntity.NAME_FIELD, name);
-        testCasePropertiesMap.put("parent_id", parentId);
-        // testCasePropertiesMap.put("description",
-        // getUploadedDescription(description));
-        testCasePropertiesMap.put("properties", new JsonArray());
-
-        String url = serverUrl + "/api/v3/projects/" + Long.toString(projectId) + "/test-cases";
-        String responseResult = QTestAPIRequestHelper.sendPostRequestViaAPI(url, token, new JsonObject(
-                testCasePropertiesMap).toString());
+        List<FieldValue> fieldValues = new ArrayList<FieldValue>();
         try {
-            if (responseResult != null && !responseResult.isEmpty()) {
-                JsonObject testCaseJsonObject = new JsonObject(responseResult);
+            JsonArray reponseJsonArray = getTestCaseFieldJsonArray(qTestProject.getId(), projectDir);
 
-                QTestTestCase qTestTestCase = new QTestTestCase(testCaseJsonObject.getLong(QTestEntity.ID_FIELD), name,
-                        parentId, testCaseJsonObject.getString(QTestEntity.PID_FIELD));
-                qTestTestCase.setVersionId(testCaseJsonObject.getLong("test_case_version_id"));
+            QTestUser user = QTestIntegrationUserManager.getUser(qTestProject, projectDir);
+            fieldValues.add(getTestCaseFieldValue("Type", "Automation", reponseJsonArray));
 
-                updateTestCase(projectDir, qTestProject, qTestTestCase);
-                return qTestTestCase;
-            } else {
-                return null;
-            }
+            FieldValue assignedUserField = getTestCaseFieldValue("Assigned To", "", reponseJsonArray);
+            assignedUserField.setProperty("field_value", "[" + user.getId() + "]");
+            fieldValues.add(assignedUserField);
         } catch (JsonException ex) {
-            throw QTestInvalidFormatException.createInvalidJsonFormatException(responseResult);
+            // Unable to get field value;
         }
+
+        TestCase testCase = new TestCase().withName(name).withDescription(getUploadedDescription(description))
+                .withParentId(parentId).withFieldValues(fieldValues);
+        CreateTestCaseRequest request = new CreateTestCaseRequest().withProjectId(projectId).withTestCase(testCase);
+
+        TestCase testCaseResult = testDesignService.createTestCase(request);
+        QTestTestCase qTestCase = new QTestTestCase(testCaseResult.getId(), name, parentId, testCaseResult.getPid());
+        qTestCase.setVersionId(testCaseResult.getTestCaseVersionId());
+
+        return qTestCase;
     }
 
     /**
-     * Updates the given <code>testCase</code> (type, assigned to,...) on qTest
-     * server
+     * Updates the given <code>testCase</code> (type, assigned to,...) on qTest server
      * 
      * @param projectDir
      * @param qTestProject
      * @param testCase
      * @throws QTestException
-     *             thrown if system cannot send request or the response is
-     *             invalid JSON format
+     *             thrown if system cannot send request or the response is invalid JSON format
      */
+    @SuppressWarnings("unused")
     private static void updateTestCase(String projectDir, QTestProject qTestProject, QTestTestCase testCase)
             throws QTestException {
         String token = QTestSettingStore.getToken(projectDir);
@@ -241,16 +238,14 @@ public class QTestIntegrationTestCaseManager {
     }
 
     /**
-     * The returned description of a {@link QTestTestCase} from qTest that
-     * contains HTML tag. Hence, this method will convert the raw parameter to
-     * java string.
+     * The returned description of a {@link QTestTestCase} from qTest that contains HTML tag. Hence, this method will
+     * convert the raw parameter to java string.
      * 
      * @param description
      * @return formated description
      */
     public static String getUploadedDescription(String description) {
-        if (description == null)
-            return "";
+        if (description == null) return "";
         StringBuilder descriptionBuilder = new StringBuilder();
         String[] stringLines = description.split("\n");
         for (String stringLine : stringLines) {
@@ -266,8 +261,7 @@ public class QTestIntegrationTestCaseManager {
      * @param projectDir
      * @return
      * @throws QTestException
-     *             thrown if system cannot send request or the response is
-     *             invalid JSON format.
+     *             thrown if system cannot send request or the response is invalid JSON format.
      */
     private static JsonArray getTestCaseFieldJsonArray(long projectId, String projectDir) throws QTestException {
         String serverUrl = QTestSettingStore.getServerUrl(projectDir);
@@ -277,8 +271,7 @@ public class QTestIntegrationTestCaseManager {
 
         String response = QTestAPIRequestHelper.sendGetRequestViaAPI(url, token);
         try {
-            if (response == null || response.isEmpty())
-                return null;
+            if (response == null || response.isEmpty()) return null;
             JsonArray responseJsonArray = new JsonArray(response);
 
             return responseJsonArray;
@@ -288,12 +281,11 @@ public class QTestIntegrationTestCaseManager {
     }
 
     /**
-     * Filters the given <code>responseJsonArray</code> to find a
-     * {@link FieldValue} that:
+     * Filters the given <code>responseJsonArray</code> to find a {@link FieldValue} that:
      * <ul>
      * <li>Its <code>label</code>'s equal with the given <code>fieldName</code></li>
-     * <li>Its <code>allowed_values</code> has an item that's <code>label</code>
-     * equal with the given <code>typeName</code></li>
+     * <li>Its <code>allowed_values</code> has an item that's <code>label</code> equal with the given
+     * <code>typeName</code></li>
      * </ul>
      * 
      * @param fieldName
@@ -358,8 +350,7 @@ public class QTestIntegrationTestCaseManager {
     }
 
     /**
-     * Used for navigating on UI Returns {@link URL} of the given
-     * <code>testCase</code> on qTest project.
+     * Used for navigating on UI Returns {@link URL} of the given <code>testCase</code> on qTest project.
      * 
      * @param qTestProject
      * @param testCase
@@ -381,16 +372,14 @@ public class QTestIntegrationTestCaseManager {
     }
 
     /**
-     * Gets versionId of the {@link QTestTestCase} that's id equal with the
-     * given <code>testCaseId</code>
+     * Gets versionId of the {@link QTestTestCase} that's id equal with the given <code>testCaseId</code>
      * 
      * @param projectDir
      * @param projectId
      * @param testCaseId
      * @return versionId
      * @throws QTestException
-     *             thrown if system cannot send request or user's authentication
-     *             is invalid.
+     *             thrown if system cannot send request or user's authentication is invalid.
      * @see {@link QTestTestCase#getVersionId()}
      */
     public static long getTestCaseVersionId(String projectDir, long projectId, long testCaseId) throws QTestException {
