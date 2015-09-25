@@ -48,8 +48,9 @@ public class VariableTypeEditingSupport extends EditingSupport {
             int chosenIndex = (int) value;
             VariableType variableType = VariableType.fromValue(variableTypes.get(chosenIndex));
             if (variableType != link.getType()) {
-            	link.setTestDataLinkId(StringUtils.EMPTY);
-                link.setType(variableType);                
+                link.setTestDataLinkId(StringUtils.EMPTY);
+                link.setType(variableType);
+                link.setValue("");
                 getViewer().update(element, null);
                 mpart.setDirty(true);
             }

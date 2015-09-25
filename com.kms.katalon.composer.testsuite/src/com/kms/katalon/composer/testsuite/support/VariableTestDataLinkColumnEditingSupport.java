@@ -75,7 +75,7 @@ public class VariableTestDataLinkColumnEditingSupport extends EditingSupport {
 
         if (!dataLinkTreeNode.getId().equals(variableLink.getTestDataLinkId())) {
             variableLink.setTestDataLinkId(dataLinkTreeNode.getId());
-
+            variableLink.setValue("");
             getViewer().update(element, null);
             testDataView.setDirty(true);
         }

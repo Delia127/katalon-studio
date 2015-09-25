@@ -131,7 +131,7 @@ public class TestSuiteController extends EntityController {
 
         Map<String, TestCaseTestDataLink> testDataLinkMap = new HashMap<String, TestCaseTestDataLink>();
 
-        for (TestCaseTestDataLink testDataLink : getAllTestCaseTestDataLinks(testCaseLink)) {
+        for (TestCaseTestDataLink testDataLink : testCaseLink.getTestDataLinks()) {
             testDataLinkMap.put(testDataLink.getId(), testDataLink);
         }
 
@@ -169,23 +169,6 @@ public class TestSuiteController extends EntityController {
         return dataProviderSetting.getTestSuiteDataProvider().getTestSuite(testSuitePk);
     }
 
-    public List<TestCaseTestDataLink> getAllTestCaseTestDataLinks(TestSuiteTestCaseLink testCaseLink) {
-        List<TestCaseTestDataLink> allTestDataLink = new ArrayList<TestCaseTestDataLink>();
-        for (TestCaseTestDataLink rootTestDataLink : testCaseLink.getTestDataLinks()) {
-            allTestDataLink.addAll(getChildrenTestDataLink(rootTestDataLink));
-        }
-        return allTestDataLink;
-    }
-
-    private List<TestCaseTestDataLink> getChildrenTestDataLink(TestCaseTestDataLink link) {
-        List<TestCaseTestDataLink> allTestDataLink = new ArrayList<TestCaseTestDataLink>();
-        allTestDataLink.add(link);
-        for (TestCaseTestDataLink childLink : link.getChildrenLink()) {
-            allTestDataLink.addAll(getChildrenTestDataLink(childLink));
-        }
-        return allTestDataLink;
-    }
-
     /**
      * 
      * @param testDataLinkId
@@ -193,7 +176,7 @@ public class TestSuiteController extends EntityController {
      * @return find test data link in tree that has id equals the give id
      */
     public TestCaseTestDataLink getTestDataLink(String testDataLinkId, TestSuiteTestCaseLink testCaseLink) {
-        for (TestCaseTestDataLink dataLink : getAllTestCaseTestDataLinks(testCaseLink)) {
+        for (TestCaseTestDataLink dataLink : testCaseLink.getTestDataLinks()) {
             if (dataLink.getId().equals(testDataLinkId)) {
                 return dataLink;
             }

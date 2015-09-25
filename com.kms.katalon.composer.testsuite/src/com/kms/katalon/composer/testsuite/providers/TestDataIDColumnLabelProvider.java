@@ -12,7 +12,7 @@ import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
-import com.kms.katalon.composer.testsuite.tree.TestDataLinkTreeNode;
+import com.kms.katalon.entity.link.TestCaseTestDataLink;
 
 public class TestDataIDColumnLabelProvider extends StyledCellLabelProvider {
     private Text textSearch;
@@ -23,10 +23,10 @@ public class TestDataIDColumnLabelProvider extends StyledCellLabelProvider {
 
     @Override
     public void update(ViewerCell cell) {
-        TestDataLinkTreeNode treeNode = (TestDataLinkTreeNode) cell.getElement();
+        TestCaseTestDataLink testDataLink = (TestCaseTestDataLink) cell.getElement();
 
-        cell.setText(treeNode.getTestDataLink().getTestDataId());
-        switch (treeNode.getTestDataLink().getCombinationType()) {
+        cell.setText(testDataLink.getTestDataId());
+        switch (testDataLink.getCombinationType()) {
             case MANY:
                 cell.setImage(ImageConstants.IMG_16_DATA_CROSS);
                 break;

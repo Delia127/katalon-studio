@@ -3,14 +3,15 @@ package com.kms.katalon.composer.testsuite.dialogs;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.TreeViewerColumn;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -22,25 +23,22 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeColumn;
 
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.filters.TestDataTreeViewerFilter;
 import com.kms.katalon.composer.testsuite.providers.TestDataIDColumnLabelProvider;
-import com.kms.katalon.composer.testsuite.providers.TestDataTreeContentProvider;
-import com.kms.katalon.composer.testsuite.tree.TestDataLinkTreeNode;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
 
 public class TestDataLinkFinderDialog extends Dialog {
     private Text textSearch;
     private List<TestCaseTestDataLink> testDataLinks;
-    private TreeViewer treeViewer;
+    private TableViewer treeViewer;
 
-    private TestDataLinkTreeNode selectedTreeNode;
+    private TestCaseTestDataLink selectedTestCaseLink;
     private TestCaseTestDataLink initSelectedTestDataLink;
-    private TestDataTreeContentProvider contentProvider;
     private TestDataTreeViewerFilter treeViewerFilter;
 
     public TestDataLinkFinderDialog(Shell parentShell, TestCaseTestDataLink testDataLink,
@@ -71,7 +69,6 @@ public class TestDataLinkFinderDialog extends Dialog {
                 String searchString = ((Text) e.getSource()).getText();
                 treeViewerFilter.setSearchText(searchString);
                 treeViewer.refresh();
-                treeViewer.expandAll();
             }
         });
 
@@ -80,7 +77,7 @@ public class TestDataLinkFinderDialog extends Dialog {
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 IStructuredSelection selection = (IStructuredSelection) treeViewer.getSelection();
-                selectedTreeNode = (TestDataLinkTreeNode) selection.getFirstElement();
+                selectedTestCaseLink = (TestCaseTestDataLink) selection.getFirstElement();
             }
 
         });
@@ -89,7 +86,7 @@ public class TestDataLinkFinderDialog extends Dialog {
             @Override
             public void doubleClick(DoubleClickEvent event) {
                 IStructuredSelection selection = (IStructuredSelection) treeViewer.getSelection();
-                selectedTreeNode = (TestDataLinkTreeNode) selection.getFirstElement();
+                selectedTestCaseLink = (TestCaseTestDataLink) selection.getFirstElement();
                 okPressed();
             }
         });
@@ -118,18 +115,17 @@ public class TestDataLinkFinderDialog extends Dialog {
         lblTestDatasHierarachy.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         lblTestDatasHierarachy.setText(StringConstants.DIA_LBL_TEST_DATA_HIERARCHY);
 
-        treeViewer = new TreeViewer(compositeTree, SWT.BORDER);
-        Tree tree = treeViewer.getTree();
+        treeViewer = new TableViewer(compositeTree, SWT.BORDER);
+        Table tree = treeViewer.getTable();
         tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        TreeViewerColumn treeViewerColumn = new TreeViewerColumn(treeViewer, SWT.NONE);
-        TreeColumn trclmnTestDataID = treeViewerColumn.getColumn();
+        TableViewerColumn treeViewerColumn = new TableViewerColumn(treeViewer, SWT.NONE);
+        TableColumn trclmnTestDataID = treeViewerColumn.getColumn();
         trclmnTestDataID.setWidth(380);
         trclmnTestDataID.setText(StringConstants.DIA_TREE_VIEWER_COL_ID);
         treeViewerColumn.setLabelProvider(new TestDataIDColumnLabelProvider(textSearch));
 
-        contentProvider = new TestDataTreeContentProvider();
-        treeViewer.setContentProvider(contentProvider);
+        treeViewer.setContentProvider(ArrayContentProvider.getInstance());
 
         treeViewerFilter = new TestDataTreeViewerFilter();
         treeViewer.setFilters(new ViewerFilter[] { treeViewerFilter });
@@ -138,29 +134,24 @@ public class TestDataLinkFinderDialog extends Dialog {
     }
 
     private void initSelection() {
-        if (initSelectedTestDataLink == null)
-            return;
+        if (initSelectedTestDataLink == null) return;
 
-        TestDataLinkTreeNode initSelectedTreeNode = contentProvider.getTreeNode(initSelectedTestDataLink);
-
-        if (initSelectedTreeNode != null) {
-            treeViewer.getTree().forceFocus();
-            treeViewer.setSelection(new StructuredSelection(initSelectedTreeNode));
-        }
+        treeViewer.getTable().forceFocus();
+        treeViewer.setSelection(new StructuredSelection(initSelectedTestDataLink));
     }
 
     @Override
     protected Point getInitialSize() {
         return new Point(500, 400);
     }
-    
+
     @Override
     protected void setShellStyle(int arg) {
         super.setShellStyle(SWT.CLOSE | SWT.TITLE | SWT.RESIZE);
     }
 
     public TestCaseTestDataLink getSelectedTestDataLink() {
-        return (selectedTreeNode != null) ? selectedTreeNode.getTestDataLink() : null;
+        return (selectedTestCaseLink != null) ? selectedTestCaseLink : null;
     }
 
 }

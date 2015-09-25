@@ -62,6 +62,7 @@ import com.kms.katalon.composer.testsuite.providers.TestCaseTableViewerFilter;
 import com.kms.katalon.composer.testsuite.support.TestCaseIdColumnEditingSupport;
 import com.kms.katalon.composer.testsuite.support.TestCaseIsRunColumnEditingSupport;
 import com.kms.katalon.composer.testsuite.transfer.TestSuiteTestCaseLinkTransfer;
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -135,9 +136,14 @@ public class TestSuitePartTestCaseView {
         testCaseTable.setHeaderVisible(true);
         testCaseTable.setLinesVisible(true);
 
-        TableViewerColumn tableViewerColumnNo = new TableViewerColumn(testCaseTableViewer, SWT.NONE);
-        TableColumn tblclmnNo = tableViewerColumnNo.getColumn();
-        tblclmnNo.setText(NUMBER_COLUMN_HEADER);
+        TableViewerColumn tableViewerColumnNotification = new TableViewerColumn(testCaseTableViewer, SWT.NONE);
+        TableColumn tblclmnNotification = tableViewerColumnNotification.getColumn();
+        tblclmnNotification.setImage(ImageConstants.IMG_16_NOTIFICATION_HEADER);
+        tblclmnNotification.setToolTipText(GlobalStringConstants.NOTIFICATION);
+        
+        TableViewerColumn tableViewerColumnOrder = new TableViewerColumn(testCaseTableViewer, SWT.NONE);
+        TableColumn tblclmnOrder = tableViewerColumnOrder.getColumn();
+        tblclmnOrder.setText(NUMBER_COLUMN_HEADER);
 
         TableViewerColumn tableViewerColumnPK = new TableViewerColumn(testCaseTableViewer, SWT.NONE);
         tblclId = tableViewerColumnPK.getColumn();
@@ -150,17 +156,11 @@ public class TestSuitePartTestCaseView {
         TableViewerColumn tableViewerColumnIsRun = new TableViewerColumn(testCaseTableViewer, SWT.NONE);
         tblclmnIsRun = tableViewerColumnIsRun.getColumn();
         tblclmnIsRun.setText(IS_RUN_COLUMN_HEADER);
-        tblclmnIsRun.addListener(SWT.Selection, new Listener() {
-
-            @Override
-            public void handleEvent(org.eclipse.swt.widgets.Event event) {
-                testCaseTableViewer.setIsRunValueAllTestCases();
-            }
-        });
 
         // set layout of table composite
         TableColumnLayout tableLayout = new TableColumnLayout();
-        tableLayout.setColumnData(tblclmnNo, new ColumnWeightData(0, 40));
+        tableLayout.setColumnData(tblclmnNotification, new ColumnWeightData(0, 30));
+        tableLayout.setColumnData(tblclmnOrder, new ColumnWeightData(0, 40));
         tableLayout.setColumnData(tblclId, new ColumnWeightData(40, 100));
         tableLayout.setColumnData(tblclmnDescription, new ColumnWeightData(15, 100));
         tableLayout.setColumnData(tblclmnIsRun, new ColumnWeightData(0, 80));
@@ -172,8 +172,12 @@ public class TestSuitePartTestCaseView {
         testCaseTableViewer.getTable().setToolTipText("");
         ColumnViewerToolTipSupport.enableFor(testCaseTableViewer, ToolTip.NO_RECREATE);
 
-        tableViewerColumnNo
-                .setLabelProvider(new TestCaseTableLabelProvider(TestCaseTableLabelProvider.COLUMN_NO_INDEX));
+        tableViewerColumnNotification.setLabelProvider(new TestCaseTableLabelProvider(
+                TestCaseTableLabelProvider.COLUMN_NOTIFICATION_INDEX));
+        
+        tableViewerColumnOrder.setLabelProvider(new TestCaseTableLabelProvider(
+                TestCaseTableLabelProvider.COLUMN_ORDER_INDEX));
+        
         tableViewerColumnPK
                 .setLabelProvider(new TestCaseTableLabelProvider(TestCaseTableLabelProvider.COLUMN_ID_INDEX));
 
@@ -228,7 +232,7 @@ public class TestSuitePartTestCaseView {
 
     /* package */void registerControlModifyListeners() {
         dataAndVariableView.registerControlModifyListeners();
-        
+
         lblSearch.addListener(SWT.MouseUp, new Listener() {
 
             @Override
@@ -280,6 +284,14 @@ public class TestSuitePartTestCaseView {
             @Override
             public void handleEvent(org.eclipse.swt.widgets.Event event) {
                 testCaseTableViewer.refresh(true);
+            }
+        });
+
+        tblclmnIsRun.addListener(SWT.Selection, new Listener() {
+
+            @Override
+            public void handleEvent(org.eclipse.swt.widgets.Event event) {
+                testCaseTableViewer.setIsRunValueAllTestCases();
             }
         });
     }

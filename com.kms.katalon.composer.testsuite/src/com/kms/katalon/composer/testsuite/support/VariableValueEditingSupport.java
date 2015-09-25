@@ -9,12 +9,13 @@ import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.editors.DataColumnChooserEditor;
 import com.kms.katalon.composer.testsuite.parts.TestSuitePartDataBindingView;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.testdata.TestData;
 import com.kms.katalon.core.testdata.TestDataFactory;
@@ -23,11 +24,12 @@ import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.link.VariableLink;
 import com.kms.katalon.entity.link.VariableLink.VariableType;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.testdata.DataFileEntity;
 
 public class VariableValueEditingSupport extends EditingSupport {
 
-    private String[] columnNames;
     private TestSuitePartDataBindingView testDataView;
+    private TestData testData;
 
     public VariableValueEditingSupport(ColumnViewer viewer, TestSuitePartDataBindingView mpart) {
         super(viewer);
@@ -37,13 +39,13 @@ public class VariableValueEditingSupport extends EditingSupport {
     @Override
     protected CellEditor getCellEditor(Object element) {
         if (element != null && element instanceof VariableLink) {
-            VariableLink link = (VariableLink) element;
-            switch (link.getType()) {
+            VariableLink variableLink = (VariableLink) element;
+            switch (variableLink.getType()) {
                 case SCRIPT:
                     return new TextCellEditor((Composite) getViewer().getControl());
                 case DATA_COLUMN:
-                    return new DataColumnChooserEditor((Composite) getViewer().getControl(), columnNames,
-                            link.getValue());
+                    return new DataColumnChooserEditor((Composite) getViewer().getControl(), testData,
+                            variableLink.getValue());
                 default:
                     break;
             }
@@ -56,7 +58,9 @@ public class VariableValueEditingSupport extends EditingSupport {
         if (element != null && element instanceof VariableLink) {
             VariableLink variableLink = (VariableLink) element;
             if (variableLink.getType() == VariableType.DATA_COLUMN) {
-
+                
+                testData = null;
+                
                 TestSuiteTestCaseLink testCaseLink = testDataView.getSelectedTestCaseLink();
                 if (testCaseLink == null) return false;
 
@@ -65,18 +69,51 @@ public class VariableValueEditingSupport extends EditingSupport {
                         testCaseLink);
 
                 if (testDataLink == null) {
-                    MessageDialog.openWarning(Display.getCurrent().getActiveShell(), StringConstants.WARN_TITLE,
-                            StringConstants.SUP_WARN_MSG_TEST_DATA_NOT_AVAILABLE);
+                    if (variableLink.getValue() == null || variableLink.getValue().isEmpty()) {
+                        MessageDialog.openInformation(null, StringConstants.INFORMATION_TITLE,
+                                StringConstants.SUP_INFORMATION_MSG_CHOOSE_TEST_DATA);
+                    } else {
+                        MessageDialog.openWarning(null, StringConstants.WARN_TITLE,
+                                StringConstants.SUP_WARN_MSG_TEST_DATA_NOT_AVAILABLE);
+                    }
                     return false;
                 } else {
-                    columnNames = getTestDataColumnNames(testDataLink.getTestDataId());
+                    ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
+                    String testDataId = testDataLink.getTestDataId();
+                    try {
+                        DataFileEntity dataFileEntity = TestDataController.getInstance().getTestDataByDisplayId(
+                                testDataId);
+                        if (dataFileEntity == null) {
+                            //Show Test data not found dialog
+                            MessageDialog.openWarning(null, StringConstants.WARN_TITLE, MessageFormat.format(
+                                    StringConstants.SUP_WARN_MSG_TEST_DATA_NOT_FOUND, testDataId));
+                            return false;
+                        }
+                    } catch (Exception e) {
+                        //Show Test data not found dialog
+                        MessageDialog.openWarning(null, StringConstants.WARN_TITLE,
+                                MessageFormat.format(StringConstants.SUP_WARN_MSG_TEST_DATA_NOT_FOUND, testDataId));
+                        LoggerSingleton.logError(e);
+                        return false;
+                    }
+
+                    try {
+                        if (testDataId != null && !testDataId.isEmpty()) {
+                            testData = TestDataFactory.findTestDataForExternalBundleCaller(testDataId,
+                                    projectEntity.getFolderLocation());
+                            return true;
+                        }
+                    } catch (Exception ex) {
+                        //Show data source of test data not found dialog.
+                        MessageDialog.openWarning(null, StringConstants.WARN_TITLE,
+                                MessageFormat.format(StringConstants.SUP_WARN_MSG_TEST_DATA_NOT_AVAILABLE, testDataId));
+                        return false;
+                    }
                 }
-                return (columnNames != null);
             } else {
                 return true;
             }
         }
-        columnNames = null;
         return false;
     }
 

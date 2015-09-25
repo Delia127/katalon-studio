@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.testsuite.providers;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,24 +21,26 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
+import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 public class TestCaseTableLabelProvider extends StyledCellLabelProvider {
 
-    public static final int COLUMN_NO_INDEX = 0;
-    public static final int COLUMN_ID_INDEX = 1;
-    public static final int COLUMN_DESCRIPTION_INDEX = 2;
-    public static final int COLUMN_RUN_INDEX = 3;
+    public static final int COLUMN_NOTIFICATION_INDEX = 0;
+    public static final int COLUMN_ORDER_INDEX = 1;
+    public static final int COLUMN_ID_INDEX = 2;
+    public static final int COLUMN_DESCRIPTION_INDEX = 3;
+    public static final int COLUMN_RUN_INDEX = 4;
 
     private static TestCaseController testCaseController = TestCaseController.getInstance();
     private int columnIndex;
 
     public TestCaseTableLabelProvider(int columnIndex) {
+        super(COLORS_ON_SELECTION);
         this.columnIndex = columnIndex;
     }
-    
 
     @Override
     protected void paint(Event event, Object element) {
@@ -53,13 +56,17 @@ public class TestCaseTableLabelProvider extends StyledCellLabelProvider {
             } else {
                 gc.drawImage(ImageConstants.IMG_16_CHECKBOX_UNCHECKED, event.getBounds().x + 5, event.getBounds().y);
             }
-
+        } else if (columnIndex == COLUMN_NOTIFICATION_INDEX) {
+            if (getTestCase(element) == null) {
+                gc.drawImage(ImageConstants.IMG_16_NOTIFICATION_HEADER, event.getBounds().x + 2, event.getBounds().y);
+            }
+        } else {
+            super.paint(event, element);
         }
-        super.paint(event, element);
     }
 
     private String getColumnText(Object element) {
-        TestCaseEntity testCase = getTestCaseLink(element);
+        TestCaseEntity testCase = getTestCase(element);
 
         try {
             TestSuiteTestCaseLink testCaseLink = (TestSuiteTestCaseLink) element;
@@ -67,7 +74,7 @@ public class TestCaseTableLabelProvider extends StyledCellLabelProvider {
                     .getInput();
 
             switch (columnIndex) {
-                case COLUMN_NO_INDEX:
+                case COLUMN_ORDER_INDEX:
                     return Integer.toString(allTestCaseLinks.indexOf(testCaseLink) + 1);
 
                 case COLUMN_ID_INDEX:
@@ -91,35 +98,44 @@ public class TestCaseTableLabelProvider extends StyledCellLabelProvider {
 
     @Override
     public String getToolTipText(Object element) {
-        return getColumnText(element);
+        if (columnIndex == COLUMN_NOTIFICATION_INDEX && getTestCase(element) == null) {
+            TestSuiteTestCaseLink testCaseLink = (TestSuiteTestCaseLink) element;
+            return MessageFormat.format(StringConstants.LP_WARN_MSG_TEST_CASE_MISSING, testCaseLink.getTestCaseId());
+        } else {
+            return getColumnText(element);
+        }
     }
 
     @Override
     public void update(ViewerCell cell) {
         String cellText = getColumnText(cell.getElement());
         cell.setText(cellText);
-
+        cell.setImage(null);
         if (columnIndex == COLUMN_ID_INDEX) {
             TextLayout textLayout = new TextLayout(cell.getControl().getDisplay());
             textLayout.setText(cellText);
-            
+
             Table table = (Table) getViewer().getControl();
-            
-            if (textLayout.getBounds().width + 5 >  table.getColumn(columnIndex).getWidth()) {
+
+            if (textLayout.getBounds().width + 5 > table.getColumn(columnIndex).getWidth()) {
                 int textNameIdx = Math.max(0, cellText.lastIndexOf("/"));
                 cell.setText(".." + cellText.substring(textNameIdx, cellText.length()));
             }
+
+        }
+
+        if (getTestCase(cell.getElement()) == null) {
+            // If test case does not exist, highlight its table item.
+            if (columnIndex == COLUMN_ID_INDEX) {
+                cell.setForeground(ColorUtil.getErrorTableItemForegroundColor());
+            }
+        } else {
+            cell.setForeground(ColorUtil.getDefaultTextColor());
         }
 
         List<StyleRange> range = new ArrayList<>();
-        if (getTestCaseLink(cell.getElement()) == null) {
-            // If test case does not exist, highlight its table item.
-            cell.setBackground(ColorUtil.getErrorTableItemBackgroundColor());
-        } else {
-            cell.setBackground(ColorUtil.getWhiteBackgroundColor());
-        }
 
-        if (columnIndex != COLUMN_NO_INDEX) {
+        if (columnIndex != COLUMN_ORDER_INDEX) {
             String searchString = getTestCaseTableViewer().getSearchedString().trim().toLowerCase();
             if (searchString != null && !searchString.isEmpty()) {
                 String highlightedString = getHighlightedString(searchString);
@@ -141,7 +157,7 @@ public class TestCaseTableLabelProvider extends StyledCellLabelProvider {
         return (TestCaseTableViewer) getViewer();
     }
 
-    private TestCaseEntity getTestCaseLink(Object element) {
+    private TestCaseEntity getTestCase(Object element) {
         if (!(element instanceof TestSuiteTestCaseLink)) {
             return null;
         }

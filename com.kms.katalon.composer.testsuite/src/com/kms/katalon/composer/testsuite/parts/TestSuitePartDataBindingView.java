@@ -1,18 +1,16 @@
 package com.kms.katalon.composer.testsuite.parts;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.TreeViewerColumn;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.GridData;
@@ -25,18 +23,14 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeColumn;
 
 import com.kms.katalon.composer.components.control.ImageButton;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.constants.ToolItemConstants;
 import com.kms.katalon.composer.testsuite.listeners.TestDataToolItemListener;
-import com.kms.katalon.composer.testsuite.providers.TestDataTreeContentProvider;
-import com.kms.katalon.composer.testsuite.providers.TestDataTreeLabelProvider;
+import com.kms.katalon.composer.testsuite.providers.TestDataTableLabelProvider;
 import com.kms.katalon.composer.testsuite.providers.VariableTableLabelProvider;
 import com.kms.katalon.composer.testsuite.support.TestDataCombinationColumnEditingSupport;
 import com.kms.katalon.composer.testsuite.support.TestDataIDColumnEditingSupport;
@@ -44,12 +38,11 @@ import com.kms.katalon.composer.testsuite.support.TestDataIterationColumnEditing
 import com.kms.katalon.composer.testsuite.support.VariableTestDataLinkColumnEditingSupport;
 import com.kms.katalon.composer.testsuite.support.VariableTypeEditingSupport;
 import com.kms.katalon.composer.testsuite.support.VariableValueEditingSupport;
-import com.kms.katalon.composer.testsuite.tree.TestDataLinkTreeNode;
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.link.VariableLink;
-import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 public class TestSuitePartDataBindingView {
     private TestSuitePartTestCaseView parentView;
@@ -60,7 +53,7 @@ public class TestSuitePartDataBindingView {
     private Composite compositeTestDataDetails;
     private ToolBar testDataToolBar;
     private Composite compositeTestDataTreeTable;
-    private TreeViewer testDataTreeViewer;
+    private TableViewer testDataTreeViewer;
     private boolean isTestDataCompositeExpanded;
     private Composite compositeVariable;
     private TableViewer testCaseVariableTableViewer;
@@ -123,6 +116,12 @@ public class TestSuitePartDataBindingView {
         testCaseVariableTable.setHeaderVisible(true);
         testCaseVariableTable.setLinesVisible(true);
 
+        TableViewerColumn variableNotificationColumnViewer = new TableViewerColumn(testCaseVariableTableViewer,
+                SWT.NONE);
+        TableColumn tblclmnVariableNotification = variableNotificationColumnViewer.getColumn();
+        tblclmnVariableNotification.setImage(ImageConstants.IMG_16_NOTIFICATION_HEADER);
+        tblclmnVariableNotification.setToolTipText("Notification");
+
         TableViewerColumn variableOrderColumnViewer = new TableViewerColumn(testCaseVariableTableViewer, SWT.NONE);
         TableColumn tblclmnVariableNo = variableOrderColumnViewer.getColumn();
         tblclmnVariableNo.setText(StringConstants.PA_TREE_VIEWER_COL_NO);
@@ -155,16 +154,41 @@ public class TestSuitePartDataBindingView {
 
         TableColumnLayout tableLayout = new TableColumnLayout();
         // Set layout
+        tableLayout.setColumnData(tblclmnVariableNotification, new ColumnWeightData(0, 30));
         tableLayout.setColumnData(tblclmnVariableNo, new ColumnWeightData(0, 40));
         tableLayout.setColumnData(tblclmnVariableName, new ColumnWeightData(15, 90));
         tableLayout.setColumnData(tblclmnVaribaleDefaultValue, new ColumnWeightData(0, 90));
-        tableLayout.setColumnData(tblclmnVariableType, new ColumnWeightData(0, 90));
+        tableLayout.setColumnData(tblclmnVariableType, new ColumnWeightData(0, 100));
         tableLayout.setColumnData(tblclmnTestDataLinkId, new ColumnWeightData(30, 100));
         tableLayout.setColumnData(tblclmnVariableValue, new ColumnWeightData(15, 90));
         compositeVariableTable.setLayout(tableLayout);
 
         testCaseVariableTableViewer.setContentProvider(ArrayContentProvider.getInstance());
-        testCaseVariableTableViewer.setLabelProvider(new VariableTableLabelProvider(testCaseVariableTableViewer, this));
+
+        variableNotificationColumnViewer.setLabelProvider(new VariableTableLabelProvider(
+                VariableTableLabelProvider.COLUMN_NOTIFICATION_INDEX, this));
+
+        variableOrderColumnViewer.setLabelProvider(new VariableTableLabelProvider(
+                VariableTableLabelProvider.COLUMN_NO_INDEX, this));
+
+        variableNameColumnViewer.setLabelProvider(new VariableTableLabelProvider(
+                VariableTableLabelProvider.COLUMN_NAME_INDEX, this));
+
+        variableDefaultValueColumnViewer.setLabelProvider(new VariableTableLabelProvider(
+                VariableTableLabelProvider.COLUMN_DEFAULT_VALUE_INDEX, this));
+
+        variableTypeColumnViewer.setLabelProvider(new VariableTableLabelProvider(
+                VariableTableLabelProvider.COLUMN_TYPE_INDEX, this));
+
+        variableTestDataLinkIDViewerColumn.setLabelProvider(new VariableTableLabelProvider(
+                VariableTableLabelProvider.COLUMN_TEST_DATA_ID_INDEX, this));
+
+        variableValueColumnViewer.setLabelProvider(new VariableTableLabelProvider(
+                VariableTableLabelProvider.COLUMN_VALUE_INDEX, this));
+
+        testCaseVariableTableViewer.getTable().setToolTipText("");
+        ColumnViewerToolTipSupport.enableFor(testCaseVariableTableViewer, ToolTip.NO_RECREATE);
+
         sashFormBindingView.setWeights(new int[] { 4, 6 });
     }
 
@@ -210,34 +234,40 @@ public class TestSuitePartDataBindingView {
         compositeTestDataTreeTable = new Composite(compositeTestDataDetails, SWT.NONE);
         compositeTestDataTreeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        testDataTreeViewer = new TreeViewer(compositeTestDataTreeTable, SWT.BORDER | SWT.FULL_SELECTION);
-        Tree testDataTable = testDataTreeViewer.getTree();
+        testDataTreeViewer = new TableViewer(compositeTestDataTreeTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+        Table testDataTable = testDataTreeViewer.getTable();
         testDataTable.setLinesVisible(true);
         testDataTable.setHeaderVisible(true);
 
-        TreeViewerColumn treeViewerColumn = new TreeViewerColumn(testDataTreeViewer, SWT.NONE);
-        TreeColumn trclmnNo = treeViewerColumn.getColumn();
+        TableViewerColumn treeViewerColumnNotification = new TableViewerColumn(testDataTreeViewer, SWT.NONE);
+        TableColumn trclmnNotification = treeViewerColumnNotification.getColumn();
+        trclmnNotification.setImage(ImageConstants.IMG_16_NOTIFICATION_HEADER);
+        trclmnNotification.setToolTipText(GlobalStringConstants.NOTIFICATION);
+
+        TableViewerColumn treeViewerColumnNo = new TableViewerColumn(testDataTreeViewer, SWT.NONE);
+        TableColumn trclmnNo = treeViewerColumnNo.getColumn();
         trclmnNo.setText(StringConstants.PA_TREE_VIEWER_COL_NO);
 
-        TreeViewerColumn testDataTableViewerColumnID = new TreeViewerColumn(testDataTreeViewer, SWT.NONE);
-        TreeColumn tblclmnTestDataId = testDataTableViewerColumnID.getColumn();
+        TableViewerColumn testDataTableViewerColumnID = new TableViewerColumn(testDataTreeViewer, SWT.NONE);
+        TableColumn tblclmnTestDataId = testDataTableViewerColumnID.getColumn();
         tblclmnTestDataId.setText(StringConstants.PA_TREE_VIEWER_COL_ID);
         testDataTableViewerColumnID.setEditingSupport(new TestDataIDColumnEditingSupport(testDataTreeViewer, this));
 
-        TreeViewerColumn testDataTableViewerColumnIteration = new TreeViewerColumn(testDataTreeViewer, SWT.NONE);
-        TreeColumn tblclmnTestDataIteration = testDataTableViewerColumnIteration.getColumn();
+        TableViewerColumn testDataTableViewerColumnIteration = new TableViewerColumn(testDataTreeViewer, SWT.NONE);
+        TableColumn tblclmnTestDataIteration = testDataTableViewerColumnIteration.getColumn();
         tblclmnTestDataIteration.setText(StringConstants.PA_TREE_VIEWER_COL_DATA_ITERATION);
         testDataTableViewerColumnIteration.setEditingSupport(new TestDataIterationColumnEditingSupport(
                 testDataTreeViewer, this));
 
-        TreeViewerColumn testDataTableViewerColumnCombination = new TreeViewerColumn(testDataTreeViewer, SWT.NONE);
-        TreeColumn tblclmnCombination = testDataTableViewerColumnCombination.getColumn();
+        TableViewerColumn testDataTableViewerColumnCombination = new TableViewerColumn(testDataTreeViewer, SWT.NONE);
+        TableColumn tblclmnCombination = testDataTableViewerColumnCombination.getColumn();
         tblclmnCombination.setText(StringConstants.PA_TREE_VIEWER_COL_TYPE);
         testDataTableViewerColumnCombination.setEditingSupport(new TestDataCombinationColumnEditingSupport(
                 testDataTreeViewer, this));
 
         // Set layout
-        TreeColumnLayout treeLayout = new TreeColumnLayout();
+        TableColumnLayout treeLayout = new TableColumnLayout();
+        treeLayout.setColumnData(trclmnNotification, new ColumnWeightData(0, 30));
         treeLayout.setColumnData(trclmnNo, new ColumnWeightData(0, 40));
         treeLayout.setColumnData(tblclmnTestDataId, new ColumnWeightData(40, 200));
         treeLayout.setColumnData(tblclmnTestDataIteration, new ColumnWeightData(15, 150));
@@ -245,9 +275,22 @@ public class TestSuitePartDataBindingView {
 
         compositeTestDataTreeTable.setLayout(treeLayout);
 
+        testDataTreeViewer.getTable().setToolTipText("");
+        ColumnViewerToolTipSupport.enableFor(testDataTreeViewer, ToolTip.NO_RECREATE);
+
+        testDataTreeViewer.setContentProvider(ArrayContentProvider.getInstance());
+
         // Set data provider
-        testDataTreeViewer.setLabelProvider(new TestDataTreeLabelProvider());
-        testDataTreeViewer.setContentProvider(new TestDataTreeContentProvider());
+        treeViewerColumnNotification.setLabelProvider(new TestDataTableLabelProvider(
+                TestDataTableLabelProvider.COLUMN_NOTIFICATION_INDEX, this));
+        treeViewerColumnNo.setLabelProvider(new TestDataTableLabelProvider(
+                TestDataTableLabelProvider.COLUMN_ORDER_INDEX, this));
+        testDataTableViewerColumnID.setLabelProvider(new TestDataTableLabelProvider(
+                TestDataTableLabelProvider.COLUMN_ID_INDEX, this));
+        testDataTableViewerColumnIteration.setLabelProvider(new TestDataTableLabelProvider(
+                TestDataTableLabelProvider.COLUMN_ITERATION_INDEX, this));
+        testDataTableViewerColumnCombination.setLabelProvider(new TestDataTableLabelProvider(
+                TestDataTableLabelProvider.COLUMN_COMBINATION_INDEX, this));
     }
 
     private void createCompositeTestData() {
@@ -347,10 +390,6 @@ public class TestSuitePartDataBindingView {
         }
     }
 
-    public TestDataTreeContentProvider getTestDataContentProvider() {
-        return (TestDataTreeContentProvider) testDataTreeViewer.getContentProvider();
-    }
-
     public TestSuiteTestCaseLink getSelectedTestCaseLink() {
         return parentView.getSelectedTestCaseLink();
     }
@@ -365,29 +404,25 @@ public class TestSuitePartDataBindingView {
         testCaseVariableTableViewer.getTable().clearAll();
 
         testDataTreeViewer.cancelEditing();
-        testDataTreeViewer.getTree().clearAll(true);
+        testDataTreeViewer.getTable().clearAll();
 
         if (selection.size() == 1) {
             TestSuiteTestCaseLink testCaseLink = (TestSuiteTestCaseLink) selection.getFirstElement();
+            testDataTreeViewer.setInput(testCaseLink.getTestDataLinks());
+            
             try {
-                TestCaseEntity testCaseEntity = TestCaseController.getInstance().getTestCaseByDisplayId(
-                        testCaseLink.getTestCaseId());
-                if (testCaseEntity != null) {
-                    testDataTreeViewer.setInput(testCaseLink.getTestDataLinks());
+                if (TestCaseController.getInstance().getTestCaseByDisplayId(testCaseLink.getTestCaseId()) != null) {
                     testCaseVariableTableViewer.setInput(testCaseLink.getVariableLinks());
                 } else {
-                    testDataTreeViewer.setInput(null);
                     testCaseVariableTableViewer.setInput(null);
-                    return;
                 }
-
             } catch (Exception e) {
-                LoggerSingleton.logError(e);
+                testCaseVariableTableViewer.setInput(null);
             }
-
+            
         } else {
-            testDataTreeViewer.setInput(new TestDataLinkTreeNode[0]);
-            testCaseVariableTableViewer.setInput(Collections.EMPTY_LIST);
+            testDataTreeViewer.setInput(null);
+            testCaseVariableTableViewer.setInput(null);
         }
     }
 

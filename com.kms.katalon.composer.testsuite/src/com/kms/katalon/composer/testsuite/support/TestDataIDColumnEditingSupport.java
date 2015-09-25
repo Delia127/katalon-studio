@@ -10,7 +10,6 @@ import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testsuite.editors.TestDataCellEditor;
 import com.kms.katalon.composer.testsuite.parts.TestSuitePartDataBindingView;
-import com.kms.katalon.composer.testsuite.tree.TestDataLinkTreeNode;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
 import com.kms.katalon.entity.link.VariableLink;
@@ -28,9 +27,8 @@ public class TestDataIDColumnEditingSupport extends EditingSupport {
 
     @Override
     protected CellEditor getCellEditor(Object element) {
-        if (element != null && element instanceof TestDataLinkTreeNode) {
-            TestDataLinkTreeNode linkTreeNode = (TestDataLinkTreeNode) element;
-            TestCaseTestDataLink link = linkTreeNode.getTestDataLink();
+        if (element != null && element instanceof TestCaseTestDataLink) {
+            TestCaseTestDataLink link = (TestCaseTestDataLink) element;
             return new TestDataCellEditor((Composite) getViewer().getControl(), link.getTestDataId(),
                     link.getTestDataId());
         }
@@ -39,14 +37,13 @@ public class TestDataIDColumnEditingSupport extends EditingSupport {
 
     @Override
     protected boolean canEdit(Object element) {
-        return (element != null && element instanceof TestDataLinkTreeNode);
+        return (element != null && element instanceof TestCaseTestDataLink);
     }
 
     @Override
     protected Object getValue(Object element) {
-        if (element != null && element instanceof TestDataLinkTreeNode) {
-            TestDataLinkTreeNode linkTreeNode = (TestDataLinkTreeNode) element;
-            TestCaseTestDataLink link = linkTreeNode.getTestDataLink();
+        if (element != null && element instanceof TestCaseTestDataLink) {
+            TestCaseTestDataLink link = (TestCaseTestDataLink) element;
             return link.getTestDataId();
         }
         return StringUtils.EMPTY;
@@ -55,10 +52,8 @@ public class TestDataIDColumnEditingSupport extends EditingSupport {
     @Override
     protected void setValue(Object element, Object value) {
         try {
-            if (element != null && element instanceof TestDataLinkTreeNode && value instanceof TestDataTreeEntity) {
-
-                TestDataLinkTreeNode linkTreeNode = (TestDataLinkTreeNode) element;
-                TestCaseTestDataLink link = linkTreeNode.getTestDataLink();
+            if (element != null && element instanceof TestCaseTestDataLink && value instanceof TestDataTreeEntity) {
+                TestCaseTestDataLink link = (TestCaseTestDataLink) element;
 
                 TestDataTreeEntity treeEntity = (TestDataTreeEntity) value;
                 DataFileEntity testDataEntity = (DataFileEntity) treeEntity.getObject();

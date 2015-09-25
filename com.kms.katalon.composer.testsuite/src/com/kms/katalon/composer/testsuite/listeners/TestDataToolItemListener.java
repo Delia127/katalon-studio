@@ -2,6 +2,7 @@ package com.kms.katalon.composer.testsuite.listeners;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,8 +11,9 @@ import java.util.Map.Entry;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -21,7 +23,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.ToolItem;
-import org.eclipse.swt.widgets.TreeItem;
 
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
@@ -34,13 +35,10 @@ import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.constants.ToolItemConstants;
 import com.kms.katalon.composer.testsuite.parts.TestSuitePartDataBindingView;
-import com.kms.katalon.composer.testsuite.providers.TestDataTreeContentProvider;
-import com.kms.katalon.composer.testsuite.tree.TestDataLinkTreeNode;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestDataController;
-import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.testdata.TestData;
 import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -55,19 +53,20 @@ import com.kms.katalon.entity.variable.VariableEntity;
 
 public class TestDataToolItemListener extends SelectionAdapter {
 
-    private TreeViewer testDataLinkTreeViewer;
-    private TestSuitePartDataBindingView mpart;
+    private TableViewer tableViewer;
+    private TestSuitePartDataBindingView view;
 
-    public TestDataToolItemListener(TreeViewer treeViewer, TestSuitePartDataBindingView view) {
+    public TestDataToolItemListener(TableViewer treeViewer, TestSuitePartDataBindingView view) {
         super();
-        this.testDataLinkTreeViewer = treeViewer;
-        this.mpart = view;
+        this.tableViewer = treeViewer;
+        this.view = view;
     }
 
     @Override
     public void widgetSelected(SelectionEvent e) {
-        if (mpart.getSelectedTestCaseLink() == null) {
-            MessageDialog.openInformation(null, "Information", "Please select a test case.");
+        if (view.getSelectedTestCaseLink() == null) {
+            MessageDialog.openInformation(null, StringConstants.INFORMATION,
+                    StringConstants.LIS_INFO_SELECT_A_TEST_CASE);
             return;
         }
 
@@ -123,9 +122,6 @@ public class TestDataToolItemListener extends SelectionAdapter {
             case ToolItemConstants.ADD_BEFORE:
                 performAddTestDataLink(ToolItemConstants.ADD_BEFORE);
                 return;
-            case ToolItemConstants.ADD_CHILDREN:
-                performAddTestDataLink(ToolItemConstants.ADD_CHILDREN);
-                return;
             default:
                 return;
         }
@@ -145,10 +141,6 @@ public class TestDataToolItemListener extends SelectionAdapter {
         mnAddAfter.setText(ToolItemConstants.ADD_AFTER);
         mnAddAfter.addSelectionListener(this);
 
-        MenuItem mnAddChildren = new MenuItem(menu, SWT.NONE);
-        mnAddChildren.setText(ToolItemConstants.ADD_CHILDREN);
-        mnAddChildren.addSelectionListener(this);
-
         menu.setLocation(pt.x, pt.y + rect.height);
         menu.setVisible(true);
     }
@@ -159,7 +151,7 @@ public class TestDataToolItemListener extends SelectionAdapter {
             if (currentProject == null) return;
 
             EntityProvider entityProvider = new EntityProvider();
-            TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(testDataLinkTreeViewer.getTree()
+            TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(tableViewer.getTable()
                     .getShell(), new EntityLabelProvider(), new EntityProvider(),
                     new EntityViewerFilter(entityProvider));
 
@@ -181,12 +173,13 @@ public class TestDataToolItemListener extends SelectionAdapter {
                     }
                 }
 
-                List<TestDataLinkTreeNode> addedTestDataLinkTreeNodes = addTestDataToTreeView(dataFileEntities, offset);
+                List<TestCaseTestDataLink> addedTestDataLinkTreeNodes = addTestDataToTreeView(dataFileEntities, offset);
 
                 if (addedTestDataLinkTreeNodes.size() > 0) {
-                    selectTreeNodes(addedTestDataLinkTreeNodes);
-                    mpart.refreshVariableTable();
-                    mpart.setDirty(true);
+                    tableViewer.refresh();
+                    tableViewer.setSelection(new StructuredSelection(addedTestDataLinkTreeNodes));
+                    view.refreshVariableTable();
+                    view.setDirty(true);
                 }
             }
 
@@ -197,88 +190,45 @@ public class TestDataToolItemListener extends SelectionAdapter {
         }
     }
 
-    private void selectTreeNodes(List<TestDataLinkTreeNode> treeNodes) {
-        testDataLinkTreeViewer.getTree().deselectAll();
-        testDataLinkTreeViewer.getTree().setFocus();
-        if (treeNodes.get(0).getParentNode() == null) {
-            TreeItem[] addedTreeItems = new TreeItem[treeNodes.size()];
-            TestDataTreeContentProvider provider = (TestDataTreeContentProvider) testDataLinkTreeViewer
-                    .getContentProvider();
-            for (int i = 0; i < treeNodes.size(); i++) {
-                int index = provider.getDataLinks().indexOf(treeNodes.get(i).getTestDataLink());
-                addedTreeItems[i] = testDataLinkTreeViewer.getTree().getItem(index);
-            }
-            testDataLinkTreeViewer.getTree().setSelection(addedTreeItems);
-        } else {
-            testDataLinkTreeViewer.setSelection(new StructuredSelection(treeNodes));
-        }
+    private List<TestCaseTestDataLink> getTableItems() {
+        return view.getSelectedTestCaseLink().getTestDataLinks();
     }
 
-    private List<TestDataLinkTreeNode> addTestDataToTreeView(List<DataFileEntity> testDataEntities, String offset)
+    private List<TestCaseTestDataLink> addTestDataToTreeView(List<DataFileEntity> testDataEntities, String offset)
             throws Exception {
-        List<TestDataLinkTreeNode> addedTestDataLinkTreeNodes = new ArrayList<TestDataLinkTreeNode>();
-        StructuredSelection selection = (StructuredSelection) testDataLinkTreeViewer.getSelection();
+        List<TestCaseTestDataLink> addedTestDataLinkTreeNodes = new ArrayList<TestCaseTestDataLink>();
+        int selectedIndex = tableViewer.getTable().getSelectionIndex();
+
         for (int i = 0; i < testDataEntities.size(); i++) {
             DataFileEntity testData = testDataEntities.get(i);
 
             TestCaseTestDataLink newTestDataLink = createTestDataLink(testData);
-            TestDataLinkTreeNode newTestDataLinkNode = new TestDataLinkTreeNode(Integer.toString(i + 1),
-                    newTestDataLink);
-
-            if (selection == null || selection.getFirstElement() == null) {
-                TestDataTreeContentProvider provider = (TestDataTreeContentProvider) testDataLinkTreeViewer
-                        .getContentProvider();
-                addNewTestDataLinkToRootNode(newTestDataLink, provider.getDataLinks().size());
-
-            } else {
-                TestDataLinkTreeNode selectedNode = (TestDataLinkTreeNode) selection.getFirstElement();
-                TestDataLinkTreeNode parentSelectedNode = selectedNode.getParentNode();
-                TestDataTreeContentProvider provider = (TestDataTreeContentProvider) testDataLinkTreeViewer
-                        .getContentProvider();
-
-                switch (offset) {
-                    case ToolItemConstants.ADD_AFTER:
-                        if (parentSelectedNode == null) {
-                            int selectedIndex = provider.getDataLinks().indexOf(selectedNode.getTestDataLink());
-                            addNewTestDataLinkToRootNode(newTestDataLink, selectedIndex + i + 1);
-                        } else {
-                            int selectedIndex = parentSelectedNode.getChildrenNode().indexOf(selectedNode);
-                            addChildNodeToParentNode(newTestDataLinkNode, parentSelectedNode, selectedIndex + i + 1);
-                        }
-                        break;
-                    case ToolItemConstants.ADD_BEFORE:
-                        if (parentSelectedNode == null) {
-                            int indexBefore = provider.getDataLinks().indexOf(selectedNode.getTestDataLink());
-                            addNewTestDataLinkToRootNode(newTestDataLink, indexBefore);
-                        } else {
-                            int selectedIndex = parentSelectedNode.getChildrenNode().indexOf(selectedNode);
-                            addChildNodeToParentNode(newTestDataLinkNode, parentSelectedNode, selectedIndex);
-                        }
-                        break;
-                    case ToolItemConstants.ADD_CHILDREN:
-                        addChildNodeToParentNode(newTestDataLinkNode, selectedNode, selectedNode.getChildrenNode()
-                                .size());
-                        break;
+            switch (offset) {
+                case ToolItemConstants.ADD_AFTER: {
+                    if (selectedIndex < 0) {
+                        int itemCount = tableViewer.getTable().getItemCount();
+                        getTableItems().add(itemCount, newTestDataLink);
+                        selectedIndex = itemCount;
+                    } else {
+                        getTableItems().add(selectedIndex + 1, newTestDataLink);
+                        selectedIndex++;
+                    }
+                    break;
+                }
+                case ToolItemConstants.ADD_BEFORE: {
+                    if (selectedIndex <= 0) {
+                        getTableItems().add(0, newTestDataLink);
+                        selectedIndex = 1;
+                    } else {
+                        getTableItems().add(selectedIndex, newTestDataLink);
+                        selectedIndex++;
+                    }
+                    break;
                 }
             }
-            addedTestDataLinkTreeNodes.add(newTestDataLinkNode);
+            addedTestDataLinkTreeNodes.add(newTestDataLink);
         }
         return addedTestDataLinkTreeNodes;
-    }
-
-    private void addChildNodeToParentNode(TestDataLinkTreeNode childNode, TestDataLinkTreeNode parentNode, int index) {
-        parentNode.addChildNode(childNode, index);
-        testDataLinkTreeViewer.refresh(parentNode);
-        if (!testDataLinkTreeViewer.getExpandedState(parentNode)) {
-            testDataLinkTreeViewer.setExpandedState(parentNode, true);
-        }
-    }
-
-    private void addNewTestDataLinkToRootNode(TestCaseTestDataLink newTestDataLink, int index) {
-        TestDataTreeContentProvider provider = (TestDataTreeContentProvider) testDataLinkTreeViewer
-                .getContentProvider();
-        provider.getDataLinks().add(index, newTestDataLink);
-        testDataLinkTreeViewer.refresh();
     }
 
     private TestCaseTestDataLink createTestDataLink(DataFileEntity testData) throws Exception {
@@ -289,113 +239,110 @@ public class TestDataToolItemListener extends SelectionAdapter {
     }
 
     private void removeTestDataLink() {
-        StructuredSelection selection = (StructuredSelection) testDataLinkTreeViewer.getSelection();
+        StructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
         if (selection == null || selection.size() == 0) return;
         @SuppressWarnings("unchecked")
-        Iterator<TestDataLinkTreeNode> iterator = selection.toList().iterator();
+        Iterator<TestCaseTestDataLink> iterator = selection.toList().iterator();
 
         while (iterator.hasNext()) {
-            TestDataLinkTreeNode linkNode = iterator.next();
-            if (linkNode.getParentNode() == null) {
-                TestDataTreeContentProvider provider = (TestDataTreeContentProvider) testDataLinkTreeViewer
-                        .getContentProvider();
-                provider.getDataLinks().remove(linkNode.getTestDataLink());
-                testDataLinkTreeViewer.refresh();
+            TestCaseTestDataLink linkNode = iterator.next();
 
-            } else {
-                TestDataLinkTreeNode parentNode = linkNode.getParentNode();
-                parentNode.removeChildNode(linkNode);
-                testDataLinkTreeViewer.refresh(parentNode);
-            }
-
-            for (VariableLink variableLink : mpart.getVariableLinks()) {
+            for (VariableLink variableLink : view.getVariableLinks()) {
 
                 if (variableLink.getType() == VariableType.DATA_COLUMN
-                        && variableLink.getTestDataLinkId().equals(linkNode.getTestDataLink().getId())) {
+                        && variableLink.getTestDataLinkId().equals(linkNode.getId())) {
                     variableLink.setTestDataLinkId("");
                     variableLink.setValue("");
                 }
             }
         }
-        mpart.refreshVariableTable();
-        mpart.setDirty(true);
+
+        getTableItems().removeAll(selection.toList());
+        tableViewer.refresh();
+        view.refreshVariableTable();
+        view.setDirty(true);
     }
 
     @SuppressWarnings("unchecked")
     private void upTestDataLink() {
-        StructuredSelection selection = (StructuredSelection) testDataLinkTreeViewer.getSelection();
-        if (selection == null) return;
-
-        TestDataLinkTreeNode selectedNode = (TestDataLinkTreeNode) selection.getFirstElement();
-
-        if (selectedNode == null) return;
-
-        TestDataTreeContentProvider contentProvider = (TestDataTreeContentProvider) testDataLinkTreeViewer
-                .getContentProvider();
-
-        TestDataLinkTreeNode parentNode = selectedNode.getParentNode();
-
-        if (parentNode == null) {
-            int index = contentProvider.getDataLinks().indexOf(selectedNode.getTestDataLink());
-
-            if (index <= 0) return;
-
-            Collections.swap(contentProvider.getDataLinks(), index, index - 1);
-            testDataLinkTreeViewer.refresh();
-        } else {
-            int index = parentNode.getChildrenNode().indexOf(selectedNode);
-            if (index <= 0) return;
-
-            Collections.swap(parentNode.getChildrenNode(), index, index - 1);
-            Collections.swap(parentNode.getTestDataLink().getChildrenLink(), index, index - 1);
-
-            parentNode.resetChildrenId();
-            testDataLinkTreeViewer.refresh(parentNode, true);
+        IStructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
+        if (selection == null || selection.size() == 0) {
+            return;
         }
 
-        selectTreeNodes(selection.toList().subList(0, 1));
-        mpart.refreshVariableTable();
-        mpart.setDirty(true);
+        List<TestCaseTestDataLink> selectedLinks = selection.toList();
+
+        sortListOfTestCaseTestDataLinks(getTableItems(), selectedLinks);
+
+        boolean needToRefresh = false;
+        for (TestCaseTestDataLink selectedLink : selectedLinks) {
+
+            int selectedIndex = getTableItems().indexOf(selectedLink);
+            if (selectedIndex > 0) {
+                TestCaseTestDataLink linkBefore = (TestCaseTestDataLink) getTableItems().get(selectedIndex - 1);
+
+                // Avoid swap 2 objects that are both selected
+                if (selectedLinks.contains(linkBefore)) {
+                    continue;
+                }
+
+                Collections.swap(getTableItems(), selectedIndex - 1, selectedIndex);
+                needToRefresh = true;
+            }
+        }
+
+        if (needToRefresh) {
+            tableViewer.refresh();
+            view.refreshVariableTable();
+            view.setDirty(true);
+        }
     }
 
     @SuppressWarnings("unchecked")
     private void downTestDataLink() {
-        StructuredSelection selection = (StructuredSelection) testDataLinkTreeViewer.getSelection();
-        if (selection == null) return;
-
-        TestDataLinkTreeNode selectedNode = (TestDataLinkTreeNode) selection.getFirstElement();
-
-        if (selectedNode == null) return;
-
-        TestDataTreeContentProvider contentProvider = (TestDataTreeContentProvider) testDataLinkTreeViewer
-                .getContentProvider();
-
-        TestDataLinkTreeNode parentNode = selectedNode.getParentNode();
-
-        if (parentNode == null) {
-            int index = contentProvider.getDataLinks().indexOf(selectedNode.getTestDataLink());
-
-            if (index >= contentProvider.getDataLinks().size() - 1) return;
-
-            Collections.swap(contentProvider.getDataLinks(), index, index + 1);
-            testDataLinkTreeViewer.refresh();
-        } else {
-
-            int index = parentNode.getChildrenNode().indexOf(selectedNode);
-
-            if (index >= parentNode.getChildrenNode().size() - 1) return;
-
-            Collections.swap(parentNode.getChildrenNode(), index, index + 1);
-            Collections.swap(parentNode.getTestDataLink().getChildrenLink(), index, index + 1);
-
-            parentNode.resetChildrenId();
-
-            testDataLinkTreeViewer.refresh(parentNode, true);
+        IStructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
+        if (selection == null || selection.size() == 0) {
+            return;
         }
 
-        selectTreeNodes(selection.toList().subList(0, 1));
-        mpart.refreshVariableTable();
-        mpart.setDirty(true);
+        List<TestCaseTestDataLink> selectedLinks = selection.toList();
+
+        sortListOfTestCaseTestDataLinks(getTableItems(), selectedLinks);
+
+        boolean needToRefresh = false;
+        for (TestCaseTestDataLink selectedLink : selectedLinks) {
+
+            int selectedIndex = getTableItems().indexOf(selectedLink);
+            if (selectedIndex < getTableItems().size() - 1) {
+                TestCaseTestDataLink linkAfter = (TestCaseTestDataLink) getTableItems().get(selectedIndex + 1);
+
+                // Avoid swap 2 objects that are both selected
+                if (selectedLinks.contains(linkAfter)) {
+                    continue;
+                }
+
+                Collections.swap(getTableItems(), selectedIndex, selectedIndex + 1);
+                needToRefresh = true;
+            }
+        }
+
+        if (needToRefresh) {
+            tableViewer.refresh();
+            view.refreshVariableTable();
+            view.setDirty(true);
+        }
+    }
+
+    private void sortListOfTestCaseTestDataLinks(final List<TestCaseTestDataLink> data,
+            List<TestCaseTestDataLink> testDataLinks) {
+        Collections.sort(testDataLinks, new Comparator<TestCaseTestDataLink>() {
+
+            @Override
+            public int compare(TestCaseTestDataLink arg0, TestCaseTestDataLink arg1) {
+                return (data.indexOf(arg0) > data.indexOf(arg1)) ? 1 : -1;
+            }
+        });
+
     }
 
     private void mapTestDataLink() {
@@ -408,8 +355,7 @@ public class TestDataToolItemListener extends SelectionAdapter {
 
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
 
-        for (TestCaseTestDataLink dataLink : TestSuiteController.getInstance().getAllTestCaseTestDataLinks(
-                mpart.getSelectedTestCaseLink())) {
+        for (TestCaseTestDataLink dataLink : view.getSelectedTestCaseLink().getTestDataLinks()) {
             try {
                 TestData testData = TestDataFactory.findTestDataForExternalBundleCaller(dataLink.getTestDataId(),
                         projectEntity.getFolderLocation());
@@ -429,11 +375,11 @@ public class TestDataToolItemListener extends SelectionAdapter {
         }
 
         try {
-            TestSuiteTestCaseLink testCaseLink = mpart.getSelectedTestCaseLink();
+            TestSuiteTestCaseLink testCaseLink = view.getSelectedTestCaseLink();
             TestCaseEntity testCaseEntity = TestCaseController.getInstance().getTestCaseByDisplayId(
                     testCaseLink.getTestCaseId());
 
-            for (VariableLink variableLink : mpart.getSelectedTestCaseLink().getVariableLinks()) {
+            for (VariableLink variableLink : view.getSelectedTestCaseLink().getVariableLinks()) {
 
                 VariableEntity variable = TestCaseController.getInstance().getVariable(testCaseEntity,
                         variableLink.getVariableId());
@@ -459,10 +405,10 @@ public class TestDataToolItemListener extends SelectionAdapter {
                     }
                 }
             }
-            mpart.refreshVariableTable();
-            mpart.setDirty(true);
+            view.refreshVariableTable();
+            view.setDirty(true);
 
-            MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "", StringConstants.LIS_INFO_MSG_DONE);
+            MessageDialog.openInformation(null, "", StringConstants.LIS_INFO_MSG_DONE);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }

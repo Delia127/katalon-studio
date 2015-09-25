@@ -9,7 +9,6 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testsuite.parts.TestSuitePartDataBindingView;
-import com.kms.katalon.composer.testsuite.tree.TestDataLinkTreeNode;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
 import com.kms.katalon.entity.link.TestDataCombinationType;
 
@@ -23,7 +22,7 @@ public class TestDataCombinationColumnEditingSupport extends EditingSupport {
 
     @Override
     protected CellEditor getCellEditor(Object element) {
-        if (element != null && element instanceof TestDataLinkTreeNode) {
+        if (element != null && element instanceof TestCaseTestDataLink) {
             return new CheckboxCellEditor((Composite) getViewer().getControl());
         }
         return null;
@@ -31,14 +30,13 @@ public class TestDataCombinationColumnEditingSupport extends EditingSupport {
 
     @Override
     protected boolean canEdit(Object element) {
-        return (element != null && element instanceof TestDataLinkTreeNode);
+        return (element != null && element instanceof TestCaseTestDataLink);
     }
 
     @Override
     protected Object getValue(Object element) {
-        if (element != null && element instanceof TestDataLinkTreeNode) {
-            TestDataLinkTreeNode linkTreeNode = (TestDataLinkTreeNode) element;
-            TestCaseTestDataLink link = linkTreeNode.getTestDataLink();
+        if (element != null && element instanceof TestCaseTestDataLink) {
+            TestCaseTestDataLink link = (TestCaseTestDataLink) element;
             return (link.getCombinationType() == TestDataCombinationType.ONE);
         }
         return StringUtils.EMPTY;
@@ -47,10 +45,9 @@ public class TestDataCombinationColumnEditingSupport extends EditingSupport {
     @Override
     protected void setValue(Object element, Object value) {
         try {
-            if (element != null && element instanceof TestDataLinkTreeNode && value instanceof Boolean) {
+            if (element != null && element instanceof TestCaseTestDataLink && value instanceof Boolean) {
 
-                TestDataLinkTreeNode linkTreeNode = (TestDataLinkTreeNode) element;
-                TestCaseTestDataLink link = linkTreeNode.getTestDataLink();
+                TestCaseTestDataLink link = (TestCaseTestDataLink) element;
                 boolean isOneOne = (boolean) value;
                 if ((link.getCombinationType() == TestDataCombinationType.ONE) != isOneOne) {
                     if (isOneOne) {

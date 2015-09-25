@@ -6,32 +6,34 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 import com.kms.katalon.composer.testsuite.dialogs.TestDataColumnChooserDialog;
+import com.kms.katalon.core.testdata.TestData;
 
 public class DataColumnChooserEditor extends DialogCellEditor {
 
-    private String[] columnNames;
+    private TestData testData;
     private String selectionColumnName;
 
-    public DataColumnChooserEditor(Composite parent, String[] columnNames, String selectionColumnName) {
+    public DataColumnChooserEditor(Composite parent, TestData testData, String selectionColumnName) {
         super(parent);
-        setColumnNames(columnNames);
+        setTestData(testData);
         setSelectionColumnName(selectionColumnName);
+    }
+
+    private void setTestData(TestData testData) {
+        // TODO Auto-generated method stub
+        this.testData = testData;
     }
 
     @Override
     protected Object openDialogBox(Control cellEditorWindow) {
         // TODO Auto-generated method stub
-        TestDataColumnChooserDialog dialog = new TestDataColumnChooserDialog(cellEditorWindow.getShell(), columnNames,
+        TestDataColumnChooserDialog dialog = new TestDataColumnChooserDialog(cellEditorWindow.getShell(), testData,
                 selectionColumnName);
         if (dialog.open() == Dialog.OK) {
             return dialog.getSelectedColumnName();
         } else {
             return selectionColumnName;
         }
-    }
-
-    public void setColumnNames(String[] columnNames) {
-        this.columnNames = columnNames;
     }
 
     public String getSelectionColumnName() {
