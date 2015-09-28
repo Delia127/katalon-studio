@@ -50,7 +50,6 @@ public class KeywordClassRenamingParticipant extends RenameParticipant {
 		return null;
 	}
 
-	@SuppressWarnings("restriction")
 	@Override
 	public Change createChange(IProgressMonitor pm) throws CoreException, OperationCanceledException {
 		RenameArguments arguments = getArguments();
