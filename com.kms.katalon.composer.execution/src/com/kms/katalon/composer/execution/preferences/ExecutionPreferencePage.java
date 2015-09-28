@@ -19,8 +19,8 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.TestEnvironmentController;
+import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
-import com.kms.katalon.execution.factory.BuiltinRunConfigurationFactory;
 
 public class ExecutionPreferencePage extends PreferencePage {
     private Button chckNotifyMe, chckOpenReport;
@@ -111,7 +111,7 @@ public class ExecutionPreferencePage extends PreferencePage {
                 PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_TIMEOUT)));
         String selectedExecutionConfiguration = getPreferenceStore().getString(
                 PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_CONFIGURATION);
-        runConfigs = BuiltinRunConfigurationFactory.getInstance().getAllRunConfigurationContributors();
+        runConfigs = RunConfigurationCollector.getInstance().getAllBuiltinRunConfigurationContributors();
         String[] runConfigIdList = new String[runConfigs.length];
         int selectedIndex = 0;
         for (int i = 0; i < runConfigs.length; i++) {
@@ -154,7 +154,7 @@ public class ExecutionPreferencePage extends PreferencePage {
                 PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_TIMEOUT)));
         String selectedExecutionConfiguration = getPreferenceStore().getDefaultString(
                 PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_CONFIGURATION);
-        runConfigs = BuiltinRunConfigurationFactory.getInstance().getAllRunConfigurationContributors();
+        runConfigs = RunConfigurationCollector.getInstance().getAllBuiltinRunConfigurationContributors();
         int selectedIndex = 0;
         if (runConfigs.length > 0) {
             String[] runConfigIdList = new String[runConfigs.length];

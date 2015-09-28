@@ -1,13 +1,20 @@
 package com.kms.katalon.composer.webui.setting;
 
-import com.kms.katalon.core.driver.DriverType;
-import com.kms.katalon.core.webui.driver.WebUIDriverType;
+import java.io.IOException;
 
-public class RemoteWebPreferencePage extends BrowserPreferencePage {
+import com.kms.katalon.composer.execution.settings.DriverPreferencePage;
+import com.kms.katalon.core.setting.DriverPropertySettingStore;
+import com.kms.katalon.core.webui.setting.RemoteWebDriverPropertySettingStore;
 
-	@Override
-	protected DriverType getDriverType() {
-		return WebUIDriverType.REMOTE_WEB_DRIVER;
-	}
+public class RemoteWebPreferencePage extends DriverPreferencePage {
 
+    @Override
+    protected DriverPropertySettingStore getDriverPropertySettingStore(String projectFolderLocation) {
+        try {
+            return new RemoteWebDriverPropertySettingStore(projectFolderLocation);
+        } catch (IOException e) {
+            // IO Errors, return null
+            return null;
+        }
+    }
 }

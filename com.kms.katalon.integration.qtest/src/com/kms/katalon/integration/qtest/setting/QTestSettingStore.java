@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.kms.katalon.core.setting.PropertySettingStore;
+import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 
 public class QTestSettingStore {
     private static final String FILE_NAME = "com.kms.katalon.integration.qtest";
@@ -21,8 +21,8 @@ public class QTestSettingStore {
     private static final String CHECK_BEFORE_UPLOADING = "checkBeforeUploading";
 
     public static File getPropertyFile(String projectDir) throws IOException {
-        File configFile = new File(projectDir + File.separator + PropertySettingStore.ROOT_FOLDER_NAME + File.separator
-                + FILE_NAME + PropertySettingStore.PROPERTY_FILE_EXENSION);
+        File configFile = new File(projectDir + File.separator + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME + File.separator
+                + FILE_NAME + PropertySettingStoreUtil.PROPERTY_FILE_EXENSION);
         if (!configFile.exists()) {
             configFile.createNewFile();
         }
@@ -31,19 +31,19 @@ public class QTestSettingStore {
 
     public static String getToken(String projectDir) {
         try {
-            return PropertySettingStore.getPropertyValue(TOKEN_PROPERTY, getPropertyFile(projectDir));
+            return PropertySettingStoreUtil.getPropertyValue(TOKEN_PROPERTY, getPropertyFile(projectDir));
         } catch (IOException e) {
             return "";
         }
     }
 
     public static void saveToken(String token, String projectDir) throws IOException {
-        PropertySettingStore.addNewProperty(TOKEN_PROPERTY, token, getPropertyFile(projectDir));
+        PropertySettingStoreUtil.addNewProperty(TOKEN_PROPERTY, token, getPropertyFile(projectDir));
     }
 
     public static String getUsername(String projectDir) {
         try {
-            return PropertySettingStore.getPropertyValue(USERNAME_PROPERTY, getPropertyFile(projectDir));
+            return PropertySettingStoreUtil.getPropertyValue(USERNAME_PROPERTY, getPropertyFile(projectDir));
         } catch (IOException e) {
             return "";
         }
@@ -51,7 +51,7 @@ public class QTestSettingStore {
 
     public static String getPassword(String projectDir) {
         try {
-            return PropertySettingStore.getPropertyValue(PASSWORD_PROPERTY, getPropertyFile(projectDir));
+            return PropertySettingStoreUtil.getPropertyValue(PASSWORD_PROPERTY, getPropertyFile(projectDir));
         } catch (IOException e) {
             return "";
         }
@@ -59,7 +59,7 @@ public class QTestSettingStore {
 
     public static String getServerUrl(String projectDir) {
         try {
-            return PropertySettingStore.getPropertyValue(SERVER_URL_PROPERTY, getPropertyFile(projectDir));
+            return PropertySettingStoreUtil.getPropertyValue(SERVER_URL_PROPERTY, getPropertyFile(projectDir));
         } catch (IOException e) {
             return "";
         }
@@ -67,20 +67,20 @@ public class QTestSettingStore {
 
     public static void saveUserProfile(String serverUrl, String username, String password, String projectDir)
             throws IOException {
-        PropertySettingStore.addNewProperty(USERNAME_PROPERTY, username, getPropertyFile(projectDir));
-        PropertySettingStore.addNewProperty(PASSWORD_PROPERTY, password, getPropertyFile(projectDir));
+        PropertySettingStoreUtil.addNewProperty(USERNAME_PROPERTY, username, getPropertyFile(projectDir));
+        PropertySettingStoreUtil.addNewProperty(PASSWORD_PROPERTY, password, getPropertyFile(projectDir));
 
         String savedServerUrl = serverUrl;
         while (!savedServerUrl.isEmpty() && savedServerUrl.endsWith("/")) {
             savedServerUrl = savedServerUrl.substring(0, savedServerUrl.length() - 1);
         }
 
-        PropertySettingStore.addNewProperty(SERVER_URL_PROPERTY, savedServerUrl, getPropertyFile(projectDir));
+        PropertySettingStoreUtil.addNewProperty(SERVER_URL_PROPERTY, savedServerUrl, getPropertyFile(projectDir));
     }
 
     public static boolean isAutoSubmitResultActive(String projectDir) {
         try {
-            return Boolean.parseBoolean(PropertySettingStore.getPropertyValue(AUTO_SUBMIT_RESULT_PROPERTY,
+            return Boolean.parseBoolean(PropertySettingStoreUtil.getPropertyValue(AUTO_SUBMIT_RESULT_PROPERTY,
                     getPropertyFile(projectDir)));
         } catch (IOException e) {
             return false;
@@ -89,7 +89,7 @@ public class QTestSettingStore {
 
     public static boolean isIntegrationActive(String projectDir) {
         try {
-            return Boolean.parseBoolean(PropertySettingStore.getPropertyValue(ENABLE_INTEGRATION_PROPERTY,
+            return Boolean.parseBoolean(PropertySettingStoreUtil.getPropertyValue(ENABLE_INTEGRATION_PROPERTY,
                     getPropertyFile(projectDir)));
         } catch (IOException e) {
             return false;
@@ -98,7 +98,7 @@ public class QTestSettingStore {
 
     public static boolean isEnableCheckBeforeUploading(String projectDir) {
         try {
-            return Boolean.parseBoolean(PropertySettingStore.getPropertyValue(CHECK_BEFORE_UPLOADING,
+            return Boolean.parseBoolean(PropertySettingStoreUtil.getPropertyValue(CHECK_BEFORE_UPLOADING,
                     getPropertyFile(projectDir)));
         } catch (IOException e) {
             return false;
@@ -106,24 +106,24 @@ public class QTestSettingStore {
     }
 
     public static void saveAutoSubmit(boolean autoSubmit, String projectDir) throws IOException {
-        PropertySettingStore.addNewProperty(AUTO_SUBMIT_RESULT_PROPERTY, Boolean.toString(autoSubmit),
+        PropertySettingStoreUtil.addNewProperty(AUTO_SUBMIT_RESULT_PROPERTY, Boolean.toString(autoSubmit),
                 getPropertyFile(projectDir));
     }
 
     public static void saveEnableIntegration(boolean isIntegration, String projectDir) throws IOException {
-        PropertySettingStore.addNewProperty(ENABLE_INTEGRATION_PROPERTY, Boolean.toString(isIntegration),
+        PropertySettingStoreUtil.addNewProperty(ENABLE_INTEGRATION_PROPERTY, Boolean.toString(isIntegration),
                 getPropertyFile(projectDir));
     }
 
     public static void saveEnableCheckBeforeUploading(boolean isEnableCheck, String projectDir) throws IOException {
-        PropertySettingStore.addNewProperty(CHECK_BEFORE_UPLOADING, Boolean.toString(isEnableCheck),
+        PropertySettingStoreUtil.addNewProperty(CHECK_BEFORE_UPLOADING, Boolean.toString(isEnableCheck),
                 getPropertyFile(projectDir));
     }
 
     public static List<QTestAttachmentSendingType> getAttachmentSendingTypes(String projectDir) {
         try {
             List<QTestAttachmentSendingType> attachmentSendingTypes = new ArrayList<QTestAttachmentSendingType>();
-            String sendingTypePropertyString = PropertySettingStore.getPropertyValue(SEND_ATTACHMENTS_PROPERTY,
+            String sendingTypePropertyString = PropertySettingStoreUtil.getPropertyValue(SEND_ATTACHMENTS_PROPERTY,
                     getPropertyFile(projectDir));
 
             if (sendingTypePropertyString == null || sendingTypePropertyString.isEmpty()) {
@@ -149,7 +149,7 @@ public class QTestSettingStore {
                     attachmentStringBuilder.append(", ");
                 }
             }
-            PropertySettingStore.addNewProperty(SEND_ATTACHMENTS_PROPERTY, attachmentStringBuilder.toString(),
+            PropertySettingStoreUtil.addNewProperty(SEND_ATTACHMENTS_PROPERTY, attachmentStringBuilder.toString(),
                     getPropertyFile(projectDir));
         } catch (IOException | IllegalArgumentException e) {
             // Do nothing
@@ -165,7 +165,7 @@ public class QTestSettingStore {
                     attachmentStringBuilder.append(", ");
                 }
             }
-            PropertySettingStore.addNewProperty(SEND_RESULT_PROPERTY, attachmentStringBuilder.toString(),
+            PropertySettingStoreUtil.addNewProperty(SEND_RESULT_PROPERTY, attachmentStringBuilder.toString(),
                     getPropertyFile(projectDir));
         } catch (IOException | IllegalArgumentException e) {
             // Do nothing
@@ -175,7 +175,7 @@ public class QTestSettingStore {
     public static List<QTestResultSendingType> getResultSendingTypes(String projectDir) {
         try {
             List<QTestResultSendingType> attachmentSendingTypes = new ArrayList<QTestResultSendingType>();
-            String sendingTypePropertyString = PropertySettingStore.getPropertyValue(SEND_RESULT_PROPERTY,
+            String sendingTypePropertyString = PropertySettingStoreUtil.getPropertyValue(SEND_RESULT_PROPERTY,
                     getPropertyFile(projectDir));
 
             if (sendingTypePropertyString == null || sendingTypePropertyString.isEmpty()) {

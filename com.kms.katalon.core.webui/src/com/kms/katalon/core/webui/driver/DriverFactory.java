@@ -26,11 +26,17 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.exception.BrowserNotOpenedException;
-import com.kms.katalon.core.webui.setting.DriverPropertyStore;
+import com.kms.katalon.core.webui.setting.ChromeDriverPropertySettingStore;
+import com.kms.katalon.core.webui.setting.FirefoxDriverPropertySettingStore;
+import com.kms.katalon.core.webui.setting.IEWebDriverPropertySettingStore;
+import com.kms.katalon.core.webui.setting.RemoteWebDriverPropertySettingStore;
+import com.kms.katalon.core.webui.setting.WebUiDriverPropertySettingStore;
 
 public class DriverFactory {
-    // Temp error constant message for
-    // https://github.com/danascheider/canto-front-end/issues/27
+    private static final String CHROME_DRIVER_PATH_PROPERTY_KEY = "webdriver.chrome.driver";
+    private static final String IE_DRIVER_PATH_PROPERTY_KEY = "webdriver.ie.driver";
+    // Temp error constant message for issues
+    // https://code.google.com/p/selenium/issues/detail?id=7977
     private static final String JAVA_SCRIPT_ERROR_H_IS_NULL_MESSAGE = "[JavaScript Error: \"h is null\"";
     public static final String IE_DRIVER_PATH_PROPERTY = StringConstants.CONF_PROPERTY_IE_DRIVER_PATH;
     public static final String CHROME_DRIVER_PATH_PROPERTY = StringConstants.CONF_PROPERTY_CHROME_DRIVER_PATH;
@@ -52,28 +58,43 @@ public class DriverFactory {
             if (driver == null) {
                 throw new StepFailedException(StringConstants.DRI_ERROR_MSG_NO_BROWSER_SET);
             }
-            KeywordLogger.getInstance().logInfo(MessageFormat.format(StringConstants.XML_LOG_STARTING_DRIVER_X, driver.toString()));
+            WebUiDriverPropertySettingStore webUiDriverPropertySettingStore = null;
+            KeywordLogger.getInstance().logInfo(
+                    MessageFormat.format(StringConstants.XML_LOG_STARTING_DRIVER_X, driver.toString()));
             switch (driver) {
             case FIREFOX_DRIVER:
-                seleniumWebDriver = new FirefoxDriver(DriverPropertyStore.getFirefoxProfile());
+                webUiDriverPropertySettingStore = (RunConfiguration.getCustomExecutionProfile() != null) ? new FirefoxDriverPropertySettingStore(
+                        RunConfiguration.getProjectDir(), RunConfiguration.getCustomExecutionProfile())
+                        : new FirefoxDriverPropertySettingStore(RunConfiguration.getProjectDir());
+                seleniumWebDriver = new FirefoxDriver(webUiDriverPropertySettingStore.toDesiredCapabilities());
+                seleniumWebDriver.manage().logs().getAvailableLogTypes();
                 setTimeout();
                 break;
             case IE_DRIVER:
-                System.setProperty("webdriver.ie.driver", getIEDriverPath());
-                seleniumWebDriver = new InternetExplorerDriver();
+                webUiDriverPropertySettingStore = (RunConfiguration.getCustomExecutionProfile() != null) ? new IEWebDriverPropertySettingStore(
+                        RunConfiguration.getProjectDir(), RunConfiguration.getCustomExecutionProfile())
+                        : new IEWebDriverPropertySettingStore(RunConfiguration.getProjectDir());
+                System.setProperty(IE_DRIVER_PATH_PROPERTY_KEY, getIEDriverPath());
+                seleniumWebDriver = new InternetExplorerDriver(webUiDriverPropertySettingStore.toDesiredCapabilities());
                 setTimeout();
                 break;
             case SAFARI_DRIVER:
                 seleniumWebDriver = new SafariDriver();
                 break;
             case CHROME_DRIVER:
-                System.setProperty("webdriver.chrome.driver", getChromeDriverPath());
-                seleniumWebDriver = new ChromeDriver(DriverPropertyStore.getChromeOptions());
+                webUiDriverPropertySettingStore = (RunConfiguration.getCustomExecutionProfile() != null) ? new ChromeDriverPropertySettingStore(
+                        RunConfiguration.getProjectDir(), RunConfiguration.getCustomExecutionProfile())
+                        : new ChromeDriverPropertySettingStore(RunConfiguration.getProjectDir());
+                System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
+                seleniumWebDriver = new ChromeDriver(webUiDriverPropertySettingStore.toDesiredCapabilities());
                 setTimeout();
                 break;
             case REMOTE_WEB_DRIVER:
+                webUiDriverPropertySettingStore = (RunConfiguration.getCustomExecutionProfile() != null) ? new RemoteWebDriverPropertySettingStore(
+                        RunConfiguration.getProjectDir(), RunConfiguration.getCustomExecutionProfile())
+                        : new RemoteWebDriverPropertySettingStore(RunConfiguration.getProjectDir());
                 seleniumWebDriver = new RemoteWebDriver(new URL(getRemoteWebDriverServerUrl()),
-                        DriverPropertyStore.getRemoteWebDriverOptions());
+                        webUiDriverPropertySettingStore.toDesiredCapabilities());
                 break;
             case ANDROID_DRIVER:
                 seleniumWebDriver = WebMobileDriverFactory.getInstance().getAndroidDriver(getMobileDeviceName());
@@ -107,14 +128,14 @@ public class DriverFactory {
                 }
                 break;
             case IE_DRIVER:
-                System.setProperty("webdriver.ie.driver", getIEDriverPath());
+                System.setProperty(IE_DRIVER_PATH_PROPERTY_KEY, getIEDriverPath());
                 seleniumWebDriver = new InternetExplorerDriver();
                 break;
             case SAFARI_DRIVER:
                 seleniumWebDriver = new SafariDriver();
                 break;
             case CHROME_DRIVER:
-                System.setProperty("webdriver.chrome.driver", getChromeDriverPath());
+                System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
                 if (options instanceof DesiredCapabilities) {
                     ChromeDriver chromeDriver = new ChromeDriver((DesiredCapabilities) options);
                     return chromeDriver;

@@ -24,12 +24,12 @@ import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.entity.TestCaseExecutedEntity;
 import com.kms.katalon.execution.entity.TestDataExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
-import com.kms.katalon.execution.factory.BuiltinRunConfigurationFactory;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
@@ -56,8 +56,8 @@ public class ExecutionUtil {
                 PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
         String selectedRunConfiguration = store
                 .getString(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_CONFIGURATION);
-        IRunConfigurationContributor[] allBuiltinRunConfigurationContributor = BuiltinRunConfigurationFactory
-                .getInstance().getAllRunConfigurationContributors();
+        IRunConfigurationContributor[] allBuiltinRunConfigurationContributor = RunConfigurationCollector
+                .getInstance().getAllBuiltinRunConfigurationContributors();
         for (IRunConfigurationContributor runConfigurationContributor : allBuiltinRunConfigurationContributor) {
             if (runConfigurationContributor.getId().equals(selectedRunConfiguration)) {
                 return runConfigurationContributor;

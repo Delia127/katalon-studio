@@ -1,13 +1,21 @@
 package com.kms.katalon.composer.webui.setting;
 
-import com.kms.katalon.core.driver.DriverType;
-import com.kms.katalon.core.webui.driver.WebUIDriverType;
+import java.io.IOException;
 
-public class ChromePreferencePage extends BrowserPreferencePage {
+import com.kms.katalon.composer.execution.settings.DriverPreferencePage;
+import com.kms.katalon.core.setting.DriverPropertySettingStore;
+import com.kms.katalon.core.webui.setting.ChromeDriverPropertySettingStore;
 
-	@Override
-	protected DriverType getDriverType() {
-		return WebUIDriverType.CHROME_DRIVER;
-	}
+public class ChromePreferencePage extends DriverPreferencePage {
+
+    @Override
+    protected DriverPropertySettingStore getDriverPropertySettingStore(String projectFolderLocation) {
+        try {
+            return new ChromeDriverPropertySettingStore(projectFolderLocation);
+        } catch (IOException e) {
+            // IO Errors, return null
+            return null;
+        }
+    }
 
 }

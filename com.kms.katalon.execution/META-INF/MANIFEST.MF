@@ -5,10 +5,10 @@ Bundle-SymbolicName: com.kms.katalon.execution;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: KMS
-Export-Package: com.kms.katalon.execution.configuration.contributor,
+Export-Package: com.kms.katalon.execution.collector,
+ com.kms.katalon.execution.configuration.contributor,
  com.kms.katalon.execution.constants,
  com.kms.katalon.execution.entity,
- com.kms.katalon.execution.factory,
  com.kms.katalon.execution.generator,
  com.kms.katalon.execution.integration,
  com.kms.katalon.execution.launcher,
@@ -46,4 +46,5 @@ Require-Bundle: org.eclipse.e4.core.contexts,
  org.eclipse.e4.core.services,
  org.eclipse.debug.ui,
  org.eclipse.e4.ui.workbench,
- javax.mail
+ javax.mail,
+ org.eclipse.osgi.services
