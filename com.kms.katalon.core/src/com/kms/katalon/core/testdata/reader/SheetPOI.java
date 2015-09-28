@@ -35,8 +35,9 @@ public abstract class SheetPOI {
         }
 
         if (col > maxColumnAtRow) {
-            throw new IllegalArgumentException(MessageFormat.format(StringConstants.EXCEL_INVALID_COL_NUMBER, col,
-                    maxColumnAtRow));
+//            throw new IllegalArgumentException(MessageFormat.format(StringConstants.EXCEL_INVALID_COL_NUMBER, col,
+//                    maxColumnAtRow));
+            return "";
         }
 
         return internallyGetCellText(col, row);

@@ -349,14 +349,16 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 if (headers.length > 0) {
                     for (int i = 1; i <= excelData.getRowNumbers(); i++) {
                         List<String> arrayValues = new ArrayList<>();
-                        try {
-                            for (int columnIndex = 1; columnIndex <= excelData.getColumnNumbers(); columnIndex++) {
+
+                        for (int columnIndex = 1; columnIndex <= excelData.getColumnNumbers(); columnIndex++) {
+                            try {
                                 String cellValue = excelData.getValue(columnIndex, i);
                                 arrayValues.add(cellValue);
+                            } catch (IllegalArgumentException ex) {
+                                arrayValues.add("");
                             }
-                        } catch (IllegalArgumentException ex) {
-                            continue;
                         }
+
                         data.add(arrayValues.toArray(new String[arrayValues.size()]));
                     }
                 }
