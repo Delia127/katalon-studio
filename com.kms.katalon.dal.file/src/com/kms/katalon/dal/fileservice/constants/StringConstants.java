@@ -7,13 +7,13 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String FS_EXC_FILE_NAME_CONTAIN_SPECIAL_CHAR = "A file name cannot contain any of the following characters: / \\ : * ? \" ' < > | ";
 
 	// FileServiceConstant
-	public static final String FS_ROOT_FOLDER_NAME_TEST_CASE = "Test Cases";
-	public static final String FS_ROOT_FOLDER_NAME_TEST_SUITE = "Test Suites";
-	public static final String FS_ROOT_FOLDER_NAME_DATA_FILE = "Data Files";
-	public static final String FS_ROOT_FOLDER_NAME_OBJECT_REPOSITORY = "Object Repository";
-	public static final String FS_ROOT_FOLDER_NAME_KEYWORD = "Keywords";
-	public static final String FS_ROOT_FOLDER_NAME_REPORT = "Reports";
-	public static final String FS_FILE_NAME_GLOBAL_VARIABLE = "GlobalVariables";
+	public static final String FS_ROOT_FOLDER_NAME_TEST_CASE = ROOT_FOLDER_NAME_TEST_CASE;
+	public static final String FS_ROOT_FOLDER_NAME_TEST_SUITE = ROOT_FOLDER_NAME_TEST_SUITE;
+	public static final String FS_ROOT_FOLDER_NAME_DATA_FILE = ROOT_FOLDER_NAME_DATA_FILE;
+	public static final String FS_ROOT_FOLDER_NAME_OBJECT_REPOSITORY = ROOT_FOLDER_NAME_OBJECT_REPOSITORY;
+	public static final String FS_ROOT_FOLDER_NAME_KEYWORD = ROOT_FOLDER_NAME_KEYWORD;
+	public static final String FS_ROOT_FOLDER_NAME_REPORT = ROOT_FOLDER_NAME_REPORT;
+	public static final String FS_FILE_NAME_GLOBAL_VARIABLE = FILE_NAME_GLOBAL_VARIABLE;
 
 	// DataFileFileServiceDataProvider
 	public static final String DP_EXC_NAME_CANNOT_BE_NULL_OR_EMPTY = "Name cannot be null or empty.";

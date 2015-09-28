@@ -111,4 +111,12 @@ public class GlobalStringConstants {
 
 	public static final String ANDROID = "Android";
 	public static final String IOS = "iOS";
+	
+	public static final String ROOT_FOLDER_NAME_TEST_CASE = "Test Cases";
+    public static final String ROOT_FOLDER_NAME_TEST_SUITE = "Test Suites";
+    public static final String ROOT_FOLDER_NAME_DATA_FILE = "Data Files";
+    public static final String ROOT_FOLDER_NAME_OBJECT_REPOSITORY = "Object Repository";
+    public static final String ROOT_FOLDER_NAME_KEYWORD = "Keywords";
+    public static final String ROOT_FOLDER_NAME_REPORT = "Reports";
+    public static final String FILE_NAME_GLOBAL_VARIABLE = "GlobalVariables";
 }

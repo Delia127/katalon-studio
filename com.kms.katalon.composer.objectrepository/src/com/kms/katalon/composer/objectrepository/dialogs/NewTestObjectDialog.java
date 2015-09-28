@@ -2,11 +2,11 @@ package com.kms.katalon.composer.objectrepository.dialogs;
 
 import org.eclipse.swt.widgets.Shell;
 
-import com.kms.katalon.composer.components.impl.dialogs.NewEntityDialog;
+import com.kms.katalon.composer.components.impl.dialogs.AbstractEntityDialog;
 import com.kms.katalon.composer.objectrepository.constants.StringConstants;
 import com.kms.katalon.entity.folder.FolderEntity;
 
-public class NewTestObjectDialog extends NewEntityDialog {
+public class NewTestObjectDialog extends AbstractEntityDialog {
 
 	public NewTestObjectDialog(Shell parentShell, FolderEntity parentFolder) {
 		super(parentShell, parentFolder);

@@ -62,23 +62,28 @@ public class KeywordClassRenamingParticipant extends RenameParticipant {
 		String newClassQualifier = (packageName.isEmpty() ? arguments.getNewName() : packageName + "."
 				+ arguments.getNewName()).replace(GroovyConstants.GROOVY_FILE_EXTENSION, "");		
 		
-		String oldScript = GroovyConstants.CUSTOM_KEYWORD_LIB_FILE_NAME + ".'" + oldClassQualifier + ".";
-		String newScript = GroovyConstants.CUSTOM_KEYWORD_LIB_FILE_NAME + ".'" + newClassQualifier + ".";
-		try {
-			ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-			GroovyRefreshUtil.updateScriptReferencesInTestCaseAndCustomScripts(oldScript, newScript, projectEntity);
-			try {
-				PartServiceSingleton.getInstance().getPartService().saveAll(false);
-			} catch (IllegalStateException ex) {
-				
-			}
-			
-			EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, 
-					new FolderTreeEntity(FolderController.getInstance().getKeywordRoot(projectEntity), null));			
-		} catch (Exception e) {
-			LoggerSingleton.getInstance().getLogger().error(e);
-		}
+		updateReferences(oldClassQualifier, newClassQualifier);
+		
 		return null;
+	}
+	
+	public static void updateReferences(String oldClassQualifier, String newClassQualifier) {
+	    String oldScript = GroovyConstants.CUSTOM_KEYWORD_LIB_FILE_NAME + ".'" + oldClassQualifier + ".";
+        String newScript = GroovyConstants.CUSTOM_KEYWORD_LIB_FILE_NAME + ".'" + newClassQualifier + ".";
+        try {
+            ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
+            GroovyRefreshUtil.updateScriptReferencesInTestCaseAndCustomScripts(oldScript, newScript, projectEntity);
+            try {
+                PartServiceSingleton.getInstance().getPartService().saveAll(false);
+            } catch (IllegalStateException ex) {
+                
+            }
+            
+            EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, 
+                    new FolderTreeEntity(FolderController.getInstance().getKeywordRoot(projectEntity), null));          
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
 	}
 
 }

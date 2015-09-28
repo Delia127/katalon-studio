@@ -7,6 +7,9 @@ import javax.inject.Named;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -16,20 +19,19 @@ import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
 
-import com.kms.katalon.composer.components.dialogs.CWizardDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.keyword.constants.StringConstants;
-import com.kms.katalon.composer.keyword.wizard.NewPackageWizard;
+import com.kms.katalon.composer.keyword.dialogs.NewRenamePackageDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -37,7 +39,6 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
-@SuppressWarnings("restriction")
 public class NewPackageHandler {
 
     @Inject
@@ -65,13 +66,11 @@ public class NewPackageHandler {
             Object parentTreeEntity = null;
             Object parent = null;
 
-            if (ArrayUtils.isEmpty(selectedObjects)) {
+            if (ArrayUtils.isEmpty(selectedObjects) || findParentTreeEntity(selectedObjects) == null) {
                 selectedTreeEntity = keywordFolderTreeRoot;
             } else if (selectedObjects[0] instanceof ITreeEntity
                     && StringUtils.equals(((ITreeEntity) selectedObjects[0]).getKeyWord(), KeywordTreeEntity.KEY_WORD)) {
                 selectedTreeEntity = (ITreeEntity) selectedObjects[0];
-            } else if (findParentTreeEntity(selectedObjects) == null) {
-                selectedTreeEntity = keywordFolderTreeRoot;
             }
 
             if (selectedTreeEntity != null) {
@@ -92,19 +91,31 @@ public class NewPackageHandler {
             }
 
             if (parent != null) {
-                NewPackageWizard newPackageCreationWizard = new NewPackageWizard();
-                newPackageCreationWizard.init(PlatformUI.getWorkbench(), new StructuredSelection(parent));
-                CWizardDialog wizardDialog = new CWizardDialog(parentShell, newPackageCreationWizard);
-                wizardDialog.open();
-                if (wizardDialog.getReturnCode() == Window.OK) {
+                IProject groovyProject = GroovyUtil.getGroovyProject(ProjectController.getInstance()
+                        .getCurrentProject());
+                IPackageFragmentRoot root = JavaCore.create(groovyProject).getPackageFragmentRoot(
+                        groovyProject.getFolder(StringConstants.ROOT_FOLDER_NAME_KEYWORD));
+                NewRenamePackageDialog dialog = new NewRenamePackageDialog(parentShell, root, true);
+                // get current name
+                if (!(selectedTreeEntity instanceof FolderTreeEntity)) {
+                    dialog.setName(((IPackageFragment) parent).getElementName());
+                }
+                dialog.open();
+                if (dialog.getReturnCode() == Dialog.OK) {
+                    // Create package
+                    IProgressMonitor monitor = new NullProgressMonitor();
+                    IPackageFragment newPackageFragment = root.createPackageFragment(dialog.getName(), true, monitor);
+                    if (monitor.isCanceled()) {
+                        throw new InterruptedException();
+                    }
+
                     eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
                     // remove any working copy of child complicationUnit that exists in the current package
-                    IPackageFragment packageFragment = (IPackageFragment) newPackageCreationWizard.getCreatedElement();
-                    for (ICompilationUnit compicationUnit : packageFragment.getCompilationUnits()) {
+                    for (ICompilationUnit compicationUnit : newPackageFragment.getCompilationUnits()) {
                         compicationUnit.discardWorkingCopy();
                     }
-                    eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, new PackageTreeEntity(packageFragment,
-                            (ITreeEntity) parentTreeEntity));
+                    eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, new PackageTreeEntity(
+                            newPackageFragment, (ITreeEntity) parentTreeEntity));
                 }
             }
 

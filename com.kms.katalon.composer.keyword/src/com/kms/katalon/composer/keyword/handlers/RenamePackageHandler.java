@@ -8,14 +8,18 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jdt.core.IPackageFragment;
-import org.eclipse.jdt.ui.refactoring.RenameSupport;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
@@ -25,11 +29,13 @@ import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.keyword.constants.StringConstants;
+import com.kms.katalon.composer.keyword.dialogs.NewRenamePackageDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.groovy.util.GroovyRefreshUtil;
+import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class RenamePackageHandler {
 
@@ -48,9 +54,11 @@ public class RenamePackageHandler {
             @Override
             public void handleEvent(Event event) {
                 Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-                
-                if (object == null || !(object instanceof PackageTreeEntity)) { return; }
-                
+
+                if (object == null || !(object instanceof PackageTreeEntity)) {
+                    return;
+                }
+
                 try {
                     PackageTreeEntity packageTreeEntity = (PackageTreeEntity) object;
                     IPackageFragment packageFragment = (IPackageFragment) packageTreeEntity.getObject();
@@ -88,15 +96,24 @@ public class RenamePackageHandler {
             }
             String oldPackagePath = parentPackageFragmentFolder.getName() + IPath.SEPARATOR
                     + packageFragment.getElementName();
-            RenameSupport support = RenameSupport.create(packageFragment, null, RenameSupport.UPDATE_REFERENCES);
-            if (support != null && support.preCheck().isOK()) {
-                // oldScript: custom keyword scripts that contain the current
-                // package before renaming.
+
+            IProject groovyProject = GroovyUtil.getGroovyProject(ProjectController.getInstance().getCurrentProject());
+            IPackageFragmentRoot root = JavaCore.create(groovyProject).getPackageFragmentRoot(
+                    groovyProject.getFolder(StringConstants.ROOT_FOLDER_NAME_KEYWORD));
+            NewRenamePackageDialog dialog = new NewRenamePackageDialog(parentShell, root, false);
+            dialog.setName(packageFragment.getElementName());
+            dialog.open();
+            if (dialog.getReturnCode() == Dialog.OK) {
+                // oldScript: custom keyword scripts that contain the current package before renaming.
                 String oldScript = "CustomKeywords.'" + packageFragment.getElementName() + ".";
-                
-                //Returns if user canceled the dialog
-                if (!support.openDialog(parentShell, false)) { return; }
-                
+
+                // Rename package
+                IProgressMonitor monitor = new NullProgressMonitor();
+                packageFragment.rename(dialog.getName(), true, monitor);
+                if (monitor.isCanceled()) {
+                    throw new InterruptedException();
+                }
+
                 // refresh explorer.
                 eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
                 ProjectEntity project = ProjectController.getInstance().getCurrentProject();
@@ -107,8 +124,7 @@ public class RenamePackageHandler {
                 // refresh project to all editors know that change.
                 parentPackageFragmentFolder.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
                 String newPkName = "";
-                // after renaming completely, update references of the renamed
-                // package.
+                // after renaming completely, update references of the renamed package.
                 for (Object object : parentTreeEntity.getChildren()) {
                     String treeEntityPathAfterRenaming = "";
                     String newPackageName = "";
@@ -121,8 +137,7 @@ public class RenamePackageHandler {
 
                     if (!childrenEntityPathBeforeRenaming.contains(treeEntityPathAfterRenaming)) {
                         newPkName = newPackageName;
-                        // newScript: custom keyword scripts that contain the
-                        // current package before renaming.
+                        // newScript: custom keyword scripts that contain the current package before renaming.
                         String newScript = "CustomKeywords.'" + newPackageName + ".";
                         GroovyRefreshUtil.updateScriptReferencesInTestCaseAndCustomScripts(oldScript, newScript,
                                 ProjectController.getInstance().getCurrentProject());

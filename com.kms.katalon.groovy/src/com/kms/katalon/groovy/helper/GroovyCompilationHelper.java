@@ -173,6 +173,10 @@ public class GroovyCompilationHelper {
 	}
 	
 	private static ICompilationUnit createType(IPackageFragment parentPackage, String typeName) throws Exception {
+	    return createType(parentPackage, typeName, true);
+	}
+	
+	private static ICompilationUnit createType(IPackageFragment parentPackage, String typeName, boolean needDefaultImport) throws Exception {
 		boolean needsSave;
 		ICompilationUnit connectedCU= null;
 		try {
@@ -202,7 +206,7 @@ public class GroovyCompilationHelper {
 			CompilationUnit astRoot= createASTForImports(parentCU);
 			existingImports= getExistingImports(astRoot);
 
-			imports = addImports(parentPackage, typeName, astRoot);
+            imports = needDefaultImport ? addImports(parentPackage, typeName, astRoot) : new ImportsManager(astRoot);
 
 			String typeContent= constructTypeStub(typeName, parentCU, imports, lineDelimiter);
 
@@ -268,9 +272,19 @@ public class GroovyCompilationHelper {
 		}
 		return imports;
 	}
+
+	public static ICompilationUnit createGroovyType(IPackageFragment parentPackage, String typeName)
+            throws Exception {
+	    return createGroovyType(parentPackage, typeName, true, true);
+	}
 	
-	public static ICompilationUnit createGroovyType(IPackageFragment parentPackage, String typeName) throws Exception {
-		createType(parentPackage, typeName);
+    public static ICompilationUnit createGroovyType(IPackageFragment parentPackage, String typeName, boolean noClassDeclaration, boolean needDefaultImport)
+            throws Exception {
+        if (noClassDeclaration) {
+            createType(parentPackage, typeName);
+        } else {
+            createType(parentPackage, typeName, needDefaultImport);
+        }
 		GroovyCompilationUnit unit = (GroovyCompilationUnit) parentPackage
 				.getCompilationUnit(getCompilationUnitName(typeName));
 		try {
@@ -298,9 +312,11 @@ public class GroovyCompilationHelper {
 				}
 			}
 
-			// remove type declaration for scripts
-			ISourceRange range = unit.getTypes()[0].getSourceRange();
-			multi.addChild(new DeleteEdit(range.getOffset(), range.getLength()));
+            if (noClassDeclaration) {
+             // remove type declaration for scripts
+                ISourceRange range = unit.getTypes()[0].getSourceRange();
+                multi.addChild(new DeleteEdit(range.getOffset(), range.getLength()));
+            }
 
 			if (multi.hasChildren()) {
 				unit.applyTextEdit(multi, null);

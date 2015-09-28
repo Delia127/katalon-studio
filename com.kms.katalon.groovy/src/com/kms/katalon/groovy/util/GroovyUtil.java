@@ -499,10 +499,9 @@ public class GroovyUtil {
         return "Script" + System.currentTimeMillis();
     }
 
-    @SuppressWarnings("unused")
-    private static ICompilationUnit createGroovyScript(IPackageFragment parentPackage, String typeName)
+    public static ICompilationUnit createGroovyScript(IPackageFragment parentPackage, String typeName)
             throws Exception {
-        return GroovyCompilationHelper.createGroovyType(parentPackage, typeName);
+        return GroovyCompilationHelper.createGroovyType(parentPackage, typeName, false, false);
     }
 
     public static String getScriptPackageRelativePathForFolder(FolderEntity folder) {

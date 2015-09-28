@@ -20,3 +20,6 @@ workspace/
 
 # Mac Metadata Files
 .DS_Store
+.metadata/
+.recommenders/
+.e4css/
