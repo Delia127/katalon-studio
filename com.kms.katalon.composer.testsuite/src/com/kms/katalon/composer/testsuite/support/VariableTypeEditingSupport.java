@@ -9,15 +9,15 @@ import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.swt.widgets.Composite;
 
-import com.kms.katalon.composer.testsuite.parts.TestSuitePart;
+import com.kms.katalon.composer.testsuite.parts.TestSuitePartDataBindingView;
 import com.kms.katalon.entity.link.VariableLink;
 import com.kms.katalon.entity.link.VariableLink.VariableType;
 
 public class VariableTypeEditingSupport extends EditingSupport {
     private static final List<String> variableTypes = VariableType.getValueStrings();
-    private TestSuitePart mpart;
+    private TestSuitePartDataBindingView mpart;
 
-    public VariableTypeEditingSupport(ColumnViewer viewer, TestSuitePart mpart) {
+    public VariableTypeEditingSupport(ColumnViewer viewer, TestSuitePartDataBindingView mpart) {
         super(viewer);
         this.mpart = mpart;
     }
@@ -36,7 +36,7 @@ public class VariableTypeEditingSupport extends EditingSupport {
     protected Object getValue(Object element) {
         if (element != null && element instanceof VariableLink) {
             VariableLink link = (VariableLink) element;
-            return variableTypes.indexOf(link.getType().getDisplayName());
+            return variableTypes.indexOf(link.getType().toString());
         }
         return 0;
     }
@@ -48,8 +48,9 @@ public class VariableTypeEditingSupport extends EditingSupport {
             int chosenIndex = (int) value;
             VariableType variableType = VariableType.fromValue(variableTypes.get(chosenIndex));
             if (variableType != link.getType()) {
-            	link.setTestDataLinkId(StringUtils.EMPTY);
-                link.setType(variableType);                
+                link.setTestDataLinkId(StringUtils.EMPTY);
+                link.setType(variableType);
+                link.setValue("");
                 getViewer().update(element, null);
                 mpart.setDirty(true);
             }

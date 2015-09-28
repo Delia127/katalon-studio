@@ -34,6 +34,7 @@ Require-Bundle: net.sf.supercsv.super-csv,
  org.apache.commons.io,
  org.apache.commons.lang,
  org.apache.xmlbeans,
- com.kms.katalon.constant
+ com.kms.katalon.constant,
+ com.google.gson
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .

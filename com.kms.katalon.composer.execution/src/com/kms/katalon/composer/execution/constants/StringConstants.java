@@ -80,6 +80,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PREF_ERROR_MSG_VAL_MUST_BE_AN_INT_BETWEEN_X_Y = "Value must be an Integer between {0} and {1}";
     
     // MailPreferencePage
+    public static final String PREF_GROUP_LBL_MAIL_SERVER = "Mail Server Settings";
     public static final String PREF_LBL_HOST = "Host";
     public static final String PREF_LBL_SECURITY_PROTOCOL = "Protocol";
     public static final String PREF_LBL_PORT = "Port";
@@ -88,4 +89,29 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PREF_LBL_REPORT_RECIPIENTS = "Report Recipients";
     public static final String PREF_LBL_SIGNATURE = "Signature";
     public static final String PREF_LBL_SEND_ATTACHMENT = "Send attachment";
+    public static final String PREF_GROUP_LBL_EXECUTION_MAIL = "Post-Execution Options";    
+
+    // DriverPreferencePage
+    public static final String SETT_COL_PREFERENCE_NAME = NAME;
+    public static final String SETT_COL_PREFERENCE_TYPE = "Type";
+    public static final String SETT_COL_PREFERENCE_VALUE = VALUE;
+    public static final String SETT_TOOLITEM_ADD = ADD;
+    public static final String SETT_TOOLITEM_REMOVE = DELETE;
+    public static final String SETT_TOOLITEM_CLEAR = CLEAR;
+    public static final String SETT_TOOLITEM_UP = UP;
+    public static final String SETT_TOOLITEM_DOWN = DOWN;
+    public static final String SETT_ERROR_MSG_UNABLE_TO_SAVE_PROJ_SETTS = "Unable to save project settings";
+    
+    // AddNewDriverPropertyDialog
+    public static final String DIA_LBL_NAME = NAME;
+    public static final String DIA_LBL_TYPE = "Type";
+    public static final String DIA_LBL_VALUE = VALUE;
+    public static final String DIA_SHELL_ADD_NEW_PREFERENCE = "Add new preference";
+    public static final String DIA_SHELL_EDIT_PREFERENCE = "Edit preference";
+    
+    // ListPropertyValueBuilderDialog
+    public static final String DIA_LIST_PROPERTY_VALUE_NAME = "List Property Builder Dialog";
+    
+    // MapPropertyValueBuilderDialog
+    public static final String DIA_MAP_PROPERTY_VALUE_NAME = "Dictionary Property Builder Dialog";
 }

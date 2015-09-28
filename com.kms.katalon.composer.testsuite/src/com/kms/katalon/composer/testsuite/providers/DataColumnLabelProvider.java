@@ -12,21 +12,19 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.widgets.Display;
 
-public class DataColumnLabelProvider extends StyledCellLabelProvider{
-    
+public class DataColumnLabelProvider extends StyledCellLabelProvider {
+
     private String searchString;
-    
+
     public DataColumnLabelProvider() {
         super();
         searchString = StringUtils.EMPTY;
     }
-    
-     
-    
+
     public void setSearchString(String text) {
         searchString = text.trim().toLowerCase();
     }
-    
+
     @Override
     public void update(ViewerCell cell) {
         String cellText = cell.getElement().toString();
@@ -38,9 +36,8 @@ public class DataColumnLabelProvider extends StyledCellLabelProvider{
             List<StyleRange> styleRanges = new ArrayList<StyleRange>();
             while (matcher.find()) {
                 int rangeLength = matcher.end() - matcher.start();
-                StyleRange myStyledRange = 
-                        new StyleRange(matcher.start(), rangeLength, null, 
-                            Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW));
+                StyleRange myStyledRange = new StyleRange(matcher.start(), rangeLength, null, Display.getCurrent()
+                        .getSystemColor(SWT.COLOR_YELLOW));
                 styleRanges.add(myStyledRange);
             }
             cell.setStyleRanges(styleRanges.toArray(new StyleRange[0]));

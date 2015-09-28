@@ -246,9 +246,15 @@ public class ReportUtil {
 		testStepLogRecord.setDescription(xmlLogRecord.getProperties().containsKey(
 				StringConstants.XML_LOG_DESCRIPTION_PROPERTY) ? xmlLogRecord.getProperties().get(
 				StringConstants.XML_LOG_DESCRIPTION_PROPERTY) : "");
+		try {
+	        testStepLogRecord.setIndex(Integer.valueOf(xmlLogRecord.getProperties().get(
+	                StringConstants.XML_LOG_STEP_INDEX)));
+		} catch (NumberFormatException e) {
+		    // error with log, set -1 to indicate error
+		    testStepLogRecord.setIndex(-1);
+		}
 		Object object = stack.peekLast();
 		if (object instanceof TestCaseLogRecord || object instanceof TestStepLogRecord) {
-			testStepLogRecord.setIndex(((ILogRecord) object).getChildRecords().length);
 			((ILogRecord) object).addChildRecord(testStepLogRecord);
 		}
 

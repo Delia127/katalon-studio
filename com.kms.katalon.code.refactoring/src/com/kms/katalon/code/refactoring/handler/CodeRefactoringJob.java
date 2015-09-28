@@ -12,7 +12,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import com.kms.katalon.code.refactoring.filter.OldSettingFileNameFilter;
 import com.kms.katalon.code.refactoring.setting.CodeRefactoringSettingStore;
 import com.kms.katalon.controller.KeywordController;
-import com.kms.katalon.core.setting.PropertySettingStore;
+import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.groovy.util.GroovyRefreshUtil;
 
@@ -34,7 +34,7 @@ public class CodeRefactoringJob extends Job {
                     "com.kms.katalon.core", projectEntity);
             monitor.worked(1);
 
-            File settingFolder = new File(projectDir, PropertySettingStore.ROOT_FOLDER_NAME);
+            File settingFolder = new File(projectDir, PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME);
             for (String fileName : settingFolder.list(new OldSettingFileNameFilter())) {
                 FileUtils.moveFile(new File(settingFolder, fileName),
                         new File(settingFolder, fileName.replace("qautomate", "katalon")));

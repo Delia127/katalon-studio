@@ -38,4 +38,8 @@ public interface ILogRecord {
 	public String getMessage();
 
 	public void setMessage(String message);
+	
+	public ILogRecord getParentLogRecord();
+
+    public void setParentLogRecord(ILogRecord parentLogRecord);
 }

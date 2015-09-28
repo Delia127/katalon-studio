@@ -3,6 +3,9 @@ package com.kms.katalon.composer.testsuite.constants;
 import com.kms.katalon.constants.GlobalStringConstants;
 
 public class StringConstants extends GlobalStringConstants {
+    // Common used
+    public static final String INFORMATION_TITLE = "Infomation";
+    
     // TestDataToolItemConstants
     public static final String CONS_ADD = ADD;
     public static final String CONS_ADD_BEFORE = "Add before";
@@ -39,6 +42,8 @@ public class StringConstants extends GlobalStringConstants {
 
     // TestDataColumnChooserDialog
     public static final String DIA_MSG_CHOOSE_DATA_COLUMN = "Choose a column";
+    public static final String DIA_TABLE_EMPTY_COLUMN = "<empty>";
+    public static final String DIA_WARN_MSG_EMPTY_COLUMN_NAME = "This column has empty header.";
 
     // TestDataCellEditor
     public static final String EDI_TITLE_TEST_DATA_BROWSER = "Test Data Browser";
@@ -64,6 +69,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String LIS_TITLE_TEST_DATA_BROWSER = "Test Data Browser";
     public static final String LIS_ERROR_MSG_UNABLE_TO_ADD_TEST_DATA = "Unable to add Test Data.";
     public static final String LIS_INFO_MSG_DONE = DONE;
+    public static final String LIS_INFO_SELECT_A_TEST_CASE = "Please selec a test case.";
 
     // NewTestSuitePopupMenuContribution
     public static final String MENU_CONTEXT_TEST_SUITE = TEST_SUITE;
@@ -124,5 +130,19 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_LBL_TOOLTIP_RETRY = "Please define the maximum number of retries that a failed test case would be re-executed until it is successfully passed.";
 
     // VariableValueEditingSupport
-    public static final String SUP_WARN_MSG_TEST_DATA_NOT_AVAILABLE = "Test Data is not available.";
+    public static final String SUP_WARN_MSG_TEST_DATA_NOT_FOUND = "Test data: {0} not found.";
+    public static final String SUP_WARN_MSG_TEST_DATA_NOT_AVAILABLE = "Please set data source for test data: {0}.";
+    public static final String SUP_INFORMATION_MSG_CHOOSE_TEST_DATA = "You need to choose a test data at column Test Data first.";
+
+    // VariableTableLabelProvider
+    public static final String LP_WARN_MSG_SET_TEST_DATA = "Please choose a test data.";
+    public static final String LP_WARN_MSG_SET_TEST_DATA_NOTIFY = "Please choose a test data at column Test Data.";
+    public static final String LP_WARN_MSG_SET_TEST_DATA_COLUMN = "Please choose a test data's column.";
+    public static final String LP_WARN_MSG_SET_TEST_DATA_COLUMN_NOTIFY = "Please choose a test data's column at column Value.";
+    
+    // TestDataTableLabelProvider
+    public static final String LP_WARN_MSG_TEST_DATA_MISSING = "Test data: {0} is missing.";
+    
+    // TestCaseTableLabelProvider
+    public static final String LP_WARN_MSG_TEST_CASE_MISSING = "Test case: {0} is missing.";
 }

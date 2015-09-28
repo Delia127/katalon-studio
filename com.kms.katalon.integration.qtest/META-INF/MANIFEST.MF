@@ -6,7 +6,7 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: com.kms.katalon.entity;bundle-version="1.0.0",
- org.qas.qtest.sdk-java;bundle-version="1.1.0",
+ org.qas.qtest.sdk-java,
  com.fasterxml.jackson.core.jackson-core,
  com.kms.katalon.core;bundle-version="1.0.0",
  com.kms.katalon.custom;bundle-version="1.0.0",

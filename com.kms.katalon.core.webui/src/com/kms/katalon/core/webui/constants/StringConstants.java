@@ -411,4 +411,8 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String KW_CATEGORIZE_TEXT = "Text";
 	public static final String KW_CATEGORIZE_WINDOW = "Window";
 	public static final String KW_CATEGORIZE_UTILITIES = "Utilities";
+	
+	// WebUiDriverPropertySettingStore
+	public static final String WEB_UI_PROPERTY_FILE_NAME = "com.kms.katalon.core.webui";
+    public static final String KW_LOG_WEB_UI_PROPERTY_SETTING = "User set preference: [''{0}'', ''{1}'']";
 }

@@ -35,111 +35,111 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class NewTestSuiteHandler {
 
-	@Inject
-	IEventBroker eventBroker;
+    @Inject
+    IEventBroker eventBroker;
 
-	@Inject
-	EModelService modelService;
+    @Inject
+    EModelService modelService;
 
-	@Inject
-	MApplication application;
+    @Inject
+    MApplication application;
 
-	@Inject
-	EPartService partService;
+    @Inject
+    EPartService partService;
 
-	@Inject
-	private ESelectionService selectionService;
+    @Inject
+    private ESelectionService selectionService;
 
-	private FolderTreeEntity testSuiteTreeRoot;
+    private FolderTreeEntity testSuiteTreeRoot;
 
-	private String newDefaultName = StringConstants.HAND_DEFAULT_NAME_NEW_TEST_SUITE;
+    private String newDefaultName = StringConstants.HAND_DEFAULT_NAME_NEW_TEST_SUITE;
 
-	@CanExecute
-	private boolean canExecute() {
-		try {
-			if (ProjectController.getInstance().getCurrentProject() != null) {
-				return true;
-			}
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-		return false;
-	}
+    @CanExecute
+    private boolean canExecute() {
+        try {
+            if (ProjectController.getInstance().getCurrentProject() != null) {
+                return true;
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        return false;
+    }
 
-	@Execute
-	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
-		try {
-			Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-			ITreeEntity parentTreeEntity = findParentTreeEntity(selectedObjects);
-			if (parentTreeEntity == null) {
-				parentTreeEntity = testSuiteTreeRoot;
-			}
+    @Execute
+    public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
+        try {
+            Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
+            ITreeEntity parentTreeEntity = findParentTreeEntity(selectedObjects);
+            if (parentTreeEntity == null) {
+                parentTreeEntity = testSuiteTreeRoot;
+            }
 
-			if (parentTreeEntity != null) {
-				FolderEntity parentFolderEntity = (FolderEntity) parentTreeEntity.getObject();
-				String suggestedName = TestSuiteController.getInstance().getAvailableTestSuiteName(parentFolderEntity,
-						newDefaultName);
+            if (parentTreeEntity != null) {
+                FolderEntity parentFolderEntity = (FolderEntity) parentTreeEntity.getObject();
+                String suggestedName = TestSuiteController.getInstance().getAvailableTestSuiteName(parentFolderEntity,
+                        newDefaultName);
 
-				NewTestSuiteDialog dialog = new NewTestSuiteDialog(parentShell, parentFolderEntity);
-				dialog.setName(suggestedName);
-				dialog.open();
+                NewTestSuiteDialog dialog = new NewTestSuiteDialog(parentShell, parentFolderEntity);
+                dialog.setName(suggestedName);
+                dialog.open();
 
-				if (dialog.getReturnCode() == Dialog.OK) {
-					TestSuiteEntity testSuite = TestSuiteController.getInstance().addNewTestSuite(parentFolderEntity,
-							dialog.getName());
+                if (dialog.getReturnCode() == Dialog.OK) {
+                    TestSuiteEntity testSuite = TestSuiteController.getInstance().addNewTestSuite(parentFolderEntity,
+                            dialog.getName());
 
-					if (testSuite != null) {
-						eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
-						eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, new TestSuiteTreeEntity(testSuite,
-								parentTreeEntity));
-						eventBroker.post(EventConstants.TEST_SUITE_OPEN, testSuite);
-						partService.saveAll(true);
-					}
-				}
-			}
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-			MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,
-					StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_SUITE);
-		}
-	}
+                    if (testSuite != null) {
+                        eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
+                        eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, new TestSuiteTreeEntity(testSuite,
+                                parentTreeEntity));
+                        eventBroker.post(EventConstants.TEST_SUITE_OPEN, testSuite);
+                        partService.saveAll(true);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,
+                    StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_SUITE);
+        }
+    }
 
-	public static ITreeEntity findParentTreeEntity(Object[] selectedObjects) throws Exception {
-		if (selectedObjects != null) {
-			for (Object entity : selectedObjects) {
-				if (entity instanceof ITreeEntity) {
-					Object entityObject = ((ITreeEntity) entity).getObject();
-					if (entityObject instanceof FolderEntity) {
-						FolderEntity folder = (FolderEntity) entityObject;
-						if (folder.getFolderType() == FolderType.TESTSUITE) {
-							return (ITreeEntity) entity;
-						}
-					} else if (entityObject instanceof TestSuiteEntity) {
-						return (ITreeEntity) ((ITreeEntity) entity).getParent();
-					}
-				}
-			}
-		}
-		return null;
-	}
+    public static ITreeEntity findParentTreeEntity(Object[] selectedObjects) throws Exception {
+        if (selectedObjects != null) {
+            for (Object entity : selectedObjects) {
+                if (entity instanceof ITreeEntity) {
+                    Object entityObject = ((ITreeEntity) entity).getObject();
+                    if (entityObject instanceof FolderEntity) {
+                        FolderEntity folder = (FolderEntity) entityObject;
+                        if (folder.getFolderType() == FolderType.TESTSUITE) {
+                            return (ITreeEntity) entity;
+                        }
+                    } else if (entityObject instanceof TestSuiteEntity) {
+                        return (ITreeEntity) ((ITreeEntity) entity).getParent();
+                    }
+                }
+            }
+        }
+        return null;
+    }
 
-	@Inject
-	@Optional
-	private void catchTestSuiteFolderTreeEntitiesRoot(
-			@UIEventTopic(EventConstants.EXPLORER_RELOAD_INPUT) List<Object> treeEntities) {
-		try {
-			for (Object o : treeEntities) {
-				Object entityObject = ((ITreeEntity) o).getObject();
-				if (entityObject instanceof FolderEntity) {
-					FolderEntity folder = (FolderEntity) entityObject;
-					if (folder.getFolderType() == FolderType.TESTSUITE) {
-						testSuiteTreeRoot = (FolderTreeEntity) o;
-						return;
-					}
-				}
-			}
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-	}
+    @Inject
+    @Optional
+    private void catchTestSuiteFolderTreeEntitiesRoot(
+            @UIEventTopic(EventConstants.EXPLORER_RELOAD_INPUT) List<Object> treeEntities) {
+        try {
+            for (Object o : treeEntities) {
+                Object entityObject = ((ITreeEntity) o).getObject();
+                if (entityObject instanceof FolderEntity) {
+                    FolderEntity folder = (FolderEntity) entityObject;
+                    if (folder.getFolderType() == FolderType.TESTSUITE) {
+                        testSuiteTreeRoot = (FolderTreeEntity) o;
+                        return;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
 }

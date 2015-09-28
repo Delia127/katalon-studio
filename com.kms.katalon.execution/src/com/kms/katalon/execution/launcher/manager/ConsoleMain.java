@@ -25,11 +25,11 @@ import com.kms.katalon.core.testdata.reader.CSVSeperator;
 import com.kms.katalon.core.testdata.reader.CsvWriter;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.entity.ExecutionEntity;
 import com.kms.katalon.execution.entity.IRunConfiguration;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
-import com.kms.katalon.execution.factory.BuiltinRunConfigurationFactory;
 import com.kms.katalon.execution.launcher.AbstractLauncher;
 import com.kms.katalon.execution.launcher.ConsoleLauncher;
 import com.kms.katalon.execution.util.ExecutionUtil;
@@ -281,7 +281,7 @@ public class ConsoleMain {
 			ExecutionEntity executionEntity = new ExecutionEntity();
 			executionEntity.setTestSuite(testSuite);
 			for (String sBrowserType : argBrowserType.split(";")) {
-				IRunConfiguration runConfig = BuiltinRunConfigurationFactory.getInstance().getRunConfiguration(sBrowserType, testSuite, new HashMap<String, String>());
+				IRunConfiguration runConfig = RunConfigurationCollector.getInstance().getRunConfiguration(sBrowserType, testSuite, new HashMap<String, String>());
 				if (runConfig != null) {
 					executionEntity.getRunConfigurations().add(runConfig);
 					executionEntity.setReportFolderPath(reportFolderPath);

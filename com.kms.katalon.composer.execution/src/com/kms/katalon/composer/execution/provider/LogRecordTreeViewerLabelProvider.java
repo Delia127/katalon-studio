@@ -47,8 +47,8 @@ public class LogRecordTreeViewerLabelProvider extends StyledCellLabelProvider {
 		if (cell.getElement() != null) {
 			if (cell.getElement() instanceof ILogTreeNode) {
 				ILogTreeNode logTreeNode = (ILogTreeNode) cell.getElement();
-				
-				styledString.append(logTreeNode.getMessage());
+				String indexString = logTreeNode.getIndexString();
+				styledString.append((indexString.isEmpty() ? "" : (indexString + " - ")) + logTreeNode.getMessage());
 			}
 			
 			if (cell.getElement() instanceof ILogParentTreeNode) {

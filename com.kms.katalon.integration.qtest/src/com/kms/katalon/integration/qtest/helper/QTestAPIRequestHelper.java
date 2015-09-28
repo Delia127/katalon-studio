@@ -17,8 +17,7 @@ import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
 public class QTestAPIRequestHelper {
 
     /**
-     * Connects to qTest server via API, sends POST or PUT request and returns
-     * the response.
+     * Connects to qTest server via API, sends POST or PUT request and returns the response.
      * 
      * @param url
      *            qTest URL as {@link String}
@@ -67,7 +66,8 @@ public class QTestAPIRequestHelper {
         } catch (IOException e) {
             if (con != null) {
                 try {
-                    throw new QTestAPIConnectionException(con.getResponseCode(), e.getMessage());
+                    throw new QTestAPIConnectionException(con.getResponseCode(), e.getMessage() + "\n. Body = [" + body
+                            + "]");
                 } catch (IOException ex) {
                     throw new QTestAPIConnectionException(ex.getMessage());
                 }
@@ -94,8 +94,7 @@ public class QTestAPIRequestHelper {
     }
 
     /**
-     * Connects to qTest server via API, sends GET request and returns the
-     * response.
+     * Connects to qTest server via API, sends GET request and returns the response.
      * 
      * @param url
      *            qTest URL as {@link String}

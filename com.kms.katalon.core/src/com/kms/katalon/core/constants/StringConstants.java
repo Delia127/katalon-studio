@@ -46,6 +46,7 @@ public class StringConstants {
 
 	// AppPOI
     public static final String UTIL_EXC_FILE_IS_UNSUPPORTED = "File is unsupported: {0}";
+    public static final String UTIL_EXC_FILE_NOT_FOUND = "File: {0} not found.";
     
     //ShettPOI
     public static final String EXCEL_INVALID_ROW_NUMBER = "Invalid row index: {0}. Posible index cannot be greater than {1}.";
@@ -132,6 +133,7 @@ public class StringConstants {
 	public static final String XML_LOG_DEVICE_NAME_PROPERTY = "deviceName";
 	public static final String XML_LOG_DEVICE_PLATFORM_PROPERTY = "devicePlatform";
 	public static final String XML_LOG_START_LINE_PROPERTY = "startLine";
+	public static final String XML_LOG_STEP_INDEX = "stepIndex";
 	public static final String XML_LOG_OS_PROPERTY = "os";
 	public static final String XML_LOG_HOST_NAME_PROPERTY = "hostName";
 	
@@ -166,4 +168,5 @@ public class StringConstants {
 	public static final String CONF_PROPERTY_EXECUTION_SOURCE_NAME = XML_LOG_NAME_PROPERTY;
 	public static final String CONF_PROPERTY_EXECUTION_SOURCE_ID = XML_LOG_ID_PROPERTY;
 	public static final String CONF_PROPERTY_EXECUTION_SOURCE_DESCRIPTION = XML_LOG_DESCRIPTION_PROPERTY;
+	public static final String CONF_PROPERTY_CUSTOM_PROPERTY_PROFILE = "katalon.execution.profile";
 }

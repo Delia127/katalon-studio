@@ -60,8 +60,6 @@ import com.kms.katalon.integration.qtest.entity.QTestTestCase;
 
 public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIntegrationView {
     private StyledText txtQTestId;
-    private StyledText txtQTestName;
-    private StyledText txtQTestTestCaseId;
     private StyledText txtTestCaseRunId;
 
     private TestSuiteEntity testSuiteEntity;
@@ -98,22 +96,10 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
         compositeInfo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
         Label lblQTestId = new Label(compositeInfo, SWT.NONE);
-        lblQTestId.setText("QTest ID");
+        lblQTestId.setText("Test Log ID");
 
         txtQTestId = new StyledText(compositeInfo, SWT.READ_ONLY);
         txtQTestId.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
-        Label lblQTestName = new Label(compositeInfo, SWT.NONE);
-        lblQTestName.setText("QTest Name");
-
-        txtQTestName = new StyledText(compositeInfo, SWT.READ_ONLY);
-        txtQTestName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
-        Label lblTestCaseId = new Label(compositeInfo, SWT.NONE);
-        lblTestCaseId.setText("Test Case ID");
-
-        txtQTestTestCaseId = new StyledText(compositeInfo, SWT.READ_ONLY);
-        txtQTestTestCaseId.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Label lblTestRunId = new Label(compositeInfo, SWT.NONE);
         lblTestRunId.setText("Test Run ID");
@@ -125,6 +111,7 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
         lblAttachment.setText("Attachment");
 
         txtAttachment = new StyledText(compositeInfo, SWT.NONE);
+        txtAttachment.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         intialize();
 
@@ -132,7 +119,6 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
     }
 
     private void intialize() {
-        // TODO Auto-generated method stub
         try {
             qTestSuite = getQTestSuite(testSuiteLogRecord);
             reloadView();
@@ -162,12 +148,9 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
     }
 
     private void reloadView() {
-        // TODO Auto-generated method stub
         try {
             txtQTestId.setText("");
-            txtQTestName.setText("");
             txtAttachment.setText("");
-            txtQTestTestCaseId.setText("");
             txtTestCaseRunId.setText("");
             clearMouseDownListener(txtQTestId);
 
@@ -175,14 +158,10 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
                 return;
             }
 
-            txtQTestTestCaseId.setText(Long.toString(qTestCase.getId()));
-
             qTestRun = QTestIntegrationTestSuiteManager.getTestRunByTestSuiteAndTestCaseId(qTestSuite,
                     qTestCase.getId());
-
-            if (qTestRun != null) {
-                txtTestCaseRunId.setText(Long.toString(qTestRun.getId()));
-            }
+            
+            if (qTestRun == null) { return; }
 
             IntegratedEntity reportIntegratedEntity = reportEntity
                     .getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
@@ -193,9 +172,10 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
                 qTestCaseLog = qTestReport.getTestLogMap().get(getTestCaseLogIndex(testCaseLogRecord));
                 if (qTestCaseLog != null) {
                     txtQTestId.setText(Long.toString(qTestCaseLog.getId()));
-                    txtQTestName.setText(qTestCaseLog.getName());
                     registerTxtQTestIdClickListener();
-
+                    
+                    txtTestCaseRunId.setText(Long.toString(qTestRun.getId()));
+                    
                     String attachmentString = qTestCaseLog.isAttachmentIncluded() ? "Yes" : "No";
                     txtAttachment.setText(attachmentString);
                     return;

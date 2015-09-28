@@ -88,7 +88,7 @@
 									<id>org.eclipse.persistence:javax.persistence:2.1.0-RC1</id>
 								</artifact>
 								<artifact>
-									<id>org.qas.qtest:qtest-sdk-java:1.1.0</id>
+									<id>org.qas.qtest:qtest-sdk-java:1.2.1</id>
 								</artifact>
 								<artifact>
 									<id>net.sf.supercsv:super-csv:2.1.0</id>

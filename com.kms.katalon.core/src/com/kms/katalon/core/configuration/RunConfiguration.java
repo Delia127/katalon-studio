@@ -13,6 +13,8 @@ public class RunConfiguration {
 	public static final String EXCUTION_SOURCE_NAME = StringConstants.CONF_PROPERTY_EXECUTION_SOURCE_NAME;
 	public static final String EXCUTION_SOURCE_ID = StringConstants.CONF_PROPERTY_EXECUTION_SOURCE_ID;
 	public static final String EXCUTION_SOURCE_DESCRIPTION = StringConstants.CONF_PROPERTY_EXECUTION_SOURCE_DESCRIPTION;
+	public static final String CUSTOME_EXECUTION_PROFILE = StringConstants.CONF_PROPERTY_CUSTOM_PROPERTY_PROFILE;
+	
 
 	public static String getProperty(String key) {
 		return System.getProperty(key);
@@ -52,6 +54,10 @@ public class RunConfiguration {
 
 	public static String getExecutionSourceDescription() {
 		return getProperty(EXCUTION_SOURCE_DESCRIPTION);
+	}
+	
+	public static String getCustomExecutionProfile() {
+	    return getProperty(CUSTOME_EXECUTION_PROFILE);
 	}
 
 }

@@ -7,25 +7,23 @@ import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.testsuite.editors.DataIterationCellEditor;
-import com.kms.katalon.composer.testsuite.parts.TestSuitePart;
-import com.kms.katalon.composer.testsuite.tree.TestDataLinkTreeNode;
+import com.kms.katalon.composer.testsuite.parts.TestSuitePartDataBindingView;
 import com.kms.katalon.entity.link.IterationEntity;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
 
 public class TestDataIterationColumnEditingSupport extends EditingSupport {
 
-    private TestSuitePart mpart;
+    private TestSuitePartDataBindingView mpart;
 
-    public TestDataIterationColumnEditingSupport(ColumnViewer viewer, TestSuitePart mpart) {
+    public TestDataIterationColumnEditingSupport(ColumnViewer viewer, TestSuitePartDataBindingView mpart) {
         super(viewer);
         this.mpart = mpart;
     }
 
     @Override
     protected CellEditor getCellEditor(Object element) {
-        if (element != null && element instanceof TestDataLinkTreeNode) {
-            TestDataLinkTreeNode linkTreeNode = (TestDataLinkTreeNode) element;
-            TestCaseTestDataLink testDataLink = linkTreeNode.getTestDataLink();
+        if (element != null && element instanceof TestCaseTestDataLink) {
+            TestCaseTestDataLink testDataLink = (TestCaseTestDataLink) element;
             if (testDataLink.getIterationEntity() != null) {
                 return new DataIterationCellEditor((Composite) getViewer().getControl(), testDataLink
                         .getIterationEntity().clone());
@@ -36,9 +34,8 @@ public class TestDataIterationColumnEditingSupport extends EditingSupport {
 
     @Override
     protected boolean canEdit(Object element) {
-        if (element != null && element instanceof TestDataLinkTreeNode) {
-            TestDataLinkTreeNode linkTreeNode = (TestDataLinkTreeNode) element;
-            TestCaseTestDataLink testDataLink = linkTreeNode.getTestDataLink();
+        if (element != null && element instanceof TestCaseTestDataLink) {
+            TestCaseTestDataLink testDataLink = (TestCaseTestDataLink) element;
 
             if (testDataLink.getIterationEntity() != null) {
                 return true;
@@ -49,14 +46,13 @@ public class TestDataIterationColumnEditingSupport extends EditingSupport {
 
     @Override
     protected Object getValue(Object element) {
-        if (element != null && element instanceof TestDataLinkTreeNode) {
-            TestDataLinkTreeNode linkTreeNode = (TestDataLinkTreeNode) element;
-            TestCaseTestDataLink testDataLink = linkTreeNode.getTestDataLink();
+        if (element != null && element instanceof TestCaseTestDataLink) {
+            TestCaseTestDataLink testDataLink = (TestCaseTestDataLink) element;
 
             if (testDataLink.getIterationEntity() != null) {
                 switch (testDataLink.getIterationEntity().getIterationType()) {
                     case ALL:
-                        return "All";
+                        return testDataLink.getIterationEntity().getIterationType().name();
                     default:
                         return testDataLink.getIterationEntity().getValue();
                 }
@@ -68,10 +64,9 @@ public class TestDataIterationColumnEditingSupport extends EditingSupport {
 
     @Override
     protected void setValue(Object element, Object value) {
-        if (element != null && element instanceof TestDataLinkTreeNode && value != null
+        if (element != null && element instanceof TestCaseTestDataLink && value != null
                 && value instanceof IterationEntity) {
-            TestDataLinkTreeNode linkTreeNode = (TestDataLinkTreeNode) element;
-            TestCaseTestDataLink testDataLink = linkTreeNode.getTestDataLink();
+            TestCaseTestDataLink testDataLink = (TestCaseTestDataLink) element;
 
             if (!testDataLink.getIterationEntity().equals(value)) {
                 testDataLink.setIterationEntity((IterationEntity) value);

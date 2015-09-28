@@ -7,8 +7,6 @@ Bundle-Vendor: KMS
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .
 Bundle-ActivationPolicy: lazy
-Import-Package: javax.annotation;version="1.2.0",
- javax.inject;version="1.0.0"
 Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.entity,
  com.kms.katalon.constant,
@@ -46,5 +44,8 @@ Require-Bundle: org.eclipse.e4.core.di,
  org.eclipse.jdt.launching,
  org.eclipse.e4.core.commands,
  org.eclipse.e4.core.contexts,
- org.eclipse.e4.ui.workbench.renderers.swt
-Export-Package: com.kms.katalon.composer.execution.handlers
+ org.eclipse.e4.ui.workbench.renderers.swt,
+ com.kms.katalon.composer.preferences,
+ com.google.guava
+Export-Package: com.kms.katalon.composer.execution.handlers,
+ com.kms.katalon.composer.execution.settings

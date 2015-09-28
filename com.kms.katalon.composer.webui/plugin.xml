@@ -46,6 +46,12 @@
       </page>
        <page
             category="com.kms.katalon.composer.webui.mainPage"
+            class="com.kms.katalon.composer.webui.setting.IEPerferencePage"
+            id="com.kms.katalon.composer.webui.page.ie"
+            name="IE">
+      </page>
+       <page
+            category="com.kms.katalon.composer.webui.mainPage"
             class="com.kms.katalon.composer.webui.setting.RemoteWebPreferencePage"
             id="com.kms.katalon.composer.webui.page.remoteweb"
             name="Remote Web">

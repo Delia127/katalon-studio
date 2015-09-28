@@ -46,6 +46,14 @@ public class CodeRefactoringHandler implements EventHandler {
                                 //Do nothing
                             }
                         }
+                        
+                        try {
+                            //wait for current progress bar disappear.
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            //Do nothing
+                        }
+                        
                         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
                         String projectDir = projectEntity.getFolderLocation();
                         boolean isMigrated = CodeRefactoringSettingStore.isMigrated(projectDir);

@@ -9,99 +9,112 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
+import com.kms.katalon.core.constants.StringConstants;
+
 public class XmlLogRecord extends LogRecord implements Serializable {
 
-	private static final String LOG_TIME_FORMAT = "MM-dd-yyyy hh:mm:ss a";
-	private static final long serialVersionUID = 1L;
-	private String method;
-	private int nestedLevel;
-	private String startTime;
-	private String endTime;
-	private List<XmlLogRecordException> exceptions;
-	private Map<String, String> properties;
-	
-	public XmlLogRecord(Level level, String message) {
-		super(level, message);
-		setLevel(level);
-		setMessage(message);
-	}
-	
-	public XmlLogRecord(Level level, String message, int nestedLevel) {
-		super(level, message);
-		setLevel(level);
-		setMessage(message);
-		setNestedLevel(nestedLevel);
-	}
-	
-	public XmlLogRecord(Level level, String message, int nestedLevel, Map<String, String> properties) {
-		super(level, message);
-		setLevel(level);
-		setMessage(message);
-		setNestedLevel(nestedLevel);
-		setProperties(properties);
-	}
+    private static final String LOG_TIME_FORMAT = "MM-dd-yyyy hh:mm:ss a";
+    private static final long serialVersionUID = 1L;
+    private String method;
+    private int nestedLevel;
+    private String startTime;
+    private String endTime;
+    private List<XmlLogRecordException> exceptions;
+    private Map<String, String> properties;
 
-	public String getMethod() {
-		return method;
-	}
+    public XmlLogRecord(Level level, String message) {
+        super(level, message);
+        setLevel(level);
+        setMessage(message);
+    }
 
-	public void setMethod(String method) {
-		this.method = method;
-	}
+    public XmlLogRecord(Level level, String message, int nestedLevel) {
+        super(level, message);
+        setLevel(level);
+        setMessage(message);
+        setNestedLevel(nestedLevel);
+    }
 
-	public int getNestedLevel() {
-		return nestedLevel;
-	}
+    public XmlLogRecord(Level level, String message, int nestedLevel, Map<String, String> properties) {
+        super(level, message);
+        setLevel(level);
+        setMessage(message);
+        setNestedLevel(nestedLevel);
+        setProperties(properties);
+    }
 
-	public void setNestedLevel(int nestedLevel) {
-		this.nestedLevel = nestedLevel;
-	}
+    public String getMethod() {
+        return method;
+    }
 
-	public String getStartTime() {
-		return startTime;
-	}
+    public void setMethod(String method) {
+        this.method = method;
+    }
 
-	public void setStartTime(String startTime) {
-		this.startTime = startTime;
-	}
+    public int getNestedLevel() {
+        return nestedLevel;
+    }
 
-	public String getEndTime() {
-		return endTime;
-	}
+    public void setNestedLevel(int nestedLevel) {
+        this.nestedLevel = nestedLevel;
+    }
 
-	public void setEndTime(String endTime) {
-		this.endTime = endTime;
-	}
+    public String getStartTime() {
+        return startTime;
+    }
 
-	public Map<String, String> getProperties() {
-		if(properties == null)
-			properties = new HashMap<String, String>();
-		return properties;
-	}
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
 
-	public void setProperties(Map<String, String> properties) {
-		this.properties = properties;
-	}
+    public String getEndTime() {
+        return endTime;
+    }
 
-	@Override
-	public String toString() {		
-		String logMess = this.getMessage();
-		String logLevel = this.getLevel().getName();
-		return getLogTimeString() + " - " + logLevel + " - " + logMess;
-	}
-	
-	public String getLogTimeString() {
-		SimpleDateFormat format = new SimpleDateFormat(LOG_TIME_FORMAT);
-		String logTime = format.format(new Date(this.getMillis()));
-		return logTime;
-	}
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
 
-	public List<XmlLogRecordException> getExceptions() {
-		return exceptions;
-	}
+    public Map<String, String> getProperties() {
+        if (properties == null)
+            properties = new HashMap<String, String>();
+        return properties;
+    }
 
-	public void setExceptions(List<XmlLogRecordException> exceptions) {
-		this.exceptions = exceptions;
-	}
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
 
+    @Override
+    public String toString() {
+        String logMess = this.getMessage();
+        String logLevel = this.getLevel().getName();
+        return getLogTimeString() + " - " + logLevel + " - " + logMess;
+    }
+
+    public String getLogTimeString() {
+        SimpleDateFormat format = new SimpleDateFormat(LOG_TIME_FORMAT);
+        String logTime = format.format(new Date(this.getMillis()));
+        return logTime;
+    }
+
+    public List<XmlLogRecordException> getExceptions() {
+        return exceptions;
+    }
+
+    public void setExceptions(List<XmlLogRecordException> exceptions) {
+        this.exceptions = exceptions;
+    }
+
+    public int getIndex() {
+        String indexPropertyValue = getProperties().get(StringConstants.XML_LOG_STEP_INDEX);
+        if (indexPropertyValue == null) {
+            return -1;
+        }
+        try {
+            return Integer.valueOf(indexPropertyValue);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
 }

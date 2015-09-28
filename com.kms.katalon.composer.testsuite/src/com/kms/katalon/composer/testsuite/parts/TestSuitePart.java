@@ -1,9 +1,8 @@
 package com.kms.katalon.composer.testsuite.parts;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -19,47 +18,19 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
-import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ListViewer;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.TreeViewerColumn;
-import org.eclipse.jface.viewers.ViewerFilter;
-import org.eclipse.jface.window.ToolTip;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.DragSource;
-import org.eclipse.swt.dnd.DragSourceEvent;
-import org.eclipse.swt.dnd.DragSourceListener;
-import org.eclipse.swt.dnd.DropTarget;
-import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
@@ -67,86 +38,29 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeColumn;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.control.ImageButton;
 import com.kms.katalon.composer.components.impl.dialogs.AddMailRecipientDialog;
-import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
-import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
-import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.explorer.custom.AdvancedSearchDialog;
-import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
-import com.kms.katalon.composer.explorer.providers.EntityProvider;
-import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
-import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
-import com.kms.katalon.composer.testsuite.constants.TestDataToolItemConstants;
 import com.kms.katalon.composer.testsuite.constants.TestSuiteEventConstants;
-import com.kms.katalon.composer.testsuite.listeners.TestCaseTableDropListener;
-import com.kms.katalon.composer.testsuite.listeners.TestCaseTableKeyListener;
-import com.kms.katalon.composer.testsuite.listeners.TestDataToolItemListener;
-import com.kms.katalon.composer.testsuite.providers.IsRunColumnLabelProvider;
-import com.kms.katalon.composer.testsuite.providers.TestCaseTableLabelProvider;
-import com.kms.katalon.composer.testsuite.providers.TestCaseTableViewer;
-import com.kms.katalon.composer.testsuite.providers.TestCaseTableViewerFilter;
-import com.kms.katalon.composer.testsuite.providers.TestDataTreeContentProvider;
-import com.kms.katalon.composer.testsuite.providers.TestDataTreeLabelProvider;
-import com.kms.katalon.composer.testsuite.providers.VariableTableLabelProvider;
-import com.kms.katalon.composer.testsuite.support.TestCaseIdColumnEditingSupport;
-import com.kms.katalon.composer.testsuite.support.TestCaseIsRunColumnEditingSupport;
-import com.kms.katalon.composer.testsuite.support.TestDataCombinationColumnEditingSupport;
-import com.kms.katalon.composer.testsuite.support.TestDataIDColumnEditingSupport;
-import com.kms.katalon.composer.testsuite.support.TestDataIterationColumnEditingSupport;
-import com.kms.katalon.composer.testsuite.support.VariableTestDataLinkColumnEditingSupport;
-import com.kms.katalon.composer.testsuite.support.VariableTypeEditingSupport;
-import com.kms.katalon.composer.testsuite.support.VariableValueEditingSupport;
-import com.kms.katalon.composer.testsuite.transfer.TestSuiteTestCaseLinkTransfer;
-import com.kms.katalon.composer.testsuite.transfer.TestSuiteTestCaseLinkTransferData;
-import com.kms.katalon.composer.testsuite.tree.TestDataLinkTreeNode;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
-import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.controller.TestEnvironmentController;
 import com.kms.katalon.controller.TestSuiteController;
-import com.kms.katalon.core.testdata.TestData;
-import com.kms.katalon.core.testdata.TestDataFactory;
-import com.kms.katalon.entity.folder.FolderEntity;
-import com.kms.katalon.entity.folder.FolderEntity.FolderType;
-import com.kms.katalon.entity.link.TestCaseTestDataLink;
-import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
-import com.kms.katalon.entity.link.VariableLink;
-import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class TestSuitePart implements EventHandler {
-    private static final String IS_RUN_COLUMN_HEADER = StringConstants.PA_COL_RUN;
-
-    private static final String PK_COLUMN_HEADER = StringConstants.PA_COL_ID;
-
-    private static final String NUMBER_COLUMN_HEADER = StringConstants.PA_COL_NO;
-
-    private static final String TEST_CASE_NAME_COLUMN_HEADER = StringConstants.PA_COL_NAME;
-
-    private static final String DESCRIPTION_COLUMN_HEADER = StringConstants.PA_COL_DESC;
 
     private static final String LAST_UPDATE_LABEL = StringConstants.PA_LBL_LAST_UPDATED;
 
@@ -170,10 +84,6 @@ public class TestSuitePart implements EventHandler {
 
     private static final int MAX_HEIGHT_OF_TEXT_BOX = 20;
 
-    private static final String IMAGE_SEARCH_TOOLTIP = StringConstants.PA_IMAGE_TIP_SEARCH;
-    private static final String IMAGE_CLOSE_SEARCH_TOOLTIP = StringConstants.PA_IMAGE_TIP_CLOSE_SEARCH;
-    private static final String IMAGE_ADVANCED_SEARCH_TOOLTIP = StringConstants.PA_IMAGE_TIP_ADVANCED_SEARCH;
-
     @Inject
     protected EModelService modelService;
 
@@ -184,82 +94,60 @@ public class TestSuitePart implements EventHandler {
     private IEventBroker eventBroker;
 
     private Composite compositeExecution, compositeMain, compositeInformation, compositeInformationHeader,
-            compositeTableContent, compositeInformationDetails;
+            compositeInformationDetails;
 
     private ScrolledComposite compositeTablePart;
 
-    private boolean isGeneralInfoCompositeExpanded, isExecutionCompositeExpanded, isTestDataCompositeExpanded;
-
-    private Table testCaseTable;
+    private boolean isGeneralInfoCompositeExpanded, isExecutionCompositeExpanded;
 
     private Text textTestSuiteName, textDescription, txtTestSuiteId, txtCreatedDate, txtLastUpdate, txtLastRun,
             txtRerun, txtUserDefinePageLoadTimeout;
 
     private Link lblLastRun;
 
-    private TestCaseTableViewer testCaseTableViewer;
-    private TableColumn tblclmnIsRun;
     private MPart mpart;
-
-    private int testSuiteTestCaseSelectedIdx = 0;
 
     private Composite compositeExecutionDetails;
     private org.eclipse.swt.widgets.List listMailRcp;
     private ListViewer listMailRcpViewer;
     private Button btnAddMailRcp, btnDeleteMailRcp, btnClearMailRcp;
     private Button radioUseDefaultPageLoadTimeout, radioUserDefinePageLoadTimeout;
-    private Composite compositeTestCase;
-    private SashForm sashForm;
-    private Table testCaseVariableTable;
-    private TableViewer testCaseVariableTableViewer;
-    private Composite compositeLastRunAndReRun, compositeVariable, compositeTestData, compositeBindingChild;
-
-    private TreeViewer testDataTreeViewer;
-    private Composite compositeTestDataTreeTable;
-
-    private ImageButton btnExpandInformation, btnExpandCompositeTestData, btnExpandExecutionComposite;
-
-    private Composite compositeTestDataDetails;
+    private Composite compositeLastRunAndReRun;
+    private ImageButton btnExpandInformation, btnExpandExecutionComposite;
 
     private TestSuiteCompositePart parentTestSuiteCompositePart;
-    private boolean isTestSuiteLoading;
 
-    private GridData gdTestDataTable;
-    private Composite compositeTableSearch;
-    private Text txtSearch;
+    private Label lblGeneralInformation, lblExecutionInformation;
 
-    private CLabel lblSearch, lblFilter;
+    private TestSuitePartTestCaseView childrenView;
 
-    private boolean isSearching;
+    private List<Thread> uiThreads;
 
-    private Label lblGeneralInformation, lblTestDataInformation, lblExecutionInformation;
+    private Composite parent;
 
-    Listener layoutTestDataCompositeListener = new Listener() {
+    private boolean isLoading;
 
-        @Override
-        public void handleEvent(org.eclipse.swt.widgets.Event event) {
-            layoutTestDataComposite();
-        }
-    };
-
-    Listener layoutGeneralCompositeListener = new Listener() {
+    private Listener layoutGeneralCompositeListener = new Listener() {
 
         @Override
         public void handleEvent(org.eclipse.swt.widgets.Event event) {
+            isGeneralInfoCompositeExpanded = !isGeneralInfoCompositeExpanded;
             layoutGeneralInfo();
         }
     };
 
-    Listener layoutExecutionCompositeListener = new Listener() {
+    private Listener layoutExecutionCompositeListener = new Listener() {
 
         @Override
         public void handleEvent(org.eclipse.swt.widgets.Event event) {
+            isExecutionCompositeExpanded = !isExecutionCompositeExpanded;
             layoutExecutionInfo();
         }
     };
 
     @PostConstruct
     public void createControls(Composite parent, MPart mpart) {
+        this.parent = parent;
         this.mpart = mpart;
 
         if (mpart.getParent().getParent() instanceof MGenericTile
@@ -270,9 +158,11 @@ public class TestSuitePart implements EventHandler {
             }
         }
 
-        initExpandedState();
+        childrenView = new TestSuitePartTestCaseView(this);
+        uiThreads = new LinkedList<Thread>();
+        isLoading = false;
 
-        parent.setLayout(new GridLayout(1, false));
+        initExpandedState();
 
         registerEventBrokerListerners();
 
@@ -282,7 +172,7 @@ public class TestSuitePart implements EventHandler {
 
         layoutGeneralInfo();
         layoutExecutionInfo();
-        // layoutTestDataComposite();
+        childrenView.layout();
     }
 
     public MPart getMPart() {
@@ -290,10 +180,9 @@ public class TestSuitePart implements EventHandler {
     }
 
     private void initExpandedState() {
-        isGeneralInfoCompositeExpanded = true;
-        isExecutionCompositeExpanded = true;
-        isTestDataCompositeExpanded = true;
-        isSearching = false;
+        isGeneralInfoCompositeExpanded = false;
+        isExecutionCompositeExpanded = false;
+        childrenView.initExpandedState();
     }
 
     @Focus
@@ -322,8 +211,6 @@ public class TestSuitePart implements EventHandler {
 
             @Override
             public void run() {
-                isGeneralInfoCompositeExpanded = !isGeneralInfoCompositeExpanded;
-
                 compositeInformationDetails.setVisible(isGeneralInfoCompositeExpanded);
                 if (!isGeneralInfoCompositeExpanded) {
                     ((GridData) compositeInformationDetails.getLayoutData()).exclude = true;
@@ -343,7 +230,6 @@ public class TestSuitePart implements EventHandler {
         Display.getDefault().timerExec(10, new Runnable() {
             @Override
             public void run() {
-                isExecutionCompositeExpanded = !isExecutionCompositeExpanded;
                 compositeExecutionDetails.setVisible(isExecutionCompositeExpanded);
                 if (!isExecutionCompositeExpanded) {
                     ((GridData) compositeExecutionDetails.getLayoutData()).exclude = true;
@@ -355,27 +241,6 @@ public class TestSuitePart implements EventHandler {
                 compositeExecution.layout(true, true);
                 compositeExecution.getParent().layout();
                 redrawBtnExpandExecutionInfo();
-            }
-        });
-    }
-
-    private void layoutTestDataComposite() {
-        Display.getDefault().timerExec(10, new Runnable() {
-            @Override
-            public void run() {
-                isTestDataCompositeExpanded = !isTestDataCompositeExpanded;
-                compositeTestDataDetails.setVisible(isTestDataCompositeExpanded);
-
-                if (!isTestDataCompositeExpanded) {
-                    ((GridData) compositeTestDataDetails.getLayoutData()).exclude = true;
-                    compositeTestData.setSize(compositeTestData.getSize().x, compositeTestData.getSize().y
-                            - compositeVariable.getSize().y);
-                } else {
-                    ((GridData) compositeTestDataDetails.getLayoutData()).exclude = false;
-                }
-                compositeTestData.layout(true, true);
-                compositeTestData.getParent().layout();
-                redrawBtnExpandCompositeTestData();
             }
         });
     }
@@ -496,45 +361,7 @@ public class TestSuitePart implements EventHandler {
             }
         });
 
-        btnExpandCompositeTestData.addListener(SWT.MouseDown, layoutTestDataCompositeListener);
-
-        lblTestDataInformation.addListener(SWT.MouseDown, layoutTestDataCompositeListener);
-
-        compositeTablePart.addListener(SWT.Resize, new Listener() {
-            @Override
-            public void handleEvent(org.eclipse.swt.widgets.Event event) {
-                int compositeHeight = compositeTablePart.getClientArea().height;
-                gdTestDataTable.heightHint = Math.min(200, compositeHeight / 3);
-                compositeBindingChild.layout(true);
-            }
-        });
-
-        txtSearch.addKeyListener(new KeyListener() {
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.keyCode == SWT.CR) {
-                    filterTestCaseLinkBySearchedText();
-                }
-            }
-        });
-
-    }
-
-    private void filterTestCaseLinkBySearchedText() {
-        if (txtSearch.getText().isEmpty()) {
-            isSearching = false;
-        } else {
-            isSearching = true;
-        }
-
-        testCaseTableViewer.setSearchedString(txtSearch.getText());
-        testCaseTableViewer.refresh(true);
-        updateStatusSearchLabel();
+        childrenView.registerControlModifyListeners();
     }
 
     private void openReportOfLastRun() {
@@ -555,83 +382,90 @@ public class TestSuitePart implements EventHandler {
     }
 
     public void loadTestSuite(final TestSuiteEntity testSuite) {
-        Display.getCurrent().syncExec(new Runnable() {
-
+        final Runnable task = new Runnable() {
             @Override
             public void run() {
                 try {
-                    isTestSuiteLoading = true;
-                    String testSuiteIdForDisplay = TestSuiteController.getInstance().getIdForDisplay(testSuite)
-                            .replace("\\", "/");
-
-                    // binding name
-                    textTestSuiteName.setText(testSuite.getName());
-
-                    // binding description
-                    if (testSuite.getDescription() != null) {
-                        textDescription.setText(testSuite.getDescription());
+                    if (parent.isDisposed()) {
+                        return;
                     }
-
-                    txtTestSuiteId.setText(testSuiteIdForDisplay);
-
-                    if (testSuite.getDateCreated() != null) {
-                        txtCreatedDate.setText(testSuite.getDateCreated().toString());
-                    }
-
-                    if (testSuite.getDateModified() != null) {
-                        txtLastUpdate.setText(testSuite.getDateModified().toString());
-                    }
-
-                    if (testSuite.getLastRun() != null) {
-                        lblLastRun.setText("<A>" + LAST_RUN_LABEL + "</A>");
-                        lblLastRun.setToolTipText(LAST_RUN_LABEL_TOOLTIP);
-                        txtLastRun.setText(testSuite.getLastRun().toString());
-                    } else {
-                        lblLastRun.setText(LAST_RUN_LABEL);
-                        lblLastRun.setToolTipText("");
-                    }
-
-                    txtRerun.setText(String.valueOf(testSuite.getNumberOfRerun()));
-
-                    // if (testSuite.getDataFileId() != null) {
-                    // textTestDataId.setText(testSuite.getDataFileId());
-                    // }
-
-                    // binding mailRecipient
-                    listMailRcpViewer.setInput(TestSuiteController.getInstance().mailRcpStringToArray(
-                            testSuite.getMailRecipient()));
-
-                    testCaseTableViewer.setInput(new ArrayList<TestSuiteTestCaseLink>(testSuite
-                            .getTestSuiteTestCaseLinks()));
-                    processTestSuteTestCaseLinkSelected();
-
-                    // binding page load timeout values
-                    short pageLoadTimeOut = testSuite.getPageLoadTimeout();
-                    if (testSuite.isPageLoadTimeoutDefault()) {
-                        radioUseDefaultPageLoadTimeout.setSelection(true);
-                        radioUserDefinePageLoadTimeout.setSelection(false);
-                        txtUserDefinePageLoadTimeout.setEnabled(false);
-                    } else {
-                        radioUseDefaultPageLoadTimeout.setSelection(false);
-                        radioUserDefinePageLoadTimeout.setSelection(true);
-                        txtUserDefinePageLoadTimeout.setEnabled(true);
-                        txtUserDefinePageLoadTimeout.setText(Integer.toString(pageLoadTimeOut));
-                    }
-
-                    isTestSuiteLoading = false;
-
+                    loadTestSuiteInfo(testSuite);
+                    childrenView.loadInput();
                 } catch (Exception e) {
                     LoggerSingleton.logError(e);
                     MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                             StringConstants.PA_ERROR_MSG_UNABLE_TO_LOAD_TEST_SUITE);
                 }
+            }
+        };
 
+        Thread loadTestSuiteThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                isLoading = true;
+                parent.getDisplay().syncExec(task);
+                isLoading = false;
             }
         });
+
+        uiThreads.add(loadTestSuiteThread);
+
+        loadTestSuiteThread.start();
+    }
+
+    private void loadTestSuiteInfo(final TestSuiteEntity testSuite) throws Exception {
+        String testSuiteIdForDisplay = TestSuiteController.getInstance().getIdForDisplay(testSuite);
+
+        // binding name
+        textTestSuiteName.setText(testSuite.getName());
+
+        // binding description
+        if (testSuite.getDescription() != null) {
+            textDescription.setText(testSuite.getDescription());
+        }
+
+        txtTestSuiteId.setText(testSuiteIdForDisplay);
+
+        if (testSuite.getDateCreated() != null) {
+            txtCreatedDate.setText(testSuite.getDateCreated().toString());
+        }
+
+        if (testSuite.getDateModified() != null) {
+            txtLastUpdate.setText(testSuite.getDateModified().toString());
+        }
+
+        if (testSuite.getLastRun() != null) {
+            lblLastRun.setText("<A>" + LAST_RUN_LABEL + "</A>");
+            lblLastRun.setToolTipText(LAST_RUN_LABEL_TOOLTIP);
+            txtLastRun.setText(testSuite.getLastRun().toString());
+        } else {
+            lblLastRun.setText(LAST_RUN_LABEL);
+            lblLastRun.setToolTipText("");
+        }
+
+        txtRerun.setText(String.valueOf(testSuite.getNumberOfRerun()));
+
+        // binding mailRecipient
+        listMailRcpViewer
+                .setInput(TestSuiteController.getInstance().mailRcpStringToArray(testSuite.getMailRecipient()));
+
+        // binding page load timeout values
+        short pageLoadTimeOut = testSuite.getPageLoadTimeout();
+        if (testSuite.isPageLoadTimeoutDefault()) {
+            radioUseDefaultPageLoadTimeout.setSelection(true);
+            radioUserDefinePageLoadTimeout.setSelection(false);
+            txtUserDefinePageLoadTimeout.setEnabled(false);
+        } else {
+            radioUseDefaultPageLoadTimeout.setSelection(false);
+            radioUserDefinePageLoadTimeout.setSelection(true);
+            txtUserDefinePageLoadTimeout.setEnabled(true);
+            txtUserDefinePageLoadTimeout.setText(Integer.toString(pageLoadTimeOut));
+        }
 
     }
 
     private void createComponents(Composite parent) {
+        parent.setLayout(new GridLayout(1, false));
         parent.setBackground(ColorUtil.getExtraLightGrayBackgroundColor());
         compositeMain = new Composite(parent, SWT.NONE);
         GridLayout glCompositeMain = new GridLayout(1, false);
@@ -642,7 +476,8 @@ public class TestSuitePart implements EventHandler {
 
         createGeneralInformationComposite();
         createExecutionInformationComposite();
-        createCompositeTestCase();
+
+        compositeTablePart = childrenView.createCompositeTestCase(compositeMain);
     }
 
     private void createGeneralInformationComposite() {
@@ -781,14 +616,6 @@ public class TestSuitePart implements EventHandler {
         btnExpandExecutionComposite.getParent().setRedraw(true);
     }
 
-    private void redrawBtnExpandCompositeTestData() {
-        if (isTestDataCompositeExpanded) {
-            btnExpandCompositeTestData.setImage(ImageConstants.IMG_16_ARROW_UP_BLACK);
-        } else {
-            btnExpandCompositeTestData.setImage(ImageConstants.IMG_16_ARROW_DOWN_BLACK);
-        }
-    }
-
     private void createExecutionInformationComposite() {
         compositeExecution = new Composite(compositeMain, SWT.NONE);
         compositeExecution.setBackground(ColorUtil.getCompositeBackgroundColor());
@@ -918,641 +745,28 @@ public class TestSuitePart implements EventHandler {
         glCompositeMailRcpButtons.marginHeight = 0;
         compositeMailRcpButtons.setLayout(glCompositeMailRcpButtons);
 
-        btnAddMailRcp = new Button(compositeMailRcpButtons, SWT.NONE);
+        btnAddMailRcp = new Button(compositeMailRcpButtons, SWT.FLAT);
         btnAddMailRcp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         btnAddMailRcp.setText(StringConstants.PA_BTN_ADD);
 
-        btnDeleteMailRcp = new Button(compositeMailRcpButtons, SWT.NONE);
+        btnDeleteMailRcp = new Button(compositeMailRcpButtons, SWT.FLAT);
         btnDeleteMailRcp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
         btnDeleteMailRcp.setText(StringConstants.PA_BTN_DEL);
 
-        btnClearMailRcp = new Button(compositeMailRcpButtons, SWT.NONE);
+        btnClearMailRcp = new Button(compositeMailRcpButtons, SWT.FLAT);
         btnClearMailRcp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
         btnClearMailRcp.setText(StringConstants.PA_BTN_CLEAR);
     }
 
-    private void createCompositeTestCaseButtons() {
-        compositeTestCase = new Composite(sashForm, SWT.NONE);
-        compositeTestCase.setLayout(new GridLayout(1, false));
-        compositeTestCase.setBackground(ColorUtil.getCompositeBackgroundColor());
-        final Composite compositeTableButtons = new Composite(compositeTestCase, SWT.NONE);
-        compositeTableButtons.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        GridLayout glCompositeTableButtons = new GridLayout(1, false);
-        compositeTableButtons.setBackground(ColorUtil.getCompositeBackgroundColor());
-        glCompositeTableButtons.marginHeight = 0;
-        glCompositeTableButtons.marginWidth = 0;
-        compositeTableButtons.setLayout(glCompositeTableButtons);
-
-        ToolBar toolBar = new ToolBar(compositeTableButtons, SWT.FLAT | SWT.RIGHT);
-
-        ToolItem tltmAddTestCases = new ToolItem(toolBar, SWT.NONE);
-        tltmAddTestCases.setText(StringConstants.PA_TOOLITEM_ADD);
-        tltmAddTestCases.setToolTipText(StringConstants.PA_TOOLITEM_ADD);
-        tltmAddTestCases.setImage(ImageConstants.IMG_24_ADD);
-        tltmAddTestCases.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                try {
-                    ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-                    if (currentProject != null) {
-                        EntityProvider entityProvider = new EntityProvider();
-                        TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(compositeTableButtons
-                                .getShell(), new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(
-                                entityProvider));
-
-                        dialog.setAllowMultiple(true);
-                        dialog.setTitle(StringConstants.PA_TITLE_TEST_CASE_BROWSER);
-                        dialog.setInput(TreeEntityUtil.getChildren(null, FolderController.getInstance()
-                                .getTestCaseRoot(currentProject)));
-                        if (dialog.open() == Window.OK) {
-                            Object[] selectedObjects = dialog.getResult();
-                            for (Object object : selectedObjects) {
-                                if (object instanceof ITreeEntity) {
-                                    ITreeEntity treeEntity = (ITreeEntity) object;
-                                    if (treeEntity.getObject() instanceof FolderEntity) {
-                                        addTestCaseFolderToTable((FolderEntity) treeEntity.getObject());
-                                    } else if (treeEntity.getObject() instanceof TestCaseEntity) {
-                                        testCaseTableViewer.addTestCase((TestCaseEntity) treeEntity.getObject());
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } catch (Exception ex) {
-                    MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                            StringConstants.PA_ERROR_MSG_UNABLE_TO_ADD_TEST_CASES);
-                    LoggerSingleton.logError(ex);
-                }
-            }
-        });
-
-        ToolItem tltmRemoveTestCases = new ToolItem(toolBar, SWT.NONE);
-        tltmRemoveTestCases.setText(StringConstants.PA_TOOLITEM_REMOVE);
-        tltmRemoveTestCases.setToolTipText(StringConstants.PA_TOOLITEM_REMOVE);
-        tltmRemoveTestCases.setImage(ImageConstants.IMG_24_REMOVE);
-        tltmRemoveTestCases.addSelectionListener(new SelectionAdapter() {
-            @SuppressWarnings({ "unchecked" })
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                try {
-                    testCaseTableViewer.removeTestCases(((IStructuredSelection) testCaseTableViewer.getSelection())
-                            .toList());
-                } catch (Exception ex) {
-                    LoggerSingleton.logError(ex);
-                }
-            }
-        });
-
-        ToolItem tltmUp = new ToolItem(toolBar, SWT.NONE);
-        tltmUp.setText(StringConstants.PA_TOOLITEM_UP);
-        tltmUp.setToolTipText(StringConstants.PA_TOOLITEM_UP);
-        tltmUp.setImage(ImageConstants.IMG_24_UP);
-        tltmUp.addSelectionListener(new SelectionAdapter() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                testCaseTableViewer.upTestCase(((IStructuredSelection) testCaseTableViewer.getSelection()).toList());
-            }
-        });
-
-        ToolItem tltmDown = new ToolItem(toolBar, SWT.NONE);
-        tltmDown.setText(StringConstants.PA_TOOLITEM_DOWN);
-        tltmDown.setToolTipText(StringConstants.PA_TOOLITEM_DOWN);
-        tltmDown.setImage(ImageConstants.IMG_24_DOWN);
-        tltmDown.addSelectionListener(new SelectionAdapter() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                testCaseTableViewer.downTestCase(((IStructuredSelection) testCaseTableViewer.getSelection()).toList());
-            }
-        });
-    }
-
-    private void addTestCaseFolderToTable(FolderEntity folder) throws Exception {
-        if (folder.getFolderType() == FolderType.TESTCASE) {
-            FolderController folderController = FolderController.getInstance();
-            for (Object childObject : folderController.getChildren(folder)) {
-                if (childObject instanceof TestCaseEntity) {
-                    testCaseTableViewer.addTestCase((TestCaseEntity) childObject);
-                } else if (childObject instanceof FolderEntity) {
-                    addTestCaseFolderToTable((FolderEntity) childObject);
-                }
-            }
-        }
-    }
-
-    private void updateStatusSearchLabel() {
-        if (isSearching) {
-            lblSearch.setImage(ImageConstants.IMG_16_CLOSE_SEARCH);
-            lblSearch.setToolTipText(IMAGE_CLOSE_SEARCH_TOOLTIP);
-        } else {
-            lblSearch.setImage(ImageConstants.IMG_16_SEARCH);
-            lblSearch.setToolTipText(IMAGE_SEARCH_TOOLTIP);
-        }
-    }
-
-    private void createCompositeTestCaseSearch() {
-        compositeTableSearch = new Composite(compositeTestCase, SWT.BORDER);
-        compositeTableSearch.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        compositeTableSearch.setBackground(ColorUtil.getWhiteBackgroundColor());
-        GridLayout glCompositeTableSearch = new GridLayout(4, false);
-        glCompositeTableSearch.marginWidth = 0;
-        glCompositeTableSearch.marginHeight = 0;
-        compositeTableSearch.setLayout(glCompositeTableSearch);
-
-        txtSearch = new Text(compositeTableSearch, SWT.NONE);
-        txtSearch.setMessage(StringConstants.PA_SEARCH_TEXT_DEFAULT_VALUE);
-        GridData gdTxtInput = new GridData(GridData.FILL_HORIZONTAL);
-        gdTxtInput.grabExcessVerticalSpace = true;
-        gdTxtInput.verticalAlignment = SWT.CENTER;
-        txtSearch.setLayoutData(gdTxtInput);
-
-        Canvas canvasSearch = new Canvas(compositeTableSearch, SWT.NONE);
-        canvasSearch.setLayout(new FillLayout(SWT.HORIZONTAL));
-        lblSearch = new CLabel(canvasSearch, SWT.NONE);
-        updateStatusSearchLabel();
-
-        lblSearch.setCursor(new Cursor(Display.getCurrent(), SWT.CURSOR_HAND));
-        lblSearch.addListener(SWT.MouseUp, new Listener() {
-
-            @Override
-            public void handleEvent(org.eclipse.swt.widgets.Event event) {
-                if (isSearching) {
-                    txtSearch.setText("");
-                }
-
-                filterTestCaseLinkBySearchedText();
-            }
-        });
-
-        Label seperator1 = new Label(compositeTableSearch, SWT.SEPARATOR | SWT.VERTICAL);
-        GridData gd_seperator1 = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
-        gd_seperator1.heightHint = 22;
-        seperator1.setLayoutData(gd_seperator1);
-
-        // label Filter
-        lblFilter = new CLabel(compositeTableSearch, SWT.NONE);
-        lblFilter.setImage(ImageConstants.IMG_16_ADVANCED_SEARCH);
-        lblFilter.setToolTipText(IMAGE_ADVANCED_SEARCH_TOOLTIP);
-        lblFilter.setCursor(new Cursor(Display.getCurrent(), SWT.CURSOR_HAND));
-        lblFilter.addListener(SWT.MouseUp, new Listener() {
-
-            @Override
-            public void handleEvent(org.eclipse.swt.widgets.Event event) {
-                openAdvancedSearchDialog();
-            }
-        });
-    }
-
-    private void openAdvancedSearchDialog() {
-        try {
-            Shell shell = new Shell(compositeTableSearch.getShell());
-            shell.setSize(0, 0);
-            List<String> searchTags = Arrays.asList(TestCaseTreeEntity.SEARCH_TAGS);
-
-            Point pt = compositeTableSearch.toDisplay(1, 1);
-            Point location = new Point(pt.x + compositeTableSearch.getBounds().width, pt.y);
-            AdvancedSearchDialog dialog = new AdvancedSearchDialog(shell, searchTags.toArray(new String[searchTags
-                    .size()]), txtSearch.getText(), location);
-            // set position for dialog
-            if (dialog.open() == Window.OK) {
-                txtSearch.setText(dialog.getOutput());
-                filterTestCaseLinkBySearchedText();
-            }
-
-            shell.getSize();
-            shell.dispose();
-
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-        }
-    }
-
-    private void createCompositeTestCaseContent() {
-        compositeTableContent = new Composite(compositeTestCase, SWT.NONE);
-        compositeTableContent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-
-        testCaseTableViewer = new TestCaseTableViewer(compositeTableContent, SWT.BORDER | SWT.FULL_SELECTION
-                | SWT.MULTI, eventBroker);
-        testCaseTable = testCaseTableViewer.getTable();
-        testCaseTable.setHeaderVisible(true);
-        testCaseTable.setLinesVisible(true);
-
-        TableViewerColumn tableViewerColumnNo = new TableViewerColumn(testCaseTableViewer, SWT.NONE);
-        TableColumn tblclmnNo = tableViewerColumnNo.getColumn();
-        tblclmnNo.setText(NUMBER_COLUMN_HEADER);
-
-        TableViewerColumn tableViewerColumnPK = new TableViewerColumn(testCaseTableViewer, SWT.NONE);
-        TableColumn tblclmnPK = tableViewerColumnPK.getColumn();
-        tblclmnPK.setText(PK_COLUMN_HEADER);
-
-        TableViewerColumn tableViewerColumnName = new TableViewerColumn(testCaseTableViewer, SWT.NONE);
-        TableColumn tblclmnName = tableViewerColumnName.getColumn();
-        tblclmnName.setText(TEST_CASE_NAME_COLUMN_HEADER);
-
-        TableViewerColumn tableViewerColumnDescription = new TableViewerColumn(testCaseTableViewer, SWT.NONE);
-        TableColumn tblclmnDescription = tableViewerColumnDescription.getColumn();
-        tblclmnDescription.setText(DESCRIPTION_COLUMN_HEADER);
-
-        TableViewerColumn tableViewerColumnIsRun = new TableViewerColumn(testCaseTableViewer, SWT.NONE);
-        tblclmnIsRun = tableViewerColumnIsRun.getColumn();
-        tblclmnIsRun.setText(IS_RUN_COLUMN_HEADER);
-        tblclmnIsRun.addListener(SWT.Selection, new Listener() {
-
-            @Override
-            public void handleEvent(org.eclipse.swt.widgets.Event event) {
-                testCaseTableViewer.setIsRunValueAllTestCases();
-            }
-        });
-
-        // set layout of table composite
-        TableColumnLayout tableLayout = new TableColumnLayout();
-        tableLayout.setColumnData(tblclmnNo, new ColumnWeightData(0, 40));
-        tableLayout.setColumnData(tblclmnPK, new ColumnWeightData(15, 100));
-        tableLayout.setColumnData(tblclmnName, new ColumnWeightData(15, 100));
-        tableLayout.setColumnData(tblclmnDescription, new ColumnWeightData(15, 100));
-        tableLayout.setColumnData(tblclmnIsRun, new ColumnWeightData(0, 80));
-
-        compositeTableContent.setLayout(tableLayout);
-
-        testCaseTableViewer.setContentProvider(ArrayContentProvider.getInstance());
-        testCaseTableViewer.setFilters(new ViewerFilter[] { new TestCaseTableViewerFilter() });
-        testCaseTableViewer.getTable().setToolTipText("");
-        ColumnViewerToolTipSupport.enableFor(testCaseTableViewer, ToolTip.NO_RECREATE);
-
-        tableViewerColumnNo
-                .setLabelProvider(new TestCaseTableLabelProvider(TestCaseTableLabelProvider.COLUMN_NO_INDEX));
-        tableViewerColumnPK
-                .setLabelProvider(new TestCaseTableLabelProvider(TestCaseTableLabelProvider.COLUMN_ID_INDEX));
-        tableViewerColumnName.setLabelProvider(new TestCaseTableLabelProvider(
-                TestCaseTableLabelProvider.COLUMN_NAME_INDEX));
-        tableViewerColumnDescription.setLabelProvider(new TestCaseTableLabelProvider(
-                TestCaseTableLabelProvider.COLUMN_DESCRIPTION_INDEX));
-
-        tableViewerColumnIsRun.setLabelProvider(new IsRunColumnLabelProvider());
-        tableViewerColumnIsRun
-                .setEditingSupport(new TestCaseIsRunColumnEditingSupport(testCaseTableViewer, eventBroker));
-
-        tableViewerColumnPK.setEditingSupport(new TestCaseIdColumnEditingSupport(testCaseTableViewer, eventBroker));
-
-        testCaseTable.addKeyListener(new TestCaseTableKeyListener(testCaseTableViewer));
-
-        testCaseTableViewer.addPostSelectionChangedListener(new ISelectionChangedListener() {
-            @Override
-            public void selectionChanged(SelectionChangedEvent event) {
-                processTestSuteTestCaseLinkSelected();
-            }
-
-        });
-
-        createCompositeTestDataAndVariable();
-
-        sashForm.setWeights(new int[] { 5, 5 });
-        hookDropEvent();
-        hookDragEvent();
-    }
-
-    private void hookDropEvent() {
-        DropTarget dt = new DropTarget(testCaseTableViewer.getTable(), DND.DROP_MOVE);
-        List<Transfer> treeEntityTransfers = TransferTypeCollection.getInstance().getTreeEntityTransfer();
-        treeEntityTransfers.add(new TestSuiteTestCaseLinkTransfer());
-        dt.setTransfer(treeEntityTransfers.toArray(new Transfer[treeEntityTransfers.size()]));
-        dt.addDropListener(new TestCaseTableDropListener(testCaseTableViewer, getTestSuite()));
-    }
-
-    private void hookDragEvent() {
-        int operations = DND.DROP_MOVE | DND.DROP_COPY;
-
-        DragSource dragSource = new DragSource(testCaseTableViewer.getTable(), operations);
-        dragSource.setTransfer(new Transfer[] { new TestSuiteTestCaseLinkTransfer() });
-        dragSource.addDragListener(new DragSourceListener() {
-
-            public void dragStart(DragSourceEvent event) {
-                TableItem[] selection = testCaseTableViewer.getTable().getSelection();
-                if (selection.length > 0) {
-                    event.doit = true;
-                } else {
-                    event.doit = false;
-                }
-            };
-
-            public void dragSetData(DragSourceEvent event) {
-                List<TestSuiteTestCaseLinkTransferData> testSuiteTestCaseLinkTransferDatas = new ArrayList<TestSuiteTestCaseLinkTransferData>();
-                TableItem[] selection = testCaseTableViewer.getTable().getSelection();
-                for (TableItem item : selection) {
-                    if (item.getData() instanceof TestSuiteTestCaseLink) {
-                        testSuiteTestCaseLinkTransferDatas.add(new TestSuiteTestCaseLinkTransferData(getTestSuite(),
-                                (TestSuiteTestCaseLink) item.getData()));
-                    }
-                }
-                event.data = testSuiteTestCaseLinkTransferDatas
-                        .toArray(new TestSuiteTestCaseLinkTransferData[testSuiteTestCaseLinkTransferDatas.size()]);
-            }
-
-            public void dragFinished(DragSourceEvent event) {
-                testCaseTableViewer.refresh();
-            }
-        });
-    }
-
-    private void processTestSuteTestCaseLinkSelected() {
-        if (testCaseTableViewer.getSelection() == null)
-            return;
-        if (!(testCaseTableViewer.getSelection() instanceof IStructuredSelection))
-            return;
-
-        IStructuredSelection selection = (IStructuredSelection) testCaseTableViewer.getSelection();
-
-        testCaseVariableTableViewer.cancelEditing();
-        testCaseVariableTable.clearAll();
-
-        testDataTreeViewer.cancelEditing();
-        testDataTreeViewer.getTree().clearAll(true);
-
-        if (selection.size() == 1) {
-            TestSuiteTestCaseLink testCaseLink = (TestSuiteTestCaseLink) selection.getFirstElement();
-            try {
-                TestCaseEntity testCaseEntity = TestCaseController.getInstance().getTestCaseByDisplayId(
-                        testCaseLink.getTestCaseId());
-                if (testCaseEntity != null) {
-                    testDataTreeViewer.setInput(testCaseLink.getTestDataLinks());
-                    testCaseVariableTableViewer.setInput(testCaseLink.getVariableLinks());
-                } else {
-                    testDataTreeViewer.setInput(null);
-                    testCaseVariableTableViewer.setInput(null);
-                    return;
-                }
-
-            } catch (Exception e) {
-                LoggerSingleton.logError(e);
-            }
-
-        } else {
-            testDataTreeViewer.setInput(new TestDataLinkTreeNode[0]);
-            testCaseVariableTableViewer.setInput(Collections.EMPTY_LIST);
-        }
-    }
-
-    private void createCompositeTestData() {
-        compositeTestData = new Composite(compositeBindingChild, SWT.NONE);
-        compositeTestData.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        compositeTestData.setBackground(ColorUtil.getCompositeBackgroundColor());
-
-        GridLayout glCompositeTestData = new GridLayout(1, false);
-        glCompositeTestData.marginWidth = 0;
-        glCompositeTestData.marginHeight = 0;
-        compositeTestData.setLayout(glCompositeTestData);
-
-        Composite compositeTestDataHeader = new Composite(compositeTestData, SWT.NONE);
-        GridLayout glCompositeTestDataHeader = new GridLayout(2, false);
-        glCompositeTestDataHeader.marginWidth = 0;
-        glCompositeTestDataHeader.marginHeight = 0;
-        compositeTestDataHeader.setLayout(glCompositeTestDataHeader);
-        compositeTestDataHeader.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        compositeTestDataHeader.setCursor(compositeTestDataHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
-
-        btnExpandCompositeTestData = new ImageButton(compositeTestDataHeader, SWT.NONE);
-        redrawBtnExpandCompositeTestData();
-
-        lblTestDataInformation = new Label(compositeTestDataHeader, SWT.NONE);
-        lblTestDataInformation.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        lblTestDataInformation.setText(StringConstants.PA_LBL_TEST_DATA);
-        lblTestDataInformation.setFont(JFaceResources.getFontRegistry().getBold(""));
-
-        compositeTestDataDetails = new Composite(compositeTestData, SWT.NONE);
-        compositeTestDataDetails.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        GridLayout glCompositeTestDataDetails = new GridLayout(1, false);
-        glCompositeTestDataDetails.marginHeight = 0;
-        glCompositeTestDataDetails.marginWidth = 0;
-        compositeTestDataDetails.setLayout(glCompositeTestDataDetails);
-
-        Composite compositeTestDataButton = new Composite(compositeTestDataDetails, SWT.NONE);
-        compositeTestDataButton.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 1, 1));
-        GridLayout glCompositeTestDataButton = new GridLayout(1, false);
-        glCompositeTestDataButton.marginWidth = 0;
-        glCompositeTestDataButton.marginHeight = 0;
-        compositeTestDataButton.setLayout(glCompositeTestDataButton);
-
-        ToolBar testDataToolBar = new ToolBar(compositeTestDataButton, SWT.FLAT | SWT.RIGHT);
-        ToolItem tltmAddTestData = new ToolItem(testDataToolBar, SWT.DROP_DOWN);
-        tltmAddTestData.setText(TestDataToolItemConstants.ADD);
-        tltmAddTestData.setToolTipText(TestDataToolItemConstants.ADD);
-        tltmAddTestData.setImage(ImageConstants.IMG_24_ADD);
-
-        ToolItem tltmRemoveTestData = new ToolItem(testDataToolBar, SWT.NONE);
-        tltmRemoveTestData.setText(TestDataToolItemConstants.REMOVE);
-        tltmRemoveTestData.setToolTipText(TestDataToolItemConstants.REMOVE);
-        tltmRemoveTestData.setImage(ImageConstants.IMG_24_REMOVE);
-
-        ToolItem tltmUpTestData = new ToolItem(testDataToolBar, SWT.NONE);
-        tltmUpTestData.setText(TestDataToolItemConstants.UP);
-        tltmUpTestData.setToolTipText(TestDataToolItemConstants.UP);
-        tltmUpTestData.setImage(ImageConstants.IMG_24_UP);
-
-        ToolItem tltmDownTestData = new ToolItem(testDataToolBar, SWT.NONE);
-        tltmDownTestData.setText(TestDataToolItemConstants.DOWN);
-        tltmDownTestData.setToolTipText(TestDataToolItemConstants.DOWN);
-        tltmDownTestData.setImage(ImageConstants.IMG_24_DOWN);
-
-        // ToolItem tltmMapTestData = new ToolItem(testDataToolBar, SWT.NONE);
-        // tltmMapTestData.setText(TestDataToolItemConstants.MAP);
-
-        ToolItem tltmMapAllTestData = new ToolItem(testDataToolBar, SWT.NONE);
-        tltmMapAllTestData.setText(TestDataToolItemConstants.MAPALL);
-        tltmMapAllTestData.setToolTipText(TestDataToolItemConstants.MAPALL);
-        tltmMapAllTestData.setImage(ImageConstants.IMG_24_MAP_ALL);
-
-        compositeTestDataTreeTable = new Composite(compositeTestDataDetails, SWT.NONE);
-        compositeTestDataTreeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        GridLayout glCompositeTestDataTreeTable = new GridLayout(1, false);
-        glCompositeTestDataTreeTable.marginBottom = 5;
-        glCompositeTestDataTreeTable.marginHeight = 0;
-        compositeTestDataTreeTable.setLayout(glCompositeTestDataTreeTable);
-
-        testDataTreeViewer = new TreeViewer(compositeTestDataTreeTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
-        Tree testDataTable = testDataTreeViewer.getTree();
-        gdTestDataTable = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-        testDataTable.setLayoutData(gdTestDataTable);
-        testDataTable.setLinesVisible(true);
-        testDataTable.setHeaderVisible(true);
-
-        TreeViewerColumn treeViewerColumn = new TreeViewerColumn(testDataTreeViewer, SWT.NONE);
-        TreeColumn trclmnNo = treeViewerColumn.getColumn();
-        trclmnNo.setWidth(60);
-        trclmnNo.setText(StringConstants.PA_TREE_VIEWER_COL_NO);
-
-        TreeViewerColumn testDataTableViewerColumnID = new TreeViewerColumn(testDataTreeViewer, SWT.NONE);
-        TreeColumn tblclmnTestDataId = testDataTableViewerColumnID.getColumn();
-        tblclmnTestDataId.setWidth(300);
-        tblclmnTestDataId.setText(StringConstants.PA_TREE_VIEWER_COL_ID);
-        testDataTableViewerColumnID.setEditingSupport(new TestDataIDColumnEditingSupport(testDataTreeViewer, this));
-
-        TreeViewerColumn testDataTableViewerColumnIteration = new TreeViewerColumn(testDataTreeViewer, SWT.NONE);
-        TreeColumn tblclmnTestDataIteration = testDataTableViewerColumnIteration.getColumn();
-        tblclmnTestDataIteration.setWidth(100);
-        tblclmnTestDataIteration.setText(StringConstants.PA_TREE_VIEWER_COL_DATA_ITERATION);
-        testDataTableViewerColumnIteration.setEditingSupport(new TestDataIterationColumnEditingSupport(
-                testDataTreeViewer, this));
-
-        TreeViewerColumn testDataTableViewerColumnCombination = new TreeViewerColumn(testDataTreeViewer, SWT.NONE);
-        TreeColumn tblclmnCombination = testDataTableViewerColumnCombination.getColumn();
-        tblclmnCombination.setWidth(100);
-        tblclmnCombination.setText(StringConstants.PA_TREE_VIEWER_COL_TYPE);
-        testDataTableViewerColumnCombination.setEditingSupport(new TestDataCombinationColumnEditingSupport(
-                testDataTreeViewer, this));
-
-        testDataTreeViewer.setLabelProvider(new TestDataTreeLabelProvider());
-        testDataTreeViewer.setContentProvider(new TestDataTreeContentProvider());
-
-        TestDataToolItemListener testDataToolItemListener = new TestDataToolItemListener(testDataTreeViewer, this);
-        tltmAddTestData.addSelectionListener(testDataToolItemListener);
-        tltmRemoveTestData.addSelectionListener(testDataToolItemListener);
-        tltmUpTestData.addSelectionListener(testDataToolItemListener);
-        tltmDownTestData.addSelectionListener(testDataToolItemListener);
-        // tltmMapTestData.addSelectionListener(testDataToolItemListener);
-        tltmMapAllTestData.addSelectionListener(testDataToolItemListener);
-    }
-
-    private void createCompositeVariableBinding() {
-        compositeVariable = new Composite(compositeBindingChild, SWT.NONE);
-        compositeVariable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        compositeVariable.setLayout(new GridLayout(1, false));
-        compositeVariable.setBackground(ColorUtil.getCompositeBackgroundColor());
-
-        Composite compositeVariableHeader = new Composite(compositeVariable, SWT.NONE);
-        compositeVariableHeader.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        GridLayout glCompositeVariableHeader = new GridLayout(1, false);
-        glCompositeVariableHeader.marginWidth = 0;
-        glCompositeVariableHeader.marginHeight = 0;
-        compositeVariableHeader.setLayout(glCompositeVariableHeader);
-
-        Label lblCompositeVariableName = new Label(compositeVariableHeader, SWT.NONE);
-        lblCompositeVariableName.setFont(JFaceResources.getFontRegistry().getBold(""));
-        lblCompositeVariableName.setText(StringConstants.PA_LBL_VAR_BINDING);
-
-        testCaseVariableTableViewer = new TableViewer(compositeVariable, SWT.BORDER | SWT.FULL_SELECTION);
-        testCaseVariableTable = testCaseVariableTableViewer.getTable();
-        testCaseVariableTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        testCaseVariableTable.setHeaderVisible(true);
-        testCaseVariableTable.setLinesVisible(true);
-
-        TableViewerColumn variableOrderColumnViewer = new TableViewerColumn(testCaseVariableTableViewer, SWT.NONE);
-        TableColumn tblclmnVariableNo = variableOrderColumnViewer.getColumn();
-        tblclmnVariableNo.setWidth(40);
-        tblclmnVariableNo.setText(StringConstants.PA_TREE_VIEWER_COL_NO);
-
-        TableViewerColumn variableNameColumnViewer = new TableViewerColumn(testCaseVariableTableViewer, SWT.NONE);
-        TableColumn tblclmnVariableName = variableNameColumnViewer.getColumn();
-        tblclmnVariableName.setWidth(100);
-        tblclmnVariableName.setText(StringConstants.PA_TREE_VIEWER_COL_NAME);
-
-        TableViewerColumn variableDefaultValueColumnViewer = new TableViewerColumn(testCaseVariableTableViewer,
-                SWT.NONE);
-        TableColumn tblclmnVaribaleDefaultValue = variableDefaultValueColumnViewer.getColumn();
-        tblclmnVaribaleDefaultValue.setWidth(100);
-        tblclmnVaribaleDefaultValue.setText(StringConstants.PA_TREE_VIEWER_COL_DEFAULT_VAL);
-
-        TableViewerColumn variableTypeColumnViewer = new TableViewerColumn(testCaseVariableTableViewer, SWT.NONE);
-        TableColumn tblclmnVariableType = variableTypeColumnViewer.getColumn();
-        tblclmnVariableType.setWidth(110);
-        tblclmnVariableType.setText(StringConstants.PA_TREE_VIEWER_COL_TYPE);
-        variableTypeColumnViewer.setEditingSupport(new VariableTypeEditingSupport(testCaseVariableTableViewer, this));
-
-        TableViewerColumn variableTestDataLinkIDViewerColumn = new TableViewerColumn(testCaseVariableTableViewer,
-                SWT.NONE);
-        TableColumn tblclmnTestDataLinkId = variableTestDataLinkIDViewerColumn.getColumn();
-        tblclmnTestDataLinkId.setWidth(200);
-        tblclmnTestDataLinkId.setText(StringConstants.PA_TREE_VIEWER_COL_TEST_DATA);
-        variableTestDataLinkIDViewerColumn.setEditingSupport(new VariableTestDataLinkColumnEditingSupport(
-                testCaseVariableTableViewer, this));
-
-        TableViewerColumn variableValueColumnViewer = new TableViewerColumn(testCaseVariableTableViewer, SWT.NONE);
-        TableColumn tblclmnVariableValue = variableValueColumnViewer.getColumn();
-        tblclmnVariableValue.setWidth(150);
-        tblclmnVariableValue.setText(StringConstants.PA_TREE_VIEWER_COL_VALUE);
-        variableValueColumnViewer.setEditingSupport(new VariableValueEditingSupport(testCaseVariableTableViewer, this));
-
-        testCaseVariableTableViewer.setContentProvider(ArrayContentProvider.getInstance());
-        testCaseVariableTableViewer.setLabelProvider(new VariableTableLabelProvider(testCaseVariableTableViewer, this));
-    }
-
-    private void createCompositeTestDataAndVariable() {
-        Composite compositeBinding = new Composite(sashForm, SWT.NONE);
-        GridLayout glCompositeBinding = new GridLayout(1, false);
-        glCompositeBinding.marginWidth = 0;
-        glCompositeBinding.marginHeight = 0;
-        compositeBinding.setLayout(glCompositeBinding);
-        compositeBinding.setBackground(ColorUtil.getCompositeBackgroundColor());
-
-        compositeBindingChild = new Composite(compositeBinding, SWT.NONE);
-        compositeBindingChild.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        compositeBindingChild.setBackground(ColorUtil.getExtraLightGrayBackgroundColor());
-
-        GridLayout glCompositeBindingChild = new GridLayout(1, false);
-        glCompositeBindingChild.marginHeight = 0;
-        glCompositeBindingChild.marginWidth = 0;
-        compositeBindingChild.setLayout(glCompositeBindingChild);
-
-        createCompositeTestData();
-        createCompositeVariableBinding();
-    }
-
-    private void createCompositeTestCase() {
-        compositeTablePart = new ScrolledComposite(compositeMain, SWT.V_SCROLL);
-        compositeTablePart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        compositeTablePart.setBackground(ColorUtil.getCompositeBackgroundColor());
-
-        sashForm = new SashForm(compositeTablePart, SWT.NONE);
-        sashForm.setSashWidth(5);
-        sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        sashForm.setBackground(ColorUtil.getExtraLightGrayBackgroundColor());
-
-        createCompositeTestCaseButtons();
-        createCompositeTestCaseSearch();
-        createCompositeTestCaseContent();
-
-        compositeTablePart.setContent(sashForm);
-        compositeTablePart.setExpandHorizontal(true);
-        compositeTablePart.setExpandVertical(true);
-        compositeTablePart.setBackgroundMode(SWT.INHERIT_DEFAULT);
-    }
-
     @Override
     public void handleEvent(Event event) {
-        if (event.getTopic().equals(TestSuiteEventConstants.TESTSUITE_UPDATE_DIRTY)) {
-            Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-            if (object != null && object instanceof TestCaseTableViewer) {
-                TestCaseTableViewer viewer = (TestCaseTableViewer) object;
-                if (viewer == testCaseTableViewer) {
-                    setDirty(true);
-                }
-            }
-        } else if (event.getTopic().equals(TestSuiteEventConstants.TESTSUITE_UPDATE_IS_RUN_COLUMN_HEADER)) {
-            Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-            if (object != null && object instanceof TestCaseTableViewer) {
-                TestCaseTableViewer viewer = (TestCaseTableViewer) object;
-                if (viewer == testCaseTableViewer) {
-                    boolean isRunAll = testCaseTableViewer.getIsRunAll();
-                    Image isRunColumnImageHeader;
-                    if (isRunAll) {
-                        isRunColumnImageHeader = ImageConstants.IMG_16_CHECKBOX_CHECKED;
-                    } else {
-                        isRunColumnImageHeader = ImageConstants.IMG_16_CHECKBOX_UNCHECKED;
-                    }
-                    tblclmnIsRun.setImage(isRunColumnImageHeader);
-                }
-            }
-        } else if (event.getTopic().equals(EventConstants.TESTCASE_UPDATED)) {
+        if (event.getTopic().equals(EventConstants.TESTCASE_UPDATED)) {
             Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
             if (object != null && object instanceof Object[]) {
                 try {
                     String oldPk = (String) ((Object[]) object)[0];
                     TestCaseEntity testCase = (TestCaseEntity) ((Object[]) object)[1];
-                    testCaseTableViewer.updateTestCaseProperties(oldPk, testCase);
-                    testCaseVariableTableViewer.refresh();
+                    childrenView.updateTestCaseTable(oldPk, testCase);
                 } catch (Exception e) {
                     LoggerSingleton.logError(e);
                 }
@@ -1568,7 +782,7 @@ public class TestSuitePart implements EventHandler {
                             projectLocation);
                     String newTestDataId = TestDataController.getInstance().getTestDataDisplayIdByPk(
                             newTestData.getId(), projectLocation);
-                    refreshTestSuiteAfterTestDataChanged(oldTestDataId, newTestDataId);
+                    childrenView.refreshTestSuiteAfterTestDataChanged(oldTestDataId, newTestDataId);
                 }
             } catch (Exception e) {
                 LoggerSingleton.logError(e);
@@ -1581,64 +795,14 @@ public class TestSuitePart implements EventHandler {
     }
 
     public void setDirty(boolean dirty) {
-        if (!isTestSuiteLoading) {
+        if (!isTestSuiteLoading()) {
             mpart.setDirty(dirty);
             parentTestSuiteCompositePart.checkDirty();
         }
     }
 
-    public void refreshTestSuiteAfterTestDataChanged(String oldTestDataId, String newTestDataId) {
-        for (TestSuiteTestCaseLink testCaseLink : getTestSuite().getTestSuiteTestCaseLinks()) {
-            for (TestCaseTestDataLink testDataLink : testCaseLink.getTestDataLinks()) {
-                if (testDataLink.getTestDataId() == null || !(testDataLink.getTestDataId().equals(oldTestDataId)))
-                    continue;
-                testDataLink.setTestDataId(newTestDataId);
-            }
-
-            if (getSelectedTestCaseLink() != null
-                    && getSelectedTestCaseLink().getTestCaseId().equals(testCaseLink.getTestCaseId())) {
-                testDataTreeViewer.cancelEditing();
-                testCaseVariableTableViewer.cancelEditing();
-
-                testDataTreeViewer.refresh();
-                testCaseVariableTableViewer.refresh();
-            }
-        }
-    }
-
-    public String[] getTestDataColumnNames(String testDataId) {
-        try {
-            ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-            if (testDataId != null && !testDataId.isEmpty()) {
-                TestData testData = TestDataFactory.findTestDataForExternalBundleCaller(testDataId,
-                        projectEntity.getFolderLocation());
-                return testData.getColumnNames();
-            }
-        } catch (Exception e) {
-            MessageDialog.openWarning(null, StringConstants.WARN_TITLE,
-                    MessageFormat.format(StringConstants.PA_WARN_MSG_DATA_SRC_NOT_AVAILABLE, testDataId));
-        }
-        return null;
-    }
-
-    private TestSuiteEntity getTestSuite() {
+    /* package */TestSuiteEntity getTestSuite() {
         return parentTestSuiteCompositePart.getTestSuiteClone();
-    }
-
-    public TestSuiteTestCaseLink getSelectedTestCaseLink() {
-        return testCaseTableViewer.getSelectedTestCaseLink();
-    }
-
-    public void refreshVariableTable() {
-        testCaseVariableTableViewer.refresh();
-    }
-
-    public void refreshVariableLink(VariableLink link) {
-        testCaseVariableTableViewer.update(link, null);
-    }
-
-    public TestDataTreeContentProvider getTestDataContentProvider() {
-        return (TestDataTreeContentProvider) testDataTreeViewer.getContentProvider();
     }
 
     private boolean verifyRerunInputValue() {
@@ -1658,33 +822,37 @@ public class TestSuitePart implements EventHandler {
         if (!verifyRerunInputValue()) {
             return false;
         }
-        testSuiteTestCaseSelectedIdx = testCaseTableViewer.getTable().getSelectionIndex();
 
-        getTestSuite().getTestSuiteTestCaseLinks().clear();
-
-        for (Object testCaseLink : testCaseTableViewer.getInput()) {
-            getTestSuite().getTestSuiteTestCaseLinks().add((TestSuiteTestCaseLink) testCaseLink);
-        }
+        childrenView.beforeSaving();
 
         getTestSuite().setMailRecipient(
                 TestSuiteController.getInstance().arrayMailRcpToString(listMailRcpViewer.getList().getItems()));
         return true;
     }
 
-    public void afterSaving() {
-        if (testCaseTableViewer == null)
-            return;
-
-        Table testCaseTable = testCaseTableViewer.getTable();
-        if (testCaseTable == null || testCaseTable.isDisposed())
-            return;
-
-        if (testSuiteTestCaseSelectedIdx >= 0
-                && testSuiteTestCaseSelectedIdx < testCaseTableViewer.getTable().getItemCount()) {
-            TestSuiteTestCaseLink selectedTestCaseLink = testCaseTableViewer.getInput().get(
-                    testSuiteTestCaseSelectedIdx);
-            IStructuredSelection selection = new StructuredSelection(Arrays.asList(selectedTestCaseLink));
-            testCaseTableViewer.setSelection(selection);
-        }
+    /* package */void afterSaving() {
+        childrenView.afterSaving();
     }
+
+    /* package */void interuptUIThreads() {
+        Iterator<Thread> iterator = uiThreads.iterator();
+        while (iterator.hasNext()) {
+            Thread thread = iterator.next();
+            if (thread.isAlive()) {
+                thread.interrupt();
+            }
+        }
+        uiThreads.clear();
+        isLoading = false;
+    }
+
+    private boolean isTestSuiteLoading() {
+        for (Thread thread : uiThreads) {
+            if (thread.isAlive()) {
+                return true;
+            }
+        }
+        return isLoading;
+    }
+
 }

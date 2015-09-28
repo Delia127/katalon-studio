@@ -24,107 +24,116 @@ import com.kms.katalon.composer.testsuite.parts.integration.AbstractTestSuiteInt
 import com.kms.katalon.composer.testsuite.parts.integration.TestSuiteIntegrationViewBuilder;
 
 public class TestSuiteIntegrationPart {
-	private ToolBar toolBar;
-	private Composite container;
-	private MPart mpart;
-	private TestSuiteCompositePart parentTestSuiteCompositePart;
-	private Map<String, AbstractTestSuiteIntegrationView> integratingCompositeMap;
+    private ToolBar toolBar;
+    private Composite container;
+    private MPart mpart;
+    private TestSuiteCompositePart parentTestSuiteCompositePart;
 
-	@PostConstruct
-	public void init(Composite parent, MPart mpart) {
-		this.mpart = mpart;
+    // Used to store the products that is integrating with test suite view.
+    // The key represents for product name
+    private Map<String, AbstractTestSuiteIntegrationView> integratingCompositeMap;
 
-		if (mpart.getParent().getParent() instanceof MGenericTile
-				&& ((MGenericTile<?>) mpart.getParent().getParent()) instanceof MCompositePart) {
-			MCompositePart compositePart = (MCompositePart) (MGenericTile<?>) mpart.getParent().getParent();
-			if (compositePart.getObject() instanceof TestSuiteCompositePart) {
-				parentTestSuiteCompositePart = ((TestSuiteCompositePart) compositePart.getObject());
-			}
-		}
-		
-		createControls(parent);
-	}
+    @PostConstruct
+    public void init(Composite parent, MPart mpart) {
+        this.mpart = mpart;
 
-	private void createControls(Composite parent) {
-		Composite mainComposite = new Composite(parent, SWT.NONE);
-		GridLayout gl_mainComposite = new GridLayout(2, false);
-		gl_mainComposite.horizontalSpacing = 20;
-		mainComposite.setLayout(gl_mainComposite);
+        if (mpart.getParent().getParent() instanceof MGenericTile
+                && ((MGenericTile<?>) mpart.getParent().getParent()) instanceof MCompositePart) {
+            MCompositePart compositePart = (MCompositePart) (MGenericTile<?>) mpart.getParent().getParent();
+            if (compositePart.getObject() instanceof TestSuiteCompositePart) {
+                parentTestSuiteCompositePart = ((TestSuiteCompositePart) compositePart.getObject());
+            }
+        }
 
-		Composite toolBarComposite = new Composite(mainComposite, SWT.NONE);
-		GridLayout gl_toolBarComposite = new GridLayout(1, false);
-		toolBarComposite.setLayout(gl_toolBarComposite);
-		toolBarComposite.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true, 1, 1));
+        createControls(parent);
+    }
 
-		toolBar = new ToolBar(toolBarComposite, SWT.FLAT | SWT.RIGHT);
-		toolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+    private void createControls(Composite parent) {
+        Composite mainComposite = new Composite(parent, SWT.NONE);
+        GridLayout glMainComposite = new GridLayout(2, false);
+        glMainComposite.horizontalSpacing = 20;
+        mainComposite.setLayout(glMainComposite);
 
-		container = new Composite(mainComposite, SWT.NONE);
-		container.setLayout(new FillLayout(SWT.HORIZONTAL));
-		container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-	}
+        Composite toolBarComposite = new Composite(mainComposite, SWT.NONE);
+        GridLayout glToolBarComposite = new GridLayout(1, false);
+        toolBarComposite.setLayout(glToolBarComposite);
+        toolBarComposite.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true, 1, 1));
 
-	public MPart getMPart() {
-		return mpart;
-	}
+        toolBar = new ToolBar(toolBarComposite, SWT.FLAT | SWT.RIGHT);
+        toolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-	public void setDirty(boolean dirty) {
-		mpart.setDirty(true);
-		parentTestSuiteCompositePart.checkDirty();
-	}
+        container = new Composite(mainComposite, SWT.NONE);
+        container.setLayout(new FillLayout(SWT.HORIZONTAL));
+        container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+    }
 
-	public void loadInput() {
-		clearToolbar();
-		
-		integratingCompositeMap = new HashMap<String, AbstractTestSuiteIntegrationView>();
+    public MPart getMPart() {
+        return mpart;
+    }
 
-		for (Entry<String, TestSuiteIntegrationViewBuilder> builderEntry : TestSuiteIntegrationFactory.getInstance()
-				.getIntegrationViewMap().entrySet()) {
-			ToolItem item = new ToolItem(toolBar, SWT.CHECK);
-			item.setText(builderEntry.getKey());
-			integratingCompositeMap.put(builderEntry.getKey(),
-					builderEntry.getValue().getIntegrationView(parentTestSuiteCompositePart.getTestSuiteClone(), mpart));
-		}
+    public void setDirty(boolean dirty) {
+        mpart.setDirty(true);
+        parentTestSuiteCompositePart.checkDirty();
+    }
 
-		for (ToolItem item : toolBar.getItems()) {
-			item.addSelectionListener(new SelectionAdapter() {
+    /**
+     * Creates a tool-bar that each owns item represent for integrating product.
+     * Sets the first item for default integrating product.
+     */
+    public void loadInput() {
+        clearToolbar();
 
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					ToolItem toolItem = (ToolItem) e.getSource();
-					if (toolItem.getSelection()) {
-						changeContainer(toolItem.getText());
-					} else {
-						clearContainer();
-					}
-				}
+        integratingCompositeMap = new HashMap<String, AbstractTestSuiteIntegrationView>();
 
-			});
-		}
+        for (Entry<String, TestSuiteIntegrationViewBuilder> builderEntry : TestSuiteIntegrationFactory.getInstance()
+                .getIntegrationViewMap().entrySet()) {
+            ToolItem item = new ToolItem(toolBar, SWT.CHECK);
+            item.setText(builderEntry.getKey());
+            integratingCompositeMap
+                    .put(builderEntry.getKey(),
+                            builderEntry.getValue().getIntegrationView(
+                                    parentTestSuiteCompositePart.getTestSuiteClone(), mpart));
+        }
 
-		if (toolBar.getItems().length > 0) {
-			toolBar.getItems()[0].setSelection(true);
-			changeContainer(toolBar.getItems()[0].getText());
-		}
-	}
-	
-	private void clearToolbar() {
-		while (toolBar.getItems().length > 0) {
-			toolBar.getItems()[0].dispose();
-		}			
-	}
+        for (ToolItem item : toolBar.getItems()) {
+            item.addSelectionListener(new SelectionAdapter() {
 
-	private void clearContainer() {
-		while (container.getChildren().length > 0) {
-			container.getChildren()[0].dispose();
-		}
-	}
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    ToolItem toolItem = (ToolItem) e.getSource();
+                    if (toolItem.getSelection()) {
+                        changeContainer(toolItem.getText());
+                    } else {
+                        clearContainer();
+                    }
+                }
 
-	private void changeContainer(String productName) {
-		clearContainer();
+            });
+        }
 
-		integratingCompositeMap.get(productName).createContainer(container);
+        if (toolBar.getItems().length > 0) {
+            toolBar.getItems()[0].setSelection(true);
+            changeContainer(toolBar.getItems()[0].getText());
+        }
+    }
 
-		container.layout(true, true);
-	}
+    private void clearToolbar() {
+        while (toolBar.getItems().length > 0) {
+            toolBar.getItems()[0].dispose();
+        }
+    }
+
+    private void clearContainer() {
+        while (container.getChildren().length > 0) {
+            container.getChildren()[0].dispose();
+        }
+    }
+
+    private void changeContainer(String productName) {
+        clearContainer();
+
+        integratingCompositeMap.get(productName).createContainer(container);
+
+        container.layout(true, true);
+    }
 }

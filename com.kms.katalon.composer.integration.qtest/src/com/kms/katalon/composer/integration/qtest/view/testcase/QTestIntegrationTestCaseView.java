@@ -66,16 +66,16 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
         Composite compositeButton = new Composite(container, SWT.NONE);
         compositeButton.setLayout(new GridLayout(3, false));
 
-        btnUpload = new Button(compositeButton, SWT.NONE);
+        btnUpload = new Button(compositeButton, SWT.FLAT);
         btnUpload.setToolTipText("Upload this test case to qTest");
         btnUpload.setText("Upload");
 
-        btnDisintegrate = new Button(compositeButton, SWT.NONE);
+        btnDisintegrate = new Button(compositeButton, SWT.FLAT);
         btnDisintegrate
                 .setToolTipText("Delete the integrated test case on qTest server and also remove its information from the file system.");
         btnDisintegrate.setText("Disintegrate");
 
-        btnNavigate = new Button(compositeButton, SWT.NONE);
+        btnNavigate = new Button(compositeButton, SWT.FLAT);
         btnNavigate.setToolTipText("Navigate to the integrated test case page on qTest");
         btnNavigate.setText("Navigate");
 

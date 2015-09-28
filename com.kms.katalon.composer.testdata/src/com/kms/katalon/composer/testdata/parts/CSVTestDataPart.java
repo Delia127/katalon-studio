@@ -83,6 +83,9 @@ public class CSVTestDataPart extends TestDataMainPart {
         super.createControls(parent, mpart);
     }
 
+    /**
+     * @wbp.parser.entryPoint
+     */
     @Override
     protected Composite createFileInfoPart(Composite parent) {
         compositeFileInfo = new Composite(parent, SWT.NONE);
@@ -103,8 +106,6 @@ public class CSVTestDataPart extends TestDataMainPart {
         compositeFileInfoHeader.setCursor(compositeFileInfoHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
 
         btnExpandFileInfoComposite = new ImageButton(compositeFileInfoHeader, SWT.NONE);
-        GridData gdBtnExpandFileInfoComposite = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        btnExpandFileInfoComposite.setLayoutData(gdBtnExpandFileInfoComposite);
 
         lblFileInfo = new Label(compositeFileInfoHeader, SWT.NONE);
         lblFileInfo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
@@ -137,7 +138,7 @@ public class CSVTestDataPart extends TestDataMainPart {
         txtFileName.setLayoutData(gridData);
         txtFileName.setEditable(false);
 
-        btnBrowse = new Button(compositeName, SWT.PUSH);
+        btnBrowse = new Button(compositeName, SWT.FLAT);
         btnBrowse.setText(StringConstants.PA_BTN_BROWSE);
 
         Composite compositeSeperator = new Composite(compositeFileInfoDetails, SWT.NONE);
@@ -154,7 +155,7 @@ public class CSVTestDataPart extends TestDataMainPart {
         cbSeperator = new Combo(compositeSeperator, SWT.READ_ONLY);
         cbSeperator.setItems(CSVSeperator.stringValues());
         cbSeperator.select(0);
-        cbSeperator.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        cbSeperator.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
         Composite compositeCheckBoxes = new Composite(compositeFileInfoDetails, SWT.NONE);
         compositeCheckBoxes.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
@@ -164,6 +165,7 @@ public class CSVTestDataPart extends TestDataMainPart {
 
         chckIsRelativePath = new Button(compositeCheckBoxes, SWT.CHECK);
         chckIsRelativePath.setText(StringConstants.PA_CHKBOX_USE_RELATIVE_PATH);
+        new Label(compositeCheckBoxes, SWT.NONE);
 
         isFileInfoExpanded = true;
         redrawBtnExpandFileInfo();

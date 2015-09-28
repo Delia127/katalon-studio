@@ -8,8 +8,8 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.SafeRunner;
 
+import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
-import com.kms.katalon.execution.factory.BuiltinRunConfigurationFactory;
 
 public class EvaluateRunConfigurationContributionsHandler {
 	private static final String IRUNCONFIGURATION_ATTRIBUTE_NAME = "configuration";
@@ -28,7 +28,7 @@ public class EvaluateRunConfigurationContributionsHandler {
 				executeExtension(o);
 			}
 		} catch (CoreException ex) {
-			ex.printStackTrace();
+			// do nothing
 		}
 	}
 
@@ -42,7 +42,7 @@ public class EvaluateRunConfigurationContributionsHandler {
 			public void run() throws Exception {
 				if (o instanceof IRunConfigurationContributor) {
 					IRunConfigurationContributor contributor = (IRunConfigurationContributor) o;
-					BuiltinRunConfigurationFactory.getInstance().addRunConfigurationContributor(contributor);
+					RunConfigurationCollector.getInstance().addBuiltinRunConfigurationContributor(contributor);
 				}
 			}
 		};

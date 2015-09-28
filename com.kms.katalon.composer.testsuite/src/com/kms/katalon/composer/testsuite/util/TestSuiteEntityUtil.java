@@ -19,10 +19,10 @@ public class TestSuiteEntityUtil {
         for (TestSuiteTestCaseLink testCaseLink : src.getTestSuiteTestCaseLinks()) {
             des.getTestSuiteTestCaseLinks().add(testCaseLink);
         }
-        
+
         des.getIntegratedEntities().clear();
-		for (IntegratedEntity integratedEntity : src.getIntegratedEntities()) {
-			des.getIntegratedEntities().add(integratedEntity);
-		}
+        for (IntegratedEntity integratedEntity : src.getIntegratedEntities()) {
+            des.getIntegratedEntities().add(integratedEntity);
+        }
     }
 }

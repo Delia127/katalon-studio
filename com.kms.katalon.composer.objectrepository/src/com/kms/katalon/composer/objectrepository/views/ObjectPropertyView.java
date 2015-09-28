@@ -258,7 +258,7 @@ public class ObjectPropertyView {
         radRelative = new Button(imageUtilComp, SWT.CHECK);
         radRelative.setText(StringConstants.VIEW_CHKBOX_LBL_USE_RELATIVE_PATH);
 
-        btnBrowseImage = new Button(imageUtilComp, SWT.NONE);
+        btnBrowseImage = new Button(imageUtilComp, SWT.FLAT);
         btnBrowseImage.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
         btnBrowseImage.setText(StringConstants.VIEW_BTN_BROWSE);
         btnBrowseImage.setToolTipText(StringConstants.VIEW_BTN_TIP_BROWSE);

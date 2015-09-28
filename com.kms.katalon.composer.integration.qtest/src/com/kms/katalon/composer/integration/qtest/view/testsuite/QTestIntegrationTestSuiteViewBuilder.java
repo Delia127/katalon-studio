@@ -6,10 +6,10 @@ import com.kms.katalon.composer.testsuite.parts.integration.AbstractTestSuiteInt
 import com.kms.katalon.composer.testsuite.parts.integration.TestSuiteIntegrationViewBuilder;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
-public class QTestIntegrationTestSuiteViewBuilder implements TestSuiteIntegrationViewBuilder{
+public class QTestIntegrationTestSuiteViewBuilder implements TestSuiteIntegrationViewBuilder {
 
-	@Override
-	public AbstractTestSuiteIntegrationView getIntegrationView(TestSuiteEntity testSuite, MPart mpart) {
-		return new QTestIntegrationTestSuiteView(testSuite, mpart);
-	}
+    @Override
+    public AbstractTestSuiteIntegrationView getIntegrationView(TestSuiteEntity testSuite, MPart mpart) {
+        return new QTestIntegrationTestSuiteView(testSuite, mpart);
+    }
 }
