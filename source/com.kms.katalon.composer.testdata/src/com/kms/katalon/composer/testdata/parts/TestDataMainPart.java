@@ -17,6 +17,8 @@ import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.e4.ui.workbench.modeling.IPartListener;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
@@ -48,9 +50,9 @@ import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 
-public abstract class TestDataMainPart implements EventHandler {
+public abstract class TestDataMainPart implements EventHandler, IPartListener {
     public static final int MAX_LABEL_WIDTH = 70;
-    
+
     @Inject
     protected IEventBroker eventBroker;
 
@@ -62,6 +64,9 @@ public abstract class TestDataMainPart implements EventHandler {
 
     @Inject
     protected MApplication application;
+
+    @Inject
+    protected EPartService partService;
 
     protected Text txtName, txtId, txtDesc, txtDataType;
 
@@ -93,7 +98,7 @@ public abstract class TestDataMainPart implements EventHandler {
     private ImageButton btnExpandGeneralInformation;
     private Label lblInformations;
     private boolean isInfoCompositeExpanded = true;
-    
+
     private Listener layoutGeneralCompositeListener = new Listener() {
 
         @Override
@@ -120,8 +125,6 @@ public abstract class TestDataMainPart implements EventHandler {
     }
 
     private void registerControlModifyListeners() {
-        // TODO Auto-generated method stub
-
         btnExpandGeneralInformation.addListener(SWT.MouseDown, layoutGeneralCompositeListener);
         lblInformations.addListener(SWT.MouseDown, layoutGeneralCompositeListener);
     }
@@ -129,6 +132,7 @@ public abstract class TestDataMainPart implements EventHandler {
     private void registerEventHandlers() {
         eventBroker.subscribe(EventConstants.TEST_DATA_UPDATED, this);
         eventBroker.subscribe(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, this);
+        partService.addPartListener(this);
     }
 
     protected void layoutGeneralComposite() {
@@ -165,18 +169,18 @@ public abstract class TestDataMainPart implements EventHandler {
         parent.setBackground(ColorUtil.getExtraLightGrayBackgroundColor());
         compositeGeneralInfo = new Composite(parent, SWT.NONE);
         compositeGeneralInfo.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
-        GridLayout gl_infoComposite = new GridLayout(1, true);
-        gl_infoComposite.verticalSpacing = 5;
-        gl_infoComposite.marginWidth = 0;
-        gl_infoComposite.marginHeight = 0;
-        compositeGeneralInfo.setLayout(gl_infoComposite);
+        GridLayout glInfoComposite = new GridLayout(1, true);
+        glInfoComposite.verticalSpacing = 5;
+        glInfoComposite.marginWidth = 0;
+        glInfoComposite.marginHeight = 0;
+        compositeGeneralInfo.setLayout(glInfoComposite);
         compositeGeneralInfo.setBackground(ColorUtil.getCompositeBackgroundColor());
 
         compositeInfoHeader = new Composite(compositeGeneralInfo, SWT.NONE);
-        GridLayout gl_compositeInfoHeader = new GridLayout(2, false);
-        gl_compositeInfoHeader.marginWidth = 0;
-        gl_compositeInfoHeader.marginHeight = 0;
-        compositeInfoHeader.setLayout(gl_compositeInfoHeader);
+        GridLayout glCompositeInfoHeader = new GridLayout(2, false);
+        glCompositeInfoHeader.marginWidth = 0;
+        glCompositeInfoHeader.marginHeight = 0;
+        compositeInfoHeader.setLayout(glCompositeInfoHeader);
         compositeInfoHeader.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         compositeInfoHeader.setCursor(compositeInfoHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
 
@@ -194,20 +198,20 @@ public abstract class TestDataMainPart implements EventHandler {
 
         compositeInfoDetails = new Composite(compositeGeneralInfo, SWT.NONE);
         compositeInfoDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        GridLayout gl_compositeInfoDetails = new GridLayout(2, true);
-        gl_compositeInfoDetails.marginBottom = 10;
-        gl_compositeInfoDetails.marginHeight = 0;
-        gl_compositeInfoDetails.marginWidth = 0;
-        gl_compositeInfoDetails.marginRight = 40;
-        gl_compositeInfoDetails.verticalSpacing = 0;
-        gl_compositeInfoDetails.marginLeft = 40;
-        gl_compositeInfoDetails.horizontalSpacing = 30;
-        compositeInfoDetails.setLayout(gl_compositeInfoDetails);
+        GridLayout glCompositeInfoDetails = new GridLayout(2, true);
+        glCompositeInfoDetails.marginBottom = 10;
+        glCompositeInfoDetails.marginHeight = 0;
+        glCompositeInfoDetails.marginWidth = 0;
+        glCompositeInfoDetails.marginRight = 40;
+        glCompositeInfoDetails.verticalSpacing = 0;
+        glCompositeInfoDetails.marginLeft = 40;
+        glCompositeInfoDetails.horizontalSpacing = 30;
+        compositeInfoDetails.setLayout(glCompositeInfoDetails);
 
         infoCompositeId = new Composite(compositeInfoDetails, SWT.NONE);
         infoCompositeId.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        GridLayout gl_infoCompositeId = new GridLayout(2, false);
-        infoCompositeId.setLayout(gl_infoCompositeId);
+        GridLayout glInfoCompositeId = new GridLayout(2, false);
+        infoCompositeId.setLayout(glInfoCompositeId);
 
         labelId = new Label(infoCompositeId, SWT.NONE);
         GridData gdLabelId = new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1);
@@ -245,8 +249,8 @@ public abstract class TestDataMainPart implements EventHandler {
 
         infoCompositeName = new Composite(compositeInfoDetails, SWT.NONE);
         infoCompositeName.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        GridLayout gl_infoCompositeName = new GridLayout(2, false);
-        infoCompositeName.setLayout(gl_infoCompositeName);
+        GridLayout glInfoCompositeName = new GridLayout(2, false);
+        infoCompositeName.setLayout(glInfoCompositeName);
 
         Label label = new Label(infoCompositeName, SWT.NONE);
         GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1);
@@ -260,8 +264,8 @@ public abstract class TestDataMainPart implements EventHandler {
 
         infoCompositeDataType = new Composite(compositeInfoDetails, SWT.NONE);
         infoCompositeDataType.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        GridLayout gl_infoCompositeDataType = new GridLayout(2, false);
-        infoCompositeDataType.setLayout(gl_infoCompositeDataType);
+        GridLayout glInfoCompositeDataType = new GridLayout(2, false);
+        infoCompositeDataType.setLayout(glInfoCompositeDataType);
 
         labelDataType = new Label(infoCompositeDataType, SWT.NONE);
         GridData gridData3 = new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1);
@@ -477,4 +481,30 @@ public abstract class TestDataMainPart implements EventHandler {
             }
         }
     }
+
+    public void partActivated(MPart part) {
+
+    }
+
+    public void partBroughtToTop(MPart part) {
+
+    }
+
+    public void partDeactivated(MPart part) {
+        part.toString();
+    }
+
+    public void partHidden(MPart part) {
+        if (part == mpart) {
+            partService.removePartListener(this);
+            if (mpart.isVisible()) {
+                partService.savePart(mpart, false);
+            }
+        }
+    }
+
+    public void partVisible(MPart part) {
+
+    }
+
 }
