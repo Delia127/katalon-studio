@@ -1,0 +1,149 @@
+package com.kms.katalon.composer.execution.components;
+
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
+
+import com.kms.katalon.composer.execution.constants.StringConstants;
+import com.kms.katalon.composer.execution.provider.MapPropertyLabelProvider;
+import com.kms.katalon.composer.execution.provider.MapPropertyTableViewerContentProvider;
+
+public class DriverPropertyMapComposite extends Composite {
+    private static final String DEFAULT_DRIVER_PROPERTY_NAME = "property";
+    private Table table;
+    private TableViewer tableViewer;
+
+    private ToolItem tltmAddProperty;
+    private ToolItem tltmRemoveProperty;
+    private ToolItem tltmClearProperty;
+
+    public DriverPropertyMapComposite(Composite parent) {
+        super(parent, SWT.NONE);
+        
+        setLayout(new GridLayout(2, false));
+        setLayoutData(new GridData(GridData.FILL_BOTH));
+        
+        Composite composite = new Composite(this, SWT.NONE);
+        GridLayout gl_composite = new GridLayout(1, false);
+        gl_composite.marginWidth = 0;
+        gl_composite.marginHeight = 0;
+        composite.setLayout(gl_composite);
+        composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+
+        Composite tableComposite = new Composite(composite, SWT.NONE);
+        tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        
+        tableViewer = new TableViewer(tableComposite, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION);
+        table = tableViewer.getTable();
+        table.setHeaderVisible(true);
+        table.setLinesVisible(true);
+        table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+
+        TableColumnLayout tableColumnLayout = new TableColumnLayout();
+        tableComposite.setLayout(tableColumnLayout);
+        
+        addTableColumn(tableViewer, tableColumnLayout, StringConstants.SETT_COL_PREFERENCE_NAME, 100, 30, new DriverPropertyNameEditingSupport(tableViewer));
+        addTableColumn(tableViewer, tableColumnLayout, StringConstants.SETT_COL_PREFERENCE_TYPE, 100, 30, new DriverPropertyTypeEditingSupport(tableViewer));
+        addTableColumn(tableViewer, tableColumnLayout, StringConstants.SETT_COL_PREFERENCE_VALUE, 100, 30, new DriverPropertyValueEditingSupport(tableViewer));
+
+        tableViewer.setLabelProvider(new MapPropertyLabelProvider());
+        tableViewer.setContentProvider(new MapPropertyTableViewerContentProvider());
+
+        Composite toolbarComposite = new Composite(this, SWT.NONE);
+        toolbarComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
+        toolbarComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true, 1, 1));
+
+        ToolBar toolBar = new ToolBar(toolbarComposite, SWT.FLAT | SWT.RIGHT | SWT.VERTICAL);
+
+        tltmAddProperty = new ToolItem(toolBar, SWT.NONE);
+        tltmAddProperty.setText(StringConstants.SETT_TOOLITEM_ADD);
+
+        tltmRemoveProperty = new ToolItem(toolBar, SWT.NONE);
+        tltmRemoveProperty.setText(StringConstants.SETT_TOOLITEM_REMOVE);
+
+        tltmClearProperty = new ToolItem(toolBar, SWT.NONE);
+        tltmClearProperty.setText(StringConstants.SETT_TOOLITEM_CLEAR);
+    }
+    
+    private void addTableColumn(TableViewer parent, TableColumnLayout tableColumnLayout, String headerText, int width,
+            int weight, EditingSupport editingSupport) {
+        TableViewerColumn tableColumn = new TableViewerColumn(parent, SWT.NONE);
+        tableColumn.getColumn().setWidth(width);
+        tableColumn.getColumn().setMoveable(true);
+        tableColumn.getColumn().setText(headerText);
+        tableColumn.setEditingSupport(editingSupport);
+        tableColumnLayout.setColumnData(tableColumn.getColumn(), new ColumnWeightData(weight, tableColumn
+                .getColumn().getWidth()));
+    }
+    
+    public void setInput(Map<String, Object> driverPropertyList) {
+        addToolItemListeners(driverPropertyList);
+        tableViewer.setInput(driverPropertyList);
+    }
+
+    private void addToolItemListeners(final Map<String, Object> driverPropertyList) {
+        tltmAddProperty.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                driverPropertyList.put(generateNewPropertyName(driverPropertyList), "");
+                tableViewer.refresh();
+            }
+        });
+
+        tltmRemoveProperty.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+                if (!selection.isEmpty()) {
+                    for (Object selectedObject : selection.toList()) {
+                        if (selectedObject instanceof Entry<?, ?>) {
+                            driverPropertyList.remove(((Entry<?, ?>)selectedObject).getKey());
+                        }
+                    }
+                    tableViewer.refresh();
+                }
+            }
+        });
+
+        tltmClearProperty.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                driverPropertyList.clear();
+                tableViewer.refresh();
+            }
+        });
+    }
+    
+    public static String generateNewPropertyName(Map<String, Object> driverPropertyDictionary) {
+        String name = DEFAULT_DRIVER_PROPERTY_NAME;
+        if (driverPropertyDictionary.get(name) == null) {
+            return name;
+        }
+        int index = 0;
+        boolean isUnique = false;
+        while (!isUnique) {
+            index++;
+            String newName = name + "_" + index;
+            isUnique = driverPropertyDictionary.get(newName) == null;
+        }
+        return name + "_" + index;
+    }
+}

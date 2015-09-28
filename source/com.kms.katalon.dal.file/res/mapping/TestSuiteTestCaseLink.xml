@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="com.kms.katalon.entity.link">
+	<java-types>
+		<java-type name="TestSuiteTestCaseLink">
+			<xml-root-element name="TestSuiteTestCaseLink"/>
+			<java-attributes>
+				<xml-element java-attribute="testCaseId"/>
+				<xml-element java-attribute="isRun"/>
+				<xml-element java-attribute="isReuseDriver"/>
+				<xml-element java-attribute="variableLinks" name="variableLink"/>
+				<xml-element java-attribute="testDataLinks" name="testDataLink"/>
+			</java-attributes>
+		</java-type>
+	</java-types>
+</xml-bindings>

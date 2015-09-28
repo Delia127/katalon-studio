@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+
+   <extension
+         id="com.kms.katalon.composer.intergration.qtest.fragment"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            uri="fragment.e4xmi">
+      </fragment>
+   </extension>
+   <extension
+         point="com.kms.katalon.preferences.ProjectSettingPages">
+      <page
+            category="com.kms.katalon.composer.preferences.integration"
+            class="com.kms.katalon.composer.integration.qtest.preferences.QTestIntegrationPage"
+            id="com.kms.katalon.composer.intergration.qtest.setting"
+            name="qTest">
+      </page>
+      <page
+            category="com.kms.katalon.composer.intergration.qtest.setting"
+            class="com.kms.katalon.composer.integration.qtest.preferences.TestCaseRepoPreferencePage"
+            id="com.kms.katalon.composer.integration.qtest.testCaseRepoMapping"
+            name="Test Case Repositories">
+      </page>
+      <page
+            category="com.kms.katalon.composer.intergration.qtest.setting"
+            class="com.kms.katalon.composer.integration.qtest.preferences.TestSuiteRepoPreferencePage"
+            id="com.kms.katalon.composer.integration.qtest.testSuiteRepoMapping"
+            name="Test Suite Repositories">
+      </page>
+   </extension>
+   <extension
+         point="com.kms.katalon.composer.testcase.integration">
+      <client
+            product="com.kms.katalon.composer.integration.qtest.QTestIntegrationContribution"
+            view="com.kms.katalon.composer.integration.qtest.view.testcase.QTestIntegrationTestCaseViewBuilder">
+      </client>
+   </extension>
+   <extension
+         point="com.kms.katalon.custom.integration">
+      <client
+            class="com.kms.katalon.composer.integration.qtest.QTestIntegrationContribution">
+      </client>
+   </extension>
+   <extension
+         point="com.kms.katalon.composer.testsuite.integration">
+      <client
+            product="com.kms.katalon.composer.integration.qtest.QTestIntegrationContribution"
+            view="com.kms.katalon.composer.integration.qtest.view.testsuite.QTestIntegrationTestSuiteViewBuilder">
+      </client>
+   </extension>
+   <extension
+         point="com.kms.katalon.composer.report.testCaseIntegration">
+      <client
+            product="com.kms.katalon.composer.integration.qtest.QTestIntegrationContribution"
+            view="com.kms.katalon.composer.integration.qtest.view.report.QTestIntegrationReportTestCaseViewBuilder">
+      </client>
+   </extension>
+   <extension
+         point="com.kms.katalon.execution.integration">
+      <client
+            product="com.kms.katalon.composer.integration.qtest.QTestIntegrationContribution"
+            report="com.kms.katalon.composer.integration.qtest.report.QTestIntegrationReporter">
+      </client>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.kms.katalon.composer.integration.qtest.preferences.QTestPreferenceDefaultValueInitializer">
+      </initializer>
+   </extension>
+
+</plugin>

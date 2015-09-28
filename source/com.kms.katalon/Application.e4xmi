@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_hQQH0BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.application">
+  <children xsi:type="basic:TrimmedWindow" xmi:id="_hQQH0RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.window.main" label="Katalon Studio" iconURI="" bindingContexts="_mWGB8AQqEeWyKYoESvUc1g" x="0" y="0" width="800" height="600">
+    <tags>shellMaximized</tags>
+    <children xsi:type="advanced:PerspectiveStack" xmi:id="_hQQH8BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.perspectiveStack" selectedElement="_hQQH8RYMEeSUMbyEN2kbFQ">
+      <children xsi:type="advanced:Perspective" xmi:id="_hQQH8RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.perspective.keyword" selectedElement="_hQQH8hYMEeSUMbyEN2kbFQ" label="Keyword" iconURI="platform:/plugin/com.kms.katalon/icons/branding_16.png" tooltip="Keyword Perspective">
+        <children xsi:type="basic:PartSashContainer" xmi:id="_hQQH8hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.partsashcontainer.main" horizontal="true">
+          <children xsi:type="basic:PartSashContainer" xmi:id="_QR8UECXxEeWJ99-mW6KHQg" elementId="com.kms.katalon.composer.partsashcontainer.left" containerData="20" selectedElement="_Uxwj0BYtEeSNBMuqFX2a9Q">
+            <children xsi:type="basic:PartStack" xmi:id="_Uxwj0BYtEeSNBMuqFX2a9Q" elementId="com.kms.katalon.composer.partstack.explorer" containerData="50"/>
+            <children xsi:type="basic:PartStack" xmi:id="_HI0W8CXyEeWJ99-mW6KHQg" elementId="com.kms.katalon.partstack.left.outline" visible="false" containerData="50">
+              <tags>newtablook</tags>
+              <tags>Minimized</tags>
+            </children>
+          </children>
+          <children xsi:type="basic:PartSashContainer" xmi:id="_GOwXsBbNEeS-5cX7m-w1IA" elementId="com.kms.katalon.composer.partsashcontainer.right" containerData="80">
+            <children xsi:type="basic:PartSashContainer" xmi:id="_XxfwgNLcEeSctqH8QULjSg" elementId="com.kms.katalon.partsashcontainer.main" containerData="70" selectedElement="_hkPqAD8NEeSqW-o8jtXO1g" horizontal="true">
+              <children xsi:type="advanced:Placeholder" xmi:id="_hkPqAD8NEeSqW-o8jtXO1g" elementId="org.eclipse.ui.editorss" containerData="80" ref="_2Ev6oD8CEeSqW-o8jtXO1g"/>
+              <children xsi:type="basic:PartStack" xmi:id="_uOwOINa1EeS1ha7mm6JZag" elementId="com.kms.katalon.partstack.outline" visible="false" containerData="20">
+                <tags>newtablook</tags>
+                <tags>Minimized</tags>
+              </children>
+            </children>
+            <children xsi:type="basic:PartStack" xmi:id="_kTWUkD8NEeSqW-o8jtXO1g" elementId="com.kms.katalon.partstack.console" visible="false" containerData="30" selectedElement="_dJQtoDqeEeWympSUeHeJlA">
+              <tags>newtablook</tags>
+              <tags>Minimized</tags>
+              <children xsi:type="advanced:Placeholder" xmi:id="_dJQtoDqeEeWympSUeHeJlA" elementId="org.eclipse.ui.views.ProblemView" ref="_d5-CIP3zEeS6qc67Kbzx-g"/>
+              <children xsi:type="advanced:Placeholder" xmi:id="_nDgIAD8NEeSqW-o8jtXO1g" elementId="org.eclipse.ui.console.ConsoleView" containerData="100" ref="_yewVQD8LEeSqW-o8jtXO1g"/>
+              <children xsi:type="advanced:Placeholder" xmi:id="_g82UADqeEeWympSUeHeJlA" elementId="org.eclipse.search.ui.views.SearchView" visible="false" ref="_zqfPgP3wEeS6qc67Kbzx-g"/>
+            </children>
+          </children>
+        </children>
+      </children>
+      <children xsi:type="advanced:Perspective" xmi:id="_0wirECUgEeWUFICrCSQG_A" elementId="org.eclipse.debug.ui.DebugPerspective" label="Debug" iconURI="platform:/plugin/org.eclipse.debug.ui/icons/full/eview16/debug_persp.png" tooltip="Debug">
+        <children xsi:type="basic:PartSashContainer" xmi:id="__qZwkCUgEeWUFICrCSQG_A" elementId="com.kms.katalon.partsashcontainer.debug.main" containerData="100">
+          <children xsi:type="basic:PartSashContainer" xmi:id="_E6OrcCUhEeWUFICrCSQG_A" elementId="com.kms.katalon.partsashcontainer.debug.top" containerData="40" horizontal="true">
+            <children xsi:type="basic:PartStack" xmi:id="_UxEoUCUhEeWUFICrCSQG_A" elementId="com.kms.katalon.partstack.debug.top.left" containerData="50" selectedElement="_9i8C4CUiEeWg5dy9vQb4CQ">
+              <children xsi:type="advanced:Placeholder" xmi:id="_9i8C4CUiEeWg5dy9vQb4CQ" elementId="com.kms.katalon.placeholder.debug.top.debug" ref="_PY0KMCUhEeWUFICrCSQG_A"/>
+            </children>
+            <children xsi:type="basic:PartStack" xmi:id="_Z2fqACUhEeWUFICrCSQG_A" elementId="com.kms.katalon.partstack.debug.top.right" containerData="50">
+              <children xsi:type="advanced:Placeholder" xmi:id="__AbUkCUiEeWg5dy9vQb4CQ" elementId="com.kms.katalon.placeholder.debug.top.variable" ref="_bXaDICUhEeWUFICrCSQG_A"/>
+              <children xsi:type="advanced:Placeholder" xmi:id="__c3Y8CUiEeWg5dy9vQb4CQ" elementId="com.kms.katalon.placeholder.debug.top.breakpoints" ref="_i8HKsCUhEeWUFICrCSQG_A"/>
+              <children xsi:type="advanced:Placeholder" xmi:id="_KEB9MCUpEeWg5dy9vQb4CQ" elementId="com.kms.katalon.placeholder.debug.top.expressions" ref="_-u-wgCUoEeWg5dy9vQb4CQ"/>
+            </children>
+          </children>
+          <children xsi:type="basic:PartSashContainer" xmi:id="_JswmUCUhEeWUFICrCSQG_A" elementId="com.kms.katalon.partsashcontainer.debug.bottom" containerData="60" horizontal="true">
+            <children xsi:type="advanced:Placeholder" xmi:id="_8cemkCUhEeWUFICrCSQG_A" elementId="org.eclipse.ui.editorss" containerData="50" ref="_2Ev6oD8CEeSqW-o8jtXO1g"/>
+            <children xsi:type="basic:PartStack" xmi:id="_kWnFIDqeEeWympSUeHeJlA" elementId="com.kms.katalon.partstack.console" containerData="50">
+              <children xsi:type="advanced:Placeholder" xmi:id="_msmsIDqeEeWympSUeHeJlA" elementId="org.eclipse.ui.console.ConsoleView" ref="_yewVQD8LEeSqW-o8jtXO1g"/>
+              <children xsi:type="advanced:Placeholder" xmi:id="_5xoxYDqgEeWympSUeHeJlA" elementId="org.eclipse.search.ui.views.SearchView" visible="false" ref="_zqfPgP3wEeS6qc67Kbzx-g"/>
+            </children>
+          </children>
+        </children>
+      </children>
+    </children>
+    <mainMenu xmi:id="_hQQH6RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu">
+      <children xsi:type="menu:Menu" xmi:id="_hQQH6hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.file" label="File">
+        <children xsi:type="menu:Menu" xmi:id="_4vwU0BsSEeSXreVpxhllQw" elementId="com.kms.katalon.menu.submenu.new" label="New"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.file.save" label="Save" iconURI="platform:/plugin/com.kms.katalon/icons/save_16.png" command="_hQQH4xYMEeSUMbyEN2kbFQ"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_VvjpYDayEeWjs_ysgU5nDA" elementId="com.kms.katalon.composer.menu.file.save_all" label="Save All" iconURI="platform:/plugin/com.kms.katalon/icons/save_all_16.png" command="_8qJlUEO4EeSlQuaMBzQJOw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.file.quit" label="Quit" iconURI="platform:/plugin/com.kms.katalon/icons/quit_16.png" command="_hQQH3BYMEeSUMbyEN2kbFQ"/>
+      </children>
+      <children xsi:type="menu:Menu" xmi:id="_wT2ksBYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.edit" label="Edit"/>
+      <children xsi:type="menu:Menu" xmi:id="_0IJ8wBYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.importexport" label="Import/Export"/>
+      <children xsi:type="menu:Menu" xmi:id="_2end0BYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.report" label="Report"/>
+      <children xsi:type="menu:Menu" xmi:id="_2zN00BYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.settings" label="Settings"/>
+      <children xsi:type="menu:Menu" xmi:id="_ljWeAAOIEeWmYfckKw0_5w" elementId="com.kms.katalon.menu.search" label="Search">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_oiLmoAOIEeWmYfckKw0_5w" elementId="com.kms.katalon.handledmenuitem.searchFile" label="Search..." command="_N5ChkARIEeWyKYoESvUc1g"/>
+      </children>
+      <children xsi:type="menu:Menu" xmi:id="_0yMVUAmfEeWmsZWUQ_5cNA" elementId="com.kms.katalon.composer.menu.project" label="Project"/>
+      <children xsi:type="menu:Menu" xmi:id="_hQQH7hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.help" label="Help">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7xYMEeSUMbyEN2kbFQ" label="About" command="_hQQH5hYMEeSUMbyEN2kbFQ"/>
+      </children>
+    </mainMenu>
+    <sharedElements xsi:type="basic:Part" xmi:id="_yewVQD8LEeSqW-o8jtXO1g" elementId="org.eclipse.ui.console.ConsoleView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Console" iconURI="platform:/plugin/org.eclipse.ui.console/icons/full/cview16/console_view.png"/>
+    <sharedElements xsi:type="advanced:Area" xmi:id="_2Ev6oD8CEeSqW-o8jtXO1g" elementId="org.eclipse.ui.editorss" containerData="50">
+      <children xsi:type="basic:PartStack" xmi:id="_Hi9d8D8DEeSqW-o8jtXO1g" elementId="com.kms.katalon.composer.content" containerData="100">
+        <tags>NoAutoCollapse</tags>
+      </children>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_PY0KMCUhEeWUFICrCSQG_A" elementId="org.eclipse.debug.ui.DebugView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Debug" iconURI="platform:/plugin/org.eclipse.debug.ui/icons/full/eview16/debug_view.png" closeable="true"/>
+    <sharedElements xsi:type="basic:Part" xmi:id="_bXaDICUhEeWUFICrCSQG_A" elementId="org.eclipse.debug.ui.VariableView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Variables" iconURI="platform:/plugin/org.eclipse.debug.ui/icons/full/eview16/variable_view.png" closeable="true"/>
+    <sharedElements xsi:type="basic:Part" xmi:id="_i8HKsCUhEeWUFICrCSQG_A" elementId="org.eclipse.debug.ui.BreakpointView" containerData="" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Breakpoints" iconURI="platform:/plugin/org.eclipse.debug.ui/icons/full/eview16/breakpoint_view.png" closeable="true"/>
+    <sharedElements xsi:type="basic:Part" xmi:id="_-u-wgCUoEeWg5dy9vQb4CQ" elementId="org.eclipse.debug.ui.ExpressionView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Expressions" iconURI="platform:/plugin/org.eclipse.debug.ui/icons/full/eview16/watchlist_view.png"/>
+    <sharedElements xsi:type="basic:Part" xmi:id="_d5-CIP3zEeS6qc67Kbzx-g" elementId="org.eclipse.ui.views.ProblemView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Problems" iconURI="platform:/plugin/org.eclipse.ui/icons/full/eview16/problems_view.png">
+      <toolbar xmi:id="_j_TosP3zEeS6qc67Kbzx-g" elementId="com.kms.katalon.toolbar.2"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_zqfPgP3wEeS6qc67Kbzx-g" elementId="org.eclipse.search.ui.views.SearchView" visible="false" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Search" iconURI="platform:/plugin/org.eclipse.search/icons/full/eview16/searchres.gif" closeable="true">
+      <toolbar xmi:id="_2gfMQP3wEeS6qc67Kbzx-g" elementId="com.kms.katalon.toolbar.1"/>
+    </sharedElements>
+    <trimBars xmi:id="_hQQH9RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.trimbar">
+      <children xsi:type="menu:ToolBar" xmi:id="_hQQH9hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.toolbar">
+        <tags>Draggable</tags>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_hQQH-BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.toolbar.save" iconURI="platform:/plugin/com.kms.katalon/icons/save_28.png" tooltip="Save" command="_hQQH4xYMEeSUMbyEN2kbFQ">
+          <tags>Opaque</tags>
+        </children>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_5oUMAEO4EeSlQuaMBzQJOw" elementId="com.kms.katalon.composer.toolbar.saveAll" iconURI="platform:/plugin/com.kms.katalon/icons/save_all_28.png" tooltip="Save All" command="_8qJlUEO4EeSlQuaMBzQJOw">
+          <tags>Opaque</tags>
+        </children>
+        <children xsi:type="menu:ToolBarSeparator" xmi:id="_3PTrMBQXEeWFKqx225rIVg" elementId="com.kms.katalon.toolbarseparator.0"/>
+      </children>
+      <children xsi:type="menu:ToolControl" xmi:id="_1-cu4OJUEeSyVPtKyNklew" elementId="PerspectiveSpacer" toBeRendered="false" visible="false" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.renderers.swt/org.eclipse.e4.ui.workbench.renderers.swt.LayoutModifierToolControl">
+        <tags>stretch</tags>
+      </children>
+      <children xsi:type="menu:ToolControl" xmi:id="_-DNO4CSUEeWwuK4yOgypdw" elementId="com.kms.katalon.toolcontrol.0" toBeRendered="false" visible="false" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.perspective.PerspectiveSwitcher"/>
+    </trimBars>
+    <trimBars xmi:id="_D8Z7cNa4EeS1ha7mm6JZag" elementId="com.kms.katalon.trimbar.right" side="Right">
+      <children xsi:type="menu:ToolControl" xmi:id="_Fy2fsNa4EeS1ha7mm6JZag" elementId="com.kms.katalon.partstack.outline(com.kms.katalon.composer.perspective.keyword)" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.TrimStack">
+        <tags>TrimStack</tags>
+      </children>
+      <children xsi:type="menu:ToolControl" xmi:id="_6JcfUDqeEeWympSUeHeJlA" elementId="com.kms.katalon.partstack.console(com.kms.katalon.composer.perspective.keyword)" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.TrimStack"/>
+    </trimBars>
+    <trimBars xmi:id="_jKbr8CYQEeWJ99-mW6KHQg" elementId="com.kms.katalon.trimbar.left" side="Left">
+      <children xsi:type="menu:ToolControl" xmi:id="_k7k5cCYQEeWJ99-mW6KHQg" elementId="com.kms.katalon.partstack.left.outline(com.kms.katalon.composer.perspective.keyword)" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.TrimStack"/>
+    </trimBars>
+  </children>
+  <handlers xmi:id="_hQQH3RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.handler.quitCommand" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.QuitHandler" command="_hQQH3BYMEeSUMbyEN2kbFQ"/>
+  <handlers xmi:id="_hQQH5BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.handler.saveCommand" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.SaveHandler" command="_hQQH4xYMEeSUMbyEN2kbFQ"/>
+  <handlers xmi:id="_AhTdEEO5EeSlQuaMBzQJOw" elementId="com.kms.katalon.composer.handler.saveAllCommand" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.SaveAllHandler" command="_8qJlUEO4EeSlQuaMBzQJOw"/>
+  <handlers xmi:id="_TBljYHR3EeSsHsBQ5R8Vbg" elementId="com.kms.katalon.composer.handler.closeCommand" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.CloseHandler" command="_On9QsHR3EeSsHsBQ5R8Vbg"/>
+  <handlers xmi:id="_5GOAsAOIEeWmYfckKw0_5w" elementId="com.kms.katalon.handler.search" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.SearchHandler" command="_N5ChkARIEeWyKYoESvUc1g"/>
+  <bindingTables xmi:id="_GQOAAAONEeWmYfckKw0_5w" elementId="com.kms.katalon.bindingtable.window" bindingContext="_mWGB8AQqEeWyKYoESvUc1g">
+    <bindings xmi:id="_RvI6YAONEeWmYfckKw0_5w" elementId="com.kms.katalon.keybinding.search" keySequence="M1+H" command="_N5ChkARIEeWyKYoESvUc1g">
+      <tags>type:user</tags>
+    </bindings>
+  </bindingTables>
+  <rootContext xmi:id="_mWGB8AQqEeWyKYoESvUc1g" elementId="org.eclipse.ui.contexts.dialogAndWindow " name="Windows and Dialogs"/>
+  <commands xmi:id="_hQQH3BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.quit" commandName="quitCommand"/>
+  <commands xmi:id="_hQQH4xYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.command.save" commandName="saveCommand"/>
+  <commands xmi:id="_hQQH5hYMEeSUMbyEN2kbFQ" elementId="org.eclipse.ui.help.aboutAction" commandName="aboutCommand"/>
+  <commands xmi:id="_8qJlUEO4EeSlQuaMBzQJOw" elementId="com.kms.katalon.command.saveAll" commandName="saveAllCommand"/>
+  <commands xmi:id="_On9QsHR3EeSsHsBQ5R8Vbg" elementId="com.kms.katalon.command.close" commandName="closeCommand"/>
+  <commands xmi:id="_N5ChkARIEeWyKYoESvUc1g" elementId="com.kms.katalon.command.search" commandName="searchCommand"/>
+  <addons xmi:id="_hQQH0hYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
+  <addons xmi:id="_hQQH0xYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
+  <addons xmi:id="_hQQH1BYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
+  <addons xmi:id="_hQQH1RYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.workbench.commands.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.CommandProcessingAddon"/>
+  <addons xmi:id="_hQQH1hYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.workbench.handler.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.HandlerProcessingAddon"/>
+  <addons xmi:id="_hQQH1xYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.workbench.contexts.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.ContextProcessingAddon"/>
+  <addons xmi:id="_hQQH2BYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.workbench.bindings.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.swt/org.eclipse.e4.ui.workbench.swt.util.BindingProcessingAddon"/>
+</application:Application>

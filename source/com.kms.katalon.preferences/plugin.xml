@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+	<extension-point 
+		id="PreferencePages" 
+		name="PreferencePages" 
+		schema="schema/PreferencePages.exsd"/>
+   	<extension-point 
+   		id="PreferenceStoreProvider" 
+   		name="PreferenceStoreProvider" 
+   		schema="schema/PreferenceStoreProvider.exsd"/>
+    <extension-point id="ProjectSettingPages" name="ProjectSettingPages" schema="schema/ProjectSettingPages.exsd"/>
+    <extension
+          point="com.kms.katalon.preferences.PreferenceStoreProvider">
+          <preferenceStoreProvider
+            class="com.kms.katalon.preferences.internal.PreferenceStoreProvider"
+            pluginId="com.kms.katalon.preferences">
+      </preferenceStoreProvider>
+    </extension>
+   		
+</plugin>

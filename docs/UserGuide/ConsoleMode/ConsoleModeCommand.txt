@@ -1,0 +1,22 @@
+1. Open command prompt and navigate to Katalon folder.
+2. Use command katalon with those options to run test suite in console mode:
+	-runMode=console : enable console mode (mandatory)
+	-consoleLog : display console (optional)
+	-noExit : keep console after run completed (optional)
+	-summaryReport : send summary report for a batch run (optional)
+	-statusDelay=<seconds> : system will update execution status of the test suite after those seconds (optional)
+	-reportFileName=<name> : specify name for report files (.html, .csv, .log); if don't specify, system uses name "report" (report.html, report.csv, report.log). This option only affects when using with -reportFolder option (optional)
+	-projectPk=<project file absolute path> : project location (include .prj file) (mandatory)
+	-execute : indicate system will execute the following test suite (mandatory)
+	-testSuiteID=<test suite file relative path> : test suite file (without extension .ts) (mandatory)
+	-browserType=<Firefox;Chrome;IE;Safari> : specify one browser type (mandatory)
+	-reportFolder=<folder path> : specify folder to save report files. Can use absolute path or relative path (root being project folder) (optional)
+	
+Example:
+	a. Use default report folder and report name
+	katalon -runMode=console -summaryReport -projectPk="D:\qAutomate_RCP\VerifyBuild\Project\RegressionTest\RegressionTest.prj" -execute -testSuiteID="Test Suites\DataDrivenRegression\TS_DataDrivenRegression" -browserType=Firefox
+	b. Specify report folder using absolute path, NOT specify report name (system use name "report" for report files of all test suites)
+	katalon -runMode=console -projectPk="D:\qAutomate_RCP\VerifyBuild\Project\RegressionTest\RegressionTest.prj" -execute -testSuiteID="Test Suites\DataDrivenRegression\TS_DataDrivenRegression" -browserType=Firefox -reportFolder="D:\Report_Folder\FirefoxRun"
+	c. Specify report folder using relative path, specify report name (system uses this name for report files of all test suites)
+	katalon -runMode=console -reportFileName="index" -projectPk="D:\qAutomate_RCP\VerifyBuild\Project\RegressionTest\RegressionTest.prj" -execute -testSuiteID="Test Suites\DataDrivenRegression\TS_DataDrivenRegression" -browserType=Firefox -reportFolder="Reports\KeywordRegression\TS_AlertClassKeywordRegression\FirefoxRun"
+3. For creating Katalon build only: To configure console mode, put file "com.kms.qautomate.execution.prefs" to "\config\.metadata\.plugins\org.eclipse.core.runtime\.settings"

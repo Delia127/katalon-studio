@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="com.kms.katalon.entity.testcase">
+	<java-types>
+		<java-type name="TestCaseEntity">
+		<xml-root-element name="TestCaseEntity" />
+			<java-attributes>
+				<xml-element java-attribute="comment" />
+				<xml-element java-attribute="tag" />
+				<xml-transient java-attribute="dataFiles" />
+				<xml-element java-attribute="dataFileLocations" />
+                <xml-transient java-attribute="scriptContents" />
+                <xml-element java-attribute="variables" name="variable"/>
+			</java-attributes>
+		</java-type>
+	</java-types>
+</xml-bindings>

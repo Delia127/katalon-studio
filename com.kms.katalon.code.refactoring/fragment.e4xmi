@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="ASCII"?>
-<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_JtTn4FLfEeWVh5zW_tb7vA">
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_KQw6QFLfEeWVh5zW_tb7vA" featurename="addons" parentElementId="com.kms.katalon.composer.application">
-    <elements xsi:type="application:Addon" xmi:id="_KuAP4FLfEeWVh5zW_tb7vA" elementId="com.kms.katalon.composer.code.factoring.addon" contributionURI="bundleclass://com.kms.katalon.code.refactoring/com.kms.katalon.code.refactoring.addon.CodeRefactoringDependencyInjectionAddon"/>
-  </fragments>
-</fragment:ModelFragments>

@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Constant
+Bundle-SymbolicName: com.kms.katalon.constant;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: KMS
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Export-Package: com.kms.katalon.constants,
+ com.kms.katalon.constants.helper
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.core.resources

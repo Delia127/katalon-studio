@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+   <extension
+         point="com.kms.katalon.execution.runConfiguration">
+      <client
+            configuration="com.kms.katalon.execution.webui.configuration.contributor.FirefoxRunConfigurationContributor">
+      </client>
+   </extension>
+   <extension
+         point="com.kms.katalon.execution.runConfiguration">
+      <client
+            configuration="com.kms.katalon.execution.webui.configuration.contributor.ChromeRunConfigurationContributor">
+      </client>
+   </extension>
+   <extension
+         point="com.kms.katalon.execution.runConfiguration">
+      <client
+            configuration="com.kms.katalon.execution.webui.configuration.contributor.IERunConfigurationContributor">
+      </client>
+   </extension>
+   <extension
+         point="com.kms.katalon.execution.runConfiguration">
+      <client
+            configuration="com.kms.katalon.execution.webui.configuration.contributor.SafariRunConfigurationContributor">
+      </client>
+   </extension>
+   <extension
+         point="com.kms.katalon.execution.runConfiguration">
+      <client
+            configuration="com.kms.katalon.execution.webui.configuration.contributor.RemoteWebRunConfigurationContributor">
+      </client>
+   </extension>
+   
+</plugin>

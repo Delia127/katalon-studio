@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Webservice
+Bundle-SymbolicName: com.kms.katalon.core.webservice;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: KMS
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ClassPath: .
+Require-Bundle: org.codehaus.groovy,
+ com.kms.katalon.constant,
+ com.kms.katalon.core,
+ wsdl4j
+Export-Package: com.kms.katalon.core.webservice.contribution,
+ com.kms.katalon.core.webservice.keyword

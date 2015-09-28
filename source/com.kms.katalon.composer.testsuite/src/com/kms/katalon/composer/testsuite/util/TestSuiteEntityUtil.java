@@ -1,0 +1,28 @@
+package com.kms.katalon.composer.testsuite.util;
+
+import com.kms.katalon.entity.integration.IntegratedEntity;
+import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
+import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+
+public class TestSuiteEntityUtil {
+    public static void copyTestSuiteProperties(TestSuiteEntity src, TestSuiteEntity des) {
+        des.setName(src.getName());
+        des.setDescription(src.getDescription());
+        des.setBrowserString(src.getBrowserString());
+        des.setPageLoadTimeout(src.getPageLoadTimeout());
+        des.setMailRecipient(src.getMailRecipient());
+        des.setPageLoadTimeoutDefault(src.isPageLoadTimeoutDefault());
+        des.setNumberOfRerun(src.getNumberOfRerun());
+
+        des.getTestSuiteTestCaseLinks().clear();
+
+        for (TestSuiteTestCaseLink testCaseLink : src.getTestSuiteTestCaseLinks()) {
+            des.getTestSuiteTestCaseLinks().add(testCaseLink);
+        }
+
+        des.getIntegratedEntities().clear();
+        for (IntegratedEntity integratedEntity : src.getIntegratedEntities()) {
+            des.getIntegratedEntities().add(integratedEntity);
+        }
+    }
+}

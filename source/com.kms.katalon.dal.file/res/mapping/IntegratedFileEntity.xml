@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="com.kms.katalon.entity.file">
+	<java-types>
+		<java-type name="IntegratedFileEntity">
+		<xml-root-element name="IntegratedFileEntity" />
+			<java-attributes>
+				<xml-element java-attribute="integratedEntities" name="integratedEntity"/>
+			</java-attributes>
+		</java-type>
+	</java-types>
+</xml-bindings>

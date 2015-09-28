@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+
+   <extension
+         id="com.kms.katalon.composer.search.fragment"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            uri="fragment.e4xmi">
+      </fragment>
+   </extension>
+   <extension
+         point="org.eclipse.search.searchPages">
+      <page
+            class="com.kms.katalon.composer.search.view.QSearchPage"
+            id="com.kms.katalon.composer.search.page"
+            label="Q Search">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.search.searchResultViewPages">
+      <viewPage
+            class="com.kms.katalon.composer.search.view.QSearchResultPage"
+            id="com.kms.katalon.composer.search.viewPage"
+            searchResultClass="com.kms.katalon.composer.search.view.QSearchResult">
+      </viewPage>
+   </extension>
+
+</plugin>

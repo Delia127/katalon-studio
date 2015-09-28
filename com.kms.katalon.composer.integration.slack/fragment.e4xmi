@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="ASCII"?>
-<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_f9mVgC7BEeW0yZ4cdmFzcw">
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_hl0QgC7BEeW0yZ4cdmFzcw" featurename="addons" parentElementId="com.kms.katalon.composer.application">
-    <elements xsi:type="application:Addon" xmi:id="_ykf_MC7BEeW0yZ4cdmFzcw" elementId="com.kms.katalon.composer.integration.slack.addon.inject" contributionURI="bundleclass://com.kms.katalon.composer.integration.slack/com.kms.katalon.composer.integration.slack.addon.SlackInjectionManagerAddon"/>
-  </fragments>
-</fragment:ModelFragments>

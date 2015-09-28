@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+   <extension-point id="integration" name="com.kms.katalon.execution" schema="schema/integration.exsd"/>
+   <extension-point id="runConfiguration" name="com.kms.katalon.execution.configuration" schema="schema/runConfiguration.exsd"/>
+
+  	<extension
+         id="com.kms.katalon.execution.fragment"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            uri="fragment.e4xmi">
+      </fragment>
+   </extension>
+</plugin>

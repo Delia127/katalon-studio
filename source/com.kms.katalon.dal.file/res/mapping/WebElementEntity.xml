@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="com.kms.katalon.entity.repository">
+	<java-types>
+		<java-type name="WebElementEntity">
+			<xml-root-element name="WebElementEntity" />
+			<java-attributes>
+				<xml-element java-attribute="elementGuidId" />
+				<xml-element java-attribute="webElementProperties" />
+				<xml-element java-attribute="imagePath" />
+				<xml-element java-attribute="useRalativeImagePath" />
+			</java-attributes>
+		</java-type>
+	</java-types>
+</xml-bindings>
