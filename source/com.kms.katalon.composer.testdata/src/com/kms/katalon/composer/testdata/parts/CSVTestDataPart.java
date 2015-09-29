@@ -5,10 +5,12 @@ import java.text.MessageFormat;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellLabelProvider;
@@ -68,6 +70,8 @@ public class CSVTestDataPart extends TestDataMainPart {
     private Label lblFileInfo;
     private boolean isFileInfoExpanded;
 
+    @Inject
+    EPartService partService;
 
     private Listener layoutFileInfoCompositeListener = new Listener() {
 
@@ -385,19 +389,19 @@ public class CSVTestDataPart extends TestDataMainPart {
     @Persist
     public void save() {
         try {
-            String oldPk = dataFile.getId();
-            String oldName = dataFile.getName();
-            String oldIdForDisplay = TestDataController.getInstance().getIdForDisplay(dataFile);
-            dataFile = updateDataFileProperty(dataFile.getLocation(), txtName.getText(), txtDesc.getText(),
+            String oldPk = originalDataFile.getId();
+            String oldName = originalDataFile.getName();
+            String oldIdForDisplay = TestDataController.getInstance().getIdForDisplay(originalDataFile);
+            originalDataFile = updateDataFileProperty(originalDataFile.getLocation(), txtName.getText(), txtDesc.getText(),
                     DataFileDriverType.CSV, txtFileName.getText(), cbSeperator.getText(),
                     chckIsRelativePath.getSelection());
 
-            updateDataFile(dataFile);
+            updateDataFile(originalDataFile);
             dirtyable.setDirty(false);
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);
-            if (!StringUtils.equalsIgnoreCase(oldName, dataFile.getName())) {
+            if (!StringUtils.equalsIgnoreCase(oldName, originalDataFile.getName())) {
                 eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-                        TestDataController.getInstance().getIdForDisplay(dataFile) });
+                        TestDataController.getInstance().getIdForDisplay(originalDataFile) });
             }
             sendTestDataUpdatedEvent(oldPk);
         } catch (DuplicatedFileNameException e) {
@@ -437,5 +441,9 @@ public class CSVTestDataPart extends TestDataMainPart {
     protected void updateChildInfo(DataFileEntity dataFile) {
         loadTestData(dataFile);
     }
-
+    
+    @Override
+    protected EPartService getPartService() {
+        return partService;
+    }
 }

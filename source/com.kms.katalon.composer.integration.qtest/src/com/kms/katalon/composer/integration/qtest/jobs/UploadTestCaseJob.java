@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.integration.qtest.jobs;
 
+import java.text.MessageFormat;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -13,6 +15,7 @@ import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
+import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.TestCaseRootSelectionDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
@@ -147,8 +150,7 @@ public class UploadTestCaseJob extends UploadJob {
             QTestIntegrationFolderManager.updateModule(projectDir, qTestProject.getId(), qTestParentModule, false);
 
             for (QTestTestCase siblingQTestCase : qTestParentModule.getChildTestCases()) {
-                if (!testCaseEntity.getName().equalsIgnoreCase(siblingQTestCase.getName()))
-                    continue;
+                if (!testCaseEntity.getName().equalsIgnoreCase(siblingQTestCase.getName())) continue;
                 // let user choose merge or not
                 performTestCaseDuplicatedConfirmation(testCaseId, siblingQTestCase);
 
@@ -193,8 +195,8 @@ public class UploadTestCaseJob extends UploadJob {
         sync.syncExec(new Runnable() {
             @Override
             public void run() {
-                MultiStatusErrorDialog.showErrorDialog(ex, "Unable to upload test cases.", ex.getClass()
-                        .getSimpleName());
+                MultiStatusErrorDialog.showErrorDialog(ex, StringConstants.DIA_MSG_UNABLE_UPLOAD_TEST_CASE, ex
+                        .getClass().getSimpleName());
             }
         });
     }
@@ -203,10 +205,12 @@ public class UploadTestCaseJob extends UploadJob {
         sync.syncExec(new Runnable() {
             @Override
             public void run() {
-                isMergeConfirmed = MessageDialog.open(MessageDialog.QUESTION, null, "Test Case Duplication Detected",
-                        "System has detected that a test case on qTest with id: " + siblingQTestCase.getId()
-                                + " has the same name as test case: " + testCaseId + ".\nDo you want to merge them?",
-                        SWT.NONE);
+                isMergeConfirmed = MessageDialog.open(
+                        MessageDialog.QUESTION,
+                        null,
+                        StringConstants.DIA_TITLE_TEST_CASE_DUPLICATION,
+                        MessageFormat.format(StringConstants.DIA_MSG_CONFIRM_MERGE_UPLOADED_TEST_CASE,
+                                siblingQTestCase.getId(), testCaseId), SWT.NONE);
             }
         });
     }
@@ -216,17 +220,16 @@ public class UploadTestCaseJob extends UploadJob {
 
             @Override
             public void run() {
-                isMergeConfirmed = MessageDialog.open(MessageDialog.QUESTION, null, "Folder Duplication Detected",
-                        "System has detected that a test folder on qTest with id: " + siblingQTestModule.getId()
-                                + " has the same name as test case folder: " + folderId
-                                + ".\nDo you want to merge them?", SWT.NONE);
+                isMergeConfirmed = MessageDialog.open(MessageDialog.QUESTION, null,
+                        StringConstants.DIA_TITLE_FOLDER_DUPLICATION,
+                                MessageFormat.format(StringConstants.DIA_MSG_CONFIRM_MERGE_UPLOADED_TEST_CASE_FOLDER,
+                                        siblingQTestModule.getId(), folderId), SWT.NONE);
             }
         });
     }
 
     /**
-     * Open a confirmation dialog that requires user choose test case root
-     * folder
+     * Open a confirmation dialog that requires user choose test case root folder
      * 
      * @param moduleRoot
      */

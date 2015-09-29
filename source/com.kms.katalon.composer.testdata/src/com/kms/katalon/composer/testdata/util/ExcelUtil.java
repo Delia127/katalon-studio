@@ -12,7 +12,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import com.kms.katalon.core.testdata.reader.AppPOI;
 import com.kms.katalon.core.testdata.reader.SheetPOI;
 
-public class Util {
+public class ExcelUtil {
 
     public static void loadPreviewExcelData(String dataFilePath, int sheetIndex, List<String> headers,
             List<List<Object>> data) throws Exception {

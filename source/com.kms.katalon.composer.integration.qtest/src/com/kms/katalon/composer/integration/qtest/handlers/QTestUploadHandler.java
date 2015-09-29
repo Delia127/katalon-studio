@@ -26,7 +26,6 @@ import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
-import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class QTestUploadHandler {
 
@@ -45,10 +44,9 @@ public class QTestUploadHandler {
     @CanExecute
     public boolean canExecute() {
         try {
-            if (ProjectController.getInstance().getCurrentProject() == null) return false;
             ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-            String projectDir = projectEntity.getFolderLocation();
-            if (!QTestSettingStore.isIntegrationActive(projectDir)) return false;
+            if (!QTestIntegrationUtil.isIntegrationEnable(projectEntity)) { return false; }
+            
             Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
             if (selectedObjects == null || selectedObjects.length > 1) return false;
             if (selectedObjects[0] instanceof ITreeEntity) {

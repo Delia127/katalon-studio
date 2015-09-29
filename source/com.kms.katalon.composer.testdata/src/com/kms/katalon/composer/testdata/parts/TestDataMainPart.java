@@ -65,18 +65,15 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
     @Inject
     protected MApplication application;
 
-    @Inject
-    protected EPartService partService;
-
     protected Text txtName, txtId, txtDesc, txtDataType;
 
     protected MPart mpart;
 
-    protected DataFileEntity dataFile;
+    protected DataFileEntity originalDataFile;
 
     protected DataFileEntity cloneDataFile;
 
-    private static boolean isConfirmDialogShowed = false;
+    private boolean isConfirmDialogShowed = false;
 
     protected Set<Thread> currentThreads;
 
@@ -88,8 +85,6 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
     private Label labelDescription;
     private Composite infoCompositeDataType;
     private Label labelDataType;
-    private Label lblSupporter;
-    private Label lblSupporter1;
     private Composite compositeInfoHeader;
     private Composite compositeInfoDetails;
     private Composite compositeGeneralInfo;
@@ -97,7 +92,8 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
     private Composite compositeDataTable;
     private ImageButton btnExpandGeneralInformation;
     private Label lblInformations;
-    private boolean isInfoCompositeExpanded = true;
+
+    private boolean isInfoCompositeExpanded;
 
     private Listener layoutGeneralCompositeListener = new Listener() {
 
@@ -110,6 +106,9 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
     public void createControls(Composite parent, MPart mpart) {
         this.mpart = mpart;
         currentThreads = new HashSet<Thread>();
+
+        isConfirmDialogShowed = false;
+        isInfoCompositeExpanded = true;
 
         createModifyListener();
 
@@ -129,10 +128,12 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
         lblInformations.addListener(SWT.MouseDown, layoutGeneralCompositeListener);
     }
 
+    protected abstract EPartService getPartService();
+
     private void registerEventHandlers() {
         eventBroker.subscribe(EventConstants.TEST_DATA_UPDATED, this);
         eventBroker.subscribe(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, this);
-        partService.addPartListener(this);
+        getPartService().addPartListener(this);
     }
 
     protected void layoutGeneralComposite() {
@@ -241,10 +242,10 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
         txtDesc.setLayoutData(gdTxtDesc);
         txtDesc.addModifyListener(modifyListener);
 
-        lblSupporter = new Label(infoCompositeDescription, SWT.NONE);
+        Label lblSupporter = new Label(infoCompositeDescription, SWT.NONE);
         lblSupporter.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
 
-        lblSupporter1 = new Label(infoCompositeDescription, SWT.NONE);
+        Label lblSupporter1 = new Label(infoCompositeDescription, SWT.NONE);
         lblSupporter1.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
 
         infoCompositeName = new Composite(compositeInfoDetails, SWT.NONE);
@@ -258,9 +259,9 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
         label.setText(StringConstants.PA_LBL_NAME);
         gridData.widthHint = MAX_LABEL_WIDTH;
         txtName = new Text(infoCompositeName, SWT.BORDER);
-        GridData gd_txtName = new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1);
-        gd_txtName.heightHint = 18;
-        txtName.setLayoutData(gd_txtName);
+        GridData gdTxtName = new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1);
+        gdTxtName.heightHint = 18;
+        txtName.setLayoutData(gdTxtName);
 
         infoCompositeDataType = new Composite(compositeInfoDetails, SWT.NONE);
         infoCompositeDataType.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -268,15 +269,15 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
         infoCompositeDataType.setLayout(glInfoCompositeDataType);
 
         labelDataType = new Label(infoCompositeDataType, SWT.NONE);
-        GridData gridData3 = new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1);
-        gridData3.widthHint = MAX_LABEL_WIDTH;
-        labelDataType.setLayoutData(gridData3);
+        GridData gridDataLabelDataType = new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1);
+        gridDataLabelDataType.widthHint = MAX_LABEL_WIDTH;
+        labelDataType.setLayoutData(gridDataLabelDataType);
         labelDataType.setText(StringConstants.PA_LBL_DATA_TYPE);
 
         txtDataType = new Text(infoCompositeDataType, SWT.BORDER);
-        GridData gd_txtDataType = new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1);
-        gd_txtDataType.heightHint = 18;
-        txtDataType.setLayoutData(gd_txtDataType);
+        GridData gdTxtDataType = new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1);
+        gdTxtDataType.heightHint = 18;
+        txtDataType.setLayoutData(gdTxtDataType);
         txtDataType.setEditable(false);
 
         txtName.addModifyListener(modifyListener);
@@ -305,7 +306,7 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
     protected abstract void updateChildInfo(DataFileEntity dataFile);
 
     protected void updateDataFile(DataFileEntity dataFile) {
-        this.dataFile = dataFile;
+        this.originalDataFile = dataFile;
         // update mpart
         mpart.setLabel(dataFile.getName());
         mpart.setElementId(EntityPartUtil.getTestDataPartId(dataFile.getId()));
@@ -335,7 +336,7 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
 
                 if (elementId.equalsIgnoreCase(mpart.getElementId())) {
                     DataFileEntity dataFile = (DataFileEntity) ((Object[]) object)[1];
-                    this.dataFile = dataFile;
+                    this.originalDataFile = dataFile;
 
                     boolean oldDirty = dirtyable.isDirty();
                     updateDataFile(dataFile);
@@ -350,7 +351,7 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
                     if (selectedTreeEntityObject instanceof TestDataTreeEntity) {
                         TestDataTreeEntity selectedTreeEntity = (TestDataTreeEntity) selectedTreeEntityObject;
                         DataFileEntity refreshedDataFileEntity = (DataFileEntity) selectedTreeEntity.getObject();
-                        if (refreshedDataFileEntity.getId().equals(dataFile.getId())) {
+                        if (refreshedDataFileEntity.getId().equals(originalDataFile.getId())) {
                             if (TestDataController.getInstance().getTestData(refreshedDataFileEntity.getId()) != null) {
                                 if (dirtyable.isDirty()) {
                                     verifySourceChanged();
@@ -367,8 +368,8 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
                     if (selectedTreeEntityObject instanceof FolderTreeEntity) {
                         FolderEntity folderEntity = (FolderEntity) ((FolderTreeEntity) selectedTreeEntityObject)
                                 .getObject();
-                        if (dataFile.getId().contains(folderEntity.getId() + File.separator)) {
-                            if (TestDataController.getInstance().getTestData(dataFile.getId()) == null) {
+                        if (originalDataFile.getId().contains(folderEntity.getId() + File.separator)) {
+                            if (TestDataController.getInstance().getTestData(originalDataFile.getId()) == null) {
                                 dispose();
                             }
                         }
@@ -397,22 +398,22 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
     }
 
     protected void sendTestDataUpdatedEvent(String oldPk) {
-        eventBroker.post(EventConstants.TEST_DATA_UPDATED, new Object[] { oldPk, dataFile });
+        eventBroker.post(EventConstants.TEST_DATA_UPDATED, new Object[] { oldPk, originalDataFile });
     }
 
     private void verifySourceChanged() {
         try {
-            if (dataFile != null) {
-                DataFileEntity sourceDataFile = TestDataController.getInstance().getTestData(dataFile.getId());
+            if (originalDataFile != null) {
+                DataFileEntity sourceDataFile = TestDataController.getInstance().getTestData(originalDataFile.getId());
                 if (sourceDataFile != null) {
-                    if (!sourceDataFile.equals(dataFile)) {
+                    if (!sourceDataFile.equals(originalDataFile)) {
                         if (!isConfirmDialogShowed) {
                             isConfirmDialogShowed = true;
                             if (MessageDialog.openConfirm(
                                     Display.getCurrent().getActiveShell(),
                                     StringConstants.PA_CONFIRM_TITLE_FILE_CHANGED,
                                     MessageFormat.format(StringConstants.PA_CONFIRM_MSG_RELOAD_FILE,
-                                            dataFile.getLocation()))) {
+                                            originalDataFile.getLocation()))) {
                                 updateDataFile(sourceDataFile);
                                 dirtyable.setDirty(false);
                             }
@@ -421,8 +422,8 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
 
                     }
                 } else {
-                    FolderTreeEntity parentFolderTreeEntity = getParentFolderTreeEntity(dataFile.getParentFolder(),
-                            FolderController.getInstance().getTestDataRoot(dataFile.getProject()));
+                    FolderTreeEntity parentFolderTreeEntity = getParentFolderTreeEntity(originalDataFile.getParentFolder(),
+                            FolderController.getInstance().getTestDataRoot(originalDataFile.getProject()));
                     if (parentFolderTreeEntity != null) {
                         eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentFolderTreeEntity);
                     }
@@ -438,11 +439,11 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
                         Display.getCurrent().getActiveShell(),
                         StringConstants.ERROR_TITLE,
                         MessageFormat.format(StringConstants.PA_ERROR_MSG_FILE_X_IS_WRONG_FORMAT_AT_LINE_Y,
-                                dataFile.getLocation(), saxParserException.getLineNumber()));
+                                originalDataFile.getLocation(), saxParserException.getLineNumber()));
                 isConfirmDialogShowed = false;
                 try {
-                    FolderTreeEntity parentFolderTreeEntity = getParentFolderTreeEntity(dataFile.getParentFolder(),
-                            FolderController.getInstance().getTestDataRoot(dataFile.getProject()));
+                    FolderTreeEntity parentFolderTreeEntity = getParentFolderTreeEntity(originalDataFile.getParentFolder(),
+                            FolderController.getInstance().getTestDataRoot(originalDataFile.getProject()));
 
                     if (parentFolderTreeEntity != null) {
                         eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentFolderTreeEntity);
@@ -491,20 +492,26 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
     }
 
     public void partDeactivated(MPart part) {
-        part.toString();
+        if (part == mpart) {
+            removePart();
+        }
     }
 
     public void partHidden(MPart part) {
         if (part == mpart) {
-            partService.removePartListener(this);
-            if (mpart.isVisible()) {
-                partService.savePart(mpart, false);
-            }
+            removePart();
         }
     }
 
     public void partVisible(MPart part) {
 
+    }
+
+    private void removePart() {
+        getPartService().removePartListener(this);
+        if (mpart.isVisible()) {
+            getPartService().savePart(mpart, false);
+        }
     }
 
 }

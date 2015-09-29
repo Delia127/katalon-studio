@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
+import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.TestCaseRepoDialog;
 import com.kms.katalon.composer.integration.qtest.jobs.DisintegrateTestCaseJob;
 import com.kms.katalon.composer.integration.qtest.jobs.listeners.DisintegrateJobListener;
@@ -55,7 +56,7 @@ import com.kms.katalon.integration.qtest.entity.QTestProject;
 public class TestCaseRepoPreferencePage extends PreferencePage {
 
     @Inject
-    UISynchronize sync;
+    private UISynchronize sync;
 
     private Composite container;
     private Table table;
@@ -83,15 +84,15 @@ public class TestCaseRepoPreferencePage extends PreferencePage {
 
         TableViewerColumn tableViewerColumnQTestProject = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnQTestProject = tableViewerColumnQTestProject.getColumn();
-        tblclmnQTestProject.setText("qTest Project");
+        tblclmnQTestProject.setText(StringConstants.DIA_TITLE_QTEST_PROJECT);
 
         TableViewerColumn tableViewerColumnQTestModule = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnQTestModule = tableViewerColumnQTestModule.getColumn();
-        tblclmnQTestModule.setText("qTest Module");
+        tblclmnQTestModule.setText(StringConstants.DIA_TITLE_QTEST_MODULE);
 
         TableViewerColumn tableViewerColumnKatalonFolder = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnKatalonFolder = tableViewerColumnKatalonFolder.getColumn();
-        tblclmnKatalonFolder.setText("Katalon Folder");
+        tblclmnKatalonFolder.setText(StringConstants.DIA_TITLE_TEST_CASE_FOLDER);
 
         tableViewer.setLabelProvider(new TestCaseRepoTableLabelProvider());
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
@@ -104,22 +105,22 @@ public class TestCaseRepoPreferencePage extends PreferencePage {
 
         Composite compositeButton = new Composite(container, SWT.NONE);
         compositeButton.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true, 1, 1));
-        GridLayout gl_compositeButton = new GridLayout(1, false);
-        gl_compositeButton.marginHeight = 0;
-        compositeButton.setLayout(gl_compositeButton);
+        GridLayout glCompositeButton = new GridLayout(1, false);
+        glCompositeButton.marginHeight = 0;
+        compositeButton.setLayout(glCompositeButton);
 
         btnAdd = new Button(compositeButton, SWT.NONE);
         btnAdd.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-        btnAdd.setText("Add");
+        btnAdd.setText(StringConstants.ADD);
 
         btnEdit = new Button(compositeButton, SWT.NONE);
         btnEdit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-        btnEdit.setText("Edit");
+        btnEdit.setText(StringConstants.EDIT);
         btnEdit.setEnabled(false);
 
         btnRemove = new Button(compositeButton, SWT.NONE);
         btnRemove.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-        btnRemove.setText("Remove");
+        btnRemove.setText(StringConstants.REMOVE);
         btnRemove.setEnabled(false);
 
         addButtonSelectionListeners();
@@ -129,7 +130,6 @@ public class TestCaseRepoPreferencePage extends PreferencePage {
     }
 
     private void initilize() {
-
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
         IntegratedEntity integratedProjectEntity = projectEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 
@@ -142,7 +142,8 @@ public class TestCaseRepoPreferencePage extends PreferencePage {
             }
         } catch (Exception ex) {
             LoggerSingleton.logError(ex);
-            MessageDialog.openWarning(null, "Unable to get qTest projects's information.", ex.getMessage());
+            MultiStatusErrorDialog.showErrorDialog(ex, StringConstants.DIA_MSG_UNABLE_GET_PROJECT_INFO, ex.getClass()
+                    .getSimpleName());
         }
 
         testCaseRepositories = QTestIntegrationUtil.getTestCaseRepositories(projectEntity, qTestProjects);
@@ -254,8 +255,8 @@ public class TestCaseRepoPreferencePage extends PreferencePage {
                     }
                 } catch (Exception e) {
                     LoggerSingleton.logError(e);
-                    MultiStatusErrorDialog.showErrorDialog(e, "Unable to modify Test Case Repository.", e.getClass()
-                            .getSimpleName());
+                    MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_UNABLE_MOFIDY_TEST_CASE_REPO, e
+                            .getClass().getSimpleName());
                 }
             }
         }
@@ -279,8 +280,8 @@ public class TestCaseRepoPreferencePage extends PreferencePage {
     }
 
     private boolean confirmRemoveRepo() {
-        if (MessageDialog.openConfirm(null, "Confirmation",
-                "Are you sure you want to disintegrate all test cases in this folder with qTest?")) {
+        if (MessageDialog.openConfirm(null, StringConstants.CONFIRMATION,
+                StringConstants.DIA_CONFIRM_DISINTEGRATE_TEST_CASE_FOLDER)) {
             return true;
         } else {
             return false;
@@ -314,13 +315,13 @@ public class TestCaseRepoPreferencePage extends PreferencePage {
 
         } catch (Exception e) {
             LoggerSingleton.logError(e);
-            MultiStatusErrorDialog.showErrorDialog(e, "Unable to remove Test Case Repository.", e.getClass()
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_UNABLE_REMOVE_TEST_CASE_REPO, e.getClass()
                     .getSimpleName());
         }
     }
 
     private void performRemoveTestCaseRepo(final FolderEntity folderEntity, final TestCaseRepo repo) {
-        DisintegrateTestCaseJob job = new DisintegrateTestCaseJob("Disintegrate test cases");
+        DisintegrateTestCaseJob job = new DisintegrateTestCaseJob(StringConstants.JOB_TITLE_DISINTEGRATE_TEST_CASE);
         job.setFileEntities(Arrays.asList((IntegratedFileEntity) folderEntity));
         job.doTask();
         job.addJobChangeListener(new DisintegrateJobListener() {
@@ -338,7 +339,7 @@ public class TestCaseRepoPreferencePage extends PreferencePage {
     }
 
     private void performInsertTestCaseRepor(final FolderEntity folderEntity, final TestCaseRepo newRepo, final int index) {
-        DisintegrateTestCaseJob job = new DisintegrateTestCaseJob("Disintegrate test cases");
+        DisintegrateTestCaseJob job = new DisintegrateTestCaseJob(StringConstants.JOB_TITLE_DISINTEGRATE_TEST_CASE);
         job.setFileEntities(Arrays.asList((IntegratedFileEntity) folderEntity));
         job.doTask();
         job.addJobChangeListener(new DisintegrateJobListener() {
@@ -361,15 +362,15 @@ public class TestCaseRepoPreferencePage extends PreferencePage {
         if (container == null) return true;
 
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-        
-        //Sync with the current project
+
+        // Sync with the current project
         Set<QTestProject> currentProjects = new LinkedHashSet<QTestProject>();
         IntegratedEntity projectIntegratedEntity = projectEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
         if (projectIntegratedEntity != null) {
             currentProjects.addAll(QTestIntegrationProjectManager
                     .getQTestProjectsByIntegratedEntity(projectIntegratedEntity));
         }
-        
+
         currentProjects.addAll(qTestProjects);
 
         for (QTestProject qTestProject : currentProjects) {
@@ -396,7 +397,7 @@ public class TestCaseRepoPreferencePage extends PreferencePage {
                 continue;
             }
         }
-        
+
         qTestProjects.clear();
         qTestProjects.addAll(currentProjects);
 

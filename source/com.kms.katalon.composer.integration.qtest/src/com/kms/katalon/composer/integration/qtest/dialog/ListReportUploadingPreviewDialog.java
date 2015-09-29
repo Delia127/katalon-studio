@@ -17,100 +17,100 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
+import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.provider.TestCaseResultPreviewUploadedLableProvider;
 import com.kms.katalon.composer.integration.qtest.dialog.support.TestCaseResultAttachmentEditingSupport;
 import com.kms.katalon.composer.integration.qtest.dialog.support.TestCaseResultMessageEditingSupport;
 import com.kms.katalon.integration.qtest.entity.QTestLogUploadedPreview;
 
 public class ListReportUploadingPreviewDialog extends Dialog {
-	
-	private List<QTestLogUploadedPreview> input;
-	
-	private Composite container;
-	private TableViewerColumn tableViewerColumnName;
-	private TableViewerColumn tableViewerColumnAttachment;
-	private TableViewerColumn tableViewerColumnMessage;
-	private TableViewer tableViewer;
 
-	public ListReportUploadingPreviewDialog(Shell parentShell, List<QTestLogUploadedPreview> input) {
-		super(parentShell);
-		setInput(input);
-	}
-	
-	protected Control createDialogArea(Composite parent) {
-		container = (Composite) super.createDialogArea(parent);
-		container.setLayout(new FillLayout(SWT.HORIZONTAL));
-		
-		Composite compositeTable = new Composite(container, SWT.NONE);
-		
-		tableViewer = new TableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION);
-		Table table = tableViewer.getTable();
-		table.setLinesVisible(true);
-		table.setHeaderVisible(true);
-		
-		TableViewerColumn tableViewerColumnNo = new TableViewerColumn(tableViewer, SWT.NONE);
-		TableColumn tblclmnNo = tableViewerColumnNo.getColumn();
-		tblclmnNo.setText("No.");
-		
-		tableViewerColumnName = new TableViewerColumn(tableViewer, SWT.NONE);
-		TableColumn tblclmnName = tableViewerColumnName.getColumn();
-		tblclmnName.setText("Name");
-		
-		tableViewerColumnAttachment = new TableViewerColumn(tableViewer, SWT.NONE);
-		TableColumn tblclmnAttachment = tableViewerColumnAttachment.getColumn();
-		tblclmnAttachment.setText("Attachment");
-		
-		tableViewerColumnMessage = new TableViewerColumn(tableViewer, SWT.NONE);
-		TableColumn tblclmnMessage = tableViewerColumnMessage.getColumn();
-		tblclmnMessage.setText("Message");
-		
-		TableColumnLayout tableLayout = new TableColumnLayout();
-		tableLayout.setColumnData(tblclmnNo, new ColumnWeightData(0, 50));
-		tableLayout.setColumnData(tblclmnName, new ColumnWeightData(50, 150));
-		tableLayout.setColumnData(tblclmnAttachment, new ColumnWeightData(0, 80));
-		tableLayout.setColumnData(tblclmnMessage, new ColumnWeightData(0, 150));
-		compositeTable.setLayout(tableLayout);		
-		
-		tableViewer.setContentProvider(ArrayContentProvider.getInstance());
-		tableViewer.setLabelProvider(new TestCaseResultPreviewUploadedLableProvider());
-		
-		tableViewerColumnAttachment.setEditingSupport(new TestCaseResultAttachmentEditingSupport(tableViewer));
-		tableViewerColumnMessage.setEditingSupport(new TestCaseResultMessageEditingSupport(tableViewer));
-		return container;
-	}
+    private List<QTestLogUploadedPreview> input;
 
-	@Override
-	public void create() {
-		super.create();
-		initialize();
-	}
-	
+    private Composite container;
+    private TableViewerColumn tableViewerColumnName;
+    private TableViewerColumn tableViewerColumnAttachment;
+    private TableViewerColumn tableViewerColumnMessage;
+    private TableViewer tableViewer;
 
-	private void initialize() {
-		tableViewer.setInput(getInput());
-	}
+    public ListReportUploadingPreviewDialog(Shell parentShell, List<QTestLogUploadedPreview> input) {
+        super(parentShell);
+        setInput(input);
+    }
 
-	@Override
-	protected Point getInitialSize() {
-		return new Point(600, 500);
-	}
-	
-	@Override
-	protected void setShellStyle(int arg) {
-		super.setShellStyle(SWT.CLOSE | SWT.TITLE | SWT.RESIZE);
-	}
+    protected Control createDialogArea(Composite parent) {
+        container = (Composite) super.createDialogArea(parent);
+        container.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-	@Override
-	protected void configureShell(Shell newShell) {
-		super.configureShell(newShell);
-		newShell.setText("Test Log Uploading Preview");
-	}
+        Composite compositeTable = new Composite(container, SWT.NONE);
 
-	public List<QTestLogUploadedPreview> getInput() {
-		return input;
-	}
+        tableViewer = new TableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION);
+        Table table = tableViewer.getTable();
+        table.setLinesVisible(true);
+        table.setHeaderVisible(true);
 
-	private void setInput(List<QTestLogUploadedPreview> input) {
-		this.input = input;
-	}
+        TableViewerColumn tableViewerColumnNo = new TableViewerColumn(tableViewer, SWT.NONE);
+        TableColumn tblclmnNo = tableViewerColumnNo.getColumn();
+        tblclmnNo.setText(StringConstants.NO_);
+
+        tableViewerColumnName = new TableViewerColumn(tableViewer, SWT.NONE);
+        TableColumn tblclmnName = tableViewerColumnName.getColumn();
+        tblclmnName.setText(StringConstants.NAME);
+
+        tableViewerColumnAttachment = new TableViewerColumn(tableViewer, SWT.NONE);
+        TableColumn tblclmnAttachment = tableViewerColumnAttachment.getColumn();
+        tblclmnAttachment.setText(StringConstants.ATTACHMENT);
+
+        tableViewerColumnMessage = new TableViewerColumn(tableViewer, SWT.NONE);
+        TableColumn tblclmnMessage = tableViewerColumnMessage.getColumn();
+        tblclmnMessage.setText(StringConstants.MESSAGE);
+
+        TableColumnLayout tableLayout = new TableColumnLayout();
+        tableLayout.setColumnData(tblclmnNo, new ColumnWeightData(0, 50));
+        tableLayout.setColumnData(tblclmnName, new ColumnWeightData(50, 150));
+        tableLayout.setColumnData(tblclmnAttachment, new ColumnWeightData(0, 80));
+        tableLayout.setColumnData(tblclmnMessage, new ColumnWeightData(0, 150));
+        compositeTable.setLayout(tableLayout);
+
+        tableViewer.setContentProvider(ArrayContentProvider.getInstance());
+        tableViewer.setLabelProvider(new TestCaseResultPreviewUploadedLableProvider());
+
+        tableViewerColumnAttachment.setEditingSupport(new TestCaseResultAttachmentEditingSupport(tableViewer));
+        tableViewerColumnMessage.setEditingSupport(new TestCaseResultMessageEditingSupport(tableViewer));
+        return container;
+    }
+
+    @Override
+    public void create() {
+        super.create();
+        initialize();
+    }
+
+    private void initialize() {
+        tableViewer.setInput(getInput());
+    }
+
+    @Override
+    protected Point getInitialSize() {
+        return new Point(600, 500);
+    }
+
+    @Override
+    protected void setShellStyle(int arg) {
+        super.setShellStyle(SWT.CLOSE | SWT.TITLE | SWT.RESIZE);
+    }
+
+    @Override
+    protected void configureShell(Shell newShell) {
+        super.configureShell(newShell);
+        newShell.setText(StringConstants.DIA_TITLE_TEST_LOG_UPLOADING_PREVIEW);
+    }
+
+    public List<QTestLogUploadedPreview> getInput() {
+        return input;
+    }
+
+    private void setInput(List<QTestLogUploadedPreview> input) {
+        this.input = input;
+    }
 }

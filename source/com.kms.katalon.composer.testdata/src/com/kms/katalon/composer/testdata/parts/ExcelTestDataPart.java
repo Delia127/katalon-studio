@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -39,7 +41,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.testdata.constants.ImageConstants;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
-import com.kms.katalon.composer.testdata.util.Util;
+import com.kms.katalon.composer.testdata.util.ExcelUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestDataController;
@@ -54,6 +56,9 @@ public class ExcelTestDataPart extends TestDataMainPart {
     private static final String[] FILTER_NAMES = { "Microsoft Excel Spreadsheet Files (*.xls, *.xlsx)" };
 
     private static final String[] FILTER_EXTS = { "*.xlsx; *.xls" };
+
+    @Inject
+    private EPartService partService;
 
     private Text txtFileName;
     private Combo cbbSheets;
@@ -323,7 +328,8 @@ public class ExcelTestDataPart extends TestDataMainPart {
             if (cbbSheets.isDisposed()) {
                 return;
             }
-            cbbSheets.setItems(Util.loadSheetName(getSourceUrlAbsolutePath()).toArray(new String[] {}));
+
+            cbbSheets.setItems(ExcelUtil.loadSheetName(getSourceUrlAbsolutePath()).toArray(new String[] {}));
             cbbSheets.select(0);
         } catch (Exception e) {
             MessageDialog.openConfirm(Display.getCurrent().getActiveShell(), StringConstants.WARN_TITLE,
@@ -405,18 +411,18 @@ public class ExcelTestDataPart extends TestDataMainPart {
     @Persist
     public void save() {
         try {
-            String oldPk = dataFile.getId();
-            String oldName = dataFile.getName();
-            String oldIdForDisplay = TestDataController.getInstance().getIdForDisplay(dataFile);
-            dataFile = updateDataFileProperty(dataFile.getLocation(), txtName.getText(), txtDesc.getText(),
-                    DataFileDriverType.ExcelFile, txtFileName.getText(), cbbSheets.getText(),
+            String oldPk = originalDataFile.getId();
+            String oldName = originalDataFile.getName();
+            String oldIdForDisplay = TestDataController.getInstance().getIdForDisplay(originalDataFile);
+            originalDataFile = updateDataFileProperty(originalDataFile.getLocation(), txtName.getText(),
+                    txtDesc.getText(), DataFileDriverType.ExcelFile, txtFileName.getText(), cbbSheets.getText(),
                     ckcbUseRelativePath.getSelection(), true);
-            updateDataFile(dataFile);
+            updateDataFile(originalDataFile);
             dirtyable.setDirty(false);
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);
-            if (!StringUtils.equalsIgnoreCase(oldName, dataFile.getName())) {
+            if (!StringUtils.equalsIgnoreCase(oldName, originalDataFile.getName())) {
                 eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-                        TestDataController.getInstance().getIdForDisplay(dataFile) });
+                        TestDataController.getInstance().getIdForDisplay(originalDataFile) });
             }
             sendTestDataUpdatedEvent(oldPk);
         } catch (DuplicatedFileNameException e) {
@@ -454,5 +460,10 @@ public class ExcelTestDataPart extends TestDataMainPart {
     @Override
     protected void updateChildInfo(DataFileEntity dataFile) {
         loadInput(dataFile);
+    }
+
+    @Override
+    protected EPartService getPartService() {
+        return partService;
     }
 }
