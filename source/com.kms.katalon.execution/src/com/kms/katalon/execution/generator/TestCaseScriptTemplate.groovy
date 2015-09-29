@@ -4,6 +4,7 @@ import groovy.text.GStringTemplateEngine
 import groovy.transform.CompileStatic
 
 import com.kms.katalon.controller.TestCaseController
+import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.driver.DriverCleanerCollector
 import com.kms.katalon.core.keyword.IKeywordContributor
 import com.kms.katalon.core.logging.KeywordLogger
@@ -12,7 +13,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testcase.TestCaseBinding
 import com.kms.katalon.custom.factory.BuiltInMethodNodeFactory
 import com.kms.katalon.entity.testcase.TestCaseEntity
-import com.kms.katalon.execution.entity.IRunConfiguration
+import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.util.ExecutionUtil
 
 @CompileStatic
@@ -22,13 +23,11 @@ class TestCaseScriptTemplate {
 <% importNames.each { %>import <%= it %>
 <% } %>
 
-<% configProperties.each { k, v -> %> 
-System.setProperty("<%= k %>", "<%= v %>")
-<% } %> 
-
-
 <% driverCleaners.each { %>DriverCleanerCollector.getInstance().addDriverCleaner(new <%= it %>())
 <% } %>
+
+RunConfiguration.setLogFile("<%= logFilePath %>");
+RunConfiguration.setExecutionSettingFile("<%= executionConfigFilePath %>");
 
 TestCaseMain.beforeStart()
 try {
@@ -47,7 +46,8 @@ try {
 			MissingPropertyException.class.getName(),
 			TestCaseBinding.class.getName(),
 			DriverCleanerCollector.class.getName(),
-			FailureHandling.class.getName()
+			FailureHandling.class.getName(),
+            RunConfiguration.class.getName()
 		]
 
 
@@ -66,7 +66,8 @@ try {
 			"importNames"     : importNames,
 			"testCaseId"      : testCaseId,
 			"testCaseBinding" : testCaseBinding,
-			"configProperties" : ExecutionUtil.escapeGroovy(config.getPropertyMap()),
+			"executionConfigFilePath" : config.getExecutionSettingFilePath(),
+            "logFilePath" : config.getLogFilePath(),
 			"driverCleaners" : driverCleaners
 		]
 

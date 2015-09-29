@@ -47,7 +47,7 @@ public class ChromeDriverPropertySettingStore extends WebUiDriverPropertySetting
         }
         DesiredCapabilities desireCapabilities = DesiredCapabilities.chrome();
         Map<String, Object> chromeOptions = new HashMap<String, Object>();
-        for (Entry<String, Object> driverProperty : getProperties().entrySet()) {
+        for (Entry<String, Object> driverProperty : getDriverProperties().entrySet()) {
             if (Arrays.asList(CHROME_CAPABILITIES).contains(driverProperty.getKey())) {
                 chromeOptions.put(driverProperty.getKey(), driverProperty.getValue());
             } else {
@@ -57,7 +57,7 @@ public class ChromeDriverPropertySettingStore extends WebUiDriverPropertySetting
                     MessageFormat.format(StringConstants.KW_LOG_WEB_UI_PROPERTY_SETTING, driverProperty.getKey(),
                             driverProperty.getValue()));
         }
-        desireCapabilities.setCapability(ChromeOptions.CAPABILITY, getProperties());
+        desireCapabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
         return desireCapabilities;
     }
 }

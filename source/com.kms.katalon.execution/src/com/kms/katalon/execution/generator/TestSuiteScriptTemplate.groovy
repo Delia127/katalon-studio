@@ -3,6 +3,7 @@ package com.kms.katalon.execution.generator;
 import groovy.text.GStringTemplateEngine
 import groovy.transform.CompileStatic
 
+import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.driver.DriverCleanerCollector
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.keyword.IKeywordContributor
@@ -14,7 +15,7 @@ import com.kms.katalon.core.testcase.TestCaseBinding
 import com.kms.katalon.core.testdata.TestDataColumn
 import com.kms.katalon.custom.factory.BuiltInMethodNodeFactory
 import com.kms.katalon.entity.testsuite.TestSuiteEntity
-import com.kms.katalon.execution.entity.IRunConfiguration
+import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.entity.TestCaseExecutedEntity
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity
 import com.kms.katalon.execution.util.ExecutionUtil
@@ -27,13 +28,16 @@ public class TestSuiteScriptTemplate {
 
 Map<String, String> suiteProperties = new HashMap<String, String>();
 
-<% configProperties.each { k, v -> %> 
-System.setProperty("<%= k %>", "<%= v %>")
+<% configProperties.each { k, v -> %>
 suiteProperties.put("<%= k %>", "<%= v %>")
 <% } %> 
 
 <% driverCleaners.each { %>DriverCleanerCollector.getInstance().addDriverCleaner(new <%= it %>())
 <% } %>
+
+
+RunConfiguration.setLogFile("<%= logFilePath %>");
+RunConfiguration.setExecutionSettingFile("<%= executionConfigFilePath %>");
 
 TestCaseMain.beforeStart()
 
@@ -58,7 +62,8 @@ KeywordLogger.getInstance().endSuite('<%= testSuite.getName() %>', null)
 			MissingPropertyException.class.getName(),
 			TestCaseBinding.class.getName(),
 			DriverCleanerCollector.class.getName(),
-			FailureHandling.class.getName()
+			FailureHandling.class.getName(),
+            RunConfiguration.class.getName()
 		]
 
 
@@ -84,6 +89,8 @@ KeywordLogger.getInstance().endSuite('<%= testSuite.getName() %>', null)
 			"testCaseIds": testCaseIds,
 			"testCaseBindings": testCaseBindings,
 			"configProperties" : ExecutionUtil.escapeGroovy(runConfig.getPropertyMap()),
+            "executionConfigFilePath" : runConfig.getExecutionSettingFilePath(),
+            "logFilePath" : runConfig.getLogFilePath(),
 			"driverCleaners" : driverCleaners
 		]
 

@@ -60,6 +60,7 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String CONF_EXECUTED_PLATFORM = XML_LOG_DEVICE_PLATFORM_PROPERTY;
     public static final String CONF_EXECUTED_DEVICE_NAME = XML_LOG_DEVICE_NAME_PROPERTY;
     public static final String XML_LOG_STARTING_DRIVER_X = "Starting ''{0}'' driver";
+    public static final String XML_LOG_ERROR_BROWSER_NOT_IE = "Executing browser is not IE";
 	
 	// BrowserNotOpenedException
 	public static final String EXC_BROWSER_IS_NOT_OPENED = "Browser is not opened";

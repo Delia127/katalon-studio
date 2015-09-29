@@ -1,13 +1,14 @@
 package com.kms.katalon.execution.collector;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
-import com.kms.katalon.execution.entity.IRunConfiguration;
 
 public class RunConfigurationCollector {
     private static RunConfigurationCollector _instance;
@@ -34,7 +35,7 @@ public class RunConfigurationCollector {
         customRunConfigurationContributors.add(runConfigurationContributor);
     }
 
-    public IRunConfiguration getRunConfiguration(String id, TestCaseEntity testCase, Map<String, String> runInput) {
+    public IRunConfiguration getRunConfiguration(String id, TestCaseEntity testCase, Map<String, String> runInput) throws IOException {
         for (IRunConfigurationContributor runConfigurationContributor : runConfigurationContributors) {
             if (runConfigurationContributor.getId().equals(id)) {
                 return runConfigurationContributor.getRunConfiguration(testCase, runInput);
@@ -48,7 +49,8 @@ public class RunConfigurationCollector {
         return null;
     }
 
-    public IRunConfiguration getRunConfiguration(String id, TestSuiteEntity testSuite, Map<String, String> runInput) {
+    public IRunConfiguration getRunConfiguration(String id, TestSuiteEntity testSuite, Map<String, String> runInput)
+            throws IOException {
         for (IRunConfigurationContributor runConfigurationContributor : runConfigurationContributors) {
             if (runConfigurationContributor.getId().equals(id)) {
                 return runConfigurationContributor.getRunConfiguration(testSuite, runInput);

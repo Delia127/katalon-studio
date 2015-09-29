@@ -26,11 +26,7 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.exception.BrowserNotOpenedException;
-import com.kms.katalon.core.webui.setting.ChromeDriverPropertySettingStore;
-import com.kms.katalon.core.webui.setting.FirefoxDriverPropertySettingStore;
-import com.kms.katalon.core.webui.setting.IEWebDriverPropertySettingStore;
-import com.kms.katalon.core.webui.setting.RemoteWebDriverPropertySettingStore;
-import com.kms.katalon.core.webui.setting.WebUiDriverPropertySettingStore;
+import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
 
 public class DriverFactory {
     private static final String CHROME_DRIVER_PATH_PROPERTY_KEY = "webdriver.chrome.driver";
@@ -58,43 +54,30 @@ public class DriverFactory {
             if (driver == null) {
                 throw new StepFailedException(StringConstants.DRI_ERROR_MSG_NO_BROWSER_SET);
             }
-            WebUiDriverPropertySettingStore webUiDriverPropertySettingStore = null;
             KeywordLogger.getInstance().logInfo(
                     MessageFormat.format(StringConstants.XML_LOG_STARTING_DRIVER_X, driver.toString()));
+            DesiredCapabilities desireCapibilities = WebDriverPropertyUtil.toDesireCapabilities(
+                    RunConfiguration.getExecutionDriverProperty(), driver);
             switch (driver) {
             case FIREFOX_DRIVER:
-                webUiDriverPropertySettingStore = (RunConfiguration.getCustomExecutionProfile() != null) ? new FirefoxDriverPropertySettingStore(
-                        RunConfiguration.getProjectDir(), RunConfiguration.getCustomExecutionProfile())
-                        : new FirefoxDriverPropertySettingStore(RunConfiguration.getProjectDir());
-                seleniumWebDriver = new FirefoxDriver(webUiDriverPropertySettingStore.toDesiredCapabilities());
-                seleniumWebDriver.manage().logs().getAvailableLogTypes();
+                seleniumWebDriver = new FirefoxDriver(desireCapibilities);
                 setTimeout();
                 break;
             case IE_DRIVER:
-                webUiDriverPropertySettingStore = (RunConfiguration.getCustomExecutionProfile() != null) ? new IEWebDriverPropertySettingStore(
-                        RunConfiguration.getProjectDir(), RunConfiguration.getCustomExecutionProfile())
-                        : new IEWebDriverPropertySettingStore(RunConfiguration.getProjectDir());
                 System.setProperty(IE_DRIVER_PATH_PROPERTY_KEY, getIEDriverPath());
-                seleniumWebDriver = new InternetExplorerDriver(webUiDriverPropertySettingStore.toDesiredCapabilities());
+                seleniumWebDriver = new InternetExplorerDriver(desireCapibilities);
                 setTimeout();
                 break;
             case SAFARI_DRIVER:
-                seleniumWebDriver = new SafariDriver();
+                seleniumWebDriver = new SafariDriver(desireCapibilities);
                 break;
             case CHROME_DRIVER:
-                webUiDriverPropertySettingStore = (RunConfiguration.getCustomExecutionProfile() != null) ? new ChromeDriverPropertySettingStore(
-                        RunConfiguration.getProjectDir(), RunConfiguration.getCustomExecutionProfile())
-                        : new ChromeDriverPropertySettingStore(RunConfiguration.getProjectDir());
                 System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
-                seleniumWebDriver = new ChromeDriver(webUiDriverPropertySettingStore.toDesiredCapabilities());
+                seleniumWebDriver = new ChromeDriver(desireCapibilities);
                 setTimeout();
                 break;
             case REMOTE_WEB_DRIVER:
-                webUiDriverPropertySettingStore = (RunConfiguration.getCustomExecutionProfile() != null) ? new RemoteWebDriverPropertySettingStore(
-                        RunConfiguration.getProjectDir(), RunConfiguration.getCustomExecutionProfile())
-                        : new RemoteWebDriverPropertySettingStore(RunConfiguration.getProjectDir());
-                seleniumWebDriver = new RemoteWebDriver(new URL(getRemoteWebDriverServerUrl()),
-                        webUiDriverPropertySettingStore.toDesiredCapabilities());
+                seleniumWebDriver = new RemoteWebDriver(new URL(getRemoteWebDriverServerUrl()), desireCapibilities);
                 break;
             case ANDROID_DRIVER:
                 seleniumWebDriver = WebMobileDriverFactory.getInstance().getAndroidDriver(getMobileDeviceName());
@@ -321,38 +304,41 @@ public class DriverFactory {
     }
 
     private static String getIEDriverPath() {
-        return System.getProperty(IE_DRIVER_PATH_PROPERTY);
+        return RunConfiguration.getStringProperty(IE_DRIVER_PATH_PROPERTY);
     }
 
     private static String getChromeDriverPath() {
-        return System.getProperty(CHROME_DRIVER_PATH_PROPERTY);
+        return RunConfiguration.getStringProperty(CHROME_DRIVER_PATH_PROPERTY);
     }
 
     private static int getWaitForIEHanging() {
-        return Integer.parseInt(System.getProperty(WAIT_FOR_IE_HANGING_PROPERTY));
+        if (getExecutedBrowser() != WebUIDriverType.IE_DRIVER) {
+            throw new IllegalArgumentException(StringConstants.XML_LOG_ERROR_BROWSER_NOT_IE);
+        }
+        return Integer.parseInt(RunConfiguration.getStringProperty(WAIT_FOR_IE_HANGING_PROPERTY));
     }
 
     public static DriverType getExecutedBrowser() {
         DriverType webDriverType = null;
-        if (System.getProperty(EXECUTED_BROWSER_PROPERTY) != null) {
-            webDriverType = WebUIDriverType.valueOf(System.getProperty(EXECUTED_BROWSER_PROPERTY));
+        if (RunConfiguration.getProperty(EXECUTED_BROWSER_PROPERTY) != null) {
+            webDriverType = WebUIDriverType.valueOf(RunConfiguration.getStringProperty(EXECUTED_BROWSER_PROPERTY));
         }
-        if (webDriverType == null && System.getProperty(EXECUTED_MOBILE_PLATFORM) != null) {
-            webDriverType = WebUIDriverType.valueOf(System.getProperty(EXECUTED_MOBILE_PLATFORM));
+        if (webDriverType == null && RunConfiguration.getProperty(EXECUTED_MOBILE_PLATFORM) != null) {
+            webDriverType = WebUIDriverType.valueOf(RunConfiguration.getStringProperty(EXECUTED_MOBILE_PLATFORM));
         }
         return webDriverType;
     }
 
     public static String getRemoteWebDriverServerUrl() {
-        return System.getProperty(REMOTE_WEB_DRIVER_URL);
+        return RunConfiguration.getStringProperty(REMOTE_WEB_DRIVER_URL);
     }
 
     public static String getMobilePlatform() {
-        return System.getProperty(EXECUTED_MOBILE_PLATFORM);
+        return RunConfiguration.getStringProperty(EXECUTED_MOBILE_PLATFORM);
     }
 
     public static String getMobileDeviceName() {
-        return System.getProperty(EXECUTED_MOBILE_DEVICE_NAME);
+        return RunConfiguration.getStringProperty(EXECUTED_MOBILE_DEVICE_NAME);
     }
 
     public static void closeWebDriver() {

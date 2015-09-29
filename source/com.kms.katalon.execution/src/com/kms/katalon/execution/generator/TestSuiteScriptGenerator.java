@@ -20,7 +20,7 @@ import com.kms.katalon.entity.link.VariableLink.VariableType;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
-import com.kms.katalon.execution.entity.IRunConfiguration;
+import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.entity.TestCaseExecutedEntity;
 import com.kms.katalon.execution.entity.TestDataExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;

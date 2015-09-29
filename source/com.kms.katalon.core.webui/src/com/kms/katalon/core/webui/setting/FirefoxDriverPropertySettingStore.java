@@ -29,7 +29,7 @@ public class FirefoxDriverPropertySettingStore extends WebUiDriverPropertySettin
             return null;
         }
         DesiredCapabilities desireCapabilities = DesiredCapabilities.firefox();
-        for (Entry<String, Object> property : getProperties().entrySet()) {
+        for (Entry<String, Object> property : getDriverProperties().entrySet()) {
             KeywordLogger.getInstance().logInfo("User set: [" + property.getKey() + ", " + property.getValue() + "]");
             if (property.getKey().equals(FirefoxDriver.PROFILE)) {
                 if (property.getValue() instanceof Map<?, ?>) {

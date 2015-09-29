@@ -76,4 +76,8 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 
 	public static final String CONF_EXECUTED_PLATFORM = XML_LOG_DEVICE_PLATFORM_PROPERTY;
 	public static final String CONF_EXECUTED_DEVICE_NAME = XML_LOG_DEVICE_NAME_PROPERTY;
+
+	// MobileDriverPropertySettingStore
+    public static final String MOBILE_PROPERTY_FILE_NAME = "com.kms.katalon.core.mobile";
+    public static final String KW_LOG_MOBILE_PROPERTY_SETTING = "User set preference: [''{0}'', ''{1}'']";
 }

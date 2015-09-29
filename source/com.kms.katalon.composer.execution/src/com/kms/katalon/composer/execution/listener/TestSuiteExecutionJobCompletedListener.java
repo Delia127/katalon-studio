@@ -13,8 +13,8 @@ import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.reporting.ReportUtil;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
-import com.kms.katalon.execution.entity.AbstractRunConfiguration;
-import com.kms.katalon.execution.entity.IRunConfiguration;
+import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
+import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 
 public class TestSuiteExecutionJobCompletedListener implements EventHandler {

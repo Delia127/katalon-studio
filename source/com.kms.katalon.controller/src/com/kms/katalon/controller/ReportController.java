@@ -16,6 +16,7 @@ public class ReportController extends EntityController {
 private static EntityController _instance;
 	
 	private static String LOG_FILE_NAME = "execution0.log";
+	private static String EXECUTION_SETTING_FILE_NAME = "execution.properties";
 	private static DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
 	
 	private ReportController() {
@@ -79,6 +80,20 @@ private static EntityController _instance;
         return new File(testSuiteReportFolderAtRuntime, LOG_FILE_NAME);
     }
 	
+    public File getExecutionSettingFile(TestCaseEntity testCase, String reportFolderName) throws Exception {
+        String testCaseRootLogFolder = dataProviderSetting.getReportDataProvider().getLogDirectory(testCase);
+        File testCaseReportFolderAtRuntime = new File(testCaseRootLogFolder, reportFolderName);
+        
+        return new File(testCaseReportFolderAtRuntime, EXECUTION_SETTING_FILE_NAME);
+    }
+    
+    public File getExecutionSettingFile(TestSuiteEntity testSuite, String reportFolderName) throws Exception {
+        String testSuiteRootLogFolder = dataProviderSetting.getReportDataProvider().getLogDirectory(testSuite);
+        File testSuiteReportFolderAtRuntime = new File(testSuiteRootLogFolder, reportFolderName);
+        
+        return new File(testSuiteReportFolderAtRuntime, EXECUTION_SETTING_FILE_NAME);
+    }
+    
 	//public boolean copyReportToProject(TestSuiteEntity testSuite, String reportFolder) throws Exception{
 	//	return dataProviderSetting.getReportDataProvider().copyReportToProject(testSuite, reportFolder);
 	//}

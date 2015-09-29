@@ -17,7 +17,10 @@ import java.util.Map;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
+import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.mobile.constants.StringConstants;
+import com.kms.katalon.core.mobile.driver.MobileDriverType;
+import com.kms.katalon.core.mobile.util.MobileDriverPropertyUtil;
 
 public class MobileDriverFactory {
 	private static MobileDriverFactory factory;
@@ -81,7 +84,8 @@ public class MobileDriverFactory {
 		if (!isServerStarted()) {
 			startAppiumServer();
 		}
-		DesiredCapabilities capabilities = new DesiredCapabilities();
+		DesiredCapabilities capabilities = MobileDriverPropertyUtil.toDesireCapabilities(
+                RunConfiguration.getExecutionDriverProperty(), MobileDriverType.ANDROID_DRIVER);
 		capabilities.setPlatform(Platform.ANDROID);
 		capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceId);
 		capabilities.setCapability(MobileCapabilityType.APP, appFile);
@@ -96,7 +100,8 @@ public class MobileDriverFactory {
 		if (!isServerStarted()) {
 			startAppiumServer();
 		}
-		DesiredCapabilities capabilities = new DesiredCapabilities();
+		DesiredCapabilities capabilities = MobileDriverPropertyUtil.toDesireCapabilities(
+                RunConfiguration.getExecutionDriverProperty(), MobileDriverType.IOS_DRIVER);
 		capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceId);
 		capabilities.setCapability(MobileCapabilityType.APP, appFile);
 		capabilities.setCapability("udid", deviceId);
@@ -286,10 +291,10 @@ public class MobileDriverFactory {
 	}
 
 	public static String getDevicePlatform() {
-		return System.getProperty(EXECUTED_PLATFORM);
+		return RunConfiguration.getStringProperty(EXECUTED_PLATFORM);
 	}
 
 	public static String getDeviceName() {
-		return System.getProperty(EXECUTED_DEVICE_NAME);
+		return RunConfiguration.getStringProperty(EXECUTED_DEVICE_NAME);
 	}
 }
