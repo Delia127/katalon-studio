@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.provider.TestCaseRootSelectionTreeContentProvider;
 import com.kms.katalon.composer.integration.qtest.dialog.provider.TestCaseRootSelectionTreeLabelProvider;
 import com.kms.katalon.integration.qtest.QTestIntegrationFolderManager;
@@ -75,11 +76,10 @@ public class TestCaseRootSelectionDialog extends Dialog {
 
         lblHeader = new Label(composite, SWT.WRAP);
         lblHeader.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        lblHeader.setText("System needs a specific module on qTest for the integration. " + "Please choose one. "
-                + "All test cases and folders will be uploaded or created inside your selection.");
+        lblHeader.setText(StringConstants.DIA_INFO_TEST_CASE_ROOT);
 
         lblStatus = new Label(composite, SWT.NONE);
-        lblStatus.setText("Please wait...");
+        lblStatus.setText(StringConstants.CM_MSG_PLEASE_WAIT);
 
         Composite compositeTable = new Composite(container, SWT.NONE);
         compositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -90,7 +90,7 @@ public class TestCaseRootSelectionDialog extends Dialog {
 
         TreeViewerColumn treeViewerColumn = new TreeViewerColumn(treeViewer, SWT.NONE);
         TreeColumn trclmnName = treeViewerColumn.getColumn();
-        trclmnName.setText("Name");
+        trclmnName.setText(StringConstants.NAME);
 
         TreeColumnLayout tableLayout = new TreeColumnLayout();
         tableLayout.setColumnData(trclmnName, new ColumnWeightData(98, 0));
@@ -161,7 +161,7 @@ public class TestCaseRootSelectionDialog extends Dialog {
                     } catch (Exception e) {
                         getShell().setVisible(false);
                         MultiStatusErrorDialog.showErrorDialog(e,
-                                "Unable to load test suite's parent from qTest server.", e.getClass().getSimpleName());
+                                StringConstants.DIA_MSG_UNABLE_TO_LOAD_TEST_SUITE_PARENT, e.getClass().getSimpleName());
 
                         exit = true;
                     }
@@ -181,7 +181,7 @@ public class TestCaseRootSelectionDialog extends Dialog {
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText("Test case root selection");
+        newShell.setText(StringConstants.DIA_TITLE_TEST_CASE_ROOT);
     }
 
 }

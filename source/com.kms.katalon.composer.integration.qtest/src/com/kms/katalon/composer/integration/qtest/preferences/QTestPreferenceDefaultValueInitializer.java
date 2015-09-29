@@ -17,7 +17,8 @@ public class QTestPreferenceDefaultValueInitializer extends AbstractPreferenceIn
     public void initializeDefaultPreferences() {
         // TODO Auto-generated method stub
 
-        getStore().setDefault(QTEST_TESTSUITE_CREATION_OPTION, TestSuiteParentCreationOption.CREATE_ONLY.name());
+        getStore().setDefault(QTEST_TESTSUITE_CREATION_OPTION,
+                TestSuiteParentCreationOption.CREATE_UPLOAD_AND_SET_AS_DEFAULT.name());
     }
 
     public static IPreferenceStore getStore() {
@@ -29,10 +30,10 @@ public class QTestPreferenceDefaultValueInitializer extends AbstractPreferenceIn
         if (creationValue == null || creationValue.isEmpty()) {
             return TestSuiteParentCreationOption.CREATE_ONLY;
         }
-        
-        return TestSuiteParentCreationOption.valueOf(creationValue); 
+
+        return TestSuiteParentCreationOption.valueOf(creationValue);
     }
-    
+
     public static void setCreationOption(TestSuiteParentCreationOption creationOption) {
         getStore().setValue(QTEST_TESTSUITE_CREATION_OPTION, creationOption.name());
     }

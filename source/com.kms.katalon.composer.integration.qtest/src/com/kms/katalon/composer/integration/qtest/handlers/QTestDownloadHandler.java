@@ -20,7 +20,6 @@ import com.kms.katalon.entity.file.IntegratedFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class QTestDownloadHandler {
     @Inject
@@ -36,16 +35,9 @@ public class QTestDownloadHandler {
     @CanExecute
     public boolean canExecute() {
         try {
-            if (ProjectController.getInstance().getCurrentProject() == null) {
-                return false;
-            }
             ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-            String projectDir = projectEntity.getFolderLocation();
-
-            if (!QTestSettingStore.isIntegrationActive(projectDir)) {
-                return false;
-            }
-
+            if (!QTestIntegrationUtil.isIntegrationEnable(projectEntity)) { return false; }
+            
             Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
             if (selectedObjects == null || selectedObjects.length != 1) {
                 return false;

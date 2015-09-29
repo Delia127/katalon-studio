@@ -272,7 +272,8 @@ public class TestSuitePart implements EventHandler {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 Shell shell = Display.getDefault().getActiveShell();
-                AddMailRecipientDialog addMailDialog = new AddMailRecipientDialog(shell, (String[]) listMailRcpViewer.getInput());
+                AddMailRecipientDialog addMailDialog = new AddMailRecipientDialog(shell, listMailRcpViewer.getList()
+                        .getItems());
                 addMailDialog.open();
 
                 if (addMailDialog.getReturnCode() == Dialog.OK) {

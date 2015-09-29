@@ -4,25 +4,24 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 
 public class FolderModulePair {
-	private FolderEntity folder;
+    private FolderEntity folder;
 
-	private QTestModule module;
-	
-	public FolderModulePair(FolderEntity left, QTestModule right) {
-		folder = left;
-		module = right;
-	}
+    private QTestModule module;
 
-	public FolderEntity getFolder() {
-		return folder;
-	}
+    public FolderModulePair(FolderEntity left, QTestModule right) {
+        folder = left;
+        module = right;
+    }
 
-	public QTestModule getModule() {
-		return module;
-	}
+    public FolderEntity getFolder() {
+        return folder;
+    }
 
-	public void setModule(QTestModule module) {
-		this.module = module;
-	}
+    public QTestModule getModule() {
+        return module;
+    }
+
+    public void setModule(QTestModule module) {
+        this.module = module;
+    }
 }
-

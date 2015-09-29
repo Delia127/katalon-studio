@@ -10,10 +10,7 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
-import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.services.IServiceConstants;
-import org.eclipse.e4.ui.workbench.modeling.EModelService;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -36,17 +33,8 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 public class NewTestSuiteHandler {
 
     @Inject
-    IEventBroker eventBroker;
-
-    @Inject
-    EModelService modelService;
-
-    @Inject
-    MApplication application;
-
-    @Inject
-    EPartService partService;
-
+    private IEventBroker eventBroker;
+    
     @Inject
     private ESelectionService selectionService;
 
@@ -93,7 +81,8 @@ public class NewTestSuiteHandler {
                         eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, new TestSuiteTreeEntity(testSuite,
                                 parentTreeEntity));
                         eventBroker.post(EventConstants.TEST_SUITE_OPEN, testSuite);
-                        partService.saveAll(true);
+                        
+//                         partService.saveAll(true);
                     }
                 }
             }

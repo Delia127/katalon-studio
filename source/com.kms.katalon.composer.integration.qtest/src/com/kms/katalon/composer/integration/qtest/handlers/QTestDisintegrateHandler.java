@@ -13,6 +13,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
+import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.jobs.DisintegrateTestCaseJob;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -21,7 +22,6 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class QTestDisintegrateHandler {
 
@@ -31,12 +31,15 @@ public class QTestDisintegrateHandler {
     @CanExecute
     public boolean canExecute() {
         try {
-            if (ProjectController.getInstance().getCurrentProject() == null) return false;
             ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-            String projectDir = projectEntity.getFolderLocation();
-            if (!QTestSettingStore.isIntegrationActive(projectDir)) return false;
+
+            if (!QTestIntegrationUtil.isIntegrationEnable(projectEntity)) { return false; }
+
             Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-            if (selectedObjects == null || selectedObjects.length != 1) return false;
+            if (selectedObjects == null || selectedObjects.length != 1) {
+                return false;
+            }
+            
             if (selectedObjects[0] instanceof ITreeEntity) {
                 Object selectedEntity = ((ITreeEntity) selectedObjects[0]).getObject();
                 if (selectedEntity instanceof TestCaseEntity) {
@@ -76,12 +79,12 @@ public class QTestDisintegrateHandler {
             ITreeEntity treeEntity = (ITreeEntity) selectedObjects[0];
             Object selectedObject = treeEntity.getObject();
             if (selectedObject instanceof TestCaseEntity) {
-                if (MessageDialog.openConfirm(null, "Confirmation",
+                if (MessageDialog.openConfirm(null, StringConstants.CONFIRMATION,
                         "Are you sure you want to disintegrate this test case with qTest?")) {
                     disintegrateTestCases(getIntegratedChildren((IntegratedFileEntity) selectedObject));
                 }
             } else if (selectedObject instanceof FolderEntity) {
-                if (MessageDialog.openConfirm(null, "Confirmation",
+                if (MessageDialog.openConfirm(null, StringConstants.CONFIRMATION,
                         "Are you sure you want to disintegrate all test cases in this folder with qTest?")) {
                     FolderEntity folder = (FolderEntity) selectedObject;
                     switch (folder.getFolderType()) {

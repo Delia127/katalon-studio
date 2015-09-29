@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.integration.qtest.jobs;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,7 @@ import org.eclipse.swt.widgets.Display;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
+import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.TestCaseRootSelectionDialog;
 import com.kms.katalon.composer.integration.qtest.dialog.TestCaseTreeDownloadedPreviewDialog;
 import com.kms.katalon.composer.integration.qtest.dialog.model.ModuleDownloadedPreviewTreeNode;
@@ -64,17 +66,18 @@ public class DownloadTestCaseJob extends UploadJob {
 
     @Override
     protected IStatus run(final IProgressMonitor monitor) {
-        monitor.beginTask("Downloading test cases...", 2);
+        monitor.beginTask(StringConstants.JOB_SUB_TASK_DOWNLOAD_TEST_CASE, 2);
 
-        monitor.subTask("Checking system...");
+        monitor.subTask(StringConstants.JOB_SUB_TASK_CHECK_SYSTEM);
         FileEntity fileEntity = getFileEntities().get(0);
         final FolderEntity folderEntity = (FolderEntity) fileEntity;
         monitor.worked(1);
 
         try {
-            monitor.subTask("Fetching children of: " + folderEntity.getName());
+            monitor.subTask(MessageFormat.format(StringConstants.JOB_SUB_TASK_FETCH_CHILDREN, folderEntity.getName()));
 
-            IntegratedEntity folderIntegratedEntity = folderEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+            IntegratedEntity folderIntegratedEntity = folderEntity
+                    .getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
             String projectDir = projectEntity.getFolderLocation();
 
             QTestProject qTestProject = QTestIntegrationUtil.getTestCaseRepo(folderEntity, projectEntity)
@@ -115,7 +118,7 @@ public class DownloadTestCaseJob extends UploadJob {
                     FolderController.getInstance().saveFolder(folderEntity);
                 }
                 monitor.done();
-                monitor.beginTask("Creating new test cases...", selectedElements.length);
+                monitor.beginTask(StringConstants.JOB_TASK_CREATE_TEST_CASE, selectedElements.length);
                 for (int index = 0; index < selectedElements.length; index++) {
                     try {
                         if (monitor.isCanceled()) return Status.CANCEL_STATUS;
@@ -141,8 +144,7 @@ public class DownloadTestCaseJob extends UploadJob {
     }
 
     /**
-     * Create a confirmation dialog for users can choose test cases they want to
-     * create.
+     * Create a confirmation dialog for users can choose test cases they want to create.
      * 
      * @param folderEntity
      */
@@ -163,8 +165,7 @@ public class DownloadTestCaseJob extends UploadJob {
     }
 
     /**
-     * Open a confirmation dialog that requires user choose test case root
-     * folder
+     * Open a confirmation dialog that requires user choose test case root folder
      * 
      * @param moduleRoot
      */
@@ -184,8 +185,7 @@ public class DownloadTestCaseJob extends UploadJob {
     }
 
     /**
-     * Open a confirmation dialog that requires user choose they want to merge
-     * folders or not.
+     * Open a confirmation dialog that requires user choose they want to merge folders or not.
      * 
      * @param moduleRoot
      */
@@ -193,16 +193,17 @@ public class DownloadTestCaseJob extends UploadJob {
         sync.syncExec(new Runnable() {
             @Override
             public void run() {
-                isMergeFolderConfirmed = MessageDialog.openConfirm(null, "Folder Duplication Detected",
-                        "System has detected you want to create a folder" + " with name: " + qTestModule.getName()
-                                + " but it has already existed on the file system.\n" + "Do you want to merge them?");
+                isMergeFolderConfirmed = MessageDialog.openConfirm(
+                        null,
+                        StringConstants.DIA_TITLE_FOLDER_DUPLICATION,
+                        MessageFormat.format(StringConstants.DIA_MSG_CONFIRM_MERGE_DOWNLOADED_TEST_CASE_FOLDER,
+                                qTestModule.getName()));
             }
         });
     }
 
     /**
-     * Open a confirmation dialog that requires user choose they want to merge
-     * test cases or not.
+     * Open a confirmation dialog that requires user choose they want to merge test cases or not.
      * 
      * @param moduleRoot
      */
@@ -210,17 +211,17 @@ public class DownloadTestCaseJob extends UploadJob {
         sync.syncExec(new Runnable() {
             @Override
             public void run() {
-                isMergeTestCaseConfimed = MessageDialog.openConfirm(null, "Test Case Duplication Detected",
-                        "System has detected you want to create a test case" + " with name: " + qTestCase.getName()
-                                + " but it has already existed on the file system.\n" + "Do you want to merge them?");
+                isMergeTestCaseConfimed = MessageDialog.openConfirm(null,
+                        StringConstants.DIA_TITLE_TEST_CASE_DUPLICATION,
+                        MessageFormat.format(StringConstants.DIA_MSG_CONFIRM_MERGE_DOWNLOADED_TEST_CASE, qTestCase.getName()));
             }
         });
     }
 
     /**
      * Get integrated entity for the given folder entity by using
-     * {@link QTestIntegrationFolderManager#getFolderIntegratedEntityByQTestModule(QTestModule)}
-     * on qTestModule of the given module tree
+     * {@link QTestIntegrationFolderManager#getFolderIntegratedEntityByQTestModule(QTestModule)} on qTestModule of the
+     * given module tree
      * 
      * @param testCaseEntity
      * @param testCaseTree
@@ -239,8 +240,8 @@ public class DownloadTestCaseJob extends UploadJob {
 
     /**
      * Get integrated entity for the given test case entity by using
-     * {@link QTestIntegrationTestCaseManager#getIntegratedEntityByQTestTestCase(QTestTestCase)}
-     * on qTestCase of the given test case tree
+     * {@link QTestIntegrationTestCaseManager#getIntegratedEntityByQTestTestCase(QTestTestCase)} on qTestCase of the
+     * given test case tree
      * 
      * @param testCaseEntity
      * @param testCaseTree
@@ -263,10 +264,8 @@ public class DownloadTestCaseJob extends UploadJob {
     }
 
     /**
-     * Creates new test case on folder that is confirmed to be created by user.
-     * If the given selectedItem is a test case, system also generate test
-     * script that includes qTest steps of the updated test case as groovy
-     * comments.
+     * Creates new test case on folder that is confirmed to be created by user. If the given selectedItem is a test
+     * case, system also generate test script that includes qTest steps of the updated test case as groovy comments.
      */
     private void doUpdateSelectedItem(QTestProject qTestProject, Object selectedItem, IProgressMonitor monitor)
             throws Exception {
@@ -284,8 +283,8 @@ public class DownloadTestCaseJob extends UploadJob {
         if (selectedItem instanceof ModuleDownloadedPreviewTreeNode) {
             ModuleDownloadedPreviewTreeNode moduleTree = (ModuleDownloadedPreviewTreeNode) selectedItem;
             if (moduleTree.getFolderEntity() == null) {
-
-                monitor.subTask("Creating folder: " + dialogDisplayedName + "...");
+                monitor.subTask(MessageFormat.format(StringConstants.JOB_SUB_TASK_CREATE_TEST_CASE_FOLDER,
+                        dialogDisplayedName));
 
                 FolderEntity existingFolder = FolderController.getInstance().getFolder(
                         parentFolder.getId() + File.separator + treeItem.getName());
@@ -313,8 +312,7 @@ public class DownloadTestCaseJob extends UploadJob {
             TestCaseDownloadedPreviewTreeNode testCaseTree = (TestCaseDownloadedPreviewTreeNode) selectedItem;
 
             QTestTestCase qTestCase = testCaseTree.getTestCase();
-
-            monitor.subTask("Creating test case: " + dialogDisplayedName + "...");
+            monitor.subTask(MessageFormat.format(StringConstants.JOB_SUB_TASK_CREATE_TEST_CASE, dialogDisplayedName));
 
             TestCaseEntity existingTestCase = TestCaseController.getInstance().getTestCase(
                     parentFolder.getId() + File.separator + treeItem.getName()
@@ -354,10 +352,8 @@ public class DownloadTestCaseJob extends UploadJob {
     }
 
     /**
-     * Add description of the given qTestCase into description of
-     * testCaseEntity. For each step of the given qTestCase, generate a comment
-     * that has test step order, description and expected result in test case's
-     * script.
+     * Add description of the given qTestCase into description of testCaseEntity. For each step of the given qTestCase,
+     * generate a comment that has test step order, description and expected result in test case's script.
      */
     private void addDescriptionForTestCase(QTestProject qTestProject, QTestTestCase qTestCase,
             TestCaseEntity testCaseEntity) throws Exception {

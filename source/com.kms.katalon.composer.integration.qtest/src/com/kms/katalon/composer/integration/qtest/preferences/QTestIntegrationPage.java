@@ -1,10 +1,10 @@
 package com.kms.katalon.composer.integration.qtest.preferences;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtil;
+import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.GenerateNewTokenDialog;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.integration.qtest.setting.QTestAttachmentSendingType;
@@ -56,26 +57,26 @@ public class QTestIntegrationPage extends PreferencePage {
         container.setLayout(new GridLayout(1, false));
 
         chckEnableIntegration = new Button(container, SWT.CHECK);
-        chckEnableIntegration.setText("Enable integration");
+        chckEnableIntegration.setText(StringConstants.DIA_TITLE_ENABLE_INTEGRATION);
 
         mainComposite = new Composite(container, SWT.NONE);
         mainComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        GridLayout gl_mainComposite = new GridLayout(1, false);
-        gl_mainComposite.marginWidth = 0;
-        gl_mainComposite.marginHeight = 0;
-        mainComposite.setLayout(gl_mainComposite);
+        GridLayout glMainComposite = new GridLayout(1, false);
+        glMainComposite.marginWidth = 0;
+        glMainComposite.marginHeight = 0;
+        mainComposite.setLayout(glMainComposite);
 
         grpAuthentication = new Group(mainComposite, SWT.NONE);
         grpAuthentication.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         grpAuthentication.setLayout(new GridLayout(4, false));
-        grpAuthentication.setText("Authentication");
+        grpAuthentication.setText(StringConstants.CM_AUTHENTICATION);
 
         Label lblToken = new Label(grpAuthentication, SWT.NONE);
         GridData gd_lblToken = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
         gd_lblToken.widthHint = 100;
         gd_lblToken.verticalIndent = 5;
         lblToken.setLayoutData(gd_lblToken);
-        lblToken.setText("Token");
+        lblToken.setText(StringConstants.CM_TOKEN);
 
         txtToken = new Text(grpAuthentication, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI);
         gdTxtToken = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1);
@@ -84,35 +85,35 @@ public class QTestIntegrationPage extends PreferencePage {
 
         btnOpenGenerateTokenDialog = new Button(grpAuthentication, SWT.NONE);
         btnOpenGenerateTokenDialog.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
-        btnOpenGenerateTokenDialog.setText("Generate");
+        btnOpenGenerateTokenDialog.setText(StringConstants.DIA_TITLE_GENERATE);
 
         projectComposite = new Composite(mainComposite, SWT.NONE);
         projectComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        GridLayout gl_projectComposite = new GridLayout(3, false);
-        gl_projectComposite.verticalSpacing = 10;
-        projectComposite.setLayout(gl_projectComposite);
+        GridLayout glProjectComposite = new GridLayout(3, false);
+        glProjectComposite.verticalSpacing = 10;
+        projectComposite.setLayout(glProjectComposite);
 
         chckEnableCheckBeforeUploading = new Button(projectComposite, SWT.CHECK);
         chckEnableCheckBeforeUploading.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
-        chckEnableCheckBeforeUploading.setText("Check duplicates before uploading test cases");
+        chckEnableCheckBeforeUploading.setText(StringConstants.DIA_TITLE_CHECK_DUPLICATES_TEST_CASE);
 
         chckAutoSubmitTestRun = new Button(projectComposite, SWT.CHECK);
         chckAutoSubmitTestRun.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
-        chckAutoSubmitTestRun.setText("Automatically submit test run result");
+        chckAutoSubmitTestRun.setText(StringConstants.DIA_TITLE_AUTO_SUBMIT_TEST_RESULT);
 
         compositeOptions = new Composite(mainComposite, SWT.NONE);
         GridData gd_compositeOptions = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
         gd_compositeOptions.verticalIndent = -5;
         compositeOptions.setLayoutData(gd_compositeOptions);
-        GridLayout gl_composite = new GridLayout(1, false);
-        gl_composite.marginLeft = 5;
-        gl_composite.marginWidth = 0;
-        gl_composite.marginHeight = 0;
-        compositeOptions.setLayout(gl_composite);
+        GridLayout glComposite = new GridLayout(1, false);
+        glComposite.marginLeft = 5;
+        glComposite.marginWidth = 0;
+        glComposite.marginHeight = 0;
+        compositeOptions.setLayout(glComposite);
 
         grpResultOptions = new Group(compositeOptions, SWT.NONE);
         grpResultOptions.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        grpResultOptions.setText("Send result");
+        grpResultOptions.setText(StringConstants.DIA_TITLE_SEND_RESULT);
         grpResultOptions.setLayout(new GridLayout(4, false));
 
         for (QTestResultSendingType sendingType : QTestResultSendingType.values()) {
@@ -125,7 +126,7 @@ public class QTestIntegrationPage extends PreferencePage {
 
         grpAttachmentOptions = new Group(compositeOptions, SWT.NONE);
         grpAttachmentOptions.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        grpAttachmentOptions.setText("Attachment included");
+        grpAttachmentOptions.setText(StringConstants.DIA_TITLE_SEND_ATTACHMENT);
         grpAttachmentOptions.setLayout(new GridLayout(4, false));
 
         for (QTestAttachmentSendingType sendingType : QTestAttachmentSendingType.values()) {
@@ -154,8 +155,8 @@ public class QTestIntegrationPage extends PreferencePage {
                         txtToken.setText(dialog.getNewToken());
                     }
                 } catch (Exception ex) {
-                    MultiStatusErrorDialog.showErrorDialog(ex, "Unable to get qTest projects.", ex.getClass()
-                            .getSimpleName());
+                    MultiStatusErrorDialog.showErrorDialog(ex, StringConstants.DIA_MSG_UNABLE_TO_UPDATE_PROJECT, ex
+                            .getClass().getSimpleName());
                 }
             }
         });
@@ -257,16 +258,17 @@ public class QTestIntegrationPage extends PreferencePage {
             QTestSettingStore.saveEnableCheckBeforeUploading(chckEnableCheckBeforeUploading.getSelection(), projectDir);
 
             saveAttachmentSendingStatus();
-            
+
             saveResultSendingStatus();
 
             return true;
-        } catch (Exception e) {
-            MessageDialog.openError(null, "Error", "Unable to save qTest's settings.");
+        } catch (IOException e) {
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.ERROR,
+                    StringConstants.DIA_MSG_UNABLE_TO_SAVE_SETTING_PAGE);
             return false;
         }
     }
-    
+
     private void saveAttachmentSendingStatus() {
         List<QTestAttachmentSendingType> selectedAttachmentSendingType = new ArrayList<QTestAttachmentSendingType>();
         for (Control radioButtonControl : grpAttachmentOptions.getChildren()) {
@@ -281,7 +283,7 @@ public class QTestIntegrationPage extends PreferencePage {
         }
         QTestSettingStore.saveAttachmentSendingType(selectedAttachmentSendingType, projectDir);
     }
-    
+
     private void saveResultSendingStatus() {
         List<QTestResultSendingType> selectedResultSendingType = new ArrayList<QTestResultSendingType>();
         for (Control radioButtonControl : grpResultOptions.getChildren()) {
@@ -296,8 +298,6 @@ public class QTestIntegrationPage extends PreferencePage {
         }
         QTestSettingStore.saveResultSendingType(selectedResultSendingType, projectDir);
     }
-    
-    
 
     @Override
     protected void performDefaults() {

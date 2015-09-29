@@ -16,29 +16,28 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 
 public class QTestMangageHandler {
-	
-	@CanExecute
-	public boolean canExecute() {
-		if (ProjectController.getInstance().getCurrentProject() == null) return false;
-		try {
-			if (!LauncherManager.getInstance().isAnyLauncherRunning()) return true;
-		} catch (CoreException e) {
-			
-		}
-		return false;
-	}
 
-	@Execute
-	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
-			PreferencesRegistry preferencesRegistry) {
-		PreferenceManager pm = preferencesRegistry.getPreferenceManager(PreferencesRegistry.PREFS_PROJECT_XP);
-		PreferenceDialog dialog = new PreferenceDialog(shell, pm);
-		dialog.setSelectedNode("com.kms.katalon.composer.intergration.qtest.setting");
-		dialog.create();
-		dialog.getTreeViewer().setComparator(new ViewerComparator());
-		dialog.getTreeViewer().expandToLevel(3);
-		dialog.getShell().setText("Project Settings");
-		dialog.getShell().setSize(800, 500);		
-		dialog.open();		
-	}
+    @CanExecute
+    public boolean canExecute() {
+        if (ProjectController.getInstance().getCurrentProject() == null) return false;
+        try {
+            if (!LauncherManager.getInstance().isAnyLauncherRunning()) return true;
+        } catch (CoreException e) {
+
+        }
+        return false;
+    }
+
+    @Execute
+    public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell, PreferencesRegistry preferencesRegistry) {
+        PreferenceManager pm = preferencesRegistry.getPreferenceManager(PreferencesRegistry.PREFS_PROJECT_XP);
+        PreferenceDialog dialog = new PreferenceDialog(shell, pm);
+        dialog.setSelectedNode("com.kms.katalon.composer.intergration.qtest.setting");
+        dialog.create();
+        dialog.getTreeViewer().setComparator(new ViewerComparator());
+        dialog.getTreeViewer().expandToLevel(3);
+        dialog.getShell().setText("Project Settings");
+        dialog.getShell().setSize(800, 500);
+        dialog.open();
+    }
 }

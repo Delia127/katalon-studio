@@ -5,10 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.Inject;
-
 import org.eclipse.e4.ui.di.Focus;
-import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -33,6 +30,7 @@ import org.eclipse.swt.widgets.TableColumn;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
+import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.TestSuiteRepoDialog;
 import com.kms.katalon.composer.integration.qtest.model.TestSuiteRepo;
 import com.kms.katalon.composer.integration.qtest.preferences.providers.TestSuiteRepoTableLabelProvider;
@@ -44,9 +42,6 @@ import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 
 public class TestSuiteRepoPreferencePage extends PreferencePage {
-
-    @Inject
-    UISynchronize sync;
 
     private Composite container;
     private TableViewer tableViewer;
@@ -75,11 +70,11 @@ public class TestSuiteRepoPreferencePage extends PreferencePage {
 
         TableViewerColumn tableViewerColumnQTestProject = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnQTestProject = tableViewerColumnQTestProject.getColumn();
-        tblclmnQTestProject.setText("qTest Project");
+        tblclmnQTestProject.setText(StringConstants.DIA_TITLE_QTEST_PROJECT);
 
         TableViewerColumn tableViewerColumnKatalonFolder = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnKatalonFolder = tableViewerColumnKatalonFolder.getColumn();
-        tblclmnKatalonFolder.setText("Katalon Folder");
+        tblclmnKatalonFolder.setText(StringConstants.DIA_TITLE_KATALON_FOLDER);
 
         tableViewer.setLabelProvider(new TestSuiteRepoTableLabelProvider());
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
@@ -91,22 +86,22 @@ public class TestSuiteRepoPreferencePage extends PreferencePage {
 
         Composite compositeButton = new Composite(container, SWT.NONE);
         compositeButton.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true, 1, 1));
-        GridLayout gl_compositeButton = new GridLayout(1, false);
-        gl_compositeButton.marginHeight = 0;
-        compositeButton.setLayout(gl_compositeButton);
+        GridLayout glCompositeButton = new GridLayout(1, false);
+        glCompositeButton.marginHeight = 0;
+        compositeButton.setLayout(glCompositeButton);
 
         btnAdd = new Button(compositeButton, SWT.NONE);
         btnAdd.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-        btnAdd.setText("Add");
+        btnAdd.setText(StringConstants.ADD);
 
         btnEdit = new Button(compositeButton, SWT.NONE);
         btnEdit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-        btnEdit.setText("Edit");
+        btnEdit.setText(StringConstants.EDIT);
         btnEdit.setEnabled(false);
 
         btnRemove = new Button(compositeButton, SWT.NONE);
         btnRemove.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-        btnRemove.setText("Remove");
+        btnRemove.setText(StringConstants.REMOVE);
         btnRemove.setEnabled(false);
 
         addButtonSelectionListeners();
@@ -128,7 +123,7 @@ public class TestSuiteRepoPreferencePage extends PreferencePage {
             }
         } catch (Exception ex) {
             LoggerSingleton.logError(ex);
-            MessageDialog.openWarning(null, "Unable to get qTest projects's information.", ex.getMessage());
+            MessageDialog.openWarning(null, StringConstants.DIA_MSG_UNABLE_GET_PROJECT_INFO, ex.getMessage());
             return;
         }
 

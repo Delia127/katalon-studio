@@ -30,6 +30,7 @@ import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.entity.QTestReport;
 import com.kms.katalon.integration.qtest.entity.QTestRun;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
+import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class QTestIntegrationUtil {
 
@@ -37,9 +38,22 @@ public class QTestIntegrationUtil {
         // Disable default constructor
     }
 
+    public static boolean isIntegrationEnable(ProjectEntity projectEntity) {
+        if (projectEntity == null) {
+            return false;
+        }
+
+        String projectDir = projectEntity.getFolderLocation();
+
+        if (!QTestSettingStore.isIntegrationActive(projectDir)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     /**
-     * Returns all {@link TestCaseRepo} as a {@link List} of the given
-     * projectEntity and list of qTestProjects.
+     * Returns all {@link TestCaseRepo} as a {@link List} of the given projectEntity and list of qTestProjects.
      * 
      * @return an array list of {@link TestCaseRepo}
      * @see TestCaseRepo
@@ -81,8 +95,7 @@ public class QTestIntegrationUtil {
     }
 
     /**
-     * Returns all {@link TestSuiteRepo} as a {@link List} of the given
-     * projectEntity and list of qTestProjects.
+     * Returns all {@link TestSuiteRepo} as a {@link List} of the given projectEntity and list of qTestProjects.
      * 
      * @return an array list of {@link TestSuiteRepo}
      * @see TestSuiteRepo
@@ -103,12 +116,10 @@ public class QTestIntegrationUtil {
     }
 
     /**
-     * Returns {@link TestCaseRepo} that the given {@link IntegratedFileEntity}
-     * belongs to.
+     * Returns {@link TestCaseRepo} that the given {@link IntegratedFileEntity} belongs to.
      * 
      * @param entity
-     * @return {@link TestCaseRepo} if system can find it in
-     *         {@link ProjectEntity}. Otherwise, <code>null</code>
+     * @return {@link TestCaseRepo} if system can find it in {@link ProjectEntity}. Otherwise, <code>null</code>
      * @throws Exception
      * @see TestCaseRepo
      */
@@ -141,12 +152,10 @@ public class QTestIntegrationUtil {
     }
 
     /**
-     * Returns {@link TestSuiteRepo} that the given {@link IntegratedFileEntity}
-     * belongs to.
+     * Returns {@link TestSuiteRepo} that the given {@link IntegratedFileEntity} belongs to.
      * 
      * @param entity
-     * @return {@link TestSuiteRepo} if system can find it in
-     *         {@link ProjectEntity}. Otherwise, <code>null</code>
+     * @return {@link TestSuiteRepo} if system can find it in {@link ProjectEntity}. Otherwise, <code>null</code>
      * @throws Exception
      */
     public static TestSuiteRepo getTestSuiteRepo(IntegratedFileEntity entity, ProjectEntity projectEntity)
@@ -171,25 +180,21 @@ public class QTestIntegrationUtil {
     }
 
     /**
-     * Checks the given {@link IntegratedFileEntity} can be downloaded or
-     * disintegrated.
+     * Checks the given {@link IntegratedFileEntity} can be downloaded or disintegrated.
      * <p>
      * For {@link TestCaseEntity} and test case {@link FolderEntity} only.
      * <p>
      * <p>
-     * If the given entity is a {@link TestCaseEntity}, it can be downloaded or
-     * disintegrated that means it contains qTest {@link IntegratedEntity}
-     * inside and its {@link TestCaseRepo} also is not null.
+     * If the given entity is a {@link TestCaseEntity}, it can be downloaded or disintegrated that means it contains
+     * qTest {@link IntegratedEntity} inside and its {@link TestCaseRepo} also is not null.
      * <p>
-     * * If the given entity is a {@link FolderEntity}, it can be downloaded or
-     * disintegrated that means it has any child that contains qTest
-     * {@link IntegratedEntity} inside and its {@link TestCaseRepo} also is not
-     * null.
+     * * If the given entity is a {@link FolderEntity}, it can be downloaded or disintegrated that means it has any
+     * child that contains qTest {@link IntegratedEntity} inside and its {@link TestCaseRepo} also is not null.
      * 
      * @param entity
      *            the entity that needs to be checked
-     * @return <code>true</code> if the given {@link IntegratedFileEntity} can
-     *         be downloaded or disintegrated. Otherwise, <code>false</code>
+     * @return <code>true</code> if the given {@link IntegratedFileEntity} can be downloaded or disintegrated.
+     *         Otherwise, <code>false</code>
      * @throws Exception
      */
     public static boolean canBeDownloadedOrDisintegrated(IntegratedFileEntity entity, ProjectEntity projectEntity)
@@ -224,8 +229,7 @@ public class QTestIntegrationUtil {
      * 
      * @param entity
      *            the entity that needs to be checked
-     * @return true if the given {@link IntegratedFileEntity} can be uploaded.
-     *         Otherwise, false.
+     * @return true if the given {@link IntegratedFileEntity} can be uploaded. Otherwise, false.
      * @throws Exception
      */
     public static boolean canBeUploaded(IntegratedFileEntity entity, ProjectEntity projectEntity) throws Exception {
@@ -248,8 +252,7 @@ public class QTestIntegrationUtil {
     }
 
     /**
-     * Returns absolute path as string of qTest folder inside katalon's
-     * temporary folder.
+     * Returns absolute path as string of qTest folder inside katalon's temporary folder.
      */
     public static String getTempDirPath() {
         String tempDir = ProjectController.getInstance().getTempDir();
@@ -261,8 +264,7 @@ public class QTestIntegrationUtil {
     }
 
     /**
-     * Stores the given {@link IntegratedEntity} into the given
-     * {@link IntegratedFileEntity}.
+     * Stores the given {@link IntegratedEntity} into the given {@link IntegratedFileEntity}.
      * 
      * @param entity
      *            the previous {@link IntegratedFileEntity} needs to update
@@ -292,17 +294,15 @@ public class QTestIntegrationUtil {
     }
 
     /**
-     * Puts all information of the given uploadedPreview into the given
-     * reportEntity. After that, saves the given reportEntity.
+     * Puts all information of the given uploadedPreview into the given reportEntity. After that, saves the given
+     * reportEntity.
      * 
      * @param reportEntity
      *            the report that will be saved.
      * @param uploadedPreview
-     *            the preview test case result entity will be put into the
-     *            report.
+     *            the preview test case result entity will be put into the report.
      * @throws Exception
-     *             throws if the project file
-     *             <code>.prj<code> is invalid format.
+     *             throws if the project file <code>.prj<code> is invalid format.
      * @see {@link #updateFileIntegratedEntity(IntegratedFileEntity, IntegratedEntity)}
      */
     public static void saveReportEntity(ReportEntity reportEntity, QTestLogUploadedPreview uploadedPreview)
@@ -325,8 +325,7 @@ public class QTestIntegrationUtil {
     }
 
     /**
-     * Called by uploadTestCaseResult. Add testRun to qTestSuite and save the
-     * given qTestSuite into testSuiteEntity.
+     * Called by uploadTestCaseResult. Add testRun to qTestSuite and save the given qTestSuite into testSuiteEntity.
      */
     public static void addNewTestRunToTestSuite(TestSuiteEntity testSuiteEntity,
             IntegratedEntity testSuiteIntegratedEntity, QTestSuite qTestSuite, QTestRun testRun,
