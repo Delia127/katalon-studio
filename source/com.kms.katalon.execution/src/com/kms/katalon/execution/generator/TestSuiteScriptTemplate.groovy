@@ -28,8 +28,8 @@ public class TestSuiteScriptTemplate {
 Map<String, String> suiteProperties = new HashMap<String, String>();
 
 <% configProperties.each { k, v -> %> 
-System.setProperty("<%= k %>", "<%= v %>")
-suiteProperties.put("<%= k %>", "<%= v %>")
+System.setProperty('<%= k %>', '<%= v %>')
+suiteProperties.put('<%= k %>', '<%= v %>')
 <% } %> 
 
 <% driverCleaners.each { %>DriverCleanerCollector.getInstance().addDriverCleaner(new <%= it %>())

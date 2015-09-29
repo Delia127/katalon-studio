@@ -23,7 +23,7 @@ class TestCaseScriptTemplate {
 <% } %>
 
 <% configProperties.each { k, v -> %> 
-System.setProperty("<%= k %>", "<%= v %>")
+System.setProperty('<%= k %>', '<%= v %>')
 <% } %> 
 
 
