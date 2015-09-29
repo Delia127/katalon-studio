@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
@@ -59,6 +61,9 @@ public class InternalTestDataPart extends TestDataMainPart {
     private static final int DF_UNREMOVEVABLE_COLUMN_WIDTH = 50;
     private static final int COLUMN_NO_IDX = 0;
 
+    @Inject
+    private EPartService partService;
+    
     @PostConstruct
     public void createControls(Composite parent, MPart mpart) {
         super.createControls(parent, mpart);
@@ -397,17 +402,17 @@ public class InternalTestDataPart extends TestDataMainPart {
         }
 
         try {
-            String oldPk = dataFile.getId();
-            String oldName = dataFile.getName();
-            String oldIdForDisplay = TestDataController.getInstance().getIdForDisplay(dataFile);
-            dataFile = updateInternalDataFileProperty(dataFile.getLocation(), txtName.getText(), txtDesc.getText(),
-                    dataFile.getDriver(), dataFile.getDataSourceUrl(), "", dataFile.getTableDataName(), headers, datas);
-            updateDataFile(dataFile);
+            String oldPk = originalDataFile.getId();
+            String oldName = originalDataFile.getName();
+            String oldIdForDisplay = TestDataController.getInstance().getIdForDisplay(originalDataFile);
+            originalDataFile = updateInternalDataFileProperty(originalDataFile.getLocation(), txtName.getText(), txtDesc.getText(),
+                    originalDataFile.getDriver(), originalDataFile.getDataSourceUrl(), "", originalDataFile.getTableDataName(), headers, datas);
+            updateDataFile(originalDataFile);
             dirtyable.setDirty(false);
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);
-            if (!StringUtils.equalsIgnoreCase(oldName, dataFile.getName())) {
+            if (!StringUtils.equalsIgnoreCase(oldName, originalDataFile.getName())) {
                 eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-                        TestDataController.getInstance().getIdForDisplay(dataFile) });
+                        TestDataController.getInstance().getIdForDisplay(originalDataFile) });
             }
             sendTestDataUpdatedEvent(oldPk);
         } catch (DuplicatedFileNameException e) {
@@ -541,5 +546,10 @@ public class InternalTestDataPart extends TestDataMainPart {
             columnNames[i - 1] = ((CustomTableColumn) table.getColumn(i)).getText();
         }
         return columnNames;
+    }
+
+    @Override
+    protected EPartService getPartService() {
+        return partService;
     }
 }
