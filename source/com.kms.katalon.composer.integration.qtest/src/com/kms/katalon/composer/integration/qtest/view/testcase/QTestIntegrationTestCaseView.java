@@ -21,6 +21,7 @@ import org.eclipse.ui.browser.IWebBrowser;
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
+import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.handlers.QTestUploadHandler;
 import com.kms.katalon.composer.integration.qtest.jobs.UploadTestCaseJob;
 import com.kms.katalon.composer.integration.qtest.model.TestCaseRepo;
@@ -44,7 +45,6 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
     }
 
     private Text txtID;
-    private Text txtName;
     private Text txtParentID;
     private QTestTestCase qTestTestCase;
 
@@ -58,53 +58,45 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
      */
     public Composite createContainer(Composite parent) {
         Composite container = new Composite(parent, SWT.NONE);
-        GridLayout gl_container = new GridLayout(1, false);
-        gl_container.marginWidth = 0;
-        gl_container.marginHeight = 0;
-        container.setLayout(gl_container);
+        GridLayout glContainer = new GridLayout(1, false);
+        glContainer.marginWidth = 0;
+        glContainer.marginHeight = 0;
+        container.setLayout(glContainer);
 
         Composite compositeButton = new Composite(container, SWT.NONE);
         compositeButton.setLayout(new GridLayout(3, false));
 
         btnUpload = new Button(compositeButton, SWT.FLAT);
-        btnUpload.setToolTipText("Upload this test case to qTest");
-        btnUpload.setText("Upload");
+        btnUpload.setToolTipText(StringConstants.VIEW_TOOLTIP_UPLOAD_TEST_CASE);
+        btnUpload.setText(StringConstants.CM_UPLOAD);
 
         btnDisintegrate = new Button(compositeButton, SWT.FLAT);
-        btnDisintegrate
-                .setToolTipText("Delete the integrated test case on qTest server and also remove its information from the file system.");
-        btnDisintegrate.setText("Disintegrate");
+        btnDisintegrate.setToolTipText(StringConstants.VIEW_TOOLTIP_DISINTEGRATE_TEST_CASE);
+        btnDisintegrate.setText(StringConstants.CM_DISINTEGRATE);
 
         btnNavigate = new Button(compositeButton, SWT.FLAT);
-        btnNavigate.setToolTipText("Navigate to the integrated test case page on qTest");
-        btnNavigate.setText("Navigate");
+        btnNavigate.setToolTipText(StringConstants.VIEW_TOOLTIP_NAVIGATE_TEST_CASE);
+        btnNavigate.setText(StringConstants.CM_NAVIGATE);
 
         Composite compositeInfo = new Composite(container, SWT.NONE);
         compositeInfo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         compositeInfo.setLayout(new GridLayout(2, false));
 
-        Label lblNewLabel = new Label(compositeInfo, SWT.NONE);
-        lblNewLabel.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
-        lblNewLabel.setText("QTest ID");
+        Label lblTestCaseId = new Label(compositeInfo, SWT.NONE);
+        lblTestCaseId.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
+        lblTestCaseId.setText(StringConstants.VIEW_TITLE_TEST_CASE_ID);
 
         txtID = new Text(compositeInfo, SWT.BORDER | SWT.READ_ONLY);
         txtID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-        Label lblQtestName = new Label(compositeInfo, SWT.NONE);
-        lblQtestName.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-        lblQtestName.setText("QTest Name");
-
-        txtName = new Text(compositeInfo, SWT.BORDER | SWT.READ_ONLY);
-        txtName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
         Label lblPID = new Label(compositeInfo, SWT.NONE);
-        lblPID.setText("Alias");
+        lblPID.setText(StringConstants.CM_ALIAS);
 
         txtPID = new Text(compositeInfo, SWT.BORDER | SWT.READ_ONLY);
         txtPID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Label lblParentId = new Label(compositeInfo, SWT.NONE);
-        lblParentId.setText("Parent ID");
+        lblParentId.setText(StringConstants.CM_PARENT_ID);
 
         txtParentID = new Text(compositeInfo, SWT.BORDER | SWT.READ_ONLY);
         txtParentID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -145,16 +137,16 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
 
     protected void disIntegrateTestCaseWithQTest() {
         try {
-            if (MessageDialog.openConfirm(null, "Confirmation",
-                    "Are you sure you want to disintegrate this test case with qTest?")) {
+            if (MessageDialog.openConfirm(null, StringConstants.CONFIRMATION,
+                    StringConstants.VIEW_CONFIRM_DISINTEGRATE_TEST_CASE)) {
                 testCaseEntity.getIntegratedEntities().remove(
                         testCaseEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME));
                 reloadView();
                 setDirty(true);
             }
         } catch (Exception e) {
-            MultiStatusErrorDialog.showErrorDialog(e, "Unable to delete this test case on qTest.", e.getClass()
-                    .getSimpleName());
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.VIEW_MSG_UNABLE_DISINTEGRATE_TEST_CASE, e
+                    .getClass().getSimpleName());
         }
 
     }
@@ -169,7 +161,7 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
             IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser();
             browser.openURL(url);
         } catch (Exception e) {
-            MultiStatusErrorDialog.showErrorDialog(e, "Unable to open qTest navigated test case", e.getClass()
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.VIEW_MSG_UNABLE_NAVIGATE_TEST_CASE, e.getClass()
                     .getSimpleName());
         }
     }
@@ -178,30 +170,27 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
 
         if (isDirty()) {
-            MessageDialog.openInformation(null, "Information", "Please save your test case before uploading.");
+            MessageDialog.openInformation(null, StringConstants.INFORMATION,
+                    StringConstants.VIEW_MSG_SAVE_BEFORE_UPLOADING);
             return;
         }
 
         String token = QTestSettingStore.getToken(projectEntity.getFolderLocation());
 
         if (token == null || token.isEmpty()) {
-            MessageDialog.openWarning(null, "Warning",
-                    "QTest's token is required. Please enter a valid token on qTest setting page or\n"
-                            + "you can generate a new one by clicking on generate button.");
+            MessageDialog.openWarning(null, StringConstants.WARN, StringConstants.VIEW_MSG_TOKEN_REQUIRED);
             return;
         }
 
         try {
             TestCaseRepo testCaseRepo = QTestIntegrationUtil.getTestCaseRepo(testCaseEntity, projectEntity);
             if (testCaseRepo == null) {
-                MessageDialog.openWarning(null, "Warning",
-                        "This test case isn't in any Test Case Repository. Please add a valid Test Case Repository"
-                                + " in Test Case Repositories page.");
+                MessageDialog.openWarning(null, StringConstants.WARN, StringConstants.VIEW_MSG_TEST_CASE_NOT_IN_REPO);
                 return;
             }
 
-            UploadTestCaseJob uploadJob = new UploadTestCaseJob("Upload test case", UISynchronizeService.getInstance()
-                    .getSync());
+            UploadTestCaseJob uploadJob = new UploadTestCaseJob(StringConstants.JOB_TITLE_UPLOAD_TEST_CASE,
+                    UISynchronizeService.getInstance().getSync());
             List<IntegratedFileEntity> uploadedEntities = new ArrayList<IntegratedFileEntity>();
             TestCaseEntity originalEntity = TestCaseController.getInstance().getTestCase(testCaseEntity.getId());
             uploadedEntities.add(originalEntity);
@@ -211,7 +200,7 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
 
             uploadJob.doTask();
         } catch (Exception ex) {
-            MultiStatusErrorDialog.showErrorDialog(ex, "Unable to upload test case to qTest.", ex.getClass()
+            MultiStatusErrorDialog.showErrorDialog(ex, StringConstants.VIEW_MSG_UNABLE_UPLOAD_TEST_CASE, ex.getClass()
                     .getSimpleName());
         }
     }
@@ -245,12 +234,10 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
         if (qTestTestCase != null) {
             txtID.setText(String.valueOf(qTestTestCase.getId()));
             txtParentID.setText(String.valueOf(qTestTestCase.getParentId()));
-            txtName.setText(String.valueOf(qTestTestCase.getName()));
             txtPID.setText(qTestTestCase.getPid());
         } else {
             txtID.setText("");
             txtParentID.setText("");
-            txtName.setText("");
             txtPID.setText("");
         }
     }

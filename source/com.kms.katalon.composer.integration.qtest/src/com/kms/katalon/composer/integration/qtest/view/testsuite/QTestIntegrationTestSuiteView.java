@@ -38,6 +38,7 @@ import org.eclipse.ui.browser.IWebBrowser;
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
+import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.CreateNewTestSuiteParentDialog;
 import com.kms.katalon.composer.integration.qtest.dialog.model.TestSuiteParentCreationOption;
 import com.kms.katalon.composer.integration.qtest.model.TestSuiteRepo;
@@ -61,7 +62,7 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
         super(testSuiteEntity, mpart);
     }
 
-    private Text txtID, txtName, txtParentID, txtPID, txtParentName;
+    private Text txtID, txtParentID, txtPID;
     private List<QTestSuite> qTestSuites;
 
     private Button btnUpload, btnDisintegrate, btnNavigate, btnUpdateParent, btnSetDefault;
@@ -77,7 +78,6 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
     private Composite compositeTable;
     private Label lblTableParentLabel;
     private Button btnRemove;
-    private Button btnDisintegrateAll;
 
     /**
      * @wbp.parser.entryPoint
@@ -87,40 +87,37 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
         container.setLayout(new GridLayout(1, false));
 
         Composite compositeButton = new Composite(container, SWT.NONE);
-        GridLayout glCompositeButton = new GridLayout(7, false);
+        GridLayout glCompositeButton = new GridLayout(6, false);
         glCompositeButton.marginHeight = 0;
         glCompositeButton.marginWidth = 0;
         compositeButton.setLayout(glCompositeButton);
 
         btnUpload = new Button(compositeButton, SWT.FLAT);
-        btnUpload.setToolTipText("Upload this test suite to qTest");
-        btnUpload.setText("Upload");
+        btnUpload.setToolTipText(StringConstants.VIEW_TOOLTIP_UPLOAD_TEST_SUITE);
+        btnUpload.setText(StringConstants.CM_UPLOAD);
 
         btnDisintegrate = new Button(compositeButton, SWT.FLAT);
         btnDisintegrate
-                .setToolTipText("Delete the integrated test suite on qTest server and also remove its information from the file system.");
-        btnDisintegrate.setText("Disintegrate");
-
-        btnDisintegrateAll = new Button(compositeButton, SWT.FLAT);
-        btnDisintegrateAll.setText("Disintegrate All");
+                .setToolTipText(StringConstants.VIEW_TOOLTIP_DISINTEGRATE_TEST_SUITE);
+        btnDisintegrate.setText(StringConstants.CM_DISINTEGRATE);
 
         btnNavigate = new Button(compositeButton, SWT.FLAT);
-        btnNavigate.setToolTipText("Navigate to the integrated test suite page on qTest");
-        btnNavigate.setText("Navigate");
+        btnNavigate.setToolTipText(StringConstants.VIEW_TOOLTIP_NAVIGATE_TEST_SUITE);
+        btnNavigate.setText(StringConstants.CM_NAVIGATE);
 
         btnUpdateParent = new Button(compositeButton, SWT.FLAT);
         btnUpdateParent
-                .setToolTipText("To upload this test suite to qTest, you need to choose a parent (qTest release, cycle,...) for the integration.");
-        btnUpdateParent.setText("New Parent");
+                .setToolTipText(StringConstants.VIEW_TOOLTIP_NEW_TEST_SUITE_PARENT);
+        btnUpdateParent.setText(StringConstants.VIEW_TITLE_NEW_TEST_SUITE_PARENT);
 
         btnSetDefault = new Button(compositeButton, SWT.FLAT);
         btnSetDefault
-                .setToolTipText("Use the integrated test suite in this parent to upload result after the execution completed.");
-        btnSetDefault.setText("Set as default");
+                .setToolTipText(StringConstants.VIEW_TOOLTIP_SET_DEFAULT_TEST_SUITE);
+        btnSetDefault.setText(StringConstants.VIEW_TITLE_SET_DEFAULT_TEST_SUITE);
 
         btnRemove = new Button(compositeButton, SWT.FLAT);
-        btnRemove.setToolTipText("Remove selected parent from the list.");
-        btnRemove.setText("Remove parent");
+        btnRemove.setToolTipText(StringConstants.VIEW_TOOLTIP_REMOVE_TEST_SUITE_PARENT);
+        btnRemove.setText(StringConstants.VIEW_TITLE_REMOVE_TEST_SUITE_PARENT);
         btnRemove.setEnabled(false);
 
         SashForm sashForm = new SashForm(container, SWT.NONE);
@@ -144,42 +141,31 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
 
         Label lblSelectedParentHeader = new Label(compositeSelectedParentHeader, SWT.NONE);
         lblSelectedParentHeader.setFont(JFaceResources.getFontRegistry().getBold(""));
-        lblSelectedParentHeader.setText("Integration Information");
+        lblSelectedParentHeader.setText(StringConstants.VIEW_TITLE_INTEGRATION_INFORMATION);
 
         Composite compositeSelectedParentDetails = new Composite(compositeSelectedParent, SWT.BORDER);
         compositeSelectedParentDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        compositeSelectedParentDetails.setLayout(new GridLayout(2, false));
+        GridLayout gl_compositeSelectedParentDetails = new GridLayout(2, false);
+        gl_compositeSelectedParentDetails.horizontalSpacing = 15;
+        compositeSelectedParentDetails.setLayout(gl_compositeSelectedParentDetails);
 
         Label lblQTestId = new Label(compositeSelectedParentDetails, SWT.NONE);
-        lblQTestId.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
-        lblQTestId.setText("QTest ID");
+        lblQTestId.setText(StringConstants.VIEW_TITLE_TEST_SUITE_ID);
 
         txtID = new Text(compositeSelectedParentDetails, SWT.BORDER | SWT.READ_ONLY);
         txtID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-        Label lblQtestName = new Label(compositeSelectedParentDetails, SWT.NONE);
-        lblQtestName.setText("QTest Name");
-
-        txtName = new Text(compositeSelectedParentDetails, SWT.BORDER | SWT.READ_ONLY);
-        txtName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
         Label lblPID = new Label(compositeSelectedParentDetails, SWT.NONE);
-        lblPID.setText("Alias");
+        lblPID.setText(StringConstants.CM_ALIAS);
 
         txtPID = new Text(compositeSelectedParentDetails, SWT.BORDER | SWT.READ_ONLY);
         txtPID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Label lblParentId = new Label(compositeSelectedParentDetails, SWT.NONE);
-        lblParentId.setText("Parent ID");
+        lblParentId.setText(StringConstants.CM_PARENT_ID);
 
         txtParentID = new Text(compositeSelectedParentDetails, SWT.BORDER | SWT.READ_ONLY);
         txtParentID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
-        Label lblParentName = new Label(compositeSelectedParentDetails, SWT.NONE);
-        lblParentName.setText("Parent Name");
-
-        txtParentName = new Text(compositeSelectedParentDetails, SWT.BORDER | SWT.READ_ONLY);
-        txtParentName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         sashForm.setWeights(new int[] { 4, 6 });
 
         initialize();
@@ -205,7 +191,7 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
 
         lblTableParentLabel = new Label(compositeTableHeader, SWT.NONE);
         lblTableParentLabel.setFont(JFaceResources.getFontRegistry().getBold(""));
-        lblTableParentLabel.setText("List of test suite's parent");
+        lblTableParentLabel.setText(StringConstants.VIEW_TITLE_LIST_TEST_SUITE_PARENT);
 
         compositeTable = new Composite(compositeParent, SWT.NONE);
         compositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -217,15 +203,15 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
 
         tableViewerColumnName = new TableViewerColumn(testSuiteParentTableViewer, SWT.NONE);
         tblclmnName = tableViewerColumnName.getColumn();
-        tblclmnName.setText("Name");
+        tblclmnName.setText(StringConstants.NAME);
 
         tableViewerColumnType = new TableViewerColumn(testSuiteParentTableViewer, SWT.NONE);
         tblclmnType = tableViewerColumnType.getColumn();
-        tblclmnType.setText("Type");
+        tblclmnType.setText(StringConstants.CM_TYPE);
 
         tableViewerColumnDefault = new TableViewerColumn(testSuiteParentTableViewer, SWT.NONE);
         tblclmnDefault = tableViewerColumnDefault.getColumn();
-        tblclmnDefault.setText("Default");
+        tblclmnDefault.setText(StringConstants.CM_DEFAULT);
 
         TableColumnLayout tableLayout = new TableColumnLayout();
         tableLayout.setColumnData(tblclmnName, new ColumnWeightData(80, 0));
@@ -265,13 +251,6 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
             }
         });
 
-        btnDisintegrateAll.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                disintegrateAllTestSuiteWithQTest();
-            }
-        });
-
         btnUpdateParent.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -292,7 +271,6 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                // TODO Auto-generated method stub
                 removeParentFromParentList();
             }
         });
@@ -310,7 +288,6 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
         });
 
         compositeTable.addListener(SWT.Resize, new Listener() {
-
             @Override
             public void handleEvent(Event event) {
                 compositeTable.layout();
@@ -348,8 +325,8 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
     }
 
     private void showTestSuiteNotValidNotification() {
-        MessageDialog.openInformation(null, "Information",
-                "Please make sure this Test Suite is in a valid Test Suite Repository.");
+        MessageDialog.openInformation(null, StringConstants.INFORMATION,
+                StringConstants.VIEW_MSG_TEST_SUITE_NOT_IN_REPO);
     }
 
     private void createTestSuiteParent() {
@@ -397,7 +374,7 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
                     default:
                         break;
                 }
-                
+
                 testSuiteParentTableViewer.setSelection(new StructuredSelection(qTestSuite));
                 setDirty(true);
             }
@@ -411,8 +388,8 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
         try {
             if (!isIntegrationActive()) return false;
 
-            if (MessageDialog.openConfirm(null, "Confirmation",
-                    "Are you sure you want to disintegrate this test suite with qTest?")) {
+            if (MessageDialog.openConfirm(null, StringConstants.CONFIRMATION,
+                    StringConstants.VIEW_CONFIRM_DISINTEGRATE_TEST_SUITE)) {
                 IStructuredSelection selection = (IStructuredSelection) testSuiteParentTableViewer.getSelection();
                 QTestSuite selectedQTestSuite = (QTestSuite) selection.getFirstElement();
 
@@ -428,33 +405,7 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
                 return true;
             }
         } catch (Exception e) {
-            MultiStatusErrorDialog.showErrorDialog(e, "Unable to delete this test case on qTest.", e.getClass()
-                    .getSimpleName());
-        }
-        return false;
-    }
-
-    protected boolean disintegrateAllTestSuiteWithQTest() {
-        try {
-            if (!isIntegrationActive()) return false;
-
-            if (MessageDialog.openConfirm(null, "Confirmation",
-                    "Are you sure you want to disintegrate this test suite with qTest?")) {
-
-                for (QTestSuite qTestSuite : getQTestSuites()) {
-                    qTestSuite.setId(0);
-                    qTestSuite.setPid("");
-                    qTestSuite.setSelected(false);
-                    qTestSuite.getTestRuns().clear();
-                    testSuiteParentTableViewer.update(qTestSuite, null);
-                }
-
-                reloadView();
-                setDirty(true);
-                return true;
-            }
-        } catch (Exception e) {
-            MultiStatusErrorDialog.showErrorDialog(e, "Unable to delete this test case on qTest.", e.getClass()
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.VIEW_MSG_UNABLE_DISINTEGRATE_TEST_SUITE, e.getClass()
                     .getSimpleName());
         }
         return false;
@@ -484,7 +435,7 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
 
             // ResourceBundle.
         } catch (Exception e) {
-            MultiStatusErrorDialog.showErrorDialog(e, "Unable to open qTest navigated test case", e.getClass()
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.VIEW_MSG_UNABLE_NAVIGATE_TEST_SUITE, e.getClass()
                     .getSimpleName());
         }
     }
@@ -493,8 +444,8 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
         boolean active = QTestSettingStore.isIntegrationActive(getProjectDir());
 
         if (!active) {
-            MessageDialog.openInformation(null, "Information",
-                    "Please enable qTest integration in Project Setting page.");
+            MessageDialog.openInformation(null, StringConstants.INFORMATION,
+                    StringConstants.VIEW_MSG_ENABLE_INTEGRATION);
         }
         return active;
     }
@@ -520,9 +471,9 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
             reloadView();
             setDirty(true);
         } catch (QTestUnauthorizedException ex) {
-            MultiStatusErrorDialog.showErrorDialog(ex, "Unable to upload test suite.", "Invalid authentication");
+            MultiStatusErrorDialog.showErrorDialog(ex, StringConstants.VIEW_MSG_UNABLE_UPLOAD_TEST_SUITE, "Invalid authentication");
         } catch (Exception ex) {
-            MessageDialog.openWarning(null, "Warning", "Unable to upload test suite.");
+            MessageDialog.openWarning(null, StringConstants.WARN, StringConstants.VIEW_MSG_UNABLE_UPLOAD_TEST_SUITE);
         }
     }
 
@@ -566,7 +517,6 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
             btnDisintegrate.setEnabled(false);
             btnNavigate.setEnabled(false);
             btnSetDefault.setEnabled(false);
-            btnDisintegrateAll.setEnabled(false);
             btnUpdateParent.setEnabled(false);
             return;
         }
@@ -574,15 +524,6 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
         IStructuredSelection selection = (IStructuredSelection) testSuiteParentTableViewer.getSelection();
 
         QTestSuite qTestSuite = (QTestSuite) selection.getFirstElement();
-
-        btnDisintegrateAll.setEnabled(false);
-
-        for (QTestSuite childQTestSuite : getQTestSuites()) {
-            if (childQTestSuite.getId() > 0) {
-                btnDisintegrateAll.setEnabled(true);
-                break;
-            }
-        }
 
         if (qTestSuite == null) {
             btnUpload.setEnabled(false);
@@ -613,15 +554,11 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
         if (qTestSuite != null && qTestSuite.getId() > 0) {
             txtID.setText(String.valueOf(qTestSuite.getId()));
             txtParentID.setText(String.valueOf(qTestSuite.getParent().getId()));
-            txtName.setText(String.valueOf(qTestSuite.getName()));
             txtPID.setText(qTestSuite.getPid());
-            txtParentName.setText(qTestSuite.getParent().getName());
         } else {
             txtID.setText("");
             txtParentID.setText("");
-            txtName.setText("");
             txtPID.setText("");
-            txtParentName.setText("");
         }
     }
 

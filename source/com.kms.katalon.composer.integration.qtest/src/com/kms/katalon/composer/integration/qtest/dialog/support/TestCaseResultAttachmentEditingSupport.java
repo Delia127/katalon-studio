@@ -6,42 +6,57 @@ import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TableViewer;
 
+import com.kms.katalon.composer.integration.qtest.dialog.ListReportUploadingPreviewDialog;
 import com.kms.katalon.integration.qtest.entity.QTestLogUploadedPreview;
 
+/**
+ * Supporting editor for {@link ListReportUploadingPreviewDialog}.
+ * <p>
+ * This checked box editor allows use can edit the selected test log will be sent to qTest that has attachments or not.
+ * 
+ * @see {@link CheckboxCellEditor}
+ * @author duyluong
+ *
+ */
 public class TestCaseResultAttachmentEditingSupport extends EditingSupport {
-	private CheckboxCellEditor editor;
+    private CheckboxCellEditor editor;
 
-	public TestCaseResultAttachmentEditingSupport(ColumnViewer viewer) {
-		super(viewer);
-		editor = new CheckboxCellEditor(((TableViewer) viewer).getTable());
-	}
+    public TestCaseResultAttachmentEditingSupport(ColumnViewer viewer) {
+        super(viewer);
+        editor = new CheckboxCellEditor(((TableViewer) viewer).getTable());
+    }
 
-	@Override
-	protected CellEditor getCellEditor(Object element) {
-		return editor;
-	}
+    @Override
+    protected CellEditor getCellEditor(Object element) {
+        return editor;
+    }
 
-	@Override
-	protected boolean canEdit(Object element) {
-		if (element == null && !(element instanceof QTestLogUploadedPreview)) return false;
-		QTestLogUploadedPreview uploadedPreview = (QTestLogUploadedPreview) element;
-		return uploadedPreview.getQTestLog() != null;
-	}
+    @Override
+    protected boolean canEdit(Object element) {
+        if (element == null || !(element instanceof QTestLogUploadedPreview)) {
+            return false;
+        }
+        
+        QTestLogUploadedPreview uploadedPreview = (QTestLogUploadedPreview) element;
+        return uploadedPreview.getQTestLog() != null;
+    }
 
-	@Override
-	protected Object getValue(Object element) {
-		QTestLogUploadedPreview uploadedPreview = (QTestLogUploadedPreview) element;
-		return uploadedPreview.getQTestLog().isAttachmentIncluded();
-	}
+    @Override
+    protected Object getValue(Object element) {
+        QTestLogUploadedPreview uploadedPreview = (QTestLogUploadedPreview) element;
+        return uploadedPreview.getQTestLog().isAttachmentIncluded();
+    }
 
-	@Override
-	protected void setValue(Object element, Object value) {
-		if (element == null && !(element instanceof QTestLogUploadedPreview)) return;
-		if (!(value instanceof Boolean)) return;
-		QTestLogUploadedPreview uploadedPreview = (QTestLogUploadedPreview) element;
-		boolean valueChange = (boolean) value;
-		uploadedPreview.getQTestLog().setAttachmentIncluded(valueChange);
-		getViewer().refresh(element);
-	}
+    @Override
+    protected void setValue(Object element, Object value) {
+        if (element == null || !(element instanceof QTestLogUploadedPreview) || !(value instanceof Boolean)) {
+            return;
+        }
+
+        QTestLogUploadedPreview uploadedPreview = (QTestLogUploadedPreview) element;
+        boolean valueChange = (boolean) value;
+        uploadedPreview.getQTestLog().setAttachmentIncluded(valueChange);
+        getViewer().refresh(element);
+    }
 
 }

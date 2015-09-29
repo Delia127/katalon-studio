@@ -8,105 +8,105 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 
 public class ModuleDownloadedPreviewTreeNode implements DownloadedPreviewTreeNode {
-	private QTestModule module;
-	private boolean isSelected;
-	private boolean isAnyChildSelected;
-	private List<TestCaseDownloadedPreviewTreeNode> childTestCaseTrees;
-	private List<ModuleDownloadedPreviewTreeNode> childModuleTrees;
-	private FolderEntity folderEntity;
-	private ModuleDownloadedPreviewTreeNode parent;
-	
-	
-	public ModuleDownloadedPreviewTreeNode(QTestModule module, FolderEntity folder, ModuleDownloadedPreviewTreeNode parent) {
-		setModule(module);
-		setAnyChildSelected(true);
-		setSelected(true);
-		this.folderEntity = folder;
-		this.parent = parent;
-	}
-	
-	public boolean isAnyChildSelected() {
-		return isAnyChildSelected;
-	}
+    private QTestModule module;
+    private boolean isSelected;
+    private boolean isAnyChildSelected;
+    private List<TestCaseDownloadedPreviewTreeNode> childTestCaseTrees;
+    private List<ModuleDownloadedPreviewTreeNode> childModuleTrees;
+    private FolderEntity folderEntity;
+    private ModuleDownloadedPreviewTreeNode parent;
 
-	public void setAnyChildSelected(boolean isAnyChildSelected) {
-		this.isAnyChildSelected = isAnyChildSelected;
-	}
+    public ModuleDownloadedPreviewTreeNode(QTestModule module, FolderEntity folder,
+            ModuleDownloadedPreviewTreeNode parent) {
+        setModule(module);
+        setAnyChildSelected(true);
+        setSelected(true);
+        this.folderEntity = folder;
+        this.parent = parent;
+    }
 
-	public QTestModule getModule() {
-		return module;
-	}
+    public boolean isAnyChildSelected() {
+        return isAnyChildSelected;
+    }
 
-	public void setModule(QTestModule module) {
-		this.module = module;
-	}
-	
-	@Override
-	public boolean isSelected() {
-		return isSelected;
-	}
+    public void setAnyChildSelected(boolean isAnyChildSelected) {
+        this.isAnyChildSelected = isAnyChildSelected;
+    }
 
-	public void setSelected(boolean isSelected) {
-		this.isSelected = isSelected;
-	}
+    public QTestModule getModule() {
+        return module;
+    }
 
-	public List<TestCaseDownloadedPreviewTreeNode> getChildTestCaseTrees() {
-		if (childTestCaseTrees == null) childTestCaseTrees = new ArrayList<>();
-		return childTestCaseTrees;
-	}
+    public void setModule(QTestModule module) {
+        this.module = module;
+    }
 
-	public void setChildTestCaseTrees(List<TestCaseDownloadedPreviewTreeNode> childTestCaseTrees) {
-		this.childTestCaseTrees = childTestCaseTrees;
-	}
+    @Override
+    public boolean isSelected() {
+        return isSelected;
+    }
 
-	public List<ModuleDownloadedPreviewTreeNode> getChildModuleTrees() {
-		if (childModuleTrees == null) childModuleTrees = new ArrayList<>();
-		return childModuleTrees;
-	}
+    public void setSelected(boolean isSelected) {
+        this.isSelected = isSelected;
+    }
 
-	public void setChildModuleTrees(List<ModuleDownloadedPreviewTreeNode> childModuleTrees) {
-		this.childModuleTrees = childModuleTrees;
-	}
+    public List<TestCaseDownloadedPreviewTreeNode> getChildTestCaseTrees() {
+        if (childTestCaseTrees == null) childTestCaseTrees = new ArrayList<>();
+        return childTestCaseTrees;
+    }
 
-	@Override
-	public ModuleDownloadedPreviewTreeNode getParent() {
-		return parent;
-	}
+    public void setChildTestCaseTrees(List<TestCaseDownloadedPreviewTreeNode> childTestCaseTrees) {
+        this.childTestCaseTrees = childTestCaseTrees;
+    }
 
-	@Override
-	public String getName() {
-		return module.getName();
-	}
+    public List<ModuleDownloadedPreviewTreeNode> getChildModuleTrees() {
+        if (childModuleTrees == null) childModuleTrees = new ArrayList<>();
+        return childModuleTrees;
+    }
 
-	@Override
-	public String getStatus() {
-		if (folderEntity != null) return "Created";
-		
-		FolderEntity parentFolderEntity = parent.getFolderEntity();
-		if (parentFolderEntity == null) return "New";
-		
-		try {
-			if (getName().equalsIgnoreCase(
-					FolderController.getInstance().getAvailableFolderName(parentFolderEntity, getName()))) {
-				return "New";
-			} else {
-				return "New but Duplicated";
-			}
-		} catch (Exception e) {
-			return "New";
-		}
-	}
+    public void setChildModuleTrees(List<ModuleDownloadedPreviewTreeNode> childModuleTrees) {
+        this.childModuleTrees = childModuleTrees;
+    }
 
-	@Override
-	public String getType() {
-		return "Module";
-	}
+    @Override
+    public ModuleDownloadedPreviewTreeNode getParent() {
+        return parent;
+    }
 
-	public FolderEntity getFolderEntity() {
-		return folderEntity;
-	}
+    @Override
+    public String getName() {
+        return module.getName();
+    }
 
-	public void setFolderEntity(FolderEntity folderEntity) {
-		this.folderEntity = folderEntity;
-	}
+    @Override
+    public String getStatus() {
+        if (folderEntity != null) return "Created";
+
+        FolderEntity parentFolderEntity = parent.getFolderEntity();
+        if (parentFolderEntity == null) return "New";
+
+        try {
+            if (getName().equalsIgnoreCase(
+                    FolderController.getInstance().getAvailableFolderName(parentFolderEntity, getName()))) {
+                return "New";
+            } else {
+                return "New but Duplicated";
+            }
+        } catch (Exception e) {
+            return "New";
+        }
+    }
+
+    @Override
+    public String getType() {
+        return "Module";
+    }
+
+    public FolderEntity getFolderEntity() {
+        return folderEntity;
+    }
+
+    public void setFolderEntity(FolderEntity folderEntity) {
+        this.folderEntity = folderEntity;
+    }
 }

@@ -3,6 +3,7 @@ package com.kms.katalon.integration.qtest.setting;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -127,7 +128,7 @@ public class QTestSettingStore {
                     getPropertyFile(projectDir));
 
             if (sendingTypePropertyString == null || sendingTypePropertyString.isEmpty()) {
-                return Collections.emptyList();
+                return Arrays.asList(QTestAttachmentSendingType.values());
             }
 
             for (String sendingTypeName : sendingTypePropertyString.trim().split(",")) {
@@ -179,7 +180,7 @@ public class QTestSettingStore {
                     getPropertyFile(projectDir));
 
             if (sendingTypePropertyString == null || sendingTypePropertyString.isEmpty()) {
-                return Collections.emptyList();
+                return Arrays.asList(QTestResultSendingType.values());
             }
 
             for (String sendingTypeName : sendingTypePropertyString.trim().split(",")) {

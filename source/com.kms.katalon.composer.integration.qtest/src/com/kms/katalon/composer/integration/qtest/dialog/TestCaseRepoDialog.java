@@ -32,6 +32,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
+import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.provider.TestCaseFolderEntityProvider;
 import com.kms.katalon.composer.integration.qtest.model.TestCaseRepo;
 import com.kms.katalon.controller.FolderController;
@@ -46,288 +47,289 @@ import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class TestCaseRepoDialog extends Dialog {
 
-	private Composite container;
-	private Text txtQTestModule;
-	private Text txtKatalonFolder;
-	private Button btnUpdateProjects;
-	private Button btnFindQTestModule;
-	private Button btnBrowseKatalonFolder;
-	private Combo cbProjects;
+    private Composite container;
+    private Text txtQTestModule;
+    private Text txtKatalonFolder;
+    private Button btnUpdateProjects;
+    private Button btnFindQTestModule;
+    private Button btnBrowseKatalonFolder;
+    private Combo cbProjects;
 
-	private List<String> folderIds;
+    private List<String> folderIds;
 
-	private QTestModule qTestModule;
-	private QTestProject qTestProject;
-	private String folderId;
+    private QTestModule qTestModule;
+    private QTestProject qTestProject;
+    private String folderId;
 
-	private Map<Long, QTestProject> qTestProjectsMap;
+    private Map<Long, QTestProject> qTestProjectsMap;
 
-	public Map<Long, QTestProject> getQTestProjectsMap() {
-		return qTestProjectsMap;
-	}
+    public Map<Long, QTestProject> getQTestProjectsMap() {
+        return qTestProjectsMap;
+    }
 
-	public TestCaseRepoDialog(Shell parentShell, List<QTestProject> qTestProjects, List<String> folderIds,
-			TestCaseRepo testCaseRepo) {
-		super(parentShell);
-		this.qTestProjectsMap = new LinkedHashMap<Long, QTestProject>();
-		updateQTestProjectsMap(qTestProjects);
-		this.folderIds = folderIds;
+    public TestCaseRepoDialog(Shell parentShell, List<QTestProject> qTestProjects, List<String> folderIds,
+            TestCaseRepo testCaseRepo) {
+        super(parentShell);
+        this.qTestProjectsMap = new LinkedHashMap<Long, QTestProject>();
+        updateQTestProjectsMap(qTestProjects);
+        this.folderIds = folderIds;
 
-		if (testCaseRepo != null) {
-			qTestProject = testCaseRepo.getQTestProject();
-			qTestModule = testCaseRepo.getQTestModule();
-			folderId = testCaseRepo.getFolderId();
-		}
-	}
+        if (testCaseRepo != null) {
+            qTestProject = testCaseRepo.getQTestProject();
+            qTestModule = testCaseRepo.getQTestModule();
+            folderId = testCaseRepo.getFolderId();
+        }
+    }
 
-	private void updateQTestProjectsMap(List<QTestProject> qTestProjects) {
-		for (QTestProject qTestProject : qTestProjects) {
-			qTestProjectsMap.put(qTestProject.getId(), qTestProject);
-		}
-	}
+    private void updateQTestProjectsMap(List<QTestProject> qTestProjects) {
+        for (QTestProject qTestProject : qTestProjects) {
+            qTestProjectsMap.put(qTestProject.getId(), qTestProject);
+        }
+    }
 
-	protected Control createDialogArea(Composite parent) {
-		container = (Composite) super.createDialogArea(parent);
-		GridLayout gridLayout = (GridLayout) container.getLayout();
-		gridLayout.numColumns = 3;
+    protected Control createDialogArea(Composite parent) {
+        container = (Composite) super.createDialogArea(parent);
+        GridLayout gridLayout = (GridLayout) container.getLayout();
+        gridLayout.numColumns = 3;
 
-		Label lblNewLabel = new Label(container, SWT.NONE);
-		lblNewLabel.setText("qTest Project");
+        Label lblQTestProject = new Label(container, SWT.NONE);
+        lblQTestProject.setText(StringConstants.DIA_TITLE_QTEST_PROJECT);
 
-		cbProjects = new Combo(container, SWT.NONE);
-		cbProjects.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        cbProjects = new Combo(container, SWT.NONE);
+        cbProjects.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
-		btnUpdateProjects = new Button(container, SWT.NONE);
-		btnUpdateProjects.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		btnUpdateProjects.setText("Update");
+        btnUpdateProjects = new Button(container, SWT.NONE);
+        btnUpdateProjects.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+        btnUpdateProjects.setText(StringConstants.UPDATE);
 
-		Label lblQTestModule = new Label(container, SWT.NONE);
-		lblQTestModule.setText("qTest Module");
+        Label lblQTestModule = new Label(container, SWT.NONE);
+        lblQTestModule.setText(StringConstants.DIA_TITLE_QTEST_MODULE);
 
-		txtQTestModule = new Text(container, SWT.BORDER | SWT.READ_ONLY);
-		txtQTestModule.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        txtQTestModule = new Text(container, SWT.BORDER | SWT.READ_ONLY);
+        txtQTestModule.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
-		btnFindQTestModule = new Button(container, SWT.NONE);
-		btnFindQTestModule.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		btnFindQTestModule.setText("Find...");
+        btnFindQTestModule = new Button(container, SWT.NONE);
+        btnFindQTestModule.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+        btnFindQTestModule.setText(StringConstants.FIND);
 
-		Label lblKatalonFolder = new Label(container, SWT.NONE);
-		lblKatalonFolder.setText("Katalon Folder");
+        Label lblKatalonFolder = new Label(container, SWT.NONE);
+        lblKatalonFolder.setText(StringConstants.DIA_TITLE_KATALON_FOLDER);
 
-		txtKatalonFolder = new Text(container, SWT.BORDER);
-		txtKatalonFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        txtKatalonFolder = new Text(container, SWT.BORDER);
+        txtKatalonFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
-		btnBrowseKatalonFolder = new Button(container, SWT.NONE);
-		btnBrowseKatalonFolder.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		btnBrowseKatalonFolder.setText("Browse...");
+        btnBrowseKatalonFolder = new Button(container, SWT.NONE);
+        btnBrowseKatalonFolder.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+        btnBrowseKatalonFolder.setText(StringConstants.BROWSE);
 
-		return container;
-	}
-	
-	@Override
-	public void create() {
-		super.create();
+        return container;
+    }
 
-		addButtonSelectionListeners();
-		initialize();
-		validate();
-	}
+    @Override
+    public void create() {
+        super.create();
 
-	private void initialize() {
-		if (qTestProject != null) {
-			cbProjects.setText(qTestProject.getName());
-		}		
-		updateProjectComboboxItems();
-		
-		if (folderId != null) {
-			txtKatalonFolder.setText(folderId);
-		}
-		
-		if (qTestModule != null) {
-			txtQTestModule.setText(qTestModule.getName());
-		}
-	}
+        addButtonSelectionListeners();
+        initialize();
+        validate();
+    }
 
-	private void updateProjectComboboxItems() {
-		String selectedProjectName = cbProjects.getText();
+    private void initialize() {
+        if (qTestProject != null) {
+            cbProjects.setText(qTestProject.getName());
+        }
+        updateProjectComboboxItems();
 
-		List<String> projectNames = new ArrayList<String>();
-		for (QTestProject qTestProject : qTestProjectsMap.values()) {
-			projectNames.add(qTestProject.getName());
-		}
+        if (folderId != null) {
+            txtKatalonFolder.setText(folderId);
+        }
 
-		cbProjects.setItems(projectNames.toArray(new String[projectNames.size()]));
+        if (qTestModule != null) {
+            txtQTestModule.setText(qTestModule.getName());
+        }
+    }
 
-		if (cbProjects.getItemCount() <= 0) return;
+    private void updateProjectComboboxItems() {
+        String selectedProjectName = cbProjects.getText();
 
-		if (selectedProjectName.isEmpty()) {
-			cbProjects.select(0);
-		} else {
-			int index = projectNames.indexOf(selectedProjectName);
-			if (index >= 0) cbProjects.select(index);
-		}
-	}
+        List<String> projectNames = new ArrayList<String>();
+        for (QTestProject qTestProject : qTestProjectsMap.values()) {
+            projectNames.add(qTestProject.getName());
+        }
 
-	private void addButtonSelectionListeners() {
-		btnUpdateProjects.addSelectionListener(new SelectionAdapter() {
+        cbProjects.setItems(projectNames.toArray(new String[projectNames.size()]));
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				updateProjects();
-				validate();
-			}
-		});
+        if (cbProjects.getItemCount() <= 0) return;
 
-		btnFindQTestModule.addSelectionListener(new SelectionAdapter() {
+        if (selectedProjectName.isEmpty()) {
+            cbProjects.select(0);
+        } else {
+            int index = projectNames.indexOf(selectedProjectName);
+            if (index >= 0) cbProjects.select(index);
+        }
+    }
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				findQTestModule();
-				validate();
-			}
-		});
+    private void addButtonSelectionListeners() {
+        btnUpdateProjects.addSelectionListener(new SelectionAdapter() {
 
-		btnBrowseKatalonFolder.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                updateProjects();
+                validate();
+            }
+        });
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				findTestCaseFolder();
-				validate();
-			}
-		});
-		
-		cbProjects.addModifyListener(new ModifyListener() {			
-			@Override
-			public void modifyText(ModifyEvent e) {
-				QTestProject[] qTestProjects = qTestProjectsMap.values().toArray(
-						new QTestProject[qTestProjectsMap.values().size()]);
-				int index = cbProjects.getSelectionIndex();
-				if (index >= 0) {
-					if (qTestProject != null && !qTestProject.equals(qTestProjects[index])) {						
-						qTestModule = null;
-						txtQTestModule.setText("");						
-					}
-					qTestProject = qTestProjects[index];
-					validate();
-				}
-			}
-		});
-	}
+        btnFindQTestModule.addSelectionListener(new SelectionAdapter() {
 
-	@Override
-	protected Point getInitialSize() {
-		return new Point(500, 200);
-	}
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                findQTestModule();
+                validate();
+            }
+        });
 
-	@Override
-	protected void configureShell(Shell newShell) {
-		super.configureShell(newShell);
-		newShell.setText("Create Test Case Repository");
-	}
+        btnBrowseKatalonFolder.addSelectionListener(new SelectionAdapter() {
 
-	public List<String> getFolderIds() {
-		return folderIds;
-	}
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                findTestCaseFolder();
+                validate();
+            }
+        });
 
-	public void setFolderIds(List<String> folderIds) {
-		this.folderIds = folderIds;
-	}
+        cbProjects.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+                QTestProject[] qTestProjects = qTestProjectsMap.values().toArray(
+                        new QTestProject[qTestProjectsMap.values().size()]);
+                int index = cbProjects.getSelectionIndex();
+                if (index >= 0) {
+                    if (qTestProject != null && !qTestProject.equals(qTestProjects[index])) {
+                        qTestModule = null;
+                        txtQTestModule.setText("");
+                    }
+                    qTestProject = qTestProjects[index];
+                    validate();
+                }
+            }
+        });
+    }
 
-	
-	private void updateProjects() {
-		String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
-		String serverUrl = QTestSettingStore.getServerUrl(projectDir);
-		String token = QTestSettingStore.getToken(projectDir);
-		try {
-			List<QTestProject> updatedProjects = QTestIntegrationProjectManager.getAllProject(token, serverUrl);
-			mergeProjects(updatedProjects);
-			updateProjectComboboxItems();
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-			MultiStatusErrorDialog.showErrorDialog(e, "Unable to update qTest projects", e.getClass().getSimpleName());
-		}
-	}
+    @Override
+    protected Point getInitialSize() {
+        return new Point(500, 200);
+    }
 
-	private void mergeProjects(List<QTestProject> updatedProjects) {
-		for (QTestProject updatedQTestProject : updatedProjects) {
-			for (QTestProject currentQTestProject : qTestProjectsMap.values()) {
-				if (updatedQTestProject.getId() == currentQTestProject.getId()) {
-					updatedQTestProject.setTestCaseFolderIds(currentQTestProject.getTestCaseFolderIds());
-					updatedQTestProject.setTestSuiteFolderIds(currentQTestProject.getTestSuiteFolderIds());
-					break;
-				}
-			}
-		}
-		qTestProjectsMap.clear();
-		updateQTestProjectsMap(updatedProjects);
+    @Override
+    protected void configureShell(Shell newShell) {
+        super.configureShell(newShell);
+        newShell.setText(StringConstants.DIA_TITLE_CREATE_TEST_CASE_REPO);
+    }
 
-		updateProjectComboboxItems();
-	}
+    public List<String> getFolderIds() {
+        return folderIds;
+    }
 
-	
-	private void findQTestModule() {
-		try {
-			String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
-			QTestModule moduleRoot = QTestIntegrationFolderManager.getModuleRoot(projectDir, qTestProject.getId());
-			//moduleRoot = QTestIntegrationFolderManager.updateModuleViaAPI(projectDir, qTestProject.getId(), moduleRoot);
-			TestCaseRootSelectionDialog testCaseRootSelectionDialog = new TestCaseRootSelectionDialog(Display
-					.getDefault().getActiveShell(), moduleRoot, true);
-			testCaseRootSelectionDialog.setProjectDir(projectDir);
-			testCaseRootSelectionDialog.setQTestProject(qTestProject);
-			if (testCaseRootSelectionDialog.open() == Dialog.OK) {
-				qTestModule = testCaseRootSelectionDialog.getSelectedModule();
-				txtQTestModule.setText(qTestModule.getName());
-			}
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-			MultiStatusErrorDialog.showErrorDialog(e, "Unable to update qTest modules.", e.getClass().getSimpleName());
-		}
-	}
-	
-	private void findTestCaseFolder() {
-		try {
-			EntityProvider entityProvider = new TestCaseFolderEntityProvider(folderIds);
-			TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(this.getShell(),
-					new EntityLabelProvider(), entityProvider, new EntityViewerFilter(entityProvider));
-			dialog.setAllowMultiple(false);
-			dialog.setTitle("Test Case Folder Browser");
-			ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-			FolderEntity rootFolder = FolderController.getInstance().getTestCaseRoot(currentProject);
-			FolderTreeEntity rootFolderTreeEntity = new FolderTreeEntity(rootFolder, null);
-			
-			dialog.setInput(Arrays.asList(rootFolderTreeEntity));
-			
-			FolderEntity selectedFolderEntity = FolderController.getInstance().getFolderByDisplayId(currentProject, folderId);
-			if (selectedFolderEntity != null) {
-				dialog.setInitialSelection(new FolderTreeEntity(selectedFolderEntity, TreeEntityUtil
-						.createSelectedTreeEntityHierachy(selectedFolderEntity.getParentFolder(), rootFolder)));
-			}
-			if (dialog.open() == Dialog.OK) {
-				Object[] results = dialog.getResult();
-				if (results == null || results.length != 1) return;
-				FolderTreeEntity folderTreeEntity = (FolderTreeEntity) results[0];
-				folderId = FolderController.getInstance().getIdForDisplay((FolderEntity) folderTreeEntity.getObject());
-				txtKatalonFolder.setText(folderId);
-			}
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-			MultiStatusErrorDialog.showErrorDialog(e, "Unable to find test case folder.", e.getClass().getSimpleName());
-		}
-	}
+    public void setFolderIds(List<String> folderIds) {
+        this.folderIds = folderIds;
+    }
 
-	public TestCaseRepo getTestCaseRepo() {
-		TestCaseRepo repo = new TestCaseRepo();
-		repo.setQTestModule(qTestModule);
-		repo.setQTestProject(qTestProject);
-		repo.setFolderId(folderId);
-		return repo;
-	}
-	
-	private void validate() {
-		if (qTestProject == null || qTestModule == null || folderId == null) {
-			getButton(OK).setEnabled(false);
-		} else {
-			getButton(OK).setEnabled(true);
-		}
-	}
+    private void updateProjects() {
+        String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+        String serverUrl = QTestSettingStore.getServerUrl(projectDir);
+        String token = QTestSettingStore.getToken(projectDir);
+        try {
+            List<QTestProject> updatedProjects = QTestIntegrationProjectManager.getAllProject(token, serverUrl);
+            mergeProjects(updatedProjects);
+            updateProjectComboboxItems();
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MultiStatusErrorDialog.showErrorDialog(e,  StringConstants.DIA_MSG_UNABLE_TO_UPDATE_PROJECT, e.getClass().getSimpleName());
+        }
+    }
+
+    private void mergeProjects(List<QTestProject> updatedProjects) {
+        for (QTestProject updatedQTestProject : updatedProjects) {
+            for (QTestProject currentQTestProject : qTestProjectsMap.values()) {
+                if (updatedQTestProject.getId() == currentQTestProject.getId()) {
+                    updatedQTestProject.setTestCaseFolderIds(currentQTestProject.getTestCaseFolderIds());
+                    updatedQTestProject.setTestSuiteFolderIds(currentQTestProject.getTestSuiteFolderIds());
+                    break;
+                }
+            }
+        }
+        qTestProjectsMap.clear();
+        updateQTestProjectsMap(updatedProjects);
+
+        updateProjectComboboxItems();
+    }
+
+    private void findQTestModule() {
+        try {
+            String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+            QTestModule moduleRoot = QTestIntegrationFolderManager.getModuleRoot(projectDir, qTestProject.getId());
+            // moduleRoot = QTestIntegrationFolderManager.updateModuleViaAPI(projectDir, qTestProject.getId(),
+            // moduleRoot);
+            TestCaseRootSelectionDialog testCaseRootSelectionDialog = new TestCaseRootSelectionDialog(Display
+                    .getDefault().getActiveShell(), moduleRoot, true);
+            testCaseRootSelectionDialog.setProjectDir(projectDir);
+            testCaseRootSelectionDialog.setQTestProject(qTestProject);
+            if (testCaseRootSelectionDialog.open() == Dialog.OK) {
+                qTestModule = testCaseRootSelectionDialog.getSelectedModule();
+                txtQTestModule.setText(qTestModule.getName());
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_UNABLE_TO_UPDATE_MODULE, e.getClass().getSimpleName());
+        }
+    }
+
+    private void findTestCaseFolder() {
+        try {
+            EntityProvider entityProvider = new TestCaseFolderEntityProvider(folderIds);
+            TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(this.getShell(),
+                    new EntityLabelProvider(), entityProvider, new EntityViewerFilter(entityProvider));
+            dialog.setAllowMultiple(false);
+            dialog.setTitle(StringConstants.DIA_TITLE_TEST_CASE_FOLDER_BROWSER);
+            ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+            FolderEntity rootFolder = FolderController.getInstance().getTestCaseRoot(currentProject);
+            FolderTreeEntity rootFolderTreeEntity = new FolderTreeEntity(rootFolder, null);
+
+            dialog.setInput(Arrays.asList(rootFolderTreeEntity));
+
+            FolderEntity selectedFolderEntity = FolderController.getInstance().getFolderByDisplayId(currentProject,
+                    folderId);
+            if (selectedFolderEntity != null) {
+                dialog.setInitialSelection(new FolderTreeEntity(selectedFolderEntity, TreeEntityUtil
+                        .createSelectedTreeEntityHierachy(selectedFolderEntity.getParentFolder(), rootFolder)));
+            }
+            if (dialog.open() == Dialog.OK) {
+                Object[] results = dialog.getResult();
+                if (results == null || results.length != 1) return;
+                FolderTreeEntity folderTreeEntity = (FolderTreeEntity) results[0];
+                folderId = FolderController.getInstance().getIdForDisplay((FolderEntity) folderTreeEntity.getObject());
+                txtKatalonFolder.setText(folderId);
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_UNABLE_TO_FIND_TEST_CASE_FOLDER, e
+                    .getClass().getSimpleName());
+        }
+    }
+
+    public TestCaseRepo getTestCaseRepo() {
+        TestCaseRepo repo = new TestCaseRepo();
+        repo.setQTestModule(qTestModule);
+        repo.setQTestProject(qTestProject);
+        repo.setFolderId(folderId);
+        return repo;
+    }
+
+    private void validate() {
+        if (qTestProject == null || qTestModule == null || folderId == null) {
+            getButton(OK).setEnabled(false);
+        } else {
+            getButton(OK).setEnabled(true);
+        }
+    }
 }

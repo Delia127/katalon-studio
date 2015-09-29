@@ -29,10 +29,11 @@ import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
+import com.kms.katalon.composer.integration.qtest.constant.ImageConstants;
+import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.ListReportUploadingPreviewDialog;
 import com.kms.katalon.composer.integration.qtest.jobs.UploadTestCaseResultJob;
 import com.kms.katalon.composer.integration.qtest.model.QTestLogEvaluation;
-import com.kms.katalon.composer.integration.qtest.view.testsuite.providers.QTestSuiteTableLabelProvider;
 import com.kms.katalon.composer.report.parts.integration.AbstractReportTestCaseIntegrationView;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -96,19 +97,19 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
         compositeInfo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
         Label lblQTestId = new Label(compositeInfo, SWT.NONE);
-        lblQTestId.setText("Test Log ID");
+        lblQTestId.setText(StringConstants.VIEW_TITLE_TEST_LOG_ID);
 
         txtQTestId = new StyledText(compositeInfo, SWT.READ_ONLY);
         txtQTestId.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Label lblTestRunId = new Label(compositeInfo, SWT.NONE);
-        lblTestRunId.setText("Test Run ID");
+        lblTestRunId.setText(StringConstants.VIEW_TITLE_TEST_RUN_ID);
 
         txtTestCaseRunId = new StyledText(compositeInfo, SWT.READ_ONLY);
         txtTestCaseRunId.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Label lblAttachment = new Label(compositeInfo, SWT.NONE);
-        lblAttachment.setText("Attachment");
+        lblAttachment.setText(StringConstants.ATTACHMENT);
 
         txtAttachment = new StyledText(compositeInfo, SWT.NONE);
         txtAttachment.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -294,14 +295,14 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
                 if (qTestReport != null) {
                     int index = getTestCaseLogIndex(testCaseLogRecord);
                     if (qTestReport.getTestLogMap().get(index) != null) {
-                        return QTestSuiteTableLabelProvider.IMG_UPLOADED;
+                        return ImageConstants.IMG_16_UPLOADED;
                     }
                 }
             }
         } catch (Exception e) {
             return null;
         }
-        return QTestSuiteTableLabelProvider.IMG_UPLOADING;
+        return ImageConstants.IMG_16_UPLOADING;
     }
 
     private QTestLogEvaluation evaluateTestCaseLog(TestCaseLogRecord testCaseLogRecord, QTestSuite qTestSuite) {
@@ -364,7 +365,7 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
 
         if (testCaseCanBeUploaded.size() > 0) {
             MenuItem uploadMenuItem = new MenuItem(qTestMenu, SWT.NONE);
-            uploadMenuItem.setText("Upload");
+            uploadMenuItem.setText(StringConstants.CM_UPLOAD);
             uploadMenuItem.setData(testCaseCanBeUploaded);
 
             uploadMenuItem.addSelectionListener(new SelectionAdapter() {
@@ -380,7 +381,7 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
 
         if (testCaseCanBeDisintegrated.size() > 0) {
             MenuItem disintegrateMenuItem = new MenuItem(qTestMenu, SWT.NONE);
-            disintegrateMenuItem.setText("Disintegrate");
+            disintegrateMenuItem.setText(StringConstants.CM_DISINTEGRATE);
 
             disintegrateMenuItem.setData(testCaseCanBeDisintegrated);
 
@@ -445,7 +446,7 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
                 job.schedule();
             }
         } catch (Exception e) {
-            MultiStatusErrorDialog.showErrorDialog(e, "Unable to upload test case's result.", e.getClass()
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.VIEW_MSG_UNABLE_UPLOAD_TEST_RESULT, e.getClass()
                     .getSimpleName());
             LoggerSingleton.logError(e);
         }
