@@ -15,7 +15,6 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.ModelServiceSingleton;
 import com.kms.katalon.constants.IdConstants;
 
-
 @SuppressWarnings("restriction")
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
@@ -26,7 +25,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
     public ActionBarAdvisor createActionBarAdvisor(IActionBarConfigurer configurer) {
         return new ApplicationActionBarAdvisor(configurer);
     }
-    
+
     @Override
     public boolean preWindowShellClose() {
         IHandlerService handlerService = (IHandlerService) PlatformUI.getWorkbench().getActiveWorkbenchWindow()
@@ -39,27 +38,25 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
             return false;
         }
     }
-    
-	/**
-	 * After window created, the right part stack docks on outline trim stack.
-	 * However, the selected part of the right part stack is not set then this method will
-	 * do that.
-	 */
-	@Override
+
+    /**
+     * After window created, the right part stack docks on outline trim stack. However, the selected part of the right
+     * part stack is not set then this method will do that.
+     */
+    @Override
     public void postWindowCreate() {
-		EPartService partService = (EPartService) PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-				.getService(EPartService.class);
+        EPartService partService = (EPartService) PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+                .getService(EPartService.class);
 
-		// active the first tab of the rightPartStack.
-		MPartStack rightPartStack = (MPartStack) ModelServiceSingleton.getInstance().getModelService()
-				.find(IdConstants.OUTLINE_PARTSTACK_ID, ApplicationSingleton.getInstance().getApplication());
+        // active the first tab of the rightPartStack.
+        MPartStack rightPartStack = (MPartStack) ModelServiceSingleton.getInstance().getModelService()
+                .find(IdConstants.OUTLINE_PARTSTACK_ID, ApplicationSingleton.getInstance().getApplication());
 
-		if (rightPartStack != null && rightPartStack.getChildren() != null && !rightPartStack.getChildren().isEmpty()) {
-			MPart globalPart = (MPart) rightPartStack.getChildren().get(0);
-			rightPartStack.setSelectedElement(globalPart);
-			partService.activate(globalPart);
-		}
+        if (rightPartStack != null && rightPartStack.getChildren() != null && !rightPartStack.getChildren().isEmpty()) {
+            MPart globalPart = (MPart) rightPartStack.getChildren().get(0);
+            rightPartStack.setSelectedElement(globalPart);
+            partService.activate(globalPart);
+        }
 
-		
     }
 }

@@ -1,7 +1,9 @@
 package com.kms.katalon.composer.components.impl.dialogs;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -25,16 +27,24 @@ import com.kms.katalon.composer.components.impl.constants.StringConstants;
 public class AddMailRecipientDialog extends Dialog {
     private Text text;
     private ControlDecoration controlDecoration;
-    private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+    private static final String EMAIL_TEXT_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
             + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
     private Pattern pattern;
     
-    private List<String> emails;
+    private Set<String> emails;
+    private String[] existedEmails;
 
-    public AddMailRecipientDialog(Shell parentShell) {
+    public AddMailRecipientDialog(Shell parentShell, String[] existedEmails) {
         super(parentShell);
-        pattern = Pattern.compile(EMAIL_PATTERN);
-        emails = new ArrayList<String>();
+        pattern = Pattern.compile(EMAIL_TEXT_PATTERN);
+        emails = new LinkedHashSet<String>();
+        
+        if (existedEmails != null) {
+            Arrays.sort(existedEmails);
+            this.existedEmails = existedEmails;
+        } else {
+            this.existedEmails = new String[0]; 
+        }
     }
 
     protected Control createDialogArea(Composite parent) {
@@ -48,7 +58,9 @@ public class AddMailRecipientDialog extends Dialog {
         lblNewLabel.setText(StringConstants.DIA_LBL_EMAIL);
 
         text = new Text(container, SWT.BORDER);
-        text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        GridData gd_text = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        gd_text.heightHint = 18;
+        text.setLayoutData(gd_text);
         text.addModifyListener(new ModifyListener() {
 
             @Override
@@ -70,15 +82,34 @@ public class AddMailRecipientDialog extends Dialog {
     }
 
     private void validateEmail() {
-        for (String email : text.getText().split(";")) {
-            if (!pattern.matcher(email.trim()).matches() && !email.trim().isEmpty()) {
+        StringBuilder duplicatedEmailBuilder = new StringBuilder();
+        
+        for (String email : text.getText().replace(" ", "").split(";")) {
+            String emailName = email.trim();
+            if (!pattern.matcher(emailName).matches() && !emailName.isEmpty()) {
                 super.getButton(OK).setEnabled(false);
                 showErrorValidator();
                 return;
+            } else {
+                
+                if (Arrays.binarySearch(existedEmails, emailName) >= 0) {
+                    if (duplicatedEmailBuilder.length() > 0) {
+                        duplicatedEmailBuilder.append(", ");
+                    }
+                    duplicatedEmailBuilder.append(emailName);
+                }
             }
         }
-        super.getButton(OK).setEnabled(true);
-        controlDecoration.hide();
+        
+        String dupplicatedNames = duplicatedEmailBuilder.toString();
+        if (!dupplicatedNames.isEmpty()) {
+            super.getButton(OK).setEnabled(false);
+            showDuplicatedValidator(dupplicatedNames);
+            return;
+        } else {
+            super.getButton(OK).setEnabled(true);
+            controlDecoration.hide();
+        }
     }
 
     private void showErrorValidator() {
@@ -87,6 +118,15 @@ public class AddMailRecipientDialog extends Dialog {
         controlDecoration.setImage(imgInfo);
         controlDecoration.setShowHover(true);
         controlDecoration.setDescriptionText(StringConstants.DIA_DESC_INVALID_EMAIL_ADDR);
+        controlDecoration.show();
+    }
+    
+    private void showDuplicatedValidator(String dupplicatedNames) {
+        Image imgInfo = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_WARNING)
+                .getImage();
+        controlDecoration.setImage(imgInfo);
+        controlDecoration.setShowHover(true);
+        controlDecoration.setDescriptionText(MessageFormat.format(StringConstants.DIA_DESC_DUPLICATED_EMAIL_ADDR, dupplicatedNames));
         controlDecoration.show();
     }
 
@@ -106,7 +146,7 @@ public class AddMailRecipientDialog extends Dialog {
     }
     
     protected void okPressed() {
-        for (String email : text.getText().split(";")) {
+        for (String email : text.getText().replace(" ", "").split(";")) {
             emails.add(email.trim());
         }
         super.okPressed();
