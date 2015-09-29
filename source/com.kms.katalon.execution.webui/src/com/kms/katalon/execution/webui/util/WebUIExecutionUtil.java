@@ -15,7 +15,7 @@ import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 public class WebUIExecutionUtil {
 	public static int getWaitForIEHanging() {
 		IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-				PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
+				PreferenceConstants.WebUiPreferenceConstants.QUALIFIER);
 		return store.getInt(PreferenceConstants.WebUiPreferenceConstants.EXECUTION_WAIT_FOR_IE_HANGING);
 	}
 
