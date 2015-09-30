@@ -80,6 +80,11 @@ public class AdvancedSearchDialog extends Dialog {
         } catch (Exception e) {
             LoggerSingleton.getInstance().getLogger().error(e);
         }
+
+        // Build the separator line
+        Label separator = new Label(parent, SWT.HORIZONTAL | SWT.SEPARATOR);
+        separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
         return container;
     }
 
