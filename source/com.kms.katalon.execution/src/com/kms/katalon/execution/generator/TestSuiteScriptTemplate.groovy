@@ -21,7 +21,7 @@ import com.kms.katalon.execution.util.ExecutionUtil
 
 @CompileStatic
 public class TestSuiteScriptTemplate {
-	private static final String tpl ='''
+    private static final String tpl ='''
 <% importNames.each { %>import <%= it %>
 <% } %>
 
@@ -45,56 +45,56 @@ KeywordLogger.getInstance().startSuite('<%= testSuite.getName() %>', suiteProper
 DriverCleanerCollector.getInstance().cleanDrivers()
 KeywordLogger.getInstance().endSuite('<%= testSuite.getName() %>', null)
 '''
-	@CompileStatic
-	def static generateTestSuiteScriptFile(File file, TestSuiteEntity testSuite, List<String> testCaseBindings,
-			IRunConfiguration runConfig, TestSuiteExecutedEntity testSuiteExecutedEntity) {
+    @CompileStatic
+    def static generateTestSuiteScriptFile(File file, TestSuiteEntity testSuite, List<String> testCaseBindings,
+            IRunConfiguration runConfig, TestSuiteExecutedEntity testSuiteExecutedEntity) {
 
-		def importNames = [
-			KeywordLogger.class.getName(),
-			StepFailedException.class.getName(),
-			ReportUtil.class.getName(),
-			TestCaseMain.class.getName(),
-			TestDataColumn.class.getName(),
-			MissingPropertyException.class.getName(),
-			TestCaseBinding.class.getName(),
-			DriverCleanerCollector.class.getName(),
-			FailureHandling.class.getName()
-		]
+        def importNames = [
+            KeywordLogger.class.getName(),
+            StepFailedException.class.getName(),
+            ReportUtil.class.getName(),
+            TestCaseMain.class.getName(),
+            TestDataColumn.class.getName(),
+            MissingPropertyException.class.getName(),
+            TestCaseBinding.class.getName(),
+            DriverCleanerCollector.class.getName(),
+            FailureHandling.class.getName()
+        ]
 
 
-		def driverCleaners = []
-		for (IKeywordContributor contributor in BuiltInMethodNodeFactory.getInstance().getKeywordContributors()) {
-			if (contributor.getDriverCleaner() != null) {
-				driverCleaners.add(contributor.getDriverCleaner().getName())
-			}
-		}
+        def driverCleaners = []
+        for (IKeywordContributor contributor in BuiltInMethodNodeFactory.getInstance().getKeywordContributors()) {
+            if (contributor.getDriverCleaner() != null) {
+                driverCleaners.add(contributor.getDriverCleaner().getName())
+            }
+        }
 
-		List<String> testCaseIds = new ArrayList<String>();
-		for (TestCaseExecutedEntity testCaseExecutedEntity in testSuiteExecutedEntity.getTestCaseExecutedEntities()) {
-			for (int index = 0; index < testCaseExecutedEntity.getLoopTimes(); index++) {
-				testCaseIds.add(testCaseExecutedEntity.getTestCaseId())
-			}
-		}
+        List<String> testCaseIds = new ArrayList<String>();
+        for (TestCaseExecutedEntity testCaseExecutedEntity in testSuiteExecutedEntity.getTestCaseExecutedEntities()) {
+            for (int index = 0; index < testCaseExecutedEntity.getLoopTimes(); index++) {
+                testCaseIds.add(testCaseExecutedEntity.getTestCaseId())
+            }
+        }
 
-		String projectDir = testSuite.getProject().getFolderLocation().replace('\\', "/")
+        String projectDir = testSuite.getProject().getFolderLocation().replace('\\', "/")
 
-		def binding = [
-			"importNames": importNames,
-			"testSuite" : testSuite,
-			"testCaseIds": testCaseIds,
-			"testCaseBindings": testCaseBindings,
-			"configProperties" : ExecutionUtil.escapeGroovy(runConfig.getPropertyMap()),
-			"driverCleaners" : driverCleaners
-		]
+        def binding = [
+            "importNames": importNames,
+            "testSuite" : testSuite,
+            "testCaseIds": testCaseIds,
+            "testCaseBindings": testCaseBindings,
+            "configProperties" : ExecutionUtil.escapeGroovy(runConfig.getPropertyMap()),
+            "driverCleaners" : driverCleaners
+        ]
 
-		def engine = new GStringTemplateEngine()
-		def tpl = engine.createTemplate(tpl).make(binding)
-		if (file != null) {
-			if (file.canWrite()) {
-				file.write(tpl.toString())
-			}
-		} else {
-			return tpl.toString()
-		}
-	}
+        def engine = new GStringTemplateEngine()
+        def tpl = engine.createTemplate(tpl).make(binding)
+        if (file != null) {
+            if (file.canWrite()) {
+                file.write(tpl.toString())
+            }
+        } else {
+            return tpl.toString()
+        }
+    }
 }
