@@ -24,6 +24,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
@@ -155,6 +156,9 @@ public class RecorderDialog extends Dialog implements EventHandler {
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
+		// Set window title for dialog
+        if (getShell() != null) getShell().setText(StringConstants.DIA_TITLE_RECORD);
+
 		Composite container = (Composite) super.createDialogArea(parent);
 		GridLayout gl_container = new GridLayout();
 		container.setLayout(gl_container);
@@ -288,6 +292,11 @@ public class RecorderDialog extends Dialog implements EventHandler {
 		});
 
 		actionTableViewer.setInput(actions);
+
+		// Build the separator line
+        Label separator = new Label(parent, SWT.HORIZONTAL | SWT.SEPARATOR);
+        separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
 		return container;
 	}
 

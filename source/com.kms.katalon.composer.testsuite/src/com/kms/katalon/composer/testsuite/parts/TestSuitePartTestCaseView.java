@@ -97,6 +97,8 @@ public class TestSuitePartTestCaseView {
 
     private TestSuitePartDataBindingView dataAndVariableView;
 
+    private TestCaseToolItemListener testCaseToolItemListener;
+
     /* package */TestSuitePartTestCaseView(TestSuitePart testSuitePart) {
         this.testSuitePart = testSuitePart;
         this.dataAndVariableView = new TestSuitePartDataBindingView(this);
@@ -267,7 +269,7 @@ public class TestSuitePartTestCaseView {
             }
         });
 
-        TestCaseToolItemListener testCaseToolItemListener = new TestCaseToolItemListener(testCaseTableViewer);
+        testCaseToolItemListener = new TestCaseToolItemListener(testCaseTableViewer);
         for (ToolItem item : testCaseToolbar.getItems()) {
             item.addSelectionListener(testCaseToolItemListener);
         }
@@ -482,6 +484,10 @@ public class TestSuitePartTestCaseView {
     /* package */void updateTestCaseTable(String oldTestCaseId, TestCaseEntity testCase) throws Exception {
         testCaseTableViewer.updateTestCaseProperties(oldTestCaseId, testCase);
         dataAndVariableView.refreshVariableTable();
+    }
+
+    /*package*/ void openAddTestCaseDialog() {
+        testCaseToolItemListener.addTestCaseLink();
     }
 
 }

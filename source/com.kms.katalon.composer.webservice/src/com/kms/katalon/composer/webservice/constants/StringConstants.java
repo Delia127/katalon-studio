@@ -39,6 +39,7 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String PA_LBL_SOAP_BODY = "SOAP Body";
 
 	// NewRequestDialog
+	public static final String WIEW_TITLE_NEW = "New";
 	public static final String VIEW_LBL_NAME = NAME;
 	public static final String VIEW_LBL_REQ_TYPE = "Request Type";
 	public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ = "WebService Request";

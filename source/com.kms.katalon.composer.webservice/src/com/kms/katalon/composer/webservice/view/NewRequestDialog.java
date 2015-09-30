@@ -36,6 +36,9 @@ public class NewRequestDialog extends TitleAreaDialog {
 
     @Override
     protected Control createDialogArea(Composite parent) {
+        // Set window title for dialog
+        if (getShell() != null) getShell().setText(StringConstants.WIEW_TITLE_NEW);
+
         Composite area = (Composite) super.createDialogArea(parent);
 
         container = new Composite(area, SWT.NONE);
@@ -72,7 +75,11 @@ public class NewRequestDialog extends TitleAreaDialog {
                 //updateStatus();
             }
         });
-        
+
+        // Build the separator line
+        Label separator = new Label(parent, SWT.HORIZONTAL | SWT.SEPARATOR);
+        separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
         return area;
     }
     

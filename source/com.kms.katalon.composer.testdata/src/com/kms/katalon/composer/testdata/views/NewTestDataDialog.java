@@ -77,7 +77,11 @@ public class NewTestDataDialog extends TitleAreaDialog {
                 updateStatus();
             }
         });
-        
+
+        // Build the separator line
+        Label separator = new Label(parent, SWT.HORIZONTAL | SWT.SEPARATOR);
+        separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
         return area;
     }
     

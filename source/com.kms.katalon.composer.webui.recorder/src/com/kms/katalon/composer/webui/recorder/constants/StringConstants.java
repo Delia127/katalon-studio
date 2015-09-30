@@ -4,6 +4,7 @@ import com.kms.katalon.constants.GlobalStringConstants;
 
 public class StringConstants extends GlobalStringConstants {
 	// RecorderDialog
+	public static final String DIA_TITLE_RECORD = "Record";
 	public static final String DIA_COL_ELEMENT = "Element";
 	public static final String DIA_COL_ACTION_DATA = "Action Data";
 	public static final String DIA_COL_ACTION = "Action";
