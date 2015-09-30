@@ -43,17 +43,15 @@ public class QTestIntegrationFolderManager {
     }
 
     /**
-     * If the given folder is integrated, return its integrated object.
-     * Otherwise, check its parent recursively then create new QTestModule by
-     * calling {@link QTestIntegrationFolderManager}
+     * If the given folder is integrated, return its integrated object. Otherwise, check its parent recursively then
+     * create new QTestModule by calling {@link QTestIntegrationFolderManager}
      * {@link #createNewQTestTCFolder(String, long, long, String)} method.
      * 
      * @param folderEntity
      * @return
      */
     public static QTestModule getQTestModuleByFolderEntity(String projectDir, FolderEntity folderEntity) {
-        if (folderEntity == null)
-            return null;
+        if (folderEntity == null) return null;
 
         IntegratedEntity folderIntegratedEntity = folderEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
         QTestModule currentQTestTCFolder = null;
@@ -80,8 +78,7 @@ public class QTestIntegrationFolderManager {
         }
 
         // cannot return root module of qTest
-        if (qTestModule.getParentId() == 0)
-            return;
+        if (qTestModule.getParentId() == 0) return;
 
         Map<String, Object> bodyProperties = new LinkedHashMap<String, Object>();
         int testCaseType = QTestModule.getType();
@@ -106,20 +103,18 @@ public class QTestIntegrationFolderManager {
     }
 
     /**
-     * Creates new {@link QTestModule} from the given
-     * <code>integratedEntity</code> with {@link IntegratedType#FOLDER} type
+     * Creates new {@link QTestModule} from the given <code>integratedEntity</code> with {@link IntegratedType#FOLDER}
+     * type
      * 
      * @param integratedEntity
      * @return
      */
     public static QTestModule getQTestModuleByIntegratedEntity(IntegratedEntity integratedEntity) {
-        if (integratedEntity.getType() != IntegratedType.FOLDER)
-            return null;
+        if (integratedEntity.getType() != IntegratedType.FOLDER) return null;
 
         Map<String, String> properties = integratedEntity.getProperties();
 
-        if (properties == null)
-            return null;
+        if (properties == null) return null;
 
         String id = properties.get(QTestEntity.ID_FIELD);
         String name = properties.get(QTestEntity.NAME_FIELD);
@@ -129,8 +124,7 @@ public class QTestIntegrationFolderManager {
     }
 
     /**
-     * Returns qTest {@link IntegratedEntity} of a {@link FolderEntity} from the
-     * given <code>qTestModule</code>
+     * Returns qTest {@link IntegratedEntity} of a {@link FolderEntity} from the given <code>qTestModule</code>
      * 
      * @param qTestModule
      * @return
@@ -172,12 +166,12 @@ public class QTestIntegrationFolderManager {
 
         Module module = new Module().withName(name);
 
-        if (parentId > 0L) {
-            module.withParentId(parentId);
-        }
-
         CreateModuleRequest createTestCaseFolderRequest = new CreateModuleRequest().withProjectId(projectId)
                 .withModule(module);
+
+        if (parentId > 0L) {
+            createTestCaseFolderRequest.withParentId(parentId);
+        }
 
         Module moduleResult = projectServiceClient.createModule(createTestCaseFolderRequest);
 
@@ -190,16 +184,14 @@ public class QTestIntegrationFolderManager {
     }
 
     /**
-     * Return a {@link QTestModule} that represents the root of module of the
-     * {@link QTestProject} that has id equal with the given
-     * <code>projectId</code>
+     * Return a {@link QTestModule} that represents the root of module of the {@link QTestProject} that has id equal
+     * with the given <code>projectId</code>
      * 
      * @param projectDir
      * @param projectId
      * @return
      * @throws QTestException
-     *             thrown if system cannot send request or the response message
-     *             is not a JSON string
+     *             thrown if system cannot send request or the response message is not a JSON string
      * @throws IOException
      */
     public static QTestModule getModuleRoot(String projectDir, long projectId) throws QTestException, IOException {
@@ -225,16 +217,14 @@ public class QTestIntegrationFolderManager {
     }
 
     /**
-     * Gathers all information of the given <code>qTestParentModule</code> via
-     * qTest API
+     * Gathers all information of the given <code>qTestParentModule</code> via qTest API
      * 
      * @param projectDir
      * @param projectId
      * @param qTestParentModule
      * @return the updated {@link QTestModule}
      * @throws QTestException
-     *             thrown if system cannot send request or the response message
-     *             is not a JSON string
+     *             thrown if system cannot send request or the response message is not a JSON string
      */
     public static QTestModule updateModuleViaAPI(String projectDir, long projectId, QTestModule qTestParentModule)
             throws QTestException {
@@ -261,8 +251,7 @@ public class QTestIntegrationFolderManager {
     }
 
     /**
-     * Supporting method of
-     * {@link #updateModuleViaAPI(String, long, QTestModule)}
+     * Supporting method of {@link #updateModuleViaAPI(String, long, QTestModule)}
      */
     private static void updateChildrenForModule(JsonArray jsonArray, QTestModule qTestParentModule)
             throws JsonException {
@@ -280,13 +269,11 @@ public class QTestIntegrationFolderManager {
     }
 
     /**
-     * Updates recursively children of a qTest module. System will fetch
-     * module's info from qTest via {@link QTestHttpRequestHelper} and
-     * automatically create new children.
+     * Updates recursively children of a qTest module. System will fetch module's info from qTest via
+     * {@link QTestHttpRequestHelper} and automatically create new children.
      * <p>
-     * !!!Note: New test cases each one has no test case version id because
-     * qTest doesn't return that. System will update test case version id when
-     * get test steps.
+     * !!!Note: New test cases each one has no test case version id because qTest doesn't return that. System will
+     * update test case version id when get test steps.
      * 
      * @param projectDir
      * @param projectId
@@ -335,8 +322,7 @@ public class QTestIntegrationFolderManager {
             }
 
             // update children of child modules recursively if updateModule flag
-            // is
-            // true
+            // is true
             if (updateChildren) {
                 for (QTestModule qTestChildModule : qTestParentModule.getChildModules()) {
                     updateModule(projectDir, projectId, qTestChildModule, updateChildren);
