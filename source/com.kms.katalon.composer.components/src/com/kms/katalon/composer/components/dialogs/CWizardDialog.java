@@ -3,6 +3,7 @@ package com.kms.katalon.composer.components.dialogs;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -15,6 +16,7 @@ public class CWizardDialog extends WizardDialog {
 
     public CWizardDialog(Shell parentShell, IWizard newWizard) {
         super(parentShell, newWizard);
+		setShellStyle(SWT.CLOSE | SWT.TITLE | SWT.APPLICATION_MODAL | getDefaultOrientation());
     }
 
     @Override
@@ -33,7 +35,7 @@ public class CWizardDialog extends WizardDialog {
         return new Point(initSize.x, getHeight());
     }
 
-    public int getHeight() {
+	public int getHeight() {
         return height;
     }
 
