@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
-import com.kms.katalon.composer.components.impl.util.ControlUtil;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.model.TestSuiteParentCreationOption;
 import com.kms.katalon.composer.integration.qtest.dialog.provider.QTestSuiteParentTreeContentProvider;
@@ -154,7 +154,7 @@ public class CreateNewTestSuiteParentDialog extends Dialog {
 
         getButton(OK).setEnabled(false);
         getButton(CANCEL).setEnabled(false);
-        ControlUtil.recursiveSetEnabled(groupOptions, false);
+        ControlUtils.recursiveSetEnabled(groupOptions, false);
 
         display.asyncExec(new Runnable() {
 
@@ -187,7 +187,7 @@ public class CreateNewTestSuiteParentDialog extends Dialog {
     }
 
     private void initCreationButtons() {
-        ControlUtil.recursiveSetEnabled(groupOptions, true);
+        ControlUtils.recursiveSetEnabled(groupOptions, true);
         TestSuiteParentCreationOption defaultOption = QTestPreferenceDefaultValueInitializer.getCreationOption();
         creationOptionButtons.get(defaultOption).setSelection(true);
     }
