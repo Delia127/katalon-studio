@@ -17,13 +17,13 @@ import com.kms.katalon.execution.util.ExecutionUtil
 
 @CompileStatic
 class TestCaseScriptTemplate {
-	private final static String tpl =
-	'''
+    private final static String tpl =
+    '''
 <% importNames.each { %>import <%= it %>
 <% } %>
 
 <% configProperties.each { k, v -> %> 
-System.setProperty("<%= k %>", "<%= v %>")
+System.setProperty('<%= k %>', '<%= v %>')
 <% } %> 
 
 
@@ -38,42 +38,42 @@ try {
     TestCaseMain.logError('<%= testCaseId %>', e)
 }
 '''
-	@CompileStatic
-	def static generateTestCaseScriptFile(File file, TestCaseEntity testCase, String testCaseBinding, IRunConfiguration config) {
+    @CompileStatic
+    def static generateTestCaseScriptFile(File file, TestCaseEntity testCase, String testCaseBinding, IRunConfiguration config) {
 
-		def importNames = [
-			TestCaseMain.class.getName(),
-			KeywordLogger.class.getName(),
-			MissingPropertyException.class.getName(),
-			TestCaseBinding.class.getName(),
-			DriverCleanerCollector.class.getName(),
-			FailureHandling.class.getName()
-		]
+        def importNames = [
+            TestCaseMain.class.getName(),
+            KeywordLogger.class.getName(),
+            MissingPropertyException.class.getName(),
+            TestCaseBinding.class.getName(),
+            DriverCleanerCollector.class.getName(),
+            FailureHandling.class.getName()
+        ]
 
 
-		def driverCleaners = []
-		for (IKeywordContributor contributor in BuiltInMethodNodeFactory.getInstance().getKeywordContributors()) {
-			if (contributor.getDriverCleaner() != null) {
-				driverCleaners.add(contributor.getDriverCleaner().getName())
-			}
-		}
+        def driverCleaners = []
+        for (IKeywordContributor contributor in BuiltInMethodNodeFactory.getInstance().getKeywordContributors()) {
+            if (contributor.getDriverCleaner() != null) {
+                driverCleaners.add(contributor.getDriverCleaner().getName())
+            }
+        }
 
-		importNames.addAll(driverCleaners)
+        importNames.addAll(driverCleaners)
 
-		String testCaseId = TestCaseController.getInstance().getIdForDisplay(testCase)
+        String testCaseId = TestCaseController.getInstance().getIdForDisplay(testCase)
 
-		def binding = [
-			"importNames"     : importNames,
-			"testCaseId"      : testCaseId,
-			"testCaseBinding" : testCaseBinding,
-			"configProperties" : ExecutionUtil.escapeGroovy(config.getPropertyMap()),
-			"driverCleaners" : driverCleaners
-		]
+        def binding = [
+            "importNames"     : importNames,
+            "testCaseId"      : testCaseId,
+            "testCaseBinding" : testCaseBinding,
+            "configProperties" : ExecutionUtil.escapeGroovy(config.getPropertyMap()),
+            "driverCleaners" : driverCleaners
+        ]
 
-		def engine = new GStringTemplateEngine()
-		def tpl = engine.createTemplate(tpl).make(binding)
-		if (file.canWrite()) {
-			file.write(tpl.toString());
-		}
-	}
+        def engine = new GStringTemplateEngine()
+        def tpl = engine.createTemplate(tpl).make(binding)
+        if (file.canWrite()) {
+            file.write(tpl.toString());
+        }
+    }
 }

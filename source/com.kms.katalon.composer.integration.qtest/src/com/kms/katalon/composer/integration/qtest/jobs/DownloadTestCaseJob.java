@@ -133,14 +133,14 @@ public class DownloadTestCaseJob extends UploadJob {
                 GroovyUtil.refreshInfiniteScriptTestCaseClasspath(projectEntity, folderEntity, null);
             }
 
+            EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_REFRESH, null);
+            return Status.OK_STATUS;
         } catch (Exception e) {
             monitor.setCanceled(true);
             return Status.CANCEL_STATUS;
+        } finally {
+            monitor.done();
         }
-
-        EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_REFRESH, null);
-        monitor.done();
-        return Status.OK_STATUS;
     }
 
     /**
@@ -193,9 +193,7 @@ public class DownloadTestCaseJob extends UploadJob {
         sync.syncExec(new Runnable() {
             @Override
             public void run() {
-                isMergeFolderConfirmed = MessageDialog.openConfirm(
-                        null,
-                        StringConstants.DIA_TITLE_FOLDER_DUPLICATION,
+                isMergeFolderConfirmed = MessageDialog.openConfirm(null, StringConstants.DIA_TITLE_FOLDER_DUPLICATION,
                         MessageFormat.format(StringConstants.DIA_MSG_CONFIRM_MERGE_DOWNLOADED_TEST_CASE_FOLDER,
                                 qTestModule.getName()));
             }
@@ -211,9 +209,11 @@ public class DownloadTestCaseJob extends UploadJob {
         sync.syncExec(new Runnable() {
             @Override
             public void run() {
-                isMergeTestCaseConfimed = MessageDialog.openConfirm(null,
+                isMergeTestCaseConfimed = MessageDialog.openConfirm(
+                        null,
                         StringConstants.DIA_TITLE_TEST_CASE_DUPLICATION,
-                        MessageFormat.format(StringConstants.DIA_MSG_CONFIRM_MERGE_DOWNLOADED_TEST_CASE, qTestCase.getName()));
+                        MessageFormat.format(StringConstants.DIA_MSG_CONFIRM_MERGE_DOWNLOADED_TEST_CASE,
+                                qTestCase.getName()));
             }
         });
     }

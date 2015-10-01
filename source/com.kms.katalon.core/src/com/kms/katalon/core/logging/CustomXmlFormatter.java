@@ -11,47 +11,48 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 public class CustomXmlFormatter extends XMLFormatter {
 
-	public CustomXmlFormatter() {
-		super();
-	}
+    public CustomXmlFormatter() {
+        super();
+    }
 
-	@Override
-	public String getHead(Handler handler) {
-		// Remove DOCTYPE
-		return "<?xml version=\"1.0\" encoding=\"windows-1252\" standalone=\"no\"?>\n<log>\n";
-	}
+    @Override
+    public String getHead(Handler handler) {
+        // Remove DOCTYPE
+        return "<?xml version=\"1.0\" encoding=\"windows-1252\" standalone=\"no\"?>\n<log>\n";
+    }
 
-	@Override
-	public String format(LogRecord record) {
-		int nestedLevel = 0;
-		Map<String, String> attributes = null;
-		if (record instanceof XmlLogRecord) {
-			XmlLogRecord logRecord = (XmlLogRecord) record;
-			nestedLevel = logRecord.getNestedLevel();
-			attributes = logRecord.getProperties();
+    @Override
+    public String format(LogRecord record) {
+        int nestedLevel = 0;
+        Map<String, String> attributes = null;
+        if (record instanceof XmlLogRecord) {
+            XmlLogRecord logRecord = (XmlLogRecord) record;
+            nestedLevel = logRecord.getNestedLevel();
+            attributes = logRecord.getProperties();
 
-			logRecord.setMessage(formatString(record.getMessage()));
-			Iterator<Entry<String, String>> it = logRecord.getProperties().entrySet().iterator();
-		    while (it.hasNext()) {
-		    	Entry<String, String> pair = it.next();
-		    	pair.setValue(formatString(pair.getValue()));
-		    }
-		}
+            Iterator<Entry<String, String>> it = logRecord.getProperties().entrySet().iterator();
+            while (it.hasNext()) {
+                Entry<String, String> pair = it.next();
+                pair.setValue(formatString(pair.getValue()));
+            }
+        }
 
-		String formattedText = super.format(record);
-		StringBuilder sbFormattedText = new StringBuilder(formattedText.substring(0, formattedText.length()
-				- "</record>\n".length()));
-		sbFormattedText.append("  <nestedLevel>" + nestedLevel + "</nestedLevel>\n");
-		if (attributes != null)
-			for (String key : attributes.keySet())
-				sbFormattedText.append(String.format("  <property name=\"%s\">%s</property>\n", key,
-						attributes.get(key)));
-		sbFormattedText.append("</record>");
-		sbFormattedText.append("\n");
-		return sbFormattedText.toString();
-	}
+        if (record.getMessage() != null) {
+            record.setMessage(formatString(record.getMessage()));
+        }
 
-	private String formatString(String text) {
-		return StringEscapeUtils.escapeXml(StringEscapeUtils.escapeJava(text));
-	}
+        String formattedText = super.format(record);
+        StringBuilder sbFormattedText = new StringBuilder(formattedText.substring(0, formattedText.length()
+                - "</record>\n".length()));
+        sbFormattedText.append("  <nestedLevel>" + nestedLevel + "</nestedLevel>\n");
+        if (attributes != null) for (String key : attributes.keySet())
+            sbFormattedText.append(String.format("  <property name=\"%s\">%s</property>\n", key, attributes.get(key)));
+        sbFormattedText.append("</record>");
+        sbFormattedText.append("\n");
+        return sbFormattedText.toString();
+    }
+
+    private String formatString(String text) {
+        return StringEscapeUtils.escapeXml(StringEscapeUtils.escapeJava(text));
+    }
 }

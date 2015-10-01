@@ -856,4 +856,8 @@ public class TestSuitePart implements EventHandler {
         return isLoading;
     }
 
+    public void openAddTestCaseDialog() {
+        childrenView.openAddTestCaseDialog();
+    }
+
 }

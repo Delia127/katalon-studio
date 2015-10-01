@@ -18,32 +18,31 @@ import com.kms.katalon.execution.entity.IRunConfiguration;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 
 public class TestSuiteExecutionJobCompletedListener implements EventHandler {
-	@SuppressWarnings({ "restriction" })
-	@Override
-	public void handleEvent(Event event) {
-		if (event.getTopic().equals(EventConstants.JOB_COMPLETED)) {
-			try {
-				Object[] datas = (Object[]) event.getProperty(IEventBroker.DATA);
-				TestSuiteEntity testSuite = (TestSuiteEntity) datas[0];
-				LaunchMode launchMode = (LaunchMode) datas[1];
-				IRunConfiguration runConfig = (IRunConfiguration) datas[2];
-				int reRunTime = (int) datas[3];
-				File logFile = (File) datas[4];
-				if (logFile != null && logFile.exists()) {
-					TestSuiteLogRecord testSuiteRecord = ReportUtil.generate(logFile.getParent());
-					if (testSuiteRecord != null
-							&& testSuiteRecord.getStatus().getStatusValue() != TestStatusValue.PASSED
-							&& reRunTime < testSuite.getNumberOfRerun()) {
-						if (runConfig instanceof AbstractRunConfiguration) {
-							AbstractRunConfiguration abstractRunConfiguration = (AbstractRunConfiguration) runConfig;
-							abstractRunConfiguration.generateLogFilePath(testSuite);
-							ExecuteHandler.executeTestSuite(testSuite, launchMode, runConfig, reRunTime + 1);
-						}
-					}
-				}
-			} catch (Exception e) {
-				LoggerSingleton.getInstance().getLogger().error(e);
-			}
-		}
-	}
+    @Override
+    public void handleEvent(Event event) {
+        if (event.getTopic().equals(EventConstants.JOB_COMPLETED)) {
+            try {
+                Object[] datas = (Object[]) event.getProperty(IEventBroker.DATA);
+                TestSuiteEntity testSuite = (TestSuiteEntity) datas[0];
+                LaunchMode launchMode = (LaunchMode) datas[1];
+                IRunConfiguration runConfig = (IRunConfiguration) datas[2];
+                int reRunTime = (int) datas[3];
+                File logFile = (File) datas[4];
+                if (logFile != null && logFile.exists()) {
+                    TestSuiteLogRecord testSuiteRecord = ReportUtil.generate(logFile.getParent());
+                    if (testSuiteRecord != null
+                            && testSuiteRecord.getStatus().getStatusValue() != TestStatusValue.PASSED
+                            && reRunTime < testSuite.getNumberOfRerun()) {
+                        if (runConfig instanceof AbstractRunConfiguration) {
+                            AbstractRunConfiguration abstractRunConfiguration = (AbstractRunConfiguration) runConfig;
+                            abstractRunConfiguration.generateLogFilePath(testSuite);
+                            ExecuteHandler.executeTestSuite(testSuite, launchMode, runConfig, reRunTime + 1);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+    }
 }

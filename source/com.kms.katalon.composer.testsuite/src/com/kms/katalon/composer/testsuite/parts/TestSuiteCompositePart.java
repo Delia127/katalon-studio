@@ -378,4 +378,9 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
             LoggerSingleton.logError(e);
         }
     }
+    
+    public void openAddTestCaseDialog() {
+        setSelectedPart(getChildMainPart());
+        childTestSuiteMainPart.openAddTestCaseDialog();
+    }
 }

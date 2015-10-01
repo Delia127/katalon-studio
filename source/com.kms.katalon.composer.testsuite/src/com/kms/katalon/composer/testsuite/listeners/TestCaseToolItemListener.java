@@ -55,16 +55,16 @@ public class TestCaseToolItemListener extends SelectionAdapter {
 
         switch (data) {
             case ToolItemConstants.ADD:
-                addTestCaseLink(toolItem);
+                addTestCaseLink();
                 return;
             case ToolItemConstants.REMOVE:
-                removeTestCaseLink(toolItem);
+                removeTestCaseLink();
                 return;
             case ToolItemConstants.UP:
-                moveUpTestCaseLink(toolItem);
+                moveUpTestCaseLink();
                 return;
             case ToolItemConstants.DOWN:
-                moveDownTestCaseLink(toolItem);
+                moveDownTestCaseLink();
                 return;
             default:
                 return;
@@ -72,17 +72,17 @@ public class TestCaseToolItemListener extends SelectionAdapter {
     }
 
     @SuppressWarnings("unchecked")
-    private void moveDownTestCaseLink(ToolItem toolItem) {
+    private void moveDownTestCaseLink() {
         tableViewer.downTestCase(((IStructuredSelection) tableViewer.getSelection()).toList());
     }
 
     @SuppressWarnings("unchecked")
-    private void moveUpTestCaseLink(ToolItem toolItem) {
+    private void moveUpTestCaseLink() {
         tableViewer.upTestCase(((IStructuredSelection) tableViewer.getSelection()).toList());
     }
 
     @SuppressWarnings("unchecked")
-    private void removeTestCaseLink(ToolItem toolItem) {
+    private void removeTestCaseLink() {
         try {
             tableViewer.removeTestCases(((IStructuredSelection) tableViewer.getSelection()).toList());
         } catch (Exception ex) {
@@ -90,7 +90,7 @@ public class TestCaseToolItemListener extends SelectionAdapter {
         }
     }
 
-    private void addTestCaseLink(ToolItem toolItem) {
+    public void addTestCaseLink() {
         try {
             ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
             if (currentProject == null) {
@@ -98,7 +98,7 @@ public class TestCaseToolItemListener extends SelectionAdapter {
             }
             
             EntityProvider entityProvider = new EntityProvider();
-            TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(toolItem.getDisplay().getActiveShell(),
+            TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(null,
                     new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(entityProvider));
 
             dialog.setAllowMultiple(true);
