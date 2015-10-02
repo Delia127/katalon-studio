@@ -1,6 +1,7 @@
 package com.kms.katalon.dal.fileservice.dataprovider;
 
 import java.io.File;
+import java.util.List;
 
 import com.kms.katalon.dal.ITestCaseDataProvider;
 import com.kms.katalon.dal.fileservice.manager.TestCaseFileServiceManager;
@@ -8,6 +9,7 @@ import com.kms.katalon.dal.state.DataProviderState;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class TestCaseFileServiceDataProvider implements ITestCaseDataProvider {
 	@Override
@@ -72,5 +74,10 @@ public class TestCaseFileServiceDataProvider implements ITestCaseDataProvider {
 		ProjectEntity projectEntity =  DataProviderState.getInstance().getCurrentProject();
 		return TestCaseFileServiceManager.getTestCaseByScriptFilePath(scriptFilePath, projectEntity);
 	}
+
+    @Override
+    public List<TestSuiteEntity> getTestCaseReferences(TestCaseEntity testCase) throws Exception {
+        return TestCaseFileServiceManager.getTestCaseReferences(testCase);
+    }
 
 }

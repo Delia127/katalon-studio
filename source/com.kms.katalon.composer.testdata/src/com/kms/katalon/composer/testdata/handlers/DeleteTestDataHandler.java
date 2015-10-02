@@ -4,10 +4,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
-import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.osgi.service.event.Event;
@@ -19,7 +15,6 @@ import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.dal.exception.TestDataReferredException;
@@ -30,13 +25,7 @@ import com.kms.katalon.entity.testsuite.TestSuiteTestCaseLinkPair;
 public class DeleteTestDataHandler {
 
     @Inject
-    IEventBroker eventBroker;
-
-    @Inject
-    MApplication application;
-
-    @Inject
-    EModelService modelService;
+    private IEventBroker eventBroker;
 
     @PostConstruct
     private void registerEventHandler() {
@@ -55,20 +44,18 @@ public class DeleteTestDataHandler {
     private void execute(TestDataTreeEntity testDataTreeEntity) {
         try {
             DataFileEntity testData = (DataFileEntity) testDataTreeEntity.getObject();
-            TestDataController.getInstance().deleteDataFile(testData);
-
-            // remove TestCase part from its partStack if it exists
-            String partId = EntityPartUtil.getTestDataPartId(testData.getId());
-            MPartStack mStackPart = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID,
-                    application);
-            MPart mPart = (MPart) modelService.find(partId, application);
-            if (mPart != null) {
-                mStackPart.getChildren().remove(mPart);
+            
+            if (testData == null) {
+                return;
             }
-
+            
+            // remove TestCase part from its partStack if it exists
+            EntityPartUtil.closePart(testData);
+            
+            TestDataController.getInstance().deleteDataFile(testData);
+            
             eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, TestDataController.getInstance()
                     .getIdForDisplay(testData));
-            eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, testDataTreeEntity.getParent());
         } catch (TestDataReferredException e) {
             MultiStatusErrorDialog.showErrorDialog(new EntityIsReferencedException(
                     getMessageFormTestDataReferencedException(e)),

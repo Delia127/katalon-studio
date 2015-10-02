@@ -28,9 +28,9 @@ public class LogPropertyDialog extends Dialog {
     protected Control createDialogArea(Composite parent) {
         // create a composite with standard margins and spacing
         Composite container = (Composite) super.createDialogArea(parent);
-        GridLayout gl_container = new GridLayout(1, false);
-        gl_container.marginWidth = 0;
-        container.setLayout(gl_container);
+        GridLayout glContainer = new GridLayout(1, false);
+        glContainer.marginWidth = 0;
+        container.setLayout(glContainer);
 
         Composite mainComposite = new Composite(container, SWT.NONE);
         mainComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));

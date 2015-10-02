@@ -800,7 +800,10 @@ public class LogViewerPart implements EventHandler {
 
     private void showRecordProperties() {
         int index = table.getSelectionIndex();
-        if (index == -1) return; // no row selected
+        
+        if (index == -1) {
+            return; // no row selected
+        }
 
         TableItem selectedItem = table.getItem(index);
         XmlLogRecord selectedRecord = (XmlLogRecord) selectedItem.getData();
