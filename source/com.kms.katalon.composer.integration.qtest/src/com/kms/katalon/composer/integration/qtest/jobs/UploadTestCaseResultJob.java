@@ -63,6 +63,8 @@ public class UploadTestCaseResultJob extends UploadJob {
                         QTestIntegrationUtil.addNewTestRunToTestSuite(testSuiteEntity, testSuiteIntegratedEntity,
                                 uploadedItem.getQTestSuite(), qTestRun, qTestSuiteCollection);
 
+                        //update test run for the uploaded item
+                        uploadedItem.setQTestRun(qTestRun);
                     } catch (Exception e) {
                         LoggerSingleton.logError(e);
                         monitor.setCanceled(true);
