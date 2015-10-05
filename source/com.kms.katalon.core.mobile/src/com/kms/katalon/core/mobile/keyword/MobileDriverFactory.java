@@ -6,6 +6,7 @@ import io.appium.java_client.remote.MobileCapabilityType;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -23,7 +24,6 @@ import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.util.MobileDriverPropertyUtil;
 
 public class MobileDriverFactory {
-	private static MobileDriverFactory factory;
 	private Process appiumServer;
 	private Map<String, String> androidDevices;
 	private Map<String, String> iosDevices;
@@ -31,6 +31,13 @@ public class MobileDriverFactory {
 	public static final String EXECUTED_PLATFORM = StringConstants.CONF_EXECUTED_PLATFORM;
 	public static final String EXECUTED_DEVICE_NAME = StringConstants.CONF_EXECUTED_DEVICE_NAME;
 
+	private static final ThreadLocal<MobileDriverFactory> localMobileDriverFactoryStorage = new ThreadLocal<MobileDriverFactory>() {
+        @Override
+        protected MobileDriverFactory initialValue() {
+            return new MobileDriverFactory();
+        }
+    };
+    
 	public enum OsType {
 		IOS, ANDROID
 	}
@@ -41,13 +48,10 @@ public class MobileDriverFactory {
 	}
 
 	public static MobileDriverFactory getInstance() {
-		if (factory == null) {
-			factory = new MobileDriverFactory();
-		}
-		return factory;
+		return localMobileDriverFactoryStorage.get();
 	}
 
-	private void cleanup() {
+	private void cleanup() throws InterruptedException, IOException {
 		String os = System.getProperty("os.name");
 		if (os.toLowerCase().contains("win")) {
 			killProcessOnWin("adb.exe");
@@ -60,22 +64,14 @@ public class MobileDriverFactory {
 		}
 	}
 
-	private void killProcessOnWin(String processName) {
+	private void killProcessOnWin(String processName) throws InterruptedException, IOException {
 		ProcessBuilder pb = new ProcessBuilder("taskkill", "/f", "/im", processName, "/t");
-		try {
-			pb.start().waitFor();
-		} catch (Exception e) {
-			// LOGGER.error(e.getMessage(), e);
-		}
+		pb.start().waitFor();
 	}
 
-	private void killProcessOnMac(String processName) {
+	private void killProcessOnMac(String processName) throws InterruptedException, IOException {
 		ProcessBuilder pb = new ProcessBuilder("killall", processName);
-		try {
-			pb.start().waitFor();
-		} catch (Exception e) {
-			// LOGGER.error(e.getMessage(), e);
-		}
+		pb.start().waitFor();
 	}
 
 	public AppiumDriver<?> getAndroidDriver(String deviceId, String appFile, boolean uninstallAfterCloseApp)

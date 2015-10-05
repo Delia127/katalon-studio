@@ -26,15 +26,25 @@ public class RunConfiguration {
     public static final String EXCUTION_SOURCE_DESCRIPTION = StringConstants.CONF_PROPERTY_EXECUTION_SOURCE_DESCRIPTION;
     public static final String EXECUTION_DRIVER_PROPERTY = StringConstants.CONF_PROPERTY_EXECUTION_DRIVER_PROPERTY;
 
-    private static String logFilePath = "";
+    private static final ThreadLocal<Map<String, Object>> localExecutionSettingMapStorage = new ThreadLocal<Map<String, Object>>() {
+        @Override
+        protected Map<String, Object> initialValue() {
+            return new HashMap<String, Object>();
+        }
+    };
 
-    private static Map<String, Object> executionSettingMap = new HashMap<String, Object>();
+    private static final ThreadLocal<String> localLogFilePathStorage = new ThreadLocal<String>() {
+        @Override
+        protected String initialValue() {
+            return new String();
+        }
+    };
 
     public static void setLogFile(String logFilePath) {
         if (logFilePath == null) {
             return;
         }
-        RunConfiguration.logFilePath = logFilePath;
+        localLogFilePathStorage.set(logFilePath);
     }
 
     public static void setExecutionSettingFile(String executionSettingFilePath) {
@@ -50,24 +60,24 @@ public class RunConfiguration {
                 }.getType();
                 Map<String, Object> result = gsonObj.fromJson(propertyConfigFileContent, collectionType);
                 if (result != null) {
-                    executionSettingMap = result;
+                    localExecutionSettingMapStorage.set(result);
                 }
             } catch (IOException | JsonSyntaxException exception) {
                 // reading file failed or parsing json failed --> do nothing;
             }
         }
     }
-    
+
     public static Object getProperty(String propertyKey) {
-        return executionSettingMap.get(propertyKey);
+        return localExecutionSettingMapStorage.get().get(propertyKey);
     }
-    
+
     public static String getStringProperty(String propertyKey) {
-        return String.valueOf(executionSettingMap.get(propertyKey));
+        return String.valueOf(getProperty(propertyKey));
     }
 
     public static String getLogFilePath() {
-        return logFilePath;
+        return localLogFilePathStorage.get();
     }
 
     public static int getTimeOut() {

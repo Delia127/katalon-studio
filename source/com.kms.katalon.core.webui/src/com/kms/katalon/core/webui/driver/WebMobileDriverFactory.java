@@ -20,22 +20,25 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 class WebMobileDriverFactory {
-	private static WebMobileDriverFactory factory;
 	private Process appiumServer;
 	private Process webProxyServer;
 	private Map<String, String> androidDevices;
 	private Map<String, String> iosDevices;
+	
+	private static final ThreadLocal<WebMobileDriverFactory> localWebMobileDriverFactoryStorage = new ThreadLocal<WebMobileDriverFactory>() {
+        @Override
+        protected WebMobileDriverFactory initialValue() {
+            return new WebMobileDriverFactory();
+        }
+    };
 
 	private WebMobileDriverFactory() {
 		androidDevices = new LinkedHashMap<>();
 		iosDevices = new LinkedHashMap<>();
 	}
 
-	static WebMobileDriverFactory getInstance() {
-		if (factory == null) {
-			factory = new WebMobileDriverFactory();
-		}
-		return factory;
+    static WebMobileDriverFactory getInstance() {
+		return localWebMobileDriverFactoryStorage.get();
 	}
 
 	private void cleanup() {

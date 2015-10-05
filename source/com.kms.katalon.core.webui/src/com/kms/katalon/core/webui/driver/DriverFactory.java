@@ -42,11 +42,17 @@ public class DriverFactory {
     public static final String EXECUTED_MOBILE_PLATFORM = StringConstants.CONF_EXECUTED_PLATFORM;
     public static final String EXECUTED_MOBILE_DEVICE_NAME = StringConstants.CONF_EXECUTED_DEVICE_NAME;
 
-    private static WebDriver seleniumWebDriver;
+    private static final ThreadLocal<WebDriver> localWebServerStorage = new ThreadLocal<WebDriver>() {
+        @Override
+        protected WebDriver initialValue() {
+            return null;
+        }
+    };
 
     public static WebDriver openWebDriver() throws Exception {
         try {
-            if (null != seleniumWebDriver && null != ((RemoteWebDriver) seleniumWebDriver).getSessionId()) {
+            if (null != localWebServerStorage.get()
+                    && null != ((RemoteWebDriver) localWebServerStorage.get()).getSessionId()) {
                 KeywordLogger.getInstance().logWarning(StringConstants.DRI_LOG_WARNING_BROWSER_ALREADY_OPENED);
                 closeWebDriver();
             }
@@ -58,41 +64,42 @@ public class DriverFactory {
                     MessageFormat.format(StringConstants.XML_LOG_STARTING_DRIVER_X, driver.toString()));
             DesiredCapabilities desireCapibilities = WebDriverPropertyUtil.toDesireCapabilities(
                     RunConfiguration.getExecutionDriverProperty(), driver);
+            WebDriver webDriver = null;
             switch (driver) {
             case FIREFOX_DRIVER:
-                seleniumWebDriver = new FirefoxDriver(desireCapibilities);
-                setTimeout();
+                webDriver = new FirefoxDriver(desireCapibilities);
                 break;
             case IE_DRIVER:
                 System.setProperty(IE_DRIVER_PATH_PROPERTY_KEY, getIEDriverPath());
-                seleniumWebDriver = new InternetExplorerDriver(desireCapibilities);
-                setTimeout();
+                webDriver = new InternetExplorerDriver(desireCapibilities);
                 break;
             case SAFARI_DRIVER:
-                seleniumWebDriver = new SafariDriver(desireCapibilities);
+                webDriver = new SafariDriver(desireCapibilities);
                 break;
             case CHROME_DRIVER:
                 System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
-                seleniumWebDriver = new ChromeDriver(desireCapibilities);
-                setTimeout();
+                webDriver = new ChromeDriver(desireCapibilities);
                 break;
             case REMOTE_WEB_DRIVER:
-                seleniumWebDriver = new RemoteWebDriver(new URL(getRemoteWebDriverServerUrl()), desireCapibilities);
+                webDriver = new RemoteWebDriver(new URL(getRemoteWebDriverServerUrl()), desireCapibilities);
                 break;
             case ANDROID_DRIVER:
-                seleniumWebDriver = WebMobileDriverFactory.getInstance().getAndroidDriver(getMobileDeviceName());
+                webDriver = WebMobileDriverFactory.getInstance().getAndroidDriver(getMobileDeviceName());
                 break;
             case IOS_DRIVER:
-                seleniumWebDriver = WebMobileDriverFactory.getInstance().getIosDriver(getMobileDeviceName());
+                webDriver = WebMobileDriverFactory.getInstance().getIosDriver(getMobileDeviceName());
                 break;
             default:
-                break;
+                throw new StepFailedException(MessageFormat.format(StringConstants.DRI_ERROR_DRIVER_X_NOT_IMPLEMENTED,
+                        driver.getName()));
             }
+            localWebServerStorage.set(webDriver);
+            setTimeout();
+            return webDriver;
         } catch (Error e) {
             KeywordLogger.getInstance().logMessage(LogLevel.WARNING, e.getMessage());
             throw new StepFailedException(e);
         }
-        return seleniumWebDriver;
     }
 
     public static WebDriver openWebDriver(DriverType driver, String projectDir, Object options) throws Exception {
@@ -101,21 +108,22 @@ public class DriverFactory {
                 return null;
             }
             closeWebDriver();
+            WebDriver webDriver = null;
             WebUIDriverType webUIDriver = (WebUIDriverType) driver;
             switch (webUIDriver) {
             case FIREFOX_DRIVER:
                 if (options instanceof FirefoxProfile) {
-                    seleniumWebDriver = new FirefoxDriver((FirefoxProfile) options);
+                    webDriver = new FirefoxDriver((FirefoxProfile) options);
                 } else {
-                    seleniumWebDriver = new FirefoxDriver();
+                    webDriver = new FirefoxDriver();
                 }
                 break;
             case IE_DRIVER:
                 System.setProperty(IE_DRIVER_PATH_PROPERTY_KEY, getIEDriverPath());
-                seleniumWebDriver = new InternetExplorerDriver();
+                webDriver = new InternetExplorerDriver();
                 break;
             case SAFARI_DRIVER:
-                seleniumWebDriver = new SafariDriver();
+                webDriver = new SafariDriver();
                 break;
             case CHROME_DRIVER:
                 System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
@@ -125,30 +133,31 @@ public class DriverFactory {
                 }
                 break;
             default:
-                break;
+                throw new StepFailedException(MessageFormat.format(StringConstants.DRI_ERROR_DRIVER_X_NOT_IMPLEMENTED,
+                        driver.getName()));
             }
+            localWebServerStorage.set(webDriver);
+            setTimeout();
+            return webDriver;
         } catch (Error e) {
             KeywordLogger.getInstance().logMessage(LogLevel.WARNING, e.getMessage());
             throw new StepFailedException(e);
         }
-        return seleniumWebDriver;
     }
 
     private static void setTimeout() {
-        // seleniumWebDriver.manage().timeouts().pageLoadTimeout(RunConfiguration.getPageLoadTimeout(),
-        // TimeUnit.SECONDS);
-        seleniumWebDriver.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
+        localWebServerStorage.get().manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
     }
 
     public static WebDriver getWebDriver() throws StepFailedException, WebDriverException {
         verifyWebDriver();
-        return seleniumWebDriver;
+        return localWebServerStorage.get();
     }
 
     private static void verifyWebDriver() throws StepFailedException, WebDriverException {
         verifyWebDriverIsOpen();
         try {
-            if (null == ((RemoteWebDriver) seleniumWebDriver).getSessionId()) {
+            if (null == ((RemoteWebDriver) localWebServerStorage.get()).getSessionId()) {
                 switchToAvailableWindow();
             } else {
                 checkIfWebDriverIsBlock();
@@ -162,7 +171,7 @@ public class DriverFactory {
     }
 
     private static void verifyWebDriverIsOpen() throws WebDriverException {
-        if (seleniumWebDriver == null) {
+        if (localWebServerStorage.get() == null) {
             throw new BrowserNotOpenedException();
         }
     }
@@ -179,7 +188,7 @@ public class DriverFactory {
                 @Override
                 public void run() {
                     try {
-                        seleniumWebDriver.getWindowHandle();
+                        localWebServerStorage.get().getWindowHandle();
                     } catch (WebDriverException e) {
                         // Ignore since we only check for hanging thread
                     }
@@ -212,14 +221,14 @@ public class DriverFactory {
                 public void run() {
                     try {
                         try {
-                            seleniumWebDriver.switchTo().alert();
+                            localWebServerStorage.get().switchTo().alert();
                         } catch (Exception e) {
                             if (!(e instanceof NoSuchWindowException) && e.getMessage() != null
                                     && !e.getMessage().startsWith(JAVA_SCRIPT_ERROR_H_IS_NULL_MESSAGE)) {
                                 throw e;
                             }
                             switchToAvailableWindow();
-                            seleniumWebDriver.switchTo().alert();
+                            localWebServerStorage.get().switchTo().alert();
                         }
                     } catch (WebDriverException e) {
                         // Ignore since we only check for hanging thread
@@ -244,14 +253,14 @@ public class DriverFactory {
         }
         try {
             try {
-                alert = seleniumWebDriver.switchTo().alert();
+                alert = localWebServerStorage.get().switchTo().alert();
             } catch (Exception e) {
                 if (!(e instanceof NoSuchWindowException) && e.getMessage() != null
                         && !e.getMessage().startsWith(JAVA_SCRIPT_ERROR_H_IS_NULL_MESSAGE)) {
                     throw e;
                 }
                 switchToAvailableWindow();
-                alert = seleniumWebDriver.switchTo().alert();
+                alert = localWebServerStorage.get().switchTo().alert();
             }
             return alert;
         } catch (NoAlertPresentException ex) {
@@ -280,17 +289,17 @@ public class DriverFactory {
     public static void switchToAvailableWindow() {
         verifyWebDriverIsOpen();
         try {
-            seleniumWebDriver.switchTo().window("");
+            localWebServerStorage.get().switchTo().window("");
         } catch (WebDriverException e) {
             if (!(e instanceof NoSuchWindowException) && e.getMessage() != null
                     && !e.getMessage().startsWith(JAVA_SCRIPT_ERROR_H_IS_NULL_MESSAGE)) {
                 throw e;
             }
             // default window is closed, try to switch to available window
-            Set<String> availableWindows = seleniumWebDriver.getWindowHandles();
+            Set<String> availableWindows = localWebServerStorage.get().getWindowHandles();
             for (String windowId : availableWindows) {
                 try {
-                    seleniumWebDriver.switchTo().window(windowId);
+                    localWebServerStorage.get().switchTo().window(windowId);
                     return;
                 } catch (WebDriverException exception) {
                     if (!(exception instanceof NoSuchWindowException) && e.getMessage() != null
@@ -342,13 +351,14 @@ public class DriverFactory {
     }
 
     public static void closeWebDriver() {
-        if (null != seleniumWebDriver && null != ((RemoteWebDriver) seleniumWebDriver).getSessionId()) {
+        WebDriver webDriver = localWebServerStorage.get();
+        if (null != webDriver && null != ((RemoteWebDriver) webDriver).getSessionId()) {
             try {
-                seleniumWebDriver.quit();
+                webDriver.quit();
             } catch (UnreachableBrowserException e) {
                 KeywordLogger.getInstance().logWarning(StringConstants.DRI_LOG_WARNING_BROWSER_NOT_REACHABLE);
             }
         }
-        seleniumWebDriver = null;
+        localWebServerStorage.set(null);
     }
 }
