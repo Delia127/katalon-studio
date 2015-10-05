@@ -1,6 +1,8 @@
-package com.kms.katalon.execution.entity;
+package com.kms.katalon.execution.configuration;
 
 import java.util.Map;
+
+import com.kms.katalon.execution.entity.IDriverConnector;
 
 public interface IRunConfiguration {
 	public IDriverConnector[] getDriverConnectors();
@@ -23,7 +25,9 @@ public interface IRunConfiguration {
 
 	public String getSourceDescription();
 
-	public Map<String, String> getPropertyMap();
+	public Map<String, Object> getPropertyMap();
 	
 	public String getName();
+	
+	public String getExecutionSettingFilePath();
 }

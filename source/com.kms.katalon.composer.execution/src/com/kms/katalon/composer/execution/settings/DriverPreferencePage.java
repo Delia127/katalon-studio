@@ -45,7 +45,7 @@ public abstract class DriverPreferencePage extends PreferencePage {
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
 		driverPropertySettingStore = getDriverPropertySettingStore(projectEntity.getFolderLocation());
 		if (driverPropertySettingStore != null) {
-	        driverProperties = driverPropertySettingStore.getProperties();
+	        driverProperties = driverPropertySettingStore.getDriverProperties();
 		} else {
 		    driverProperties = new LinkedHashMap<String, Object>(driverProperties);
 		}
@@ -60,7 +60,7 @@ public abstract class DriverPreferencePage extends PreferencePage {
 			if (projectEntity == null || driverProperties == null || driverPropertySettingStore == null) {
 			    return true;
 			}
-			driverPropertySettingStore.saveProperties(driverProperties);
+			driverPropertySettingStore.saveDriverProperties(driverProperties);
 			return true;
 		} catch (Exception e) {
 			MessageDialog.openError(null, StringConstants.ERROR_TITLE, 

@@ -14,11 +14,17 @@ import com.kms.katalon.core.constants.StringConstants;
 public class KeywordLogger {
     private String logFilePath;
     private Logger logger;
-    private static KeywordLogger _instance;
-    private static String pendingDescription = null;
+    private String pendingDescription = null;
     private Stack<KeywordStackElement> currentKeywordStack = null;
     private Stack<Stack<KeywordStackElement>> keywordStacksContainer = new Stack<Stack<KeywordStackElement>>();
     private int nestedLevel;
+    
+    private static final ThreadLocal<KeywordLogger> localKeywordLoggerStorage = new ThreadLocal<KeywordLogger>() {
+        @Override
+        protected KeywordLogger initialValue() {
+            return new KeywordLogger();
+        }
+    };
 
     public class KeywordStackElement {
         private String keywordName;
@@ -47,10 +53,7 @@ public class KeywordLogger {
     }
 
     public static KeywordLogger getInstance() {
-        if (_instance == null) {
-            _instance = new KeywordLogger();
-        }
-        return _instance;
+        return localKeywordLoggerStorage.get();
     }
 
     private KeywordLogger() {
@@ -93,11 +96,7 @@ public class KeywordLogger {
     }
 
     public static void cleanUp() {
-        if (_instance != null) {
-            _instance.logFilePath = null;
-            _instance.logger = null;
-            _instance = null;
-        }
+        localKeywordLoggerStorage.set(null);
     }
 
     public String getLogFilePath() {
@@ -275,7 +274,7 @@ public class KeywordLogger {
         }
     }
 
-    public static void setPendingDescription(String stepDescription) {
-        KeywordLogger.pendingDescription = stepDescription;
+    public void setPendingDescription(String stepDescription) {
+        pendingDescription = stepDescription;
     }
 }

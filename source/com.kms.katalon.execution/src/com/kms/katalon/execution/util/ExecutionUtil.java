@@ -78,9 +78,11 @@ public class ExecutionUtil {
         return store.getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_OPEN_REPORT_AFTER_EXECUTING);
     }
 
-    public static Map<String, String> escapeGroovy(Map<String, String> propertiesMap) {
-        for (Entry<String, String> entry : propertiesMap.entrySet()) {
-            entry.setValue(GroovyStringUtil.escapeGroovy(entry.getValue()));
+    public static Map<String, Object> escapeGroovy(Map<String, Object> propertiesMap) {
+        for (Entry<String, Object> entry : propertiesMap.entrySet()) {
+            if (entry.getValue() instanceof String) {
+                entry.setValue(GroovyStringUtil.escapeGroovy((String) entry.getValue()));
+            }
         }
         return propertiesMap;
     }

@@ -11,8 +11,8 @@ import org.eclipse.e4.ui.model.application.ui.menu.impl.HandledToolItemImpl;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
-import com.kms.katalon.execution.entity.IRunConfiguration;
 import com.kms.katalon.execution.util.ExecutionUtil;
 
 @SuppressWarnings("restriction")

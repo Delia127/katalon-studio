@@ -3,7 +3,7 @@ package com.kms.katalon.composer.mobile.execution.handler;
 import com.kms.katalon.composer.mobile.constants.StringConstants;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
-import com.kms.katalon.execution.entity.IRunConfiguration;
+import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.mobile.configuration.AndroidRunConfiguration;
 
 public class AndroidExecutionHandler extends MobileExecutionHandler {

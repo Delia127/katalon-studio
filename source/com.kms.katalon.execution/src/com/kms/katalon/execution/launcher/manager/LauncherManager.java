@@ -116,9 +116,10 @@ public class LauncherManager {
 		return teminatedLaunchers.size() != 0;
 	}
 
+	// Let all the launcher run parallel for now
 	private boolean isLauncherReadyToRun(AbstractLauncher launcher) {
-		if (runningLaunchers.size() > 0)
-			return false;
+//		if (runningLaunchers.size() > 0)
+//			return false;
 
 //		for (AbstractLauncher runningLauncher : runningLaunchers) {
 //			String driverType = runningLauncher.getRunConfiguration().getPropertyMap()

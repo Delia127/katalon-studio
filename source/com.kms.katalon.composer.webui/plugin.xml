@@ -28,6 +28,7 @@
    <extension
          point="com.kms.katalon.preferences.ProjectSettingPages">
       <page
+      		category="com.kms.katalon.composer.execution.settings"
             class="com.kms.katalon.composer.webui.setting.WebUiPerferencePage"
             id="com.kms.katalon.composer.webui.mainPage"
             name="Web UI">

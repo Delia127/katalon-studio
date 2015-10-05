@@ -30,7 +30,7 @@ public abstract class WebUiDriverPropertySettingStore extends DriverPropertySett
 
     public DesiredCapabilities toDesiredCapabilities() {
         DesiredCapabilities desireCapabilities = new DesiredCapabilities();
-        for (Entry<String, Object> property : getProperties().entrySet()) {
+        for (Entry<String, Object> property : getDriverProperties().entrySet()) {
             KeywordLogger.getInstance().logInfo(
                     MessageFormat.format(StringConstants.KW_LOG_WEB_UI_PROPERTY_SETTING, property.getKey(),
                             property.getValue()));
