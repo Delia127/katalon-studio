@@ -12,28 +12,26 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 
 public class StopExecutingScriptHandler {
 
-	@Inject
-	IEventBroker eventBroker;
+    @Inject
+    IEventBroker eventBroker;
 
-	@CanExecute
-	public boolean canExecute() {
-	    try {
-	       return LauncherManager.getInstance().isAnyLauncherRunning();
-	    } catch (Exception e) {
-	        return false;
-	    }
-		
-	}
+    @CanExecute
+    public boolean canExecute() {
+        try {
+            return LauncherManager.getInstance().isAnyLauncherRunning();
+        } catch (Exception e) {
+            return false;
+        }
 
-	@SuppressWarnings("restriction")
-	@Execute
-	public void execute() {
-		try {
-			LauncherManager.getInstance().stopAllLauncher();
-			eventBroker.send(UIEvents.REQUEST_ENABLEMENT_UPDATE_TOPIC,
-					UIEvents.ALL_ELEMENT_ID);
-		} catch (Exception e) {
-			LoggerSingleton.getInstance().getLogger().error(e);
-		}
-	}
+    }
+
+    @Execute
+    public void execute() {
+        try {
+            LauncherManager.getInstance().stopAllLauncher();
+            eventBroker.send(UIEvents.REQUEST_ENABLEMENT_UPDATE_TOPIC, UIEvents.ALL_ELEMENT_ID);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
 }

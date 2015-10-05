@@ -34,6 +34,7 @@ import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.listener.TestSuiteExecutionJobCompletedListener;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
+import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.parts.TestSuiteCompositePart;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
@@ -56,10 +57,10 @@ public abstract class AbstractExecutionHandler {
 
     @Inject
     protected static EModelService modelService;
-    
+
     @Inject
     protected static ECommandService commandService;
-    
+
     @Inject
     protected static EHandlerService handlerService;
 
@@ -80,8 +81,7 @@ public abstract class AbstractExecutionHandler {
             if (ProjectController.getInstance().getCurrentProject() != null) {
                 MPartStack composerStack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID,
                         application);
-                if (composerStack == null)
-                    return false;
+                if (composerStack == null) return false;
 
                 if (composerStack.isVisible() && composerStack.getSelectedElement() != null) {
                     MPart part = (MPart) composerStack.getSelectedElement();
@@ -106,7 +106,7 @@ public abstract class AbstractExecutionHandler {
         } catch (SWTException e) {
             // Ignore it
         } catch (Exception e) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Unable to execute test script");
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Unable to execute test script.");
             LoggerSingleton.logError(e);
         }
     }
@@ -123,7 +123,18 @@ public abstract class AbstractExecutionHandler {
                 return ((TestCaseCompositePart) selectedPart.getObject()).getTestCase();
             } else if (partElementId.startsWith(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX)
                     && selectedPart.getObject() instanceof TestSuiteCompositePart) {
-                return ((TestSuiteCompositePart) selectedPart.getObject()).getOriginalTestSuite();
+                TestSuiteCompositePart testSuiteComposite = (TestSuiteCompositePart) selectedPart.getObject();
+
+                if (testSuiteComposite.getOriginalTestSuite().getTestSuiteTestCaseLinks().isEmpty()) {
+                    if (MessageDialog
+                            .openQuestion(null, StringConstants.INFORMATION_TITLE,
+                                    "The test suite didn't have any test case to run. Do you want to add some test cases?")) {
+                        testSuiteComposite.openAddTestCaseDialog();
+                    }
+                    return null;
+                }
+
+                return testSuiteComposite.getOriginalTestSuite();
             }
         }
         return null;
@@ -135,6 +146,11 @@ public abstract class AbstractExecutionHandler {
 
     public void execute(LaunchMode launchMode) throws Exception {
         Entity targetEntity = getExecutionTarget();
+
+        if (targetEntity == null) {
+            return;
+        }
+
         if (targetEntity instanceof TestCaseEntity) {
             TestCaseEntity testCase = (TestCaseEntity) targetEntity;
             IRunConfiguration runConfiguration = getRunConfigurationForExecution(testCase);
@@ -152,7 +168,7 @@ public abstract class AbstractExecutionHandler {
             executeTestSuite(testSuite, launchMode, runConfiguration, 0);
         }
     }
-    
+
     protected static void executeTestCase(final TestCaseEntity testCase, final LaunchMode launchMode,
             final IRunConfiguration runConfig) throws Exception {
         if (testCase != null) {
@@ -167,8 +183,8 @@ public abstract class AbstractExecutionHandler {
                         monitor.worked(1);
 
                         monitor.subTask("Building scripts...");
-                        final IDELauncher launcher = new IDELauncher(eventBroker, LoggerSingleton
-                                .getInstance().getLogger(), launchMode, runConfig);
+                        final IDELauncher launcher = new IDELauncher(eventBroker, LoggerSingleton.getInstance()
+                                .getLogger(), launchMode, runConfig);
                         monitor.worked(1);
 
                         monitor.subTask("Launching test case...");
@@ -231,8 +247,8 @@ public abstract class AbstractExecutionHandler {
                         monitor.worked(1);
 
                         monitor.subTask("Building scripts...");
-                        final IDELauncher launcher = new IDELauncher(eventBroker, LoggerSingleton
-                                .getInstance().getLogger(), launchMode, runConfig);
+                        final IDELauncher launcher = new IDELauncher(eventBroker, LoggerSingleton.getInstance()
+                                .getLogger(), launchMode, runConfig);
                         monitor.worked(1);
 
                         monitor.subTask("Launching test suite...");
@@ -256,8 +272,17 @@ public abstract class AbstractExecutionHandler {
                         monitor.done();
                         return Status.OK_STATUS;
                     } else {
-                        MessageDialog.openWarning(Display.getCurrent().getActiveShell(), "Warning",
-                                "The current selected test suite has no test case.");
+                        sync.syncExec(new Runnable() {
+                            @Override
+                            public void run() {
+                                MessageDialog
+                                        .openWarning(
+                                                Display.getCurrent().getActiveShell(),
+                                                StringConstants.WARN_TITLE,
+                                                "There is no test case selected.\n"
+                                                        + "Please select test cases you want to execute by checking their checkboxes at 'Run' column.");
+                            }
+                        });
                         return Status.CANCEL_STATUS;
                     }
 
@@ -315,8 +340,7 @@ public abstract class AbstractExecutionHandler {
                 }
 
                 // set current page of console partStack is log viewer
-                MPart consoleLogPart = (MPart) modelService.find(IdConstants.IDE_CONSOLE_LOG_PART_ID,
-                        consolePartStack);
+                MPart consoleLogPart = (MPart) modelService.find(IdConstants.IDE_CONSOLE_LOG_PART_ID, consolePartStack);
                 if (consoleLogPart != null && consolePartStack.getSelectedElement() != consoleLogPart) {
                     consolePartStack.setSelectedElement(consoleLogPart);
                 }

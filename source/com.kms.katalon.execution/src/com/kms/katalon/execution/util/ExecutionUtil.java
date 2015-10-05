@@ -139,7 +139,7 @@ public class ExecutionUtil {
                     }
 
                     if (testData == null || testData.getRowNumbers() < 0) {
-                        throw new RuntimeException(MessageFormat.format(
+                        throw new IllegalArgumentException(MessageFormat.format(
                                 StringConstants.UTIL_EXC_TD_DATA_SRC_X_UNAVAILABLE, testDataLink.getTestDataId()));
                     } else {
                         TestDataExecutedEntity testDataExecutedEntity = getTestDataExecutedEntity(testCaseLink,

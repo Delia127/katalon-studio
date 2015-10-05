@@ -11,7 +11,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_DESC_DUPLICATED_EMAIL_ADDR = "Email(s) {0} has/have already existed in mail recipients.";
     public static final String DIA_ADD_EMAIL_RECIPIENT = "Add email recipient";
 
-    // NewEntityDialog
+    // AbstractEntityDialog
     public static final String DIA_LBL_NAME = NAME;
     public static final String DIA_LBL_CREATE_NEW = "Create new";
     public static final String DIA_NAME_CANNOT_BE_BLANK_OR_EMPTY = NAME + " cannot be blank or empty.";

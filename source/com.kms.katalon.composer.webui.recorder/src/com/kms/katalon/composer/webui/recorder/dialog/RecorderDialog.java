@@ -155,6 +155,9 @@ public class RecorderDialog extends Dialog implements EventHandler {
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
+		// Set window title for dialog
+        if (getShell() != null) getShell().setText(StringConstants.DIA_TITLE_RECORD);
+
 		Composite container = (Composite) super.createDialogArea(parent);
 		GridLayout gl_container = new GridLayout();
 		container.setLayout(gl_container);

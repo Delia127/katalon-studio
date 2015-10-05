@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 
@@ -30,157 +31,209 @@ import com.kms.katalon.groovy.util.GroovyStringUtil;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class TestSuiteScriptGenerator {
-	private static final String TEMPLATE_CLASS_NAME = IdConstants.KATALON_EXECUTION_BUNDLE_ID
-			+ ".generator.TestSuiteScriptTemplate";
-	private static final String GENERATED_TEST_SUITE_SCRIPT_METHOD_NAME = "generateTestSuiteScriptFile";
-	private static final String TEMP_TEST_SUITE_FILE_NAME = "TempTestSuite";
+    private static final String TEMPLATE_CLASS_NAME = IdConstants.KATALON_EXECUTION_BUNDLE_ID
+            + ".generator.TestSuiteScriptTemplate";
+    private static final String GENERATED_TEST_SUITE_SCRIPT_METHOD_NAME = "generateTestSuiteScriptFile";
+    private static final String TEMP_TEST_SUITE_FILE_NAME = "TempTestSuite";
 
-	private TestSuiteEntity testSuite;
-	private IRunConfiguration config;
-	private TestSuiteExecutedEntity testSuiteExecuted;
+    private TestSuiteEntity testSuite;
+    private IRunConfiguration config;
+    private TestSuiteExecutedEntity testSuiteExecuted;
 
-	public TestSuiteScriptGenerator(TestSuiteEntity testSuite, IRunConfiguration config,
-			TestSuiteExecutedEntity testSuiteExecutedEntity) {
-		this.testSuite = testSuite;
-		this.config = config;
-		this.testSuiteExecuted = testSuiteExecutedEntity;
-	}
+    public TestSuiteScriptGenerator(TestSuiteEntity testSuite, IRunConfiguration config,
+            TestSuiteExecutedEntity testSuiteExecutedEntity) {
+        this.testSuite = testSuite;
+        this.config = config;
+        this.testSuiteExecuted = testSuiteExecutedEntity;
+    }
 
-	public File generateScriptFile() throws Exception {
-		IFolder libFolder = GroovyUtil.getCustomKeywordLibFolder(testSuite.getProject());
-		File file = new File(libFolder.getRawLocation().toString(), TEMP_TEST_SUITE_FILE_NAME
-				+ System.currentTimeMillis() + GroovyConstants.GROOVY_FILE_EXTENSION);
-		file.createNewFile();
-		GroovyObject object = (GroovyObject) Class.forName(TEMPLATE_CLASS_NAME).newInstance();
-		object.invokeMethod(GENERATED_TEST_SUITE_SCRIPT_METHOD_NAME, new Object[] { file, testSuite,
-				createTestCaseBindings(), config, testSuiteExecuted });
-		libFolder.refreshLocal(IResource.DEPTH_ONE, null);
-		return file;
-	}
+    public File generateScriptFile() throws Exception {
+        IFolder libFolder = GroovyUtil.getCustomKeywordLibFolder(testSuite.getProject());
+        File file = new File(libFolder.getRawLocation().toString(), TEMP_TEST_SUITE_FILE_NAME
+                + System.currentTimeMillis() + GroovyConstants.GROOVY_FILE_EXTENSION);
+        file.createNewFile();
+        GroovyObject object = (GroovyObject) Class.forName(TEMPLATE_CLASS_NAME).newInstance();
+        object.invokeMethod(GENERATED_TEST_SUITE_SCRIPT_METHOD_NAME, new Object[] { file, testSuite,
+                createTestCaseBindings(), config, testSuiteExecuted });
+        libFolder.refreshLocal(IResource.DEPTH_ONE, null);
+        return file;
+    }
 
-	public String generateScriptAsString() throws Exception {
-		GroovyObject object = (GroovyObject) Class.forName(TEMPLATE_CLASS_NAME).newInstance();
-		return (String) object.invokeMethod(GENERATED_TEST_SUITE_SCRIPT_METHOD_NAME, new Object[] { null, testSuite,
-				createTestCaseBindings(), config });
-	}
+    public String generateScriptAsString() throws Exception {
+        GroovyObject object = (GroovyObject) Class.forName(TEMPLATE_CLASS_NAME).newInstance();
+        return (String) object.invokeMethod(GENERATED_TEST_SUITE_SCRIPT_METHOD_NAME, new Object[] { null, testSuite,
+                createTestCaseBindings(), config });
+    }
 
-	public List<String> createTestCaseBindings() throws Exception {
-		List<String> testCaseBindings = new ArrayList<>();
-		StringBuilder syntaxErrorCollector = new StringBuilder();
+    public List<String> createTestCaseBindings() throws Exception {
+        List<String> testCaseBindings = new ArrayList<>();
+        StringBuilder syntaxErrorCollector = new StringBuilder();
 
-		List<TestSuiteTestCaseLink> lstTestCaseRun = TestSuiteController.getInstance().getTestSuiteTestCaseRun(testSuite);
-		for (int index = 0; index < lstTestCaseRun.size(); index++) {
-			TestSuiteTestCaseLink testCaseLink = lstTestCaseRun.get(index);
-			TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByDisplayId(
-					testCaseLink.getTestCaseId());
-			if (testCase != null && testCaseLink.getIsRun()) {
-				TestCaseExecutedEntity testCaseExecuted = testSuiteExecuted.getTestCaseExecutedEntities().get(index);
-				List<String> testCaseBinding = getTestCaseBindingString(testCaseLink, syntaxErrorCollector,
-						testCaseExecuted);
-				testCaseBindings.addAll(testCaseBinding);
-			}
-		}
-		
-		if (syntaxErrorCollector.toString().isEmpty()) {
-			return testCaseBindings;
-		} else {
-			throw new IllegalArgumentException(syntaxErrorCollector.toString());
-		}
-	}
+        List<TestSuiteTestCaseLink> lstTestCaseRun = TestSuiteController.getInstance().getTestSuiteTestCaseRun(
+                testSuite);
+        for (int index = 0; index < lstTestCaseRun.size(); index++) {
+            TestSuiteTestCaseLink testCaseLink = lstTestCaseRun.get(index);
+            TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByDisplayId(
+                    testCaseLink.getTestCaseId());
+            if (testCase != null && testCaseLink.getIsRun()) {
+                TestCaseExecutedEntity testCaseExecuted = testSuiteExecuted.getTestCaseExecutedEntities().get(index);
+                List<String> testCaseBinding = getTestCaseBindingString(testCaseLink, syntaxErrorCollector,
+                        testCaseExecuted);
+                testCaseBindings.addAll(testCaseBinding);
+            }
+        }
 
-	private List<String> getTestCaseBindingString(TestSuiteTestCaseLink testCaseLink,
-			StringBuilder syntaxErrorCollector, TestCaseExecutedEntity testCaseExecutedEntity) throws Exception {
-		List<String> testCaseBindingStrings = new ArrayList<String>();
-		for (int i = 0; i < testCaseExecutedEntity.getLoopTimes(); i++) {
-			boolean needToBreak = false;
-			String testCaseReportName = testCaseLink.getTestCaseId();
-			if (testCaseExecutedEntity.getLoopTimes() > 1) {
-				testCaseReportName += " - Iteration " + Integer.toString(i + 1);
-			}
-			StringBuilder testCaseBindingBuilder = new StringBuilder();
-			if (testCaseLink.getVariableLinks().isEmpty()) {
-				testCaseBindingBuilder.append("new TestCaseBinding('" + testCaseReportName + "', null)");
-			} else {
-				testCaseBindingBuilder.append("new TestCaseBinding('" + testCaseReportName + "', [");
-				
-				
-				StringBuilder variableBuilder = new StringBuilder();
-				
-				for (VariableLink variableLink : testCaseLink.getVariableLinks()) {
-					VariableEntity variableEntity = TestSuiteController.getInstance().getVariable(testCaseLink,
-							variableLink);
-					if (variableEntity != null) {
-						String variableValue = variableLink.getValue();
-						if (variableLink.getType() == VariableType.DATA_COLUMN) {
-							if (variableValue != null && !variableValue.isEmpty()) {
-								TestDataExecutedEntity testDataExecutedEntity = testCaseExecutedEntity
-										.getTestDataExecuted(variableLink.getTestDataLinkId());
+        if (syntaxErrorCollector.toString().isEmpty()) {
+            return testCaseBindings;
+        } else {
+            throw new IllegalArgumentException(syntaxErrorCollector.toString());
+        }
+    }
 
-								TestData testData = testSuiteExecuted.getTestDataMap().get(
-										testDataExecutedEntity.getTestDataId());
+    private List<String> getTestCaseBindingString(TestSuiteTestCaseLink testCaseLink,
+            StringBuilder syntaxErrorCollector, TestCaseExecutedEntity testCaseExecutedEntity) throws Exception {
+        List<String> testCaseBindingStrings = new ArrayList<String>();
+        for (int i = 0; i < testCaseExecutedEntity.getLoopTimes(); i++) {
+            boolean needToBreak = false;
+            String testCaseReportName = testCaseLink.getTestCaseId();
+            if (testCaseExecutedEntity.getLoopTimes() > 1) {
+                testCaseReportName += " - Iteration " + Integer.toString(i + 1);
+            }
+            StringBuilder testCaseBindingBuilder = new StringBuilder();
+            if (testCaseLink.getVariableLinks().isEmpty()) {
+                testCaseBindingBuilder.append("new TestCaseBinding('" + testCaseReportName + "', null)");
+            } else {
+                testCaseBindingBuilder.append("new TestCaseBinding('" + testCaseReportName + "', [");
 
-								int rowIndex = 0;
-								if (testDataExecutedEntity.getType() == TestDataCombinationType.ONE) {
-									rowIndex = i % testDataExecutedEntity.getRowIndexes().length;
-								} else {
-									rowIndex = (i / testDataExecutedEntity.getMultiplier())
-											% testDataExecutedEntity.getRowIndexes().length;
-								}
-								
-								try {								    
-									variableValue = GroovyStringUtil.escapeGroovy(testData.getValue(variableValue,
-													testDataExecutedEntity.getRowIndexes()[rowIndex]));
-									if (variableValue != null) {
-									    variableValue = "'" + variableValue + "'";
-									} else {
-									    variableValue = "null";
-									}
-									
-								} catch (IllegalArgumentException ex) {
-									syntaxErrorCollector.append(
-											"Wrong syntax at [TestCaseID: " + testCaseLink.getTestCaseId() + ", VariableName: "
-													+ variableEntity.getName() + ", Value: " + variableValue + "]: " +
-													ex.getMessage()).append(SyntaxUtil.LINE_SEPERATOR);
-									needToBreak = true;
-									break;
-								}
-							} else {
-								syntaxErrorCollector.append("Wrong syntax at [TestCaseID: "
-										+ testCaseLink.getTestCaseId() + ", VariableName: " + variableEntity.getName()
-										+ ", Value: " + variableValue + "]: Column name cannot be empty.");
-								needToBreak = true;
-								break;
-							}
-						} else {
-							if (variableValue.isEmpty()) continue;
-						}
+                StringBuilder variableBuilder = new StringBuilder();
 
-						if (SyntaxUtil.checkVariableSyntax(variableEntity.getName(), variableValue)
-								&& !variableValue.isEmpty()) {
-							variableBuilder.append(variableEntity.getName()).append(" : ").append(variableValue)
-									.append(" , ");
-						} else {
-							syntaxErrorCollector.append(
-									"Wrong syntax at [TestCaseID: " + testCaseLink.getTestCaseId() + ", VariableName: "
-											+ variableEntity.getName() + ", Value: " + variableValue + "]").append(
-									SyntaxUtil.LINE_SEPERATOR);
-							needToBreak = true;
-							break;
-						}
-					}
-				}
-				if (needToBreak) {
-					break;
-				}
-				
-				String variableMapBinding = variableBuilder.toString();
-				if (variableMapBinding.isEmpty()) variableMapBinding = ":";				
-				
-				testCaseBindingBuilder.append(variableMapBinding).append("])");
-			}
-			testCaseBindingStrings.add(testCaseBindingBuilder.toString());
-		}
-		
-		return testCaseBindingStrings;
-	}
+                for (VariableLink variableLink : testCaseLink.getVariableLinks()) {
+                    VariableEntity variableEntity = TestSuiteController.getInstance().getVariable(testCaseLink,
+                            variableLink);
+                    if (variableEntity != null) {
+                        String variableValue = variableLink.getValue();
+                        if (variableLink.getType() == VariableType.DATA_COLUMN) {
+
+                            if (StringUtils.isBlank(variableLink.getTestDataLinkId())) {
+                                syntaxErrorCollector.append("Wrong syntax at [Test case ID: "
+                                        + testCaseLink.getTestCaseId() + ", Variable name: " + variableEntity.getName()
+                                        + ", Test data: <empty>]: Test data cannot be empty.");
+                                needToBreak = true;
+                                break;
+                            }
+
+                            TestDataExecutedEntity testDataExecutedEntity = testCaseExecutedEntity
+                                    .getTestDataExecuted(variableLink.getTestDataLinkId());
+
+                            TestData testData = testSuiteExecuted.getTestDataMap().get(
+                                    testDataExecutedEntity.getTestDataId());
+
+                            if (!StringUtils.isBlank(variableValue)) {
+                                int rowIndex = 0;
+                                if (testDataExecutedEntity.getType() == TestDataCombinationType.ONE) {
+                                    rowIndex = i % testDataExecutedEntity.getRowIndexes().length;
+                                } else {
+                                    rowIndex = (i / testDataExecutedEntity.getMultiplier())
+                                            % testDataExecutedEntity.getRowIndexes().length;
+                                }
+
+                                try {
+                                    variableValue = GroovyStringUtil.escapeGroovy(testData.getValue(variableValue,
+                                            testDataExecutedEntity.getRowIndexes()[rowIndex]));
+                                    if (variableValue != null) {
+                                        variableValue = "'" + variableValue + "'";
+                                    } else {
+                                        variableValue = "null";
+                                    }
+
+                                } catch (IllegalArgumentException ex) {
+                                    syntaxErrorCollector.append(
+                                            "Wrong syntax at [Test case ID: " + testCaseLink.getTestCaseId()
+                                                    + ", Variale name: " + variableEntity.getName() + ", Test data: "
+                                                    + testDataExecutedEntity.getTestDataId() + ", Column name: "
+                                                    + variableValue + "]: "
+                                                    + getMessageForInvalidColumn(variableValue, testData)).append(
+                                            SyntaxUtil.LINE_SEPERATOR);
+                                    needToBreak = true;
+                                    break;
+                                }
+                            } else {
+                                syntaxErrorCollector.append("Wrong syntax at [Test case ID: "
+                                        + testCaseLink.getTestCaseId() + ", Variable name: " + variableEntity.getName()
+                                        + ", Test data: " + testDataExecutedEntity.getTestDataId() + ", Column name: "
+                                        + variableValue + "<empty>]: Column name cannot be empty. "
+                                        + getMessageForPossibleColumnName(testData));
+                                needToBreak = true;
+                                break;
+                            }
+                        } else {
+                            if (variableValue.isEmpty()) {
+                                // use default value
+                                continue;
+                            }
+                        }
+
+                        if (SyntaxUtil.checkVariableSyntax(variableEntity.getName(), variableValue)
+                                && !variableValue.isEmpty()) {
+                            variableBuilder.append(variableEntity.getName()).append(" : ").append(variableValue)
+                                    .append(" , ");
+                        } else {
+                            syntaxErrorCollector.append(
+                                    "Wrong syntax at [Test case ID: " + testCaseLink.getTestCaseId()
+                                            + ", Variable Name: " + variableEntity.getName() + ", Value: "
+                                            + variableValue + "]").append(SyntaxUtil.LINE_SEPERATOR);
+                            needToBreak = true;
+                            break;
+                        }
+                    }
+                }
+                if (needToBreak) {
+                    break;
+                }
+
+                String variableMapBinding = variableBuilder.toString();
+                if (variableMapBinding.isEmpty()) variableMapBinding = ":";
+
+                testCaseBindingBuilder.append(variableMapBinding).append("])");
+            }
+            testCaseBindingStrings.add(testCaseBindingBuilder.toString());
+        }
+
+        return testCaseBindingStrings;
+    }
+
+    private String getMessageForInvalidColumn(String columnName, TestData testData) {
+        StringBuilder messageBuilder = new StringBuilder("Invalid column name '");
+        messageBuilder.append(columnName).append("'. ").append(getMessageForPossibleColumnName(testData));
+
+        return messageBuilder.toString();
+    }
+
+    private String getMessageForPossibleColumnName(TestData testData) {
+        StringBuilder messageBuilder = new StringBuilder("Possible values are '").append(
+                arrayToString(testData.getColumnNames())).append("'");
+
+        return messageBuilder.toString();
+    }
+
+    private String arrayToString(String[] columnNames) {
+        StringBuilder stringBuilder = new StringBuilder("[");
+        if (columnNames != null) {
+            int validNums = 0;
+            for (int i = 0; i < columnNames.length; i++) {
+                String columnName = columnNames[i];
+                if (!StringUtils.isBlank(columnName)) {
+
+                    if (validNums > 0) {
+                        stringBuilder.append(", ");
+                    }
+
+                    stringBuilder.append(columnName);
+                    validNums++;
+                }
+            }
+        }
+        stringBuilder.append("]");
+        return stringBuilder.toString();
+    }
 }

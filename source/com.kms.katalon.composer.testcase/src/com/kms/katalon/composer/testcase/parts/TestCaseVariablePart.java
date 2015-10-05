@@ -314,7 +314,8 @@ public class TestCaseVariablePart {
 			int index = variables.indexOf(variable) + 1;
 			String variableName = variable.getName();
 			String variableDefaultValue = variable.getDefaultValue();
-			if (variableDefaultValue.isEmpty()) variableDefaultValue = null;
+			if (variableDefaultValue == null || variableDefaultValue.isEmpty()) 
+				variableDefaultValue = null;
 
 			if (variableName == null || variableName.isEmpty()) {
 				errorCollector.append(MessageFormat.format(

@@ -54,16 +54,16 @@ public class AbstractEntityDialog extends TitleAreaDialog {
         if (getShell() != null) getShell().setText(getWindowTitle());
 
         // Title and message area
-        super.createDialogArea(parent);
+        Composite area = (Composite) super.createDialogArea(parent);
 
         // body area
-        createDialogBodyArea(parent);
+        createDialogBodyArea(area);
 
         // Build the separator line
         Label separator = new Label(parent, SWT.HORIZONTAL | SWT.SEPARATOR);
         separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-        return container;
+        return area;
     }
 
     public Control createDialogBodyArea(Composite parent) {

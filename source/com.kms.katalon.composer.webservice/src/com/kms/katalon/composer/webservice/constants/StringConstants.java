@@ -12,7 +12,7 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String BUNDLE_URI_WEBSERVICE = "bundleclass://com.kms.katalon.composer.webservice/";
 
 	// NewWebServiceRequestObjectPopupMenuContribution
-	public static final String MENU_CONTEXT_WEBSERVICE_REQ = "WebService Request";
+	public static final String MENU_CONTEXT_WEBSERVICE_REQ = "Web Service Request";
 	public static final String COMMAND_ID_ADD_WEBSERVICE_REQ = "com.kms.katalon.composer.webservice.command.add";
 
 	// RequestObjectPart
@@ -39,10 +39,11 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String PA_LBL_SOAP_BODY = "SOAP Body";
 
 	// NewRequestDialog
+	public static final String WIEW_TITLE_NEW = "New";
 	public static final String VIEW_LBL_NAME = NAME;
 	public static final String VIEW_LBL_REQ_TYPE = "Request Type";
-	public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ = "WebService Request";
-	public static final String VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ = "Create WebService Request";
+	public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ = "Web Service Request";
+	public static final String VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ = "Create Web Service Request";
 
 	// ParameterTable
 	public static final String VIEW_COL_NAME = NAME;

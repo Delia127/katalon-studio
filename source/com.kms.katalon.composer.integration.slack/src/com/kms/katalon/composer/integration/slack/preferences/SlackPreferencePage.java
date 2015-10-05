@@ -66,6 +66,7 @@ public class SlackPreferencePage extends FieldEditorPreferencePage {
 	@Override
 	protected void createFieldEditors() {
 		fieldEditorParent = new Composite(getFieldEditorParent(), SWT.NONE);
+		fieldEditorParent.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true, 1, 1));
 
 		enabled = new BooleanFieldEditor(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_ENABLED,
 				StringConstants.PREF_LBL_SLACK_ENABLED, fieldEditorParent);
