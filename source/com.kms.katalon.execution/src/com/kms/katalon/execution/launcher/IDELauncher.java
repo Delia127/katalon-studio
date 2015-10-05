@@ -18,6 +18,7 @@ import org.eclipse.debug.core.model.RuntimeProcess;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.workbench.UIEvents;
+import org.eclipse.swt.widgets.Display;
 
 import com.google.gson.Gson;
 import com.kms.katalon.constants.EventConstants;
@@ -174,7 +175,15 @@ public class IDELauncher extends AbstractLauncher {
 
                             watcher.setStopSignal(true);
                             threadWatcher.join();
-                            stopAndSchedule();
+                            Display.getDefault().syncExec(new Runnable() {
+                                public void run() {
+                                    try {
+                                        stopAndSchedule();
+                                    } catch (CoreException | InterruptedException e) {
+                                        // Exeception happened, return
+                                    }
+                                }
+                            });
 
                             // update status of "Run" and "Stop" buttons
                             eventBroker.send(UIEvents.REQUEST_ENABLEMENT_UPDATE_TOPIC, UIEvents.ALL_ELEMENT_ID);
