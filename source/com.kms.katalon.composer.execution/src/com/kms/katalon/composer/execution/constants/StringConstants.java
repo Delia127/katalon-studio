@@ -75,8 +75,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PREF_GRP_DEFAULT_EXECUTION_CONFIG = "Default execution";
     public static final String PREF_LBL_DEFAULT_PAGE_LOAD_TIMEOUT = "Default load timeout (in seconds):";
     public static final String PREF_GRP_AFTER_EXECUTING = "After executing";
-    public static final String PREF_CHKBOX_NOTIFY_ME_AFTER_EXE_COMPLETELY = "Notify me after executing completely";
-    public static final String PREF_CHKBOX_OPEN_RPT_AFTER_EXE_COMPLETELY = "Open report after executing completely";
+    public static final String PREF_CHKBOX_NOTIFY_ME_AFTER_EXE_COMPLETELY = "Notify me";
+    public static final String PREF_CHKBOX_OPEN_RPT_AFTER_EXE_COMPLETELY = "Open report";
     public static final String PREF_ERROR_MSG_VAL_MUST_BE_AN_INT_BETWEEN_X_Y = "Value must be an Integer between {0} and {1}";
     
     // MailPreferencePage
