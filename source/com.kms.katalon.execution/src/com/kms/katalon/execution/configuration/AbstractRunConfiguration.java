@@ -1,6 +1,7 @@
 package com.kms.katalon.execution.configuration;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,15 +26,15 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     protected String sourceDescription;
     protected String executionSettingFilePath;
 
-    public AbstractRunConfiguration(TestCaseEntity testCaseEntity) {
+    public AbstractRunConfiguration(TestCaseEntity testCaseEntity) throws IOException {
         init(testCaseEntity);
     }
 
-    public AbstractRunConfiguration(TestSuiteEntity testSuiteEntity) {
+    public AbstractRunConfiguration(TestSuiteEntity testSuiteEntity) throws IOException {
         init(testSuiteEntity);
     }
 
-    protected void init(FileEntity fileEntity) {
+    protected void init(FileEntity fileEntity) throws IOException {
         if (fileEntity == null) {
             return;
         }

@@ -53,14 +53,14 @@ public class MixedModeExecutionHandler extends MobileExecutionHandler {
                     TestCaseEntity testCase = (TestCaseEntity) fileEntity;
                     String projectDirectory = testCase.getProject().getFolderLocation();
                     return new MixedModeRunConfiguration(testCase, MobileExecutionUtil.getMobileDriverConnector(
-                            mobileDriverType, projectDirectory, deviceName),
-                            WebUIExecutionUtil.getBrowserDriverConnector(webDriverType, projectDirectory));
+                            mobileDriverType, projectDirectory), WebUIExecutionUtil.getBrowserDriverConnector(
+                            webDriverType, projectDirectory));
                 } else if (fileEntity instanceof TestSuiteEntity) {
                     TestSuiteEntity testSuite = (TestSuiteEntity) fileEntity;
                     String projectDirectory = testSuite.getProject().getFolderLocation();
                     return new MixedModeRunConfiguration(testSuite, MobileExecutionUtil.getMobileDriverConnector(
-                            mobileDriverType, projectDirectory, deviceName),
-                            WebUIExecutionUtil.getBrowserDriverConnector(webDriverType, projectDirectory));
+                            mobileDriverType, projectDirectory), WebUIExecutionUtil.getBrowserDriverConnector(
+                            webDriverType, projectDirectory));
                 }
 
             }

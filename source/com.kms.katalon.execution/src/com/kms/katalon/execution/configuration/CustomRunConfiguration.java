@@ -1,5 +1,6 @@
 package com.kms.katalon.execution.configuration;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,13 +12,13 @@ public class CustomRunConfiguration extends AbstractRunConfiguration {
     private String name;
     private List<IDriverConnector> driverConnectors;
 
-    public CustomRunConfiguration(TestCaseEntity testCaseEntity, String name) {
+    public CustomRunConfiguration(TestCaseEntity testCaseEntity, String name) throws IOException {
         super(testCaseEntity);
         this.name = name;
         driverConnectors = new ArrayList<IDriverConnector>();
     }
 
-    public CustomRunConfiguration(TestSuiteEntity testSuiteEntity, String name) {
+    public CustomRunConfiguration(TestSuiteEntity testSuiteEntity, String name) throws IOException {
         super(testSuiteEntity);
         this.name = name;
         driverConnectors = new ArrayList<IDriverConnector>();

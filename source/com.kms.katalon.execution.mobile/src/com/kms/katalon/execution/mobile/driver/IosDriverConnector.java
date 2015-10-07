@@ -7,13 +7,13 @@ import com.kms.katalon.core.mobile.driver.MobileDriverType;
 
 public class IosDriverConnector extends AbstractMobileDriverConnector {
 
-    public IosDriverConnector(String projectDir, String deviceName) throws IOException {
-        super(projectDir, deviceName);
+    public IosDriverConnector(String projectDir) throws IOException {
+        super(projectDir);
     }
 
-    public IosDriverConnector(String projectDir, String customProfileName, String deviceName)
+    public IosDriverConnector(String projectDir, String customProfileName)
             throws IOException {
-        super(projectDir, customProfileName, deviceName); 
+        super(projectDir, customProfileName); 
     }
 
 	@Override

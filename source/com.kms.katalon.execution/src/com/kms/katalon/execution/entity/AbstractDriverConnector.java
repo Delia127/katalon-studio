@@ -92,4 +92,12 @@ public abstract class AbstractDriverConnector implements IDriverConnector {
         }
         return null;
     }
+    
+    public void setDriverPropertyValue(String rawKey, String propertyValue) {
+        for (Entry<String, Object> driverProperty : getDriverProperties().entrySet()) {
+            if (driverProperty.getKey().equals(rawKey)) {
+                driverProperty.setValue(propertyValue);
+            }
+        }
+    }
 }

@@ -24,20 +24,17 @@ public class MixedModeRunConfigurationContributor implements IRunConfigurationCo
     public IRunConfiguration getRunConfiguration(TestCaseEntity testCase, Map<String, String> runInput)
             throws IOException {
         if (runInput == null
-                || runInput.get(com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_DEVICE_NAME) == null
                 || runInput.get(com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_PLATFORM) == null
                 || runInput.get(com.kms.katalon.core.webui.constants.StringConstants.CONF_PROPERTY_EXECUTED_BROWSER) == null) {
             return null;
         }
-        String deviceName = runInput
-                .get(com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_DEVICE_NAME);
         String devicePlatform = runInput
                 .get(com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_PLATFORM);
         String browserType = runInput
                 .get(com.kms.katalon.core.webui.constants.StringConstants.CONF_PROPERTY_EXECUTED_BROWSER);
         String projectFolderLocation = testCase.getProject().getFolderLocation();
         return new MixedModeRunConfiguration(testCase, MobileExecutionUtil.getMobileDriverConnector(
-                MobileDriverType.fromStringValue(devicePlatform), projectFolderLocation, deviceName),
+                MobileDriverType.fromStringValue(devicePlatform), projectFolderLocation),
                 WebUIExecutionUtil.getBrowserDriverConnector(WebUIDriverType.fromStringValue(browserType),
                         projectFolderLocation));
     }
@@ -46,20 +43,17 @@ public class MixedModeRunConfigurationContributor implements IRunConfigurationCo
     public IRunConfiguration getRunConfiguration(TestSuiteEntity testSuite, Map<String, String> runInput)
             throws IOException {
         if (runInput == null
-                || runInput.get(com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_DEVICE_NAME) == null
                 || runInput.get(com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_PLATFORM) == null
                 || runInput.get(com.kms.katalon.core.webui.constants.StringConstants.CONF_PROPERTY_EXECUTED_BROWSER) == null) {
             return null;
         }
-        String deviceName = runInput
-                .get(com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_DEVICE_NAME);
         String devicePlatform = runInput
                 .get(com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_PLATFORM);
         String browserType = runInput
                 .get(com.kms.katalon.core.webui.constants.StringConstants.CONF_PROPERTY_EXECUTED_BROWSER);
         String projectFolderLocation = testSuite.getProject().getFolderLocation();
         return new MixedModeRunConfiguration(testSuite, MobileExecutionUtil.getMobileDriverConnector(
-                MobileDriverType.fromStringValue(devicePlatform), projectFolderLocation, deviceName),
+                MobileDriverType.fromStringValue(devicePlatform), projectFolderLocation),
                 WebUIExecutionUtil.getBrowserDriverConnector(WebUIDriverType.fromStringValue(browserType),
                         projectFolderLocation));
     }

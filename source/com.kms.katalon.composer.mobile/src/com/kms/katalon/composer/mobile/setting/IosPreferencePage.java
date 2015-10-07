@@ -3,16 +3,15 @@ package com.kms.katalon.composer.mobile.setting;
 import java.io.IOException;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.execution.settings.DriverPreferencePage;
-import com.kms.katalon.core.mobile.setting.IosDriverPropertySettingStore;
-import com.kms.katalon.core.setting.DriverPropertySettingStore;
+import com.kms.katalon.execution.entity.IDriverConnector;
+import com.kms.katalon.execution.mobile.driver.IosDriverConnector;
 
-public class IosPreferencePage extends DriverPreferencePage {
-
+public class IosPreferencePage extends AbstractMobilePreferencePage {
+    
     @Override
-    protected DriverPropertySettingStore getDriverPropertySettingStore(String projectFolderLocation) {
+    protected IDriverConnector getDriverConnector(String projectFolderLocation) {
         try {
-            return new IosDriverPropertySettingStore(projectFolderLocation);
+            return new IosDriverConnector(projectFolderLocation);
         } catch (IOException e) {
             LoggerSingleton.logError(e);
             // IO Errors, return null

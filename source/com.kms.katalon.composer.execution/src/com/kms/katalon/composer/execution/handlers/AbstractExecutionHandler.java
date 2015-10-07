@@ -40,6 +40,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.Entity;
+import com.kms.katalon.entity.exception.KatalonException;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -81,7 +82,8 @@ public abstract class AbstractExecutionHandler {
             if (ProjectController.getInstance().getCurrentProject() != null) {
                 MPartStack composerStack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID,
                         application);
-                if (composerStack == null) return false;
+                if (composerStack == null)
+                    return false;
 
                 if (composerStack.isVisible() && composerStack.getSelectedElement() != null) {
                     MPart part = (MPart) composerStack.getSelectedElement();
@@ -103,10 +105,13 @@ public abstract class AbstractExecutionHandler {
     public void execute() {
         try {
             execute(LaunchMode.RUN);
+        } catch (KatalonException e) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", e.getMessage());
         } catch (SWTException e) {
             // Ignore it
         } catch (Exception e) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Unable to execute test script.");
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error",
+                    "Unable to execute test script. (Root cause: " + e.getMessage() + " )");
             LoggerSingleton.logError(e);
         }
     }
@@ -126,9 +131,8 @@ public abstract class AbstractExecutionHandler {
                 TestSuiteCompositePart testSuiteComposite = (TestSuiteCompositePart) selectedPart.getObject();
 
                 if (testSuiteComposite.getOriginalTestSuite().getTestSuiteTestCaseLinks().isEmpty()) {
-                    if (MessageDialog
-                            .openQuestion(null, StringConstants.INFORMATION_TITLE,
-                                    "The test suite didn't have any test case to run. Do you want to add some test cases?")) {
+                    if (MessageDialog.openQuestion(null, StringConstants.INFORMATION_TITLE,
+                            "The test suite didn't have any test case to run. Do you want to add some test cases?")) {
                         testSuiteComposite.openAddTestCaseDialog();
                     }
                     return null;

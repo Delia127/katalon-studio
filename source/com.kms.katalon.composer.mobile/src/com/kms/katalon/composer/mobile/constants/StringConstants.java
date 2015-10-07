@@ -15,6 +15,7 @@ public class StringConstants extends GlobalStringConstants {
 	
 	// MobileExecutionHandler
 	public static final String DIA_ERROR_NULL_DEVICE_NAME = "No device is selected";
+	public static final String DIA_ERROR_CANNOT_FOUND_DEVICE_NAME = "Device ''{0}'' cannot be found.";
 	
 	// MixedModeExecutionHandler
 	public static final String DIA_ERROR_NULL_DEVICE_BROWSER_NAME = "No device/browser is selected";
