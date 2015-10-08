@@ -8,5 +8,26 @@
             uri="fragment.e4xmi">
       </fragment>
    </extension>
-
+   
+	<extension
+         point="com.kms.katalon.preferences.ProjectSettingPages">
+      <page
+      		category="com.kms.katalon.composer.execution.settings"
+            class="com.kms.katalon.composer.mobile.setting.MobilePerferencePage"
+            id="com.kms.katalon.composer.mobile.mainPage"
+            name="Mobile">
+      </page>
+      <page
+            category="com.kms.katalon.composer.mobile.mainPage"
+            class="com.kms.katalon.composer.mobile.setting.IosPreferencePage"
+            id="com.kms.katalon.composer.mobile.page.ios"
+            name="iOS">
+      </page>
+      <page
+            category="com.kms.katalon.composer.mobile.mainPage"
+            class="com.kms.katalon.composer.mobile.setting.AndroidPreferencePage"
+            id="com.kms.katalon.composer.mobile.page.android"
+            name="Android">
+      </page>
+   </extension>
 </plugin>

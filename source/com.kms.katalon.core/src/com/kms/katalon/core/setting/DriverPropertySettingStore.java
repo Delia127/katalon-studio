@@ -42,15 +42,15 @@ public abstract class DriverPropertySettingStore {
 
     protected abstract String getSettingFileName();
 
-    public Map<String, Object> getProperties() {
-        Map<String, Map<String, Object>> allProperties = getAllProperties();
+    public Map<String, Object> getDriverProperties() {
+        Map<String, Map<String, Object>> allProperties = getAllDriverProperties();
         if (allProperties.get(driverType.getName()) == null) {
             return new LinkedHashMap<String, Object>();
         }
         return allProperties.get(driverType.getName());
     }
 
-    public void saveProperties(Map<String, Object> driverProperties) throws IOException {
+    public void saveDriverProperties(Map<String, Object> driverProperties) throws IOException {
         // PropertySettingStoreUtil.removeAll(getPropertyKeys(),
         // propertyConfigFile);
         // for (DriverProperty driverProperty : driverProperties) {
@@ -58,7 +58,7 @@ public abstract class DriverPropertySettingStore {
         // driverProperty.getRawValue(),
         // propertyConfigFile);
         // }
-        Map<String, Map<String, Object>> driverPropertiesMap = getAllProperties();
+        Map<String, Map<String, Object>> driverPropertiesMap = getAllDriverProperties();
         driverPropertiesMap.put(driverType.getName(), driverProperties);
         Gson gsonObj = new Gson();
         String strJson = gsonObj.toJson(driverPropertiesMap);
@@ -88,7 +88,7 @@ public abstract class DriverPropertySettingStore {
         // }
     }
 
-    public Map<String, Map<String, Object>> getAllProperties() {
+    public Map<String, Map<String, Object>> getAllDriverProperties() {
         // try {
         // return
         // PropertySettingStoreUtil.getPropertyValues(DriverProperty.getParentKey(driverType),
@@ -110,8 +110,8 @@ public abstract class DriverPropertySettingStore {
 
     }
 
-    public Object getPropertyValue(String projectDir, String rawKey) {
-        for (Entry<String, Object> driverProperty : getProperties().entrySet()) {
+    public Object getDriverPropertyValue(String projectDir, String rawKey) {
+        for (Entry<String, Object> driverProperty : getDriverProperties().entrySet()) {
             if (driverProperty.getKey().equals(rawKey)) {
                 return driverProperty.getValue();
             }

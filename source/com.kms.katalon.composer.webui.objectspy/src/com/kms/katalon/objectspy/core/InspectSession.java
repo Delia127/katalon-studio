@@ -91,9 +91,11 @@ public class InspectSession implements Runnable {
 	protected void setUp(WebUIDriverType webUIDriverType, ProjectEntity currentProject) throws Exception {
 		projectDir = currentProject.getFolderLocation();
 
-		IDriverConnector driverConnector = WebUIExecutionUtil.getBrowserDriverConnector(webUIDriverType);
-		for (Entry<String, String> entry : driverConnector.getPropertyMap().entrySet()) {
-			System.setProperty(entry.getKey(), entry.getValue());
+		IDriverConnector driverConnector = WebUIExecutionUtil.getBrowserDriverConnector(webUIDriverType, projectDir);
+		for (Entry<String, Object> entry : driverConnector.getExecutionSettingPropertyMap().entrySet()) {
+		    if (entry.getValue() instanceof String) {
+	            System.setProperty(entry.getKey(), (String) entry.getValue());
+		    }
 		}
 
 		options = createDriverOptions(webUIDriverType);

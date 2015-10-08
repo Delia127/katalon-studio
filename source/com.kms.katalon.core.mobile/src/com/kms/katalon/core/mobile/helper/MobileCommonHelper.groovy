@@ -28,7 +28,7 @@ public class MobileCommonHelper {
 
     public static AppiumDriver initializeMobileDriver(String appFile, boolean uninstallAfterCloseApp) throws Exception {
     	MobileDriverFactory.getInstance().getDevices();
-        String deviceId = MobileDriverFactory.getInstance().getDeviceId(System.getProperty(MobileDriverFactory.EXECUTED_DEVICE_NAME));
+        String deviceId = MobileDriverFactory.getInstance().getDeviceId(RunConfiguration.getProperty(MobileDriverFactory.EXECUTED_DEVICE_NAME));
         OsType deviceOs = MobileDriverFactory.getInstance().getDeviceOs(deviceId);
         switch (deviceOs) {
         case OsType.IOS:
@@ -58,7 +58,7 @@ public class MobileCommonHelper {
     }
 
     public static String getDeviceModel() throws StepFailedException, IOException, InterruptedException {
-    	String deviceId = MobileDriverFactory.getInstance().getDeviceId(System.getProperty(MobileDriverFactory.EXECUTED_DEVICE_NAME));
+    	String deviceId = MobileDriverFactory.getInstance().getDeviceId(RunConfiguration.getProperty(MobileDriverFactory.EXECUTED_DEVICE_NAME));
         OsType deviceOs = MobileDriverFactory.getInstance().getDeviceOs(deviceId);
         String model = null;
         ProcessBuilder pb = new ProcessBuilder();
@@ -93,7 +93,7 @@ public class MobileCommonHelper {
     }
 
     public static String getDeviceOSVersion() throws StepFailedException, IOException, InterruptedException {
-    	String deviceId = MobileDriverFactory.getInstance().getDeviceId(System.getProperty(RunConfiguration.EXECUTED_DEVICE_NAME));
+    	String deviceId = MobileDriverFactory.getInstance().getDeviceId(RunConfiguration.getProperty(MobileDriverFactory.EXECUTED_DEVICE_NAME));
         OsType deviceOs = MobileDriverFactory.getInstance().getDeviceOs(deviceId);
         String osVersion = null;
         ProcessBuilder pb = new ProcessBuilder();

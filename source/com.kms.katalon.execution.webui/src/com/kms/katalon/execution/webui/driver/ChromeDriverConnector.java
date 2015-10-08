@@ -1,27 +1,33 @@
 package com.kms.katalon.execution.webui.driver;
 
+import java.io.IOException;
 import java.util.Map;
 
 import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
-import com.kms.katalon.execution.entity.AbstractDriverConnector;
 
-public class ChromeDriverConnector extends AbstractDriverConnector {
+public class ChromeDriverConnector extends WebUiDriverConnector {
 	private String chromeDriverPath;
 	
-	public ChromeDriverConnector() {
-		setChromeDriverPath(SeleniumWebDriverProvider.getChromeDriverPath());
-	}
+	public ChromeDriverConnector(String projectDir) throws IOException {
+        super(projectDir);
+        setChromeDriverPath(SeleniumWebDriverProvider.getChromeDriverPath());
+    }
 
+    public ChromeDriverConnector(String projectDir, String customProfileName) throws IOException {
+        super(projectDir, customProfileName);
+        setChromeDriverPath(SeleniumWebDriverProvider.getChromeDriverPath());
+    }
+    
 	@Override
 	public DriverType getDriverType() {
 		return WebUIDriverType.CHROME_DRIVER;
 	}
 
 	@Override
-	public Map<String, String> getPropertyMap() {
-		Map<String, String> propertyMap = super.getPropertyMap();
+	public Map<String, Object> getExecutionSettingPropertyMap() {
+		Map<String, Object> propertyMap = super.getExecutionSettingPropertyMap();
 		propertyMap.put(StringConstants.CONF_PROPERTY_CHROME_DRIVER_PATH, getChromeDriverPath());
 		return propertyMap;
 	}

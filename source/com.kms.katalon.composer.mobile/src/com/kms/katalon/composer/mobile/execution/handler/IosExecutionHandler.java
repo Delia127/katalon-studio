@@ -6,7 +6,7 @@ import org.eclipse.swt.widgets.Display;
 import com.kms.katalon.composer.mobile.constants.StringConstants;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
-import com.kms.katalon.execution.entity.IRunConfiguration;
+import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.mobile.configuration.IosRunConfiguration;
 
 public class IosExecutionHandler extends MobileExecutionHandler {

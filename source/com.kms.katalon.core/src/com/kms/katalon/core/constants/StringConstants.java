@@ -168,5 +168,5 @@ public class StringConstants {
 	public static final String CONF_PROPERTY_EXECUTION_SOURCE_NAME = XML_LOG_NAME_PROPERTY;
 	public static final String CONF_PROPERTY_EXECUTION_SOURCE_ID = XML_LOG_ID_PROPERTY;
 	public static final String CONF_PROPERTY_EXECUTION_SOURCE_DESCRIPTION = XML_LOG_DESCRIPTION_PROPERTY;
-	public static final String CONF_PROPERTY_CUSTOM_PROPERTY_PROFILE = "katalon.execution.profile";
+	public static final String CONF_PROPERTY_EXECUTION_DRIVER_PROPERTY = "katalon.execution.driver.property";
 }

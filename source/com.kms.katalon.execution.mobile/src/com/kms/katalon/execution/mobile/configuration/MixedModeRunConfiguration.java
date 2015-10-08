@@ -2,7 +2,7 @@ package com.kms.katalon.execution.mobile.configuration;
 
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
-import com.kms.katalon.execution.entity.AbstractRunConfiguration;
+import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.entity.IDriverConnector;
 
 public class MixedModeRunConfiguration extends AbstractRunConfiguration {

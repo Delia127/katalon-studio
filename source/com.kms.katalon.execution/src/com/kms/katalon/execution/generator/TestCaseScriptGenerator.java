@@ -9,7 +9,7 @@ import org.eclipse.core.resources.IResource;
 
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.execution.entity.IRunConfiguration;
+import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.groovy.util.GroovyUtil;
 

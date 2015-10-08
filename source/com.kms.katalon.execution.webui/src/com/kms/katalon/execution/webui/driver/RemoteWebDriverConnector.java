@@ -1,19 +1,25 @@
 package com.kms.katalon.execution.webui.driver;
 
+import java.io.IOException;
 import java.util.Map;
 
 import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
-import com.kms.katalon.execution.entity.AbstractDriverConnector;
 
-public class RemoteWebDriverConnector extends AbstractDriverConnector {
+public class RemoteWebDriverConnector extends WebUiDriverConnector {
 	private String remoteServerUrl;
 	
-	public RemoteWebDriverConnector(String remoteServerUrl) {
-		this.setRemoteServerUrl(remoteServerUrl);
-	}
+	public RemoteWebDriverConnector(String projectDir, String remoteServerUrl) throws IOException {
+        super(projectDir);
+        setRemoteServerUrl(remoteServerUrl);
+    }
 
+    public RemoteWebDriverConnector(String projectDir, String customProfileName, String remoteServerUrl) throws IOException {
+        super(projectDir, customProfileName);
+        setRemoteServerUrl(remoteServerUrl);
+    }
+    
 	@Override
 	public DriverType getDriverType() {
 		return WebUIDriverType.REMOTE_WEB_DRIVER;
@@ -28,8 +34,8 @@ public class RemoteWebDriverConnector extends AbstractDriverConnector {
 	}
 	
 	@Override
-	public Map<String, String> getPropertyMap() {
-		Map<String, String> propertyMap = super.getPropertyMap();
+	public Map<String, Object> getExecutionSettingPropertyMap() {
+		Map<String, Object> propertyMap = super.getExecutionSettingPropertyMap();
 		propertyMap.put(DriverFactory.REMOTE_WEB_DRIVER_URL, remoteServerUrl);
 		return propertyMap;
 	}

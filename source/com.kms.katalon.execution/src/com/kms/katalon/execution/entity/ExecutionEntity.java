@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.configuration.IRunConfiguration;
 
 public class ExecutionEntity {
 	private TestSuiteEntity testSuite;
