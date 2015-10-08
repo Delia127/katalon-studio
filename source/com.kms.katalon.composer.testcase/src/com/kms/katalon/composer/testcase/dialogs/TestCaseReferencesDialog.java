@@ -21,15 +21,16 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
-import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.explorer.handlers.deletion.AbstractDeleteEntityDialog;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.testcase.handlers.DeleteTestCaseHandler;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
-public class TestCaseReferencesDialog extends AbstractDialog {
+public class TestCaseReferencesDialog extends AbstractDeleteEntityDialog {
 
     // Control
     private TableViewer tableViewer;
@@ -40,8 +41,9 @@ public class TestCaseReferencesDialog extends AbstractDialog {
 
     private Label lblStatus;
 
-    public TestCaseReferencesDialog(Shell parentShell, TestCaseEntity testCase, List<TestSuiteEntity> testSuiteEntities) {
-        super(parentShell);
+    public TestCaseReferencesDialog(Shell parentShell, TestCaseEntity testCase,
+            List<TestSuiteEntity> testSuiteEntities, DeleteTestCaseHandler handler) {
+        super(parentShell, handler);
         setTestSuiteEntities(testSuiteEntities);
         setTestCaseEntity(testCase);
     }
@@ -63,11 +65,10 @@ public class TestCaseReferencesDialog extends AbstractDialog {
 
     @Override
     protected void setInput() {
-
         try {
             lblStatus.setText(MessageFormat.format(StringConstants.DIA_MSG_HEADER_TEST_CASE_REFERENCES,
                     TestCaseController.getInstance().getIdForDisplay(fTestCaseEntity)));
-            
+
             tableViewer.setInput(fTestSuiteEntities);
             getButton(CANCEL).forceFocus();
             mainComposite.layout(true, true);
@@ -77,10 +78,25 @@ public class TestCaseReferencesDialog extends AbstractDialog {
     }
 
     @Override
-    protected Control createDialogContainer(Composite parent) {
+    public String getDialogTitle() {
+        return StringConstants.DIA_TITLE_TEST_CASE_REFERENCES;
+    }
 
+    @Override
+    protected Point getInitialSize() {
+        return new Point(500, 500);
+    }
+
+    private void setTestCaseEntity(TestCaseEntity testCaseEntity) {
+        this.fTestCaseEntity = testCaseEntity;
+    }
+
+    @Override
+    protected Control createDialogComposite(Composite parent) {
         Composite composite = new Composite(parent, SWT.NONE);
         GridLayout glComposite = new GridLayout(1, false);
+        glComposite.marginWidth = 0;
+        glComposite.marginHeight = 0;
         glComposite.verticalSpacing = 10;
         composite.setLayout(glComposite);
 
@@ -89,7 +105,7 @@ public class TestCaseReferencesDialog extends AbstractDialog {
         compositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Label lblStatusImg = new Label(compositeHeader, SWT.NONE);
-        lblStatusImg.setImage(Display.getCurrent().getSystemImage(SWT.ICON_QUESTION));
+        lblStatusImg.setImage(Display.getCurrent().getSystemImage(SWT.ICON_WARNING));
 
         lblStatus = new Label(compositeHeader, SWT.WRAP);
         lblStatus.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
@@ -132,20 +148,6 @@ public class TestCaseReferencesDialog extends AbstractDialog {
         });
 
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
-        return tableViewer.getTable();
-    }
-
-    @Override
-    public String getDialogTitle() {
-        return StringConstants.DIA_TITLE_TEST_CASE_REFERENCES;
-    }
-
-    @Override
-    protected Point getInitialSize() {
-        return new Point(500, 500);
-    }
-
-    private void setTestCaseEntity(TestCaseEntity testCaseEntity) {
-        this.fTestCaseEntity = testCaseEntity;
+        return composite;
     }
 }

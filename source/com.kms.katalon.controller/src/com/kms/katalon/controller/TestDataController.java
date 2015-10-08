@@ -3,6 +3,7 @@ package com.kms.katalon.controller;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
@@ -10,6 +11,7 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.dal.state.DataProviderState;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testdata.DataFilePropertyInputEntity;
 import com.kms.katalon.entity.testdata.InternalDataFilePropertyEntity;
@@ -126,5 +128,10 @@ public class TestDataController extends EntityController {
     public String getTestDataDisplayIdByPk(String pk, String projectLocation) {
         return FilenameUtils.removeExtension(pk).replace(projectLocation + File.separator, "")
                 .replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPERATOR);
+    }
+
+    public Map<String, List<TestSuiteTestCaseLink>> getTestDataReferences(DataFileEntity dataFileEntity)
+            throws Exception {
+        return dataProviderSetting.getDataFileDataProvider().getTestDataReferences(dataFileEntity);
     }
 }

@@ -4,10 +4,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -15,8 +15,6 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
@@ -26,7 +24,12 @@ import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.tree.ITreeEntity;
+import com.kms.katalon.composer.explorer.handlers.deletion.AbstractDeleteReferredEntityHandler;
+import com.kms.katalon.composer.explorer.handlers.deletion.IDeleteEntityHandler;
 import com.kms.katalon.composer.folder.constants.StringConstants;
+import com.kms.katalon.composer.folder.handlers.deletion.DeleteFolderHandlerFactory;
+import com.kms.katalon.composer.folder.handlers.deletion.IDeleteFolderHandler;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
@@ -40,7 +43,7 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
-public class DeleteFolderHandler {
+public class DeleteFolderHandler extends AbstractDeleteReferredEntityHandler implements IDeleteEntityHandler {
 
     @Inject
     IEventBroker eventBroker;
@@ -50,45 +53,6 @@ public class DeleteFolderHandler {
 
     @Inject
     MApplication application;
-
-    @PostConstruct
-    private void registerEventHandler() {
-        eventBroker.subscribe(EventConstants.EXPLORER_DELETE_SELECTED_ITEM, new EventHandler() {
-            @Override
-            public void handleEvent(Event event) {
-                Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-                if (object != null && object instanceof FolderTreeEntity) {
-                    excute((FolderTreeEntity) object);
-                }
-            }
-        });
-    }
-
-    private void excute(FolderTreeEntity folderTreeEntity) {
-        try {
-            if ((folderTreeEntity.getObject() != null) && (folderTreeEntity.getObject() instanceof FolderEntity)) {
-                List<String> childEntitiesPartId = new ArrayList<String>();
-                getChildrenId(folderTreeEntity, childEntitiesPartId);
-                FolderEntity folderEntity = (FolderEntity) folderTreeEntity.getObject();
-                
-                if (folderEntity.getFolderType() == FolderType.TESTCASE) {
-                    eventBroker.post(EventConstants.EXPLORER_DELETE_TEST_CASE_FOLDER, folderTreeEntity);
-                    return;
-                }
-                
-                FolderController.getInstance().deleteFolder(folderEntity);
-                removeFromExplorer(childEntitiesPartId);
-                eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, folderEntity.getRelativePathForUI()
-                        .replace(File.separatorChar, IPath.SEPARATOR) + IPath.SEPARATOR);
-            }
-        } catch (EntityIsReferencedException | TestCaseIsReferencedByTestSuiteExepception e) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, e.getMessage());
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
-                    StringConstants.HAND_ERROR_MSG_UNABLE_TO_DELETE_FOLDER);
-        }
-    }
 
     private void getChildrenId(FolderTreeEntity folderTreeEntity, List<String> children) throws Exception {
         for (Object child : folderTreeEntity.getChildren()) {
@@ -129,6 +93,58 @@ public class DeleteFolderHandler {
                     mStackPart.getChildren().remove(mPart);
                 }
             }
+        }
+    }
+
+    @Override
+    public Class<? extends ITreeEntity> entityType() {
+        return FolderTreeEntity.class;
+    }
+
+    @Override
+    public boolean execute(ITreeEntity entity, IProgressMonitor monitor) {
+        try {
+            if (!(entity instanceof FolderTreeEntity)) {
+                return false;
+            }
+
+            if ((entity.getObject() != null) && (entity.getObject() instanceof FolderEntity)) {
+                List<String> childEntitiesPartId = new ArrayList<String>();
+                getChildrenId((FolderTreeEntity) entity, childEntitiesPartId);
+                FolderEntity folderEntity = (FolderEntity) entity.getObject();
+
+                // Check Delete Folder Handler from registry first,
+                // If it exists, call its execute method. Otherwise, use default delete.
+                FolderType folderType = folderEntity.getFolderType();
+                IDeleteFolderHandler handler = DeleteFolderHandlerFactory.getInstance().getDeleteHandler(folderType);
+                if (handler != null) {
+                    if (handler instanceof AbstractDeleteReferredEntityHandler) {
+                        ((AbstractDeleteReferredEntityHandler) handler)
+                                .setDeletePreferenceOption(getDeletePreferenceOption());
+                    }
+                    handler.execute((FolderTreeEntity) entity, monitor);
+
+                    if (handler instanceof AbstractDeleteReferredEntityHandler) {
+                        setDeletePreferenceOption(((AbstractDeleteReferredEntityHandler) handler)
+                                .getDeletePreferenceOption());
+                    }
+                } else {
+                    FolderController.getInstance().deleteFolder(folderEntity);
+                    removeFromExplorer(childEntitiesPartId);
+                }
+
+                eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, folderEntity.getRelativePathForUI()
+                        .replace(File.separatorChar, IPath.SEPARATOR) + IPath.SEPARATOR);
+            }
+            return true;
+        } catch (EntityIsReferencedException | TestCaseIsReferencedByTestSuiteExepception e) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, e.getMessage());
+            return false;
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                    StringConstants.HAND_ERROR_MSG_UNABLE_TO_DELETE_FOLDER);
+            return false;
         }
     }
 }

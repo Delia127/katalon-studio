@@ -1,55 +1,50 @@
 package com.kms.katalon.composer.report.handlers;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
-import org.eclipse.e4.core.services.events.IEventBroker;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventHandler;
+import org.eclipse.core.runtime.IProgressMonitor;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.tree.ITreeEntity;
+import com.kms.katalon.composer.explorer.handlers.deletion.IDeleteEntityHandler;
 import com.kms.katalon.composer.report.constants.StringConstants;
-import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.entity.report.ReportEntity;
 
-public class DeleteReportHandler {
+public class DeleteReportHandler implements IDeleteEntityHandler{
 
-    @Inject
-    private IEventBroker eventBroker;
-    
-    @PostConstruct
-    private void registerEventHandler() {
-
-        eventBroker.subscribe(EventConstants.EXPLORER_DELETE_SELECTED_ITEM, new EventHandler() {
-
-            @Override
-            public void handleEvent(Event event) {
-                Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-                if (object != null && object instanceof ReportTreeEntity) {
-                    excute((ReportTreeEntity) object);
-                }
-            }
-        });
+    @Override
+    public Class<? extends ITreeEntity> entityType() {
+        return ReportTreeEntity.class;
     }
 
-    private void excute(ReportTreeEntity reportTreeEntity) {
+    @Override
+    public boolean execute(ITreeEntity treeEntity, IProgressMonitor monitor) {
         try {
-            ReportEntity report = (ReportEntity) reportTreeEntity.getObject();
+            if (treeEntity == null || !(treeEntity instanceof ReportTreeEntity)) { return false;}
+            
+            String taskName = "Deleting " + treeEntity.getTypeName() + " '" + treeEntity.getText()
+                    + "'...";
+            monitor.beginTask(taskName, 1);
+            
+            ReportEntity report = (ReportEntity) treeEntity.getObject();
+            
             if (report == null) {
-                return;
+                return false;
             }
             
             EntityPartUtil.closePart(report);
             
             ReportController.getInstance().deleteReport(report);
+            return true;
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.HAND_ERROR_MSG_UNABLE_TO_DELETE_REPORT,
                     e.getMessage());
+            return false;
+        } finally {
+            monitor.done();
         }
     }
 }

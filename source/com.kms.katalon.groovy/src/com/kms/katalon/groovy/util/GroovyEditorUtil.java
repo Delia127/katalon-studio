@@ -34,100 +34,102 @@ import org.eclipse.ui.part.FileEditorInput;
 
 @SuppressWarnings("restriction")
 public class GroovyEditorUtil {
-	private static final String GROOVY_EDITOR_URI = "org.codehaus.groovy.eclipse.editor.GroovyEditor";
+    private static final String GROOVY_EDITOR_URI = "org.codehaus.groovy.eclipse.editor.GroovyEditor";
 
-	public static MPart createTestCaseEditorPart(IFile scriptFile, MPartStack parentPartStack, String testCaseEditorId,
-			EPartService partService, int index) throws Exception {
-		MPart editor = partService.createPart(CompatibilityEditor.MODEL_ELEMENT_ID);
-		editor.setElementId(testCaseEditorId);
+    public static MPart createTestCaseEditorPart(IFile scriptFile, MPartStack parentPartStack, String testCaseEditorId,
+            EPartService partService, int index) throws Exception {
+        MPart editor = partService.createPart(CompatibilityEditor.MODEL_ELEMENT_ID);
+        editor.setElementId(testCaseEditorId);
 
-		IEditorInput input = new FileEditorInput(scriptFile);
-		editor.getTags().add(GROOVY_EDITOR_URI);
-		createEditorReferenceForPart(editor, input, GROOVY_EDITOR_URI, null);
-		updateActiveEditorSources(editor);
-		EditorDescriptor descriptor = (EditorDescriptor) PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-				.getActivePage().getWorkbenchWindow().getWorkbench().getEditorRegistry().findEditor(GROOVY_EDITOR_URI);
-		recordEditor(input, descriptor);
+        IEditorInput input = new FileEditorInput(scriptFile);
+        editor.getTags().add(GROOVY_EDITOR_URI);
+        createEditorReferenceForPart(editor, input, GROOVY_EDITOR_URI, null);
+        updateActiveEditorSources(editor);
+        EditorDescriptor descriptor = (EditorDescriptor) PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+                .getActivePage().getWorkbenchWindow().getWorkbench().getEditorRegistry().findEditor(GROOVY_EDITOR_URI);
+        recordEditor(input, descriptor);
 
-		editor.getTags().add(IPresentationEngine.NO_MOVE);
-		parentPartStack.getChildren().add(index, editor);
-		return editor;
-	}
+        editor.getTags().add(IPresentationEngine.NO_MOVE);
+        parentPartStack.getChildren().add(index, editor);
+        return editor;
+    }
 
-	private static void recordEditor(IEditorInput input, IEditorDescriptor descriptor) {
-		WorkbenchPage page = (WorkbenchPage) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		EditorHistory history = ((Workbench) page.getWorkbenchWindow().getWorkbench()).getEditorHistory();
-		history.add(input, descriptor);
-	}
+    private static void recordEditor(IEditorInput input, IEditorDescriptor descriptor) {
+        WorkbenchPage page = (WorkbenchPage) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        EditorHistory history = ((Workbench) page.getWorkbenchWindow().getWorkbench()).getEditorHistory();
+        history.add(input, descriptor);
+    }
 
-	private static IEditorPart getEditor(MPart part) {
-		if (part != null) {
-			Object clientObject = part.getObject();
-			if (clientObject instanceof CompatibilityEditor) {
-				return ((CompatibilityEditor) clientObject).getEditor();
-			}
-		}
-		return null;
-	}
+    private static IEditorPart getEditor(MPart part) {
+        if (part != null) {
+            Object clientObject = part.getObject();
+            if (clientObject instanceof CompatibilityEditor) {
+                return ((CompatibilityEditor) clientObject).getEditor();
+            }
+        }
+        return null;
+    }
 
-	private static void updateActiveEditorSources(MPart part) {
-		IEditorPart editor = getEditor(part);
-		WorkbenchPage page = (WorkbenchPage) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		MWindow window = page.getWindowModel();
-		window.getContext().set(ISources.ACTIVE_EDITOR_ID_NAME, editor == null ? null : editor.getSite().getId());
-		window.getContext().set(ISources.ACTIVE_EDITOR_NAME, editor);
-		window.getContext().set(ISources.ACTIVE_EDITOR_INPUT_NAME, editor == null ? null : editor.getEditorInput());
+    private static void updateActiveEditorSources(MPart part) {
+        IEditorPart editor = getEditor(part);
+        WorkbenchPage page = (WorkbenchPage) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        MWindow window = page.getWindowModel();
+        window.getContext().set(ISources.ACTIVE_EDITOR_ID_NAME, editor == null ? null : editor.getSite().getId());
+        window.getContext().set(ISources.ACTIVE_EDITOR_NAME, editor);
+        window.getContext().set(ISources.ACTIVE_EDITOR_INPUT_NAME, editor == null ? null : editor.getEditorInput());
 
-		if (editor != null) {
-			NavigationHistory navigationHistory = (NavigationHistory) page.getNavigationHistory();
-			navigationHistory.markEditor(editor);
-		}
-	}
+        if (editor != null) {
+            NavigationHistory navigationHistory = (NavigationHistory) page.getNavigationHistory();
+            navigationHistory.markEditor(editor);
+        }
+    }
 
-	private static EditorReference createEditorReferenceForPart(final MPart part, IEditorInput input, String editorId,
-			IMemento memento) {
-		IEditorRegistry registry = PlatformUI.getWorkbench().getEditorRegistry();
-		EditorDescriptor descriptor = (EditorDescriptor) registry.findEditor(editorId);
-		WorkbenchPage page = (WorkbenchPage) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		final EditorReference ref = new EditorReference(page.getWindowModel().getContext(), page, part, input,
-				descriptor, memento);
-		page.addEditorReference(ref);
-		ref.subscribe();
-		return ref;
-	}
+    private static EditorReference createEditorReferenceForPart(final MPart part, IEditorInput input, String editorId,
+            IMemento memento) {
+        IEditorRegistry registry = PlatformUI.getWorkbench().getEditorRegistry();
+        EditorDescriptor descriptor = (EditorDescriptor) registry.findEditor(editorId);
+        WorkbenchPage page = (WorkbenchPage) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        final EditorReference ref = new EditorReference(page.getWindowModel().getContext(), page, part, input,
+                descriptor, memento);
+        page.addEditorReference(ref);
+        ref.subscribe();
+        return ref;
+    }
 
-	public static void showProblems(GroovyEditor editor) {
-		IResource resource = null;
-		try {
-			resource = editor.getGroovyCompilationUnit().getResource();			
-			clearEditorProblems(editor);			
-			String testScriptContent = editor.getGroovyCompilationUnit().getSource();
-			if (testScriptContent == null || testScriptContent.isEmpty()) return;
-			new AstBuilder().buildFromString(CompilePhase.CONVERSION, testScriptContent);
-		} catch (MultipleCompilationErrorsException ex) {
-			try {
-				SyntaxErrorMessage message = (SyntaxErrorMessage) ex.getErrorCollector().getError(0);
-				SyntaxException syntaxException = message.getCause();
-				int lineOffset = editor.getViewer().getDocument().getLineOffset(syntaxException.getLine() - 1);
-				IMarker marker = resource.createMarker(GroovyDSLCoreActivator.MARKER_ID);
-				marker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_HIGH);
-				marker.setAttribute(IMarker.MESSAGE, syntaxException.getMessage());
-				marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
-				marker.setAttribute(IMarker.LINE_NUMBER, syntaxException.getLine());
-				marker.setAttribute(IMarker.CHAR_START, lineOffset + syntaxException.getStartColumn() - 1);
-				marker.setAttribute(IMarker.CHAR_END, lineOffset + syntaxException.getEndColumn() - 1);
-				marker.setAttribute(IMarker.LOCATION, String.format("line %d", syntaxException.getLine()));				
-			} catch (Exception e) {
-				//Don't throw or log because this is a user typing error.
-			}
-		} catch (Exception e) {
-			//Don't throw or log because this is a user typing error.
-		}
-	}
-	
-	public static void clearEditorProblems(GroovyEditor editor) throws CoreException {
-		IResource resource = editor.getGroovyCompilationUnit().getResource();
-		resource.deleteMarkers(IMarker.PROBLEM, true, IMarker.SEVERITY_ERROR);
-	}
+    public static void showProblems(GroovyEditor editor) {
+        IResource resource = null;
+        try {
+            resource = editor.getGroovyCompilationUnit().getResource();
+            clearEditorProblems(editor);
+            String testScriptContent = editor.getGroovyCompilationUnit().getSource();
+            if (testScriptContent == null || testScriptContent.isEmpty()) return;
+            new AstBuilder().buildFromString(CompilePhase.CONVERSION, testScriptContent);
+        } catch (MultipleCompilationErrorsException ex) {
+            try {
+                SyntaxErrorMessage message = (SyntaxErrorMessage) ex.getErrorCollector().getError(0);
+                SyntaxException syntaxException = message.getCause();
+                int lineOffset = editor.getViewer().getDocument().getLineOffset(syntaxException.getLine() - 1);
+                IMarker marker = resource.createMarker(GroovyDSLCoreActivator.MARKER_ID);
+                marker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_HIGH);
+                marker.setAttribute(IMarker.MESSAGE, syntaxException.getMessage());
+                marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+                marker.setAttribute(IMarker.LINE_NUMBER, syntaxException.getLine());
+                marker.setAttribute(IMarker.CHAR_START, lineOffset + syntaxException.getStartColumn() - 1);
+                marker.setAttribute(IMarker.CHAR_END, lineOffset + syntaxException.getEndColumn() - 1);
+                marker.setAttribute(IMarker.LOCATION, String.format("line %d", syntaxException.getLine()));
+            } catch (Exception e) {
+                // Don't throw or log because this is a user typing error.
+            }
+        } catch (Exception e) {
+            // Don't throw or log because this is a user typing error.
+        }
+    }
+
+    public static void clearEditorProblems(GroovyEditor editor) throws CoreException {
+        IResource resource = editor.getGroovyCompilationUnit().getResource();
+        if (resource != null && resource.exists()) {
+            resource.deleteMarkers(IMarker.PROBLEM, true, IMarker.SEVERITY_ERROR);
+        }
+    }
 
 }

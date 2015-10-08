@@ -76,7 +76,7 @@ public class KeywordLogger {
                 // Split log into 100 files, every file is maximum 100MB
                 // 100MB for a log file maybe too large???
                 FileHandler fileHandler = new FileHandler(logFolder + File.separator + "execution%g.log",
-                        100 * 1024 * 1024 * 1024, 100, true);
+                        100 * 1024 * 1024, 100, true);
                 logger.addHandler(fileHandler);
 
                 CustomXmlFormatter formatter = new CustomXmlFormatter();

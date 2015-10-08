@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.explorer.handlers;
 
+import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Set;
@@ -9,22 +10,26 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.dialogs.YesNoAllOptions;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.SelectionServiceSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.constants.StringConstants;
+import com.kms.katalon.composer.explorer.handlers.deletion.AbstractDeleteReferredEntityHandler;
+import com.kms.katalon.composer.explorer.handlers.deletion.DeleteEntityHandlerFactory;
+import com.kms.katalon.composer.explorer.handlers.deletion.IDeleteEntityHandler;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 
@@ -80,54 +85,78 @@ public class DeleteHandler implements IHandler {
         }
     }
 
-    private static void delete(final IEventBroker eventBroker, final Object[] objects) {
-        Job job = new Job("Delete tree items") {
-
+    private static void delete(final IEventBroker eventBroker, final Object[] objects)
+            throws InvocationTargetException, InterruptedException {
+        ProgressMonitorDialog dialog = new ProgressMonitorDialog(Display.getCurrent().getActiveShell());
+        dialog.run(true, true, new IRunnableWithProgress() {
             @Override
-            protected IStatus run(IProgressMonitor monitor) {
+            public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                 try {
                     monitor.beginTask("Deleting items...", objects.length + 1);
                     Set<ITreeEntity> parentSetEntities = new HashSet<ITreeEntity>();
-                    
+
+                    YesNoAllOptions globalDeletionOption = YesNoAllOptions.NO;
                     for (Object selectedItem : objects) {
-                        ITreeEntity treeEntity = (ITreeEntity) selectedItem;
+                        if (monitor.isCanceled()) {
+                            return;
+                        }
+
+                        final ITreeEntity treeEntity = (ITreeEntity) selectedItem;
+                        SubProgressMonitor subMonitor = new SubProgressMonitor(monitor, 1,
+                                SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK);
                         try {
                             if (parentSetEntities.contains(treeEntity)) {
                                 parentSetEntities.remove(treeEntity);
                             }
-                            
+
                             if (treeEntity.getParent() != null) {
                                 parentSetEntities.add(treeEntity.getParent());
                             }
-                            
-                            monitor.subTask("Deleting " + treeEntity.getTypeName() + " '" + treeEntity.getText()
-                                    + "'...");
+
                         } catch (Exception e) {
+                            subMonitor.done();
                             continue;
                         }
+
                         if (selectedItem instanceof ITreeEntity) {
-                            eventBroker.send(EventConstants.EXPLORER_DELETE_SELECTED_ITEM, treeEntity);
+                            IDeleteEntityHandler handler = DeleteEntityHandlerFactory.getInstance().getDeleteHandler(
+                                    treeEntity.getClass());
+                            if (handler == null) {
+                                continue;
+                            }
+
+                            // prepare for entity's deletion handler
+                            if (handler instanceof AbstractDeleteReferredEntityHandler) {
+                                AbstractDeleteReferredEntityHandler deletePreferenceHandler = (AbstractDeleteReferredEntityHandler) handler;
+                                deletePreferenceHandler.setDeletePreferenceOption(globalDeletionOption);
+                            }
+
+                            handler.execute(treeEntity, subMonitor);
+
+                            // Store the confirmation of "Yes to all" or "No to all" for all previous entity
+                            if (handler instanceof AbstractDeleteReferredEntityHandler) {
+                                AbstractDeleteReferredEntityHandler deletePreferenceHandler = (AbstractDeleteReferredEntityHandler) handler;
+                                YesNoAllOptions handlerDeletionOption = deletePreferenceHandler
+                                        .getDeletePreferenceOption();
+                                if (handlerDeletionOption == YesNoAllOptions.YES_TO_ALL
+                                        || handlerDeletionOption == YesNoAllOptions.NO_TO_ALL) {
+                                    globalDeletionOption = handlerDeletionOption;
+                                }
+                            }
                         }
-                        monitor.worked(1);
                     }
-                    
+
                     monitor.subTask("Refreshing explorer");
                     for (ITreeEntity parentEntity : parentSetEntities) {
                         eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentEntity);
                     }
                     monitor.worked(1);
-                    
-                    return Status.OK_STATUS;
                 } finally {
                     monitor.done();
                 }
             }
-        };
+        });
 
-        if (objects.length > 1) {
-            job.setUser(true);
-        }
-        job.schedule(0);
     }
 
     @Override

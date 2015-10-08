@@ -106,7 +106,7 @@ public class OpenProjectHandler {
                     monitor.worked(1);
                     monitor.subTask(StringConstants.HAND_LOADING_PROJ);
                     final ProjectEntity project = ProjectController.getInstance().openProjectForUI(projectPk,
-                            new SubProgressMonitor(monitor, 7));
+                            new SubProgressMonitor(monitor, 7, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK));
                     monitor.subTask(StringConstants.HAND_REFRESHING_EXPLORER);
                     sync.syncExec(new Runnable() {
                         @Override

@@ -1,7 +1,6 @@
 package com.kms.katalon.composer.components.impl.dialogs;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -62,11 +61,4 @@ public abstract class AbstractDialog extends Dialog {
 
     protected abstract String getDialogTitle();
     
-    protected void createButtonsForButtonBar(Composite parent) {
-        // create OK and Cancel buttons by default
-        createButton(parent, IDialogConstants.OK_ID, "Yes",
-                true);
-        createButton(parent, IDialogConstants.CANCEL_ID,
-                "No", false);
-    }
 }

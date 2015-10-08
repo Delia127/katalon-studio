@@ -17,51 +17,52 @@ import com.kms.katalon.constants.IdConstants;
 
 @SuppressWarnings("restriction")
 public class RenameHandler {
-	
-	@Inject
-	private Logger logger;
-	
-	@Inject
-	private ESelectionService selectionService;
-	
-	@Inject EPartService partService;
 
-	@CanExecute
-    public boolean canExecute() {		
-	    Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);	    
-		if (selectedObjects == null || selectedObjects.length != 1) {
-			return false;
-		}
+    @Inject
+    private Logger logger;
+
+    @Inject
+    private ESelectionService selectionService;
+
+    @Inject
+    EPartService partService;
+
+    @CanExecute
+    public boolean canExecute() {
+        Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
+        if (selectedObjects == null || selectedObjects.length != 1) {
+            return false;
+        }
         if (selectedObjects[0] instanceof ITreeEntity) {
-        	try {
-				return ((ITreeEntity) selectedObjects[0]).isRenamable();
-			} catch (Exception e) {
-				logger.error(e);
-			}
+            try {
+                return ((ITreeEntity) selectedObjects[0]).isRenamable();
+            } catch (Exception e) {
+                logger.error(e);
+            }
         }
         return true;
     }
-	
-	@Execute
+
+    @Execute
     public void execute(IEventBroker eventBroker) {
-		if (selectionService != null) {	
-			if (partService.getDirtyParts().size() > 0) {
-				if (!MessageDialog.openConfirm(null, StringConstants.HAND_CONFIRM_TITLE, 
-						StringConstants.HAND_CONFIRM_MSG_REQUIRE_SAVE_ALL_B4_CONTINUE)) {
-					return;
-				}
-			}
-			
+        if (selectionService != null) {
+            if (partService.getDirtyParts().size() > 0) {
+                if (!MessageDialog.openConfirm(null, StringConstants.HAND_CONFIRM_TITLE,
+                        StringConstants.HAND_CONFIRM_MSG_REQUIRE_SAVE_ALL_B4_CONTINUE)) {
+                    return;
+                }
+            }
+
             if (partService.saveAll(true) && selectionService.getSelection(IdConstants.EXPLORER_PART_ID) != null) {
-            	Object[] selectedObjects = (Object[])selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-            	if(selectedObjects.length > 0 && selectedObjects[0] instanceof ITreeEntity){
-            		try {
-						eventBroker.post(EventConstants.EXPLORER_RENAME_SELECTED_ITEM, 
-								(ITreeEntity)selectedObjects[0]);
-					} catch (Exception e) {
-						logger.error(e);
-					}            		
-            	}
+                Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
+                if (selectedObjects.length > 0 && selectedObjects[0] instanceof ITreeEntity) {
+                    try {
+                        eventBroker
+                                .post(EventConstants.EXPLORER_RENAME_SELECTED_ITEM, (ITreeEntity) selectedObjects[0]);
+                    } catch (Exception e) {
+                        logger.error(e);
+                    }
+                }
             }
         }
     }

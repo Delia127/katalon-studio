@@ -9,5 +9,11 @@
             uri="fragment.e4xmi">
       </fragment>
    </extension>
+   <extension
+         point="com.kms.katalon.composer.explorer.delete">
+      <client
+            handler="com.kms.katalon.composer.report.handlers.DeleteReportHandler">
+      </client>
+   </extension>
 
 </plugin>
