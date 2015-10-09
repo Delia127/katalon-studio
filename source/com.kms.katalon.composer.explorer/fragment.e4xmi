@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ASCII"?>
-<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_rRLBABb6EeSOVencM6x_7w">
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_rRLBABb6EeSOVencM6x_7w">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_QIdWEA82EeW1X5UIL5jJZA" featurename="bindings" parentElementId="com.kms.katalon.bindingtable.window">
     <elements xsi:type="commands:KeyBinding" xmi:id="_7reTkA58EeWhRqQJseEW0Q" elementId="com.kms.katalon.composer.explorer.keybinding.refresh" keySequence="F5" command="_zBE1cKCCEeS_c-2UCFgVmQ">
       <tags>type:user</tags>
@@ -39,5 +39,8 @@
     <elements xsi:type="commands:Handler" xmi:id="_Baz_ICPUEeStgKkqz5sGOw" elementId="com.kms.katalon.composer.explorer.handler.paste" contributionURI="bundleclass://com.kms.katalon.composer.explorer/com.kms.katalon.composer.explorer.handlers.PasteHandler" command="_8CRNICPTEeStgKkqz5sGOw"/>
     <elements xsi:type="commands:Handler" xmi:id="_N4xDwImREeSwnaro5Nln-g" elementId="com.kms.katalon.composer.explorer.handler.cut" contributionURI="bundleclass://com.kms.katalon.composer.explorer/com.kms.katalon.composer.explorer.handlers.CutHandler" command="_Phq7QImREeSwnaro5Nln-g"/>
     <elements xsi:type="commands:Handler" xmi:id="_Baxe4KCDEeS_c-2UCFgVmQ" elementId="com.kms.katalon.composer.explorer.handler.refresh" contributionURI="bundleclass://com.kms.katalon.composer.explorer/com.kms.katalon.composer.explorer.handlers.RefreshHandler" command="_zBE1cKCCEeS_c-2UCFgVmQ"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_B8mnUGsrEeWfg6wx-7KkhQ" featurename="addons" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="application:Addon" xmi:id="_DvtjsGsrEeWfg6wx-7KkhQ" elementId="com.kms.katalon.composer.explorer.addon.injection" contributionURI="bundleclass://com.kms.katalon.composer.explorer/com.kms.katalon.composer.explorer.addon.ExplorerContextInjectionAddon"/>
   </fragments>
 </fragment:ModelFragments>

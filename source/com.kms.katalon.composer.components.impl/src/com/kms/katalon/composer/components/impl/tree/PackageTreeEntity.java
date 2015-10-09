@@ -45,7 +45,7 @@ public class PackageTreeEntity implements ITreeEntity {
     public Object[] getChildren() throws Exception {
         List<Object> children = new ArrayList<Object>();
         for (ICompilationUnit childGroovyClass : GroovyUtil.getAllGroovyClasses(packageFragment)) {
-            if (childGroovyClass.exists()) {
+            if (childGroovyClass.getResource().exists()) {
                 children.add(new KeywordTreeEntity(childGroovyClass, this));
             }
         }

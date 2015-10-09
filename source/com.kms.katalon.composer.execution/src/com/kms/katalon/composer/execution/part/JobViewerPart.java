@@ -23,8 +23,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -218,13 +216,12 @@ public class JobViewerPart implements EventHandler {
         }
 
         Label lblStatus = new Label(compositeLauncher, SWT.NONE);
-        lblStatus.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        GridData gdLblStatus = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        gdLblStatus.heightHint = 9;
+        
         String driver = launcher.getRunConfiguration().getName();
 
         lblStatus.setText("<" + launcher.getStatus().toString() + ">" + " - " + driver);
-        FontData[] fdStatus = lblStatus.getFont().getFontData();
-        fdStatus[0].setHeight(9);
-        lblStatus.setFont(new Font(Display.getCurrent(), fdStatus[0]));
         lblStatus.setBackground(compositeLauncher.getBackground());
         new Label(compositeLauncher, SWT.NONE);
 

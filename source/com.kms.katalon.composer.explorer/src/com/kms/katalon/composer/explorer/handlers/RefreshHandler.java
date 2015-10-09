@@ -22,68 +22,68 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 
 public class RefreshHandler implements IHandler {
-	@Override
-	public void addHandlerListener(IHandlerListener handlerListener) {
-		// TODO Auto-generated method stub
+    @Override
+    public void addHandlerListener(IHandlerListener handlerListener) {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
+    @Override
+    public void dispose() {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
-		String activePartId = HandlerUtil.getActivePartId(event);
-		if (activePartId != null && activePartId.equals(IdConstants.EXPLORER_PART_ID)) {
-			execute(SelectionServiceSingleton.getInstance().getSelectionService(), EventBrokerSingleton.getInstance()
-					.getEventBroker());
-		}
-		return null;
-	}
+    @Override
+    public Object execute(ExecutionEvent event) throws ExecutionException {
+        String activePartId = HandlerUtil.getActivePartId(event);
+        if (activePartId != null && activePartId.equals(IdConstants.EXPLORER_PART_ID)) {
+            execute(SelectionServiceSingleton.getInstance().getSelectionService(), EventBrokerSingleton.getInstance()
+                    .getEventBroker());
+        }
+        return null;
+    }
 
-	@SuppressWarnings("restriction")
-	@Execute
-	private void execute(ESelectionService selectionService, IEventBroker eventBroker) {
-		if (selectionService != null) {
-			if (selectionService.getSelection(IdConstants.EXPLORER_PART_ID) != null) {
-				for (Object selectedItem : (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID)) {
-					if (selectedItem instanceof ITreeEntity) {
-						try {
-							eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, selectedItem);
-							eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, selectedItem);
-						} catch (Exception e) {
-							LoggerSingleton.getInstance().getLogger().error(e);
-						}
-					}
-				}
-			}
-		}
-	}
+    @SuppressWarnings("restriction")
+    @Execute
+    private void execute(ESelectionService selectionService, IEventBroker eventBroker) {
+        if (selectionService != null) {
+            if (selectionService.getSelection(IdConstants.EXPLORER_PART_ID) != null) {
+                for (Object selectedItem : (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID)) {
+                    if (selectedItem instanceof ITreeEntity) {
+                        try {
+                            eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, selectedItem);
+                            eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, selectedItem);
+                        } catch (Exception e) {
+                            LoggerSingleton.getInstance().getLogger().error(e);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-	@Override
-	public boolean isEnabled() {
-		ESelectionService selectionService = SelectionServiceSingleton.getInstance().getSelectionService();
-		Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-		return canExecute(selectedObjects);
-	}
+    @Override
+    public boolean isEnabled() {
+        ESelectionService selectionService = SelectionServiceSingleton.getInstance().getSelectionService();
+        Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
+        return canExecute(selectedObjects);
+    }
 
-	@Override
-	public boolean isHandled() {
-		return true;
-	}
+    @Override
+    public boolean isHandled() {
+        return true;
+    }
 
-	@Override
-	public void removeHandlerListener(IHandlerListener handlerListener) {
-	}
+    @Override
+    public void removeHandlerListener(IHandlerListener handlerListener) {
+    }
 
-	@CanExecute
-	public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object[] selectedObjects) {
-		if (selectedObjects == null || selectedObjects.length == 0) {
-			return false;
-		}
-		return true;
-	}
+    @CanExecute
+    public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object[] selectedObjects) {
+        if (selectedObjects == null || selectedObjects.length == 0) {
+            return false;
+        }
+        return true;
+    }
 }

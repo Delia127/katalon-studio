@@ -38,7 +38,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_MENU_CONTEXT_INSERT_COL = "Insert column";
     public static final String PA_MENU_CONTEXT_INSERT_COL_TO_THE_LEFT = "To the left";
     public static final String PA_MENU_CONTEXT_INSERT_COL_TO_THE_RIGHT = "To the right";
-    public static final String PA_MENU_CONTEXT_RENAME_COL = "Rename column";    
+    public static final String PA_MENU_CONTEXT_RENAME_COL = "Rename column";
     public static final String PA_MENU_CONTEXT_INSERT_ROW = "Insert row";
     public static final String PA_MENU_CONTEXT_DEL = "Delete";
     public static final String PA_MENU_CONTEXT_DEL_COL = "Column";
@@ -53,8 +53,10 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_LBL_DESCRIPTION = DESCRIPTION;
     public static final String PA_LBL_DATA_TYPE = "Data Type";
     public static final String PA_CONFIRM_TITLE_FILE_CHANGED = "File changed";
-    public static final String PA_CONFIRM_MSG_RELOAD_FILE = "The file ''{0}'' has been changed on the file system. Do you want to reload it?";
-    public static final String PA_ERROR_MSG_FILE_X_IS_WRONG_FORMAT_AT_LINE_Y = "The file ''{0}'' is wrong format at line number [{1}]";
+    public static final String PA_CONFIRM_MSG_RELOAD_FILE = "The file ''{0}'' has been changed on the file system. Do "
+            + "you want to reload it?";
+    public static final String PA_ERROR_MSG_FILE_X_IS_WRONG_FORMAT_AT_LINE_Y = "The file ''{0}'' is wrong format at line"
+            + " number [{1}]";
 
     // NewTestDataColumnDialog
     public static final String VIEW_COL_COL_NAME = "Column Name";
@@ -73,4 +75,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String VIEW_TITLE_TEST_DATA = TEST_DATA;
     public static final String VIEW_MSG_CREATE_NEW_TEST_DATA = "Create Test Data";
     public static final String VIEW_WINDOW_TITLE_NEW = "New";
+
+    // TestDataReferencesDialog
+    public static final String DIA_MSG_HEADER_TEST_DATA_REFERENCES = "Test data ''{0}'' has been referred by some test "
+            + "suites listed below.\nDo you want to delete all the references?";
 }

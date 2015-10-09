@@ -16,6 +16,7 @@ import com.kms.katalon.constants.IdConstants;
 public class OpenHandler {
     @Inject
     private Logger logger;
+    
     @Inject
     private ESelectionService selectionService;
 

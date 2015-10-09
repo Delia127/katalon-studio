@@ -53,7 +53,6 @@ import com.kms.katalon.dal.exception.TaskCancelledException;
 import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
-import com.kms.katalon.entity.link.TestStepCallTestCaseLink;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
@@ -65,7 +64,6 @@ import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 public class ExportFileServiceManager {
     private int progress;
     private boolean isCancelled;
-    List<TestStepCallTestCaseLink> testStepCallTestCaseLinks;
     List<String> exportedTestCaseLocations;
     Queue<String> logs;
     private static final String TEST_SCRIPT_SOURCE_FOLDER_NAME = "Scripts";

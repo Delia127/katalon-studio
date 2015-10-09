@@ -33,81 +33,83 @@ import com.kms.katalon.groovy.constant.GroovyConstants;
 @SuppressWarnings("restriction")
 public class OpenKeywordHandler {
 
-	@Inject
-	IEventBroker eventBroker;
+    @Inject
+    IEventBroker eventBroker;
 
-	@Inject
-	EModelService modelService;
+    @Inject
+    EModelService modelService;
 
-	@Inject
-	MApplication application;
+    @Inject
+    MApplication application;
 
-	@PostConstruct
-	public void registerEventHandler() {
-		eventBroker.subscribe(EventConstants.EXPLORER_OPEN_SELECTED_ITEM, new EventHandler() {
-			@Override
-			public void handleEvent(Event event) {
-				Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-				if (object != null && object instanceof ICompilationUnit
-						&& ((ICompilationUnit) object).getElementName().endsWith(GroovyConstants.GROOVY_FILE_EXTENSION)) {
-					excute((ICompilationUnit) object);
-				}
-			}
-		});
-	}
+    @PostConstruct
+    public void registerEventHandler() {
+        eventBroker.subscribe(EventConstants.EXPLORER_OPEN_SELECTED_ITEM, new EventHandler() {
+            @Override
+            public void handleEvent(Event event) {
+                Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+                if (object != null && object instanceof ICompilationUnit
+                        && ((ICompilationUnit) object).getElementName().endsWith(GroovyConstants.GROOVY_FILE_EXTENSION)) {
+                    excute((ICompilationUnit) object);
+                }
+            }
+        });
+    }
 
-	/**
-	 * Open a custom keyword file and validate that file after user save it
-	 * 
-	 * @param keywordFile
-	 */
-	private void excute(ICompilationUnit keywordFile) {
-		if (keywordFile != null && keywordFile.exists()) {
-			try {
-				if (!keywordFile.isWorkingCopy()) {
-					keywordFile.becomeWorkingCopy(null);
-				}
-				IEditorPart keywordPath = IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-						.getActivePage(), (IFile) keywordFile.getResource());				
-				keywordPath.addPropertyListener(new IPropertyListener() {
+    /**
+     * Open a custom keyword file and validate that file after user save it
+     * 
+     * @param keywordFile
+     */
+    private void excute(ICompilationUnit keywordFile) {
+        if (keywordFile != null && keywordFile.exists()) {
+            try {
+                if (!keywordFile.isWorkingCopy()) {
+                    keywordFile.becomeWorkingCopy(null);
+                }
+                
+                IEditorPart keywordPath = IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+                        .getActivePage(), (IFile) keywordFile.getResource());
+                
+                keywordPath.addPropertyListener(new IPropertyListener() {
 
-					@Override
-					public void propertyChanged(Object source, int propId) {
-						if (source instanceof ISaveablePart && propId == ISaveablePart.PROP_DIRTY) {
-							try {
-								if (!((ISaveablePart) source).isDirty()) {
-									final ProjectEntity project = ProjectController.getInstance().getCurrentProject();
-									final IFile file = ((FileEditorInput) ((IEditorPart) source).getEditorInput())
-											.getFile();
-									Job job = new Job(StringConstants.HAND_COLLECTING_CUSTOM_KEYWORD) {
+                    @Override
+                    public void propertyChanged(Object source, int propId) {
+                        if (source instanceof ISaveablePart && propId == ISaveablePart.PROP_DIRTY) {
+                            try {
+                                if (!((ISaveablePart) source).isDirty()) {
+                                    final ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+                                    final IFile file = ((FileEditorInput) ((IEditorPart) source).getEditorInput())
+                                            .getFile();
+                                    Job job = new Job(StringConstants.HAND_COLLECTING_CUSTOM_KEYWORD) {
 
-										@Override
-										protected IStatus run(IProgressMonitor monitor) {
-											try {
-												KeywordController.getInstance().parseCustomKeywordFile(file, project);
-											} catch (Exception e) {
-												LoggerSingleton.getInstance().getLogger().error(e);
-												return Status.CANCEL_STATUS;
-											}
-											return Status.OK_STATUS;
-										}
+                                        @Override
+                                        protected IStatus run(IProgressMonitor monitor) {
+                                            try {
+                                                KeywordController.getInstance().parseCustomKeywordFile(file, project);
+                                            } catch (Exception e) {
+                                                LoggerSingleton.getInstance().getLogger().error(e);
+                                                return Status.CANCEL_STATUS;
+                                            }
+                                            return Status.OK_STATUS;
+                                        }
 
-									};
-									job.schedule();
-								}
-							} catch (Exception e) {
-								LoggerSingleton.getInstance().getLogger().error(e);
-							}
+                                    };
+                                    job.schedule();
+                                }
+                            } catch (Exception e) {
+                                LoggerSingleton.getInstance().getLogger().error(e);
+                            }
 
-						}
-					}
-				});				
-				
-			} catch (Exception e) {
-				LoggerSingleton.getInstance().getLogger().error(e);
-				MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-						StringConstants.HAND_ERROR_MSG_CANNOT_OPEN_KEYWORD_FILE);
-			}
-		}
-	}
+                        }
+                    }
+                });
+
+            } catch (Exception e) {
+                LoggerSingleton.getInstance().getLogger().error(e);
+                MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                        StringConstants.HAND_ERROR_MSG_CANNOT_OPEN_KEYWORD_FILE);
+            }
+        }
+    }
 }

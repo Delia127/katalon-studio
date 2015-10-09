@@ -21,81 +21,81 @@ import com.kms.katalon.constants.IdConstants;
 
 public class PasteHandler implements IHandler {
 
-	@SuppressWarnings("restriction")
-	@CanExecute
-	public static boolean canExecute(ESelectionService selectionService) {
-		try {
-			if (selectionService.getSelection(IdConstants.EXPLORER_PART_ID) instanceof Object[]) {
-				Object[] selectedNodes = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-				if (selectedNodes == null || selectedNodes.length != 1) {
-					return false;
-				}
-				Clipboard clipboard = new Clipboard(Display.getCurrent());
-				for (Object node : selectedNodes) {
-					ITreeEntity entity = (ITreeEntity) node;
-					
-					if (entity.getEntityTransfer() == null || clipboard.getContents(entity.getEntityTransfer()) == null) {
-						return false;
-					}
+    @SuppressWarnings("restriction")
+    @CanExecute
+    public static boolean canExecute(ESelectionService selectionService) {
+        try {
+            if (selectionService.getSelection(IdConstants.EXPLORER_PART_ID) instanceof Object[]) {
+                Object[] selectedNodes = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
+                if (selectedNodes == null || selectedNodes.length != 1) {
+                    return false;
+                }
+                Clipboard clipboard = new Clipboard(Display.getCurrent());
+                for (Object node : selectedNodes) {
+                    ITreeEntity entity = (ITreeEntity) node;
 
-				}
-				return true;
-			}
-		} catch (Exception e) {
-			LoggerSingleton.getInstance().getLogger().error(e);
-		}
-		return false;
-	}
+                    if (entity.getEntityTransfer() == null || clipboard.getContents(entity.getEntityTransfer()) == null) {
+                        return false;
+                    }
 
-	@SuppressWarnings("restriction")
-	@Execute
-	public static void execute(ESelectionService selectionService, IEventBroker eventBroker) {
-		try {
-			if (selectionService.getSelection(IdConstants.EXPLORER_PART_ID) instanceof Object[]) {
-				Object[] selectedNodes = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-				if (selectedNodes != null && selectedNodes.length == 1) {
-					ITreeEntity target = (ITreeEntity) selectedNodes[0];
-					eventBroker.send(EventConstants.EXPLORER_PASTE_SELECTED_ITEM, target);
-				}
-			}
-		} catch (Exception ex) {
-			LoggerSingleton.getInstance().getLogger().error(ex);
-		}
-	}
+                }
+                return true;
+            }
+        } catch (Exception e) {
+            LoggerSingleton.getInstance().getLogger().error(e);
+        }
+        return false;
+    }
 
-	@Override
-	public void addHandlerListener(IHandlerListener handlerListener) {
-		// TODO Auto-generated method stub
-	}
+    @SuppressWarnings("restriction")
+    @Execute
+    public static void execute(ESelectionService selectionService, IEventBroker eventBroker) {
+        try {
+            if (selectionService.getSelection(IdConstants.EXPLORER_PART_ID) instanceof Object[]) {
+                Object[] selectedNodes = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
+                if (selectedNodes != null && selectedNodes.length == 1) {
+                    ITreeEntity target = (ITreeEntity) selectedNodes[0];
+                    eventBroker.send(EventConstants.EXPLORER_PASTE_SELECTED_ITEM, target);
+                }
+            }
+        } catch (Exception ex) {
+            LoggerSingleton.getInstance().getLogger().error(ex);
+        }
+    }
 
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
-	}
+    @Override
+    public void addHandlerListener(IHandlerListener handlerListener) {
+        // TODO Auto-generated method stub
+    }
 
-	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
-		String activePartId = HandlerUtil.getActivePartId(event);
-		if (activePartId != null && activePartId.equals(IdConstants.EXPLORER_PART_ID)) {
-			execute(SelectionServiceSingleton.getInstance().getSelectionService(), EventBrokerSingleton.getInstance()
-					.getEventBroker());
-		}
-		return null;
-	}
+    @Override
+    public void dispose() {
+        // TODO Auto-generated method stub
+    }
 
-	@Override
-	public boolean isEnabled() {
-		return canExecute(SelectionServiceSingleton.getInstance().getSelectionService());
-	}
+    @Override
+    public Object execute(ExecutionEvent event) throws ExecutionException {
+        String activePartId = HandlerUtil.getActivePartId(event);
+        if (activePartId != null && activePartId.equals(IdConstants.EXPLORER_PART_ID)) {
+            execute(SelectionServiceSingleton.getInstance().getSelectionService(), EventBrokerSingleton.getInstance()
+                    .getEventBroker());
+        }
+        return null;
+    }
 
-	@Override
-	public boolean isHandled() {
-		return true;
-	}
+    @Override
+    public boolean isEnabled() {
+        return canExecute(SelectionServiceSingleton.getInstance().getSelectionService());
+    }
 
-	@Override
-	public void removeHandlerListener(IHandlerListener handlerListener) {
-		// TODO Auto-generated method stub
+    @Override
+    public boolean isHandled() {
+        return true;
+    }
 
-	}
+    @Override
+    public void removeHandlerListener(IHandlerListener handlerListener) {
+        // TODO Auto-generated method stub
+
+    }
 }

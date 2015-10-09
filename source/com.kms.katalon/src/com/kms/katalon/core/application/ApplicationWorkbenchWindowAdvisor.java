@@ -15,7 +15,6 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.ModelServiceSingleton;
 import com.kms.katalon.constants.IdConstants;
 
-@SuppressWarnings("restriction")
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
     public ApplicationWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {
@@ -34,7 +33,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
             boolean confirmed = (boolean) handlerService.executeCommand(IdConstants.QUIT_COMMAND_ID, null);
             return confirmed;
         } catch (Exception e) {
-            LoggerSingleton.getInstance().getLogger().error(e);
+            LoggerSingleton.logError(e);
             return false;
         }
     }

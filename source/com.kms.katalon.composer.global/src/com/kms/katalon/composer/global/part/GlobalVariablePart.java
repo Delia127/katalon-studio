@@ -92,7 +92,6 @@ public class GlobalVariablePart implements EventHandler {
 
         Composite compositeToolbar = new Composite(composite, SWT.NONE);
         compositeToolbar.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        compositeToolbar.setSize(161, 527);
         GridLayout gl_compositeToolbar = new GridLayout(1, false);
         gl_compositeToolbar.marginWidth = 0;
         gl_compositeToolbar.marginHeight = 0;
@@ -100,7 +99,6 @@ public class GlobalVariablePart implements EventHandler {
         compositeToolbar.setBackground(ColorUtil.getCompositeBackgroundColor());
 
         ToolBar toolBar = new ToolBar(compositeToolbar, SWT.FLAT);
-        toolBar.setBounds(0, 0, 89, 23);
 
         tltmAdd = new ToolItem(toolBar, SWT.NONE);
         tltmAdd.setText(StringConstants.PA_BTN_TIP_ADD);

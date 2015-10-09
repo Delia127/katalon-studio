@@ -280,11 +280,11 @@ public class LogViewerPart implements EventHandler {
     private void createTreeCompositeContainer(Composite parent) {
         compositeTreeContainer = new Composite(parent, SWT.NONE);
         compositeTreeContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        GridLayout gl_composite = new GridLayout(2, false);
-        gl_composite.horizontalSpacing = 0;
-        gl_composite.marginWidth = 0;
-        gl_composite.marginHeight = 0;
-        compositeTreeContainer.setLayout(gl_composite);
+        GridLayout glComposite = new GridLayout(2, false);
+        glComposite.horizontalSpacing = 0;
+        glComposite.marginWidth = 0;
+        glComposite.marginHeight = 0;
+        compositeTreeContainer.setLayout(glComposite);
 
         createTreeCompositeToolbar(compositeTreeContainer);
 
@@ -524,9 +524,9 @@ public class LogViewerPart implements EventHandler {
     private void createStatusComposite(Composite container) {
         Composite compositeStatus = new Composite(container, SWT.NONE);
         compositeStatus.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        GridLayout gl_compositeStatus = new GridLayout(2, true);
-        gl_compositeStatus.marginWidth = 0;
-        compositeStatus.setLayout(gl_compositeStatus);
+        GridLayout glCompositeStatus = new GridLayout(2, true);
+        glCompositeStatus.marginWidth = 0;
+        compositeStatus.setLayout(glCompositeStatus);
 
         Composite composite = new Composite(compositeStatus, SWT.NONE);
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
@@ -787,10 +787,10 @@ public class LogViewerPart implements EventHandler {
     private void createTableComposite(Composite parent) {
         Composite tableContainer = new Composite(parent, SWT.NONE);
         tableContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        GridLayout gl_composite = new GridLayout(2, false);
-        gl_composite.marginWidth = 0;
-        gl_composite.marginHeight = 0;
-        tableContainer.setLayout(gl_composite);
+        GridLayout glComposite = new GridLayout(2, false);
+        glComposite.marginWidth = 0;
+        glComposite.marginHeight = 0;
+        tableContainer.setLayout(glComposite);
 
         createTableButtonComposite(tableContainer);
         createTableCompositeDetails(tableContainer);
@@ -800,7 +800,10 @@ public class LogViewerPart implements EventHandler {
 
     private void showRecordProperties() {
         int index = table.getSelectionIndex();
-        if (index == -1) return; // no row selected
+        
+        if (index == -1) {
+            return; // no row selected
+        }
 
         TableItem selectedItem = table.getItem(index);
         XmlLogRecord selectedRecord = (XmlLogRecord) selectedItem.getData();

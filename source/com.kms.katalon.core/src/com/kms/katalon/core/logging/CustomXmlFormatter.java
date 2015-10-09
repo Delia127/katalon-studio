@@ -20,6 +20,10 @@ public class CustomXmlFormatter extends XMLFormatter {
         // Remove DOCTYPE
         return "<?xml version=\"1.0\" encoding=\"windows-1252\" standalone=\"no\"?>\n<log>\n";
     }
+    
+    public String getTail(Handler h) {
+        return "</log>\n";
+      }
 
     @Override
     public String format(LogRecord record) {
@@ -39,6 +43,7 @@ public class CustomXmlFormatter extends XMLFormatter {
 
         if (record.getMessage() != null) {
             record.setMessage(formatString(record.getMessage()));
+            System.out.println(record.getMessage());
         }
 
         String formattedText = super.format(record);

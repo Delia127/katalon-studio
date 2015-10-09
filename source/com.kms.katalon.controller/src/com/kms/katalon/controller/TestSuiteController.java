@@ -187,4 +187,8 @@ public class TestSuiteController extends EntityController {
     public String getAvailableTestSuiteName(FolderEntity parentFolder, String name) throws Exception {
         return dataProviderSetting.getTestSuiteDataProvider().getAvailableTestSuiteName(parentFolder, name);
     }
+    
+    public TestSuiteTestCaseLink getTestCaseLink(String testCaseId, TestSuiteEntity testSuite) {
+        return dataProviderSetting.getTestSuiteDataProvider().getTestCaseLink(testSuite, testCaseId);
+    }
 }
