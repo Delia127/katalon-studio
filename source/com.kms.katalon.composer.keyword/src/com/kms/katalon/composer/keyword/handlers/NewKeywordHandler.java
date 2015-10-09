@@ -8,6 +8,7 @@ import javax.inject.Named;
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -86,6 +87,7 @@ public class NewKeywordHandler {
                         .getCurrentProject());
                 IPackageFragmentRoot rootPackage = JavaCore.create(groovyProject).getPackageFragmentRoot(
                         groovyProject.getFolder(StringConstants.ROOT_FOLDER_NAME_KEYWORD));
+                packageFragment.getResource().refreshLocal(IResource.DEPTH_ONE, null);
                 NewKeywordDialog dialog = new NewKeywordDialog(parentShell, rootPackage, packageFragment);
                 dialog.open();
                 if (dialog.getReturnCode() == Dialog.OK) {
@@ -106,7 +108,7 @@ public class NewKeywordHandler {
                     }
 
                     // create Keyword class
-                    ICompilationUnit createdCompilationUnit = GroovyUtil.createGroovyScript(packageFragment,
+                    ICompilationUnit createdCompilationUnit = GroovyUtil.createGroovyScriptForCustomKeyword(packageFragment,
                             dialog.getName());
 
                     if (createdCompilationUnit instanceof GroovyCompilationUnit

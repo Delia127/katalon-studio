@@ -44,21 +44,23 @@ public class DeleteKeywordHandler implements IDeleteEntityHandler {
             monitor.beginTask(taskName, 1);
 
             if (treeEntity.getObject() != null && treeEntity.getObject() instanceof ICompilationUnit) {
-                ICompilationUnit file = (ICompilationUnit) treeEntity.getObject();
-                IFile iFile = (IFile) file.getResource();
+                ICompilationUnit unit = (ICompilationUnit) treeEntity.getObject();
+                IFile iFile = (IFile) unit.getResource();
 
                 KeywordController.getInstance().removeMethodNodesCustomKeywordFile(iFile,
                         ProjectController.getInstance().getCurrentProject());
 
-                if (file.exists()) {
-                    file.getResource().refreshLocal(IResource.DEPTH_ZERO, null);
+                if (unit.exists()) {
+                    unit.getResource().refreshLocal(IResource.DEPTH_ZERO, null);
 
                     closeEditor(iFile);
                     
-                    if (file.isWorkingCopy()) {
-                        file = file.getPrimary();
+                    if (unit.isWorkingCopy()) {
+                        unit = unit.getPrimary();
+                        unit.discardWorkingCopy();
                     }
-                    file.delete(true, null);
+                    
+                    unit.delete(true, null);
                 }
                 return true;
             } else {
