@@ -12,6 +12,7 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.execution.handler.EvaluateDriverConnectorContributionsHandler;
 import com.kms.katalon.execution.handler.EvaluateRunConfigurationContributionsHandler;
 import com.kms.katalon.execution.integration.EvaluateReportIntegrationContribution;
 
@@ -24,6 +25,7 @@ public class ExecutionInjectionManagerAddon implements EventHandler {
     public void initHandlers(IEclipseContext context) {
         ContextInjectionFactory.make(EvaluateReportIntegrationContribution.class, context);
         ContextInjectionFactory.make(EvaluateRunConfigurationContributionsHandler.class, context);
+        ContextInjectionFactory.make(EvaluateDriverConnectorContributionsHandler.class, context);
         eventBroker.subscribe(EventConstants.PROJECT_OPENED, this);
     }
 

@@ -8,11 +8,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.Platform;
 
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
-import com.kms.katalon.execution.entity.IDriverConnector;
+import com.kms.katalon.core.setting.PropertySettingStoreUtil;
+import com.kms.katalon.entity.file.FileEntity;
+import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.mobile.driver.AndroidDriverConnector;
 import com.kms.katalon.execution.mobile.driver.IosDriverConnector;
 
@@ -42,9 +45,11 @@ public class MobileExecutionUtil {
             throws IOException {
         switch (mobileDriverType) {
         case ANDROID_DRIVER:
-            return new AndroidDriverConnector(projectDirectory);
+            return new AndroidDriverConnector(projectDirectory + File.separator
+                    + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME);
         case IOS_DRIVER:
-            return new IosDriverConnector(projectDirectory);
+            return new IosDriverConnector(projectDirectory + File.separator
+                    + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME);
         }
         return null;
     }
@@ -165,5 +170,41 @@ public class MobileExecutionUtil {
         }
 
         return deviceMap;
+    }
+
+    public static String getDefaultDeviceName(FileEntity fileEntity, MobileDriverType platform) throws IOException {
+        switch (platform) {
+        case ANDROID_DRIVER:
+            return new AndroidDriverConnector(fileEntity.getProject().getFolderLocation() + File.separator
+                    + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME).getDeviceName();
+        case IOS_DRIVER:
+            return new IosDriverConnector(fileEntity.getProject().getFolderLocation() + File.separator
+                    + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME).getDeviceName();
+        }
+        return null;
+    }
+
+    public static boolean checkDeviceName(MobileDriverType mobileDriverType, String deviceName) throws IOException,
+            InterruptedException {
+        Map<String, String> deviceMap = null;
+        switch (mobileDriverType) {
+        case ANDROID_DRIVER:
+            deviceMap = MobileExecutionUtil.getAndroidDevices();
+            for (Entry<String, String> device : deviceMap.entrySet()) {
+                if (device.getValue().equals(deviceName)) {
+                    return true;
+                }
+            }
+            break;
+        case IOS_DRIVER:
+            deviceMap = MobileExecutionUtil.getIosDevices();
+            for (Entry<String, String> device : deviceMap.entrySet()) {
+                if (device.getKey().equals(deviceName)) {
+                    return true;
+                }
+            }
+            break;
+        }
+        return false;
     }
 }

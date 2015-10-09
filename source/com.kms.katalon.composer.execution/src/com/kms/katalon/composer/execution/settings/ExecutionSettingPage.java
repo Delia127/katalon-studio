@@ -6,6 +6,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 public class ExecutionSettingPage extends PreferencePage {
+    public ExecutionSettingPage() {
+        noDefaultAndApplyButton();
+    }
+    
 	@Override
 	protected Control createContents(Composite parent) {
 	    Composite fieldEditorParent = new Composite(parent, SWT.NONE);

@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.testcase.editors;
+package com.kms.katalon.composer.components.dialogs;
 
 import java.text.MessageFormat;
 
@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
-import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.components.constants.StringConstants;
 
 public abstract class AbstractDialogCellEditor extends DialogCellEditor {
 	protected String defaultContent;

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
+   <extension-point id="driverConnectorEditor" name="com.kms.katalon.composer.execution.driver.connector.editor" schema="schema/driverConnectorEditor.exsd"/>
 
    <extension
          id="com.kms.katalon.execution.fragment"
@@ -68,6 +69,18 @@
             class="com.kms.katalon.composer.execution.settings.ExecutionSettingPage"
             id="com.kms.katalon.composer.execution.settings"
             name="Execution">
+      </page>
+      <page
+            class="com.kms.katalon.composer.execution.settings.DefaultExecutionSettingPage"
+            category="com.kms.katalon.composer.execution.settings"
+            id="com.kms.katalon.composer.execution.settings.default"
+            name="Default">
+      </page>
+      <page
+            class="com.kms.katalon.composer.execution.settings.CustomExecutionSettingPage"
+            category="com.kms.katalon.composer.execution.settings"
+            id="com.kms.katalon.composer.execution.settings.custom"
+            name="Custom">
       </page>
    </extension>
 </plugin>

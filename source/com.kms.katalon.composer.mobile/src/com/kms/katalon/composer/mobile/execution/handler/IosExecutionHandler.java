@@ -16,7 +16,9 @@ public class IosExecutionHandler extends MobileExecutionHandler {
         if (deviceName == null || deviceName.isEmpty()) {
             return null;
         }
-        return new IosRunConfiguration(testCase, deviceName);
+        IosRunConfiguration runConfiguration = new IosRunConfiguration(testCase);
+        runConfiguration.setDeviceName(deviceName);
+        return runConfiguration;
     }
 
     protected IRunConfiguration getRunConfigurationForExecution(TestSuiteEntity testSuite) throws Exception {
@@ -27,6 +29,8 @@ public class IosExecutionHandler extends MobileExecutionHandler {
         if (deviceName == null || deviceName.isEmpty()) {
             return null;
         }
-        return new IosRunConfiguration(testSuite, deviceName);
+        IosRunConfiguration runConfiguration = new IosRunConfiguration(testSuite);
+        runConfiguration.setDeviceName(deviceName);
+        return runConfiguration;
     }
 }

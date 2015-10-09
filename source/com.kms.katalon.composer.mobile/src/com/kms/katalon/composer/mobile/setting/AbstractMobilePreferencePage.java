@@ -11,19 +11,17 @@ import com.kms.katalon.composer.execution.components.DriverPropertyMapComposite;
 import com.kms.katalon.composer.execution.settings.DriverPreferencePage;
 import com.kms.katalon.composer.mobile.component.DeviceSelectionComposite;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
-import com.kms.katalon.execution.mobile.driver.AbstractMobileDriverConnector;
+import com.kms.katalon.execution.mobile.driver.MobileDriverConnector;
 
 public abstract class AbstractMobilePreferencePage extends DriverPreferencePage {
-    public AbstractMobilePreferencePage() {
-    }
 
     private DeviceSelectionComposite deviceSelectionComposite;
-    private AbstractMobileDriverConnector abstractMobileDriverConnector;
+    private MobileDriverConnector abstractMobileDriverConnector;
 
     @Override
     protected void initilize() {
         super.initilize();
-        abstractMobileDriverConnector = (AbstractMobileDriverConnector) driverConnector;
+        abstractMobileDriverConnector = (MobileDriverConnector) driverConnector;
     }
 
     @Override
@@ -47,7 +45,7 @@ public abstract class AbstractMobilePreferencePage extends DriverPreferencePage 
         DriverPropertyMapComposite driverPropertyMap = new DriverPropertyMapComposite(container);
 
         initilize();
-        driverPropertyMap.setInput(driverProperties);
+        driverPropertyMap.setInput(driverConnector.getDriverProperties());
         return container;
     }
 

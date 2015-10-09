@@ -1,20 +1,15 @@
 package com.kms.katalon.composer.webui.execution.handler;
 
-import java.io.IOException;
-
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.widgets.Display;
 
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.handlers.AbstractExecutionHandler;
 import com.kms.katalon.composer.webui.constants.StringConstants;
-import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.webui.configuration.RemoteWebRunConfiguration;
-import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector;
 
 public class RemoteWebDriverExecutionHandler extends AbstractExecutionHandler {
 
@@ -22,30 +17,18 @@ public class RemoteWebDriverExecutionHandler extends AbstractExecutionHandler {
         if (testCase == null) {
             return null;
         }
-        String remoteWebDriverServerUrl = getDefaultRemoteWebDriverServerUrl(testCase);
-        if (remoteWebDriverServerUrl == null || remoteWebDriverServerUrl.isEmpty()) {
-            remoteWebDriverServerUrl = getRemoteWebDriverServerUrl();
+        RemoteWebRunConfiguration runConfiguration = new RemoteWebRunConfiguration(testCase);
+        if (runConfiguration.getRemoteServerUrl() == null || runConfiguration.getRemoteServerUrl().isEmpty()) {
+            String remoteWebDriverServerUrl = getRemoteWebDriverServerUrl();
             if (remoteWebDriverServerUrl != null && !remoteWebDriverServerUrl.isEmpty()) {
-                return new RemoteWebRunConfiguration(testCase, remoteWebDriverServerUrl);
+                runConfiguration.setRemoteServerUrl(remoteWebDriverServerUrl);
+                return runConfiguration;
+            } else {
+                return null;
             }
         } else {
-            return new RemoteWebRunConfiguration(testCase);
+            return runConfiguration;
         }
-        return null;
-    }
-
-    private String getDefaultRemoteWebDriverServerUrl(FileEntity fileEntity) {
-        RemoteWebDriverConnector remoteWebDriverConnector = null;
-        try {
-            remoteWebDriverConnector = new RemoteWebDriverConnector(fileEntity.getProject().getFolderLocation());
-        } catch (IOException e) {
-            LoggerSingleton.logError(e);
-        }
-
-        if (remoteWebDriverConnector != null) {
-            return remoteWebDriverConnector.getRemoteServerUrl();
-        }
-        return null;
     }
 
     private String getRemoteWebDriverServerUrl() {
@@ -62,15 +45,17 @@ public class RemoteWebDriverExecutionHandler extends AbstractExecutionHandler {
         if (testSuite == null) {
             return null;
         }
-        String remoteWebDriverServerUrl = getDefaultRemoteWebDriverServerUrl(testSuite);
-        if (remoteWebDriverServerUrl == null || remoteWebDriverServerUrl.isEmpty()) {
-            remoteWebDriverServerUrl = getRemoteWebDriverServerUrl();
+        RemoteWebRunConfiguration runConfiguration = new RemoteWebRunConfiguration(testSuite);
+        if (runConfiguration.getRemoteServerUrl() == null || runConfiguration.getRemoteServerUrl().isEmpty()) {
+            String remoteWebDriverServerUrl = getRemoteWebDriverServerUrl();
             if (remoteWebDriverServerUrl != null && !remoteWebDriverServerUrl.isEmpty()) {
-                return new RemoteWebRunConfiguration(testSuite, remoteWebDriverServerUrl);
+                runConfiguration.setRemoteServerUrl(remoteWebDriverServerUrl);
+                return runConfiguration;
+            } else {
+                return null;
             }
         } else {
-            return new RemoteWebRunConfiguration(testSuite);
+            return runConfiguration;
         }
-        return null;
     }
 }

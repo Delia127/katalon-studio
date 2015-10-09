@@ -7,7 +7,6 @@ Bundle-Vendor: KMS
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: com.kms.katalon.entity;uses:="com.kms.katalon.entity.folder,com.kms.katalon.entity.project",
  com.kms.katalon.entity.dal.exception;uses:="org.xml.sax",
- com.kms.katalon.entity.exception,
  com.kms.katalon.entity.file;uses:="com.kms.katalon.entity,com.kms.katalon.entity.folder",
  com.kms.katalon.entity.folder;uses:="com.kms.katalon.entity.file",
  com.kms.katalon.entity.global,

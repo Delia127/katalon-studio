@@ -30,5 +30,34 @@
             configuration="com.kms.katalon.execution.webui.configuration.contributor.RemoteWebRunConfigurationContributor">
       </client>
    </extension>
-   
+   <extension
+         point="com.kms.katalon.execution.driverConnector">
+      <client
+            driver.connector="com.kms.katalon.execution.webui.driver.contributor.ChromeDriverConnectorContributor">
+      </client>
+   </extension>
+   <extension
+         point="com.kms.katalon.execution.driverConnector">
+      <client
+            driver.connector="com.kms.katalon.execution.webui.driver.contributor.FirefoxDriverConnectorContributor">
+      </client>
+   </extension>
+   <extension
+         point="com.kms.katalon.execution.driverConnector">
+      <client
+            driver.connector="com.kms.katalon.execution.webui.driver.contributor.IEDriverConnectorContributor">
+      </client>
+   </extension>
+   <extension
+         point="com.kms.katalon.execution.driverConnector">
+      <client
+            driver.connector="com.kms.katalon.execution.webui.driver.contributor.SafariDriverConnectorContributor">
+      </client>
+   </extension>
+   <extension
+         point="com.kms.katalon.execution.driverConnector">
+      <client
+            driver.connector="com.kms.katalon.execution.webui.driver.contributor.RemoteWebDriverConnectorContributor">
+      </client>
+   </extension>
 </plugin>

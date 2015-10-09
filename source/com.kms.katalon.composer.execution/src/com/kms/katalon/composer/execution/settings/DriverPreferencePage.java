@@ -1,6 +1,6 @@
 package com.kms.katalon.composer.execution.settings;
 
-import java.util.Map;
+import java.io.File;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -11,14 +11,15 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-import com.kms.katalon.composer.execution.components.DriverPropertyMapComposite;
+import com.kms.katalon.composer.execution.components.DriverPreferenceComposite;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.execution.entity.IDriverConnector;
+import com.kms.katalon.execution.configuration.IDriverConnector;
 
 public abstract class DriverPreferencePage extends PreferencePage {
-    protected Map<String, Object> driverProperties;
+    protected DriverPreferenceComposite driverPreferenceComposite;
 
     protected IDriverConnector driverConnector;
 
@@ -37,26 +38,25 @@ public abstract class DriverPreferencePage extends PreferencePage {
         container.setLayout(layout);
         container.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-        DriverPropertyMapComposite control = new DriverPropertyMapComposite(container);
-        control.setInput(driverProperties);
+        driverPreferenceComposite = new DriverPreferenceComposite(container, SWT.NONE, driverConnector);
+        driverPreferenceComposite.setInput(driverConnector.getDriverProperties());
         return container;
     }
 
     protected void initilize() {
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-        driverConnector = getDriverConnector(projectEntity.getFolderLocation());
-        if (driverConnector != null) {
-            driverProperties = driverConnector.getDriverProperties();
-        }
+        driverConnector = getDriverConnector(projectEntity.getFolderLocation() + File.separator
+                + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME);
     }
 
-    protected abstract IDriverConnector getDriverConnector(String projectFolderLocation);
+    protected abstract IDriverConnector getDriverConnector(String configurationFolderPath);
 
     @Override
     public boolean performOk() {
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
         try {
-            if (projectEntity == null || driverProperties == null || driverConnector == null) {
+            if (projectEntity == null || driverPreferenceComposite == null || driverPreferenceComposite.getResult() == null
+                    || driverConnector == null) {
                 return true;
             }
             driverConnector.saveDriverProperties();
@@ -71,6 +71,7 @@ public abstract class DriverPreferencePage extends PreferencePage {
     @Override
     protected void performDefaults() {
         initilize();
+        driverPreferenceComposite.setInput(driverConnector.getDriverProperties());
         super.performDefaults();
     }
 }

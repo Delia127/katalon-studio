@@ -8,6 +8,7 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
+import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.webui.configuration.FirefoxRunConfiguration;
 
 public class FirefoxRunConfigurationContributor implements IRunConfigurationContributor {
@@ -19,13 +20,13 @@ public class FirefoxRunConfigurationContributor implements IRunConfigurationCont
 
     @Override
     public IRunConfiguration getRunConfiguration(TestCaseEntity testCase, Map<String, String> runInput)
-            throws IOException {
+            throws IOException, ExecutionException {
         return new FirefoxRunConfiguration(testCase);
     }
 
     @Override
     public IRunConfiguration getRunConfiguration(TestSuiteEntity testSuite, Map<String, String> runInput)
-            throws IOException {
+            throws IOException, ExecutionException {
         return new FirefoxRunConfiguration(testSuite);
     }
 

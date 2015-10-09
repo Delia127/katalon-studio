@@ -6,6 +6,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 public class WebUiPerferencePage extends PreferencePage {
+    public WebUiPerferencePage() {
+        noDefaultAndApplyButton();
+    }
+    
     
 	@Override
 	protected Control createContents(Composite parent) {

@@ -112,9 +112,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_TITLE_EDIT_DESCRIPTION = "Edit Description";
     public static final String DIA_MESSAGE_EDIT_DESCRIPTION = "Edit Description for Test Step";
 
-	// AbstractDialogCellEditor
-	public static final String EDI_MSG_VALIDATOR_REQUIRE_MESSAGE = "The cell editor required object as type {0} to work.";
-
 	// CallTestCaseCellEditor
 	public static final String EDI_TITLE_TEST_CASE_BROWSER = "Test Case Browser";
 	public static final String EDI_ERROR_MSG_CANNOT_OPEN_DIALOG = "Can not open dialog";

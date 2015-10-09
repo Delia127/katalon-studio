@@ -15,7 +15,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.components.DriverPropertyMapComposite;
 import com.kms.katalon.composer.execution.settings.DriverPreferencePage;
 import com.kms.katalon.composer.webui.constants.StringConstants;
-import com.kms.katalon.execution.entity.IDriverConnector;
+import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector;
 
 public class RemoteWebPreferencePage extends DriverPreferencePage {
@@ -23,9 +23,9 @@ public class RemoteWebPreferencePage extends DriverPreferencePage {
     private RemoteWebDriverConnector remoteDriverConnector;
 
     @Override
-    protected IDriverConnector getDriverConnector(String projectFolderLocation) {
+    protected IDriverConnector getDriverConnector(String configurationFolderPath) {
         try {
-            remoteDriverConnector = new RemoteWebDriverConnector(projectFolderLocation);
+            remoteDriverConnector = new RemoteWebDriverConnector(configurationFolderPath);
             return remoteDriverConnector;
         } catch (IOException e) {
             LoggerSingleton.logError(e);
@@ -58,7 +58,7 @@ public class RemoteWebPreferencePage extends DriverPreferencePage {
         txtRemoteServerUrl.setText(remoteDriverConnector.getRemoteServerUrl());
         
         DriverPropertyMapComposite driverPropertyMap = new DriverPropertyMapComposite(container);
-        driverPropertyMap.setInput(driverProperties);
+        driverPropertyMap.setInput(driverConnector.getDriverProperties());
         return container;
     }
 

@@ -1,22 +1,19 @@
 package com.kms.katalon.execution.mobile.driver;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.kms.katalon.core.mobile.constants.StringConstants;
-import com.kms.katalon.execution.entity.AbstractDriverConnector;
+import com.kms.katalon.execution.configuration.AbstractDriverConnector;
 
-public abstract class AbstractMobileDriverConnector extends AbstractDriverConnector {
+public abstract class MobileDriverConnector extends AbstractDriverConnector {
     protected String deviceName;
 
-    public AbstractMobileDriverConnector(String projectDir) throws IOException {
-        super(projectDir);
+    public MobileDriverConnector(String configurationFolderPath) throws IOException {
+        super(configurationFolderPath);
     }
-
-    public AbstractMobileDriverConnector(String projectDir, String customProfileName) throws IOException {
-        super(projectDir, customProfileName);
-    }
-
+    
     @Override
     public Map<String, Object> getExecutionSettingPropertyMap() {
         Map<String, Object> propertyMap = super.getExecutionSettingPropertyMap();
@@ -33,12 +30,12 @@ public abstract class AbstractMobileDriverConnector extends AbstractDriverConnec
     }
 
     @Override
-    protected String getSettingFileName() {
-        return StringConstants.MOBILE_PROPERTY_FILE_NAME;
+    public String getSettingFileName() {
+        return StringConstants.MOBILE_PROPERTY_FILE_NAME + "." + getDriverType().toString().toLowerCase();
     }
 
     @Override
-    protected void loadDriverProperties() {
+    protected void loadDriverProperties() throws IOException {
         super.loadDriverProperties();
         deviceName = (driverProperties.get(StringConstants.CONF_EXECUTED_DEVICE_NAME) instanceof String) ? (String) driverProperties
                 .get(StringConstants.CONF_EXECUTED_DEVICE_NAME) : null;
@@ -51,5 +48,12 @@ public abstract class AbstractMobileDriverConnector extends AbstractDriverConnec
             driverProperties.put(StringConstants.CONF_EXECUTED_DEVICE_NAME, deviceName);
         }
         super.saveDriverProperties();
+    }
+    
+    @Override
+    public String toString() {
+        Map<String, Object> tempMap = new HashMap<String, Object>(getDriverProperties());
+        tempMap.put(StringConstants.CONF_EXECUTED_DEVICE_NAME, deviceName);
+        return tempMap.toString();
     }
 }

@@ -13,18 +13,12 @@ public class IEDriverConnector extends WebUiDriverConnector {
 	private String ieDriverPath;
 	private int waitForHang;
 	
-	public IEDriverConnector(String projectDir) throws IOException {
-        super(projectDir);
+	public IEDriverConnector(String configurationFolderPath) throws IOException {
+        super(configurationFolderPath);
         setIeDriverPath(SeleniumWebDriverProvider.getIEDriverPath());
         setWaitForHang(WebUIExecutionUtil.getWaitForIEHanging());
     }
-
-    public IEDriverConnector(String projectDir, String customProfileName) throws IOException {
-        super(projectDir, customProfileName);
-        setIeDriverPath(SeleniumWebDriverProvider.getIEDriverPath());
-        setWaitForHang(WebUIExecutionUtil.getWaitForIEHanging());
-    }
-
+	
 	@Override
 	public DriverType getDriverType() {
 		return WebUIDriverType.IE_DRIVER;

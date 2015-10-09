@@ -9,6 +9,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 
+import com.kms.katalon.composer.components.dialogs.AbstractDialogCellEditor;
+
 @SuppressWarnings("restriction")
 public class TypeInputCellEditor extends AbstractDialogCellEditor {
 	public TypeInputCellEditor(Composite parent, String defaultContent) {

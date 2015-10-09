@@ -5,17 +5,12 @@ import java.io.IOException;
 import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 
-public class IosDriverConnector extends AbstractMobileDriverConnector {
+public class IosDriverConnector extends MobileDriverConnector {
 
-    public IosDriverConnector(String projectDir) throws IOException {
-        super(projectDir);
+    public IosDriverConnector(String configurationFolderPath) throws IOException {
+        super(configurationFolderPath);
     }
-
-    public IosDriverConnector(String projectDir, String customProfileName)
-            throws IOException {
-        super(projectDir, customProfileName); 
-    }
-
+    
 	@Override
 	public DriverType getDriverType() {
 		return MobileDriverType.IOS_DRIVER;

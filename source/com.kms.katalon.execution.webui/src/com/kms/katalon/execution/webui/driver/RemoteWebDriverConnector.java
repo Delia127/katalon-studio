@@ -1,6 +1,7 @@
 package com.kms.katalon.execution.webui.driver;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.kms.katalon.core.driver.DriverType;
@@ -12,10 +13,6 @@ public class RemoteWebDriverConnector extends WebUiDriverConnector {
 
     public RemoteWebDriverConnector(String projectDir) throws IOException {
         super(projectDir);
-    }
-
-    public RemoteWebDriverConnector(String projectDir, String customProfileName) throws IOException {
-        super(projectDir, customProfileName);
     }
 
     @Override
@@ -39,7 +36,7 @@ public class RemoteWebDriverConnector extends WebUiDriverConnector {
     }
 
     @Override
-    protected void loadDriverProperties() {
+    protected void loadDriverProperties() throws IOException {
         super.loadDriverProperties();
         remoteServerUrl = (driverProperties.get(DriverFactory.REMOTE_WEB_DRIVER_URL) instanceof String) ? (String) driverProperties
                 .get(DriverFactory.REMOTE_WEB_DRIVER_URL) : "";
@@ -50,5 +47,12 @@ public class RemoteWebDriverConnector extends WebUiDriverConnector {
     public void saveDriverProperties() throws IOException {
         driverProperties.put(DriverFactory.REMOTE_WEB_DRIVER_URL, remoteServerUrl);
         super.saveDriverProperties();
+    }
+    
+    @Override
+    public String toString() {
+        Map<String, Object> tempMap = new HashMap<String, Object>(getDriverProperties());
+        tempMap.put(DriverFactory.REMOTE_WEB_DRIVER_URL, remoteServerUrl);
+        return tempMap.toString();
     }
 }

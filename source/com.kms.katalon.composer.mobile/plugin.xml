@@ -12,8 +12,8 @@
 	<extension
          point="com.kms.katalon.preferences.ProjectSettingPages">
       <page
-      		category="com.kms.katalon.composer.execution.settings"
-            class="com.kms.katalon.composer.mobile.setting.MobilePerferencePage"
+      		category="com.kms.katalon.composer.execution.settings.default"
+            class="com.kms.katalon.composer.mobile.setting.MobilePreferencePage"
             id="com.kms.katalon.composer.mobile.mainPage"
             name="Mobile">
       </page>
@@ -30,4 +30,16 @@
             name="Android">
       </page>
    </extension>
+	 <extension
+	       point="com.kms.katalon.composer.execution.driverConnectorEditor">
+		  <client
+		        driver.connector.editor="com.kms.katalon.composer.mobile.component.contributor.AndroidDriverEditorContributor">
+		  </client>
+	 </extension>
+	 <extension
+	   point="com.kms.katalon.composer.execution.driverConnectorEditor">
+		  <client
+			driver.connector.editor="com.kms.katalon.composer.mobile.component.contributor.IosDriverEditorContributor">
+		  </client>
+	 </extension>
 </plugin>

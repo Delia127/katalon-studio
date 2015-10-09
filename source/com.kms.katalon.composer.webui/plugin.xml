@@ -28,7 +28,7 @@
    <extension
          point="com.kms.katalon.preferences.ProjectSettingPages">
       <page
-      		category="com.kms.katalon.composer.execution.settings"
+      		category="com.kms.katalon.composer.execution.settings.default"
             class="com.kms.katalon.composer.webui.setting.WebUiPerferencePage"
             id="com.kms.katalon.composer.webui.mainPage"
             name="Web UI">
@@ -58,5 +58,34 @@
             name="Remote Web">
       </page>
    </extension>
-
+	<extension
+	       point="com.kms.katalon.composer.execution.driverConnectorEditor">
+		  <client
+		        driver.connector.editor="com.kms.katalon.composer.webui.component.contributor.ChromeDriverEditorContributor">
+		  </client>
+	 </extension>
+	 <extension
+	       point="com.kms.katalon.composer.execution.driverConnectorEditor">
+		  <client
+		        driver.connector.editor="com.kms.katalon.composer.webui.component.contributor.FirefoxDriverEditorContributor">
+		  </client>
+	 </extension>
+	 <extension
+	       point="com.kms.katalon.composer.execution.driverConnectorEditor">
+		  <client
+		        driver.connector.editor="com.kms.katalon.composer.webui.component.contributor.IEDriverEditorContributor">
+		  </client>
+	 </extension>
+	 <extension
+	       point="com.kms.katalon.composer.execution.driverConnectorEditor">
+		  <client
+		        driver.connector.editor="com.kms.katalon.composer.webui.component.contributor.SafariDriverEditorContributor">
+		  </client>
+	 </extension>
+	 <extension
+	       point="com.kms.katalon.composer.execution.driverConnectorEditor">
+		  <client
+		        driver.connector.editor="com.kms.katalon.composer.webui.component.contributor.RemoteWebDriverEditorContributor">
+		  </client>
+	 </extension>
 </plugin>

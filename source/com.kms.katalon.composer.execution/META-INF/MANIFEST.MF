@@ -48,5 +48,8 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.composer.preferences,
  com.google.guava
 Export-Package: com.kms.katalon.composer.execution.components,
+ com.kms.katalon.composer.execution.components.contributor,
+ com.kms.katalon.composer.execution.constants,
+ com.kms.katalon.composer.execution.dialog,
  com.kms.katalon.composer.execution.handlers,
  com.kms.katalon.composer.execution.settings

@@ -8,11 +8,10 @@ import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.dialog.ListPropertyValueBuilderDialog;
 
-public class ListPropertyValueCellEditor extends DialogCellEditor {
-    private static final String INVALID_TYPE_MESSAGE = "Invalid Type";
-    
+public class ListPropertyValueCellEditor extends DialogCellEditor {    
     public ListPropertyValueCellEditor(Composite parent) {
         super(parent);
         setValidator(new ICellEditorValidator() {
@@ -22,7 +21,7 @@ public class ListPropertyValueCellEditor extends DialogCellEditor {
                 if (value instanceof List) {
                     return null;
                 }
-                return INVALID_TYPE_MESSAGE;
+                return StringConstants.INVALID_TYPE_MESSAGE;
             }
         });
     }

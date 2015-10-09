@@ -40,12 +40,12 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.Entity;
-import com.kms.katalon.entity.exception.KatalonException;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
+import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.IDELauncher;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.util.ExecutionUtil;
@@ -105,18 +105,18 @@ public abstract class AbstractExecutionHandler {
     public void execute() {
         try {
             execute(LaunchMode.RUN);
-        } catch (KatalonException e) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", e.getMessage());
+        } catch (ExecutionException e) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR, e.getMessage());
         } catch (SWTException e) {
             // Ignore it
         } catch (Exception e) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error",
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR,
                     "Unable to execute test script. (Root cause: " + e.getMessage() + " )");
             LoggerSingleton.logError(e);
         }
     }
 
-    public Entity getExecutionTarget() {
+    public static Entity getExecutionTarget() {
         MPartStack composerStack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID,
                 application);
         MPart selectedPart = (MPart) composerStack.getSelectedElement();
@@ -173,7 +173,7 @@ public abstract class AbstractExecutionHandler {
         }
     }
 
-    protected static void executeTestCase(final TestCaseEntity testCase, final LaunchMode launchMode,
+    public static void executeTestCase(final TestCaseEntity testCase, final LaunchMode launchMode,
             final IRunConfiguration runConfig) throws Exception {
         if (testCase != null) {
             Job job = new Job("Launching test case...") {

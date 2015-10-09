@@ -4,7 +4,7 @@ import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
-import com.kms.katalon.execution.mobile.configuration.IosRunConfiguration;
+import com.kms.katalon.execution.mobile.configuration.AndroidRunConfiguration;
 
 public class AndroidExecutionHandler extends MobileExecutionHandler {
 
@@ -16,7 +16,9 @@ public class AndroidExecutionHandler extends MobileExecutionHandler {
         if (deviceName == null || deviceName.isEmpty()) {
             return null;
         }
-        return new IosRunConfiguration(testCase, deviceName);
+        AndroidRunConfiguration runConfiguration = new AndroidRunConfiguration(testCase);
+        runConfiguration.setDeviceName(deviceName);
+        return runConfiguration;
     }
 
     protected IRunConfiguration getRunConfigurationForExecution(TestSuiteEntity testSuite) throws Exception {
@@ -27,6 +29,8 @@ public class AndroidExecutionHandler extends MobileExecutionHandler {
         if (deviceName == null || deviceName.isEmpty()) {
             return null;
         }
-        return new IosRunConfiguration(testSuite, deviceName);
+        AndroidRunConfiguration runConfiguration = new AndroidRunConfiguration(testSuite);
+        runConfiguration.setDeviceName(deviceName);
+        return runConfiguration;
     }
 }

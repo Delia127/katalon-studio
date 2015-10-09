@@ -8,6 +8,7 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
+import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.webui.configuration.IERunConfiguration;
 
 public class IERunConfigurationContributor implements IRunConfigurationContributor {
@@ -18,13 +19,14 @@ public class IERunConfigurationContributor implements IRunConfigurationContribut
     }
 
     @Override
-    public IRunConfiguration getRunConfiguration(TestCaseEntity testCase, Map<String, String> runInput) throws IOException {
+    public IRunConfiguration getRunConfiguration(TestCaseEntity testCase, Map<String, String> runInput)
+            throws IOException, ExecutionException {
         return new IERunConfiguration(testCase);
     }
 
     @Override
     public IRunConfiguration getRunConfiguration(TestSuiteEntity testSuite, Map<String, String> runInput)
-            throws IOException {
+            throws IOException, ExecutionException {
         return new IERunConfiguration(testSuite);
     }
 
