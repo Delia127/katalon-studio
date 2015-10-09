@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.groovy.eclipse.codeassist.processors.IProposalProvider;
@@ -16,6 +17,7 @@ import com.kms.katalon.composer.codeassist.util.KatalonContextUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.annotation.Keyword;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 /**
@@ -37,7 +39,7 @@ public class KatalonProposalProvider implements IProposalProvider {
         if (KatalonContextUtil.isBuiltinKeywordCompletionClassNode(context)) {
             for (MethodNode methodNode : completionType.getAllDeclaredMethods()) {
                 if (methodNode.getName().startsWith(completionExpression.trim())
-                        && KatalonContextUtil.isKeywordMethodNode(methodNode)) {
+                        && isKeywordNode(methodNode)) {
                     groovyProposals.add(new KatalonMethodNodeProposal(methodNode));
                 }
             }
@@ -79,6 +81,16 @@ public class KatalonProposalProvider implements IProposalProvider {
     @Override
     public List<String> getNewFieldProposals(ContentAssistContext context) {
         return null;
+    }
+    
+    private boolean isKeywordNode(MethodNode methodNode) {
+        if (!methodNode.isStatic() || !methodNode.isPublic()) { return false; }
+        for (AnnotationNode annotatedNode : methodNode.getAnnotations()) {
+            if (annotatedNode.getClassNode().getName().equals(Keyword.class.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
