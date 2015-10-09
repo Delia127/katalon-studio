@@ -28,100 +28,100 @@ import org.eclipse.swt.widgets.Table;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 
 public abstract class AbstractAstBuilderWithTableDialog extends Dialog implements AstBuilderDialog {
-	protected TableViewer tableViewer;
+    protected TableViewer tableViewer;
 
-	protected InputValueType[] inputValueTypes;
+    protected InputValueType[] inputValueTypes;
 
-	protected AbstractAstBuilderWithTableDialog _instance;
-	
-	protected ClassNode scriptClass;
+    protected AbstractAstBuilderWithTableDialog _instance;
 
-	public AbstractAstBuilderWithTableDialog(Shell parent, ClassNode scriptClass) {
-		super(parent);
-		_instance = this;
-		this.scriptClass = scriptClass;
-	}
+    protected ClassNode scriptClass;
 
-	protected TableViewer createTable(Composite parent) {
-		Composite container = (Composite) super.createDialogArea(parent);
-		container.setLayout(new GridLayout(1, false));
+    public AbstractAstBuilderWithTableDialog(Shell parent, ClassNode scriptClass) {
+        super(parent);
+        _instance = this;
+        this.scriptClass = scriptClass;
+    }
 
-		TableViewer tableViewer = new TableViewer(container, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
-		Table table = tableViewer.getTable();
-		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		table.setLinesVisible(true);
-		table.setHeaderVisible(true);
+    protected TableViewer createTable(Composite parent) {
+        Composite container = (Composite) super.createDialogArea(parent);
+        container.setLayout(new GridLayout(1, false));
 
-		TableViewerFocusCellManager focusCellManager = new TableViewerFocusCellManager(tableViewer,
-				new FocusCellOwnerDrawHighlighter(tableViewer));
+        TableViewer tableViewer = new TableViewer(container, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+        Table table = tableViewer.getTable();
+        table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        table.setLinesVisible(true);
+        table.setHeaderVisible(true);
 
-		ColumnViewerEditorActivationStrategy activationSupport = new ColumnViewerEditorActivationStrategy(tableViewer) {
-			protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
-				if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION) {
-					EventObject source = event.sourceEvent;
-					if (source instanceof MouseEvent && ((MouseEvent) source).button == 3)
-						return false;
+        TableViewerFocusCellManager focusCellManager = new TableViewerFocusCellManager(tableViewer,
+                new FocusCellOwnerDrawHighlighter(tableViewer));
 
-					return true;
-				} else if (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && event.keyCode == SWT.CR) {
-					return true;
-				}
-				return false;
-			}
-		};
+        ColumnViewerEditorActivationStrategy activationSupport = new ColumnViewerEditorActivationStrategy(tableViewer) {
+            protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
+                if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION) {
+                    EventObject source = event.sourceEvent;
+                    if (source instanceof MouseEvent && ((MouseEvent) source).button == 3) return false;
 
-		TableViewerEditor.create(tableViewer, focusCellManager, activationSupport,
-				ColumnViewerEditor.TABBING_HORIZONTAL | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
-						| ColumnViewerEditor.KEYBOARD_ACTIVATION);
+                    return true;
+                } else if (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED
+                        && (event.keyCode == SWT.CR || event.keyCode == SWT.KEYPAD_CR)) {
+                    return true;
+                }
+                return false;
+            }
+        };
 
-		return tableViewer;
-	}
+        TableViewerEditor.create(tableViewer, focusCellManager, activationSupport,
+                ColumnViewerEditor.TABBING_HORIZONTAL | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
+                        | ColumnViewerEditor.KEYBOARD_ACTIVATION);
 
-	/***
-	 * sub classes need to override this method to add columns to table
-	 */
-	protected abstract void addTableColumns();
+        return tableViewer;
+    }
 
-	/***
-	 * sub classes need to override this method to refresh the table
-	 */
-	public abstract void refresh();
+    /***
+     * sub classes need to override this method to add columns to table
+     */
+    protected abstract void addTableColumns();
 
-	@Override
-	protected Control createDialogArea(Composite parent) {
-		Composite container = (Composite) super.createDialogArea(parent);
-		container.setLayout(new GridLayout(1, false));
-		tableViewer = createTable(container);
-		addTableColumns();
-		refresh();
-		return container;
-	}
+    /***
+     * sub classes need to override this method to refresh the table
+     */
+    public abstract void refresh();
 
-	protected void createButtonsForButtonBar(Composite parent) {
-		Button btnOK = createButton(parent, 102, IDialogConstants.OK_LABEL, false);
-		btnOK.addSelectionListener(new SelectionListener() {
+    @Override
+    protected Control createDialogArea(Composite parent) {
+        Composite container = (Composite) super.createDialogArea(parent);
+        container.setLayout(new GridLayout(1, false));
+        tableViewer = createTable(container);
+        addTableColumns();
+        refresh();
+        return container;
+    }
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				_instance.close();
-			}
+    protected void createButtonsForButtonBar(Composite parent) {
+        Button btnOK = createButton(parent, 102, IDialogConstants.OK_LABEL, false);
+        btnOK.addSelectionListener(new SelectionListener() {
 
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
-		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
-	}
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                _instance.close();
+            }
 
-	@Override
-	protected Point getInitialSize() {
-		return new Point(700, 500);
-	}
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {
+            }
+        });
+        createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+    }
 
-	@Override
-	protected void configureShell(Shell newShell) {
-		super.configureShell(newShell);
-		newShell.setText(getDialogTitle());
-	}
+    @Override
+    protected Point getInitialSize() {
+        return new Point(700, 500);
+    }
+
+    @Override
+    protected void configureShell(Shell newShell) {
+        super.configureShell(newShell);
+        newShell.setText(getDialogTitle());
+    }
 
 }
