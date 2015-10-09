@@ -41,7 +41,7 @@ public class ExecutionUtil {
 
     public static String getLocalHostName() {
         try {
-            return InetAddress.getLocalHost().getCanonicalHostName();
+            return System.getProperty("user.name") + " - " + InetAddress.getLocalHost().getCanonicalHostName();
         } catch (UnknownHostException e) {
             return UNKNOW_HOST;
         }

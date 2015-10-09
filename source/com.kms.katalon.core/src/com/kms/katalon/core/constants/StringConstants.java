@@ -162,7 +162,7 @@ public class StringConstants {
 	public static final String CONF_PROPERTY_LOG_FILE_PATH = "katalon.logFilePath";
 	public static final String CONF_PROPERTY_TIMEOUT = "katalon.timeOut";
 	public static final String CONF_PROPERTY_PROJECT_DIR = "katalon.projectDir";
-	public static final String CONF_PROPERTY_HOST_NAME = XML_LOG_DESCRIPTION_PROPERTY;
+	public static final String CONF_PROPERTY_HOST_NAME = XML_LOG_HOST_NAME_PROPERTY;
 	public static final String CONF_PROPERTY_HOST_OS = XML_LOG_OS_PROPERTY;
 	public static final String CONF_PROPERTY_EXECUTION_SOURCE = XML_LOG_SOURCE_PROPERTY;
 	public static final String CONF_PROPERTY_EXECUTION_SOURCE_NAME = XML_LOG_NAME_PROPERTY;
