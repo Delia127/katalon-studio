@@ -48,21 +48,27 @@ public class ProjectController extends EntityController {
     }
 
     public ProjectEntity openProjectForUI(String projectPk, IProgressMonitor monitor) throws Exception {
-        if (monitor == null) monitor = new NullProgressMonitor();
+        try {
+            if (monitor == null) monitor = new NullProgressMonitor();
 
-        ProjectEntity project = dataProviderSetting.getProjectDataProvider().getProjectWithoutClasspath(projectPk);
+            ProjectEntity project = dataProviderSetting.getProjectDataProvider().getProjectWithoutClasspath(projectPk);
 
-        if (project != null) {
-            monitor.beginTask("Initialzing project's working space...", 10);
-            GroovyUtil.initGroovyProject(project, FolderController.getInstance().getTestCaseRoot(project),
-                    new SubProgressMonitor(monitor, 8));
-            addRecentProject(project);
-            GlobalVariableController.getInstance().generateGlobalVariableLibFile(project,
-                    new SubProgressMonitor(monitor, 1));
-            KeywordController.getInstance().parseAllCustomKeywords(project, new SubProgressMonitor(monitor, 1));
-            monitor.done();
+            if (project != null) {
+                monitor.beginTask("Initialzing project's working space...", 10);
+                GroovyUtil.initGroovyProject(project, FolderController.getInstance().getTestCaseRoot(project),
+                        new SubProgressMonitor(monitor, 4, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK));
+                addRecentProject(project);
+                GlobalVariableController.getInstance().generateGlobalVariableLibFile(project,
+                        new SubProgressMonitor(monitor, 2, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK));
+                KeywordController.getInstance().parseAllCustomKeywords(project,
+                        new SubProgressMonitor(monitor, 4, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK));
+            }
+            return project;
+        } finally {
+            if (monitor != null) {
+                monitor.done();
+            }
         }
-        return project;
     }
 
     public ProjectEntity openProject(String projectPk) throws Exception {

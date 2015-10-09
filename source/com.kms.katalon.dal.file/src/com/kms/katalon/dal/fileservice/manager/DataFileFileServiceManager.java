@@ -6,8 +6,10 @@ import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
@@ -19,6 +21,7 @@ import com.kms.katalon.dal.fileservice.FileServiceConstant;
 import com.kms.katalon.dal.fileservice.constants.StringConstants;
 import com.kms.katalon.entity.dal.exception.DuplicatedFileNameException;
 import com.kms.katalon.entity.dal.exception.EntityIsReferencedException;
+import com.kms.katalon.entity.dal.exception.NoEntityException;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
@@ -39,8 +42,7 @@ import com.kms.katalon.groovy.util.GroovyRefreshUtil;
 public class DataFileFileServiceManager {
 
     /**
-     * add a new child Data File to the specific folder and initialize its
-     * properties
+     * add a new child Data File to the specific folder and initialize its properties
      * 
      * @param parentFolderPk
      * @param projectPk
@@ -68,13 +70,12 @@ public class DataFileFileServiceManager {
     }
 
     /**
-     * check if a data file entity is referenced by any test case, test suite
-     * and job definition entity or not
+     * check if a data file entity is referenced by any test case, test suite and job definition entity or not
      * 
      * @param dataFilePk
      * @param projectPk
-     * @return the string contains information of all entities that refer to the
-     *         data file entity, if none return empty string
+     * @return the string contains information of all entities that refer to the data file entity, if none return empty
+     *         string
      * @throws Exception
      */
     private static String isDataFileReferred(DataFileEntity dataFile, List<TestSuiteEntity> testSuiteList,
@@ -87,14 +88,13 @@ public class DataFileFileServiceManager {
         String dataFileId = dataFile.getRelativePathForUI().replace(File.separator,
                 GlobalStringConstants.ENTITY_ID_SEPERATOR);
         TestDataReferredException exception = new TestDataReferredException("");
-        
-        
+
         for (TestSuiteEntity testSuiteEntity : testSuiteList) {
             boolean needToSave = false;
             for (TestSuiteTestCaseLink testCaseLink : testSuiteEntity.getTestSuiteTestCaseLinks()) {
-                
+
                 List<TestCaseTestDataLink> removedTestDataLinks = new ArrayList<TestCaseTestDataLink>();
-                
+
                 for (TestCaseTestDataLink testDataLink : testCaseLink.getTestDataLinks()) {
                     if (dataFileId.equals(testDataLink.getTestDataId())) {
                         if (!isForced) {
@@ -110,7 +110,7 @@ public class DataFileFileServiceManager {
                         }
                     }
                 }
-                
+
                 if (isForced) {
                     testCaseLink.getTestDataLinks().removeAll(removedTestDataLinks);
                     needToSave = true;
@@ -129,8 +129,53 @@ public class DataFileFileServiceManager {
     }
 
     /**
-     * delete a data file entity and its file after checking it is referenced by
-     * others entities
+     * Returns a map of list of {@link TestSuiteTestCaseLink} that are references of the given data file.
+     * <p>
+     * Key of the map is id of test suite, Value is a list {@link TestSuiteTestCaseLink} in that test suite that each
+     * one has at least one {@link TestCaseTestDataLink} that contains test data id of the given parameter.
+     * 
+     * @param dataFileEntity
+     * @return a hash map of list of {@link TestSuiteTestCaseLink}
+     * @throws Exception
+     *             thrown if the given test data is null or system cannot get all test suites of the current project.
+     */
+    public static Map<String, List<TestSuiteTestCaseLink>> getTestDataReferences(DataFileEntity dataFileEntity)
+            throws Exception {
+        if (dataFileEntity == null) {
+            throw new NoEntityException("Test data not found.");
+        }
+
+        Map<String, List<TestSuiteTestCaseLink>> testDataReferences = new HashMap<String, List<TestSuiteTestCaseLink>>();
+
+        List<TestSuiteEntity> allTestSuites = FolderFileServiceManager
+                .getDescendantTestSuitesOfFolder(FolderFileServiceManager.getTestSuiteRoot(dataFileEntity.getProject()));
+
+        String dataFileId = dataFileEntity.getRelativePathForUI().replace(File.separator,
+                GlobalStringConstants.ENTITY_ID_SEPERATOR);
+
+        for (TestSuiteEntity testSuiteEntity : allTestSuites) {
+            List<TestSuiteTestCaseLink> testCaseLinkReferences = new ArrayList<TestSuiteTestCaseLink>();
+            for (TestSuiteTestCaseLink testCaseLink : testSuiteEntity.getTestSuiteTestCaseLinks()) {
+
+                for (TestCaseTestDataLink testDataLink : testCaseLink.getTestDataLinks()) {
+                    if (dataFileId.equals(testDataLink.getTestDataId())) {
+                        testCaseLinkReferences.add(testCaseLink);
+                        break;
+                    }
+                }
+            }
+
+            if (!testCaseLinkReferences.isEmpty()) {
+                String testSuiteId = testSuiteEntity.getRelativePathForUI().replace(File.separator,
+                        GlobalStringConstants.ENTITY_ID_SEPERATOR);
+                testDataReferences.put(testSuiteId, testCaseLinkReferences);
+            }
+        }
+        return testDataReferences;
+    }
+
+    /**
+     * Deletes the given data file entity and its file after checking it is referenced by others entities
      * 
      * @param dataFilePk
      * @param projectPk
@@ -153,13 +198,12 @@ public class DataFileFileServiceManager {
     }
 
     /**
-     * check if the given folder entity that's data file entities can be deleted
-     * or not
+     * check if the given folder entity that's data file entities can be deleted or not
      * 
      * @param folder
      * @param projectPk
-     * @return the string contains information of all entities that refer to its
-     *         children data file entity, if none return empty string
+     * @return the string contains information of all entities that refer to its children data file entity, if none
+     *         return empty string
      * @throws Exception
      */
     private static String canDeleteDataFileFolder(FolderEntity folder, List<TestSuiteEntity> testSuiteList)
@@ -181,8 +225,7 @@ public class DataFileFileServiceManager {
     }
 
     /**
-     * check a folder data file entity could be deleted or not if it can be,
-     * call method delete recursively to delete it
+     * check a folder data file entity could be deleted or not if it can be, call method delete recursively to delete it
      * 
      * @param folderPk
      * @param projectPk
@@ -382,8 +425,8 @@ public class DataFileFileServiceManager {
     }
 
     /**
-     * update all test cases, test suites and job definition that each one
-     * refers to the given data file after it renamed
+     * update all test cases, test suites and job definition that each one refers to the given data file after it
+     * renamed
      * 
      * @param oldEntity
      * @param newEntity
@@ -540,8 +583,7 @@ public class DataFileFileServiceManager {
     }
 
     /**
-     * get a data file entity that has name same with specific name in same
-     * folder
+     * get a data file entity that has name same with specific name in same folder
      * 
      * @param folderLocation
      * @param dataFileName
@@ -609,8 +651,7 @@ public class DataFileFileServiceManager {
     }
 
     /**
-     * rename a folder of data file and update all references of its children
-     * data files after it renamed
+     * rename a folder of data file and update all references of its children data files after it renamed
      * 
      * @param newFolderName
      * @param folderEntity

@@ -22,10 +22,10 @@ public class ListPropertyLabelProvider extends LabelProvider implements ITableLa
             return "";
         }
         switch (columnIndex) {
-        case COLUMN_TYPE_INDEX:
-            return DriverPropertyValueType.fromValue(element).toString();
-        case COLUMN_VALUE_INDEX:
-            return String.valueOf(element);
+            case COLUMN_TYPE_INDEX:
+                return DriverPropertyValueType.fromValue(element).toString();
+            case COLUMN_VALUE_INDEX:
+                return String.valueOf(element);
         }
         return null;
     }

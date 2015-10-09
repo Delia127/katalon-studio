@@ -36,8 +36,12 @@ public class CodeRefactoringJob extends Job {
 
             File settingFolder = new File(projectDir, PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME);
             for (String fileName : settingFolder.list(new OldSettingFileNameFilter())) {
-                FileUtils.moveFile(new File(settingFolder, fileName),
-                        new File(settingFolder, fileName.replace("qautomate", "katalon")));
+                try {
+                    FileUtils.moveFile(new File(settingFolder, fileName),
+                            new File(settingFolder, fileName.replace("qautomate", "katalon")));
+                } catch (Exception ex) {
+                    continue;
+                }
             }
             monitor.worked(1);
 

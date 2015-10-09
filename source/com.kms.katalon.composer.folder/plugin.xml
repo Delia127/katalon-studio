@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
+   <extension-point id="delete" name="com.kms.katalon.composer.folder" schema="schema/delete.exsd"/>
 
    <extension
          id="com.kms.katalon.composer.folder.fragment"
@@ -7,6 +8,12 @@
       <fragment
             uri="fragment.e4xmi">
       </fragment>
+   </extension>
+   <extension
+         point="com.kms.katalon.composer.explorer.delete">
+      <client
+            handler="com.kms.katalon.composer.folder.handlers.DeleteFolderHandler">
+      </client>
    </extension>
 
 </plugin>

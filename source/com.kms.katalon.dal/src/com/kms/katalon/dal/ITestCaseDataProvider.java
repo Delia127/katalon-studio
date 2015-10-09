@@ -1,7 +1,10 @@
 package com.kms.katalon.dal;
 
+import java.util.List;
+
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public interface ITestCaseDataProvider {
 	public TestCaseEntity addNewTestCase(FolderEntity parentFolder, String testCaseName) throws Exception;
@@ -27,4 +30,6 @@ public interface ITestCaseDataProvider {
 	public TestCaseEntity getTestCaseByScriptFileName(String scriptFile) throws Exception;
 	
 	public TestCaseEntity getTestCaseByScriptFilePath(String scriptFilePath) throws Exception;
+	
+	public List<TestSuiteEntity> getTestCaseReferences(TestCaseEntity testCase) throws Exception; 
 }

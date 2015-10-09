@@ -46,9 +46,18 @@ public class GlobalVariableController extends EntityController {
     }
 
     public void generateGlobalVariableLibFile(ProjectEntity project, IProgressMonitor monitor) throws Exception {
-        IFolder libFolder = GroovyUtil.getCustomKeywordLibFolder(project);
-        GlobalVariableParser.getInstance().generateGlobalVariableLibFile(libFolder, getAllGlobalVariables(project));
-        libFolder.refreshLocal(IResource.DEPTH_ONE, monitor);
+        try {
+            if (monitor != null) {
+                monitor.beginTask("Generating global variables...", 1);
+            }
+            IFolder libFolder = GroovyUtil.getCustomKeywordLibFolder(project);
+            GlobalVariableParser.getInstance().generateGlobalVariableLibFile(libFolder, getAllGlobalVariables(project));
+            libFolder.refreshLocal(IResource.DEPTH_ONE, monitor);
+        } finally {
+            if (monitor != null) {
+                monitor.done();
+            }
+        }
     }
 
 }

@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
-import com.kms.katalon.composer.components.impl.util.ControlUtil;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.GenerateNewTokenDialog;
 import com.kms.katalon.controller.ProjectController;
@@ -189,19 +189,19 @@ public class QTestIntegrationPage extends PreferencePage {
 
     private void enableAttachmentsGroup() {
         if (chckEnableIntegration.getSelection() && chckAutoSubmitTestRun.getSelection()) {
-            ControlUtil.recursiveSetEnabled(compositeOptions, true);
+            ControlUtils.recursiveSetEnabled(compositeOptions, true);
             compositeOptions.setEnabled(true);
         } else {
-            ControlUtil.recursiveSetEnabled(compositeOptions, false);
+            ControlUtils.recursiveSetEnabled(compositeOptions, false);
             compositeOptions.setEnabled(false);
         }
     }
 
     private void enableMainComposite() {
         if (chckEnableIntegration.getSelection()) {
-            ControlUtil.recursiveSetEnabled(mainComposite, true);
+            ControlUtils.recursiveSetEnabled(mainComposite, true);
         } else {
-            ControlUtil.recursiveSetEnabled(mainComposite, false);
+            ControlUtils.recursiveSetEnabled(mainComposite, false);
         }
         enableAttachmentsGroup();
     }

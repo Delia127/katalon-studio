@@ -112,8 +112,10 @@ public class GroovyUtil {
         SubProgressMonitor subProgressDescription = null;
         SubProgressMonitor subProgressClasspath = null;
         if (monitor != null) {
-            subProgressDescription = new SubProgressMonitor(monitor, 1);
-            subProgressClasspath = new SubProgressMonitor(monitor, 9);
+            monitor.beginTask("Initialzing project's classpath...", 10);
+            subProgressDescription = new SubProgressMonitor(monitor, 1,
+                    SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK);
+            subProgressClasspath = new SubProgressMonitor(monitor, 9, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK);
         }
         initGroovyProjectDescription(projectEntity, subProgressDescription);
         initGroovyProjectClassPath(projectEntity, testCaseRootFolder, true, subProgressClasspath);
@@ -499,8 +501,7 @@ public class GroovyUtil {
         return "Script" + System.currentTimeMillis();
     }
 
-    public static ICompilationUnit createGroovyScript(IPackageFragment parentPackage, String typeName)
-            throws Exception {
+    public static ICompilationUnit createGroovyScript(IPackageFragment parentPackage, String typeName) throws Exception {
         return GroovyCompilationHelper.createGroovyType(parentPackage, typeName, false, false);
     }
 
@@ -783,8 +784,8 @@ public class GroovyUtil {
     }
 
     /**
-     * Create test case source script folder if it does not exist. Clean all
-     * variant that equalsIgnoreCase with name of the the given test case.
+     * Create test case source script folder if it does not exist. Clean all variant that equalsIgnoreCase with name of
+     * the the given test case.
      * 
      * @param testCaseSourceFolder
      * @param parentSourceFolder

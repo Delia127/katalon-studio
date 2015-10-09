@@ -17,7 +17,7 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String DIA_LBL_TIME = TIME;
 	public static final String DIA_LBL_LEVEL = LEVEL;
 	public static final String DIA_LBL_MESSAGE = MESSAGE;
-	public static final String DIA_TITLE_PROPERTIES = "Properties";
+	public static final String DIA_TITLE_LOG_PROPERTIES = "Log's Properties";
 
 	// ExecuteHandler
 	public static final String ERROR_TITLE = ERROR;
@@ -57,7 +57,7 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String PA_COL_LEVEL = LEVEL;
 	public static final String PA_COL_TIME = TIME;
 	public static final String PA_COL_MESSAGE = MESSAGE;
-	public static final String PA_LOG_CONTEXT_MENU_PROPERTIES = DIA_TITLE_PROPERTIES;
+	public static final String PA_LOG_CONTEXT_MENU_PROPERTIES = DIA_TITLE_LOG_PROPERTIES;
 
 	// LogExceptionNavigator
 	public static final String WARN_TITLE = WARN;

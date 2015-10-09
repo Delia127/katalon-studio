@@ -77,13 +77,15 @@ public class TestCaseTableViewer extends TableViewer {
         parentView.setDirty(true);
     }
 
-    public void insertTestCase(TestCaseEntity testCase, int index) throws Exception {
+    public TestSuiteTestCaseLink insertTestCase(TestCaseEntity testCase, int index) throws Exception {
         if (index < 0 || index > data.size()) {
             addTestCase(testCase);
-            return;
+            return null;
         }
         // check testCase is in list or not
-        if (testCasesPKs.contains(testCase.getId())) return;
+        if (testCasesPKs.contains(testCase.getId())) {
+            return null;
+        }
 
         TestSuiteTestCaseLink link = createNewTestSuiteTestCaseLink(testCase);
 
@@ -93,14 +95,14 @@ public class TestCaseTableViewer extends TableViewer {
         this.refresh();
         this.setSelection(new StructuredSelection(link));
         parentView.setDirty(true);
+        return link;
     }
 
     protected TestSuiteTestCaseLink createNewTestSuiteTestCaseLink(TestCaseEntity testCase) throws Exception {
         TestSuiteTestCaseLink link = new TestSuiteTestCaseLink();
         link.setIsRun(true);
         link.setTestCaseId(TestCaseController.getInstance().getIdForDisplay(testCase));
-        link.setOrder(data.size() + 1);
-
+        
         for (VariableEntity variable : testCase.getVariables()) {
             VariableLink variableLink = new VariableLink();
             variableLink.setVariableId(variable.getId());
@@ -111,16 +113,17 @@ public class TestCaseTableViewer extends TableViewer {
 
     public void upTestCase(List<TestSuiteTestCaseLink> selectedObjects) {
         if (selectedObjects != null && selectedObjects.size() >= 1) {
+            
             Collections.sort(selectedObjects, new Comparator<TestSuiteTestCaseLink>() {
 
                 @Override
                 public int compare(TestSuiteTestCaseLink arg0, TestSuiteTestCaseLink arg1) {
-                    return (arg0.getOrder() > arg1.getOrder()) ? 1 : -1;
+                    return data.indexOf(arg0) > data.indexOf(arg1) ? 1 : -1;
                 }
+                
             });
-
+            
             for (TestSuiteTestCaseLink selectedLink : selectedObjects) {
-                int selectedLinkOrder = selectedLink.getOrder();
 
                 int selectedIndex = data.indexOf(selectedLink) - 1;
                 if (selectedIndex >= 0) {
@@ -131,9 +134,6 @@ public class TestCaseTableViewer extends TableViewer {
                     
                     data.remove(selectedLink);
                     data.add(selectedIndex, selectedLink);
-
-                    selectedLink.setOrder(selectedLinkOrder - 1);
-                    linkBefore.setOrder(selectedLinkOrder);
 
                     this.update(selectedLink, null);
                     this.update(linkBefore, null);
@@ -152,13 +152,12 @@ public class TestCaseTableViewer extends TableViewer {
 
                 @Override
                 public int compare(TestSuiteTestCaseLink arg0, TestSuiteTestCaseLink arg1) {
-                    return (arg0.getOrder() < arg1.getOrder()) ? 1 : -1;
+                    return data.indexOf(arg0) < data.indexOf(arg1) ? 1 : -1;
                 }
+                
             });
-
+            
             for (TestSuiteTestCaseLink selectedLink : selectedObjects) {
-                int selectedLinkOrder = selectedLink.getOrder();
-
                 int selectedIndex = data.indexOf(selectedLink) + 1;
                 if (selectedIndex < data.size()) {
                     TestSuiteTestCaseLink linkAfter = (TestSuiteTestCaseLink) data.get(selectedIndex);
@@ -168,9 +167,6 @@ public class TestCaseTableViewer extends TableViewer {
                     
                     data.remove(selectedLink);
                     data.add(selectedIndex, selectedLink);
-
-                    selectedLink.setOrder(selectedLinkOrder + 1);
-                    linkAfter.setOrder(selectedLinkOrder);
 
                     this.update(selectedLink, null);
                     this.update(linkAfter, null);
@@ -195,7 +191,6 @@ public class TestCaseTableViewer extends TableViewer {
 
                 data.remove(data.indexOf(link));
             }
-            refreshTestCaseLinkOrder();
             refreshIsRunAll();
 
             this.refresh();
@@ -205,14 +200,6 @@ public class TestCaseTableViewer extends TableViewer {
 
     public int getIndex(TestSuiteTestCaseLink testSuiteTestCaseLink) {
         return data.indexOf(testSuiteTestCaseLink);
-    }
-
-    private void refreshTestCaseLinkOrder() {
-        for (int i = 0; i < data.size(); i++) {
-            TestSuiteTestCaseLink link = (TestSuiteTestCaseLink) data.get(i);
-            link.setOrder(i + 1);
-            this.update(link, null);
-        }
     }
 
     public void setIsRunValueAllTestCases() {

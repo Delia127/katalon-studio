@@ -1,10 +1,11 @@
 package com.kms.katalon.composer.components.impl.util;
 
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-public class ControlUtil {
-    private ControlUtil() {
+public class ControlUtils {
+    private ControlUtils() {
         //Disable default constructor.
     }
     
@@ -17,5 +18,9 @@ public class ControlUtil {
         } else {
             ctrl.setEnabled(enabled);
         }
+    }
+    
+    public static void setFontToBeBold(Control ctrl) {
+        ctrl.setFont(JFaceResources.getFontRegistry().getBold(""));
     }
 }

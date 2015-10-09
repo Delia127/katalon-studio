@@ -1,3 +1,4 @@
+
 package com.kms.katalon.composer.testcase.addons;
 
 import javax.annotation.PostConstruct;
@@ -13,6 +14,7 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.transfer.TreeEntityTransfer;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
+import com.kms.katalon.composer.testcase.handlers.DeleteTestCaseFolderHandler;
 import com.kms.katalon.composer.testcase.handlers.DeleteTestCaseHandler;
 import com.kms.katalon.composer.testcase.handlers.EvaluateIntegrationContributionViewHandler;
 import com.kms.katalon.composer.testcase.handlers.OpenTestCaseHandler;
@@ -22,28 +24,29 @@ import com.kms.katalon.constants.EventConstants;
 
 public class TestCaseInjectionManagerAddon implements EventHandler {
 
-	@Inject
-	private IEventBroker eventBroker;
-	
-	@Inject
-	private EPartService partService;
+    @Inject
+    private IEventBroker eventBroker;
 
-	@PostConstruct
-	public void initHandlers(IEclipseContext context) {
-		ContextInjectionFactory.make(DeleteTestCaseHandler.class, context);
-		ContextInjectionFactory.make(OpenTestCaseHandler.class, context);
-		ContextInjectionFactory.make(RenameTestCaseHandler.class, context);
-		ContextInjectionFactory.make(RefreshTestCaseHandler.class, context);
-		ContextInjectionFactory.make(EvaluateIntegrationContributionViewHandler.class, context);
+    @Inject
+    private EPartService partService;
 
-		TransferTypeCollection.getInstance().addTreeEntityTransferType(TreeEntityTransfer.getInstance());
-		eventBroker.subscribe(EventConstants.WORKSPACE_CREATED, this);
-	}
+    @PostConstruct
+    public void initHandlers(IEclipseContext context) {
+        ContextInjectionFactory.make(DeleteTestCaseHandler.class, context);
+        ContextInjectionFactory.make(DeleteTestCaseFolderHandler.class, context);
+        ContextInjectionFactory.make(OpenTestCaseHandler.class, context);
+        ContextInjectionFactory.make(RenameTestCaseHandler.class, context);
+        ContextInjectionFactory.make(RefreshTestCaseHandler.class, context);
+        ContextInjectionFactory.make(EvaluateIntegrationContributionViewHandler.class, context);
 
-	@Override
-	public void handleEvent(Event event) {
-		if (event.getTopic().equals(EventConstants.WORKSPACE_CREATED)) {
-			partService.showPart("com.kms.katalon.composer.testcase.part.keywordsBrowser", PartState.CREATE);
-		}
-	}
+        TransferTypeCollection.getInstance().addTreeEntityTransferType(TreeEntityTransfer.getInstance());
+        eventBroker.subscribe(EventConstants.WORKSPACE_CREATED, this);
+    }
+
+    @Override
+    public void handleEvent(Event event) {
+        if (event.getTopic().equals(EventConstants.WORKSPACE_CREATED)) {
+            partService.showPart("com.kms.katalon.composer.testcase.part.keywordsBrowser", PartState.CREATE);
+        }
+    }
 }

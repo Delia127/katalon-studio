@@ -9,7 +9,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
@@ -30,10 +29,7 @@ import com.kms.katalon.groovy.util.GroovyUtil;
 public class RefreshFolderHandler {
 
     @Inject
-    IEventBroker eventBroker;
-
-    @Inject
-    EModelService modelService;
+    private IEventBroker eventBroker;
 
     @PostConstruct
     private void registerEventHandler() {
@@ -54,38 +50,37 @@ public class RefreshFolderHandler {
     }
 
     /**
-     * Refresh children tree entities of a folder tree entity on explorer
-     * If folder tree entity has its folder entity exists, refresh all its own children
-     * If it doesn't refresh its parent tree entity
-     * If its folder entity is a test case folder, refresh all its children script class paths
-     * If its folder entity is a keyword folder, that means the folder also is keyword root folder then
-     * call CustomKeywordParse to refresh all keyword files
+     * Refresh children tree entities of a folder tree entity on explorer If folder tree entity has its folder entity
+     * exists, refresh all its own children If it doesn't refresh its parent tree entity If its folder entity is a test
+     * case folder, refresh all its children script class paths If its folder entity is a keyword folder, that means the
+     * folder also is keyword root folder then call CustomKeywordParse to refresh all keyword files
+     * 
      * @param folderTreeEntity
      * @throws Exception
      */
-    private void execute(FolderTreeEntity folderTreeEntity, boolean isRecursive) throws Exception {    	
-    	if (!isRecursive) {
-    		eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, folderTreeEntity);
-    	}
-    	
-        if ((folderTreeEntity.getObject() != null) && (folderTreeEntity.getObject() instanceof FolderEntity)) {        	
+    private void execute(FolderTreeEntity folderTreeEntity, boolean isRecursive) throws Exception {
+        if (!isRecursive) {
+            eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, folderTreeEntity);
+        }
+
+        if ((folderTreeEntity.getObject() != null) && (folderTreeEntity.getObject() instanceof FolderEntity)) {
             FolderEntity folderEntity = (FolderEntity) folderTreeEntity.getObject();
-            
+
             if (!isRecursive) {
-            	RefreshingFolderJob refreshingJob = new RefreshingFolderJob(folderEntity);
-            	refreshingJob.schedule();
+                RefreshingFolderJob refreshingJob = new RefreshingFolderJob(folderEntity);
+                refreshingJob.schedule();
             }
 
             if (FolderController.getInstance().getFolder(folderEntity.getId()) != null) {
                 for (Object treeEntityObject : folderTreeEntity.getChildren()) {
                     ITreeEntity childTreeEntity = (ITreeEntity) treeEntityObject;
-					if (childTreeEntity.getObject() != null
-							&& !(childTreeEntity instanceof KeywordTreeEntity && childTreeEntity instanceof PackageTreeEntity)) {
-                    	if (childTreeEntity instanceof FolderTreeEntity) {
-                    		execute((FolderTreeEntity) childTreeEntity, true);
-                    	} else {
-                    		eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, childTreeEntity);
-                    	}
+                    if (childTreeEntity.getObject() != null
+                            && !(childTreeEntity instanceof KeywordTreeEntity && childTreeEntity instanceof PackageTreeEntity)) {
+                        if (childTreeEntity instanceof FolderTreeEntity) {
+                            execute((FolderTreeEntity) childTreeEntity, true);
+                        } else {
+                            eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, childTreeEntity);
+                        }
                     }
                 }
             } else {
@@ -98,36 +93,40 @@ public class RefreshFolderHandler {
         }
 
     }
-    
+
     private class RefreshingFolderJob extends Job {
-    	
-    	private FolderEntity folderEntity;
 
-		public RefreshingFolderJob(FolderEntity folderEntity) {
-			super("Refresh folder");
-			this.folderEntity = folderEntity;
-			this.setUser(true);
-		}
+        private FolderEntity folderEntity;
 
-		@Override
-		protected IStatus run(IProgressMonitor monitor) {
-			try {
-				monitor.beginTask("Refreshing folder: "+ FolderController.getInstance().getIdForDisplay(folderEntity) + "...", 2);
-				ProjectEntity projectEntity = folderEntity.getProject();
-				GroovyRefreshUtil.refreshFolder(folderEntity.getRelativePath(), folderEntity.getProject(), new SubProgressMonitor(monitor, 1));
-	            if (folderEntity.getFolderType() == FolderType.TESTCASE) {
-	            	
-	                // refresh children entities
-	                folderEntity.setChildrenEntities(FolderController.getInstance().getChildren(folderEntity));
-	                GroovyUtil.refreshInfiniteScriptTestCaseClasspath(projectEntity, folderEntity, new SubProgressMonitor(monitor, 1));	                
-	            } else if (folderEntity.getFolderType() == FolderType.KEYWORD) {
-	                KeywordController.getInstance().parseAllCustomKeywords(projectEntity, new SubProgressMonitor(monitor, 1));
-	            }
-	            return Status.OK_STATUS;
-			} catch (Exception ex) {
-				return Status.CANCEL_STATUS;
-			}
-		}
-    	
+        public RefreshingFolderJob(FolderEntity folderEntity) {
+            super("Refresh folder");
+            this.folderEntity = folderEntity;
+            this.setUser(true);
+        }
+
+        @Override
+        protected IStatus run(IProgressMonitor monitor) {
+            try {
+                monitor.beginTask("Refreshing folder: " + FolderController.getInstance().getIdForDisplay(folderEntity)
+                        + "...", 2);
+                ProjectEntity projectEntity = folderEntity.getProject();
+                GroovyRefreshUtil.refreshFolder(folderEntity.getRelativePath(), folderEntity.getProject(),
+                        new SubProgressMonitor(monitor, 1));
+                if (folderEntity.getFolderType() == FolderType.TESTCASE) {
+
+                    // refresh children entities
+                    folderEntity.setChildrenEntities(FolderController.getInstance().getChildren(folderEntity));
+                    GroovyUtil.refreshInfiniteScriptTestCaseClasspath(projectEntity, folderEntity,
+                            new SubProgressMonitor(monitor, 1));
+                } else if (folderEntity.getFolderType() == FolderType.KEYWORD) {
+                    KeywordController.getInstance().parseAllCustomKeywords(projectEntity,
+                            new SubProgressMonitor(monitor, 1));
+                }
+                return Status.OK_STATUS;
+            } catch (Exception ex) {
+                return Status.CANCEL_STATUS;
+            }
+        }
+
     }
 }
