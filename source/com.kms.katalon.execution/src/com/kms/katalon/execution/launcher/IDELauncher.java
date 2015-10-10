@@ -86,16 +86,6 @@ public class IDELauncher extends AbstractLauncher {
         }
     }
 
-    private void writeRunConfigToFile() throws IOException {
-        File executionFile = new File(runConfig.getExecutionSettingFilePath());
-        if (!executionFile.exists()) {
-            executionFile.createNewFile();
-        }
-        Gson gsonObj = new Gson();
-        String strJson = gsonObj.toJson(runConfig.getPropertyMap());
-        FileUtils.writeStringToFile(executionFile, strJson);
-    }
-
     private IFile generateTempTestSuiteScript(TestSuiteEntity testSuite, IRunConfiguration runConfig) throws Exception {
         if (testSuite != null) {
             File testSuiteScriptFile = new TestSuiteScriptGenerator(testSuite, runConfig, testSuiteExecutedEntity)

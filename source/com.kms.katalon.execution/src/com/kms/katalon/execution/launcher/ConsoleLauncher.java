@@ -58,6 +58,7 @@ public class ConsoleLauncher extends AbstractLauncher {
 		if (testSuite != null) {
 			executedEntity = testSuite;
 			this.testSuiteExecutedEntity = testSuiteExecutedEntity;
+			writeRunConfigToFile();
 			scriptFile = generateTempTestSuiteScript(testSuite, runConfig, testSuiteExecutedEntity);
 			LauncherManager.getInstance().addLauncher(this);
 		}

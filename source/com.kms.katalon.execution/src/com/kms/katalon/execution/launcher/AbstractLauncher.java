@@ -1,10 +1,12 @@
 package com.kms.katalon.execution.launcher;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -14,6 +16,7 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceStore;
 
+import com.google.gson.Gson;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestCaseController;
@@ -70,6 +73,16 @@ public abstract class AbstractLauncher {
                 TestSuiteController.getInstance().updateTestSuite(testSuite);
             }
         }
+    }
+    
+    protected void writeRunConfigToFile() throws IOException {
+        File executionFile = new File(runConfig.getExecutionSettingFilePath());
+        if (!executionFile.exists()) {
+            executionFile.createNewFile();
+        }
+        Gson gsonObj = new Gson();
+        String strJson = gsonObj.toJson(runConfig.getPropertyMap());
+        FileUtils.writeStringToFile(executionFile, strJson);
     }
 
     public static void sendReportEmail(TestSuiteEntity testSuite, File logFile) throws Exception {
