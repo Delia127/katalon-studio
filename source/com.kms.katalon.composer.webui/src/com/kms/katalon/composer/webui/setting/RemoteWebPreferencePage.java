@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.execution.components.DriverPropertyMapComposite;
+import com.kms.katalon.composer.execution.components.DriverPreferenceComposite;
 import com.kms.katalon.composer.execution.settings.DriverPreferencePage;
 import com.kms.katalon.composer.webui.constants.StringConstants;
 import com.kms.katalon.execution.configuration.IDriverConnector;
@@ -57,8 +57,8 @@ public class RemoteWebPreferencePage extends DriverPreferencePage {
         txtRemoteServerUrl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtRemoteServerUrl.setText(remoteDriverConnector.getRemoteServerUrl());
         
-        DriverPropertyMapComposite driverPropertyMap = new DriverPropertyMapComposite(container);
-        driverPropertyMap.setInput(driverConnector.getDriverProperties());
+        driverPreferenceComposite = new DriverPreferenceComposite(container, SWT.NONE, driverConnector);
+        driverPreferenceComposite.setInput(driverConnector.getDriverProperties());
         return container;
     }
 

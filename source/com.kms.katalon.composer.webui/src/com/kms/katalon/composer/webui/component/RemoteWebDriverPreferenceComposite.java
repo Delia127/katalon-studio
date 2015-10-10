@@ -17,8 +17,9 @@ import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector;
 
 public class RemoteWebDriverPreferenceComposite extends DriverPreferenceComposite {
     private Text txtRemoteServerUrl;
-    
-    public RemoteWebDriverPreferenceComposite(Composite parent, int style, RemoteWebDriverConnector remoteDriverConnector) {
+
+    public RemoteWebDriverPreferenceComposite(Composite parent, int style,
+            RemoteWebDriverConnector remoteDriverConnector) {
         super(parent, style, remoteDriverConnector);
     }
 
@@ -38,9 +39,10 @@ public class RemoteWebDriverPreferenceComposite extends DriverPreferenceComposit
         txtRemoteServerUrl = new Text(remoteUrlComposite, SWT.BORDER);
         txtRemoteServerUrl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtRemoteServerUrl.setText(((RemoteWebDriverConnector) driverConnector).getRemoteServerUrl());
-        
+
         driverPropertyMapComposite = new DriverPropertyMapComposite(this);
-        
+        driverPropertyMapComposite.setInput(driverConnector.getDriverProperties());
+
         txtRemoteServerUrl.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {

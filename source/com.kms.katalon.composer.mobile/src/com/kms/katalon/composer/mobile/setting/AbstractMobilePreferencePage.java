@@ -7,7 +7,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-import com.kms.katalon.composer.execution.components.DriverPropertyMapComposite;
+import com.kms.katalon.composer.execution.components.DriverPreferenceComposite;
 import com.kms.katalon.composer.execution.settings.DriverPreferencePage;
 import com.kms.katalon.composer.mobile.component.DeviceSelectionComposite;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
@@ -42,10 +42,9 @@ public abstract class AbstractMobilePreferencePage extends DriverPreferencePage 
                 (MobileDriverType) driverConnector.getDriverType());
 
         deviceSelectionComposite.setDeviceName(abstractMobileDriverConnector.getDeviceName());
-        DriverPropertyMapComposite driverPropertyMap = new DriverPropertyMapComposite(container);
 
-        initilize();
-        driverPropertyMap.setInput(driverConnector.getDriverProperties());
+        driverPreferenceComposite = new DriverPreferenceComposite(container, SWT.NONE, driverConnector);
+        driverPreferenceComposite.setInput(abstractMobileDriverConnector.getDriverProperties());
         return container;
     }
 
