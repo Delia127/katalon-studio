@@ -81,7 +81,11 @@ public class DriverFactory {
                 webDriver = new ChromeDriver(desireCapibilities);
                 break;
             case REMOTE_WEB_DRIVER:
-                webDriver = new RemoteWebDriver(new URL(getRemoteWebDriverServerUrl()), desireCapibilities);
+                String remoteWebServerUrl = getRemoteWebDriverServerUrl();
+                KeywordLogger.getInstance().logInfo(
+                        MessageFormat.format(StringConstants.XML_LOG_CONNECTING_TO_REMOTE_WEB_SERVER_X,
+                                remoteWebServerUrl));
+                webDriver = new RemoteWebDriver(new URL(remoteWebServerUrl), desireCapibilities);
                 break;
             case ANDROID_DRIVER:
                 webDriver = WebMobileDriverFactory.getInstance().getAndroidDriver(getMobileDeviceName());

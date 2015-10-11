@@ -45,6 +45,7 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
+import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.IDELauncher;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.util.ExecutionUtil;
@@ -81,7 +82,8 @@ public abstract class AbstractExecutionHandler {
             if (ProjectController.getInstance().getCurrentProject() != null) {
                 MPartStack composerStack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID,
                         application);
-                if (composerStack == null) return false;
+                if (composerStack == null)
+                    return false;
 
                 if (composerStack.isVisible() && composerStack.getSelectedElement() != null) {
                     MPart part = (MPart) composerStack.getSelectedElement();
@@ -103,15 +105,18 @@ public abstract class AbstractExecutionHandler {
     public void execute() {
         try {
             execute(LaunchMode.RUN);
+        } catch (ExecutionException e) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR, e.getMessage());
         } catch (SWTException e) {
             // Ignore it
         } catch (Exception e) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Unable to execute test script.");
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR,
+                    "Unable to execute test script. (Root cause: " + e.getMessage() + " )");
             LoggerSingleton.logError(e);
         }
     }
 
-    public Entity getExecutionTarget() {
+    public static Entity getExecutionTarget() {
         MPartStack composerStack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID,
                 application);
         MPart selectedPart = (MPart) composerStack.getSelectedElement();
@@ -126,9 +131,8 @@ public abstract class AbstractExecutionHandler {
                 TestSuiteCompositePart testSuiteComposite = (TestSuiteCompositePart) selectedPart.getObject();
 
                 if (testSuiteComposite.getOriginalTestSuite().getTestSuiteTestCaseLinks().isEmpty()) {
-                    if (MessageDialog
-                            .openQuestion(null, StringConstants.INFORMATION_TITLE,
-                                    "The test suite didn't have any test case to run. Do you want to add some test cases?")) {
+                    if (MessageDialog.openQuestion(null, StringConstants.INFORMATION_TITLE,
+                            "The test suite didn't have any test case to run. Do you want to add some test cases?")) {
                         testSuiteComposite.openAddTestCaseDialog();
                     }
                     return null;
@@ -169,7 +173,7 @@ public abstract class AbstractExecutionHandler {
         }
     }
 
-    protected static void executeTestCase(final TestCaseEntity testCase, final LaunchMode launchMode,
+    public static void executeTestCase(final TestCaseEntity testCase, final LaunchMode launchMode,
             final IRunConfiguration runConfig) throws Exception {
         if (testCase != null) {
             Job job = new Job("Launching test case...") {

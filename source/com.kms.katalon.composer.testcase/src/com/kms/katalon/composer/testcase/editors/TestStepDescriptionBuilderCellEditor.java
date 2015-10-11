@@ -5,6 +5,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
+import com.kms.katalon.composer.components.dialogs.AbstractDialogCellEditor;
 import com.kms.katalon.composer.testcase.dialogs.TestStepDescriptionBuilderDialog;
 
 public class TestStepDescriptionBuilderCellEditor extends AbstractDialogCellEditor {

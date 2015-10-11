@@ -18,4 +18,16 @@
             configuration="com.kms.katalon.execution.mobile.configuration.contributor.MixedModeRunConfigurationContributor">
       </client>
    </extension>
+   <extension
+         point="com.kms.katalon.execution.driverConnector">
+      <client
+            driver.connector="com.kms.katalon.execution.mobile.driver.contributor.AndroidDriverConnectorContributor">
+      </client>
+   </extension>
+   <extension
+         point="com.kms.katalon.execution.driverConnector">
+      <client
+            driver.connector="com.kms.katalon.execution.mobile.driver.contributor.IosDriverConnectorContributor">
+      </client>
+   </extension>
 </plugin>

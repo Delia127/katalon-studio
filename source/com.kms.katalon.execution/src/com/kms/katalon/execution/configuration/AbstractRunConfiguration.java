@@ -1,15 +1,17 @@
 package com.kms.katalon.execution.configuration;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.entity.file.FileEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
-import com.kms.katalon.execution.entity.IDriverConnector;
 import com.kms.katalon.execution.util.ExecutionUtil;
 
 public abstract class AbstractRunConfiguration implements IRunConfiguration {
@@ -24,16 +26,23 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     protected String sourceName;
     protected String sourceDescription;
     protected String executionSettingFilePath;
+    
+    public AbstractRunConfiguration() {
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+        if (currentProject != null) {
+            projectFolderLocation = currentProject.getFolderLocation().replace(File.separator, "/");
+        }
+    }
 
-    public AbstractRunConfiguration(TestCaseEntity testCaseEntity) {
+    public AbstractRunConfiguration(TestCaseEntity testCaseEntity) throws IOException {
         init(testCaseEntity);
     }
 
-    public AbstractRunConfiguration(TestSuiteEntity testSuiteEntity) {
+    public AbstractRunConfiguration(TestSuiteEntity testSuiteEntity) throws IOException {
         init(testSuiteEntity);
     }
 
-    protected void init(FileEntity fileEntity) {
+    protected void init(FileEntity fileEntity) throws IOException {
         if (fileEntity == null) {
             return;
         }

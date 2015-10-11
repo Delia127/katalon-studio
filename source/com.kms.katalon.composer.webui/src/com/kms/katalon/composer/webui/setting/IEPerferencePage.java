@@ -4,15 +4,15 @@ import java.io.IOException;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.settings.DriverPreferencePage;
-import com.kms.katalon.core.setting.DriverPropertySettingStore;
-import com.kms.katalon.core.webui.setting.IEWebDriverPropertySettingStore;
+import com.kms.katalon.execution.configuration.IDriverConnector;
+import com.kms.katalon.execution.webui.driver.IEDriverConnector;
 
 public class IEPerferencePage extends DriverPreferencePage {
 
     @Override
-    protected DriverPropertySettingStore getDriverPropertySettingStore(String projectFolderLocation) {
+    protected IDriverConnector getDriverConnector(String configurationFolderPath) {
         try {
-            return new IEWebDriverPropertySettingStore(projectFolderLocation);
+            return new IEDriverConnector(configurationFolderPath);
         } catch (IOException e) {
             LoggerSingleton.logError(e);
             // IO Errors, return null

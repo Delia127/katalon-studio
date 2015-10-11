@@ -8,11 +8,10 @@ import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.dialog.MapPropertyValueBuilderDialog;
 
 public class MapPropertyValueCellEditor extends DialogCellEditor {
-    private static final String INVALID_TYPE_MESSAGE = "Invalid Type";
-    
     public MapPropertyValueCellEditor(Composite parent) {
         super(parent);
         setValidator(new ICellEditorValidator() {
@@ -22,7 +21,7 @@ public class MapPropertyValueCellEditor extends DialogCellEditor {
                 if (value instanceof Map) {
                     return null;
                 }
-                return INVALID_TYPE_MESSAGE;
+                return StringConstants.INVALID_TYPE_MESSAGE;
             }
         });
     }

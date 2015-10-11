@@ -7,12 +7,8 @@ import com.kms.katalon.core.webui.driver.WebUIDriverType;
 
 public class SafariDriverConnector extends WebUiDriverConnector {
     
-    public SafariDriverConnector(String projectDir) throws IOException {
-        super(projectDir);
-    }
-
-    public SafariDriverConnector(String projectDir, String customProfileName) throws IOException {
-        super(projectDir, customProfileName);
+    public SafariDriverConnector(String configurationFolderPath) throws IOException {
+        super(configurationFolderPath);
     }
     
 	@Override

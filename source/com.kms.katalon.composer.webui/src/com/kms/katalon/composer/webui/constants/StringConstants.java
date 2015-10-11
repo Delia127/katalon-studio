@@ -9,4 +9,7 @@ public class StringConstants extends GlobalStringConstants {
 	
 	//WebUiExecutionPreferencePage
 	public static final String PREF_LBL_DEFAULT_WAIT_FOR_IE_HANGING_TIMEOUT = "Default wait for IE hanging timeout (in seconds):";
+	
+	// RemoteWebPreferencePage
+	public static final String LBL_REMOTE_SERVER_URL = "Remote web server url";
 }

@@ -2,6 +2,7 @@
 <plugin>
    <extension-point id="integration" name="com.kms.katalon.execution" schema="schema/integration.exsd"/>
    <extension-point id="runConfiguration" name="com.kms.katalon.execution.configuration" schema="schema/runConfiguration.exsd"/>
+   <extension-point id="driverConnector" name="com.kms.katalon.execution.driver.connector" schema="schema/driverConnector.exsd"/>
 
   	<extension
          id="com.kms.katalon.execution.fragment"

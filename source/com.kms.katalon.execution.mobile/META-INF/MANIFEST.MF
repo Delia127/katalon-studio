@@ -22,4 +22,5 @@ Require-Bundle: org.eclipse.swt,
  com.kms.katalon.execution.webui
 Export-Package: com.kms.katalon.execution.mobile.configuration,
  com.kms.katalon.execution.mobile.driver,
+ com.kms.katalon.execution.mobile.exception,
  com.kms.katalon.execution.mobile.util

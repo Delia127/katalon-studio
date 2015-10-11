@@ -32,6 +32,8 @@ public class DriverPropertyMapComposite extends Composite {
     private ToolItem tltmAddProperty;
     private ToolItem tltmRemoveProperty;
     private ToolItem tltmClearProperty;
+    
+    private Map<String, Object> driverPropertyList;
 
     public DriverPropertyMapComposite(Composite parent) {
         super(parent, SWT.NONE);
@@ -79,6 +81,7 @@ public class DriverPropertyMapComposite extends Composite {
 
         tltmClearProperty = new ToolItem(toolBar, SWT.NONE);
         tltmClearProperty.setText(StringConstants.SETT_TOOLITEM_CLEAR);
+        addToolItemListeners();
     }
     
     private void addTableColumn(TableViewer parent, TableColumnLayout tableColumnLayout, String headerText, int width,
@@ -93,11 +96,11 @@ public class DriverPropertyMapComposite extends Composite {
     }
     
     public void setInput(Map<String, Object> driverPropertyList) {
-        addToolItemListeners(driverPropertyList);
+        this.driverPropertyList = driverPropertyList;
         tableViewer.setInput(driverPropertyList);
     }
 
-    private void addToolItemListeners(final Map<String, Object> driverPropertyList) {
+    private void addToolItemListeners() {
         tltmAddProperty.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {

@@ -5,15 +5,10 @@ import java.io.IOException;
 import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 
-public class AndroidDriverConnector extends AbstractMobileDriverConnector {
+public class AndroidDriverConnector extends MobileDriverConnector {
 
-    public AndroidDriverConnector(String projectDir, String deviceName) throws IOException {
-        super(projectDir, deviceName);
-    }
-
-    public AndroidDriverConnector(String projectDir, String customProfileName, String deviceName)
-            throws IOException {
-        super(projectDir, customProfileName, deviceName);
+    public AndroidDriverConnector(String configurationFolderPath) throws IOException {
+        super(configurationFolderPath);
     }
 
     @Override

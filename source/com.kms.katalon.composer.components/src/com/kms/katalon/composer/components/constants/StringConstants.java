@@ -23,4 +23,7 @@ public class StringConstants extends GlobalStringConstants {
 	// UpdateReferencesPage
 	public static final String WIZ_UPDATE_REFERENCES_PAGE_DESCRIPTION = "Please ensure that all references to this object are also updated.";
 	public static final String WIZ_UPDATE_REFERENCES_PAGE_TITLE = "Update references";
+	
+    // AbstractDialogCellEditor
+    public static final String EDI_MSG_VALIDATOR_REQUIRE_MESSAGE = "The cell editor required object as type {0} to work.";
 }

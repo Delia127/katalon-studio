@@ -21,7 +21,7 @@ import org.osgi.framework.FrameworkUtil;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.execution.entity.IDriverConnector;
+import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.webui.util.WebUIExecutionUtil;
 import com.kms.katalon.objectspy.exception.BrowserNotSupportedException;
 import com.kms.katalon.objectspy.exception.ExtensionNotFoundException;

@@ -3,7 +3,9 @@ package com.kms.katalon.composer.execution.constants;
 import com.kms.katalon.constants.GlobalStringConstants;
 
 public class StringConstants extends GlobalStringConstants {
-
+    // Dialog
+    public static final String INVALID_TYPE_MESSAGE = "Invalid Type";
+    
 	// LogPropertyDialog
 	public static final String DIA_LOG_LVL_START = "START";
 	public static final String DIA_LOG_LVL_END = "END";
@@ -93,6 +95,8 @@ public class StringConstants extends GlobalStringConstants {
 
     // DriverPreferencePage
     public static final String SETT_COL_PREFERENCE_NAME = NAME;
+    public static final String SETT_COL_DRIVER_PREFERENCE_NAME = "Driver Name";
+    public static final String SETT_COL_PREFERENCE = "Preferences";
     public static final String SETT_COL_PREFERENCE_TYPE = "Type";
     public static final String SETT_COL_PREFERENCE_VALUE = VALUE;
     public static final String SETT_TOOLITEM_ADD = ADD;
@@ -110,8 +114,17 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_SHELL_EDIT_PREFERENCE = "Edit preference";
     
     // ListPropertyValueBuilderDialog
-    public static final String DIA_LIST_PROPERTY_VALUE_NAME = "List Property Builder Dialog";
+    public static final String DIA_LIST_PROPERTY_VALUE_NAME = "List Property Builder";
     
     // MapPropertyValueBuilderDialog
-    public static final String DIA_MAP_PROPERTY_VALUE_NAME = "Dictionary Property Builder Dialog";
+    public static final String DIA_MAP_PROPERTY_VALUE_NAME = "Dictionary Property Builder";
+    
+    // DriverConnectorBuilderBuilderDialog
+    public static final String DIA_DRIVER_CONNECTOR_BUILDER = "Driver Builder";
+    
+    // DriverConnectorListBuilderDialog
+    public static final String DIA_DRIVER_LIST_CONNECTOR_BUILDER = "Custom Execution Configuration Builder";
+    
+    // CustomRunConfigurationHandler
+    public static final String CUSTOM_RUN_CONFIG_ID_PREFIX = "com.kms.katalon.composer.execution.custom.";
 }

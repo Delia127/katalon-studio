@@ -10,13 +10,8 @@ import com.kms.katalon.core.webui.driver.WebUIDriverType;
 public class ChromeDriverConnector extends WebUiDriverConnector {
 	private String chromeDriverPath;
 	
-	public ChromeDriverConnector(String projectDir) throws IOException {
-        super(projectDir);
-        setChromeDriverPath(SeleniumWebDriverProvider.getChromeDriverPath());
-    }
-
-    public ChromeDriverConnector(String projectDir, String customProfileName) throws IOException {
-        super(projectDir, customProfileName);
+	public ChromeDriverConnector(String configurationFolderPath) throws IOException {
+        super(configurationFolderPath);
         setChromeDriverPath(SeleniumWebDriverProvider.getChromeDriverPath());
     }
     

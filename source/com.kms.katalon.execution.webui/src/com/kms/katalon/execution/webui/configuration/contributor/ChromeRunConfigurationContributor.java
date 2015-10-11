@@ -8,6 +8,7 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
+import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.webui.configuration.ChromeRunConfiguration;
 
 public class ChromeRunConfigurationContributor implements IRunConfigurationContributor {
@@ -19,13 +20,13 @@ public class ChromeRunConfigurationContributor implements IRunConfigurationContr
 
     @Override
     public IRunConfiguration getRunConfiguration(TestCaseEntity testCase, Map<String, String> runInput)
-            throws IOException {
+            throws IOException, ExecutionException {
         return new ChromeRunConfiguration(testCase);
     }
 
     @Override
     public IRunConfiguration getRunConfiguration(TestSuiteEntity testSuite, Map<String, String> runInput)
-            throws IOException {
+            throws IOException, ExecutionException {
         return new ChromeRunConfiguration(testSuite);
     }
 
