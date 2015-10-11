@@ -212,7 +212,7 @@ public class ReportPartTestLogView {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.keyCode == SWT.CR) {
+                if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR) {
                     filterTestStepBySearchedText();
                 }
             }
@@ -742,7 +742,7 @@ public class ReportPartTestLogView {
             txtSTestCaseMessage.setText("");
             enebleMargin(txtSTestCaseMessage, false);
         }
-        
+
         compositeTestCaseInformation.layout();
 
         if (selectedLogRecord != null) {
@@ -869,7 +869,7 @@ public class ReportPartTestLogView {
     public ReportEntity getReport() {
         return parentPart.getReport();
     }
-    
+
     public void enebleMargin(StyledText styledText, boolean enable) {
         styledText.setRedraw(false);
         if (enable) {

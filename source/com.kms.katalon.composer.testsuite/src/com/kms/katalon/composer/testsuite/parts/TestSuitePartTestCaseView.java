@@ -142,7 +142,7 @@ public class TestSuitePartTestCaseView {
         TableColumn tblclmnNotification = tableViewerColumnNotification.getColumn();
         tblclmnNotification.setImage(ImageConstants.IMG_16_NOTIFICATION_HEADER);
         tblclmnNotification.setToolTipText(GlobalStringConstants.NOTIFICATION);
-        
+
         TableViewerColumn tableViewerColumnOrder = new TableViewerColumn(testCaseTableViewer, SWT.NONE);
         TableColumn tblclmnOrder = tableViewerColumnOrder.getColumn();
         tblclmnOrder.setText(NUMBER_COLUMN_HEADER);
@@ -176,10 +176,10 @@ public class TestSuitePartTestCaseView {
 
         tableViewerColumnNotification.setLabelProvider(new TestCaseTableLabelProvider(
                 TestCaseTableLabelProvider.COLUMN_NOTIFICATION_INDEX));
-        
+
         tableViewerColumnOrder.setLabelProvider(new TestCaseTableLabelProvider(
                 TestCaseTableLabelProvider.COLUMN_ORDER_INDEX));
-        
+
         tableViewerColumnPK
                 .setLabelProvider(new TestCaseTableLabelProvider(TestCaseTableLabelProvider.COLUMN_ID_INDEX));
 
@@ -255,7 +255,7 @@ public class TestSuitePartTestCaseView {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.keyCode == SWT.CR) {
+                if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR) {
                     filterTestCaseLinkBySearchedText();
                 }
             }
@@ -486,7 +486,7 @@ public class TestSuitePartTestCaseView {
         dataAndVariableView.refreshVariableTable();
     }
 
-    /*package*/ void openAddTestCaseDialog() {
+    /* package */void openAddTestCaseDialog() {
         testCaseToolItemListener.addTestCaseLink();
     }
 

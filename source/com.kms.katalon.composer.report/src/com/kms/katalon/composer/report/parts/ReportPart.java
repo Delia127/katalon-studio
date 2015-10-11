@@ -167,7 +167,7 @@ public class ReportPart implements EventHandler {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.keyCode == SWT.CR) {
+                if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR) {
                     filterTestLogBySearchedText();
                 }
             }

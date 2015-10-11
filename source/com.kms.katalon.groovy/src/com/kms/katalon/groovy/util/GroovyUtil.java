@@ -57,6 +57,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.groovy.helper.GroovyCompilationHelper;
+import com.kms.katalon.groovy.model.ImportType;
 import com.kms.katalon.selenium.TempClass;
 
 @SuppressWarnings("restriction")
@@ -261,11 +262,13 @@ public class GroovyUtil {
 
     private static void addClassPathOfCoreBundleToJavaProject(List<IClasspathEntry> entries, Bundle coreBundle)
             throws IOException, BundleException {
-        if (coreBundle == null) return;
+        if (coreBundle == null)
+            return;
 
         File customBundleFile = FileLocator.getBundleFile(coreBundle).getAbsoluteFile();
 
-        if (customBundleFile == null || !customBundleFile.exists()) return;
+        if (customBundleFile == null || !customBundleFile.exists())
+            return;
 
         if (customBundleFile.isDirectory()) { // built by IDE
             addSourceFolderToClassPath(customBundleFile, entries);
@@ -336,15 +339,19 @@ public class GroovyUtil {
     private static boolean checkRequiredBundleLocation(File requiredBundleLocation, List<IClasspathEntry> entries) {
         String bundleName = FilenameUtils.getBaseName(requiredBundleLocation.getName());
 
-        if (bundleName == null || bundleName.isEmpty()) return false;
+        if (bundleName == null || bundleName.isEmpty())
+            return false;
 
         if (bundleName.contains("_")) {
             bundleName = bundleName.split("_")[0];
-            if (bundleName == null || bundleName.isEmpty()) return false;
+            if (bundleName == null || bundleName.isEmpty())
+                return false;
         }
 
-        if ("org.eclipse.core.runtime".equalsIgnoreCase(bundleName)) return false;
-        if ("com.kms.katalon.custom".equalsIgnoreCase(bundleName)) return false;
+        if ("org.eclipse.core.runtime".equalsIgnoreCase(bundleName))
+            return false;
+        if ("com.kms.katalon.custom".equalsIgnoreCase(bundleName))
+            return false;
 
         for (IClasspathEntry childEntry : entries) {
             if ((childEntry.getPath() != null) && (childEntry.getEntryKind() == IClasspathEntry.CPE_LIBRARY)
@@ -501,8 +508,9 @@ public class GroovyUtil {
         return "Script" + System.currentTimeMillis();
     }
 
-    public static ICompilationUnit createGroovyScript(IPackageFragment parentPackage, String typeName) throws Exception {
-        return GroovyCompilationHelper.createGroovyType(parentPackage, typeName, false, false);
+    public static ICompilationUnit createGroovyScriptForCustomKeyword(IPackageFragment parentPackage, String typeName)
+            throws Exception {
+        return GroovyCompilationHelper.createGroovyType(parentPackage, typeName, false, ImportType.KEYWORD_IMPORTS);
     }
 
     public static String getScriptPackageRelativePathForFolder(FolderEntity folder) {
@@ -784,8 +792,8 @@ public class GroovyUtil {
     }
 
     /**
-     * Create test case source script folder if it does not exist. Clean all variant that equalsIgnoreCase with name of
-     * the the given test case.
+     * Create test case source script folder if it does not exist. Clean all
+     * variant that equalsIgnoreCase with name of the the given test case.
      * 
      * @param testCaseSourceFolder
      * @param parentSourceFolder
