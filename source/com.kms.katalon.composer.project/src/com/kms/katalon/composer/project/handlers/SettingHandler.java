@@ -37,7 +37,7 @@ public class SettingHandler {
 		dialog.getTreeViewer().setComparator(new ViewerComparator());
 		dialog.getTreeViewer().expandToLevel(2);
 		dialog.getShell().setText(StringConstants.HAND_PROJ_SETTING);
-		dialog.getShell().setSize(800, 500);
+		dialog.getShell().setMinimumSize(800, 500);
 		dialog.open();		
 	}
 }
