@@ -77,9 +77,10 @@ public class KeywordLogger {
                 String logFolder = new File(getLogFilePath()).getParent();
 
                 // Split log into 100 files, every file is maximum 100MB
-                // 100MB for a log file maybe too large???
+                
+                //TODO The log file now is 100GB. We will fix it in next sprint.
                 FileHandler fileHandler = new FileHandler(logFolder + File.separator + "execution%g.log",
-                        100 * 1024 * 1024, 100, true);
+                        100 * 1024 * 1024 * 1024 , 100, true);
                 logger.addHandler(fileHandler);
 
                 CustomXmlFormatter formatter = new CustomXmlFormatter();
