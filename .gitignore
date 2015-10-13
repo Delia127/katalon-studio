@@ -23,3 +23,5 @@ workspace/
 .metadata/
 .recommenders/
 .e4css/
+source/com.kms.katalon.composer.webui.objectspy/resources/extensions/Chrome/Object Spy/server.js
+source/com.kms.katalon.composer.webui.recorder/resources/extensions/Chrome/Recorder/server.js

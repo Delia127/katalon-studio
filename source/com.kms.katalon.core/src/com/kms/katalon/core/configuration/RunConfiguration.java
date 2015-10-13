@@ -67,6 +67,13 @@ public class RunConfiguration {
             }
         }
     }
+    
+    public static void setExecutionSetting(Map<String, Object> executionSettingMap) {
+        if (executionSettingMap == null) {
+            return;
+        }
+        localExecutionSettingMapStorage.set(executionSettingMap);
+    }
 
     public static Object getProperty(String propertyKey) {
         return localExecutionSettingMapStorage.get().get(propertyKey);
