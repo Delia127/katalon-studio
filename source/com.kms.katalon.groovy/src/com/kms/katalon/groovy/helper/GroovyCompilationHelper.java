@@ -184,10 +184,6 @@ public class GroovyCompilationHelper {
         return typeName + GroovyConstants.GROOVY_FILE_EXTENSION;
     }
 
-    private static ICompilationUnit createType(IPackageFragment parentPackage, String typeName) throws Exception {
-        return createType(parentPackage, typeName, com.kms.katalon.groovy.model.ImportType.DEFAULT);
-    }
-
     private static ICompilationUnit createType(IPackageFragment parentPackage, String typeName,
             ImportType type) throws Exception {
         boolean needsSave;
@@ -314,11 +310,8 @@ public class GroovyCompilationHelper {
 
     public static ICompilationUnit createGroovyType(IPackageFragment parentPackage, String typeName,
             boolean noClassDeclaration, ImportType importType) throws Exception {
-        if (noClassDeclaration) {
-            createType(parentPackage, typeName);
-        } else {
-            createType(parentPackage, typeName, importType);
-        }
+        createType(parentPackage, typeName, importType);
+        
         GroovyCompilationUnit unit = (GroovyCompilationUnit) parentPackage
                 .getCompilationUnit(getCompilationUnitName(typeName));
         try {
