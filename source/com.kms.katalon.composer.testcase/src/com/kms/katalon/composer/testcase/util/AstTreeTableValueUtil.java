@@ -5,6 +5,7 @@ import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.Parameter;
 import org.codehaus.groovy.ast.expr.BooleanExpression;
+import org.codehaus.groovy.ast.expr.ClassExpression;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.expr.MethodCallExpression;
@@ -20,6 +21,7 @@ import org.codehaus.groovy.ast.stmt.WhileStatement;
 import org.codehaus.groovy.syntax.Token;
 import org.codehaus.groovy.syntax.Types;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.internal.core.BinaryType;
 
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
@@ -35,6 +37,7 @@ import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 
+@SuppressWarnings("restriction")
 public class AstTreeTableValueUtil {
 
 	public static final int[] OPERATION_CODES = new int[] { Types.COMPARE_EQUAL, Types.COMPARE_GREATER_THAN,
@@ -184,13 +187,25 @@ public class AstTreeTableValueUtil {
 			return setValue((ConstantExpression) expression, value);
 		} else if (expression instanceof PropertyExpression) {
 			return setValue((PropertyExpression) expression, value, scriptClass);
-		} else if (value instanceof Expression) {
+		} else if (expression instanceof ClassExpression) {
+		    return setValue((ClassExpression) expression, value, scriptClass);
+        } else if (value instanceof Expression) {
 			return (Expression) value;
 		}
 		return null;
 	}
+	
+    private static Expression setValue(ClassExpression expression, Object value, ClassNode scriptClass) {
+	    if (value instanceof BinaryType) {
+	        BinaryType binaryType = (BinaryType) value;
+	        Class<?> valueClass = AstTreeTableInputUtil.loadType(binaryType.getFullyQualifiedName(), scriptClass);
+	        expression.setType(new ClassNode(valueClass));
+	        return expression;
+	    }
+	    return null;
+    }
 
-	private static Expression setValue(PropertyExpression propertyExpression, Object value, ClassNode scriptClass) {
+    private static Expression setValue(PropertyExpression propertyExpression, Object value, ClassNode scriptClass) {
 		if (value instanceof Integer) {
 			if (AstTreeTableInputUtil.isGlobalVariablePropertyExpression(propertyExpression)) {
 				return AstTreeTableInputUtil.getGlobalVariableExpression((int) value);
