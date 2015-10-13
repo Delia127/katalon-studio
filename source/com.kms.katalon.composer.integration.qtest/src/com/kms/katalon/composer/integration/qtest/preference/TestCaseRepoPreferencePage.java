@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.integration.qtest.preferences;
+package com.kms.katalon.composer.integration.qtest.preference;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,10 +37,10 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.TestCaseRepoDialog;
-import com.kms.katalon.composer.integration.qtest.jobs.DisintegrateTestCaseJob;
-import com.kms.katalon.composer.integration.qtest.jobs.listeners.DisintegrateJobListener;
+import com.kms.katalon.composer.integration.qtest.job.DisintegrateTestCaseJob;
+import com.kms.katalon.composer.integration.qtest.job.listener.DisintegrateJobListener;
 import com.kms.katalon.composer.integration.qtest.model.TestCaseRepo;
-import com.kms.katalon.composer.integration.qtest.preferences.providers.TestCaseRepoTableLabelProvider;
+import com.kms.katalon.composer.integration.qtest.preference.provider.TestCaseRepoTableLabelProvider;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
@@ -321,7 +321,7 @@ public class TestCaseRepoPreferencePage extends PreferencePage {
     }
 
     private void performRemoveTestCaseRepo(final FolderEntity folderEntity, final TestCaseRepo repo) {
-        DisintegrateTestCaseJob job = new DisintegrateTestCaseJob(StringConstants.JOB_TITLE_DISINTEGRATE_TEST_CASE);
+        DisintegrateTestCaseJob job = new DisintegrateTestCaseJob();
         job.setFileEntities(Arrays.asList((IntegratedFileEntity) folderEntity));
         job.doTask();
         job.addJobChangeListener(new DisintegrateJobListener() {
@@ -339,7 +339,7 @@ public class TestCaseRepoPreferencePage extends PreferencePage {
     }
 
     private void performInsertTestCaseRepor(final FolderEntity folderEntity, final TestCaseRepo newRepo, final int index) {
-        DisintegrateTestCaseJob job = new DisintegrateTestCaseJob(StringConstants.JOB_TITLE_DISINTEGRATE_TEST_CASE);
+        DisintegrateTestCaseJob job = new DisintegrateTestCaseJob();
         job.setFileEntities(Arrays.asList((IntegratedFileEntity) folderEntity));
         job.doTask();
         job.addJobChangeListener(new DisintegrateJobListener() {

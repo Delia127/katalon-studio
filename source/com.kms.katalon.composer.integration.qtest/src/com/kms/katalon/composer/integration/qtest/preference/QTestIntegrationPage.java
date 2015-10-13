@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.integration.qtest.preferences;
+package com.kms.katalon.composer.integration.qtest.preference;
 
 import java.io.IOException;
 import java.util.ArrayList;

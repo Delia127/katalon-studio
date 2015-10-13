@@ -12,7 +12,12 @@ public class TestCaseRootSelectionTreeLabelProvider extends LabelProvider implem
     @Override
     public Image getColumnImage(Object element, int columnIndex) {
         if (element != null && element instanceof QTestModule) {
-            return ImageConstants.IMG_16_FOLDER;
+            QTestModule module = (QTestModule) element;
+            if (module.getParentId() > 0) {
+                return ImageConstants.IMG_16_FOLDER;
+            } else {
+                return ImageConstants.IMG_16_FOLDER_ROOT;
+            }
         }
         return null;
     }

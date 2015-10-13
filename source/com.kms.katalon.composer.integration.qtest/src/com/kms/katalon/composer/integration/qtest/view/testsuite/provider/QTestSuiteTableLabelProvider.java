@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.integration.qtest.view.testsuite.providers;
+package com.kms.katalon.composer.integration.qtest.view.testsuite.provider;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;

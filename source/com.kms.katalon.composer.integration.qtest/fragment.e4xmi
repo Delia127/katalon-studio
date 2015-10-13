@@ -1,23 +1,6 @@
 <?xml version="1.0" encoding="ASCII"?>
-<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_Ac4ZkBQOEeWWgewj5Jx3_A">
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_Ac4ZkBQOEeWWgewj5Jx3_A">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_BUeI4BQOEeWWgewj5Jx3_A" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu" positionInList="last">
-    <elements xsi:type="menu:Menu" xmi:id="_7PrT4BQYEeWWgewj5Jx3_A" elementId="com.kms.katalon.composer.intergration.qtest.menu.qtest" label="qTest">
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_FQQoABQZEeWWgewj5Jx3_A" elementId="com.kms.katalon.composer.intergration.qtest.handledmenuitem.upload" label="Upload" command="_JC_50BQZEeWWgewj5Jx3_A"/>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_qbJuACuWEeWiK4BHZnN07Q" elementId="com.kms.katalon.composer.integration.qtest.handledmenuitem.update" label="Download" command="_nxiu0CuTEeWiK4BHZnN07Q"/>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_oox6ICVDEeWg5dy9vQb4CQ" elementId="com.kms.katalon.composer.integration.qtest.handledmenuitem.disintegrate" label="Disintegrate" tooltip="Disintegrate" command="_JgbJwCU9EeWg5dy9vQb4CQ"/>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_Y29yMDXhEeWPwZFpUlBpjw" elementId="com.kms.katalon.composer.integration.qtest.handledmenuitem.manage" label="Manage" command="_KwveYDXhEeWPwZFpUlBpjw"/>
-    </elements>
-  </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_GACfIBQZEeWWgewj5Jx3_A" featurename="commands" parentElementId="com.kms.katalon.composer.application">
-    <elements xsi:type="commands:Command" xmi:id="_JC_50BQZEeWWgewj5Jx3_A" elementId="com.kms.katalon.composer.intergration.qtest.command.upload" commandName="Upload"/>
-    <elements xsi:type="commands:Command" xmi:id="_JgbJwCU9EeWg5dy9vQb4CQ" elementId="comcom.kms.katalon.composer.intergration.qtest.command.disintegrate" commandName="Disintegrate"/>
-    <elements xsi:type="commands:Command" xmi:id="_nxiu0CuTEeWiK4BHZnN07Q" elementId="comcom.kms.katalon.composer.intergration.qtest.command.update" commandName="Download"/>
-    <elements xsi:type="commands:Command" xmi:id="_KwveYDXhEeWPwZFpUlBpjw" elementId="comcom.kms.katalon.composer.intergration.qtest.command.manage" commandName="Manage"/>
-  </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_KUSikBQZEeWWgewj5Jx3_A" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
-    <elements xsi:type="commands:Handler" xmi:id="_SPs58BQZEeWWgewj5Jx3_A" elementId="com.kms.katalon.composer.intergration.qtest.handler.upload" contributionURI="bundleclass://com.kms.katalon.composer.integration.qtest/com.kms.katalon.composer.integration.qtest.handlers.QTestUploadHandler" command="_JC_50BQZEeWWgewj5Jx3_A"/>
-    <elements xsi:type="commands:Handler" xmi:id="_PDS8cCU9EeWg5dy9vQb4CQ" elementId="com.kms.katalon.composer.integration.qtest.handler.disintegrate" contributionURI="bundleclass://com.kms.katalon.composer.integration.qtest/com.kms.katalon.composer.integration.qtest.handlers.QTestDisintegrateHandler" command="_JgbJwCU9EeWg5dy9vQb4CQ"/>
-    <elements xsi:type="commands:Handler" xmi:id="_Bf2qoCuVEeWiK4BHZnN07Q" elementId="com.kms.katalon.composer.integration.qtest.handler.update" contributionURI="bundleclass://com.kms.katalon.composer.integration.qtest/com.kms.katalon.composer.integration.qtest.handlers.QTestDownloadHandler" command="_nxiu0CuTEeWiK4BHZnN07Q"/>
-    <elements xsi:type="commands:Handler" xmi:id="_Vi3kMDXhEeWPwZFpUlBpjw" elementId="com.kms.katalon.composer.integration.qtest.handler.manage" contributionURI="bundleclass://com.kms.katalon.composer.integration.qtest/com.kms.katalon.composer.integration.qtest.handlers.QTestMangageHandler" command="_KwveYDXhEeWPwZFpUlBpjw"/>
+    <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_o8yOUHC9EeWsofLToktG7g" elementId="com.kms.katalon.composer.integration.qtest.dynamicmenucontribution.0" label="qTest" contributionURI="bundleclass://com.kms.katalon.composer.integration.qtest/com.kms.katalon.composer.integration.qtest.menu.QTestContextMenuContribution"/>
   </fragments>
 </fragment:ModelFragments>

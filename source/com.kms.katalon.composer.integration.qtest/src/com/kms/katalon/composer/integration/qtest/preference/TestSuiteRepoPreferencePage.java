@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.integration.qtest.preferences;
+package com.kms.katalon.composer.integration.qtest.preference;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -33,7 +33,7 @@ import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.TestSuiteRepoDialog;
 import com.kms.katalon.composer.integration.qtest.model.TestSuiteRepo;
-import com.kms.katalon.composer.integration.qtest.preferences.providers.TestSuiteRepoTableLabelProvider;
+import com.kms.katalon.composer.integration.qtest.preference.provider.TestSuiteRepoTableLabelProvider;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.project.ProjectEntity;

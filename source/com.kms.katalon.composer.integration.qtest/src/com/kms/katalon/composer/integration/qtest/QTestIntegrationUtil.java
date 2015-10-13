@@ -14,6 +14,7 @@ import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
@@ -30,6 +31,7 @@ import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.entity.QTestReport;
 import com.kms.katalon.integration.qtest.entity.QTestRun;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
+import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class QTestIntegrationUtil {
@@ -185,11 +187,13 @@ public class QTestIntegrationUtil {
      * For {@link TestCaseEntity} and test case {@link FolderEntity} only.
      * <p>
      * <p>
-     * If the given entity is a {@link TestCaseEntity}, it can be downloaded or disintegrated that means it contains
-     * qTest {@link IntegratedEntity} inside and its {@link TestCaseRepo} also is not null.
+     * If the given entity is a {@link TestCaseEntity} or {@link TestSuiteEntity}, it can be downloaded or disintegrated
+     * that means it contains qTest {@link IntegratedEntity} inside o its {@link TestCaseRepo}/ {@link TestSuiteRepo}
+     * also is not null.
      * <p>
      * * If the given entity is a {@link FolderEntity}, it can be downloaded or disintegrated that means it has any
-     * child that contains qTest {@link IntegratedEntity} inside and its {@link TestCaseRepo} also is not null.
+     * child that contains qTest {@link IntegratedEntity} inside and its {@link TestCaseRepo}/{@link TestSuiteRepo} also
+     * is not null.
      * 
      * @param entity
      *            the entity that needs to be checked
@@ -208,8 +212,14 @@ public class QTestIntegrationUtil {
                 return true;
             }
 
-            if (getTestCaseRepo(entity, projectEntity) == null) {
-                return false;
+            if (folderEntity.getFolderType() == FolderType.TESTCASE) {
+                if (getTestCaseRepo(entity, projectEntity) == null) {
+                    return false;
+                }
+            } else if (folderEntity.getFolderType() == FolderType.TESTSUITE) {
+                if (getTestSuiteRepo(entity, projectEntity) == null) {
+                    return false;
+                }
             }
 
             for (FileEntity childEntity : FolderController.getInstance().getChildren(folderEntity)) {
@@ -219,8 +229,12 @@ public class QTestIntegrationUtil {
             }
             return false;
 
+        } else if (entity instanceof TestCaseEntity) {
+            return isIntegrated && (getTestCaseRepo(entity, projectEntity) != null);
+        } else if (entity instanceof TestSuiteEntity) {
+            return isIntegrated && (getTestSuiteRepo(entity, projectEntity) != null);
         } else {
-            return isIntegrated;
+            return false;
         }
     }
 
@@ -233,11 +247,19 @@ public class QTestIntegrationUtil {
      * @throws Exception
      */
     public static boolean canBeUploaded(IntegratedFileEntity entity, ProjectEntity projectEntity) throws Exception {
-        if (getTestCaseRepo(entity, projectEntity) == null) return false;
-
         boolean isNotIntegrated = (entity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME) == null);
 
         if (entity instanceof FolderEntity) {
+            if (((FolderEntity) entity).getFolderType() == FolderType.TESTCASE) {
+                if (getTestCaseRepo(entity, projectEntity) == null) {
+                    return false;
+                }
+            } else if (((FolderEntity) entity).getFolderType() == FolderType.TESTSUITE) {
+                if (getTestSuiteRepo(entity, projectEntity) == null) {
+                    return false;
+                }
+            }
+
             FolderEntity folderEntity = (FolderEntity) entity;
             for (FileEntity childEntity : FolderController.getInstance().getChildren(folderEntity)) {
                 if (canBeUploaded((IntegratedFileEntity) childEntity, projectEntity)) {
@@ -246,8 +268,12 @@ public class QTestIntegrationUtil {
             }
 
             return false;
+        } else if (entity instanceof TestCaseEntity) {
+            return isNotIntegrated && (getTestCaseRepo(entity, projectEntity) != null);
+        } else if (entity instanceof TestSuiteEntity) {
+            return (getTestSuiteRepo(entity, projectEntity) != null);
         } else {
-            return isNotIntegrated;
+            return false;
         }
     }
 
@@ -336,5 +362,29 @@ public class QTestIntegrationUtil {
                 qTestSuiteCollection.indexOf(qTestSuite));
 
         TestSuiteController.getInstance().updateTestSuite(testSuiteEntity);
+    }
+
+    /**
+     * Return a list of {@link QTestSuite} that each item can be uploaded to qTest of the give <code>testSuite</code>
+     * 
+     * @param testSuite
+     *            a {@link TestSuiteEntity}
+     * @return an array list of {@link QTestSuite}
+     * @throws QTestInvalidFormatException
+     *             thrown the given <code>testSuite</code> has invalid qTest integrated information.
+     */
+    public static List<QTestSuite> getUnuploadedQTestSuites(TestSuiteEntity testSuite)
+            throws QTestInvalidFormatException {
+        List<QTestSuite> qTestSuites = QTestIntegrationTestSuiteManager.getQTestSuiteListByIntegratedEntity(testSuite
+                .getIntegratedEntity(QTestStringConstants.PRODUCT_NAME));
+        List<QTestSuite> unuploadedQTestSuites = new ArrayList<QTestSuite>();
+
+        for (QTestSuite availableQTestSuite : qTestSuites) {
+            if (availableQTestSuite.getId() <= 0) {
+                unuploadedQTestSuites.add(availableQTestSuite);
+            }
+        }
+
+        return unuploadedQTestSuites;
     }
 }

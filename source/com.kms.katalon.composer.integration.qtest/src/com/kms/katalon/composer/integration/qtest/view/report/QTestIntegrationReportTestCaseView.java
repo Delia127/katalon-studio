@@ -32,7 +32,7 @@ import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.ImageConstants;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.ListReportUploadingPreviewDialog;
-import com.kms.katalon.composer.integration.qtest.jobs.UploadTestCaseResultJob;
+import com.kms.katalon.composer.integration.qtest.job.UploadTestCaseResultJob;
 import com.kms.katalon.composer.integration.qtest.model.QTestLogEvaluation;
 import com.kms.katalon.composer.report.parts.integration.AbstractReportTestCaseIntegrationView;
 import com.kms.katalon.constants.EventConstants;

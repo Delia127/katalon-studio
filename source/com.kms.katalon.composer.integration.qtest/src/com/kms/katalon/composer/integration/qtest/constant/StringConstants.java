@@ -12,6 +12,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String CM_PASSWORD = "Password";
     public static final String CM_SERVER_URL = "Server Url";
     public static final String CM_UPLOAD = "Upload";
+    public static final String CM_DONWLOAD = "Download";
     public static final String CM_AUTHENTICATION = "Authentication";
     public static final String CM_TOKEN = "Token";
     public static final String CM_DISINTEGRATE = "Disintegrate";
@@ -19,10 +20,18 @@ public class StringConstants extends GlobalStringConstants {
     public static final String CM_ALIAS = "Alias";
     public static final String CM_PARENT_ID = "Parent ID";
     public static final String CM_DEFAULT = "Default";
+    public static final String CM_QTEST_COMPOSER_BUNDLE_URI = "bundleclass://com.kms.katalon.composer.integration.qtest/";
 
     // Job
     public static final String JOB_TITLE_DISINTEGRATE_TEST_CASE = "Disintegrate test case(s)";
     public static final String JOB_TITLE_UPLOAD_TEST_CASE = "Upload test case(s)";
+    public static final String JOB_TITLE_UPLOAD_TEST_SUITE = "Upload test suite";
+    public static final String JOB_MSG_TEST_SUITE_INVALID_FORMAT = "qTest integrated information of test suite: {0} is invalid.";
+    
+    //UploadTestSuiteJob
+    public static final String JOB_TASK_UPLOADING_TEST_SUITE_ENTITY = "Uploading test suite: {0}";
+    public static final String JOB_SUB_TASK_UPLOADING_QTEST_SUITE = "Uploading test suite under {0}: {1}";
+    public static final String JOB_SUB_TASK_UPDATING_TEST_SUITE_ENTITY = "Updating integration info...";
 
     // DisintegrateTestCaseJob
     public static final String JOB_TASK_DISINTEGRATE_TEST_CASE = "Disintegrating test cases...";
@@ -91,6 +100,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_MSG_UNABLE_TO_LOAD_TEST_SUITE_PARENT = "Unable to load test suite's parent from qTest"
             + " server.";
     public static final String DIA_TITLE_TEST_CASE_ROOT = "Test case root selection";
+    public static final String DIA_MSG_USER_CHOOSES_TEST_CASE_ROOT = "Please note that you are choosing root module of qTest. "
+                            + "The \"Upload\" function will not be applied for its direct test case(s).";
 
     // TestCaseTreeDownloadedPreviewDialog
     public static final String DIA_INFO_TEST_CASE_DOWNLOADED_PREVIEW = "Please select test cases you want to create.";
@@ -132,6 +143,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String VIEW_MSG_TEST_CASE_NOT_IN_REPO = "This test case isn't in any Test Case Repository. "
             + "Please add a valid Test Case Repository in Test Case Repositories page.";
     public static final String VIEW_MSG_UNABLE_UPLOAD_TEST_CASE = "Unable to upload test case to qTest.";
+    public static final String VIEW_MSG_UNABLE_UPLOAD_TEST_CASE_UNDER_ROOT_MODULE = "This test case cannot be uploaded "
+            + "to qTest's root module.";
 
     // QTestIntegrationTestSuiteView
     public static final String VIEW_TOOLTIP_UPLOAD_TEST_SUITE = "Upload this test suite to qTest";
@@ -160,4 +173,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String VIEW_MSG_UNABLE_NAVIGATE_TEST_SUITE = "Unable to open qTest navigated test suite.";
     public static final String VIEW_MSG_UNABLE_UPLOAD_TEST_SUITE = "Unable to upload test suite.";
     public static final String VIEW_MSG_INVALID_AUTHENTICATION = "Invalid authentication";
+        
+    //QTestDisintegrateTestCaseHandler
+    public static final String DIA_CONFIRM_DISINTEGRATE_TEST_CASE = "Are you sure you want to disintegrate this test "
+            + "case with qTest?";
 }
