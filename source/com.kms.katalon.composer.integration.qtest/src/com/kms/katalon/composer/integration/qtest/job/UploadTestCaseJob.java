@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.integration.qtest.jobs;
+package com.kms.katalon.composer.integration.qtest.job;
 
 import java.text.MessageFormat;
 
@@ -143,7 +143,12 @@ public class UploadTestCaseJob extends UploadJob {
 
         QTestModule qTestParentModule = QTestIntegrationFolderManager.getQTestModuleByFolderEntity(projectDir,
                 testCaseEntity.getParentFolder());
-
+        
+        //Returns if this test case under qTest root module.
+        if (qTestParentModule == null || qTestParentModule.getParentId() <= 0) {
+            return;
+        }
+        
         QTestTestCase qTestTestCase = null;
 
         if (QTestSettingStore.isEnableCheckBeforeUploading(projectDir)) {

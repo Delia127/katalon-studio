@@ -3,6 +3,7 @@ package com.kms.katalon.composer.integration.qtest.dialog;
 import java.util.Arrays;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -182,6 +183,15 @@ public class TestCaseRootSelectionDialog extends Dialog {
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
         newShell.setText(StringConstants.DIA_TITLE_TEST_CASE_ROOT);
+    }
+    
+    @Override
+    protected void okPressed() {
+        if (selectedModule.getParentId() <= 0) {
+            MessageDialog.openWarning(null, StringConstants.WARN,
+                            StringConstants.DIA_MSG_USER_CHOOSES_TEST_CASE_ROOT);
+        }
+        super.okPressed();
     }
 
 }

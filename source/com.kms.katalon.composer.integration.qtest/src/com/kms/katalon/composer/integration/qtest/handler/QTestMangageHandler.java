@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.integration.qtest.handlers;
+package com.kms.katalon.composer.integration.qtest.handler;
 
 import javax.inject.Named;
 
@@ -19,9 +19,13 @@ public class QTestMangageHandler {
 
     @CanExecute
     public boolean canExecute() {
-        if (ProjectController.getInstance().getCurrentProject() == null) return false;
+        if (ProjectController.getInstance().getCurrentProject() == null) {
+            return false;
+        }
         try {
-            if (!LauncherManager.getInstance().isAnyLauncherRunning()) return true;
+            if (!LauncherManager.getInstance().isAnyLauncherRunning()) {
+                return true;
+            }
         } catch (CoreException e) {
 
         }

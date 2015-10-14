@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.integration.qtest.jobs;
+package com.kms.katalon.composer.integration.qtest.job;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -28,8 +28,8 @@ import com.kms.katalon.integration.qtest.entity.QTestProject;
 
 public class DisintegrateTestCaseJob extends UploadJob {
 
-    public DisintegrateTestCaseJob(String name) {
-        super(name);
+    public DisintegrateTestCaseJob() {
+        super(StringConstants.JOB_TITLE_DISINTEGRATE_TEST_CASE);
         setUser(true);
     }
 

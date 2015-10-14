@@ -63,7 +63,6 @@ public class QTestDownloadedTreeStateListener implements ICheckStateListener {
 
     @Override
     public void checkStateChanged(CheckStateChangedEvent event) {
-        // TODO Auto-generated method stub
         if (event.getElement() instanceof DownloadedPreviewTreeNode) {
             boolean isChecked = event.getChecked();
             DownloadedPreviewTreeNode previewTree = (DownloadedPreviewTreeNode) event.getElement();
