@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.integration.qtest.handlers;
+package com.kms.katalon.composer.integration.qtest.handler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
-import com.kms.katalon.composer.integration.qtest.jobs.DisintegrateTestCaseJob;
+import com.kms.katalon.composer.integration.qtest.job.DisintegrateTestCaseJob;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
@@ -23,7 +23,7 @@ import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
-public class QTestDisintegrateHandler {
+public class QTestDisintegrateTestCaseHandler {
 
     @Inject
     private ESelectionService selectionService;
@@ -67,7 +67,7 @@ public class QTestDisintegrateHandler {
     }
 
     private void disintegrateTestCases(List<IntegratedFileEntity> integratedTestCases) {
-        DisintegrateTestCaseJob job = new DisintegrateTestCaseJob("Disintegrate test cases");
+        DisintegrateTestCaseJob job = new DisintegrateTestCaseJob();
         job.setFileEntities(integratedTestCases);
         job.doTask();
     }
@@ -80,12 +80,12 @@ public class QTestDisintegrateHandler {
             Object selectedObject = treeEntity.getObject();
             if (selectedObject instanceof TestCaseEntity) {
                 if (MessageDialog.openConfirm(null, StringConstants.CONFIRMATION,
-                        "Are you sure you want to disintegrate this test case with qTest?")) {
+                        StringConstants.DIA_CONFIRM_DISINTEGRATE_TEST_CASE)) {
                     disintegrateTestCases(getIntegratedChildren((IntegratedFileEntity) selectedObject));
                 }
             } else if (selectedObject instanceof FolderEntity) {
                 if (MessageDialog.openConfirm(null, StringConstants.CONFIRMATION,
-                        "Are you sure you want to disintegrate all test cases in this folder with qTest?")) {
+                        StringConstants.DIA_CONFIRM_DISINTEGRATE_TEST_CASE_FOLDER)) {
                     FolderEntity folder = (FolderEntity) selectedObject;
                     switch (folder.getFolderType()) {
                         case TESTCASE:

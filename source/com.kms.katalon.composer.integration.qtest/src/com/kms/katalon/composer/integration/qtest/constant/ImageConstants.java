@@ -11,6 +11,8 @@ public class ImageConstants {
             com.kms.katalon.composer.components.impl.constants.ImageConstants.IMG_16_FOLDER;
     public static final Image IMG_16_TEST_CASE = 
             com.kms.katalon.composer.components.impl.constants.ImageConstants.IMG_16_TEST_CASE;
+    public static final Image IMG_16_FOLDER_ROOT = 
+            com.kms.katalon.composer.components.impl.constants.ImageConstants.IMG_16_FOLDER_TEST_CASE;
     public static final Image IMG_16_CHECKED= 
             com.kms.katalon.composer.components.impl.constants.ImageConstants.IMG_16_CHECKED;
     public static final Image IMG_16_UNCHECKED= 

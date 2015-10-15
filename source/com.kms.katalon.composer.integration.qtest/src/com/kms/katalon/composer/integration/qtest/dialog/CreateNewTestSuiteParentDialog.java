@@ -33,7 +33,7 @@ import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.model.TestSuiteParentCreationOption;
 import com.kms.katalon.composer.integration.qtest.dialog.provider.QTestSuiteParentTreeContentProvider;
 import com.kms.katalon.composer.integration.qtest.dialog.provider.QTestSuiteParentTreeLabelProvider;
-import com.kms.katalon.composer.integration.qtest.preferences.QTestPreferenceDefaultValueInitializer;
+import com.kms.katalon.composer.integration.qtest.preference.QTestPreferenceDefaultValueInitializer;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager;
 import com.kms.katalon.integration.qtest.entity.QTestProject;

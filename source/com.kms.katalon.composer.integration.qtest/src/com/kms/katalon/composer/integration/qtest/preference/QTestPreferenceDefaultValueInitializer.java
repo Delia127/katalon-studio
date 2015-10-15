@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.integration.qtest.preferences;
+package com.kms.katalon.composer.integration.qtest.preference;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -15,8 +15,6 @@ public class QTestPreferenceDefaultValueInitializer extends AbstractPreferenceIn
 
     @Override
     public void initializeDefaultPreferences() {
-        // TODO Auto-generated method stub
-
         getStore().setDefault(QTEST_TESTSUITE_CREATION_OPTION,
                 TestSuiteParentCreationOption.CREATE_UPLOAD_AND_SET_AS_DEFAULT.name());
     }

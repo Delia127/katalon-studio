@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.integration.qtest.jobs.listeners;
+package com.kms.katalon.composer.integration.qtest.job.listener;
 
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;

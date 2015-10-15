@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.integration.qtest.jobs;
+package com.kms.katalon.composer.integration.qtest.job;
 
 import java.io.File;
 import java.text.MessageFormat;

@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.integration.qtest.handlers;
+package com.kms.katalon.composer.integration.qtest.handler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
-import com.kms.katalon.composer.integration.qtest.jobs.DownloadTestCaseJob;
+import com.kms.katalon.composer.integration.qtest.job.DownloadTestCaseJob;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
@@ -21,7 +21,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
 
-public class QTestDownloadHandler {
+public class QTestDownloadTestCaseHandler {
     @Inject
     private ESelectionService selectionService;
 

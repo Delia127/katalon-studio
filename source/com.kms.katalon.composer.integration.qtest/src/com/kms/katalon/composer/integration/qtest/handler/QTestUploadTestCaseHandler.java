@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.integration.qtest.handlers;
+package com.kms.katalon.composer.integration.qtest.handler;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,7 +14,7 @@ import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
-import com.kms.katalon.composer.integration.qtest.jobs.UploadTestCaseJob;
+import com.kms.katalon.composer.integration.qtest.job.UploadTestCaseJob;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
@@ -27,7 +27,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 
-public class QTestUploadHandler {
+public class QTestUploadTestCaseHandler {
 
     @Inject
     private UISynchronize sync;
@@ -38,7 +38,7 @@ public class QTestUploadHandler {
     /**
      * @return <code>true</code> if selected item doesn't integrate with qTest
      *         or it has any child item that doesn't integrate with qTest.
-     * @see QTestUploadHandler#getNotIntegratedChildren(IntegratedFileEntity)
+     * @see QTestUploadTestCaseHandler#getNotIntegratedChildren(IntegratedFileEntity)
      *      Otherwise, return <code>false</code>
      */
     @CanExecute

@@ -22,8 +22,8 @@ import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
-import com.kms.katalon.composer.integration.qtest.handlers.QTestUploadHandler;
-import com.kms.katalon.composer.integration.qtest.jobs.UploadTestCaseJob;
+import com.kms.katalon.composer.integration.qtest.handler.QTestUploadTestCaseHandler;
+import com.kms.katalon.composer.integration.qtest.job.UploadTestCaseJob;
 import com.kms.katalon.composer.integration.qtest.model.TestCaseRepo;
 import com.kms.katalon.composer.testcase.parts.integration.AbstractTestCaseIntegrationView;
 import com.kms.katalon.controller.ProjectController;
@@ -32,8 +32,10 @@ import com.kms.katalon.entity.file.IntegratedFileEntity;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.integration.qtest.QTestIntegrationFolderManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestCaseManager;
 import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
+import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
@@ -175,7 +177,8 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
             return;
         }
 
-        String token = QTestSettingStore.getToken(projectEntity.getFolderLocation());
+        String projectDir = projectEntity.getFolderLocation();
+        String token = QTestSettingStore.getToken(projectDir);
 
         if (token == null || token.isEmpty()) {
             MessageDialog.openWarning(null, StringConstants.WARN, StringConstants.VIEW_MSG_TOKEN_REQUIRED);
@@ -189,12 +192,23 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
                 return;
             }
 
+            QTestModule module = QTestIntegrationFolderManager.getQTestModuleByFolderEntity(projectDir,
+                    testCaseEntity.getParentFolder());
+
+            // If the parent module is qTest's root module, open a warning message that system cannot upload this test
+            // case.
+            if (module != null && module.getParentId() <= 0) {
+                MessageDialog.openWarning(null, StringConstants.WARN,
+                        StringConstants.VIEW_MSG_UNABLE_UPLOAD_TEST_CASE_UNDER_ROOT_MODULE);
+                return;
+            }
+
             UploadTestCaseJob uploadJob = new UploadTestCaseJob(StringConstants.JOB_TITLE_UPLOAD_TEST_CASE,
                     UISynchronizeService.getInstance().getSync());
             List<IntegratedFileEntity> uploadedEntities = new ArrayList<IntegratedFileEntity>();
             TestCaseEntity originalEntity = TestCaseController.getInstance().getTestCase(testCaseEntity.getId());
             uploadedEntities.add(originalEntity);
-            QTestUploadHandler.addParentToUploadedEntities(originalEntity, uploadedEntities);
+            QTestUploadTestCaseHandler.addParentToUploadedEntities(originalEntity, uploadedEntities);
 
             uploadJob.setFileEntities(uploadedEntities);
 
