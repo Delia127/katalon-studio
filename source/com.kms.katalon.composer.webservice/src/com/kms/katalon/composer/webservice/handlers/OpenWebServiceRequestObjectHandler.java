@@ -78,7 +78,7 @@ public class OpenWebServiceRequestObjectHandler {
                 	mPart.setContributionURI(WEBSERVICE_REST_OBJECT_PART_URI);
                 }
                 mPart.setCloseable(true);
-                mPart.setIconURI(ImageConstants.URL_28_NEW_WS_TEST_OBJECT);
+                mPart.setIconURI(ImageConstants.URL_16_WS_TEST_OBJECT);
                 stack.getChildren().add(mPart);    
             }
             

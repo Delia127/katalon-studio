@@ -11,6 +11,7 @@ public class ImageConstants {
 	
 	// OpenWebServiceRequestObjectHandler
 	public static final String URL_28_NEW_WS_TEST_OBJECT = ImageUtil.getImageUrl(currentBundle, "/icons/new_ws_test_object_28.png");
+	public static final String URL_16_WS_TEST_OBJECT = ImageUtil.getImageUrl(currentBundle, "/icons/ws_test_object_16.png");
 	
 	// ExpandableComposite
 	public static final Image IMG_16_ARROW_DOWN_BLACK = ImageUtil.loadImage(currentBundle, "/icons/arrow_down_black_16.png");
