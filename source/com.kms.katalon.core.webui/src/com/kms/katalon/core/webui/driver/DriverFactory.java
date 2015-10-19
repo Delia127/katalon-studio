@@ -226,12 +226,12 @@ public class DriverFactory {
             // if (isAlertPresent()) {
             // return;
             // }
-
+            final WebDriver ieDriver = localWebServerStorage.get();
             Thread ieSafeThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        localWebServerStorage.get().getWindowHandle();
+                        ieDriver.getWindowHandle();
                     } catch (WebDriverException e) {
                         // Ignore since we only check for hanging thread
                     }
@@ -259,19 +259,20 @@ public class DriverFactory {
         verifyWebDriverIsOpen();
         Alert alert = null;
         if (getExecutedBrowser() == WebUIDriverType.IE_DRIVER) {
+            final WebDriver ieDriver = localWebServerStorage.get();
             Thread ieSafeThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
                         try {
-                            localWebServerStorage.get().switchTo().alert();
+                            ieDriver.switchTo().alert();
                         } catch (Exception e) {
                             if (!(e instanceof NoSuchWindowException) && e.getMessage() != null
                                     && !e.getMessage().startsWith(JAVA_SCRIPT_ERROR_H_IS_NULL_MESSAGE)) {
                                 throw e;
                             }
                             switchToAvailableWindow();
-                            localWebServerStorage.get().switchTo().alert();
+                            ieDriver.switchTo().alert();
                         }
                     } catch (WebDriverException e) {
                         // Ignore since we only check for hanging thread
