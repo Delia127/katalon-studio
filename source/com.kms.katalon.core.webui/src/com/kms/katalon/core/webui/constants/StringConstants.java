@@ -53,15 +53,18 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String DRI_MSG_UNABLE_REACH_WEB_DRI_TIMEOUT = "Unable to reach web driver after {0} seconds. Possible reason: web driver is blocked after an unreturned call.";
 	public static final String DRI_ERROR_MSG_NO_BROWSER_SET = "No driver is set for execution.";
 	public static final String DRI_ERROR_DRIVER_X_NOT_IMPLEMENTED = "Driver ''{0}'' is not supported.";
+	public static final String DRI_MISSING_PROPERTY_X_FOR_APPIUM_REMOTE_WEB_DRIVER = "Missing property ''{0}'' for appium remote web driver";
+	public static final String DRI_PLATFORM_NAME_X_IS_NOT_SUPPORTED_FOR_APPIUM_REMOTE_WEB_DRIVER = "Platform name ''{0}'' is not supported for appium remote web driver";
 	public static final String CONF_PROPERTY_IE_DRIVER_PATH = "ieDriverPath";
 	public static final String CONF_PROPERTY_CHROME_DRIVER_PATH = "chromeDriverPath";
 	public static final String CONF_PROPERTY_WAIT_FOR_IE_HANGING = "waitForIEHanging";
 	public static final String CONF_PROPERTY_EXECUTED_BROWSER = XML_LOG_BROWSER_TYPE_PROPERTY;
 	public static final String CONF_PROPERTY_REMOTE_WEB_DRIVER_URL = "remoteWebDriverUrl";
+	public static final String CONF_PROPERTY_REMOTE_WEB_DRIVER_TYPE = "remoteWebDriverType";
 	public static final String CONF_EXECUTED_PLATFORM = XML_LOG_DEVICE_PLATFORM_PROPERTY;
     public static final String CONF_EXECUTED_DEVICE_NAME = XML_LOG_DEVICE_NAME_PROPERTY;
     public static final String XML_LOG_STARTING_DRIVER_X = "Starting ''{0}'' driver";
-    public static final String XML_LOG_CONNECTING_TO_REMOTE_WEB_SERVER_X = "Connecting to remote web server ''{0}''";
+    public static final String XML_LOG_CONNECTING_TO_REMOTE_WEB_SERVER_X_WITH_TYPE_Y = "Connecting to remote web server ''{0}'' with type ''{1}''";
     public static final String XML_LOG_ERROR_BROWSER_NOT_IE = "Executing browser is not IE";
 	
 	// BrowserNotOpenedException

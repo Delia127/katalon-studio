@@ -12,4 +12,5 @@ public class StringConstants extends GlobalStringConstants {
 	
 	// RemoteWebPreferencePage
 	public static final String LBL_REMOTE_SERVER_URL = "Remote web server url";
+	public static final String LBL_REMOTE_SERVER_TYPE = "Remote web server type";
 }

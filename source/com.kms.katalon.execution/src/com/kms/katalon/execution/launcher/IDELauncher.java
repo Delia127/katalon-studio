@@ -2,12 +2,10 @@ package com.kms.katalon.execution.launcher;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -20,7 +18,6 @@ import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.swt.widgets.Display;
 
-import com.google.gson.Gson;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
