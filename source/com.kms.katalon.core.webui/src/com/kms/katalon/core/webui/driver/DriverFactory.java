@@ -1,5 +1,7 @@
 package com.kms.katalon.core.webui.driver;
 
+import io.appium.java_client.ios.IOSDriver;
+
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Set;
@@ -29,6 +31,11 @@ import com.kms.katalon.core.webui.exception.BrowserNotOpenedException;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
 
 public class DriverFactory {
+    private static final String APPIUM_CAPABILITY_PLATFORM_NAME_ADROID = "android";
+    private static final String APPIUM_CAPABILITY_PLATFORM_NAME_IOS = "ios";
+    private static final String APPIUM_CAPABILITY_PLATFORM_NAME = "platformName";
+    private static final String REMOTE_WEB_DRIVER_TYPE_APPIUM = "Appium";
+    private static final String REMOTE_WEB_DRIVER_TYPE_SELENIUM = "Selenium";
     private static final String CHROME_DRIVER_PATH_PROPERTY_KEY = "webdriver.chrome.driver";
     private static final String IE_DRIVER_PATH_PROPERTY_KEY = "webdriver.ie.driver";
     // Temp error constant message for issues
@@ -39,6 +46,7 @@ public class DriverFactory {
     public static final String WAIT_FOR_IE_HANGING_PROPERTY = StringConstants.CONF_PROPERTY_WAIT_FOR_IE_HANGING;
     public static final String EXECUTED_BROWSER_PROPERTY = StringConstants.CONF_PROPERTY_EXECUTED_BROWSER;
     public static final String REMOTE_WEB_DRIVER_URL = StringConstants.CONF_PROPERTY_REMOTE_WEB_DRIVER_URL;
+    public static final String REMOTE_WEB_DRIVER_TYPE = StringConstants.CONF_PROPERTY_REMOTE_WEB_DRIVER_TYPE;
     public static final String EXECUTED_MOBILE_PLATFORM = StringConstants.CONF_EXECUTED_PLATFORM;
     public static final String EXECUTED_MOBILE_DEVICE_NAME = StringConstants.CONF_EXECUTED_DEVICE_NAME;
 
@@ -49,6 +57,7 @@ public class DriverFactory {
         }
     };
 
+    @SuppressWarnings("rawtypes")
     public static WebDriver openWebDriver() throws Exception {
         try {
             if (null != localWebServerStorage.get()
@@ -82,9 +91,39 @@ public class DriverFactory {
                 break;
             case REMOTE_WEB_DRIVER:
                 String remoteWebServerUrl = getRemoteWebDriverServerUrl();
+                String remoteWebServerType = getRemoteWebDriverServerType();
+                if (remoteWebServerType == null) {
+                    remoteWebServerType = REMOTE_WEB_DRIVER_TYPE_SELENIUM;
+                }
                 KeywordLogger.getInstance().logInfo(
-                        MessageFormat.format(StringConstants.XML_LOG_CONNECTING_TO_REMOTE_WEB_SERVER_X,
-                                remoteWebServerUrl));
+                        MessageFormat.format(StringConstants.XML_LOG_CONNECTING_TO_REMOTE_WEB_SERVER_X_WITH_TYPE_Y,
+                                remoteWebServerUrl, remoteWebServerType));
+                if (remoteWebServerType.equals(REMOTE_WEB_DRIVER_TYPE_APPIUM)) {
+                    Object platformName = desireCapibilities.getCapability(APPIUM_CAPABILITY_PLATFORM_NAME);
+                    if (platformName == null) {
+                        throw new StepFailedException(MessageFormat.format(
+                                StringConstants.DRI_MISSING_PROPERTY_X_FOR_APPIUM_REMOTE_WEB_DRIVER,
+                                APPIUM_CAPABILITY_PLATFORM_NAME));
+                    }
+                    if (platformName instanceof String) {
+                        if (APPIUM_CAPABILITY_PLATFORM_NAME_ADROID.equalsIgnoreCase((String) platformName)) {
+                            webDriver = new SwipeableAndroidDriver(new URL(remoteWebServerUrl),
+                                    WebDriverPropertyUtil.toDesireCapabilities(
+                                            RunConfiguration.getExecutionDriverProperty(),
+                                            DesiredCapabilities.android(), false));
+                        } else if (APPIUM_CAPABILITY_PLATFORM_NAME_IOS.equalsIgnoreCase((String) platformName)) {
+                            webDriver = new IOSDriver(new URL(remoteWebServerUrl),
+                                    WebDriverPropertyUtil.toDesireCapabilities(
+                                            RunConfiguration.getExecutionDriverProperty(),
+                                            DesiredCapabilities.iphone(), false));
+                        } else {
+                            throw new StepFailedException(MessageFormat.format(
+                                    StringConstants.DRI_PLATFORM_NAME_X_IS_NOT_SUPPORTED_FOR_APPIUM_REMOTE_WEB_DRIVER,
+                                    platformName));
+                        }
+                    }
+                    break;
+                }
                 webDriver = new RemoteWebDriver(new URL(remoteWebServerUrl), desireCapibilities);
                 break;
             case ANDROID_DRIVER:
@@ -344,6 +383,10 @@ public class DriverFactory {
 
     public static String getRemoteWebDriverServerUrl() {
         return RunConfiguration.getStringProperty(REMOTE_WEB_DRIVER_URL);
+    }
+
+    public static String getRemoteWebDriverServerType() {
+        return RunConfiguration.getStringProperty(REMOTE_WEB_DRIVER_TYPE);
     }
 
     public static String getMobilePlatform() {

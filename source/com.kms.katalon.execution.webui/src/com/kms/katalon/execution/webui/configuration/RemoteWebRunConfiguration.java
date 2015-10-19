@@ -7,6 +7,7 @@ import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector;
+import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector.RemoteWebDriverConnectorType;
 
 public class RemoteWebRunConfiguration extends WebUiRunConfiguration {
     public RemoteWebRunConfiguration(TestCaseEntity testCase) throws IOException {
@@ -30,5 +31,13 @@ public class RemoteWebRunConfiguration extends WebUiRunConfiguration {
 
     public void setRemoteServerUrl(String remoteServerUrl) {
         ((RemoteWebDriverConnector) webUiDriverConnector).setRemoteServerUrl(remoteServerUrl);
+    }
+    
+    public RemoteWebDriverConnectorType getRemoteWebDriverConnectorType() {
+        return ((RemoteWebDriverConnector) webUiDriverConnector).getRemoteWebDriverConnectorType();
+    }
+
+    public void setRemoteWebDriverConnectorType(RemoteWebDriverConnectorType remoteWebDriverConnectorType) {
+        ((RemoteWebDriverConnector) webUiDriverConnector).setRemoteWebDriverConnectorType(remoteWebDriverConnectorType);
     }
 }
