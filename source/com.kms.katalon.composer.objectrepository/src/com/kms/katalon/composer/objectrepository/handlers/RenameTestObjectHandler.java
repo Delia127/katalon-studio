@@ -66,13 +66,13 @@ public class RenameTestObjectHandler {
 							String newIdForDisplay = ObjectRepositoryController.getInstance().getIdForDisplay(webElement);
 							eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] {oldIdForDisplay, newIdForDisplay});
 						}
-						partService.saveAll(false);							
+						partService.saveAll(false);
 					} catch (Exception ex) {
 						// Restore old name
 						webElement.setName(oldName);
 						LoggerSingleton.logError(ex);
 						MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE, 
-								StringConstants.HAND_ERROR_MSG_UNABLE_TO_RENAME_TEST_DATA);
+								StringConstants.HAND_ERROR_MSG_UNABLE_TO_RENAME_TEST_OBJECT);
 						return;
 					}
 

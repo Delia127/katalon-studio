@@ -13,10 +13,10 @@
     <elements xsi:type="commands:Handler" xmi:id="_vGkMgDcrEeSiAqu25cXbFw" elementId="com.kms.katalon.composer.objectrepository.handler.spy" contributionURI="bundleclass://com.kms.katalon.composer.objectrepository/com.kms.katalon.composer.objectrepository.handlers.SpyObjectHandler" command="_qx_Y8DcrEeSiAqu25cXbFw"/>
     <elements xsi:type="commands:Handler" xmi:id="_YKHkoBDREeW0R_pMAWEPbg" elementId="com.kms.katalon.composer.objectrepository.handler.addToObjectSpy" contributionURI="bundleclass://com.kms.katalon.composer.objectrepository/com.kms.katalon.composer.objectrepository.handlers.AddToObjectSpyHandler" command="_VVuxcBDREeW0R_pMAWEPbg"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_0_h9ACauEeS9vYgzPyb1ug" featurename="children" parentElementId="com.kms.katalon.menu.submenu.new" positionInList="before:com.kms.katalon.menu.submenu.new.testsuite">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_0_h9ACauEeS9vYgzPyb1ug" featurename="children" parentElementId="com.kms.katalon.menu.submenu.new" positionInList="before:com.kms.katalon.composer.webservice.handledmenuitem.webServiceRequest">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_EVuD4CavEeS9vYgzPyb1ug" elementId="com.kms.katalon.menu.submenu.new.testobject" label="Test Object" iconURI="platform:/plugin/com.kms.katalon.composer.objectrepository/icons/test_object_16.png" tooltip="New Test Object" command="_GJVzECauEeS9vYgzPyb1ug"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_4oSW8CavEeS9vYgzPyb1ug" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="before:com.kms.katalon.composer.toolbar.testsuite.newtestsuite">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_4oSW8CavEeS9vYgzPyb1ug" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="before:com.kms.katalon.composer.webservice.handledtoolitem.newWsRequest">
     <elements xsi:type="menu:HandledToolItem" xmi:id="_GQ0pMCawEeS9vYgzPyb1ug" elementId="com.kms.katalon.composer.objectrepository.handledtoolitem.newTestObject" label="" iconURI="platform:/plugin/com.kms.katalon.composer.objectrepository/icons/new_test_object_28.png" tooltip="New Test Object" command="_GJVzECauEeS9vYgzPyb1ug">
       <tags>FORCE_TEXT</tags>
     </elements>
