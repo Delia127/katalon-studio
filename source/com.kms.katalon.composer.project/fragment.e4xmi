@@ -39,7 +39,7 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_4DWkEAmfEeWmsZWUQ_5cNA" featurename="children" parentElementId="com.kms.katalon.composer.menu.project" positionInList="first">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="__E0bsAmfEeWmsZWUQ_5cNA" elementId="com.kms.katalon.composer.project.handledmenuitem.refresh" label="Refresh" tooltip="" command="_INCkcAmgEeWmsZWUQ_5cNA"/>
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_ntQlwAmnEeWmsZWUQ_5cNA" elementId="com.kms.katalon.composer.project.handledmenuitem.rebuild" label="Rebuild" tooltip="Rebuild classpath" command="_ttzy8AmnEeWmsZWUQ_5cNA"/>
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_ntQlwAmnEeWmsZWUQ_5cNA" elementId="com.kms.katalon.composer.project.handledmenuitem.rebuild" toBeRendered="false" visible="false" label="Rebuild" tooltip="Rebuild classpath" command="_ttzy8AmnEeWmsZWUQ_5cNA"/>
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_KjCN4CEhEeSZXr0THRq18w" elementId="com.kms.katalon.menu.submenu.project.update" label="Update Project" tooltip="" command="_pc9IYCEhEeSZXr0THRq18w"/>
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_n8_IEA2-EeWNbI7oMCmN4Q" elementId="com.kms.katalon.composer.project.handledmenuitem.settings" label="Settings" tooltip="Change project settings" command="_gXvN8A2-EeWNbI7oMCmN4Q"/>
   </fragments>
