@@ -7,8 +7,8 @@ import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -25,143 +25,148 @@ import com.kms.katalon.entity.project.ProjectEntity;
 
 public class NewProjectDialog extends TitleAreaDialog {
 
-	private Text txtProjectName;
-	private Text txtProjectLocation;
-	private Text txtProjectDescription;
+    private Text txtProjectName;
 
-	private String name, loc, desc;
+    private Text txtProjectLocation;
 
-	private ProjectEntity project;
-	private boolean showError;
+    private Text txtProjectDescription;
+
+    private String name, loc, desc;
+
+    private ProjectEntity project;
+
+    private boolean showError;
+
     private Button btnFolderChooser;
 
-	public NewProjectDialog(Shell parentShell) {
-		super(parentShell);
-	}
+    public NewProjectDialog(Shell parentShell) {
+        super(parentShell);
+    }
 
-	public NewProjectDialog(Shell parentShell, ProjectEntity project) {
-		super(parentShell);
-		this.project = project;
-	}
+    public NewProjectDialog(Shell parentShell, ProjectEntity project) {
+        super(parentShell);
+        this.project = project;
+    }
 
-	@Override
-	protected Control createDialogArea(Composite parent) {
-		Composite area = (Composite) super.createDialogArea(parent);
+    @Override
+    protected Control createDialogArea(Composite parent) {
+        Composite area = (Composite) super.createDialogArea(parent);
 
-		getShell().setText(project == null ? StringConstants.VIEW_TITLE_NEW_PROJ : StringConstants.VIEW_TITLE_UPDATE_PROJ);
-		setTitle(project == null ? StringConstants.VIEW_TITLE_NEW_PROJ : StringConstants.VIEW_TITLE_UPDATE_PROJ);
-		setMessage(StringConstants.VIEW_MSG_PLS_ENTER_PROJ_INFO);
+        getShell().setText(
+                project == null ? StringConstants.VIEW_TITLE_NEW_PROJ : StringConstants.VIEW_TITLE_UPDATE_PROJ);
+        setTitle(project == null ? StringConstants.VIEW_TITLE_NEW_PROJ : StringConstants.VIEW_TITLE_UPDATE_PROJ);
+        setMessage(StringConstants.VIEW_MSG_PLS_ENTER_PROJ_INFO);
 
-		Composite container = new Composite(area, SWT.NONE);
-		container.setLayoutData(new GridData(GridData.FILL_BOTH));
-		container.setLayout(new GridLayout(2, false));
+        Composite container = new Composite(area, SWT.NONE);
+        container.setLayoutData(new GridData(GridData.FILL_BOTH));
+        container.setLayout(new GridLayout(2, false));
 
-		Label l = new Label(container, SWT.NONE);
-		l.setText(StringConstants.VIEW_LBL_NAME);
+        Label l = new Label(container, SWT.NONE);
+        l.setText(StringConstants.VIEW_LBL_NAME);
 
-		txtProjectName = new Text(container, SWT.BORDER);
-		txtProjectName.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        txtProjectName = new Text(container, SWT.BORDER);
+        txtProjectName.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		// Add
-		l = new Label(container, SWT.NONE);
-		l.setText(StringConstants.VIEW_LBL_LOCATION);
-		createFileChooserComposite(container);
-		
+        // Add
+        l = new Label(container, SWT.NONE);
+        l.setText(StringConstants.VIEW_LBL_LOCATION);
+        createFileChooserComposite(container);
 
-		l = new Label(container, SWT.NONE);
-		l.setText(StringConstants.VIEW_LBL_DESCRIPTION);
+        l = new Label(container, SWT.NONE);
+        l.setText(StringConstants.VIEW_LBL_DESCRIPTION);
 
-		txtProjectDescription = new Text(container, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
-		txtProjectDescription.setLayoutData(new GridData(GridData.FILL_BOTH));
+        txtProjectDescription = new Text(container, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+        txtProjectDescription.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		if (project != null) {
-			txtProjectName.setText(project.getName());
-			txtProjectLocation.setText(project.getFolderLocation());
-			txtProjectDescription.setText(project.getDescription());
-			txtProjectLocation.setEnabled(false);
-			btnFolderChooser.setEnabled(true);
-		}
-		
-		addControlModifyListeners();
-		return area;
-	}
+        if (project != null) {
+            txtProjectName.setText(project.getName());
+            txtProjectLocation.setText(project.getFolderLocation());
+            txtProjectDescription.setText(project.getDescription());
+            txtProjectLocation.setEnabled(false);
+        }
 
-	private Composite createFileChooserComposite(Composite parent) {
-		Composite container = new Composite(parent, SWT.NONE);
-		container.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        // Build the separator line
+        Label separator = new Label(parent, SWT.HORIZONTAL | SWT.SEPARATOR);
+        separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		GridLayout theLayout = new GridLayout(2, false);
-		theLayout.marginWidth = 0;
-		container.setLayout(theLayout);
+        addControlModifyListeners();
+        return area;
+    }
 
-		txtProjectLocation = new Text(container, SWT.BORDER);
-		txtProjectLocation.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+    private Composite createFileChooserComposite(Composite parent) {
+        Composite container = new Composite(parent, SWT.NONE);
+        container.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        GridLayout theLayout = new GridLayout((project == null) ? 2 : 1, false);
+        theLayout.marginWidth = 0;
+        container.setLayout(theLayout);
 
-		btnFolderChooser = new Button(container, SWT.PUSH);
-		btnFolderChooser.setText(StringConstants.VIEW_BTN_BROWSE);
-		btnFolderChooser.addSelectionListener(new SelectionListener() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				DirectoryDialog dialog = new DirectoryDialog(btnFolderChooser.getShell());
-				String path = dialog.open();
-				if (path == null)
-					return;
-				txtProjectLocation.setText(path);
-			}
+        txtProjectLocation = new Text(container, SWT.BORDER);
+        txtProjectLocation.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
+        if (project == null) {
+            btnFolderChooser = new Button(container, SWT.PUSH);
+            btnFolderChooser.setText(StringConstants.VIEW_BTN_BROWSE);
+        }
 
-		return container;
-	}
-	
-	private void addControlModifyListeners() {
-	    txtProjectLocation.addModifyListener(new ModifyListener() {
-            
+        return container;
+    }
+
+    private void addControlModifyListeners() {
+        txtProjectLocation.addModifyListener(new ModifyListener() {
+
             @Override
             public void modifyText(ModifyEvent e) {
                 validate();
             }
         });
-	    
-	    txtProjectName.addModifyListener(new ModifyListener() {
-            
+
+        txtProjectName.addModifyListener(new ModifyListener() {
+
             @Override
             public void modifyText(ModifyEvent e) {
                 validate();
             }
         });
-	}
-	
-	public void setErrorMessage(String newErrorMessage) {
-	    if (showError) {
-	        super.setErrorMessage(newErrorMessage);
-	    }
-	}
-	
-	@Override
-	protected void createButtonsForButtonBar(Composite parent) {
-	    super.createButtonsForButtonBar(parent);
-	    showError = false;
-	    validate();
-	    showError = true;
-	}
-	
-	private boolean validateProjectFolderLocation(String projectLocation) {
-	    if (projectLocation == null || projectLocation.isEmpty()) {
-	        setErrorMessage(StringConstants.VIEW_ERROR_MSG_PROJ_LOC_CANNOT_BE_BLANK);
-	        return false;
-	    }
-	    File folderLocation = new File(txtProjectLocation.getText());
-	    return folderLocation.isDirectory() ? true : false;
-	}
-	
-	private boolean validate() {
-	    String projectLocation = txtProjectLocation.getText().trim();
-	    String projectName = txtProjectName.getText().trim();
-	    if (validateProjectFolderLocation(projectLocation)) {
+        if (btnFolderChooser != null) {
+            btnFolderChooser.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    DirectoryDialog dialog = new DirectoryDialog(btnFolderChooser.getShell());
+                    String path = dialog.open();
+                    if (path == null) return;
+                    txtProjectLocation.setText(path);
+                }
+            });
+        }
+    }
+
+    public void setErrorMessage(String newErrorMessage) {
+        if (showError) {
+            super.setErrorMessage(newErrorMessage);
+        }
+    }
+
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        super.createButtonsForButtonBar(parent);
+        showError = false;
+        validate();
+        showError = true;
+    }
+
+    private boolean validateProjectFolderLocation(String projectLocation) {
+        if (projectLocation == null || projectLocation.isEmpty()) {
+            setErrorMessage(StringConstants.VIEW_ERROR_MSG_PROJ_LOC_CANNOT_BE_BLANK);
+            return false;
+        }
+        File folderLocation = new File(txtProjectLocation.getText());
+        return folderLocation.isDirectory() ? true : false;
+    }
+
+    private boolean validate() {
+        String projectLocation = txtProjectLocation.getText().trim();
+        String projectName = txtProjectName.getText().trim();
+        if (validateProjectFolderLocation(projectLocation)) {
             try {
                 if (projectName == null || projectName.isEmpty()) {
                     setErrorMessage(StringConstants.VIEW_ERROR_MSG_PROJ_NAME_CANNOT_BE_BLANK);
@@ -182,27 +187,26 @@ public class NewProjectDialog extends TitleAreaDialog {
             setErrorMessage(StringConstants.VIEW_ERROR_MSG_PROJ_LOC_DOES_NOT_EXIST);
             getButton(Dialog.OK).setEnabled(false);
         }
-	    return false;
-	}
-	
+        return false;
+    }
 
-	@Override
-	protected void okPressed() {
-		name = txtProjectName.getText();
-		loc = txtProjectLocation == null ? "" : txtProjectLocation.getText();
-		desc = txtProjectDescription.getText();
-		super.okPressed();
-	}
+    @Override
+    protected void okPressed() {
+        name = txtProjectName.getText();
+        loc = txtProjectLocation == null ? "" : txtProjectLocation.getText();
+        desc = txtProjectDescription.getText();
+        super.okPressed();
+    }
 
-	public String getProjectName() {
-		return name;
-	}
+    public String getProjectName() {
+        return name;
+    }
 
-	public String getProjectLocation() {
-		return loc;
-	}
+    public String getProjectLocation() {
+        return loc;
+    }
 
-	public String getProjectDescription() {
-		return desc;
-	}
+    public String getProjectDescription() {
+        return desc;
+    }
 }
