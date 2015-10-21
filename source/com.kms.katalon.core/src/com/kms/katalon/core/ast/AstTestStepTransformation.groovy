@@ -1,8 +1,5 @@
 package com.kms.katalon.core.ast;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import groovy.transform.CompileStatic
 
 import org.codehaus.groovy.ast.ASTNode
@@ -21,6 +18,7 @@ import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.CaseStatement
 import org.codehaus.groovy.ast.stmt.CatchStatement
 import org.codehaus.groovy.ast.stmt.DoWhileStatement
+import org.codehaus.groovy.ast.stmt.EmptyStatement
 import org.codehaus.groovy.ast.stmt.ExpressionStatement
 import org.codehaus.groovy.ast.stmt.ForStatement
 import org.codehaus.groovy.ast.stmt.IfStatement
@@ -150,7 +148,7 @@ public class AstTestStepTransformation implements ASTTransformation {
     @CompileStatic
     public void visit(IfStatement ifStatement, Stack<Statement> deferedStatements = new Stack<Statement>(), Map<Statement, Integer> indexMap, int nestedLevel) {
         visit(ifStatement.getIfBlock(), deferedStatements, nestedLevel);
-        if (ifStatement.getElseBlock() == null) {
+        if (ifStatement.getElseBlock() == null || ifStatement.getElseBlock() instanceof EmptyStatement) {
             return;
         }
         if (ifStatement.getElseBlock() instanceof IfStatement) {
@@ -370,7 +368,7 @@ public class AstTestStepTransformation implements ASTTransformation {
                     indexMap.put(ifStatement, index);
                     index++;
                 }
-                if (ifStatement.getElseBlock() == null) {
+                if (ifStatement.getElseBlock() == null || ifStatement.getElseBlock() instanceof EmptyStatement) {
                     continue;
                 }
                 indexMap.put(ifStatement.getElseBlock(), index);
