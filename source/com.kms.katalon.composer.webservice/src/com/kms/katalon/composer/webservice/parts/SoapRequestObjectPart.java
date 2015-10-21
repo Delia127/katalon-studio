@@ -50,92 +50,69 @@ public class SoapRequestObjectPart extends RequestObjectPart {
                 true);
         Composite compositeDetails = soapComposite.createControl();
 
-        Composite compositeDetailsInfo = new Composite(compositeDetails, SWT.NONE);
-        compositeDetailsInfo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        compositeDetailsInfo.setLayout(new GridLayout(2, false));
+        Composite soapDetailsComposite = new Composite(compositeDetails, SWT.NONE);
+        soapDetailsComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        soapDetailsComposite.setLayout(new GridLayout(2, false));
+
+        GridData gdData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        gdData.heightHint = 20;
 
         // WSDL
-        Label lblWsdl = new Label(compositeDetailsInfo, SWT.NONE);
-        lblWsdl.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
+        Label lblWsdl = new Label(soapDetailsComposite, SWT.LEFT | SWT.WRAP);
         lblWsdl.setText(StringConstants.PA_LBL_WSDL_ADDR);
+        lblWsdl.setLayoutData(labelGridData);
 
-        txtWSDL = new Text(compositeDetailsInfo, SWT.BORDER);
-        GridData gdData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 2);
-        gdData.heightHint = 20;
+        txtWSDL = new Text(soapDetailsComposite, SWT.BORDER);
         txtWSDL.setLayoutData(gdData);
         txtWSDL.addModifyListener(modifyListener);
 
-        Label lblSupporter = new Label(compositeDetailsInfo, SWT.NONE);
-        lblSupporter.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
-
         // Request Method
-        Label lblRequestMethod = new Label(compositeDetailsInfo, SWT.NONE);
-        lblRequestMethod.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
+        Label lblRequestMethod = new Label(soapDetailsComposite, SWT.LEFT | SWT.WRAP);
         lblRequestMethod.setText(StringConstants.PA_LBL_REQ_METHOD);
+        lblRequestMethod.setLayoutData(labelGridData);
 
-        cbbSoapRequestMethod = new Combo(compositeDetailsInfo, SWT.NONE);
-        gdData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 2);
-        gdData.heightHint = 20;
+        cbbSoapRequestMethod = new Combo(soapDetailsComposite, SWT.NONE);
         cbbSoapRequestMethod.setLayoutData(gdData);
         cbbSoapRequestMethod.setItems(WebServiceRequestEntity.SOAP_REQUEST_METHODS);
         cbbSoapRequestMethod.select(0);
         cbbSoapRequestMethod.addModifyListener(modifyListener);
 
-        lblSupporter = new Label(compositeDetailsInfo, SWT.NONE);
-        lblSupporter.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
-
         // Service Function
-        Label lblServiceFunction = new Label(compositeDetailsInfo, SWT.NONE);
-        lblServiceFunction.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
+        Label lblServiceFunction = new Label(soapDetailsComposite, SWT.LEFT | SWT.WRAP);
         lblServiceFunction.setText(StringConstants.PA_LBL_SERVICE_FUNCTION);
+        lblServiceFunction.setLayoutData(labelGridData);
 
-        txtServiceFunction = new Text(compositeDetailsInfo, SWT.BORDER);
-        gdData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 2);
-        gdData.heightHint = 20;
+        txtServiceFunction = new Text(soapDetailsComposite, SWT.BORDER);
         txtServiceFunction.setLayoutData(gdData);
         txtServiceFunction.addModifyListener(modifyListener);
 
-        lblSupporter = new Label(compositeDetailsInfo, SWT.NONE);
-        lblSupporter.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
-
         // Service Function Parameters
-        Label lblFunctionParams = new Label(compositeDetailsInfo, SWT.NONE);
-        lblFunctionParams.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
+        Label lblFunctionParams = new Label(soapDetailsComposite, SWT.LEFT | SWT.WRAP);
         lblFunctionParams.setText(StringConstants.PA_LBL_PARAMS);
+        lblFunctionParams.setLayoutData(labelGridData);
 
-        tblSoapParams = createParamsTable(compositeDetailsInfo);
+        tblSoapParams = createParamsTable(soapDetailsComposite);
         tblSoapParams.setInput(listSoapParams);
 
-        lblSupporter = new Label(compositeDetailsInfo, SWT.NONE);
-        lblSupporter.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
-
         // SOAP Header
-        Label lblSoapHeader = new Label(compositeDetailsInfo, SWT.NONE);
-        lblSoapHeader.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
+        Label lblSoapHeader = new Label(soapDetailsComposite, SWT.LEFT | SWT.WRAP);
         lblSoapHeader.setText(StringConstants.PA_LBL_SOAP_HEADER_OPT);
+        lblSoapHeader.setLayoutData(labelGridData);
 
-        txtSoapHeader = new Text(compositeDetailsInfo, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI);
-        gdData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2);
-        gdData.heightHint = 45;
-        txtSoapHeader.setLayoutData(gdData);
+        txtSoapHeader = new Text(soapDetailsComposite, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI);
+        GridData newGdData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+        newGdData.heightHint = 45;
+        txtSoapHeader.setLayoutData(newGdData);
         txtSoapHeader.addModifyListener(modifyListener);
 
-        lblSupporter = new Label(compositeDetailsInfo, SWT.NONE);
-        lblSupporter.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
-
         // SOAP Body
-        Label lblSoapBody = new Label(compositeDetailsInfo, SWT.NONE);
-        lblSoapBody.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
+        Label lblSoapBody = new Label(soapDetailsComposite, SWT.LEFT | SWT.WRAP);
         lblSoapBody.setText(StringConstants.PA_LBL_SOAP_BODY);
+        lblSoapBody.setLayoutData(labelGridData);
 
-        txtSoapBody = new Text(compositeDetailsInfo, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI);
-        gdData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2);
-        gdData.heightHint = 45;
-        txtSoapBody.setLayoutData(gdData);
+        txtSoapBody = new Text(soapDetailsComposite, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI);
+        txtSoapBody.setLayoutData(newGdData);
         txtSoapBody.addModifyListener(modifyListener);
-
-        lblSupporter = new Label(compositeDetailsInfo, SWT.NONE);
-        lblSupporter.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
     }
 
     @Override

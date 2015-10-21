@@ -36,7 +36,7 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String PA_LBL_WSDL_ADDR = "WSDL Address";
 	public static final String PA_LBL_SERVICE_FUNCTION = "Service Function";
 	public static final String PA_LBL_PARAMS = "Parameters";
-	public static final String PA_LBL_SOAP_HEADER_OPT = "SOAP Header:\n   (Optional)";
+	public static final String PA_LBL_SOAP_HEADER_OPT = "SOAP Header (Optional)";
 	public static final String PA_LBL_SOAP_BODY = "SOAP Body";
 
 	// NewRequestDialog

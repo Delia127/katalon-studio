@@ -49,48 +49,36 @@ public class RestRequestObjectPart extends RequestObjectPart {
         restContainerComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         restContainerComposite.setLayout(new GridLayout(2, false));
 
-        GridData gdData;
+        GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        gridData.heightHint = 20;
 
         // Service Url
-        Label lblRestUrl = new Label(restContainerComposite, SWT.NONE);
-        lblRestUrl.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
+        Label lblRestUrl = new Label(restContainerComposite, SWT.LEFT | SWT.WRAP);
         lblRestUrl.setText(StringConstants.PA_LBL_REST_URL);
+        lblRestUrl.setLayoutData(labelGridData);
 
         txtRestUrl = new Text(restContainerComposite, SWT.BORDER);
-        gdData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 2);
-        gdData.heightHint = 20;
-        txtRestUrl.setLayoutData(gdData);
+        txtRestUrl.setLayoutData(gridData);
         txtRestUrl.addModifyListener(modifyListener);
 
-        Label lblSupporter = new Label(restContainerComposite, SWT.NONE);
-        lblSupporter.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
-
         // Request Method
-        Label lblRequestMethod = new Label(restContainerComposite, SWT.NONE);
-        lblRequestMethod.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
+        Label lblRequestMethod = new Label(restContainerComposite, SWT.LEFT | SWT.WRAP);
         lblRequestMethod.setText(StringConstants.PA_LBL_REQ_METHOD);
+        lblRequestMethod.setLayoutData(labelGridData);
 
         cbbRestRequestMethod = new Combo(restContainerComposite, SWT.NONE);
-        gdData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 2);
-        gdData.heightHint = 20;
-        cbbRestRequestMethod.setLayoutData(gdData);
+        cbbRestRequestMethod.setLayoutData(gridData);
         cbbRestRequestMethod.setItems(WebServiceRequestEntity.REST_REQUEST_METHODS);
         cbbRestRequestMethod.select(0);
         cbbRestRequestMethod.addModifyListener(modifyListener);
 
-        lblSupporter = new Label(restContainerComposite, SWT.NONE);
-        lblSupporter.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
-
         // REST Parameters
-        Label lblRestParam = new Label(restContainerComposite, SWT.NONE);
-        lblRestParam.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
+        Label lblRestParam = new Label(restContainerComposite, SWT.LEFT | SWT.WRAP);
         lblRestParam.setText(StringConstants.PA_LBL_REST_PARAMS);
+        lblRestParam.setLayoutData(labelGridData);
 
         tblRestParams = createParamsTable(restContainerComposite);
         tblRestParams.setInput(listRestParams);
-
-        lblSupporter = new Label(restContainerComposite, SWT.NONE);
-        lblSupporter.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
     }
 
     @Override
