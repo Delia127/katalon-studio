@@ -71,9 +71,17 @@ public class ObjectPropertyView {
 
     private SashForm sash;
 
-    private Composite layoutComposite, compositeInfo, compositeInfoDetails, compositeTable;
+    private Composite layoutComposite;
 
-    private ToolItem toolItemAdd, toolItemDelete;
+    private Composite compositeInfo;
+
+    private Composite compositeInfoDetails;
+
+    private Composite compositeTable;
+
+    private ToolItem toolItemAdd;
+
+    private ToolItem toolItemDelete;
 
     private ObjectPropetiesTableViewer treeViewer;
 
@@ -84,8 +92,11 @@ public class ObjectPropertyView {
     private FormLayout formLayout;
 
     private Text txtName;
+
     private Text txtId;
+
     private Text txtImage;
+
     private Button btnBrowseImage;
 
     private Button radRelative;
@@ -95,10 +106,13 @@ public class ObjectPropertyView {
     private MDirtyable dirtyable;
 
     private WebElementEntity originalTestObject;
+
     private WebElementEntity cloneTestObject;
 
     private Composite mainComposite;
+
     private Text txtDescriptions;
+
     private boolean isInfoCompositeExpanded = true;
 
     private Listener layoutGeneralCompositeListener = new Listener() {
@@ -214,38 +228,40 @@ public class ObjectPropertyView {
         compositeInfoDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         compositeInfoDetails.setBounds(0, 0, 64, 64);
 
+        // Label default width
+        GridData labelGridData = new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1);
+        labelGridData.widthHint = 100;
+
         Composite compositeInfoNameAndId = new Composite(compositeInfoDetails, SWT.NONE);
         compositeInfoNameAndId.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         GridLayout glCompositeInfoNameAndId = new GridLayout(2, false);
         glCompositeInfoNameAndId.verticalSpacing = 10;
         compositeInfoNameAndId.setLayout(glCompositeInfoNameAndId);
 
+        GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        gridData.heightHint = 20;
+
         Label lblId = new Label(compositeInfoNameAndId, SWT.NONE);
-        lblId.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
+        lblId.setLayoutData(labelGridData);
         lblId.setText(StringConstants.VIEW_LBL_ID);
 
         txtId = new Text(compositeInfoNameAndId, SWT.BORDER);
-        GridData gd_txtId = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-        gd_txtId.heightHint = 20;
-        txtId.setLayoutData(gd_txtId);
+        txtId.setLayoutData(gridData);
         txtId.setEditable(false);
 
         Label lblName = new Label(compositeInfoNameAndId, SWT.NONE);
-        lblName.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
+        lblName.setLayoutData(labelGridData);
         lblName.setText(StringConstants.VIEW_LBL_NAME);
 
         txtName = new Text(compositeInfoNameAndId, SWT.BORDER);
-        GridData gdTxtName = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-        gdTxtName.heightHint = 20;
-        txtName.setLayoutData(gdTxtName);
+        txtName.setLayoutData(gridData);
 
         Label lblImage = new Label(compositeInfoNameAndId, SWT.NONE);
-        lblImage.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
+        lblImage.setLayoutData(labelGridData);
         lblImage.setText(StringConstants.VIEW_LBL_IMAGE);
 
         txtImage = new Text(compositeInfoNameAndId, SWT.BORDER);
-        gdTxtName.heightHint = 20;
-        txtImage.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtImage.setLayoutData(gridData);
         txtImage.setEditable(false);
 
         Composite imageUtilComp = new Composite(compositeInfoNameAndId, SWT.NONE);
@@ -268,18 +284,13 @@ public class ObjectPropertyView {
         compositeInfoDescriptions.setLayout(new GridLayout(2, false));
 
         Label lblDescription = new Label(compositeInfoDescriptions, SWT.NONE);
-        GridData gd_lblDescription = new GridData(SWT.RIGHT, SWT.TOP, false, true, 1, 1);
-        gd_lblDescription.verticalIndent = 5;
-        lblDescription.setLayoutData(gd_lblDescription);
+        lblDescription.setLayoutData(labelGridData);
         lblDescription.setText(StringConstants.VIEW_LBL_DESC);
 
         txtDescriptions = new Text(compositeInfoDescriptions, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI);
-        GridData gdTextDescription = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2);
+        GridData gdTextDescription = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 3);
         gdTextDescription.heightHint = 45;
         txtDescriptions.setLayoutData(gdTextDescription);
-
-        Label lblSupporter = new Label(compositeInfoDescriptions, SWT.NONE);
-        lblSupporter.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
     }
 
     private void createTableToolbar() {
@@ -494,8 +505,7 @@ public class ObjectPropertyView {
                 dialog.setFilterPath(projectFolder);
 
                 String absolutePath = dialog.open();
-                if (absolutePath == null)
-                    return;
+                if (absolutePath == null) return;
                 if (radRelative.getSelection()) {
                     String relPath = PathUtils.absoluteToRelativePath(absolutePath, projectFolder);
                     txtImage.setText(relPath);
