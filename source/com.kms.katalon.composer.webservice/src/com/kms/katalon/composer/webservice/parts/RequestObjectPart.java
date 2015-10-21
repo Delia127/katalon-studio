@@ -82,6 +82,8 @@ public abstract class RequestObjectPart implements EventHandler {
     @Inject
     protected MDirtyable dirtyable;
 
+    protected GridData labelGridData = new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1);
+
     public void createComposite(Composite parent, MPart part) {
         this.mPart = part;
         this.originalWsObject = (WebServiceRequestEntity) part.getObject();
@@ -93,6 +95,9 @@ public abstract class RequestObjectPart implements EventHandler {
         mainComposite.setLayout(glMainComposite);
 
         createModifyListener();
+
+        // Label width
+        labelGridData.widthHint = 100;
 
         // Init UI
         createEntityInfoComposite(mainComposite);
@@ -170,49 +175,60 @@ public abstract class RequestObjectPart implements EventHandler {
     private void createEntityInfoComposite(Composite mainComposite) {
         ExpandableComposite entityComposite = new ExpandableComposite(mainComposite, StringConstants.PA_TITLE_INFO, 1,
                 true);
-        Composite compositeDetails = entityComposite.createControl();
+        Composite generalInfoComposite = entityComposite.createControl();
+        GridLayout gl_compositeInfoDetails = new GridLayout(2, true);
+        gl_compositeInfoDetails.marginRight = 40;
+        gl_compositeInfoDetails.marginLeft = 40;
+        gl_compositeInfoDetails.marginBottom = 5;
+        gl_compositeInfoDetails.horizontalSpacing = 30;
+        gl_compositeInfoDetails.marginHeight = 0;
+        gl_compositeInfoDetails.marginWidth = 0;
+        generalInfoComposite.setLayout(gl_compositeInfoDetails);
+        generalInfoComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        generalInfoComposite.setBounds(0, 0, 64, 64);
 
-        Composite entityContainerComposite = new Composite(compositeDetails, SWT.NONE);
-        entityContainerComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        entityContainerComposite.setLayout(new GridLayout(4, false));
+        Composite idNameComposite = new Composite(generalInfoComposite, SWT.NONE);
+        idNameComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        GridLayout glCompositeInfoNameAndId = new GridLayout(2, false);
+        glCompositeInfoNameAndId.verticalSpacing = 10;
+        idNameComposite.setLayout(glCompositeInfoNameAndId);
 
-        GridData gdData;
+        GridData idNameGridData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        idNameGridData.heightHint = 20;
 
-        Label lblID = new Label(entityContainerComposite, SWT.NONE);
-        lblID.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
+        Label lblID = new Label(idNameComposite, SWT.LEFT);
         lblID.setText(StringConstants.PA_LBL_ID);
+        lblID.setLayoutData(labelGridData);
 
-        txtID = new Text(entityContainerComposite, SWT.BORDER);
-        gdData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-        gdData.heightHint = 20;
-        txtID.setLayoutData(gdData);
+        txtID = new Text(idNameComposite, SWT.BORDER);
+        txtID.setLayoutData(idNameGridData);
         txtID.setEditable(false);
         txtID.addModifyListener(modifyListener);
 
-        Label lblDesc = new Label(entityContainerComposite, SWT.NONE);
-        lblDesc.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
-        lblDesc.setText(StringConstants.PA_LBL_DESC);
-
-        txtDescription = new Text(entityContainerComposite, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI);
-        gdData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2);
-        gdData.heightHint = 45;
-        txtDescription.setLayoutData(gdData);
-        txtDescription.addModifyListener(modifyListener);
-
-        Label lblName = new Label(entityContainerComposite, SWT.NONE);
-        lblName.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
+        Label lblName = new Label(idNameComposite, SWT.LEFT);
         lblName.setText(StringConstants.PA_LBL_NAME);
+        lblName.setLayoutData(labelGridData);
 
-        txtName = new Text(entityContainerComposite, SWT.BORDER);
-        gdData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-        gdData.heightHint = 20;
-        txtName.setLayoutData(gdData);
+        txtName = new Text(idNameComposite, SWT.BORDER);
+        txtName.setLayoutData(idNameGridData);
         txtName.addModifyListener(modifyListener);
 
+        Composite descComposite = new Composite(generalInfoComposite, SWT.NONE);
+        descComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        descComposite.setLayout(new GridLayout(2, false));
+
+        Label lblDesc = new Label(descComposite, SWT.LEFT);
+        lblDesc.setText(StringConstants.PA_LBL_DESC);
+        lblDesc.setLayoutData(labelGridData);
+
+        txtDescription = new Text(descComposite, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI);
+        GridData gdTextDescription = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2);
+        gdTextDescription.heightHint = 45;
+        txtDescription.setLayoutData(gdTextDescription);
+        txtDescription.addModifyListener(modifyListener);
     }
 
     private void createHttpComposite(Composite mainComposite) {
-
         ExpandableComposite soapComposite = new ExpandableComposite(mainComposite, StringConstants.PA_TITLE_HTTP, 1,
                 true);
         Composite compositeDetails = soapComposite.createControl();
@@ -221,32 +237,24 @@ public abstract class RequestObjectPart implements EventHandler {
         httpContainerComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         httpContainerComposite.setLayout(new GridLayout(2, false));
 
-        GridData gdData;
-
         // HTTP Header
-        Label lblHttpHeader = new Label(httpContainerComposite, SWT.NONE);
-        lblHttpHeader.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
+        Label lblHttpHeader = new Label(httpContainerComposite, SWT.LEFT | SWT.WRAP);
         lblHttpHeader.setText(StringConstants.PA_LBL_HTTP_HEADER);
+        lblHttpHeader.setLayoutData(labelGridData);
 
         tblHttpHeader = createParamsTable(httpContainerComposite);
         tblHttpHeader.setInput(listHttpHeaderProps);
 
-        Label lblSupporter = new Label(httpContainerComposite, SWT.NONE);
-        lblSupporter.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
-
         // HTTP Body
-        Label lblSoapBody = new Label(httpContainerComposite, SWT.NONE);
-        lblSoapBody.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
+        Label lblSoapBody = new Label(httpContainerComposite, SWT.LEFT | SWT.WRAP);
         lblSoapBody.setText(StringConstants.PA_LBL_HTTP_BODY);
+        lblSoapBody.setLayoutData(labelGridData);
 
         txtHttpBody = new Text(httpContainerComposite, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI);
-        gdData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2);
+        GridData gdData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
         gdData.heightHint = 45;
         txtHttpBody.setLayoutData(gdData);
         txtHttpBody.addModifyListener(modifyListener);
-
-        lblSupporter = new Label(httpContainerComposite, SWT.NONE);
-        lblSupporter.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
     }
 
     protected abstract void createServiceInfoComposite(Composite mainComposite);
@@ -257,7 +265,7 @@ public abstract class RequestObjectPart implements EventHandler {
         glCompositeTableDetails.marginWidth = 0;
         glCompositeTableDetails.marginHeight = 0;
         compositeTableDetails.setLayout(glCompositeTableDetails);
-        GridData gdData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2);
+        GridData gdData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
         gdData.heightHint = 100;
         compositeTableDetails.setLayoutData(gdData);
 
