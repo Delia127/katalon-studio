@@ -40,15 +40,24 @@ public class WebDriverPropertyUtil {
         case FIREFOX_DRIVER:
             return getDesireCapabilitiesForFirefox(propertyMap);
         default:
-            DesiredCapabilities desireCapabilities = new DesiredCapabilities();
-            for (Entry<String, Object> property : propertyMap.entrySet()) {
+            return toDesireCapabilities(propertyMap);
+        }
+    }
+
+    public static DesiredCapabilities toDesireCapabilities(Map<String, Object> propertyMap) {
+        return toDesireCapabilities(propertyMap, new DesiredCapabilities(), true);
+    }
+
+    public static DesiredCapabilities toDesireCapabilities(Map<String, Object> propertyMap, DesiredCapabilities desireCapabilities, boolean isLog) {
+        for (Entry<String, Object> property : propertyMap.entrySet()) {
+            if (isLog) {
                 KeywordLogger.getInstance().logInfo(
                         MessageFormat.format(StringConstants.KW_LOG_WEB_UI_PROPERTY_SETTING, property.getKey(),
                                 property.getValue()));
-                desireCapabilities.setCapability(property.getKey(), property.getValue());
             }
-            return desireCapabilities;
+            desireCapabilities.setCapability(property.getKey(), property.getValue());
         }
+        return desireCapabilities;
     }
     
     public static DesiredCapabilities getDesireCapabilitiesForFirefox(Map<String, Object> propertyMap) {

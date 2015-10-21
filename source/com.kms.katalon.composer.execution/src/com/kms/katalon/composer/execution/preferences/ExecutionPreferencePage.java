@@ -65,7 +65,7 @@ public class ExecutionPreferencePage extends PreferencePage {
         txtPageLoadTimeout.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
         Group grpAfterExecuting = new Group(fieldEditorParent, SWT.NONE);
-        grpAfterExecuting.setText(StringConstants.PREF_GRP_AFTER_EXECUTING);
+        grpAfterExecuting.setText(StringConstants.PREF_GRP_POST_EXECUTION_OPTIONS);
         GridLayout glGrpAfterExecuting = new GridLayout(1, false);
         glGrpAfterExecuting.marginLeft = 15;
         grpAfterExecuting.setLayout(glGrpAfterExecuting);

@@ -66,7 +66,7 @@ public class NewWebServiceRequestObjectHandler {
 			@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
 		try {
 			
-			if (selectedObjects != null && selectedObjects[0] != null) {
+			if (selectedObjects != null) {
                 ITreeEntity parentTreeEntity = findParentTreeEntity(selectedObjects);
                 if (parentTreeEntity == null) {
                     parentTreeEntity = objectRepositoryTreeRoot;

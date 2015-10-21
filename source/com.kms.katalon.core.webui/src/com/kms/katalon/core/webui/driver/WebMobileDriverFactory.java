@@ -1,7 +1,6 @@
 package com.kms.katalon.core.webui.driver;
 
 import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.remote.MobileCapabilityType;
 
@@ -16,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.openqa.selenium.Platform;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 class WebMobileDriverFactory {
@@ -83,7 +81,7 @@ class WebMobileDriverFactory {
 		capabilities.setPlatform(Platform.ANDROID);
 		capabilities.setCapability(MobileCapabilityType.BROWSER_NAME, "Chrome");
 		capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceName);
-		return new AndroidDriver<WebElement>(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
+		return new SwipeableAndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
 	}
 
 	@SuppressWarnings("rawtypes")

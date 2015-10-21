@@ -9,14 +9,14 @@ public class StringConstants extends GlobalStringConstants {
 
 	// DeleteTestObjectHandler
 	public static final String ERROR_TITLE = ERROR;
-	public static final String HAND_ERROR_MSG_UNABLE_TO_DEL_TEST_OBJ = "Unable to delete test object.";
+	public static final String HAND_ERROR_MSG_UNABLE_TO_DEL_TEST_OBJ = "Unable to delete Test Object";
 
 	// NewTestObjectHandler
 	public static final String HAND_NEW_TEST_OBJ = "New Test Object";
-	public static final String HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_OBJ = "Unable to create test object";
+	public static final String HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_OBJ = "Unable to create Test Object";
 
 	// RenameTestObjectHandler
-	public static final String HAND_ERROR_MSG_UNABLE_TO_RENAME_TEST_DATA = "Unable to rename test data.";
+	public static final String HAND_ERROR_MSG_UNABLE_TO_RENAME_TEST_OBJECT = "Unable to rename Test Object";
 
 	// SaveTestObjectHandler
 	public static final String HAND_ERROR_MSG_UNABLE_TO_SAVE_TEST_OBJ = "Unable to save Test Object";
@@ -54,8 +54,8 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String VIEW_LBL_ADD = ADD;
 	public static final String VIEW_LBL_DELETE = DELETE;
 	public static final String VIEW_LBL_HIGHLIGHT = "Highlight";
-	public static final String VIEW_ERROR_MSG_FAILED_TO_LOAD_OBJ_REPOSITORY = "Failed to load Object Repository.";
-	public static final String VIEW_ERROR_MSG_UNABLE_TO_SAVE_TEST_OBJ = "Unable to save test object.";
-	public static final String VIEW_ERROR_REASON_OBJ_EXISTED = "Object ''{0}'' has already existed.";
+	public static final String VIEW_ERROR_MSG_FAILED_TO_LOAD_OBJ_REPOSITORY = "Failed to load Object Repository";
+	public static final String VIEW_ERROR_MSG_UNABLE_TO_SAVE_TEST_OBJ = "Unable to save Test Object";
+	public static final String VIEW_ERROR_REASON_OBJ_EXISTED = "Object ''{0}'' has already existed";
 	public static final String VIEW_ERROR_REASON_OBJ_PROP_EXISTED = "Duplicated test object property name ''{0}''";
 }
