@@ -1120,7 +1120,7 @@ public class TestCasePart implements EventHandler {
                 TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(tltmAddStep.getParent().getShell(),
                         new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(new EntityProvider()));
 
-                dialog.setAllowMultiple(true);
+                dialog.setAllowMultiple(false);
                 dialog.setTitle(StringConstants.EDI_TITLE_TEST_CASE_BROWSER);
                 dialog.setInput(TreeEntityUtil.getChildren(null,
                         FolderController.getInstance().getTestCaseRoot(currentProject)));
