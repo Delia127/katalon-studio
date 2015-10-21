@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="ASCII"?>
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_lZUq4EurEeWj7OhDHfltSQ">
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_uad7QEurEeWj7OhDHfltSQ" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:2">
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_ovh5cFqYEeWwu6VuxUpakQ" elementId="com.kms.katalon.composer.mobile.execution.handledmenuitem.ios" label="iOS" iconURI="platform:/plugin/com.kms.katalon.composer.mobile/icons/apple_16.png" command="_1W2pIEusEeWj7OhDHfltSQ"/>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_uad7QEurEeWj7OhDHfltSQ" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="after:com.kms.katalon.composer.webui.execution.handledmenuitem.remote">
+    <elements xsi:type="menu:MenuSeparator" xmi:id="_tChpYHfIEeWiVci6VZKWGw" elementId="com.kms.katalon.composer.mobile.menuseparator.0"/>
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_zU58sFqYEeWwu6VuxUpakQ" elementId="com.kms.katalon.composer.mobile.execution.handledmenuitem.android" label="Android" iconURI="platform:/plugin/com.kms.katalon.composer.mobile/icons/android_16.png" command="_xoxN0EusEeWj7OhDHfltSQ"/>
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_7SrEgFqYEeWwu6VuxUpakQ" elementId="com.kms.katalon.composer.mobile.execution.handledmenuitem.mixMode" label="Mixed mode" iconURI="platform:/plugin/com.kms.katalon.composer.mobile/icons/mixed_mode.png" command="_5PKxIEvxEeWSR5dl8TkM5g"/>
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_ovh5cFqYEeWwu6VuxUpakQ" elementId="com.kms.katalon.composer.mobile.execution.handledmenuitem.ios" label="iOS" iconURI="platform:/plugin/com.kms.katalon.composer.mobile/icons/apple_16.png" command="_1W2pIEusEeWj7OhDHfltSQ"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_t9GNUEusEeWj7OhDHfltSQ" featurename="commands" parentElementId="com.kms.katalon.composer.application">
-    <elements xsi:type="commands:Command" xmi:id="_1W2pIEusEeWj7OhDHfltSQ" elementId="com.kms.katalon.composer.mobile.execution.command.ios" commandName="iOS"/>
     <elements xsi:type="commands:Command" xmi:id="_xoxN0EusEeWj7OhDHfltSQ" elementId="com.kms.katalon.composer.mobile.execution.command.android" commandName="Android"/>
-    <elements xsi:type="commands:Command" xmi:id="_5PKxIEvxEeWSR5dl8TkM5g" elementId="com.kms.katalon.composer.mobile.execution.command.mixed" commandName="Mixed Mode"/>
+    <elements xsi:type="commands:Command" xmi:id="_1W2pIEusEeWj7OhDHfltSQ" elementId="com.kms.katalon.composer.mobile.execution.command.ios" commandName="iOS"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_89TdIEusEeWj7OhDHfltSQ" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
-    <elements xsi:type="commands:Handler" xmi:id="__lEwoEusEeWj7OhDHfltSQ" elementId="com.kms.katalon.composer.mobile.execution.handler.firefox" contributionURI="bundleclass://com.kms.katalon.composer.mobile/com.kms.katalon.composer.mobile.execution.handler.IosExecutionHandler" command="_1W2pIEusEeWj7OhDHfltSQ"/>
     <elements xsi:type="commands:Handler" xmi:id="_6B_wgEvWEeWj7OhDHfltSQ" elementId="com.kms.katalon.composer.mobile.execution.handler.chrome" contributionURI="bundleclass://com.kms.katalon.composer.mobile/com.kms.katalon.composer.mobile.execution.handler.AndroidExecutionHandler" command="_xoxN0EusEeWj7OhDHfltSQ"/>
-    <elements xsi:type="commands:Handler" xmi:id="_7p35AEvxEeWSR5dl8TkM5g" elementId="com.kms.katalon.composer.mobile.execution.handler.mixed" contributionURI="bundleclass://com.kms.katalon.composer.mobile/com.kms.katalon.composer.mobile.execution.handler.MixedModeExecutionHandler" command="_5PKxIEvxEeWSR5dl8TkM5g"/>
+    <elements xsi:type="commands:Handler" xmi:id="__lEwoEusEeWj7OhDHfltSQ" elementId="com.kms.katalon.composer.mobile.execution.handler.firefox" contributionURI="bundleclass://com.kms.katalon.composer.mobile/com.kms.katalon.composer.mobile.execution.handler.IosExecutionHandler" command="_1W2pIEusEeWj7OhDHfltSQ"/>
   </fragments>
 </fragment:ModelFragments>
