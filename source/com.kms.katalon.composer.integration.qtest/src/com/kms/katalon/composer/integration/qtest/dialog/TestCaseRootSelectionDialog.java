@@ -32,6 +32,7 @@ import com.kms.katalon.composer.integration.qtest.dialog.provider.TestCaseRootSe
 import com.kms.katalon.integration.qtest.QTestIntegrationFolderManager;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
+import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 
 public class TestCaseRootSelectionDialog extends Dialog {
     private Composite container;
@@ -148,8 +149,8 @@ public class TestCaseRootSelectionDialog extends Dialog {
                 @Override
                 public void run() {
                     try {
-                        moduleRoot = QTestIntegrationFolderManager.updateModuleViaAPI(projectDir, qTestProject.getId(),
-                                moduleRoot);
+                        moduleRoot = QTestIntegrationFolderManager.updateModuleViaAPI(new QTestSettingCredential(
+                                projectDir), qTestProject.getId(), moduleRoot);
 
                         treeViewer.setInput(Arrays.asList(moduleRoot));
                         treeViewer.expandAll();
@@ -184,12 +185,11 @@ public class TestCaseRootSelectionDialog extends Dialog {
         super.configureShell(newShell);
         newShell.setText(StringConstants.DIA_TITLE_TEST_CASE_ROOT);
     }
-    
+
     @Override
     protected void okPressed() {
         if (selectedModule.getParentId() <= 0) {
-            MessageDialog.openWarning(null, StringConstants.WARN,
-                            StringConstants.DIA_MSG_USER_CHOOSES_TEST_CASE_ROOT);
+            MessageDialog.openWarning(null, StringConstants.WARN, StringConstants.DIA_MSG_USER_CHOOSES_TEST_CASE_ROOT);
         }
         super.okPressed();
     }

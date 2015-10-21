@@ -13,7 +13,6 @@ import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -53,7 +52,7 @@ import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 
-public class TestCaseRepoPreferencePage extends PreferencePage {
+public class TestCaseRepoPreferencePage extends AbstractQTestIntegrationPage {
 
     @Inject
     private UISynchronize sync;
@@ -64,9 +63,6 @@ public class TestCaseRepoPreferencePage extends PreferencePage {
     private TableViewer tableViewer;
     private List<QTestProject> qTestProjects;
     private List<TestCaseRepo> testCaseRepositories;
-
-    public TestCaseRepoPreferencePage() {
-    }
 
     @Override
     protected Control createContents(Composite parent) {
@@ -124,12 +120,17 @@ public class TestCaseRepoPreferencePage extends PreferencePage {
         btnRemove.setEnabled(false);
 
         addButtonSelectionListeners();
-        initilize();
+        initialize();
 
         return container;
     }
 
-    private void initilize() {
+    @Override
+    protected void initialize() {
+        if (container == null || container.isDisposed()) {
+            return;
+        }
+
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
         IntegratedEntity integratedProjectEntity = projectEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 
@@ -307,7 +308,9 @@ public class TestCaseRepoPreferencePage extends PreferencePage {
             IntegratedEntity folderIntegratedEntity = folderEntity
                     .getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 
-            if (folderIntegratedEntity == null) removeRepoFromTable(repo);
+            if (folderIntegratedEntity == null) {
+                removeRepoFromTable(repo);
+            }
 
             if (confirmRemoveRepo()) {
                 performRemoveTestCaseRepo(folderEntity, repo);
@@ -315,8 +318,8 @@ public class TestCaseRepoPreferencePage extends PreferencePage {
 
         } catch (Exception e) {
             LoggerSingleton.logError(e);
-            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_UNABLE_REMOVE_TEST_CASE_REPO, e.getClass()
-                    .getSimpleName());
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_UNABLE_REMOVE_TEST_CASE_REPO, e
+                    .getClass().getSimpleName());
         }
     }
 
@@ -409,7 +412,8 @@ public class TestCaseRepoPreferencePage extends PreferencePage {
         IntegratedEntity folderNewIntegratedEntity = QTestIntegrationFolderManager
                 .getFolderIntegratedEntityByQTestModule(qTestModule);
 
-        folderEntity = (FolderEntity) updateFileIntegratedEntity(folderEntity, folderNewIntegratedEntity);
+        folderEntity = (FolderEntity) QTestIntegrationUtil.updateFileIntegratedEntity(folderEntity,
+                folderNewIntegratedEntity);
 
         try {
             FolderController.getInstance().saveFolder(folderEntity);
@@ -418,32 +422,11 @@ public class TestCaseRepoPreferencePage extends PreferencePage {
         }
     }
 
-    private IntegratedFileEntity updateFileIntegratedEntity(IntegratedFileEntity entity, IntegratedEntity newIntegrated) {
-        IntegratedEntity oldIntegrated = entity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
-
-        // Otherwise, add the new one to integrated list
-        int index = 0;
-        if (oldIntegrated == null) {
-            index = entity.getIntegratedEntities().size();
-        } else {
-            index = entity.getIntegratedEntities().indexOf(oldIntegrated);
-            entity.getIntegratedEntities().remove(index);
-        }
-
-        if (index >= entity.getIntegratedEntities().size()) {
-            entity.getIntegratedEntities().add(newIntegrated);
-        } else {
-            entity.getIntegratedEntities().add(index, oldIntegrated);
-        }
-
-        return entity;
-    }
-
     private void saveProject(ProjectEntity projectEntity) {
         IntegratedEntity projectNewIntegratedEntity = QTestIntegrationProjectManager
                 .getIntegratedEntityByQTestProjects(qTestProjects);
 
-        ProjectEntity currentProject = (ProjectEntity) updateFileIntegratedEntity(projectEntity,
+        ProjectEntity currentProject = (ProjectEntity) QTestIntegrationUtil.updateFileIntegratedEntity(projectEntity,
                 projectNewIntegratedEntity);
 
         try {
@@ -455,7 +438,7 @@ public class TestCaseRepoPreferencePage extends PreferencePage {
 
     @Override
     protected void performDefaults() {
-        initilize();
+        initialize();
     }
 
 }

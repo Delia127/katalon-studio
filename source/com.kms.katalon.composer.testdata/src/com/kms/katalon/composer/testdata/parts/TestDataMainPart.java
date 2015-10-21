@@ -35,7 +35,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 import org.xml.sax.SAXParseException;
 
-import com.kms.katalon.composer.components.control.ImageButton;
+import com.kms.katalon.composer.components.impl.control.ImageButton;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;

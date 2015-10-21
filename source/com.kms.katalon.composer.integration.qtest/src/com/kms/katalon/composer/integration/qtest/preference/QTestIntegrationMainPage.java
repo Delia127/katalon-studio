@@ -4,7 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -17,19 +23,32 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.composer.integration.qtest.constant.EventConstants;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.GenerateNewTokenDialog;
+import com.kms.katalon.composer.integration.qtest.wizard.SetupWizardDialog;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.integration.IntegratedEntity;
+import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.setting.QTestAttachmentSendingType;
 import com.kms.katalon.integration.qtest.setting.QTestResultSendingType;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
-public class QTestIntegrationPage extends PreferencePage {
+public class QTestIntegrationMainPage extends PreferencePage {
+
+    @Named(IServiceConstants.ACTIVE_SHELL)
+    private Shell shell;
+
+    @Inject
+    private IEventBroker eventBroker;
+
     private Text txtToken;
     private Button chckAutoSubmitTestRun;
     private Button chckEnableIntegration;
@@ -45,8 +64,10 @@ public class QTestIntegrationPage extends PreferencePage {
     private Group grpAttachmentOptions;
     private Group grpResultOptions;
     private Composite compositeOptions;
+    private Link setupLink;
+    private Composite composite;
 
-    public QTestIntegrationPage() {
+    public QTestIntegrationMainPage() {
         projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
     }
 
@@ -56,8 +77,16 @@ public class QTestIntegrationPage extends PreferencePage {
         container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         container.setLayout(new GridLayout(1, false));
 
-        chckEnableIntegration = new Button(container, SWT.CHECK);
+        composite = new Composite(container, SWT.NONE);
+        composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        composite.setLayout(new GridLayout(2, false));
+
+        chckEnableIntegration = new Button(composite, SWT.CHECK);
         chckEnableIntegration.setText(StringConstants.DIA_TITLE_ENABLE_INTEGRATION);
+
+        setupLink = new Link(composite, SWT.NONE);
+        setupLink.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
+        setupLink.setText(StringConstants.DIA_INFO_QUICK_SETUP);
 
         mainComposite = new Composite(container, SWT.NONE);
         mainComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -72,10 +101,10 @@ public class QTestIntegrationPage extends PreferencePage {
         grpAuthentication.setText(StringConstants.CM_AUTHENTICATION);
 
         Label lblToken = new Label(grpAuthentication, SWT.NONE);
-        GridData gd_lblToken = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
-        gd_lblToken.widthHint = 100;
-        gd_lblToken.verticalIndent = 5;
-        lblToken.setLayoutData(gd_lblToken);
+        GridData gdLblToken = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
+        gdLblToken.widthHint = 100;
+        gdLblToken.verticalIndent = 5;
+        lblToken.setLayoutData(gdLblToken);
         lblToken.setText(StringConstants.CM_TOKEN);
 
         txtToken = new Text(grpAuthentication, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI);
@@ -102,11 +131,11 @@ public class QTestIntegrationPage extends PreferencePage {
         chckAutoSubmitTestRun.setText(StringConstants.DIA_TITLE_AUTO_SUBMIT_TEST_RESULT);
 
         compositeOptions = new Composite(mainComposite, SWT.NONE);
-        GridData gd_compositeOptions = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
-        gd_compositeOptions.verticalIndent = -5;
-        compositeOptions.setLayoutData(gd_compositeOptions);
+        GridData gdCompositeOptions = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
+        gdCompositeOptions.verticalIndent = -5;
+        compositeOptions.setLayoutData(gdCompositeOptions);
         GridLayout glComposite = new GridLayout(1, false);
-        glComposite.marginLeft = 5;
+        glComposite.marginLeft = 25;
         glComposite.marginWidth = 0;
         glComposite.marginHeight = 0;
         compositeOptions.setLayout(glComposite);
@@ -138,13 +167,12 @@ public class QTestIntegrationPage extends PreferencePage {
         }
 
         addToolItemListeners();
-        initilize();
+        initialize();
 
         return container;
     }
 
     private void addToolItemListeners() {
-
         btnOpenGenerateTokenDialog.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
                 try {
@@ -166,6 +194,21 @@ public class QTestIntegrationPage extends PreferencePage {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 enableMainComposite();
+
+                if (!chckEnableIntegration.getSelection()) {
+                    return;
+                }
+                IntegratedEntity qTestProjectIntegratedEntity = ProjectController.getInstance().getCurrentProject()
+                        .getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+                if (QTestSettingStore.isTheFirstTime(projectDir) && (qTestProjectIntegratedEntity == null)) {
+                    QTestSettingStore.usedSetupWizard(projectDir);
+
+                    if (!MessageDialog.openQuestion(null, StringConstants.CM_QUESTION,
+                            StringConstants.DIA_TITLE_ASK_USE_SETUP)) {
+                        return;
+                    }
+                    performWizardSetup();
+                }
             }
         });
 
@@ -185,6 +228,22 @@ public class QTestIntegrationPage extends PreferencePage {
                 enableAttachmentsGroup();
             }
         });
+
+        setupLink.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                performWizardSetup();
+            }
+        });
+    }
+
+    private void performWizardSetup() {
+        SetupWizardDialog wizard = new SetupWizardDialog(getShell());
+        if (wizard.open() == Dialog.OK) {
+            eventBroker.post(EventConstants.SETUP_FINISHED, null);
+            initialize();
+        }
     }
 
     private void enableAttachmentsGroup() {
@@ -206,7 +265,7 @@ public class QTestIntegrationPage extends PreferencePage {
         enableAttachmentsGroup();
     }
 
-    private void initilize() {
+    private void initialize() {
         String token = QTestSettingStore.getToken(projectDir);
         boolean autoSubmitResult = QTestSettingStore.isAutoSubmitResultActive(projectDir);
         boolean isIntegrationActive = QTestSettingStore.isIntegrationActive(projectDir);
@@ -301,6 +360,6 @@ public class QTestIntegrationPage extends PreferencePage {
 
     @Override
     protected void performDefaults() {
-        initilize();
+        initialize();
     }
 }

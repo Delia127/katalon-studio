@@ -30,6 +30,7 @@ import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
 import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
+import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class UploadTestCaseJob extends UploadJob {
@@ -87,7 +88,7 @@ public class UploadTestCaseJob extends UploadJob {
             // folder is root of test case
             // get moduleRoot from qTest and all its children for user can
             // select
-            QTestModule moduleRoot = QTestIntegrationFolderManager.getModuleRoot(projectDir, qTestProject.getId());
+            QTestModule moduleRoot = QTestIntegrationFolderManager.getModuleRoot(new QTestSettingCredential(projectDir), qTestProject.getId());
             QTestIntegrationFolderManager.updateModule(projectDir, qTestProject.getId(), moduleRoot, true);
 
             performTestCaseRootSelection(moduleRoot);

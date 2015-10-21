@@ -51,8 +51,8 @@ public class TreeEntitySelectionDialog extends ElementTreeSelectionDialog {
 	}
 
 	@Override
-	protected TreeViewer createTreeViewer(Composite parent) {
-		parent.setLayoutData(new GridData(GridData.FILL_BOTH));
+	public TreeViewer createTreeViewer(Composite parent) {
+//		parent.setLayoutData(new GridData(GridData.FILL_BOTH));
 		parent.setLayout(new GridLayout(1, false));
 
 		Composite searchComposite = new Composite(parent, SWT.BORDER);

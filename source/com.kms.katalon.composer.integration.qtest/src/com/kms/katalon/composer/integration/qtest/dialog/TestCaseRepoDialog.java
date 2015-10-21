@@ -43,6 +43,7 @@ import com.kms.katalon.integration.qtest.QTestIntegrationFolderManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationProjectManager;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
+import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class TestCaseRepoDialog extends Dialog {
@@ -244,7 +245,8 @@ public class TestCaseRepoDialog extends Dialog {
             updateProjectComboboxItems();
         } catch (Exception e) {
             LoggerSingleton.logError(e);
-            MultiStatusErrorDialog.showErrorDialog(e,  StringConstants.DIA_MSG_UNABLE_TO_UPDATE_PROJECT, e.getClass().getSimpleName());
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_UNABLE_TO_UPDATE_PROJECT, e.getClass()
+                    .getSimpleName());
         }
     }
 
@@ -267,7 +269,8 @@ public class TestCaseRepoDialog extends Dialog {
     private void findQTestModule() {
         try {
             String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
-            QTestModule moduleRoot = QTestIntegrationFolderManager.getModuleRoot(projectDir, qTestProject.getId());
+            QTestModule moduleRoot = QTestIntegrationFolderManager.getModuleRoot(
+                    new QTestSettingCredential(projectDir), qTestProject.getId());
             // moduleRoot = QTestIntegrationFolderManager.updateModuleViaAPI(projectDir, qTestProject.getId(),
             // moduleRoot);
             TestCaseRootSelectionDialog testCaseRootSelectionDialog = new TestCaseRootSelectionDialog(Display
@@ -280,7 +283,8 @@ public class TestCaseRepoDialog extends Dialog {
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
-            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_UNABLE_TO_UPDATE_MODULE, e.getClass().getSimpleName());
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_UNABLE_TO_UPDATE_MODULE, e.getClass()
+                    .getSimpleName());
         }
     }
 

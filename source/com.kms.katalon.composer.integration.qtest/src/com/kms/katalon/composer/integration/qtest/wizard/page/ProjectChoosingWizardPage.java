@@ -1,0 +1,214 @@
+package com.kms.katalon.composer.integration.qtest.wizard.page;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+
+import com.kms.katalon.composer.components.impl.control.GifCLabel;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.integration.qtest.constant.ImageConstants;
+import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
+import com.kms.katalon.composer.integration.qtest.wizard.AbstractWizardPage;
+import com.kms.katalon.integration.qtest.QTestIntegrationProjectManager;
+import com.kms.katalon.integration.qtest.entity.QTestProject;
+import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
+import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
+
+public class ProjectChoosingWizardPage extends AbstractWizardPage {
+
+    // Control
+    private Group grpQtestProjects;
+
+    // Field
+    private List<QTestProject> qTestProjects;
+    private String fServerUrl;
+    private String fToken;
+    private QTestProject selectedQTestProject;
+
+    private Composite connectingComposite;
+
+    private InputStream inputStream;
+
+    private GifCLabel connectingLabel;
+
+    public ProjectChoosingWizardPage() {
+        fServerUrl = "";
+        fToken = "";
+    }
+
+    @Override
+    public String getTitle() {
+        return StringConstants.WZ_P_PROJECT_TITLE;
+    }
+
+    @Override
+    public boolean canFlipToNextPage() {
+        return selectedQTestProject != null;
+    }
+
+    /**
+     * @wbp.parser.entryPoint
+     */
+    @Override
+    public void createStepArea(Composite parent) {
+        Composite composite = new Composite(parent, SWT.NONE);
+        composite.setLayout(new GridLayout(1, false));
+
+        Label lblHeader = new Label(composite, SWT.NONE);
+        GridData gd_lblHeader = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        gd_lblHeader.horizontalIndent = 5;
+        lblHeader.setLayoutData(gd_lblHeader);
+        lblHeader.setText(StringConstants.WZ_P_PROJECT_INFO);
+
+        connectingComposite = new Composite(composite, SWT.NONE);
+        GridLayout gl_connectingComposite = new GridLayout(2, false);
+        gl_connectingComposite.marginWidth = 0;
+        connectingComposite.setLayout(gl_connectingComposite);
+        connectingComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+
+        connectingLabel = new GifCLabel(connectingComposite, SWT.NONE);
+        connectingLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+
+        Label lblConnectingStatus = new Label(connectingComposite, SWT.NONE);
+        lblConnectingStatus.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        lblConnectingStatus.setText(StringConstants.CM_CONNECTING);
+
+        grpQtestProjects = new Group(composite, SWT.NONE);
+        grpQtestProjects.setText(StringConstants.WZ_P_PROJECT_LIST);
+        grpQtestProjects.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        grpQtestProjects.setLayout(new GridLayout(1, false));
+    }
+
+    private void updateProjectRadioButtons() {
+        for (QTestProject qTestProject : qTestProjects) {
+            Button radioButton = new Button(grpQtestProjects, SWT.RADIO);
+            radioButton.setText(qTestProject.getName());
+            radioButton.setData(qTestProject);
+
+            if (qTestProject.equals(selectedQTestProject)) {
+                radioButton.setSelection(true);
+            }
+
+            radioButton.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    if (e.getSource() != null && (e.getSource() instanceof Button)) {
+                        updateSelectedProject((Button) e.getSource());
+                    }
+                }
+            });
+        }
+
+        grpQtestProjects.getParent().layout(true);
+    }
+
+    private void updateSelectedProject(Button button) {
+        selectedQTestProject = (QTestProject) button.getData();
+        firePageChanged();
+    }
+
+    private void setConnectingCompositeVisible(boolean isConnectingCompositeVisible) {
+        if (isConnectingCompositeVisible) {
+            try {
+                inputStream = ImageConstants.URL_16_LOADING.openStream();
+                connectingLabel.setGifImage(inputStream);
+                connectingComposite.layout(true, true);
+            } catch (IOException ex) {
+            } finally {
+                if (inputStream != null) {
+                    closeQuietly(inputStream);
+                    inputStream = null;
+                }
+            }
+        } else {
+            if (inputStream != null) {
+                closeQuietly(inputStream);
+                inputStream = null;
+            }
+        }
+        connectingComposite.setVisible(isConnectingCompositeVisible);
+        ((GridData) connectingComposite.getLayoutData()).exclude = !isConnectingCompositeVisible;
+        connectingComposite.getParent().layout(true, true);
+    }
+
+    @Override
+    public void registerControlModifyListeners() {
+    }
+
+    @Override
+    public Map<String, Object> storeControlStates() {
+        Map<String, Object> sharedData = new HashMap<String, Object>();
+        sharedData.put("qTestProjects", qTestProjects);
+        sharedData.put("qTestProject", selectedQTestProject);
+        return sharedData;
+    }
+
+    @Override
+    public void setInput(final Map<String, Object> sharedData) {
+        final String token = (String) sharedData.get(QTestSettingStore.TOKEN_PROPERTY);
+        final String serverUrl = (String) sharedData.get(QTestSettingStore.SERVER_URL_PROPERTY);
+        setConnectingCompositeVisible(true);
+
+        Job job = new Job("") {
+            @Override
+            protected IStatus run(IProgressMonitor monitor) {
+                try {
+                    // If the token or server url is different than the current one, update new qTest Project from
+                    // qTest.
+                    if (!token.equals(fToken) || !serverUrl.equals(fServerUrl)) {
+                        fServerUrl = serverUrl;
+                        fToken = token;
+
+                        try {
+                            qTestProjects = QTestIntegrationProjectManager.getAllProject(token, serverUrl);
+                        } catch (QTestUnauthorizedException e) {
+                            UISynchronizeService.getInstance().getSync().syncExec(new Runnable() {
+                                @Override
+                                public void run() {
+                                    MessageDialog.openWarning(null, StringConstants.WARN,
+                                           StringConstants.WZ_P_PROJECT_MSG_GET_PROJECTS_FAILED);
+                                }
+                            });
+                        }
+                    }
+                    UISynchronizeService.getInstance().getSync().syncExec(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateProjectRadioButtons();
+                        }
+                    });
+                    return Status.OK_STATUS;
+                } finally {
+                    UISynchronizeService.getInstance().getSync().syncExec(new Runnable() {
+                        @Override
+                        public void run() {
+                            setConnectingCompositeVisible(false);
+                        }
+                    });
+                    monitor.done();
+                }
+            }
+        };
+        job.setUser(false);
+        job.schedule();
+
+    }
+
+}

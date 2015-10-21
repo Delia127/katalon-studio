@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.execution.composite;
+package com.kms.katalon.composer.components.impl.control;
 
 import org.eclipse.swt.widgets.Composite;
 

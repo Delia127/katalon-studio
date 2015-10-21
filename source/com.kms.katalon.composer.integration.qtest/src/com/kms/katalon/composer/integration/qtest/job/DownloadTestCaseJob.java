@@ -46,6 +46,7 @@ import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.entity.QTestStep;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
+import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 
 public class DownloadTestCaseJob extends UploadJob {
 
@@ -91,7 +92,8 @@ public class DownloadTestCaseJob extends UploadJob {
             } else {
                 // users have not specified root folder of test case on qTest,
                 // let them choose one.
-                QTestModule moduleRoot = QTestIntegrationFolderManager.getModuleRoot(projectDir, qTestProject.getId());
+                QTestModule moduleRoot = QTestIntegrationFolderManager.getModuleRoot(new QTestSettingCredential(
+                        projectDir), qTestProject.getId());
                 QTestIntegrationFolderManager.updateModule(projectDir, qTestProject.getId(), moduleRoot, true);
 
                 performTestCaseRootSelection(moduleRoot);

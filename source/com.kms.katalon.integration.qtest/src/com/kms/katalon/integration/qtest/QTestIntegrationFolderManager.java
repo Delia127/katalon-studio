@@ -22,6 +22,7 @@ import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.integration.IntegratedType;
 import com.kms.katalon.integration.qtest.constants.QTestMessageConstants;
 import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
+import com.kms.katalon.integration.qtest.credential.IQTestCredential;
 import com.kms.katalon.integration.qtest.entity.QTestEntity;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
@@ -187,20 +188,19 @@ public class QTestIntegrationFolderManager {
      * Return a {@link QTestModule} that represents the root of module of the {@link QTestProject} that has id equal
      * with the given <code>projectId</code>
      * 
-     * @param projectDir
+     * @param IQTestCredential
      * @param projectId
      * @return
      * @throws QTestException
      *             thrown if system cannot send request or the response message is not a JSON string
      * @throws IOException
      */
-    public static QTestModule getModuleRoot(String projectDir, long projectId) throws QTestException, IOException {
+    public static QTestModule getModuleRoot(IQTestCredential credential, long projectId) throws QTestException, IOException {
         String url = "/p/" + Long.toString(projectId) + "/portal/project/testdesign/rootmodulelazy/get";
 
-        String serverUrl = QTestSettingStore.getServerUrl(projectDir);
-
-        String username = QTestSettingStore.getUsername(projectDir);
-        String password = QTestSettingStore.getPassword(projectDir);
+        String serverUrl = credential.getServerUrl();
+        String username = credential.getUsername();
+        String password = credential.getPassword();
 
         String response = QTestHttpRequestHelper.sendGetRequest(serverUrl, url, username, password);
 
@@ -226,10 +226,10 @@ public class QTestIntegrationFolderManager {
      * @throws QTestException
      *             thrown if system cannot send request or the response message is not a JSON string
      */
-    public static QTestModule updateModuleViaAPI(String projectDir, long projectId, QTestModule qTestParentModule)
+    public static QTestModule updateModuleViaAPI(IQTestCredential credential, long projectId, QTestModule qTestParentModule)
             throws QTestException {
-        String token = QTestSettingStore.getToken(projectDir);
-        String serverUrl = QTestSettingStore.getServerUrl(projectDir);
+        String token = credential.getToken();
+        String serverUrl = credential.getServerUrl();
 
         if (!QTestIntegrationAuthenticationManager.validateToken(token)) {
             throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);

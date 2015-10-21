@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.integration.qtest.QTestIntegrationAuthenticationManager;
+import com.kms.katalon.integration.qtest.credential.IQTestCredential;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 import com.kms.katalon.controller.ProjectController;
 
@@ -97,13 +98,33 @@ public class GenerateNewTokenDialog extends Dialog {
         }
 
         try {
-            String newServerUrl = txtServerUrl.getText();
-            String newUsername = txtUsername.getText();
-            String newPassword = txtPassword.getText();
+            final String newServerUrl = txtServerUrl.getText();
+            final String newUsername = txtUsername.getText();
+            final String newPassword = txtPassword.getText();
 
             token = QTestIntegrationAuthenticationManager.getToken(newServerUrl, newUsername, newPassword);
-            QTestSettingStore.saveUserProfile(newServerUrl, newUsername, newPassword, ProjectController.getInstance()
-                    .getCurrentProject().getFolderLocation());
+            QTestSettingStore.saveUserProfile(new IQTestCredential() {
+
+                @Override
+                public String getUsername() {
+                    return newUsername;
+                }
+
+                @Override
+                public String getToken() {
+                    return token;
+                }
+
+                @Override
+                public String getServerUrl() {
+                    return newServerUrl;
+                }
+
+                @Override
+                public String getPassword() {
+                    return newPassword;
+                }
+            }, ProjectController.getInstance().getCurrentProject().getFolderLocation());
             return true;
         } catch (MalformedURLException | UnknownHostException e) {
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_UNABLE_TO_GET_TOKEN,

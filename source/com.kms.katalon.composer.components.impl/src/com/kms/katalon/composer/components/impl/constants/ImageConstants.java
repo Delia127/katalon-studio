@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.components.impl.constants;
 
+import java.net.URL;
+
 import org.eclipse.swt.graphics.Image;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -51,4 +53,5 @@ public class ImageConstants {
     public static final Image IMG_16_UNCHECKED = ImageUtil.loadImage(currentBundle, "/icons/checkbox_unchecked_16.png");
     public static final Image IMG_16_NOTIFICATION_HEADER = ImageUtil.loadImage(currentBundle,
             "/icons/notification_16.gif");
+    public static final URL URL_16_LOADING = currentBundle.getEntry("/icons/loading_16.gif");
 }

@@ -387,4 +387,38 @@ public class QTestIntegrationUtil {
 
         return unuploadedQTestSuites;
     }
+
+    /**
+     * Returns new {@link TestCaseRepo} that created by the given params.
+     * @param qTestModule
+     * @param qTestProject
+     * @param folderEntity
+     * @return new instance of {@link TestCaseRepo}
+     */
+    public static TestCaseRepo getNewTestCaseRepo(QTestModule qTestModule, QTestProject qTestProject,
+            FolderEntity folderEntity) {
+        TestCaseRepo testCaseRepo = new TestCaseRepo();
+        testCaseRepo.setQTestModule(qTestModule);
+        testCaseRepo.setQTestProject(qTestProject);
+        
+        String folderId = FolderController.getInstance().getIdForDisplay(folderEntity);
+        testCaseRepo.setFolderId(folderId);
+        return testCaseRepo;
+    }
+    
+    /**
+     * Returns new {@link TestSuiteRepo} that created by the given params.
+     * @param qTestProject
+     * @param folderEntity
+     * @return new instance of {@link TestSuiteRepo}
+     */
+    public static TestSuiteRepo getNewTestSuiteRepo(QTestProject qTestProject,
+            FolderEntity folderEntity) {
+        TestSuiteRepo testSuiteRepo = new TestSuiteRepo();
+        testSuiteRepo.setQTestProject(qTestProject);
+        
+        String folderId = FolderController.getInstance().getIdForDisplay(folderEntity);
+        testSuiteRepo.setFolderId(folderId);
+        return testSuiteRepo;
+    }
 }

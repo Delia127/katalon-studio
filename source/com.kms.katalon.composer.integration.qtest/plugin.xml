@@ -12,7 +12,7 @@
          point="com.kms.katalon.preferences.ProjectSettingPages">
       <page
             category="com.kms.katalon.composer.preferences.integration"
-            class="com.kms.katalon.composer.integration.qtest.preference.QTestIntegrationPage"
+            class="com.kms.katalon.composer.integration.qtest.preference.QTestIntegrationMainPage"
             id="com.kms.katalon.composer.intergration.qtest.setting"
             name="qTest">
       </page>

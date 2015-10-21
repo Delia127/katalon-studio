@@ -9,7 +9,6 @@ import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -41,7 +40,7 @@ import com.kms.katalon.integration.qtest.QTestIntegrationProjectManager;
 import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 
-public class TestSuiteRepoPreferencePage extends PreferencePage {
+public class TestSuiteRepoPreferencePage extends AbstractQTestIntegrationPage {
 
     private Composite container;
     private TableViewer tableViewer;
@@ -50,9 +49,6 @@ public class TestSuiteRepoPreferencePage extends PreferencePage {
     private Button btnRemove;
     private List<QTestProject> qTestProjects;
     private List<TestSuiteRepo> testSuiteRepositories;
-
-    public TestSuiteRepoPreferencePage() {
-    }
 
     @Override
     protected Control createContents(Composite parent) {
@@ -105,12 +101,17 @@ public class TestSuiteRepoPreferencePage extends PreferencePage {
         btnRemove.setEnabled(false);
 
         addButtonSelectionListeners();
-        initilize();
+        initialize();
 
         return container;
     }
 
-    private void initilize() {
+    @Override
+    protected void initialize() {
+        if (container == null || container.isDisposed()) {
+            return;
+        }
+        
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
         IntegratedEntity integratedProjectEntity = projectEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
 
@@ -176,11 +177,10 @@ public class TestSuiteRepoPreferencePage extends PreferencePage {
 
     @Focus
     public void focus() {
-        initilize();
+        initialize();
     }
 
     protected void removeTestSuiteRepo() {
-        // TODO Auto-generated method stub
         IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
         if (selection == null || selection.isEmpty()) return;
 
@@ -299,6 +299,6 @@ public class TestSuiteRepoPreferencePage extends PreferencePage {
 
     @Override
     protected void performDefaults() {
-        initilize();
+        initialize();
     }
 }
