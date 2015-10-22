@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.model.ModuleDownloadedPreviewTreeNode;
 import com.kms.katalon.composer.integration.qtest.dialog.model.TestCaseDownloadedPreviewTreeNode;
@@ -35,7 +36,6 @@ import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationFolderManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestCaseManager;
-import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
 
@@ -207,11 +207,17 @@ public class TestCaseTreeDownloadedPreviewDialog extends Dialog {
             }
         }
 
-        if (moduleTree.getChildModuleTrees().size() > 0) { return true; }
+        if (moduleTree.getChildModuleTrees().size() > 0) {
+            return true;
+        }
 
-        if (moduleTree.getFolderEntity() == null) { return true; }
+        if (moduleTree.getFolderEntity() == null) {
+            return true;
+        }
 
-        if (moduleTree.getChildTestCaseTrees().size() > 0) { return true; }
+        if (moduleTree.getChildTestCaseTrees().size() > 0) {
+            return true;
+        }
 
         return false;
     }
@@ -220,9 +226,12 @@ public class TestCaseTreeDownloadedPreviewDialog extends Dialog {
         Map<Long, FolderModulePair> qTestModuleMap = new LinkedHashMap<Long, FolderModulePair>();
 
         for (FolderEntity folderEntity : folderEntities) {
-            IntegratedEntity folderIntegratedEntity = folderEntity
-                    .getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
-            if (folderIntegratedEntity == null) continue;
+            IntegratedEntity folderIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(folderEntity);
+            
+            if (folderIntegratedEntity == null) {
+                continue;
+            }
+            
             QTestModule qTestModule = QTestIntegrationFolderManager
                     .getQTestModuleByIntegratedEntity(folderIntegratedEntity);
 
@@ -239,7 +248,7 @@ public class TestCaseTreeDownloadedPreviewDialog extends Dialog {
         List<QTestTestCase> qTestCases = new ArrayList<QTestTestCase>();
 
         for (TestCaseEntity testCase : testCaseEntities) {
-            IntegratedEntity testCaseIntegratedEntity = testCase.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+            IntegratedEntity testCaseIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(testCase);
             QTestTestCase qTestCase = QTestIntegrationTestCaseManager
                     .getQTestTestCaseByIntegratedEntity(testCaseIntegratedEntity);
 

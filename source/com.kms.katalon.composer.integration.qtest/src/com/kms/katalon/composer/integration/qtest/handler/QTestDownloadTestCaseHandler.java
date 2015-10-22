@@ -11,17 +11,15 @@ import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.job.DownloadTestCaseJob;
-import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
 
-public class QTestDownloadTestCaseHandler {
+public class QTestDownloadTestCaseHandler extends AbstractQTestHandler {
     @Inject
     private ESelectionService selectionService;
 
@@ -36,20 +34,17 @@ public class QTestDownloadTestCaseHandler {
     public boolean canExecute() {
         try {
             ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-            if (!QTestIntegrationUtil.isIntegrationEnable(projectEntity)) { return false; }
             
-            Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-            if (selectedObjects == null || selectedObjects.length != 1) {
+            Object selectedEntity = getFirstSelectedObject(selectionService);
+            if (selectedEntity == null) {
                 return false;
             }
-            if (selectedObjects[0] instanceof ITreeEntity) {
-                Object selectedEntity = ((ITreeEntity) selectedObjects[0]).getObject();
-                if (selectedEntity instanceof FolderEntity) {
-                    FolderEntity folder = (FolderEntity) selectedEntity;
+            
+            if (selectedEntity instanceof FolderEntity) {
+                FolderEntity folder = (FolderEntity) selectedEntity;
 
-                    if (folder.getFolderType() == FolderType.TESTCASE) {
-                        return QTestIntegrationUtil.canBeDownloadedOrDisintegrated(folder, projectEntity);
-                    }
+                if (folder.getFolderType() == FolderType.TESTCASE) {
+                    return QTestIntegrationUtil.canBeDownloadedOrDisintegrated(folder, projectEntity);
                 }
             }
         } catch (Exception e) {
@@ -61,15 +56,13 @@ public class QTestDownloadTestCaseHandler {
     @Execute
     public void execute() {
         try {
-            Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-            ITreeEntity treeEntity = (ITreeEntity) selectedObjects[0];
-            Object selectedObject = treeEntity.getObject();
+            Object selectedObject = getFirstSelectedObject(selectionService);
             if (selectedObject instanceof FolderEntity) {
                 FolderEntity folder = (FolderEntity) selectedObject;
                 if (folder.getFolderType() == FolderType.TESTCASE) {
                     List<IntegratedFileEntity> testCaseEntities = new ArrayList<IntegratedFileEntity>();
                     testCaseEntities.add(folder);
-                    DownloadTestCaseJob job = new DownloadTestCaseJob("Download test case", sync);
+                    DownloadTestCaseJob job = new DownloadTestCaseJob(sync);
                     job.setFileEntities(testCaseEntities);
                     job.doTask();
                 }

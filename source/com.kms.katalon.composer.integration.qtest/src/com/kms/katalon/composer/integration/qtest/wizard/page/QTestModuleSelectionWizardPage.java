@@ -215,7 +215,7 @@ public class QTestModuleSelectionWizardPage extends AbstractWizardPage {
     @Override
     public Map<String, Object> storeControlStates() {
         Map<String, Object> sharedData = new HashMap<String, Object>();
-        sharedData.put("qTestModule", moduleRoot);
+        sharedData.put("qTestModule", selectedModule);
         return sharedData;
     }
 

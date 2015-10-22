@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.integration.qtest.job;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -10,13 +11,13 @@ import org.eclipse.core.runtime.Status;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
+import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationReportManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager;
-import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestLog;
 import com.kms.katalon.integration.qtest.entity.QTestLogUploadedPreview;
 import com.kms.katalon.integration.qtest.entity.QTestRun;
@@ -32,7 +33,7 @@ public class UploadTestCaseResultJob extends UploadJob {
 
     public UploadTestCaseResultJob(ReportEntity reportEntity, TestSuiteEntity testSuiteEntity,
             List<QTestLogUploadedPreview> uploadedPreviewLst, String projectDir) {
-        super("Test Case's Result Uploading");
+        super(StringConstants.JOB_TITLE_UPLOAD_TEST_RESULT);
         setUploadedPreviewLst(uploadedPreviewLst);
         setProjectDir(projectDir);
         setReportEntity(reportEntity);
@@ -41,15 +42,15 @@ public class UploadTestCaseResultJob extends UploadJob {
 
     @Override
     protected IStatus run(IProgressMonitor monitor) {
-        monitor.beginTask("Uploading Test Case's Result...", uploadedPreviewLst.size());
+        monitor.beginTask(StringConstants.JOB_TASK_UPLOAD_TEST_RESULT, uploadedPreviewLst.size());
         try {
             for (QTestLogUploadedPreview uploadedItem : uploadedPreviewLst) {
                 if (monitor.isCanceled()) break;
 
-                monitor.subTask("Uploading result of test case: "
-                        + getWrappedName(uploadedItem.getTestCaseLogRecord().getName()) + "...");
-                IntegratedEntity testSuiteIntegratedEntity = testSuiteEntity
-                        .getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+                monitor.subTask(MessageFormat.format(StringConstants.JOB_SUB_TASK_UPLOAD_TEST_RESULT,
+                        getWrappedName(uploadedItem.getTestCaseLogRecord().getName())));
+                IntegratedEntity testSuiteIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(testSuiteEntity);
+
                 List<QTestSuite> qTestSuiteCollection = QTestIntegrationTestSuiteManager
                         .getQTestSuiteListByIntegratedEntity(testSuiteIntegratedEntity);
 
@@ -63,7 +64,7 @@ public class UploadTestCaseResultJob extends UploadJob {
                         QTestIntegrationUtil.addNewTestRunToTestSuite(testSuiteEntity, testSuiteIntegratedEntity,
                                 uploadedItem.getQTestSuite(), qTestRun, qTestSuiteCollection);
 
-                        //update test run for the uploaded item
+                        // update test run for the uploaded item
                         uploadedItem.setQTestRun(qTestRun);
                     } catch (Exception e) {
                         LoggerSingleton.logError(e);

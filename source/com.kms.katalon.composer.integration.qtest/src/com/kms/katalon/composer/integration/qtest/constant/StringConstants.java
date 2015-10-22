@@ -26,6 +26,9 @@ public class StringConstants extends GlobalStringConstants {
     public static final String CM_CANCEL = "Cancel";
     public static final String CM_CONNECTING = "Connecting...";
     public static final String CM_QUESTION = "Question";
+    public static final String CM_YES = "Yes";
+    public static final String CM_NO = "No";
+    public static final String CM_SETTINGS = "Settings";
     
     /******************************************************************************************************************/
     
@@ -39,7 +42,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String JOB_MSG_TEST_SUITE_INVALID_FORMAT = "qTest integrated information of test suite: {0} is invalid.";
 
     // UploadTestSuiteJob
-    public static final String JOB_TASK_UPLOADING_TEST_SUITE_ENTITY = "Uploading test suite: {0}";
+    public static final String JOB_TASK_UPLOADING_TEST_SUITE_ENTITY = "Uploading test suite: {0}...";
     public static final String JOB_SUB_TASK_UPLOADING_QTEST_SUITE = "Uploading test suite under {0}: {1}";
     public static final String JOB_SUB_TASK_UPDATING_TEST_SUITE_ENTITY = "Updating integration info...";
 
@@ -48,6 +51,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String JOB_SUB_TASK_DISINTEGRATE_TEST_CASE = "Disintegrating {0} ...";
 
     // DownloadTestCaseJob
+    public static final String JOB_TASK_DOWNLOAD_TEST_CASE = "Download test cases";
     public static final String JOB_SUB_TASK_DOWNLOAD_TEST_CASE = "Downloading test cases...";
     public static final String JOB_SUB_TASK_CHECK_SYSTEM = "Checking system...";
     public static final String JOB_SUB_TASK_FETCH_CHILDREN = "Fetching children of: {0}";
@@ -71,6 +75,11 @@ public class StringConstants extends GlobalStringConstants {
             + " with id: {0} has the same name as test case: {1}.\nDo you want to merge them?";
     public static final String DIA_MSG_CONFIRM_MERGE_UPLOADED_TEST_CASE_FOLDER = "System has detected that a test folder"
             + " on qTest with id: {0} has the same name as test case folder: {1}.\nDo you want to merge them?";
+    
+    //UploadTestCaseResultJob
+    public static final String JOB_TITLE_UPLOAD_TEST_RESULT = "Upload Test Case's Result";
+    public static final String JOB_TASK_UPLOAD_TEST_RESULT = "Uploading Test Case's Result...";
+    public static final String JOB_SUB_TASK_UPLOAD_TEST_RESULT = "Uploading result of test case: {0}...";
     
     /******************************************************************************************************************/
     
@@ -134,7 +143,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_TITLE_ENABLE_INTEGRATION = "Enable integration";
     public static final String DIA_TITLE_CHECK_DUPLICATES_TEST_CASE = "Check duplicates before uploading test cases";
     public static final String DIA_TITLE_AUTO_SUBMIT_TEST_RESULT = "Automatically submit test run result";
-    public static final String DIA_TITLE_SEND_RESULT = "Send result";
+    public static final String DIA_TITLE_SEND_RESULT = "Send execution result";
     public static final String DIA_TITLE_SEND_ATTACHMENT = "Attachment included";
     public static final String DIA_TITLE_ASK_USE_SETUP = "For quickly setting, we already provide a setup wizard. Would "
             + "you like to take a tour with us?";
@@ -150,8 +159,10 @@ public class StringConstants extends GlobalStringConstants {
 
     // QTestIntegrationReportTestCaseView
     public static final String VIEW_TITLE_TEST_LOG_ID = "Test Log ID";
-    public static final String VIEW_TITLE_TEST_RUN_ID = "Test Run ID";
+    public static final String VIEW_TITLE_TEST_RUN_ALIAS = "Test Run Alias";
     public static final String VIEW_MSG_UNABLE_UPLOAD_TEST_RESULT = "Unable to upload test case's result.";
+    public static final String DIA_CONFIRM_DISINTEGRATE_TEST_LOGS = "Are you sure you want to disintegrate these test "
+            + "logs with qTest?";
 
     // QTestIntegrationTestCaseView
     public static final String VIEW_TOOLTIP_UPLOAD_TEST_CASE = "Upload this test case to qTest";

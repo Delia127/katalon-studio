@@ -34,7 +34,6 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationFolderManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestCaseManager;
-import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
@@ -132,9 +131,7 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
             public void widgetSelected(SelectionEvent e) {
                 disIntegrateTestCaseWithQTest();
             }
-
         });
-
     }
 
     protected void disIntegrateTestCaseWithQTest() {
@@ -142,7 +139,7 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
             if (MessageDialog.openConfirm(null, StringConstants.CONFIRMATION,
                     StringConstants.VIEW_CONFIRM_DISINTEGRATE_TEST_CASE)) {
                 testCaseEntity.getIntegratedEntities().remove(
-                        testCaseEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME));
+                        QTestIntegrationUtil.getIntegratedEntity(testCaseEntity));
                 reloadView();
                 setDirty(true);
             }
@@ -231,7 +228,7 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
     }
 
     private void reloadView() {
-        IntegratedEntity integratedEntity = testCaseEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+        IntegratedEntity integratedEntity = QTestIntegrationUtil.getIntegratedEntity(testCaseEntity);
 
         qTestTestCase = QTestIntegrationTestCaseManager.getQTestTestCaseByIntegratedEntity(integratedEntity);
 

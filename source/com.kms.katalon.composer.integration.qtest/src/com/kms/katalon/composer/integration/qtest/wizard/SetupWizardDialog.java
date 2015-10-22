@@ -2,6 +2,7 @@ package com.kms.katalon.composer.integration.qtest.wizard;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,8 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
+import com.kms.katalon.composer.integration.qtest.job.DisintegrateTestCaseJob;
+import com.kms.katalon.composer.integration.qtest.model.TestCaseRepo;
 import com.kms.katalon.composer.integration.qtest.wizard.page.AuthenticationWizardPage;
 import com.kms.katalon.composer.integration.qtest.wizard.page.FinishPage;
 import com.kms.katalon.composer.integration.qtest.wizard.page.OptionalSettingWizardPage;
@@ -49,6 +52,7 @@ import com.kms.katalon.composer.integration.qtest.wizard.page.TestSuiteFolderSel
 import com.kms.katalon.composer.integration.qtest.wizard.provider.WizardTableLabelProvider;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.file.IntegratedFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -464,8 +468,44 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
         }
     }
 
+    private void disintegrateAllTestCaseRepos() {
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+
+        IntegratedEntity projectIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(currentProject);
+        if (projectIntegratedEntity == null) {
+            return;
+        }
+        try {
+            List<TestCaseRepo> testCaseRepos = QTestIntegrationUtil.getTestCaseRepositories(currentProject,
+                    QTestIntegrationProjectManager.getQTestProjectsByIntegratedEntity(projectIntegratedEntity));
+
+            List<IntegratedFileEntity> integratedTestCaseFolder = new ArrayList<IntegratedFileEntity>();
+            for (TestCaseRepo testCaseRepo : testCaseRepos) {
+                try {
+                    FolderEntity folderEntity = FolderController.getInstance().getFolderByDisplayId(currentProject,
+                            testCaseRepo.getFolderId());
+                    if (folderEntity != null) {
+                        integratedTestCaseFolder.add(folderEntity);
+                    }
+                } catch (Exception ex) {
+                    LoggerSingleton.logError(ex);
+                }
+            }
+
+            DisintegrateTestCaseJob job = new DisintegrateTestCaseJob();
+            job.setFileEntities(integratedTestCaseFolder);
+            job.doTask();
+            job.join();
+        } catch (InterruptedException ex) {
+
+        }
+    }
+
     private void updateProject() {
         try {
+            // Disintegrate all current test case repo
+            disintegrateAllTestCaseRepos();
+
             QTestProject defaultQTestPrject = (QTestProject) sharedData.get("qTestProject");
             QTestModule selectedModule = (QTestModule) sharedData.get("qTestModule");
             FolderTreeEntity selectedTestCaseFolderTree = (FolderTreeEntity) sharedData.get("testCaseFolder");

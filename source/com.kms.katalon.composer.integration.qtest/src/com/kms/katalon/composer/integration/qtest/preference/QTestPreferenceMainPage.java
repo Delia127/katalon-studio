@@ -30,18 +30,18 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.EventConstants;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.GenerateNewTokenDialog;
 import com.kms.katalon.composer.integration.qtest.wizard.SetupWizardDialog;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.integration.IntegratedEntity;
-import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.setting.QTestAttachmentSendingType;
 import com.kms.katalon.integration.qtest.setting.QTestResultSendingType;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
-public class QTestIntegrationMainPage extends PreferencePage {
+public class QTestPreferenceMainPage extends PreferencePage {
 
     @Named(IServiceConstants.ACTIVE_SHELL)
     private Shell shell;
@@ -67,7 +67,7 @@ public class QTestIntegrationMainPage extends PreferencePage {
     private Link setupLink;
     private Composite composite;
 
-    public QTestIntegrationMainPage() {
+    public QTestPreferenceMainPage() {
         projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
     }
 
@@ -198,8 +198,8 @@ public class QTestIntegrationMainPage extends PreferencePage {
                 if (!chckEnableIntegration.getSelection()) {
                     return;
                 }
-                IntegratedEntity qTestProjectIntegratedEntity = ProjectController.getInstance().getCurrentProject()
-                        .getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+                IntegratedEntity qTestProjectIntegratedEntity = QTestIntegrationUtil
+                        .getIntegratedEntity(ProjectController.getInstance().getCurrentProject());
                 if (QTestSettingStore.isTheFirstTime(projectDir) && (qTestProjectIntegratedEntity == null)) {
                     QTestSettingStore.usedSetupWizard(projectDir);
 

@@ -48,7 +48,6 @@ import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationFolderManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationProjectManager;
-import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 
@@ -132,7 +131,7 @@ public class TestCaseRepoPreferencePage extends AbstractQTestIntegrationPage {
         }
 
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-        IntegratedEntity integratedProjectEntity = projectEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+        IntegratedEntity integratedProjectEntity = QTestIntegrationUtil.getIntegratedEntity(projectEntity);
 
         try {
             if (integratedProjectEntity != null) {
@@ -244,12 +243,15 @@ public class TestCaseRepoPreferencePage extends AbstractQTestIntegrationPage {
                     FolderEntity folderEntity = FolderController.getInstance().getFolderByDisplayId(projectEntity,
                             folderId);
 
-                    if (folderEntity == null) insertNewRepoToTable(index, newRepo);
+                    if (folderEntity == null) {
+                        insertNewRepoToTable(index, newRepo);
+                    }
 
-                    IntegratedEntity folderIntegratedEntity = folderEntity
-                            .getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+                    IntegratedEntity folderIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(folderEntity);
 
-                    if (folderIntegratedEntity == null) insertNewRepoToTable(index, newRepo);
+                    if (folderIntegratedEntity == null) {
+                        insertNewRepoToTable(index, newRepo);
+                    }
 
                     if (confirmRemoveRepo()) {
                         performInsertTestCaseRepor(folderEntity, newRepo, index);
@@ -305,8 +307,7 @@ public class TestCaseRepoPreferencePage extends AbstractQTestIntegrationPage {
                 return;
             }
 
-            IntegratedEntity folderIntegratedEntity = folderEntity
-                    .getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+            IntegratedEntity folderIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(folderEntity);
 
             if (folderIntegratedEntity == null) {
                 removeRepoFromTable(repo);
@@ -368,7 +369,9 @@ public class TestCaseRepoPreferencePage extends AbstractQTestIntegrationPage {
 
         // Sync with the current project
         Set<QTestProject> currentProjects = new LinkedHashSet<QTestProject>();
-        IntegratedEntity projectIntegratedEntity = projectEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+
+        IntegratedEntity projectIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(projectEntity);
+
         if (projectIntegratedEntity != null) {
             currentProjects.addAll(QTestIntegrationProjectManager
                     .getQTestProjectsByIntegratedEntity(projectIntegratedEntity));

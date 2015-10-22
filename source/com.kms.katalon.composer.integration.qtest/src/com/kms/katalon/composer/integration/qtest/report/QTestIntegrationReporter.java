@@ -22,7 +22,6 @@ import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.integration.qtest.QTestIntegrationReportManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestCaseManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager;
-import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestLog;
 import com.kms.katalon.integration.qtest.entity.QTestLogUploadedPreview;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
@@ -44,10 +43,8 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
         String projectDir = projectEntity.getFolderLocation();
         TestCaseEntity testCaseEntity = TestCaseController.getInstance().getTestCaseByDisplayId(testLogEntity.getId());
-        IntegratedEntity testSuiteIntegratedEntity = testSuiteEntity
-                .getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
-        IntegratedEntity testCaseIntegratedEntity = testCaseEntity
-                .getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+        IntegratedEntity testSuiteIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(testSuiteEntity);
+        IntegratedEntity testCaseIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(testCaseEntity);
 
         if (testSuiteIntegratedEntity != null && testCaseIntegratedEntity != null
                 && isSameQTestProject(testCaseEntity, testSuiteEntity, projectEntity)) {
@@ -131,8 +128,7 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
         String projectDir = projectEntity.getFolderLocation();
         if (QTestSettingStore.isIntegrationActive(projectDir) && QTestSettingStore.isAutoSubmitResultActive(projectDir)) {
-            IntegratedEntity projectIntegratedEntity = projectEntity
-                    .getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+            IntegratedEntity projectIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(projectEntity);
             if (projectIntegratedEntity == null) {
                 return;
             }

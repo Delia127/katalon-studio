@@ -37,7 +37,6 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationProjectManager;
-import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 
 public class TestSuiteRepoPreferencePage extends AbstractQTestIntegrationPage {
@@ -113,7 +112,7 @@ public class TestSuiteRepoPreferencePage extends AbstractQTestIntegrationPage {
         }
         
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-        IntegratedEntity integratedProjectEntity = projectEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+        IntegratedEntity integratedProjectEntity = QTestIntegrationUtil.getIntegratedEntity(projectEntity);
 
         try {
             if (integratedProjectEntity != null) {
@@ -257,7 +256,8 @@ public class TestSuiteRepoPreferencePage extends AbstractQTestIntegrationPage {
         
         // Sync with the current project
         Set<QTestProject> currentProjects = new LinkedHashSet<QTestProject>();
-        IntegratedEntity projectIntegratedEntity = projectEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+        IntegratedEntity projectIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(projectEntity);
+        
         if (projectIntegratedEntity != null) {
             currentProjects.addAll(QTestIntegrationProjectManager
                     .getQTestProjectsByIntegratedEntity(projectIntegratedEntity));

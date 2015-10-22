@@ -13,13 +13,17 @@ import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
+import com.kms.katalon.composer.integration.qtest.handler.QTestDisintegrateReportHandler;
 import com.kms.katalon.composer.integration.qtest.handler.QTestDisintegrateTestCaseHandler;
 import com.kms.katalon.composer.integration.qtest.handler.QTestDisintegrateTestSuiteHandler;
 import com.kms.katalon.composer.integration.qtest.handler.QTestDownloadTestCaseHandler;
+import com.kms.katalon.composer.integration.qtest.handler.QTestSettingsHandler;
+import com.kms.katalon.composer.integration.qtest.handler.QTestUploadReportHandler;
 import com.kms.katalon.composer.integration.qtest.handler.QTestUploadTestCaseHandler;
 import com.kms.katalon.composer.integration.qtest.handler.QTestUploadTestSuiteHandler;
 import com.kms.katalon.constants.IdConstants;
@@ -57,6 +61,7 @@ public class QTestContextMenuContribution {
             MDirectMenuItem uploadMenuItem = getUploadMenuItem();
             MDirectMenuItem downloadMenuItem = getDownloadMenuItem();
             MDirectMenuItem disintegrateMenuItem = getDisintegrateMenuItem();
+            MDirectMenuItem manageMenuItem = getManageMenuItem();
 
             if (selectedObject instanceof TestCaseTreeEntity) {
                 // Add Upload menu item for test case
@@ -68,6 +73,7 @@ public class QTestContextMenuContribution {
                 disintegrateMenuItem.setContributionURI(StringConstants.CM_QTEST_COMPOSER_BUNDLE_URI
                         + QTestDisintegrateTestCaseHandler.class.getName());
                 qTestMenu.getChildren().add(disintegrateMenuItem);
+                qTestMenu.getChildren().add(manageMenuItem);
             } else if (selectedObject instanceof TestSuiteTreeEntity) {
                 // Add Upload menu item for test suite
                 uploadMenuItem.setContributionURI(StringConstants.CM_QTEST_COMPOSER_BUNDLE_URI
@@ -78,6 +84,18 @@ public class QTestContextMenuContribution {
                 disintegrateMenuItem.setContributionURI(StringConstants.CM_QTEST_COMPOSER_BUNDLE_URI
                         + QTestDisintegrateTestSuiteHandler.class.getName());
                 qTestMenu.getChildren().add(disintegrateMenuItem);
+                qTestMenu.getChildren().add(manageMenuItem);
+            } else if (selectedObject instanceof ReportTreeEntity) {
+                // Add Upload menu item for test suite
+                uploadMenuItem.setContributionURI(StringConstants.CM_QTEST_COMPOSER_BUNDLE_URI
+                        + QTestUploadReportHandler.class.getName());
+                qTestMenu.getChildren().add(uploadMenuItem);
+
+                // Add Disintegrate menu item for test suite
+                disintegrateMenuItem.setContributionURI(StringConstants.CM_QTEST_COMPOSER_BUNDLE_URI
+                        + QTestDisintegrateReportHandler.class.getName());
+                qTestMenu.getChildren().add(disintegrateMenuItem);
+                qTestMenu.getChildren().add(manageMenuItem);
             } else if (selectedObject instanceof FolderTreeEntity
                     && ((FolderTreeEntity) selectedObject).getObject() instanceof FolderEntity) {
                 FolderEntity folderEntity = (FolderEntity) ((FolderTreeEntity) selectedObject).getObject();
@@ -89,7 +107,7 @@ public class QTestContextMenuContribution {
                 uploadMenuItem.setContributionURI(StringConstants.CM_QTEST_COMPOSER_BUNDLE_URI
                         + QTestUploadTestCaseHandler.class.getName());
                 qTestMenu.getChildren().add(uploadMenuItem);
-                
+
                 // Add Download menu item for test folder
                 downloadMenuItem.setContributionURI(StringConstants.CM_QTEST_COMPOSER_BUNDLE_URI
                         + QTestDownloadTestCaseHandler.class.getName());
@@ -99,6 +117,7 @@ public class QTestContextMenuContribution {
                 disintegrateMenuItem.setContributionURI(StringConstants.CM_QTEST_COMPOSER_BUNDLE_URI
                         + QTestDisintegrateTestCaseHandler.class.getName());
                 qTestMenu.getChildren().add(disintegrateMenuItem);
+                qTestMenu.getChildren().add(manageMenuItem);
             }
 
             if (qTestMenu.getChildren().size() > 0) {
@@ -130,6 +149,15 @@ public class QTestContextMenuContribution {
         dynamicItem.setLabel(StringConstants.CM_DONWLOAD);
         dynamicItem.setContributorURI(CONTRIBUTOR_URI);
 
+        return dynamicItem;
+    }
+
+    private MDirectMenuItem getManageMenuItem() {
+        MDirectMenuItem dynamicItem = modelService.createModelElement(MDirectMenuItem.class);
+        dynamicItem.setLabel(StringConstants.CM_SETTINGS);
+        dynamicItem.setContributorURI(CONTRIBUTOR_URI);
+        dynamicItem.setContributionURI(StringConstants.CM_QTEST_COMPOSER_BUNDLE_URI
+                + QTestSettingsHandler.class.getName());
         return dynamicItem;
     }
 
