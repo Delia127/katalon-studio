@@ -230,7 +230,9 @@ public class QTestIntegrationTestSuiteManager {
             qTestRun.setId(qTestRunJsonObject.getLong(QTestEntity.ID_FIELD));
             qTestRun.setName(qTestRunJsonObject.getString(QTestEntity.NAME_FIELD));
             qTestRun.setQTestCaseId(qTestRunJsonObject.getLong("qTestCaseId"));
-
+            if (qTestRunJsonObject.has(QTestEntity.PID_FIELD)) {
+                qTestRun.setPid(qTestRunJsonObject.getString(QTestEntity.PID_FIELD));
+            }
             qTestRunCollection.add(qTestRun);
         }
 
@@ -358,6 +360,7 @@ public class QTestIntegrationTestSuiteManager {
                 testRun.setId(resultObject.getLong(QTestEntity.ID_FIELD));
                 testRun.setName(testCase.getName());
                 testRun.setQTestCaseId(testCase.getId());
+                testRun.setPid(resultObject.getString(QTestEntity.PID_FIELD));
                 return testRun;
             } else {
                 return null;

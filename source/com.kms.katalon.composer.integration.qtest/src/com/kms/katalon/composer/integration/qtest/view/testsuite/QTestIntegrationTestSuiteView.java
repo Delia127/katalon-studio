@@ -50,7 +50,6 @@ import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager;
-import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
 import com.kms.katalon.integration.qtest.entity.QTestSuiteParent;
 import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
@@ -97,8 +96,7 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
         btnUpload.setText(StringConstants.CM_UPLOAD);
 
         btnDisintegrate = new Button(compositeButton, SWT.FLAT);
-        btnDisintegrate
-                .setToolTipText(StringConstants.VIEW_TOOLTIP_DISINTEGRATE_TEST_SUITE);
+        btnDisintegrate.setToolTipText(StringConstants.VIEW_TOOLTIP_DISINTEGRATE_TEST_SUITE);
         btnDisintegrate.setText(StringConstants.CM_DISINTEGRATE);
 
         btnNavigate = new Button(compositeButton, SWT.FLAT);
@@ -106,13 +104,11 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
         btnNavigate.setText(StringConstants.CM_NAVIGATE);
 
         btnUpdateParent = new Button(compositeButton, SWT.FLAT);
-        btnUpdateParent
-                .setToolTipText(StringConstants.VIEW_TOOLTIP_NEW_TEST_SUITE_PARENT);
+        btnUpdateParent.setToolTipText(StringConstants.VIEW_TOOLTIP_NEW_TEST_SUITE_PARENT);
         btnUpdateParent.setText(StringConstants.VIEW_TITLE_NEW_TEST_SUITE_PARENT);
 
         btnSetDefault = new Button(compositeButton, SWT.FLAT);
-        btnSetDefault
-                .setToolTipText(StringConstants.VIEW_TOOLTIP_SET_DEFAULT_TEST_SUITE);
+        btnSetDefault.setToolTipText(StringConstants.VIEW_TOOLTIP_SET_DEFAULT_TEST_SUITE);
         btnSetDefault.setText(StringConstants.VIEW_TITLE_SET_DEFAULT_TEST_SUITE);
 
         btnRemove = new Button(compositeButton, SWT.FLAT);
@@ -405,8 +401,8 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
                 return true;
             }
         } catch (Exception e) {
-            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.VIEW_MSG_UNABLE_DISINTEGRATE_TEST_SUITE, e.getClass()
-                    .getSimpleName());
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.VIEW_MSG_UNABLE_DISINTEGRATE_TEST_SUITE, e
+                    .getClass().getSimpleName());
         }
         return false;
     }
@@ -471,7 +467,8 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
             reloadView();
             setDirty(true);
         } catch (QTestUnauthorizedException ex) {
-            MultiStatusErrorDialog.showErrorDialog(ex, StringConstants.VIEW_MSG_UNABLE_UPLOAD_TEST_SUITE, "Invalid authentication");
+            MultiStatusErrorDialog.showErrorDialog(ex, StringConstants.VIEW_MSG_UNABLE_UPLOAD_TEST_SUITE,
+                    "Invalid authentication");
         } catch (Exception ex) {
             MessageDialog.openWarning(null, StringConstants.WARN, StringConstants.VIEW_MSG_UNABLE_UPLOAD_TEST_SUITE);
         }
@@ -479,8 +476,7 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
 
     private void initialize() {
         try {
-            IntegratedEntity testSuiteIntegratedEntity = testSuiteEntity
-                    .getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+            IntegratedEntity testSuiteIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(testSuiteEntity);
             setQTestSuites(QTestIntegrationTestSuiteManager
                     .getQTestSuiteListByIntegratedEntity(testSuiteIntegratedEntity));
             testSuiteParentTableViewer.setInput(getQTestSuites());
@@ -493,8 +489,7 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
 
     @Override
     public void setDirty(boolean dirty) {
-        IntegratedEntity testSuiteIntegratedEntity = testSuiteEntity
-                .getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+        IntegratedEntity testSuiteIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(testSuiteEntity);
 
         if (testSuiteIntegratedEntity == null) {
             testSuiteIntegratedEntity = QTestIntegrationTestSuiteManager

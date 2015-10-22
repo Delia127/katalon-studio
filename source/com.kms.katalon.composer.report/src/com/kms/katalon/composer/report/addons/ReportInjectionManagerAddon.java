@@ -10,14 +10,13 @@ import com.kms.katalon.composer.report.handlers.EvaluateIntegrationContributionV
 import com.kms.katalon.composer.report.handlers.OpenReportHandler;
 import com.kms.katalon.composer.report.handlers.RefreshReportHandler;
 
-
 public class ReportInjectionManagerAddon {
-	
-	@PostConstruct
-	public void initHandlers(IEclipseContext context) {
-		ContextInjectionFactory.make(DeleteReportHandler.class, context);
-		ContextInjectionFactory.make(OpenReportHandler.class, context);
-		ContextInjectionFactory.make(RefreshReportHandler.class, context);
-		ContextInjectionFactory.make(EvaluateIntegrationContributionViewHandler.class, context);
-	}
+
+    @PostConstruct
+    public void initHandlers(IEclipseContext context) {
+        ContextInjectionFactory.make(DeleteReportHandler.class, context);
+        ContextInjectionFactory.make(OpenReportHandler.class, context);
+        ContextInjectionFactory.make(RefreshReportHandler.class, context);
+        ContextInjectionFactory.make(EvaluateIntegrationContributionViewHandler.class, context);
+    }
 }

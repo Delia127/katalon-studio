@@ -13,6 +13,7 @@ import org.qas.api.internal.util.json.JsonObject;
 import org.qas.api.net.UrlEncoder;
 
 import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
+import com.kms.katalon.integration.qtest.exception.QTestAPIConnectionException;
 import com.kms.katalon.integration.qtest.exception.QTestException;
 import com.kms.katalon.integration.qtest.exception.QTestIOException;
 import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
@@ -76,6 +77,8 @@ public class QTestIntegrationAuthenticationManager {
                 JsonObject jo = new JsonObject(response.toString());
                 throw new QTestIOException(jo.getString("message"));
             }
+        } catch (IllegalArgumentException ex) {
+            throw new QTestAPIConnectionException(ex.getMessage());
         } catch (IOException ex) {
             throw new QTestIOException(ex);
         } catch (JsonException ex) {

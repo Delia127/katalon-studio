@@ -23,7 +23,7 @@ import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
-public class QTestDisintegrateTestCaseHandler {
+public class QTestDisintegrateTestCaseHandler extends AbstractQTestHandler {
 
     @Inject
     private ESelectionService selectionService;
@@ -33,25 +33,20 @@ public class QTestDisintegrateTestCaseHandler {
         try {
             ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
 
-            if (!QTestIntegrationUtil.isIntegrationEnable(projectEntity)) { return false; }
-
-            Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-            if (selectedObjects == null || selectedObjects.length != 1) {
+            Object selectedEntity = getFirstSelectedObject(selectionService);
+            if (selectedEntity == null) {
                 return false;
             }
-            
-            if (selectedObjects[0] instanceof ITreeEntity) {
-                Object selectedEntity = ((ITreeEntity) selectedObjects[0]).getObject();
-                if (selectedEntity instanceof TestCaseEntity) {
-                    return QTestIntegrationUtil.canBeDownloadedOrDisintegrated((IntegratedFileEntity) selectedEntity,
-                            projectEntity);
-                }
 
-                if (selectedEntity instanceof FolderEntity) {
-                    FolderEntity folder = (FolderEntity) selectedEntity;
-                    if (folder.getFolderType() == FolderType.TESTCASE) {
-                        return QTestIntegrationUtil.canBeDownloadedOrDisintegrated(folder, projectEntity);
-                    }
+            if (selectedEntity instanceof TestCaseEntity) {
+                return QTestIntegrationUtil.canBeDownloadedOrDisintegrated((IntegratedFileEntity) selectedEntity,
+                        projectEntity);
+            }
+
+            if (selectedEntity instanceof FolderEntity) {
+                FolderEntity folder = (FolderEntity) selectedEntity;
+                if (folder.getFolderType() == FolderType.TESTCASE) {
+                    return QTestIntegrationUtil.canBeDownloadedOrDisintegrated(folder, projectEntity);
                 }
             }
         } catch (Exception e) {

@@ -27,9 +27,9 @@ import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.TestCaseRootSelectionDialog;
 import com.kms.katalon.composer.integration.qtest.dialog.TestCaseTreeDownloadedPreviewDialog;
+import com.kms.katalon.composer.integration.qtest.dialog.model.DownloadedPreviewTreeNode;
 import com.kms.katalon.composer.integration.qtest.dialog.model.ModuleDownloadedPreviewTreeNode;
 import com.kms.katalon.composer.integration.qtest.dialog.model.TestCaseDownloadedPreviewTreeNode;
-import com.kms.katalon.composer.integration.qtest.dialog.model.DownloadedPreviewTreeNode;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.TestCaseController;
@@ -41,11 +41,11 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.integration.qtest.QTestIntegrationFolderManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestCaseManager;
-import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.entity.QTestStep;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
+import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 
 public class DownloadTestCaseJob extends UploadJob {
 
@@ -56,8 +56,8 @@ public class DownloadTestCaseJob extends UploadJob {
     private boolean isMergeFolderConfirmed;
     private boolean isMergeTestCaseConfimed;
 
-    public DownloadTestCaseJob(String name, UISynchronize sync) {
-        super(name);
+    public DownloadTestCaseJob(UISynchronize sync) {
+        super(StringConstants.JOB_TASK_DOWNLOAD_TEST_CASE);
         setUser(true);
         this.sync = sync;
         qTestSelectedModule = null;
@@ -76,8 +76,7 @@ public class DownloadTestCaseJob extends UploadJob {
         try {
             monitor.subTask(MessageFormat.format(StringConstants.JOB_SUB_TASK_FETCH_CHILDREN, folderEntity.getName()));
 
-            IntegratedEntity folderIntegratedEntity = folderEntity
-                    .getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+            IntegratedEntity folderIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(folderEntity);
             String projectDir = projectEntity.getFolderLocation();
 
             QTestProject qTestProject = QTestIntegrationUtil.getTestCaseRepo(folderEntity, projectEntity)
@@ -91,7 +90,8 @@ public class DownloadTestCaseJob extends UploadJob {
             } else {
                 // users have not specified root folder of test case on qTest,
                 // let them choose one.
-                QTestModule moduleRoot = QTestIntegrationFolderManager.getModuleRoot(projectDir, qTestProject.getId());
+                QTestModule moduleRoot = QTestIntegrationFolderManager.getModuleRoot(new QTestSettingCredential(
+                        projectDir), qTestProject.getId());
                 QTestIntegrationFolderManager.updateModule(projectDir, qTestProject.getId(), moduleRoot, true);
 
                 performTestCaseRootSelection(moduleRoot);
@@ -290,8 +290,9 @@ public class DownloadTestCaseJob extends UploadJob {
                         parentFolder.getId() + File.separator + treeItem.getName());
 
                 if (existingFolder != null) {
-                    IntegratedEntity existingIntegratedFolderEntity = existingFolder
-                            .getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+                    IntegratedEntity existingIntegratedFolderEntity = QTestIntegrationUtil
+                            .getIntegratedEntity(existingFolder);
+
                     if (existingIntegratedFolderEntity == null) {
                         // They are duplicated but can be merged, let users
                         // decide to merge or not
@@ -319,8 +320,8 @@ public class DownloadTestCaseJob extends UploadJob {
                             + TestCaseEntity.getTestCaseFileExtension());
 
             if (existingTestCase != null) {
-                IntegratedEntity existingIntegratedTestCaseEntity = existingTestCase
-                        .getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+                IntegratedEntity existingIntegratedTestCaseEntity = QTestIntegrationUtil
+                        .getIntegratedEntity(existingTestCase);
                 if (existingIntegratedTestCaseEntity == null) {
                     // They are duplicated but can be merged, let users decide
                     // to merge or not

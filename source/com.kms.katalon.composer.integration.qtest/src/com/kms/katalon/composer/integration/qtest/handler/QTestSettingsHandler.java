@@ -15,7 +15,7 @@ import com.kms.katalon.preferences.internal.PreferencesRegistry;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 
-public class QTestMangageHandler {
+public class QTestSettingsHandler {
 
     @CanExecute
     public boolean canExecute() {

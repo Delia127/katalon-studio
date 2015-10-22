@@ -2,15 +2,22 @@ package com.kms.katalon.composer.integration.qtest;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.integration.qtest.model.QTestLogEvaluation;
 import com.kms.katalon.composer.integration.qtest.model.TestCaseRepo;
 import com.kms.katalon.composer.integration.qtest.model.TestSuiteRepo;
+import com.kms.katalon.composer.report.lookup.LogRecordLookup;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
+import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.core.logging.model.TestCaseLogRecord;
+import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -23,6 +30,7 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationFolderManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationProjectManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationReportManager;
+import com.kms.katalon.integration.qtest.QTestIntegrationTestCaseManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager;
 import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestLogUploadedPreview;
@@ -31,6 +39,7 @@ import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.entity.QTestReport;
 import com.kms.katalon.integration.qtest.entity.QTestRun;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
+import com.kms.katalon.integration.qtest.entity.QTestTestCase;
 import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
@@ -40,6 +49,10 @@ public class QTestIntegrationUtil {
         // Disable default constructor
     }
 
+    /**
+     * @param projectEntity
+     * @return true if uses set enable qTest integration.
+     */
     public static boolean isIntegrationEnable(ProjectEntity projectEntity) {
         if (projectEntity == null) {
             return false;
@@ -52,6 +65,16 @@ public class QTestIntegrationUtil {
         } else {
             return true;
         }
+    }
+
+    /**
+     * The qTest {@link IntegratedEntity} of the given <code>fileEntity</code>
+     * 
+     * @param fileEntity
+     * @return
+     */
+    public static IntegratedEntity getIntegratedEntity(IntegratedFileEntity fileEntity) {
+        return fileEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
     }
 
     /**
@@ -70,25 +93,22 @@ public class QTestIntegrationUtil {
                 repo.setFolderId(testCaseFolderId);
 
                 FolderEntity folderEntity = null;
+                QTestModule qTestModule = null;
                 try {
                     folderEntity = FolderController.getInstance().getFolderByDisplayId(projectEntity, testCaseFolderId);
 
-                    QTestModule qTestModule = null;
-
                     if (folderEntity != null) {
-                        IntegratedEntity integratedFolderEntity = folderEntity
-                                .getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+                        IntegratedEntity integratedFolderEntity = getIntegratedEntity(folderEntity);
                         if (integratedFolderEntity != null) {
                             qTestModule = QTestIntegrationFolderManager
                                     .getQTestModuleByIntegratedEntity(integratedFolderEntity);
                         }
                     }
 
-                    if (qTestModule != null) {
-                        repo.setQTestModule(qTestModule);
-                    }
                 } catch (Exception ex) {
-                    repo.setQTestModule(null);
+                    LoggerSingleton.logError(ex);
+                } finally {
+                    repo.setQTestModule(qTestModule);
                 }
                 testCaseRepositories.add(repo);
             }
@@ -131,7 +151,7 @@ public class QTestIntegrationUtil {
             return null;
         }
 
-        IntegratedEntity projectIntegratedEntity = projectEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+        IntegratedEntity projectIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(projectEntity);
 
         if (projectIntegratedEntity == null) {
             return null;
@@ -163,8 +183,11 @@ public class QTestIntegrationUtil {
     public static TestSuiteRepo getTestSuiteRepo(IntegratedFileEntity entity, ProjectEntity projectEntity)
             throws Exception {
         if (entity == null) return null;
-        IntegratedEntity projectIntegratedEntity = projectEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
-        if (projectIntegratedEntity == null) return null;
+        IntegratedEntity projectIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(projectEntity);
+        if (projectIntegratedEntity == null) {
+            return null;
+        }
+
         List<QTestProject> qTestProjects = QTestIntegrationProjectManager
                 .getQTestProjectsByIntegratedEntity(projectIntegratedEntity);
         String entityId = entity.getRelativePathForUI().replace(File.separator,
@@ -203,7 +226,7 @@ public class QTestIntegrationUtil {
      */
     public static boolean canBeDownloadedOrDisintegrated(IntegratedFileEntity entity, ProjectEntity projectEntity)
             throws Exception {
-        boolean isIntegrated = (entity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME) != null);
+        boolean isIntegrated = (QTestIntegrationUtil.getIntegratedEntity(entity) != null);
 
         if (entity instanceof FolderEntity) {
 
@@ -230,6 +253,7 @@ public class QTestIntegrationUtil {
             return false;
 
         } else if (entity instanceof TestCaseEntity) {
+
             return isIntegrated && (getTestCaseRepo(entity, projectEntity) != null);
         } else if (entity instanceof TestSuiteEntity) {
             return isIntegrated && (getTestSuiteRepo(entity, projectEntity) != null);
@@ -247,7 +271,7 @@ public class QTestIntegrationUtil {
      * @throws Exception
      */
     public static boolean canBeUploaded(IntegratedFileEntity entity, ProjectEntity projectEntity) throws Exception {
-        boolean isNotIntegrated = (entity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME) == null);
+        boolean isNotIntegrated = (QTestIntegrationUtil.getIntegratedEntity(entity) == null);
 
         if (entity instanceof FolderEntity) {
             if (((FolderEntity) entity).getFolderType() == FolderType.TESTCASE) {
@@ -269,7 +293,19 @@ public class QTestIntegrationUtil {
 
             return false;
         } else if (entity instanceof TestCaseEntity) {
-            return isNotIntegrated && (getTestCaseRepo(entity, projectEntity) != null);
+            if (isNotIntegrated && (getTestCaseRepo(entity, projectEntity) != null)) {
+                QTestModule module = QTestIntegrationFolderManager.getQTestModuleByFolderEntity(
+                        projectEntity.getFolderLocation(), entity.getParentFolder());
+
+                // Cannot upload test case under root module.
+                if (module != null && module.getParentId() <= 0) {
+                    return false;
+                } else {
+                    return true;
+                }
+            } else {
+                return false;
+            }
         } else if (entity instanceof TestSuiteEntity) {
             return (getTestSuiteRepo(entity, projectEntity) != null);
         } else {
@@ -300,7 +336,7 @@ public class QTestIntegrationUtil {
      */
     public static IntegratedFileEntity updateFileIntegratedEntity(IntegratedFileEntity entity,
             IntegratedEntity newIntegrated) {
-        IntegratedEntity oldIntegrated = entity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+        IntegratedEntity oldIntegrated = QTestIntegrationUtil.getIntegratedEntity(entity);
 
         // Otherwise, add the new one to integrated list
         int index = 0;
@@ -333,7 +369,7 @@ public class QTestIntegrationUtil {
      */
     public static void saveReportEntity(ReportEntity reportEntity, QTestLogUploadedPreview uploadedPreview)
             throws Exception {
-        IntegratedEntity reportIntegratedEntity = reportEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+        IntegratedEntity reportIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(reportEntity);
         QTestReport qTestReport = QTestIntegrationReportManager
                 .getQTestReportByIntegratedEntity(reportIntegratedEntity);
 
@@ -358,10 +394,16 @@ public class QTestIntegrationUtil {
             List<QTestSuite> qTestSuiteCollection) throws Exception {
         qTestSuite.getTestRuns().add(testRun);
 
-        QTestIntegrationTestSuiteManager.addQTestSuiteToIntegratedEntity(qTestSuite, testSuiteIntegratedEntity,
-                qTestSuiteCollection.indexOf(qTestSuite));
+        for (int index = 0; index < qTestSuiteCollection.size(); index++) {
+            if (qTestSuiteCollection.get(index).getId() == qTestSuite.getId()) {
+                QTestIntegrationTestSuiteManager.addQTestSuiteToIntegratedEntity(qTestSuite, testSuiteIntegratedEntity,
+                        index);
 
-        TestSuiteController.getInstance().updateTestSuite(testSuiteEntity);
+                TestSuiteController.getInstance().updateTestSuite(testSuiteEntity);
+                return;
+            }
+        }
+
     }
 
     /**
@@ -375,8 +417,8 @@ public class QTestIntegrationUtil {
      */
     public static List<QTestSuite> getUnuploadedQTestSuites(TestSuiteEntity testSuite)
             throws QTestInvalidFormatException {
-        List<QTestSuite> qTestSuites = QTestIntegrationTestSuiteManager.getQTestSuiteListByIntegratedEntity(testSuite
-                .getIntegratedEntity(QTestStringConstants.PRODUCT_NAME));
+        List<QTestSuite> qTestSuites = QTestIntegrationTestSuiteManager
+                .getQTestSuiteListByIntegratedEntity(getIntegratedEntity(testSuite));
         List<QTestSuite> unuploadedQTestSuites = new ArrayList<QTestSuite>();
 
         for (QTestSuite availableQTestSuite : qTestSuites) {
@@ -386,5 +428,184 @@ public class QTestIntegrationUtil {
         }
 
         return unuploadedQTestSuites;
+    }
+
+    /**
+     * Returns new {@link TestCaseRepo} that created by the given params.
+     * 
+     * @param qTestModule
+     * @param qTestProject
+     * @param folderEntity
+     * @return new instance of {@link TestCaseRepo}
+     */
+    public static TestCaseRepo getNewTestCaseRepo(QTestModule qTestModule, QTestProject qTestProject,
+            FolderEntity folderEntity) {
+        TestCaseRepo testCaseRepo = new TestCaseRepo();
+        testCaseRepo.setQTestModule(qTestModule);
+        testCaseRepo.setQTestProject(qTestProject);
+
+        String folderId = FolderController.getInstance().getIdForDisplay(folderEntity);
+        testCaseRepo.setFolderId(folderId);
+        return testCaseRepo;
+    }
+
+    /**
+     * Returns new {@link TestSuiteRepo} that created by the given params.
+     * 
+     * @param qTestProject
+     * @param folderEntity
+     * @return new instance of {@link TestSuiteRepo}
+     */
+    public static TestSuiteRepo getNewTestSuiteRepo(QTestProject qTestProject, FolderEntity folderEntity) {
+        TestSuiteRepo testSuiteRepo = new TestSuiteRepo();
+        testSuiteRepo.setQTestProject(qTestProject);
+
+        String folderId = FolderController.getInstance().getIdForDisplay(folderEntity);
+        testSuiteRepo.setFolderId(folderId);
+        return testSuiteRepo;
+    }
+
+    /**
+     * Returns an instance of {@link QTestLogEvaluation} that represents state of an {@link TestCaseLogRecord}.
+     * 
+     * @param testCaseLogRecord
+     *            the {@link TestCaseLogRecord} that needs to evaluate.
+     * @param qTestSuite
+     * @param reportEntity
+     * @return <li> {@link QTestLogEvaluation#CANNOT_INTEGRATE} if the given testCaseLogRecord cannot be integrated.</li>
+     *         <li> {@link QTestLogEvaluation#INTEGRATED} if the given testCaseLogRecord is integrated.</li> <li>
+     *         {@link QTestLogEvaluation#CAN_INTEGRATE} if the given testCaseLogRecord can be integrated but have not
+     *         been integrated yet.</li>
+     */
+    public static QTestLogEvaluation evaluateTestCaseLog(TestCaseLogRecord testCaseLogRecord, QTestSuite qTestSuite,
+            ReportEntity reportEntity) {
+        QTestTestCase qTestCase = getQTestCase(testCaseLogRecord);
+        if (qTestCase == null) {
+            return QTestLogEvaluation.CANNOT_INTEGRATE;
+        }
+
+        QTestRun qTestRun = QTestIntegrationTestSuiteManager.getTestRunByTestSuiteAndTestCaseId(qTestSuite,
+                qTestCase.getId());
+        if (qTestRun != null) {
+            IntegratedEntity reportIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(reportEntity);
+            QTestReport qTestReport;
+            try {
+                qTestReport = QTestIntegrationReportManager.getQTestReportByIntegratedEntity(reportIntegratedEntity);
+            } catch (Exception e) {
+                return QTestLogEvaluation.CANNOT_INTEGRATE;
+            }
+
+            if (qTestReport != null) {
+                int index = getTestCaseLogIndex(testCaseLogRecord, reportEntity);
+                if (index >= 0 && qTestReport.getTestLogMap().get(index) != null) {
+                    return QTestLogEvaluation.INTEGRATED;
+                }
+            }
+        }
+        return QTestLogEvaluation.CAN_INTEGRATE;
+    }
+
+    /**
+     * Returns an instance of {@link QTestTestCase} that has been referred by the given testCaseLogRecord.
+     * <p>
+     * a {@link QTestTestCase} is stored as a {@link IntegratedEntity} in a {@link TestCaseEntity}.
+     * 
+     * @param testCaseLogRecord
+     * @return {@link QTestTestCase} if it exists. Otherwise, returns null.
+     */
+    public static QTestTestCase getQTestCase(TestCaseLogRecord testCaseLogRecord) {
+        try {
+            TestCaseEntity testCaseEntity = TestCaseController.getInstance().getTestCaseByDisplayId(
+                    testCaseLogRecord.getId());
+            if (testCaseEntity != null) {
+                return QTestIntegrationTestCaseManager
+                        .getQTestTestCaseByIntegratedEntity(getIntegratedEntity(testCaseEntity));
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        return null;
+    }
+
+    /**
+     * Returns the index of {@link TestCaseLogRecord} in a collection that's child records of a
+     * {@link TestSuiteLogRecord} that's the log of the given <code>reportEntity</code>
+     * 
+     * @param testCaseLogRecord
+     * @param reportEntity
+     * @return
+     */
+    public static int getTestCaseLogIndex(TestCaseLogRecord testCaseLogRecord, ReportEntity reportEntity) {
+        TestSuiteLogRecord testSuiteLogRecord = LogRecordLookup.getInstance().getTestSuiteLogRecord(reportEntity);
+        if (testCaseLogRecord == null || testSuiteLogRecord == null) {
+            return -1;
+        }
+        return Arrays.asList(testSuiteLogRecord.getChildRecords()).indexOf(testCaseLogRecord);
+    }
+
+    /**
+     * Returns the selected {@link QTestSuite} of a {@link TestSuiteEntity} that is integrated with qTest.
+     * <p>
+     * The {@link TestSuiteEntity} whose id equals with the id of the given <code>testSuiteLogRecord</code>.
+     * 
+     * @param testSuiteLogRecord
+     * @return
+     */
+    public static QTestSuite getSelectedQTestSuite(TestSuiteLogRecord testSuiteLogRecord) {
+        try {
+            if (testSuiteLogRecord == null) {
+                return null;
+            }
+
+            TestSuiteEntity testSuiteEntity = getTestSuiteEntity(testSuiteLogRecord);
+            if (testSuiteEntity == null) {
+                return null;
+            }
+
+            IntegratedEntity testSuiteIntegratedEntity = getIntegratedEntity(testSuiteEntity);
+
+            if (testSuiteIntegratedEntity != null) {
+                List<QTestSuite> qTestSuiteCollection = QTestIntegrationTestSuiteManager
+                        .getQTestSuiteListByIntegratedEntity(testSuiteIntegratedEntity);
+                return QTestIntegrationTestSuiteManager.getSelectedQTestSuiteByIntegratedEntity(qTestSuiteCollection);
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        return null;
+    }
+
+    /**
+     * Stores the given <code>qTestReport</code> as a qTest's {@link IntegratedEntity} to the given
+     * <code>reportEntity</code>.
+     * 
+     * @param qTestReport
+     * @param reportEntity
+     * @return
+     */
+    public static ReportEntity saveReportEntity(QTestReport qTestReport, ReportEntity reportEntity) {
+        try {
+            IntegratedEntity reportIntegratedEntity = QTestIntegrationReportManager
+                    .getIntegratedEntityByQTestReport(qTestReport);
+            reportEntity = (ReportEntity) QTestIntegrationUtil.updateFileIntegratedEntity(reportEntity,
+                    reportIntegratedEntity);
+            reportEntity = ReportController.getInstance().updateReport(reportEntity);
+            return reportEntity;
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            return null;
+        }
+    }
+
+    /**
+     * Returns a {@link TestSuiteEntity} that's id equals with the id of the given <code>testSuiteLogRecord</code>
+     * 
+     * @param testSuiteLogRecord
+     * @return
+     * @throws Exception
+     */
+    public static TestSuiteEntity getTestSuiteEntity(TestSuiteLogRecord testSuiteLogRecord) throws Exception {
+        return TestSuiteController.getInstance().getTestSuiteByDisplayId(testSuiteLogRecord.getId(),
+                ProjectController.getInstance().getCurrentProject());
     }
 }

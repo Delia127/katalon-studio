@@ -18,7 +18,6 @@ import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager;
-import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
 import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 
@@ -38,14 +37,12 @@ public class UploadTestSuiteJob extends UploadJob {
             List<QTestSuite> unuploadedQTestSuites = QTestIntegrationUtil.getUnuploadedQTestSuites(fTestSuiteEntity);
             String testSuiteId = TestSuiteController.getInstance().getIdForDisplay(fTestSuiteEntity);
 
-            monitor.beginTask(
-                    getWrappedName(MessageFormat.format(StringConstants.JOB_TASK_UPLOADING_TEST_SUITE_ENTITY,
-                            testSuiteId)) + "...", unuploadedQTestSuites.size() + 1);
+            monitor.beginTask(MessageFormat.format(StringConstants.JOB_TASK_UPLOADING_TEST_SUITE_ENTITY,
+                    getWrappedName(testSuiteId)), unuploadedQTestSuites.size() + 1);
             TestSuiteRepo repo = QTestIntegrationUtil.getTestSuiteRepo(fTestSuiteEntity, projectEntity);
 
             List<QTestSuite> allQTestSuites = QTestIntegrationTestSuiteManager
-                    .getQTestSuiteListByIntegratedEntity(fTestSuiteEntity
-                            .getIntegratedEntity(QTestStringConstants.PRODUCT_NAME));
+                    .getQTestSuiteListByIntegratedEntity(QTestIntegrationUtil.getIntegratedEntity(fTestSuiteEntity));
 
             for (QTestSuite qTestSuite : allQTestSuites) {
                 monitor.subTask(getWrappedName(MessageFormat.format(StringConstants.JOB_SUB_TASK_UPLOADING_QTEST_SUITE,

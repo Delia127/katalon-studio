@@ -55,7 +55,7 @@ public class QTestIntegrationTestCaseManager {
     }
 
     /**
-     * Returns {@link QTestTestCase} by parsing the given <code>integratedEntity</code> that's type
+     * Returns {@link QTestTestCase} by parsing the given <code>integratedEntity</code> that it's type is
      * {@link IntegratedType#TESTCASE}
      * 
      * @param integratedEntity

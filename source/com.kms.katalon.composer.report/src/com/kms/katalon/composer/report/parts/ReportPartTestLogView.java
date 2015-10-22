@@ -680,7 +680,7 @@ public class ReportPartTestLogView {
 
         compositeTestCaseLogIntegration.layout(true, true);
         selectedReportTestCaseIntegrationView.changeTestCase((TestCaseLogRecord) parentPart
-                .getTestCaseSelectedLogRecord());
+                .getSelectedTestCaseLogRecord());
     }
 
     private void clearTestCaseIntegrationContainer() {
@@ -751,7 +751,7 @@ public class ReportPartTestLogView {
             treeViewerTestSteps.setInput(null);
         }
         selectedReportTestCaseIntegrationView.changeTestCase((TestCaseLogRecord) parentPart
-                .getTestCaseSelectedLogRecord());
+                .getSelectedTestCaseLogRecord());
         updateSelectedTestStep(null);
     }
 
@@ -779,14 +779,14 @@ public class ReportPartTestLogView {
                             EventBrokerSingleton.getInstance().getEventBroker()
                                     .post(EventConstants.TESTCASE_OPEN, testCaseEntity);
                         } else {
-                            MessageDialog.openWarning(null, "Warning", "Test case not found.");
+                            MessageDialog.openWarning(null, StringConstants.WARN, "Test case not found.");
                         }
                     }
 
                 } catch (IllegalArgumentException e) {
                     // no character under event.x, event.y
                 } catch (Exception e) {
-                    MessageDialog.openWarning(null, "Warning", "Test case not found.");
+                    MessageDialog.openWarning(null, StringConstants.WARN, "Test case not found.");
                 }
             }
         });

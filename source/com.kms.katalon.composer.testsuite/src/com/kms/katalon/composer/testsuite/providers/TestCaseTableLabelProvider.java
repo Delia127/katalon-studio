@@ -38,7 +38,7 @@ public class TestCaseTableLabelProvider extends StyledCellLabelProvider {
     private int columnIndex;
 
     public TestCaseTableLabelProvider(int columnIndex) {
-        super(COLORS_ON_SELECTION);
+        super();
         this.columnIndex = columnIndex;
     }
 

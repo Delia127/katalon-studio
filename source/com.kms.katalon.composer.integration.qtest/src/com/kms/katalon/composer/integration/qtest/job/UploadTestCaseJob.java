@@ -30,6 +30,7 @@ import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
 import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
+import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class UploadTestCaseJob extends UploadJob {
@@ -48,7 +49,7 @@ public class UploadTestCaseJob extends UploadJob {
 
     @Override
     protected IStatus run(IProgressMonitor monitor) {
-        monitor.beginTask("Uploading test cases...", getFileEntities().size());
+        monitor.beginTask(StringConstants.JOB_TASK_UPLOAD_TEST_CASE, getFileEntities().size());
         String projectDir = projectEntity.getFolderLocation();
 
         for (FileEntity fileEntity : getFileEntities()) {
@@ -79,7 +80,7 @@ public class UploadTestCaseJob extends UploadJob {
 
     private void uploadFolder(FolderEntity folderEntity, IProgressMonitor monitor, String projectDir) throws Exception {
         String folderId = FolderController.getInstance().getIdForDisplay(folderEntity);
-        monitor.subTask("Uploading " + folderId + "...");
+        monitor.subTask(MessageFormat.format(StringConstants.JOB_SUB_TASK_UPLOAD_TEST_CASE, folderId));
 
         QTestProject qTestProject = QTestIntegrationUtil.getTestCaseRepo(folderEntity, projectEntity).getQTestProject();
 
@@ -87,7 +88,8 @@ public class UploadTestCaseJob extends UploadJob {
             // folder is root of test case
             // get moduleRoot from qTest and all its children for user can
             // select
-            QTestModule moduleRoot = QTestIntegrationFolderManager.getModuleRoot(projectDir, qTestProject.getId());
+            QTestModule moduleRoot = QTestIntegrationFolderManager.getModuleRoot(
+                    new QTestSettingCredential(projectDir), qTestProject.getId());
             QTestIntegrationFolderManager.updateModule(projectDir, qTestProject.getId(), moduleRoot, true);
 
             performTestCaseRootSelection(moduleRoot);
@@ -139,16 +141,16 @@ public class UploadTestCaseJob extends UploadJob {
         QTestProject qTestProject = QTestIntegrationUtil.getTestCaseRepo(testCaseEntity, projectEntity)
                 .getQTestProject();
         String testCaseId = TestCaseController.getInstance().getIdForDisplay(testCaseEntity);
-        monitor.subTask("Uploading " + testCaseId + "...");
+        monitor.subTask(MessageFormat.format(StringConstants.JOB_SUB_TASK_UPLOAD_TEST_CASE, testCaseId));
 
         QTestModule qTestParentModule = QTestIntegrationFolderManager.getQTestModuleByFolderEntity(projectDir,
                 testCaseEntity.getParentFolder());
-        
-        //Returns if this test case under qTest root module.
+
+        // Returns if this test case under qTest root module.
         if (qTestParentModule == null || qTestParentModule.getParentId() <= 0) {
             return;
         }
-        
+
         QTestTestCase qTestTestCase = null;
 
         if (QTestSettingStore.isEnableCheckBeforeUploading(projectDir)) {
@@ -226,9 +228,9 @@ public class UploadTestCaseJob extends UploadJob {
             @Override
             public void run() {
                 isMergeConfirmed = MessageDialog.open(MessageDialog.QUESTION, null,
-                        StringConstants.DIA_TITLE_FOLDER_DUPLICATION,
-                                MessageFormat.format(StringConstants.DIA_MSG_CONFIRM_MERGE_UPLOADED_TEST_CASE_FOLDER,
-                                        siblingQTestModule.getId(), folderId), SWT.NONE);
+                        StringConstants.DIA_TITLE_FOLDER_DUPLICATION, MessageFormat.format(
+                                StringConstants.DIA_MSG_CONFIRM_MERGE_UPLOADED_TEST_CASE_FOLDER,
+                                siblingQTestModule.getId(), folderId), SWT.NONE);
             }
         });
     }
