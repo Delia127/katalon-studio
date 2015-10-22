@@ -17,7 +17,6 @@ import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector;
 
 public class RemoteWebPreferencePage extends DriverPreferencePage {
     private RemoteWebDriverConnector remoteDriverConnector;
-    private RemoteWebDriverPreferenceComposite remoteUrlComposite;
 
     @Override
     protected IDriverConnector getDriverConnector(String configurationFolderPath) {
@@ -42,14 +41,15 @@ public class RemoteWebPreferencePage extends DriverPreferencePage {
         container.setLayout(layout);
         container.setLayoutData(new GridData(GridData.FILL_BOTH));
         
-        remoteUrlComposite = new RemoteWebDriverPreferenceComposite(container, SWT.NONE, remoteDriverConnector);
+        driverPreferenceComposite = new RemoteWebDriverPreferenceComposite(container, SWT.NONE, remoteDriverConnector);
+        
         return container;
     }
 
     @Override
     public boolean performOk() {
-        if (remoteUrlComposite != null) {
-            remoteDriverConnector = (RemoteWebDriverConnector) remoteUrlComposite.getResult();
+        if (driverPreferenceComposite != null) {
+            driverConnector = driverPreferenceComposite.getResult();
         }
         return super.performOk();
     }
