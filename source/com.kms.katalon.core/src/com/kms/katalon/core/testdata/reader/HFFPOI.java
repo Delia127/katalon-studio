@@ -103,13 +103,7 @@ public class HFFPOI extends SheetPOI {
                     }
                 } catch (Exception e1) {
                 }
-                // try with Boolean
-                try {
-                    return Boolean.toString(curCell.getBooleanCellValue());
-                } catch (IllegalStateException e) {
-                }
-
-                return curCell.getCellFormula();
+                return curCell.getStringCellValue();
             }
             default:
                 return curCell.getStringCellValue();
