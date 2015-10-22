@@ -131,8 +131,12 @@ public class QTestSettingStore {
             String sendingTypePropertyString = PropertySettingStoreUtil.getPropertyValue(SEND_ATTACHMENTS_PROPERTY,
                     getPropertyFile(projectDir));
 
-            if (sendingTypePropertyString == null || sendingTypePropertyString.isEmpty()) {
+            if (sendingTypePropertyString == null) {
                 return Arrays.asList(QTestAttachmentSendingType.values());
+            }
+            
+            if (sendingTypePropertyString.isEmpty()) {
+                return attachmentSendingTypes;
             }
 
             for (String sendingTypeName : sendingTypePropertyString.trim().split(",")) {
@@ -179,19 +183,24 @@ public class QTestSettingStore {
 
     public static List<QTestResultSendingType> getResultSendingTypes(String projectDir) {
         try {
-            List<QTestResultSendingType> attachmentSendingTypes = new ArrayList<QTestResultSendingType>();
+            List<QTestResultSendingType> resultSendingTypes = new ArrayList<QTestResultSendingType>();
             String sendingTypePropertyString = PropertySettingStoreUtil.getPropertyValue(SEND_RESULT_PROPERTY,
                     getPropertyFile(projectDir));
 
-            if (sendingTypePropertyString == null || sendingTypePropertyString.isEmpty()) {
+            //By default, select them all.
+            if (sendingTypePropertyString == null) {
                 return Arrays.asList(QTestResultSendingType.values());
+            }
+            
+            if (sendingTypePropertyString.isEmpty()) {
+                return resultSendingTypes;
             }
 
             for (String sendingTypeName : sendingTypePropertyString.trim().split(",")) {
-                attachmentSendingTypes.add(QTestResultSendingType.valueOf(sendingTypeName.trim()));
+                resultSendingTypes.add(QTestResultSendingType.valueOf(sendingTypeName.trim()));
             }
 
-            return attachmentSendingTypes;
+            return resultSendingTypes;
         } catch (IOException | IllegalArgumentException e) {
             return Collections.emptyList();
         }
@@ -213,7 +222,7 @@ public class QTestSettingStore {
             return true;
         }
     }
-    
+
     public static void usedSetupWizard(String projectDir) {
         try {
             PropertySettingStoreUtil.addNewProperty(FIRST_TIME_USING, Boolean.toString(false),
