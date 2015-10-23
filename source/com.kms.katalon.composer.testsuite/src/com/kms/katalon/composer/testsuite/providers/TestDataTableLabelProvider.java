@@ -31,7 +31,7 @@ public class TestDataTableLabelProvider extends StyledCellLabelProvider {
     private int columnIndex;
 
     public TestDataTableLabelProvider(int columnIndex, TestSuitePartDataBindingView testSuiteDataBindingView) {
-        super(COLORS_ON_SELECTION);
+        super();
         this.columnIndex = columnIndex;
         this.testSuiteDataBindingView = testSuiteDataBindingView;
     }

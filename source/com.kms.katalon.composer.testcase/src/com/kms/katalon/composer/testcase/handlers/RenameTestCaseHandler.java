@@ -4,9 +4,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
@@ -65,9 +62,6 @@ public class RenameTestCaseHandler {
 					try {
 						if (renameWizard.getNewNameValue() != null && !renameWizard.getNewNameValue().isEmpty()
 								&& !renameWizard.getNewNameValue().equals(oldName)) {
-							IFile scriptFile = ResourcesPlugin.getWorkspace().getRoot()
-									.getFile(GroovyUtil.getGroovyScriptForTestCase(testCase).getPath());
-							IFolder oldScriptFolderFile = (IFolder) scriptFile.getParent();
 							GroovyUtil.loadScriptContentIntoTestCase(testCase);
 							testCase.setName(renameWizard.getNewNameValue());
 							TestCaseController.getInstance().updateTestCase(testCase);
@@ -78,13 +72,6 @@ public class RenameTestCaseHandler {
 							eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
 									testCaseTreeEntity.getParent());
 							eventBroker.post(EventConstants.TESTCASE_UPDATED, new Object[] { pk, testCase });
-
-							if (oldScriptFolderFile.exists()) {
-								while (!scriptFile.isAccessible()) {
-
-								}
-								oldScriptFolderFile.delete(true, null);
-							}
 
 							partService.saveAll(false);
 						}

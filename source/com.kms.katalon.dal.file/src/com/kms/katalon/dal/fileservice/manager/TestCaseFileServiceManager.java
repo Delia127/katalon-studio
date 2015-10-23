@@ -137,12 +137,12 @@ public class TestCaseFileServiceManager {
 
                 GroovyRefreshUtil.updateStringScriptReferences(oldRelativeTcId, newRelativeTcId, project);
 
-                GroovyUtil.updateTestCasePasted(testCase);
-
                 IFolder oldScriptFolder = GroovyUtil.getGroovyProject(project).getFolder(
                         GroovyUtil.getScriptPackageRelativePathForTestCase(oldRelativeTcId));
 
                 oldScriptFolder.delete(true, null);
+                
+                GroovyUtil.updateTestCasePasted(testCase);
 
                 FolderFileServiceManager.refreshFolder(testCase.getParentFolder());
 

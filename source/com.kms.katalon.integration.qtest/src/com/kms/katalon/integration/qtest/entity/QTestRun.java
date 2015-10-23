@@ -17,6 +17,7 @@ public class QTestRun extends QTestEntity implements Serializable {
 	private long testCaseVersionId;
 	private long order;
 	private long statusId;
+	private String pid;
 	
 	public QTestRun(long id, String name) {
 		super(id, name);
@@ -116,6 +117,7 @@ public class QTestRun extends QTestEntity implements Serializable {
 		properties.put(QTestEntity.ID_FIELD, id);
 		properties.put(QTestEntity.NAME_FIELD, name);
 		properties.put("qTestCaseId", qTestCaseId);
+		properties.put("pid", getPid());
 		
 		return properties;
 	}
@@ -123,4 +125,15 @@ public class QTestRun extends QTestEntity implements Serializable {
 	public static int getType() {
 		return 3;
 	}
+
+    public String getPid() {
+        if (pid == null) {
+            pid = "";
+        }
+        return pid;
+    }
+
+    public void setPid(String pid) {
+        this.pid = pid;
+    }
 }

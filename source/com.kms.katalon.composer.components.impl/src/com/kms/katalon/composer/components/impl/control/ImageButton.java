@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.components.control;
+package com.kms.katalon.composer.components.impl.control;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;

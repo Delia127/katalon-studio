@@ -59,6 +59,7 @@ import com.kms.katalon.composer.components.util.DateUtil;
 import com.kms.katalon.composer.report.constants.ImageConstants;
 import com.kms.katalon.composer.report.constants.StringConstants;
 import com.kms.katalon.composer.report.integration.ReportComposerIntegrationFactory;
+import com.kms.katalon.composer.report.lookup.LogRecordLookup;
 import com.kms.katalon.composer.report.parts.integration.AbstractReportTestCaseIntegrationView;
 import com.kms.katalon.composer.report.parts.integration.ReportTestCaseIntegrationViewBuilder;
 import com.kms.katalon.composer.report.provider.ReportPartTestCaseLabelProvider;
@@ -119,7 +120,7 @@ public class ReportPart implements EventHandler {
 
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
-                ILogRecord selectedLogRecord = (ILogRecord) getTestCaseSelectedLogRecord();
+                ILogRecord selectedLogRecord = (ILogRecord) getSelectedTestCaseLogRecord();
 
                 if (selectedLogRecord == null) return;
                 testLogView.updateSelectedTestCase(selectedLogRecord);
@@ -132,7 +133,7 @@ public class ReportPart implements EventHandler {
             public void widgetSelected(SelectionEvent e) {
                 testCaseTableFilter.setShowPassed(btnFilterTestCasePassed.getSelection());
                 testCaseTableViewer.refresh();
-                testLogView.updateSelectedTestCase(getTestCaseSelectedLogRecord());
+                testLogView.updateSelectedTestCase(getSelectedTestCaseLogRecord());
             }
         });
 
@@ -143,7 +144,7 @@ public class ReportPart implements EventHandler {
                 // TODO Auto-generated method stub
                 testCaseTableFilter.setShowFailed(btnFilterTestCaseFailed.getSelection());
                 testCaseTableViewer.refresh();
-                testLogView.updateSelectedTestCase(getTestCaseSelectedLogRecord());
+                testLogView.updateSelectedTestCase(getSelectedTestCaseLogRecord());
             }
         });
 
@@ -154,7 +155,7 @@ public class ReportPart implements EventHandler {
                 // TODO Auto-generated method stub
                 testCaseTableFilter.setShowError(btnFilterTestCaseError.getSelection());
                 testCaseTableViewer.refresh();
-                testLogView.updateSelectedTestCase(getTestCaseSelectedLogRecord());
+                testLogView.updateSelectedTestCase(getSelectedTestCaseLogRecord());
             }
         });
 
@@ -268,9 +269,11 @@ public class ReportPart implements EventHandler {
 
             if (report == null) return;
 
-            this.testSuiteLogRecord = ReportUtil.generate(report.getLocation());
+            this.testSuiteLogRecord = LogRecordLookup.getInstance().getTestSuiteLogRecord(report);
 
-            if (testSuiteLogRecord == null) return;
+            if (testSuiteLogRecord == null) {
+                return;
+            }
 
             try {
                 TestSuiteEntity testSuite = ReportController.getInstance().getTestSuiteByReport(report);
@@ -352,9 +355,12 @@ public class ReportPart implements EventHandler {
         }
     }
 
-    public ILogRecord getTestCaseSelectedLogRecord() {
+    
+    public ILogRecord getSelectedTestCaseLogRecord() {
         StructuredSelection selection = (StructuredSelection) testCaseTableViewer.getSelection();
-        if (selection == null || selection.size() != 1) return null;
+        if (selection == null || selection.size() != 1) {
+            return null;
+        }
         return (ILogRecord) selection.getFirstElement();
     }
 
@@ -709,7 +715,9 @@ public class ReportPart implements EventHandler {
     }
 
     public void prepareBeforeReloading() {
-        if (testCaseTableViewer == null) return;
+        if (testCaseTableViewer == null) {
+            return;
+        }
         selectedTestCaseRecordIndex = testCaseTableViewer.getTable().getSelectionIndex();
     }
 
@@ -731,17 +739,18 @@ public class ReportPart implements EventHandler {
             try {
                 Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
                 String updatedReportId = (String) object;
-                if (updatedReportId == null) return;
+                if (updatedReportId == null) {
+                    return;
+                }
 
                 if (updatedReportId.equals(report.getId())) {
                     prepareBeforeReloading();
-                    updateInput(report);
+                    updateInput(ReportController.getInstance().getReportEntity(updatedReportId));
                     prepareAfterReloading();
                 }
             } catch (Exception e) {
                 LoggerSingleton.logError(e);
             }
-
         }
     }
 }

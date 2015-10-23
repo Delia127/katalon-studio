@@ -23,6 +23,7 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -502,8 +503,10 @@ public class ExplorerPart {
     @Inject
     @Optional
     private void setSelectedItem(@UIEventTopic(EventConstants.EXPLORER_SET_SELECTED_ITEM) Object object) {
-        EntityProvider dataProvider = (EntityProvider) getViewer().getContentProvider();
-        getViewer().setSelection(new TreeSelection(dataProvider.getTreePath(object)), true);
+        if (object == null || !(object instanceof ITreeEntity)) {
+            return;
+        }
+        getViewer().setSelection(new StructuredSelection(object));
         getViewer().setExpandedState(object, true);
         setFocus();
     }

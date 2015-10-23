@@ -1,6 +1,9 @@
 package com.kms.katalon.composer.report.handlers;
 
+import javax.inject.Inject;
+
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.e4.core.services.events.IEventBroker;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
@@ -9,10 +12,14 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.handlers.deletion.IDeleteEntityHandler;
 import com.kms.katalon.composer.report.constants.StringConstants;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.entity.report.ReportEntity;
 
-public class DeleteReportHandler implements IDeleteEntityHandler{
+public class DeleteReportHandler implements IDeleteEntityHandler {
+    
+    @Inject
+    private IEventBroker eventBroker; 
 
     @Override
     public Class<? extends ITreeEntity> entityType() {
@@ -36,7 +43,10 @@ public class DeleteReportHandler implements IDeleteEntityHandler{
             
             EntityPartUtil.closePart(report);
             
+            String reportId = report.getId();
             ReportController.getInstance().deleteReport(report);
+            
+            eventBroker.send(EventConstants.REPORT_DELETED, reportId);
             return true;
         } catch (Exception e) {
             LoggerSingleton.logError(e);

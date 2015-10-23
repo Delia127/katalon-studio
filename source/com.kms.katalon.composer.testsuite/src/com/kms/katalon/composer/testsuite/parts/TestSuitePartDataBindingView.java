@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
-import com.kms.katalon.composer.components.control.ImageButton;
+import com.kms.katalon.composer.components.impl.control.ImageButton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;

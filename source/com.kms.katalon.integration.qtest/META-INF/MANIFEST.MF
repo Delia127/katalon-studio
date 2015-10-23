@@ -20,6 +20,7 @@ Require-Bundle: com.kms.katalon.entity;bundle-version="1.0.0",
  org.apache.commons.lang
 Export-Package: com.kms.katalon.integration.qtest,
  com.kms.katalon.integration.qtest.constants,
+ com.kms.katalon.integration.qtest.credential,
  com.kms.katalon.integration.qtest.entity,
  com.kms.katalon.integration.qtest.exception,
  com.kms.katalon.integration.qtest.setting
