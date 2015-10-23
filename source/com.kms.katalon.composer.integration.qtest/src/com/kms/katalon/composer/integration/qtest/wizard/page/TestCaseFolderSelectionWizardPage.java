@@ -53,7 +53,6 @@ public class TestCaseFolderSelectionWizardPage extends AbstractWizardPage {
      */
     @Override
     public void createStepArea(Composite parent) {
-        // TODO Auto-generated method stub
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayout(new GridLayout(1, false));
 

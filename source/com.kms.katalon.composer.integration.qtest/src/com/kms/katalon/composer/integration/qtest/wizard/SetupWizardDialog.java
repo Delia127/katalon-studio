@@ -453,6 +453,7 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
         String projectDir = currentProject.getFolderLocation();
         try {
+            QTestSettingStore.saveEnableIntegration(true, projectDir);
             QTestSettingStore.saveUserProfile(getCredential(sharedData), projectDir);
             QTestSettingStore.saveAutoSubmit((boolean) sharedData.get(QTestSettingStore.AUTO_SUBMIT_RESULT_PROPERTY),
                     projectDir);

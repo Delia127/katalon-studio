@@ -12,6 +12,9 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -48,6 +51,8 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage {
 
     private GifCLabel connectingLabel;
 
+    private Composite composite;
+
     public ProjectChoosingWizardPage() {
         fServerUrl = "";
         fToken = "";
@@ -68,13 +73,13 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage {
      */
     @Override
     public void createStepArea(Composite parent) {
-        Composite composite = new Composite(parent, SWT.NONE);
+        composite = new Composite(parent, SWT.NONE);
         composite.setLayout(new GridLayout(1, false));
 
         Label lblHeader = new Label(composite, SWT.NONE);
-        GridData gd_lblHeader = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-        gd_lblHeader.horizontalIndent = 5;
-        lblHeader.setLayoutData(gd_lblHeader);
+        GridData gdLblHeader = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        gdLblHeader.horizontalIndent = 5;
+        lblHeader.setLayoutData(gdLblHeader);
         lblHeader.setText(StringConstants.WZ_P_PROJECT_INFO);
 
         connectingComposite = new Composite(composite, SWT.NONE);
@@ -97,6 +102,10 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage {
     }
 
     private void updateProjectRadioButtons() {
+        if (qTestProjects == null) {
+            return;
+        }
+        
         for (QTestProject qTestProject : qTestProjects) {
             Button radioButton = new Button(grpQtestProjects, SWT.RADIO);
             radioButton.setText(qTestProject.getName());
@@ -150,6 +159,13 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage {
 
     @Override
     public void registerControlModifyListeners() {
+        composite.addDisposeListener(new DisposeListener() {
+            
+            @Override
+            public void widgetDisposed(DisposeEvent e) {
+                closeQuietly(inputStream);
+            }
+        });
     }
 
     @Override
@@ -191,7 +207,11 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage {
                     UISynchronizeService.getInstance().getSync().syncExec(new Runnable() {
                         @Override
                         public void run() {
-                            updateProjectRadioButtons();
+                            try {
+                                updateProjectRadioButtons();
+                            } catch (IllegalStateException | IllegalArgumentException | SWTException e) {
+                                //Display is disposed
+                            }
                         }
                     });
                     return Status.OK_STATUS;
@@ -199,7 +219,11 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage {
                     UISynchronizeService.getInstance().getSync().syncExec(new Runnable() {
                         @Override
                         public void run() {
-                            setConnectingCompositeVisible(false);
+                            try {
+                                setConnectingCompositeVisible(false);
+                            } catch (IllegalStateException | IllegalArgumentException | SWTException e) {
+                                //Display is disposed
+                            }
                         }
                     });
                     monitor.done();
@@ -208,7 +232,6 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage {
         };
         job.setUser(false);
         job.schedule();
-
     }
 
 }

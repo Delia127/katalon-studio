@@ -20,6 +20,9 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -75,9 +78,9 @@ public class QTestModuleSelectionWizardPage extends AbstractWizardPage {
 
         headerComposite = new Composite(composite, SWT.NONE);
         headerComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        GridLayout gl_headerComposite = new GridLayout(1, false);
-        gl_headerComposite.marginHeight = 0;
-        headerComposite.setLayout(gl_headerComposite);
+        GridLayout glHeaderComposite = new GridLayout(1, false);
+        glHeaderComposite.marginHeight = 0;
+        headerComposite.setLayout(glHeaderComposite);
 
         lblHeader = new Label(headerComposite, SWT.WRAP);
         lblHeader.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
@@ -85,9 +88,9 @@ public class QTestModuleSelectionWizardPage extends AbstractWizardPage {
 
         connectingComposite = new Composite(composite, SWT.NONE);
         connectingComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        GridLayout gl_connectingComposite = new GridLayout(2, false);
-        gl_connectingComposite.marginHeight = 0;
-        connectingComposite.setLayout(gl_connectingComposite);
+        GridLayout glConnectingComposite = new GridLayout(2, false);
+        glConnectingComposite.marginHeight = 0;
+        connectingComposite.setLayout(glConnectingComposite);
 
         connectingLabel = new GifCLabel(connectingComposite, SWT.NONE);
         connectingLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
@@ -140,27 +143,38 @@ public class QTestModuleSelectionWizardPage extends AbstractWizardPage {
                                 SetupWizardDialog.getCredential(sharedData), qTestProject.getId(), moduleRoot);
                     }
 
+                    if (treeViewer == null || moduleRoot == null || monitor.isCanceled()) {
+                        return Status.OK_STATUS;
+                    }
+
                     UISynchronizeService.getInstance().getSync().syncExec(new Runnable() {
                         @Override
                         public void run() {
+                            try {
+                                treeViewer.setInput(Arrays.asList(moduleRoot));
+                                treeViewer.expandAll();
+                                composite.layout(true, true);
 
-                            treeViewer.setInput(Arrays.asList(moduleRoot));
-                            treeViewer.expandAll();
-                            composite.layout(true, true);
-
-                            if (selectedModule != null) {
-                                treeViewer.setSelection(new StructuredSelection(selectedModule));
+                                if (selectedModule != null) {
+                                    treeViewer.setSelection(new StructuredSelection(selectedModule));
+                                }
+                                setConnectingCompositeVisible(false);
+                            } catch (IllegalStateException | IllegalArgumentException | SWTException e) {
+                                //Display is disposed
                             }
-                            setConnectingCompositeVisible(false);
                         }
                     });
 
                     return Status.OK_STATUS;
                 } catch (QTestException | IOException e) {
-                    MultiStatusErrorDialog.showErrorDialog(
-                            e,
-                            MessageFormat.format(StringConstants.WZ_P_MODULE_MSG_GET_MODULES_FAILED,
-                                    qTestProject.getName()), e.getMessage());
+                    UISynchronizeService.getInstance().getSync().syncExec(new Runnable() {
+                        @Override
+                        public void run() {
+                            MultiStatusErrorDialog.showErrorDialog(e, MessageFormat.format(
+                                    StringConstants.WZ_P_MODULE_MSG_GET_MODULES_FAILED, qTestProject.getName()), e
+                                    .getMessage());
+                        }
+                    });
                     return Status.OK_STATUS;
                 } finally {
                     monitor.done();
@@ -179,16 +193,12 @@ public class QTestModuleSelectionWizardPage extends AbstractWizardPage {
                 connectingLabel.setGifImage(inputStream);
             } catch (IOException ex) {
             } finally {
-                if (inputStream != null) {
-                    closeQuietly(inputStream);
-                    inputStream = null;
-                }
-            }
-        } else {
-            if (inputStream != null) {
                 closeQuietly(inputStream);
                 inputStream = null;
             }
+        } else {
+            closeQuietly(inputStream);
+            inputStream = null;
         }
         connectingComposite.setVisible(isConnectingCompositeVisible);
         ((GridData) connectingComposite.getLayoutData()).exclude = !isConnectingCompositeVisible;
@@ -202,6 +212,14 @@ public class QTestModuleSelectionWizardPage extends AbstractWizardPage {
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 updateTreeViewerSelection();
+            }
+        });
+        
+        composite.addDisposeListener(new DisposeListener() {
+            
+            @Override
+            public void widgetDisposed(DisposeEvent e) {
+                closeQuietly(inputStream);
             }
         });
     }
