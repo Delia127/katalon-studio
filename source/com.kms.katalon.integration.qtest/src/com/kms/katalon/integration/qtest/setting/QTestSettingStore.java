@@ -70,6 +70,8 @@ public class QTestSettingStore {
     }
 
     public static void saveUserProfile(IQTestCredential credential, String projectDir) throws IOException {
+        PropertySettingStoreUtil.addNewProperty(TOKEN_PROPERTY, credential.getToken(),
+                getPropertyFile(projectDir));
         PropertySettingStoreUtil.addNewProperty(USERNAME_PROPERTY, credential.getUsername(),
                 getPropertyFile(projectDir));
         PropertySettingStoreUtil.addNewProperty(PASSWORD_PROPERTY, credential.getPassword(),
