@@ -56,7 +56,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String JOB_SUB_TASK_CHECK_SYSTEM = "Checking system...";
     public static final String JOB_SUB_TASK_FETCH_CHILDREN = "Fetching children of: {0}";
     public static final String JOB_TASK_CREATE_TEST_CASE = "Creating new test cases...";
-    public static final String JOB_SUB_TASK_CREATE_TEST_CASE = "Creating test cases: {0} ...";
+    public static final String JOB_SUB_TASK_CREATE_TEST_CASE = "Creating test case: {0} ...";
     public static final String JOB_SUB_TASK_CREATE_TEST_CASE_FOLDER = "Creating folder: {0} ...";
 
     public static final String DIA_TITLE_FOLDER_DUPLICATION = "Folder Duplication Detected";
