@@ -241,7 +241,6 @@ public class QTestPreferenceMainPage extends PreferencePage {
     private void performWizardSetup() {
         SetupWizardDialog wizard = new SetupWizardDialog(getShell());
         if (wizard.open() == Dialog.OK) {
-            chckEnableIntegration.setEnabled(true);
             eventBroker.post(EventConstants.SETUP_FINISHED, null);
             initialize();
         }

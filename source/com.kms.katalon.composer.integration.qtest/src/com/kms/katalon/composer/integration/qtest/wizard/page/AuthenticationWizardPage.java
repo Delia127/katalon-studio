@@ -12,6 +12,9 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -83,6 +86,7 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
     private InputStream inputStream;
     private Composite headerComposite;
     private Label lblHeader;
+    private Composite stepAreaComposite;
 
     @Override
     public String getTitle() {
@@ -94,7 +98,7 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
      */
     @Override
     public void createStepArea(Composite parent) {
-        Composite stepAreaComposite = new Composite(parent, SWT.NONE);
+        stepAreaComposite = new Composite(parent, SWT.NONE);
         stepAreaComposite.setLayout(new GridLayout(1, false));
 
         headerComposite = new Composite(stepAreaComposite, SWT.NONE);
@@ -189,11 +193,11 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
         txtUsername.addModifyListener(modifyTextListener);
         txtPassword.addModifyListener(modifyTextListener);
 
-        btnConnect.addSelectionListener(new SelectionAdapter() {
+        stepAreaComposite.addDisposeListener(new DisposeListener() {
+
             @Override
-            public void widgetSelected(SelectionEvent e) {
-                isDirty = true;
-                lblConnectedStatus.setText("");
+            public void widgetDisposed(DisposeEvent e) {
+                closeQuietly(inputStream);
             }
         });
 
@@ -224,6 +228,9 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
                     MessageDialog.openInformation(null, StringConstants.INFO, message.toString());
                     return;
                 }
+
+                isDirty = true;
+                lblConnectedStatus.setText("");
 
                 final String newServerUrl = txtServerURL.getText();
                 final String newUsername = txtUsername.getText();
@@ -259,7 +266,11 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
                             UISynchronizeService.getInstance().getSync().syncExec(new Runnable() {
                                 @Override
                                 public void run() {
-                                    setConnectingCompositeVisible(false);
+                                    try {
+                                        setConnectingCompositeVisible(false);
+                                    } catch (IllegalStateException | IllegalArgumentException | SWTException e) {
+                                        //Display is disposed
+                                    }
                                 }
                             });
                             monitor.done();

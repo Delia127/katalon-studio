@@ -47,7 +47,9 @@ public abstract class AbstractWizardPage implements IWizardPage {
     
     protected void closeQuietly(InputStream inputStream) {
         try {
-            inputStream.close();
+            if (inputStream != null) {
+                inputStream.close();
+            }
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
