@@ -28,15 +28,15 @@ import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.entity.QTestRun;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
+import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class QTestIntegrationReporter implements ReportIntegrationContribution {
 
     /**
-     * Upload result of test runs of test suite to qTest. A test run matches
-     * with a test case link in test suite. System will find test run in the
-     * given test suite. If test run does not exist, system will create new.
-     * Test result of test run will be uploaded via qTest's API.
+     * Uploads result of test runs of test suite to qTest. A test run matches with a test case link in test suite.
+     * System will find test run in the given test suite. If test run does not exist, system will create new. Test
+     * result of test run will be uploaded via qTest's API.
      */
     public void uploadTestCaseResult(TestSuiteEntity testSuiteEntity, IntegratedEntity projectIntegratedEntity,
             TestCaseLogRecord testLogEntity, TestSuiteLogRecord suiteLog) throws Exception {
@@ -60,19 +60,27 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
                     .getQTestTestCaseByIntegratedEntity(testCaseIntegratedEntity);
             QTestProject qTestProject = QTestIntegrationUtil.getTestCaseRepo(testCaseEntity, projectEntity)
                     .getQTestProject();
-            QTestRun testRun = QTestIntegrationTestSuiteManager.getTestRunByTestSuiteAndTestCaseId(selectedQTestSuite,
+            QTestRun qTestRun = QTestIntegrationTestSuiteManager.getTestRunByTestSuiteAndTestCaseId(selectedQTestSuite,
                     qTestCase.getId());
 
-            // if test run does not exist, create a new one and save it into
+            // If test run does not exist, create new and save it into
             // test suite.
-            if (testRun == null) {
-                testRun = QTestIntegrationTestSuiteManager.uploadTestCaseInTestSuite(qTestCase, selectedQTestSuite,
-                        qTestProject, projectDir);
+            if (qTestRun == null) {
+                // Check in the current list first
+                qTestRun = QTestIntegrationUtil.getQTestRun(qTestCase,
+                        getCurrentQTestRuns(testSuiteEntity, projectEntity));
 
+                if (qTestRun == null) {
+                    // If qTestRun isn't in the current list, upload new to qTest.
+                    qTestRun = QTestIntegrationTestSuiteManager.uploadTestCaseInTestSuite(qTestCase,
+                            selectedQTestSuite, qTestProject, projectDir);
+                }
+
+                // Save test suite.
                 QTestIntegrationUtil.addNewTestRunToTestSuite(testSuiteEntity, testSuiteIntegratedEntity,
-                        selectedQTestSuite, testRun, qTestSuiteCollection);
+                        selectedQTestSuite, qTestRun, qTestSuiteCollection);
             }
-            testRun.setTestCaseVersionId(qTestCase.getVersionId());
+            qTestRun.setTestCaseVersionId(qTestCase.getVersionId());
 
             int testLogIndex = Arrays.asList(suiteLog.getChildRecords()).indexOf(testLogEntity);
 
@@ -80,7 +88,7 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
             uploadedPreview.setQTestProject(qTestProject);
             uploadedPreview.setQTestSuite(selectedQTestSuite);
             uploadedPreview.setQTestCase(qTestCase);
-            uploadedPreview.setQTestRun(testRun);
+            uploadedPreview.setQTestRun(qTestRun);
             uploadedPreview.setQTestLog(null);
             uploadedPreview.setTestLogIndex(testLogIndex);
             uploadedPreview.setTestCaseLogRecord(testLogEntity);
@@ -99,11 +107,9 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
      * 
      * @param testCaseEntity
      * @param testSuiteEntity
-     * @return true if the given params have the same qTestProject. Otherwise,
-     *         false.
+     * @return true if the given params have the same qTestProject. Otherwise, false.
      * @throws Exception
-     *             : throws if system cannot get repositories of the given
-     *             params
+     *             : throws if system cannot get repositories of the given params
      */
     private boolean isSameQTestProject(TestCaseEntity testCaseEntity, TestSuiteEntity testSuiteEntity,
             ProjectEntity projectEntity) throws Exception {
@@ -119,9 +125,28 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
         return testCaseProject.equals(testSuiteProject);
     }
 
+    private List<QTestRun> getCurrentQTestRuns(TestSuiteEntity testSuiteEntity, ProjectEntity projectEntity)
+            throws Exception {
+        IntegratedEntity testSuiteIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(testSuiteEntity);
+
+        if (testSuiteIntegratedEntity != null) {
+            List<QTestSuite> qTestSuiteCollection = QTestIntegrationTestSuiteManager
+                    .getQTestSuiteListByIntegratedEntity(testSuiteIntegratedEntity);
+            QTestSuite selectedQTestSuite = QTestIntegrationTestSuiteManager
+                    .getSelectedQTestSuiteByIntegratedEntity(qTestSuiteCollection);
+
+            QTestProject qTestProject = QTestIntegrationUtil.getTestSuiteRepo(testSuiteEntity, projectEntity)
+                    .getQTestProject();
+            return QTestIntegrationTestSuiteManager.getTestRuns(selectedQTestSuite, qTestProject,
+                    new QTestSettingCredential(projectEntity.getFolderLocation()));
+        }
+        return null;
+
+    }
+
     /**
-     * if qTest integration and auto-submit result option are both enable,
-     * upload the given test log of the given test suite to qTest server.
+     * If qTest integration and auto-submit result option are both enable, Uploads the given test log of the given test
+     * suite to qTest server.
      */
     @Override
     public void uploadTestSuiteResult(TestSuiteEntity testSuite, TestSuiteLogRecord suiteLog) throws Exception {

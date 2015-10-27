@@ -19,6 +19,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -31,16 +32,17 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.CreateNewTestSuiteParentDialog;
 import com.kms.katalon.composer.integration.qtest.dialog.model.TestSuiteParentCreationOption;
+import com.kms.katalon.composer.integration.qtest.job.UploadTestSuiteJob;
 import com.kms.katalon.composer.integration.qtest.model.TestSuiteRepo;
 import com.kms.katalon.composer.integration.qtest.preference.QTestPreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.integration.qtest.view.testsuite.provider.QTestSuiteTableLabelProvider;
@@ -52,8 +54,8 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
 import com.kms.katalon.integration.qtest.entity.QTestSuiteParent;
+import com.kms.katalon.integration.qtest.exception.QTestException;
 import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
-import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationView {
@@ -61,7 +63,7 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
         super(testSuiteEntity, mpart);
     }
 
-    private Text txtID, txtParentID, txtPID;
+    private StyledText txtID, txtParentID, txtPID;
     private List<QTestSuite> qTestSuites;
 
     private Button btnUpload, btnDisintegrate, btnNavigate, btnUpdateParent, btnSetDefault;
@@ -140,27 +142,31 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
         lblSelectedParentHeader.setText(StringConstants.VIEW_TITLE_INTEGRATION_INFORMATION);
 
         Composite compositeSelectedParentDetails = new Composite(compositeSelectedParent, SWT.BORDER);
+        compositeSelectedParentDetails.setBackground(ColorUtil.getWhiteBackgroundColor());
+        compositeSelectedParentDetails.setBackgroundMode(SWT.INHERIT_FORCE);
+        
         compositeSelectedParentDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        GridLayout gl_compositeSelectedParentDetails = new GridLayout(2, false);
-        gl_compositeSelectedParentDetails.horizontalSpacing = 15;
-        compositeSelectedParentDetails.setLayout(gl_compositeSelectedParentDetails);
+        GridLayout glCompositeSelectedParentDetails = new GridLayout(2, false);
+        glCompositeSelectedParentDetails.verticalSpacing = 7;
+        glCompositeSelectedParentDetails.horizontalSpacing = 15;
+        compositeSelectedParentDetails.setLayout(glCompositeSelectedParentDetails);
 
         Label lblQTestId = new Label(compositeSelectedParentDetails, SWT.NONE);
         lblQTestId.setText(StringConstants.VIEW_TITLE_TEST_SUITE_ID);
 
-        txtID = new Text(compositeSelectedParentDetails, SWT.BORDER | SWT.READ_ONLY);
+        txtID = new StyledText(compositeSelectedParentDetails, SWT.READ_ONLY);
         txtID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Label lblPID = new Label(compositeSelectedParentDetails, SWT.NONE);
         lblPID.setText(StringConstants.CM_ALIAS);
 
-        txtPID = new Text(compositeSelectedParentDetails, SWT.BORDER | SWT.READ_ONLY);
+        txtPID = new StyledText(compositeSelectedParentDetails, SWT.READ_ONLY);
         txtPID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Label lblParentId = new Label(compositeSelectedParentDetails, SWT.NONE);
         lblParentId.setText(StringConstants.CM_PARENT_ID);
 
-        txtParentID = new Text(compositeSelectedParentDetails, SWT.BORDER | SWT.READ_ONLY);
+        txtParentID = new StyledText(compositeSelectedParentDetails, SWT.READ_ONLY);
         txtParentID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         sashForm.setWeights(new int[] { 4, 6 });
 
@@ -293,7 +299,7 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
     }
 
     private void removeParentFromParentList() {
-        if (!isIntegrationActive()) return;
+        if (!isIntegrationActive()) { return; }
         IStructuredSelection selection = (IStructuredSelection) testSuiteParentTableViewer.getSelection();
         QTestSuite selectedQTestSuite = (QTestSuite) selection.getFirstElement();
         if (selectedQTestSuite.getId() > 0) {
@@ -304,7 +310,6 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
         testSuiteParentTableViewer.refresh();
 
         setDirty(true);
-
     }
 
     private void setDefaultQTestSuite(QTestSuite selectedQTestSuite) {
@@ -364,8 +369,8 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
                         uploadTestSuite(qTestSuite);
                         break;
                     case CREATE_UPLOAD_AND_SET_AS_DEFAULT:
-                        uploadTestSuite(qTestSuite);
                         setDefaultQTestSuite(qTestSuite);
+                        uploadTestSuite(qTestSuite);
                         break;
                     default:
                         break;
@@ -424,12 +429,10 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
                 return;
             }
 
-            URL url = QTestIntegrationTestSuiteManager.navigatedUrlToQTestTestSuite(getProjectDir(),
+            URL url = QTestIntegrationTestSuiteManager.navigatedUrlForQTestSuite(getProjectDir(),
                     selectedQTestSuite, repo.getQTestProject());
             IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser();
             browser.openURL(url);
-
-            // ResourceBundle.
         } catch (Exception e) {
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.VIEW_MSG_UNABLE_NAVIGATE_TEST_SUITE, e.getClass()
                     .getSimpleName());
@@ -448,29 +451,24 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
 
     private void uploadTestSuite(QTestSuite selectedQTestSuite) {
         try {
-            if (!isIntegrationActive()) return;
+            if (!isIntegrationActive()) { return; }
             ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
             TestSuiteRepo repo = QTestIntegrationUtil.getTestSuiteRepo(testSuiteEntity, currentProject);
             if (repo == null) {
                 showTestSuiteNotValidNotification();
                 return;
             }
-
-            QTestSuite newQTestSuite = QTestIntegrationTestSuiteManager.addTestSuite(getProjectDir(),
-                    testSuiteEntity.getName(), selectedQTestSuite.getParent(), repo.getQTestProject());
-
-            selectedQTestSuite.setId(newQTestSuite.getId());
-            selectedQTestSuite.setPid(newQTestSuite.getPid());
-
-            testSuiteParentTableViewer.update(selectedQTestSuite, null);
-
-            reloadView();
-            setDirty(true);
-        } catch (QTestUnauthorizedException ex) {
-            MultiStatusErrorDialog.showErrorDialog(ex, StringConstants.VIEW_MSG_UNABLE_UPLOAD_TEST_SUITE,
-                    "Invalid authentication");
+            List<QTestSuite> uploadedQTestSuites = new ArrayList<QTestSuite>();
+            uploadedQTestSuites.add(selectedQTestSuite);
+            UploadTestSuiteJob job = new UploadTestSuiteJob(testSuiteEntity, uploadedQTestSuites);
+            job.doTask();
+        } catch (QTestException ex) {
+            MultiStatusErrorDialog.showErrorDialog(ex, StringConstants.VIEW_MSG_UNABLE_UPLOAD_TEST_SUITE, ex.getClass()
+                    .getSimpleName());
+            LoggerSingleton.logError(ex);
         } catch (Exception ex) {
             MessageDialog.openWarning(null, StringConstants.WARN, StringConstants.VIEW_MSG_UNABLE_UPLOAD_TEST_SUITE);
+            LoggerSingleton.logError(ex);
         }
     }
 

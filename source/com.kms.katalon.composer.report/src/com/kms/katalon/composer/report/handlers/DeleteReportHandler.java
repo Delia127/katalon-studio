@@ -4,6 +4,7 @@ import javax.inject.Inject;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.di.UISynchronize;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
@@ -17,6 +18,9 @@ import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.entity.report.ReportEntity;
 
 public class DeleteReportHandler implements IDeleteEntityHandler {
+    
+    @Inject
+    private UISynchronize sync;
     
     @Inject
     private IEventBroker eventBroker; 
@@ -48,10 +52,16 @@ public class DeleteReportHandler implements IDeleteEntityHandler {
             
             eventBroker.send(EventConstants.REPORT_DELETED, reportId);
             return true;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LoggerSingleton.logError(e);
-            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.HAND_ERROR_MSG_UNABLE_TO_DELETE_REPORT,
-                    e.getMessage());
+            sync.syncExec(new Runnable() {
+                
+                @Override
+                public void run() {
+                    MultiStatusErrorDialog.showErrorDialog(e, StringConstants.HAND_ERROR_MSG_UNABLE_TO_DELETE_REPORT,
+                            e.getMessage());
+                }
+            });
             return false;
         } finally {
             monitor.done();

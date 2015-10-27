@@ -7,6 +7,7 @@ public abstract class QTestEntity {
     public static final String PARENT_ID_FIELD = "parentId";
     public static final String TYPE_FIELD = "type";
     public static final String PID_FIELD = "pid";
+    public static final String DESCRIPTION_FIELD = "description";
 
     protected long id;
     protected String name;

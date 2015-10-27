@@ -81,6 +81,11 @@ public class StringConstants extends GlobalStringConstants {
     public static final String JOB_TASK_UPLOAD_TEST_RESULT = "Uploading Test Case's Result...";
     public static final String JOB_SUB_TASK_UPLOAD_TEST_RESULT = "Uploading result of test case: {0}...";
     
+    //UploadTestSuiteJob
+    public static final String DIA_TITLE_TEST_SUITE_DUPLICATION = "Test Suite Duplication Detected";
+    public static final String DIA_MSG_CONFIRM_MERGE_UPLOADED_TEST_SUITE = "System has detected that a test suite on qTest"
+            + " with id: {0} has the same name as test suite: ''{1}'' under {2}: ''{3}''.\nDo you want to merge them?";
+    
     /******************************************************************************************************************/
     
     
