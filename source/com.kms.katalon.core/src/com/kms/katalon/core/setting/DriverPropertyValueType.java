@@ -18,7 +18,7 @@ public enum DriverPropertyValueType {
     }
     
     public static DriverPropertyValueType fromValue(Object value) {
-        if (value instanceof Integer) {
+        if (value instanceof Integer || value instanceof Double) {
             return Integer;
         } else if (value instanceof Boolean) {
             return Boolean;
