@@ -7,6 +7,7 @@ import java.util.List;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -14,12 +15,12 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.handler.QTestUploadTestCaseHandler;
@@ -45,14 +46,12 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
         super(testCaseEntity, mpart);
     }
 
-    private Text txtID;
-    private Text txtParentID;
+    private StyledText txtID, txtParentID, txtAlias;
     private QTestTestCase qTestTestCase;
 
     private Button btnUpload;
     private Button btnDisintegrate;
     private Button btnNavigate;
-    private Text txtPID;
 
     /**
      * @wbp.parser.entryPoint
@@ -65,7 +64,9 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
         container.setLayout(glContainer);
 
         Composite compositeButton = new Composite(container, SWT.NONE);
-        compositeButton.setLayout(new GridLayout(3, false));
+        GridLayout gl_compositeButton = new GridLayout(3, false);
+        gl_compositeButton.marginWidth = 0;
+        compositeButton.setLayout(gl_compositeButton);
 
         btnUpload = new Button(compositeButton, SWT.FLAT);
         btnUpload.setToolTipText(StringConstants.VIEW_TOOLTIP_UPLOAD_TEST_CASE);
@@ -79,27 +80,33 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
         btnNavigate.setToolTipText(StringConstants.VIEW_TOOLTIP_NAVIGATE_TEST_CASE);
         btnNavigate.setText(StringConstants.CM_NAVIGATE);
 
-        Composite compositeInfo = new Composite(container, SWT.NONE);
+        Composite compositeInfo = new Composite(container, SWT.BORDER);
+        compositeInfo.setBackground(ColorUtil.getWhiteBackgroundColor());
+        compositeInfo.setBackgroundMode(SWT.INHERIT_FORCE);
+        
         compositeInfo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        compositeInfo.setLayout(new GridLayout(2, false));
+        GridLayout gl_compositeInfo = new GridLayout(2, false);
+        gl_compositeInfo.verticalSpacing = 7;
+        gl_compositeInfo.horizontalSpacing = 15;
+        compositeInfo.setLayout(gl_compositeInfo);
 
         Label lblTestCaseId = new Label(compositeInfo, SWT.NONE);
         lblTestCaseId.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
         lblTestCaseId.setText(StringConstants.VIEW_TITLE_TEST_CASE_ID);
 
-        txtID = new Text(compositeInfo, SWT.BORDER | SWT.READ_ONLY);
+        txtID = new StyledText(compositeInfo, SWT.READ_ONLY);
         txtID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Label lblPID = new Label(compositeInfo, SWT.NONE);
         lblPID.setText(StringConstants.CM_ALIAS);
 
-        txtPID = new Text(compositeInfo, SWT.BORDER | SWT.READ_ONLY);
-        txtPID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtAlias = new StyledText(compositeInfo, SWT.READ_ONLY);
+        txtAlias.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Label lblParentId = new Label(compositeInfo, SWT.NONE);
         lblParentId.setText(StringConstants.CM_PARENT_ID);
 
-        txtParentID = new Text(compositeInfo, SWT.BORDER | SWT.READ_ONLY);
+        txtParentID = new StyledText(compositeInfo, SWT.READ_ONLY);
         txtParentID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         initialize();
@@ -245,11 +252,11 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
         if (qTestTestCase != null) {
             txtID.setText(String.valueOf(qTestTestCase.getId()));
             txtParentID.setText(String.valueOf(qTestTestCase.getParentId()));
-            txtPID.setText(qTestTestCase.getPid());
+            txtAlias.setText(qTestTestCase.getPid());
         } else {
             txtID.setText("");
             txtParentID.setText("");
-            txtPID.setText("");
+            txtAlias.setText("");
         }
     }
 

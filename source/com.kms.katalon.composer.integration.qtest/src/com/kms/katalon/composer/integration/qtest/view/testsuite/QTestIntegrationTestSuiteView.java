@@ -19,6 +19,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -31,12 +32,12 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.CreateNewTestSuiteParentDialog;
@@ -62,7 +63,7 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
         super(testSuiteEntity, mpart);
     }
 
-    private Text txtID, txtParentID, txtPID;
+    private StyledText txtID, txtParentID, txtPID;
     private List<QTestSuite> qTestSuites;
 
     private Button btnUpload, btnDisintegrate, btnNavigate, btnUpdateParent, btnSetDefault;
@@ -141,27 +142,31 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
         lblSelectedParentHeader.setText(StringConstants.VIEW_TITLE_INTEGRATION_INFORMATION);
 
         Composite compositeSelectedParentDetails = new Composite(compositeSelectedParent, SWT.BORDER);
+        compositeSelectedParentDetails.setBackground(ColorUtil.getWhiteBackgroundColor());
+        compositeSelectedParentDetails.setBackgroundMode(SWT.INHERIT_FORCE);
+        
         compositeSelectedParentDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        GridLayout gl_compositeSelectedParentDetails = new GridLayout(2, false);
-        gl_compositeSelectedParentDetails.horizontalSpacing = 15;
-        compositeSelectedParentDetails.setLayout(gl_compositeSelectedParentDetails);
+        GridLayout glCompositeSelectedParentDetails = new GridLayout(2, false);
+        glCompositeSelectedParentDetails.verticalSpacing = 7;
+        glCompositeSelectedParentDetails.horizontalSpacing = 15;
+        compositeSelectedParentDetails.setLayout(glCompositeSelectedParentDetails);
 
         Label lblQTestId = new Label(compositeSelectedParentDetails, SWT.NONE);
         lblQTestId.setText(StringConstants.VIEW_TITLE_TEST_SUITE_ID);
 
-        txtID = new Text(compositeSelectedParentDetails, SWT.BORDER | SWT.READ_ONLY);
+        txtID = new StyledText(compositeSelectedParentDetails, SWT.READ_ONLY);
         txtID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Label lblPID = new Label(compositeSelectedParentDetails, SWT.NONE);
         lblPID.setText(StringConstants.CM_ALIAS);
 
-        txtPID = new Text(compositeSelectedParentDetails, SWT.BORDER | SWT.READ_ONLY);
+        txtPID = new StyledText(compositeSelectedParentDetails, SWT.READ_ONLY);
         txtPID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Label lblParentId = new Label(compositeSelectedParentDetails, SWT.NONE);
         lblParentId.setText(StringConstants.CM_PARENT_ID);
 
-        txtParentID = new Text(compositeSelectedParentDetails, SWT.BORDER | SWT.READ_ONLY);
+        txtParentID = new StyledText(compositeSelectedParentDetails, SWT.READ_ONLY);
         txtParentID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         sashForm.setWeights(new int[] { 4, 6 });
 
@@ -364,8 +369,8 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
                         uploadTestSuite(qTestSuite);
                         break;
                     case CREATE_UPLOAD_AND_SET_AS_DEFAULT:
-                        uploadTestSuite(qTestSuite);
                         setDefaultQTestSuite(qTestSuite);
+                        uploadTestSuite(qTestSuite);
                         break;
                     default:
                         break;
@@ -446,7 +451,7 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
 
     private void uploadTestSuite(QTestSuite selectedQTestSuite) {
         try {
-            if (!isIntegrationActive()) return;
+            if (!isIntegrationActive()) { return; }
             ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
             TestSuiteRepo repo = QTestIntegrationUtil.getTestSuiteRepo(testSuiteEntity, currentProject);
             if (repo == null) {
