@@ -294,7 +294,7 @@ public class QTestIntegrationTestCaseManager {
      * @return
      * @throws JsonException
      */
-    private static FieldValue getTestCaseFieldValue(String fieldName, String typeName, JsonArray responseJsonArray)
+    public static FieldValue getTestCaseFieldValue(String fieldName, String typeName, JsonArray responseJsonArray)
             throws JsonException {
         for (int index = 0; index < responseJsonArray.length(); index++) {
             JsonObject fieldJsonObject = responseJsonArray.getJsonObject(index);
