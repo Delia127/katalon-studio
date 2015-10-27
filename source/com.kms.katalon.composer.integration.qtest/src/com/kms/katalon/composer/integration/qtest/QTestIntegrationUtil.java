@@ -41,6 +41,7 @@ import com.kms.katalon.integration.qtest.entity.QTestRun;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
 import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
+import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class QTestIntegrationUtil {
@@ -75,6 +76,19 @@ public class QTestIntegrationUtil {
      */
     public static IntegratedEntity getIntegratedEntity(IntegratedFileEntity fileEntity) {
         return fileEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
+    }
+    
+    /**
+     * Removes qTest {@link IntegratedEntity} from the given <code>fileEntity</code>
+     * @param fileEntity
+     * @return the {@link IntegratedFileEntity} after removing qTest {@link IntegratedEntity}
+     */
+    public static IntegratedFileEntity removeQTestIntegratedEntity(IntegratedFileEntity fileEntity) {
+        IntegratedEntity qTestIntegratedEntity = getIntegratedEntity(fileEntity);
+        if (qTestIntegratedEntity != null) {
+            fileEntity.getIntegratedEntities().remove(qTestIntegratedEntity);
+        }
+        return fileEntity;
     }
 
     /**
@@ -476,6 +490,7 @@ public class QTestIntegrationUtil {
      *         <li> {@link QTestLogEvaluation#INTEGRATED} if the given testCaseLogRecord is integrated.</li> <li>
      *         {@link QTestLogEvaluation#CAN_INTEGRATE} if the given testCaseLogRecord can be integrated but have not
      *         been integrated yet.</li>
+     * @throws Exception
      */
     public static QTestLogEvaluation evaluateTestCaseLog(TestCaseLogRecord testCaseLogRecord, QTestSuite qTestSuite,
             ReportEntity reportEntity) {
@@ -483,14 +498,20 @@ public class QTestIntegrationUtil {
         if (qTestCase == null) {
             return QTestLogEvaluation.CANNOT_INTEGRATE;
         }
-
+        
+        if (!isSameQTestProject(testCaseLogRecord, LogRecordLookup.getInstance()
+                .getTestSuiteLogRecord(reportEntity))) {
+            return QTestLogEvaluation.CANNOT_INTEGRATE;
+        }
+        
         QTestRun qTestRun = QTestIntegrationTestSuiteManager.getTestRunByTestSuiteAndTestCaseId(qTestSuite,
                 qTestCase.getId());
         if (qTestRun != null) {
             IntegratedEntity reportIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(reportEntity);
             QTestReport qTestReport;
             try {
-                qTestReport = QTestIntegrationReportManager.getQTestReportByIntegratedEntity(reportIntegratedEntity);
+                qTestReport = QTestIntegrationReportManager
+                        .getQTestReportByIntegratedEntity(reportIntegratedEntity);
             } catch (Exception e) {
                 return QTestLogEvaluation.CANNOT_INTEGRATE;
             }
@@ -503,6 +524,30 @@ public class QTestIntegrationUtil {
             }
         }
         return QTestLogEvaluation.CAN_INTEGRATE;
+    }
+
+    private static boolean isSameQTestProject(TestCaseLogRecord testCaseLogRecord, TestSuiteLogRecord testSuiteLogRecord) {
+        try {
+            ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
+            // Return QTestLogEvaluation.CANNOT_INTEGRATE if testCaseEntity and testSuiteEntity are not in the same
+            // qTestProject
+            TestCaseRepo testCaseRepo = getTestCaseRepo(
+                    TestCaseController.getInstance().getTestCaseByDisplayId(testCaseLogRecord.getId()), projectEntity);
+            if (testCaseRepo == null || testCaseRepo.getQTestProject() == null) {
+                return false;
+            }
+            TestSuiteEntity testSuiteEntity = QTestIntegrationUtil.getTestSuiteEntity(testSuiteLogRecord);
+            TestSuiteRepo testSuiteRepo = getTestSuiteRepo(testSuiteEntity, projectEntity);
+
+            if (testSuiteRepo == null || testSuiteRepo.getQTestProject() == null) {
+                return false;
+            }
+
+            return testCaseRepo.getQTestProject().getId() == testSuiteRepo.getQTestProject().getId();
+        } catch (Exception ex) {
+            LoggerSingleton.logError(ex);
+            return false;
+        }
     }
 
     /**
@@ -607,5 +652,56 @@ public class QTestIntegrationUtil {
     public static TestSuiteEntity getTestSuiteEntity(TestSuiteLogRecord testSuiteLogRecord) throws Exception {
         return TestSuiteController.getInstance().getTestSuiteByDisplayId(testSuiteLogRecord.getId(),
                 ProjectController.getInstance().getCurrentProject());
+    }
+
+    /**
+     * Returns the first {@link QTestRun} in the given <code>currentQTestRuns</code> that's
+     * {@link QTestRun#getQTestCaseId()} equals with <code>id</code> of the given <code>qTestCase</code>.
+     * 
+     * @param qTestCase
+     * @param currentQTestRuns
+     * @return {@link QTestRun} if can be found. Otherwise, null.
+     */
+    public static QTestRun getQTestRun(QTestTestCase qTestCase, List<QTestRun> currentQTestRuns) {
+        if (qTestCase == null || currentQTestRuns == null) {
+            return null;
+        }
+
+        for (QTestRun currentQTestRun : currentQTestRuns) {
+            if (qTestCase.getId() == currentQTestRun.getQTestCaseId()) {
+                return currentQTestRun;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Fetches the list of {@link QTestRun} under the given selected {@link QTestSuite} of the given
+     * <code>testSuiteEntity</code> from qTest
+     * 
+     * @param testSuiteEntity
+     * @param projectEntity
+     * @return list of {@link QTestRun} that each one has id that equals with a {@link QTestTestCase#getId()} in the
+     *         given <code>testSuiteEntity</code>, null if the given <code>testSuiteEntity</code> isn't integrated with
+     *         qTest.
+     * @throws Exception
+     */
+    public static List<QTestRun> getCurrentQTestRuns(TestSuiteEntity testSuiteEntity, ProjectEntity projectEntity)
+            throws Exception {
+        IntegratedEntity testSuiteIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(testSuiteEntity);
+
+        if (testSuiteIntegratedEntity != null) {
+            List<QTestSuite> qTestSuiteCollection = QTestIntegrationTestSuiteManager
+                    .getQTestSuiteListByIntegratedEntity(testSuiteIntegratedEntity);
+            QTestSuite selectedQTestSuite = QTestIntegrationTestSuiteManager
+                    .getSelectedQTestSuiteByIntegratedEntity(qTestSuiteCollection);
+
+            QTestProject qTestProject = QTestIntegrationUtil.getTestSuiteRepo(testSuiteEntity, projectEntity)
+                    .getQTestProject();
+            return QTestIntegrationTestSuiteManager.getTestRuns(selectedQTestSuite, qTestProject,
+                    new QTestSettingCredential(projectEntity.getFolderLocation()));
+        }
+        return null;
+
     }
 }

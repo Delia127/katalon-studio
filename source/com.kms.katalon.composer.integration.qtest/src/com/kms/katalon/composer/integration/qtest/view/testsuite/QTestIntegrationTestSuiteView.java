@@ -41,6 +41,7 @@ import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.CreateNewTestSuiteParentDialog;
 import com.kms.katalon.composer.integration.qtest.dialog.model.TestSuiteParentCreationOption;
+import com.kms.katalon.composer.integration.qtest.job.UploadTestSuiteJob;
 import com.kms.katalon.composer.integration.qtest.model.TestSuiteRepo;
 import com.kms.katalon.composer.integration.qtest.preference.QTestPreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.integration.qtest.view.testsuite.provider.QTestSuiteTableLabelProvider;
@@ -52,8 +53,8 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
 import com.kms.katalon.integration.qtest.entity.QTestSuiteParent;
+import com.kms.katalon.integration.qtest.exception.QTestException;
 import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
-import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationView {
@@ -293,7 +294,7 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
     }
 
     private void removeParentFromParentList() {
-        if (!isIntegrationActive()) return;
+        if (!isIntegrationActive()) { return; }
         IStructuredSelection selection = (IStructuredSelection) testSuiteParentTableViewer.getSelection();
         QTestSuite selectedQTestSuite = (QTestSuite) selection.getFirstElement();
         if (selectedQTestSuite.getId() > 0) {
@@ -304,7 +305,6 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
         testSuiteParentTableViewer.refresh();
 
         setDirty(true);
-
     }
 
     private void setDefaultQTestSuite(QTestSuite selectedQTestSuite) {
@@ -424,12 +424,10 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
                 return;
             }
 
-            URL url = QTestIntegrationTestSuiteManager.navigatedUrlToQTestTestSuite(getProjectDir(),
+            URL url = QTestIntegrationTestSuiteManager.navigatedUrlForQTestSuite(getProjectDir(),
                     selectedQTestSuite, repo.getQTestProject());
             IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser();
             browser.openURL(url);
-
-            // ResourceBundle.
         } catch (Exception e) {
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.VIEW_MSG_UNABLE_NAVIGATE_TEST_SUITE, e.getClass()
                     .getSimpleName());
@@ -455,22 +453,17 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
                 showTestSuiteNotValidNotification();
                 return;
             }
-
-            QTestSuite newQTestSuite = QTestIntegrationTestSuiteManager.addTestSuite(getProjectDir(),
-                    testSuiteEntity.getName(), selectedQTestSuite.getParent(), repo.getQTestProject());
-
-            selectedQTestSuite.setId(newQTestSuite.getId());
-            selectedQTestSuite.setPid(newQTestSuite.getPid());
-
-            testSuiteParentTableViewer.update(selectedQTestSuite, null);
-
-            reloadView();
-            setDirty(true);
-        } catch (QTestUnauthorizedException ex) {
-            MultiStatusErrorDialog.showErrorDialog(ex, StringConstants.VIEW_MSG_UNABLE_UPLOAD_TEST_SUITE,
-                    "Invalid authentication");
+            List<QTestSuite> uploadedQTestSuites = new ArrayList<QTestSuite>();
+            uploadedQTestSuites.add(selectedQTestSuite);
+            UploadTestSuiteJob job = new UploadTestSuiteJob(testSuiteEntity, uploadedQTestSuites);
+            job.doTask();
+        } catch (QTestException ex) {
+            MultiStatusErrorDialog.showErrorDialog(ex, StringConstants.VIEW_MSG_UNABLE_UPLOAD_TEST_SUITE, ex.getClass()
+                    .getSimpleName());
+            LoggerSingleton.logError(ex);
         } catch (Exception ex) {
             MessageDialog.openWarning(null, StringConstants.WARN, StringConstants.VIEW_MSG_UNABLE_UPLOAD_TEST_SUITE);
+            LoggerSingleton.logError(ex);
         }
     }
 

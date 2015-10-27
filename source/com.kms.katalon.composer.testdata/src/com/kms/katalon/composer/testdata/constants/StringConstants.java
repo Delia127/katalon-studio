@@ -78,5 +78,5 @@ public class StringConstants extends GlobalStringConstants {
 
     // TestDataReferencesDialog
     public static final String DIA_MSG_HEADER_TEST_DATA_REFERENCES = "Test data ''{0}'' has been referred by some test "
-            + "suites listed below.\nDo you want to delete all the references?";
+            + "suites listed below.\nDo you want to delete all these references?";
 }

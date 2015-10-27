@@ -283,7 +283,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String KEYWORD_BROWSER_CUSTOM_KEYWORD_ROOT_TREE_ITEM_LABEL = "Custom Keywords";
 
     // TestCaseReferencesDialog
-    public static final String DIA_MSG_HEADER_TEST_CASE_REFERENCES = "Test case ''{0}'' has been referred by some test suites listed below.\nDo you want to delete all the references?";
+    public static final String DIA_MSG_HEADER_TEST_CASE_REFERENCES = "Test case ''{0}'' has been referred by some test "
+            + "suites listed below.\nDo you want to delete all these references?";
     public static final String DIA_TITLE_TEST_CASE_REFERENCES = "Test Case's References Detected";
     public static final String DIA_FIELD_TEST_SUITE_ID = "Test Suite ID";
 }

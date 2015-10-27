@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.integration.qtest.handler;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -19,7 +21,8 @@ public class QTestUploadTestSuiteHandler extends AbstractQTestHandler {
     @Inject
     private ESelectionService selectionService;
 
-    private TestSuiteEntity testSuite;
+    private TestSuiteEntity fTestSuite;
+    private List<QTestSuite> fUnuploadedQTestSuites;
 
     /**
      * @return true if the selected test suite has at least one {@link QTestSuite} that had not been uploaded.
@@ -44,8 +47,9 @@ public class QTestUploadTestSuiteHandler extends AbstractQTestHandler {
                 return false;
             }
 
-            testSuite = (TestSuiteEntity) selectedEntity;
-            return QTestIntegrationUtil.getUnuploadedQTestSuites(testSuite).size() > 0;
+            fTestSuite = (TestSuiteEntity) selectedEntity;
+            fUnuploadedQTestSuites =  QTestIntegrationUtil.getUnuploadedQTestSuites(fTestSuite);
+            return fUnuploadedQTestSuites.size() > 0;
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
@@ -54,7 +58,7 @@ public class QTestUploadTestSuiteHandler extends AbstractQTestHandler {
 
     @Execute
     public void execute() {
-        UploadTestSuiteJob job = new UploadTestSuiteJob(testSuite);
+        UploadTestSuiteJob job = new UploadTestSuiteJob(fTestSuite, fUnuploadedQTestSuites);
         job.doTask();
     }
 }
