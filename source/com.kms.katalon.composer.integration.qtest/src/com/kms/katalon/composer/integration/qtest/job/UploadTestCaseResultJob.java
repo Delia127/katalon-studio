@@ -22,7 +22,6 @@ import com.kms.katalon.integration.qtest.entity.QTestLog;
 import com.kms.katalon.integration.qtest.entity.QTestLogUploadedPreview;
 import com.kms.katalon.integration.qtest.entity.QTestRun;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
-import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 
 public class UploadTestCaseResultJob extends UploadJob {
 
@@ -44,6 +43,7 @@ public class UploadTestCaseResultJob extends UploadJob {
     protected IStatus run(IProgressMonitor monitor) {
         monitor.beginTask(StringConstants.JOB_TASK_UPLOAD_TEST_RESULT, uploadedPreviewLst.size());
         try {
+
             for (QTestLogUploadedPreview uploadedItem : uploadedPreviewLst) {
                 if (monitor.isCanceled()) break;
 
@@ -55,22 +55,33 @@ public class UploadTestCaseResultJob extends UploadJob {
                         .getQTestSuiteListByIntegratedEntity(testSuiteIntegratedEntity);
 
                 QTestRun qTestRun = uploadedItem.getQTestRun();
+
                 if (qTestRun == null) {
-                    try {
-                        qTestRun = QTestIntegrationTestSuiteManager.uploadTestCaseInTestSuite(
-                                uploadedItem.getQTestCase(), uploadedItem.getQTestSuite(),
-                                uploadedItem.getQTestProject(), projectDir);
+                    // Check in the current list first
+                    qTestRun = getQTestRun(uploadedItem,
+                            QTestIntegrationUtil.getCurrentQTestRuns(testSuiteEntity, projectEntity));
 
-                        QTestIntegrationUtil.addNewTestRunToTestSuite(testSuiteEntity, testSuiteIntegratedEntity,
-                                uploadedItem.getQTestSuite(), qTestRun, qTestSuiteCollection);
+                    // If qTestRun isn't in the current list, upload new to qTest.
+                    if (qTestRun == null) {
+                        try {
+                            qTestRun = QTestIntegrationTestSuiteManager.uploadTestCaseInTestSuite(
+                                    uploadedItem.getQTestCase(), uploadedItem.getQTestSuite(),
+                                    uploadedItem.getQTestProject(), projectDir);
 
-                        // update test run for the uploaded item
-                        uploadedItem.setQTestRun(qTestRun);
-                    } catch (Exception e) {
-                        LoggerSingleton.logError(e);
-                        monitor.setCanceled(true);
-                        return Status.CANCEL_STATUS;
+                            // update test run for the uploaded item
+                            uploadedItem.setQTestRun(qTestRun);
+                        } catch (Exception e) {
+                            LoggerSingleton.logError(e);
+                            monitor.setCanceled(true);
+                            return Status.CANCEL_STATUS;
+                        }
+                    } else {
+                        qTestRun.setQTestCaseId( uploadedItem.getQTestCase().getId());
                     }
+
+                    // Save test suite.
+                    QTestIntegrationUtil.addNewTestRunToTestSuite(testSuiteEntity, testSuiteIntegratedEntity,
+                            uploadedItem.getQTestSuite(), qTestRun, qTestSuiteCollection);
                 }
 
                 try {
@@ -89,8 +100,9 @@ public class UploadTestCaseResultJob extends UploadJob {
                 monitor.worked(1);
             }
             return Status.OK_STATUS;
-        } catch (QTestInvalidFormatException ex) {
+        } catch (Exception ex) {
             monitor.setCanceled(true);
+            LoggerSingleton.logError(ex);
             return Status.CANCEL_STATUS;
         } finally {
             monitor.done();
@@ -99,6 +111,15 @@ public class UploadTestCaseResultJob extends UploadJob {
                     .post(EventConstants.REPORT_UPDATED, reportEntity.getId());
         }
 
+    }
+
+    private QTestRun getQTestRun(QTestLogUploadedPreview uploadedPreviewItem, List<QTestRun> currentQTestRunsOnQTest) {
+        for (QTestRun currentQTestRun : currentQTestRunsOnQTest) {
+            if (uploadedPreviewItem.getQTestCase().getId() == currentQTestRun.getQTestCaseId()) {
+                return currentQTestRun;
+            }
+        }
+        return null;
     }
 
     private void setUploadedPreviewLst(List<QTestLogUploadedPreview> uploadedPreviewLst) {

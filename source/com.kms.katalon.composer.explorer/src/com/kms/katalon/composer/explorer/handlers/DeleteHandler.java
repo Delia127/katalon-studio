@@ -23,6 +23,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.YesNoAllOptions;
+import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.SelectionServiceSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
@@ -95,7 +96,17 @@ public class DeleteHandler implements IHandler {
                     monitor.beginTask("Deleting items...", objects.length + 1);
                     Set<ITreeEntity> parentSetEntities = new HashSet<ITreeEntity>();
 
+                    // Used for deletion options when an AbstractDeleteEntityDialog opened.
+                    YesNoAllOptions[] availabelDeletionOptions = null;
+
                     YesNoAllOptions globalDeletionOption = YesNoAllOptions.NO;
+
+                    if (objects.length == 1 && !(objects[0] instanceof FolderTreeEntity)) {
+                        availabelDeletionOptions = new YesNoAllOptions[] { YesNoAllOptions.YES, YesNoAllOptions.NO };
+                    } else {
+                        availabelDeletionOptions = YesNoAllOptions.values();
+                    }
+
                     for (Object selectedItem : objects) {
                         if (monitor.isCanceled()) {
                             return;
@@ -112,7 +123,6 @@ public class DeleteHandler implements IHandler {
                             if (treeEntity.getParent() != null) {
                                 parentSetEntities.add(treeEntity.getParent());
                             }
-
                         } catch (Exception e) {
                             subMonitor.done();
                             continue;
@@ -129,10 +139,14 @@ public class DeleteHandler implements IHandler {
                             if (handler instanceof AbstractDeleteReferredEntityHandler) {
                                 AbstractDeleteReferredEntityHandler deletePreferenceHandler = (AbstractDeleteReferredEntityHandler) handler;
                                 deletePreferenceHandler.setDeletePreferenceOption(globalDeletionOption);
+                                deletePreferenceHandler.setAvailableDeletionOptions(availabelDeletionOptions);
                             }
 
-                            handler.execute(treeEntity, subMonitor);
-
+                            try {
+                                handler.execute(treeEntity, subMonitor);
+                            } catch (Exception ex) {
+                                LoggerSingleton.logError(ex);
+                            }
                             // Store the confirmation of "Yes to all" or "No to all" for all previous entity
                             if (handler instanceof AbstractDeleteReferredEntityHandler) {
                                 AbstractDeleteReferredEntityHandler deletePreferenceHandler = (AbstractDeleteReferredEntityHandler) handler;

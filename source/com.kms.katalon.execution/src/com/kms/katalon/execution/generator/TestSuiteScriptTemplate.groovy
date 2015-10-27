@@ -34,7 +34,7 @@ def static runTestCase_<%= index %>() {
 Map<String, String> suiteProperties = new HashMap<String, String>();
 
 <% configProperties.each { k, v -> %>
-suiteProperties.put("<%= k %>", "<%= v %>")
+suiteProperties.put('<%= k %>', '<%= v %>')
 <% } %> 
 
 <% driverCleaners.each { %>DriverCleanerCollector.getInstance().addDriverCleaner(new <%= it %>())

@@ -27,9 +27,11 @@ import com.kms.katalon.composer.integration.qtest.handler.QTestUploadReportHandl
 import com.kms.katalon.composer.integration.qtest.handler.QTestUploadTestCaseHandler;
 import com.kms.katalon.composer.integration.qtest.handler.QTestUploadTestSuiteHandler;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
+import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class QTestContextMenuContribution {
 
@@ -50,6 +52,12 @@ public class QTestContextMenuContribution {
     @AboutToShow
     public void aboutToShow(List<MMenuElement> menuItems) {
         try {
+            String projectDir = ProjectController.getInstance().getCurrentProject()
+                    .getFolderLocation();
+            if (!QTestSettingStore.isIntegrationActive(projectDir)) {
+                return;
+            }
+
             Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
             if (selectedObjects == null || selectedObjects.length != 1) {
                 return;

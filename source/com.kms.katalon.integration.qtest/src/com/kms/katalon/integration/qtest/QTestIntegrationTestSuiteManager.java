@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 import java.util.TreeMap;
 
 import org.apache.http.NameValuePair;
@@ -15,12 +16,25 @@ import org.apache.http.message.BasicNameValuePair;
 import org.qas.api.internal.util.json.JsonArray;
 import org.qas.api.internal.util.json.JsonException;
 import org.qas.api.internal.util.json.JsonObject;
+import org.qas.qtest.api.auth.BasicQTestCredentials;
+import org.qas.qtest.api.auth.QTestCredentials;
+import org.qas.qtest.api.internal.model.ArtifactLevel;
+import org.qas.qtest.api.internal.model.FieldValue;
+import org.qas.qtest.api.internal.model.Link;
+import org.qas.qtest.api.services.execution.TestExecutionService;
+import org.qas.qtest.api.services.execution.TestExecutionServiceClient;
+import org.qas.qtest.api.services.execution.model.CreateTestSuiteRequest;
+import org.qas.qtest.api.services.execution.model.ListTestRunRequest;
+import org.qas.qtest.api.services.execution.model.ListTestSuiteRequest;
+import org.qas.qtest.api.services.execution.model.TestRun;
+import org.qas.qtest.api.services.execution.model.TestSuite;
 
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.integration.IntegratedType;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.integration.qtest.constants.QTestMessageConstants;
 import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
+import com.kms.katalon.integration.qtest.credential.IQTestCredential;
 import com.kms.katalon.integration.qtest.entity.QTestCycle;
 import com.kms.katalon.integration.qtest.entity.QTestEntity;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
@@ -49,8 +63,7 @@ public class QTestIntegrationTestSuiteManager {
     }
 
     /**
-     * Finds the selected item in the given <code>qTestSuites</code> The
-     * returned will be used for uploading.
+     * Finds the selected item in the given <code>qTestSuites</code> The returned will be used for uploading.
      * 
      * @param qTestSuites
      * @return {@link QTestSuite}
@@ -65,8 +78,8 @@ public class QTestIntegrationTestSuiteManager {
     }
 
     /**
-     * Gets the {@link QTestRun} inside the given <code>qTestSuite</code> that
-     * is an image of {@link QTestTestCase} in {@link QTestSuite}
+     * Gets the {@link QTestRun} inside the given <code>qTestSuite</code> that is an image of {@link QTestTestCase} in
+     * {@link QTestSuite}
      * 
      * @param qTestSuite
      * @param testCaseId
@@ -75,8 +88,10 @@ public class QTestIntegrationTestSuiteManager {
      * @see {@link QTestRun#getQTestCaseId()}
      */
     public static QTestRun getTestRunByTestSuiteAndTestCaseId(QTestSuite qTestSuite, long testCaseId) {
-        if (qTestSuite == null) { return null; }
-        
+        if (qTestSuite == null) {
+            return null;
+        }
+
         QTestRun testRun = null;
         for (QTestRun childTestRun : qTestSuite.getTestRuns()) {
             if (childTestRun.getQTestCaseId() == testCaseId) {
@@ -88,8 +103,8 @@ public class QTestIntegrationTestSuiteManager {
     }
 
     /**
-     * Inserts the given <code>qTestSuite</code> at the given <code>order</code>
-     * of the given <code>testSuiteIntegratedEntity</code>
+     * Inserts the given <code>qTestSuite</code> at the given <code>order</code> of the given
+     * <code>testSuiteIntegratedEntity</code>
      * 
      * @param qTestSuite
      * @param testSuiteIntegratedEntity
@@ -114,12 +129,10 @@ public class QTestIntegrationTestSuiteManager {
     }
 
     /**
-     * Transforms the given <code>qTestSuites</code> to qTest
-     * {@link IntegratedEntity} of a {@link TestSuiteEntity}
+     * Transforms the given <code>qTestSuites</code> to qTest {@link IntegratedEntity} of a {@link TestSuiteEntity}
      * 
      * @param qTestSuites
-     * @return qTest {@link IntegratedEntity} with
-     *         {@link IntegratedType#TESTSUITE}
+     * @return qTest {@link IntegratedEntity} with {@link IntegratedType#TESTSUITE}
      */
     public static IntegratedEntity getIntegratedEntityByTestSuiteList(List<QTestSuite> qTestSuites) {
         IntegratedEntity testSuiteIntegratedEntity = new IntegratedEntity();
@@ -134,8 +147,8 @@ public class QTestIntegrationTestSuiteManager {
     }
 
     /**
-     * Returns a list of {@link QTestSuite} by parsing the given qTest
-     * <code>integratedEntity</code> of a {@link TestSuiteEntity}
+     * Returns a list of {@link QTestSuite} by parsing the given qTest <code>integratedEntity</code> of a
+     * {@link TestSuiteEntity}
      * 
      * @param integratedEntity
      *            qTest {@link IntegratedEntity} of a test suite
@@ -180,8 +193,7 @@ public class QTestIntegrationTestSuiteManager {
     }
 
     /**
-     * Supporting method of
-     * {@link #getQTestSuiteListByIntegratedEntity(IntegratedEntity)} Returns
+     * Supporting method of {@link #getQTestSuiteListByIntegratedEntity(IntegratedEntity)} Returns
      * {@link QTestSuiteParent} by parsing its JSON format.
      * 
      * @param parentJsonObject
@@ -212,12 +224,10 @@ public class QTestIntegrationTestSuiteManager {
     }
 
     /**
-     * Returns a list of {@link QTestRun} by parsing the given
-     * <code>testRunJsonArray</code>
+     * Returns a list of {@link QTestRun} by parsing the given <code>testRunJsonArray</code>
      * 
      * @param testRunJsonArray
-     *            a {@link JsonArray} that contains {@link QTestRun}
-     *            information.
+     *            a {@link JsonArray} that contains {@link QTestRun} information.
      * @return a list of {@link QTestRun}
      * @throws JsonException
      *             if there is any error occurs when using JSON
@@ -242,8 +252,8 @@ public class QTestIntegrationTestSuiteManager {
     /**
      * Used for saving.
      * 
-     * Returns an qTest {@link IntegratedEntity} of {@link TestSuiteEntity} by
-     * transforming the given <code>qTestTS</code>
+     * Returns an qTest {@link IntegratedEntity} of {@link TestSuiteEntity} by transforming the given
+     * <code>qTestTS</code>
      * 
      * @param qTestTS
      * @return
@@ -322,8 +332,7 @@ public class QTestIntegrationTestSuiteManager {
     }
 
     /**
-     * Creates new {@link QTestRun}, an image of a {@link QTestTestCase} to
-     * qTest server via qTest's API.
+     * Creates new {@link QTestRun}, an image of a {@link QTestTestCase} to qTest server via qTest's API.
      * 
      * @param testCase
      *            {@link QTestTestCase} reference of the new {@link QTestRun}
@@ -333,8 +342,7 @@ public class QTestIntegrationTestSuiteManager {
      * @param projectDir
      * @return a new {@link QTestRun} created by parsing its JSON response
      * @throws QTestException
-     *             thrown if system cannot send request or the response is not a
-     *             JSON string.
+     *             thrown if system cannot send request or the response is not a JSON string.
      */
     public static QTestRun uploadTestCaseInTestSuite(QTestTestCase testCase, QTestSuite testSuite,
             QTestProject project, String projectDir) throws QTestException {
@@ -361,6 +369,7 @@ public class QTestIntegrationTestSuiteManager {
                 testRun.setName(testCase.getName());
                 testRun.setQTestCaseId(testCase.getId());
                 testRun.setPid(resultObject.getString(QTestEntity.PID_FIELD));
+                testRun.setTestCaseVersionId(testCase.getVersionId());
                 return testRun;
             } else {
                 return null;
@@ -381,49 +390,89 @@ public class QTestIntegrationTestSuiteManager {
      * @param qTestProject
      * @return
      * @throws QTestException
-     *             thrown if system cannot send request or the response is
-     *             invalid JSON format.
+     *             thrown if system cannot send request or the response is invalid JSON format.
      */
-    public static QTestSuite addTestSuite(String projectDir, String name, QTestSuiteParent parent,
-            QTestProject qTestProject) throws QTestException {
+    public static QTestSuite uploadTestSuite(IQTestCredential credentials, String name, String description,
+            QTestSuiteParent parent, QTestProject qTestProject) throws QTestException {
 
-        Map<String, Object> bodyProperties = new LinkedHashMap<String, Object>();
-        int testCaseType = QTestSuite.getType();
+        String token = credentials.getToken();
+        String serverUrl = credentials.getServerUrl();
 
-        bodyProperties.put(QTestEntity.NAME_FIELD, name);
-        bodyProperties.put(QTestEntity.PARENT_ID_FIELD, parent.getId());
-        bodyProperties.put(QTestEntity.TYPE_FIELD, testCaseType);
-
-        String serverUrl = QTestSettingStore.getServerUrl(projectDir);
-
-        String url = "/p/" + Long.toString(qTestProject.getId()) + "/portal/tree/create/"
-                + Integer.toString(parent.getType());
-
-        String username = QTestSettingStore.getUsername(projectDir);
-        String password = QTestSettingStore.getPassword(projectDir);
-
-        QTestIntegrationAuthenticationManager.authenticate(username, password);
-
-        List<NameValuePair> postParams = new ArrayList<NameValuePair>();
-        postParams.add(new BasicNameValuePair("data", QTestHttpRequestHelper.createDataBody(bodyProperties, true)));
-        String result = QTestHttpRequestHelper.sendPostRequest(serverUrl, url, username, password, postParams);
-        try {
-            if (result != null && !result.isEmpty()) {
-                QTestSuite testSuite = new QTestSuite();
-                testSuite.setName(name);
-                testSuite.setParent(parent);
-
-                JsonObject data = new JsonObject(result).getJsonArray("data").getJsonObject(0);
-
-                testSuite.setId(data.getLong(QTestEntity.OBJECT_ID_FIELD));
-                testSuite.setPid(data.getString("idPrefix") + "-" + data.getString(QTestEntity.PID_FIELD));
-                return testSuite;
-            } else {
-                return null;
-            }
-        } catch (JsonException ex) {
-            throw QTestInvalidFormatException.createInvalidJsonFormatException(result);
+        if (!QTestIntegrationAuthenticationManager.validateToken(token)) {
+            throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
         }
+
+        TestExecutionService executionService = new TestExecutionServiceClient(new BasicQTestCredentials(token));
+        executionService.setEndpoint(serverUrl);
+
+        TestSuite testSuite = new TestSuite().withName(name);
+
+        List<FieldValue> fieldValues = new ArrayList<FieldValue>();
+
+        JsonArray reponseJsonArray = getTestSuiteFieldJsonArray(qTestProject.getId(), credentials);
+
+        for (int index = 0; index < reponseJsonArray.length(); index++) {
+            try {
+                JsonObject fieldJsonObject = reponseJsonArray.getJsonObject(index);
+
+                if (fieldJsonObject.has("label") && "Description".equals(fieldJsonObject.getString("label"))) {
+                    fieldValues.add(new FieldValue(fieldJsonObject.getLong(QTestEntity.ID_FIELD),
+                            QTestIntegrationTestCaseManager.getUploadedDescription(description)));
+                    break;
+                }
+            } catch (JsonException e) {
+                throw QTestInvalidFormatException.createInvalidJsonFormatException(reponseJsonArray.toString());
+            }
+        }
+        testSuite.setFieldValues(fieldValues);
+
+        CreateTestSuiteRequest request = new CreateTestSuiteRequest().withProjectId(qTestProject.getId())
+                .withArtifactId(parent.getId()).withArtifactLevel(parent.getArtifactLevel()).withTestSuite(testSuite);
+
+        testSuite = executionService.createTestSuite(request);
+
+        return new QTestSuite(testSuite.getId(), name,
+                (String) testSuite.getProperty(QTestEntity.PID_FIELD), parent);
+    }
+
+    public static QTestSuite getDuplicatedTestSuiteOnQTest(IQTestCredential credentials, String name,
+            QTestSuiteParent parent, QTestProject qTestProject) throws QTestUnauthorizedException {
+        String token = credentials.getToken();
+        String serverUrl = credentials.getServerUrl();
+
+        if (!QTestIntegrationAuthenticationManager.validateToken(token)) {
+            throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
+        }
+
+        TestExecutionService executionService = new TestExecutionServiceClient(new BasicQTestCredentials(token));
+        executionService.setEndpoint(serverUrl);
+
+        ListTestSuiteRequest request = new ListTestSuiteRequest().withProjectId(qTestProject.getId()).withArtifactId(
+                parent.getId());
+        switch (parent.getType()) {
+            case QTestSuiteParent.RELEASE_ROOT_TYPE:
+                request.setArtifactLevel(ArtifactLevel.ROOT);
+                break;
+            case QTestSuiteParent.RELEASE_TYPE:
+                request.setArtifactLevel(ArtifactLevel.RELEASE);
+                break;
+            case QTestSuiteParent.CYCLE_TYPE:
+                request.setArtifactLevel(ArtifactLevel.TEST_CYCLE);
+                break;
+        }
+
+        for (TestSuite testSuite : executionService.listTestSuite(request)) {
+            if (name.equals(testSuite.getName())) {
+                QTestSuite qTestSuite = new QTestSuite();
+                qTestSuite.setName(name);
+                qTestSuite.setParent(parent);
+                qTestSuite.setId(testSuite.getId());
+                qTestSuite.setPid((String) testSuite.getProperty(QTestEntity.PID_FIELD));
+                return qTestSuite;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -459,8 +508,7 @@ public class QTestIntegrationTestSuiteManager {
     }
 
     /**
-     * Returns an {@link URL} of the given <code>testSuite</code> on qTest
-     * server
+     * Returns an {@link URL} of the given <code>testSuite</code> on qTest server
      * 
      * @param projectDir
      * @param testSuite
@@ -469,7 +517,7 @@ public class QTestIntegrationTestSuiteManager {
      * @throws MalformedURLException
      * @see {@link URL}
      */
-    public static URL navigatedUrlToQTestTestSuite(String projectDir, QTestSuite testSuite, QTestProject qTestProject)
+    public static URL navigatedUrlForQTestSuite(String projectDir, QTestSuite testSuite, QTestProject qTestProject)
             throws MalformedURLException {
 
         String url = QTestSettingStore.getServerUrl(projectDir);
@@ -528,8 +576,7 @@ public class QTestIntegrationTestSuiteManager {
      * @param projectDir
      * @return
      * @throws QTestException
-     *             throw if system cannot send request or the response is
-     *             invalid JSON format.
+     *             throw if system cannot send request or the response is invalid JSON format.
      */
     public static List<QTestSuiteParent> getReleases(QTestProject qTestProject, String projectDir)
             throws QTestException {
@@ -589,6 +636,72 @@ public class QTestIntegrationTestSuiteManager {
             return qTestCycles;
         } catch (JsonException ex) {
             throw QTestInvalidFormatException.createInvalidJsonFormatException(result);
+        }
+    }
+
+    /**
+     * Returns a list of {@link QTestRun} under {@link QTestSuite} on qTest.
+     * @param qTestSuite
+     * @param qTestProject
+     * @param credentials
+     * @return an instance of {@link ArrayList} of {@link QTestRun}
+     */
+    public static List<QTestRun> getTestRuns(QTestSuite qTestSuite, QTestProject qTestProject,
+            IQTestCredential credentials) {
+        List<QTestRun> qTestRuns = new ArrayList<QTestRun>();
+
+        QTestCredentials qTestCredentials = new BasicQTestCredentials(credentials.getToken());
+
+        TestExecutionService service = new TestExecutionServiceClient(qTestCredentials);
+        service.setEndpoint(credentials.getServerUrl());
+
+        ListTestRunRequest request = new ListTestRunRequest().withProjectId(qTestProject.getId())
+                .withArtifactId(qTestSuite.getId()).withArtifactLevel(ArtifactLevel.TEST_SUITE);
+
+        List<TestRun> testRuns = service.listTestRun(request);
+        for (TestRun testRun : testRuns) {
+            QTestRun qTestRun = new QTestRun(testRun.getId(), testRun.getName());
+
+            qTestRun.setPid(testRun.getPid());
+            for (Link testRunLink : testRun.getLinks()) {
+                if ("test-case".equals(testRunLink.getRelation())) {
+                    String[] testCaseHrefCut = testRunLink.getHref().split("test-cases/")[1].split(Pattern
+                            .quote("?versionId="));
+                    qTestRun.setQTestCaseId(Long.parseLong(testCaseHrefCut[0]));
+                    qTestRun.setTestCaseVersionId(Long.parseLong(testCaseHrefCut[1]));
+                    break;
+                }
+            }
+
+            qTestRuns.add(qTestRun);
+        }
+
+        return qTestRuns;
+    }
+
+    /**
+     * Gets qTest fields of {@link QTestSuite} via qTest API
+     * 
+     * @param projectId
+     * @param projectDir
+     * @return
+     * @throws QTestException
+     *             thrown if system cannot send request or the response is invalid JSON format.
+     */
+    private static JsonArray getTestSuiteFieldJsonArray(long projectId, IQTestCredential credentials)
+            throws QTestException {
+
+        String url = credentials.getServerUrl() + "/api/v3/projects/" + Long.toString(projectId)
+                + "/settings/test-suites/fields";
+
+        String response = QTestAPIRequestHelper.sendGetRequestViaAPI(url, credentials.getToken());
+        try {
+            if (response == null || response.isEmpty()) return null;
+            JsonArray responseJsonArray = new JsonArray(response);
+
+            return responseJsonArray;
+        } catch (JsonException ex) {
+            throw QTestInvalidFormatException.createInvalidJsonFormatException(response);
         }
     }
 }
