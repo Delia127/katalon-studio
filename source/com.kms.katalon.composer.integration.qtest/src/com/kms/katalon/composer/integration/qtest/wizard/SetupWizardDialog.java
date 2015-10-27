@@ -35,13 +35,16 @@ import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
+import com.kms.katalon.composer.integration.qtest.constant.EventConstants;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.job.DisintegrateTestCaseJob;
 import com.kms.katalon.composer.integration.qtest.model.TestCaseRepo;
+import com.kms.katalon.composer.integration.qtest.model.TestSuiteRepo;
 import com.kms.katalon.composer.integration.qtest.wizard.page.AuthenticationWizardPage;
 import com.kms.katalon.composer.integration.qtest.wizard.page.FinishPage;
 import com.kms.katalon.composer.integration.qtest.wizard.page.OptionalSettingWizardPage;
@@ -52,10 +55,14 @@ import com.kms.katalon.composer.integration.qtest.wizard.page.TestSuiteFolderSel
 import com.kms.katalon.composer.integration.qtest.wizard.provider.WizardTableLabelProvider;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.controller.ReportController;
+import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.report.ReportEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationFolderManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationProjectManager;
 import com.kms.katalon.integration.qtest.credential.IQTestCredential;
@@ -502,11 +509,71 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
         }
     }
 
+    private void disintegrateAllTestSuiteRepos() {
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+
+        IntegratedEntity projectIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(currentProject);
+        if (projectIntegratedEntity == null) {
+            return;
+        }
+        List<TestSuiteRepo> testSuiteRepos = QTestIntegrationUtil.getTestSuiteRepositories(currentProject,
+                QTestIntegrationProjectManager.getQTestProjectsByIntegratedEntity(projectIntegratedEntity));
+        for (TestSuiteRepo testSuiteRepo : testSuiteRepos) {
+            String testSuiteFolderId = testSuiteRepo.getFolderId();
+            try {
+                FolderEntity testSuiteFolderEntity = FolderController.getInstance().getFolderByDisplayId(
+                        currentProject, testSuiteFolderId);
+                FolderController.getInstance().getAllDescentdantEntities(testSuiteFolderEntity);
+
+                for (Object childObject : FolderController.getInstance().getAllDescentdantEntities(
+                        testSuiteFolderEntity)) {
+                    if (!(childObject instanceof TestSuiteEntity)) {
+                        continue;
+                    }
+
+                    TestSuiteEntity testSuiteEntity = (TestSuiteEntity) childObject;
+
+                    if (QTestIntegrationUtil.getIntegratedEntity(testSuiteEntity) == null) {
+                        continue;
+                    }
+
+                    // Remove all integrated reportEntity
+                    disintegrateAllReport(testSuiteEntity, currentProject);
+
+                    testSuiteEntity = (TestSuiteEntity) QTestIntegrationUtil
+                            .removeQTestIntegratedEntity(testSuiteEntity);
+                    TestSuiteController.getInstance().updateTestSuite(testSuiteEntity);
+                    EventBrokerSingleton
+                            .getInstance()
+                            .getEventBroker()
+                            .post(EventConstants.TEST_SUITE_UPDATED,
+                                    new Object[] { testSuiteEntity.getId(), testSuiteEntity });
+                }
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+    }
+
+    private void disintegrateAllReport(TestSuiteEntity testSuiteEntity, ProjectEntity projectEntity) {
+        try {
+            for (ReportEntity reportEntity : ReportController.getInstance().listReportEntities(testSuiteEntity,
+                    projectEntity)) {
+                reportEntity = (ReportEntity) QTestIntegrationUtil.removeQTestIntegratedEntity(reportEntity);
+                ReportController.getInstance().updateReport(reportEntity);
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
+
     private void updateProject() {
         try {
-            // Disintegrate all current test case repo
+            // Disintegrate all previous integrated information
             disintegrateAllTestCaseRepos();
+            disintegrateAllTestSuiteRepos();
 
+            // Apply new settings
             QTestProject defaultQTestPrject = (QTestProject) sharedData.get("qTestProject");
             QTestModule selectedModule = (QTestModule) sharedData.get("qTestModule");
             FolderTreeEntity selectedTestCaseFolderTree = (FolderTreeEntity) sharedData.get("testCaseFolder");

@@ -221,10 +221,10 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
     public Image getImage(TestCaseLogRecord testCaseLogRecord) {
         try {
             QTestTestCase qTestCase = QTestIntegrationUtil.getQTestCase(testCaseLogRecord);
-            if (qTestCase == null) return null;
+            if (qTestCase == null) { return null; }
 
             QTestSuite qTestSuite = QTestIntegrationUtil.getSelectedQTestSuite(testSuiteLogRecord);
-            if (qTestSuite == null) return null;
+            if (qTestSuite == null) { return null; }
 
             QTestRun qTestRun = QTestIntegrationTestSuiteManager.getTestRunByTestSuiteAndTestCaseId(qTestSuite,
                     qTestCase.getId());

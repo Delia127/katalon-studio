@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
+import com.kms.katalon.composer.components.impl.dialogs.YesNoAllOptions;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.explorer.handlers.deletion.AbstractDeleteEntityDialog;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
@@ -70,7 +71,7 @@ public class TestCaseReferencesDialog extends AbstractDeleteEntityDialog {
                     TestCaseController.getInstance().getIdForDisplay(fTestCaseEntity)));
 
             tableViewer.setInput(fTestSuiteEntities);
-            getButton(CANCEL).forceFocus();
+            getButton(YesNoAllOptions.NO.ordinal()).forceFocus();
             mainComposite.layout(true, true);
         } catch (Exception e) {
             LoggerSingleton.logError(e);

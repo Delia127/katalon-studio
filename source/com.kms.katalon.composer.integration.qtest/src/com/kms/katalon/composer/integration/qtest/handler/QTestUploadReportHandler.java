@@ -143,7 +143,7 @@ public class QTestUploadReportHandler extends AbstractQTestHandler {
                 UploadTestCaseResultJob job = new UploadTestCaseResultJob(reportEntity, testSuiteEntity,
                         uploadedPreviewLst, ProjectController.getInstance().getCurrentProject().getFolderLocation());
                 job.setUser(true);
-                job.schedule();
+                job.doTask();
             }
         } catch (Exception e) {
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.VIEW_MSG_UNABLE_UPLOAD_TEST_RESULT, e.getClass()
