@@ -136,7 +136,7 @@ public class MobileDriverFactory {
 		// String node = System.getenv("NODE_HOME") + "/node";
 		// String appium = System.getenv("APPIUM_HOME") + "/appium.js";
 	    String nodeHome = System.getenv("NODE_HOME") != null ? System.getenv("NODE_HOME") + File.separator : "";
-        String node = nodeHome + "node";
+        String node = nodeHome + "bin/node";
 		String appium = System.getenv("APPIUM_HOME") + "/bin" + "/appium.js";
 		String appiumTemp = System.getProperty("user.home") + File.separator + "Appium_Temp";
 		String[] cmd = { node, appium, "--command-timeout", "3600", "--tmp", appiumTemp };
@@ -262,13 +262,13 @@ public class MobileDriverFactory {
 		}
 
 		for (Map.Entry<String, String> entry : androidDevices.entrySet()) {
-			if (entry.getValue().equalsIgnoreCase(deviceName)) {
+			if (entry.getValue().equalsIgnoreCase(deviceName) || entry.getKey().equalsIgnoreCase(deviceName)) {
 				return entry.getKey();
 			}
 		}
 
 		for (Map.Entry<String, String> entry : iosDevices.entrySet()) {
-			if (entry.getValue().equalsIgnoreCase(deviceName)) {
+			if (entry.getValue().equalsIgnoreCase(deviceName) || entry.getKey().equalsIgnoreCase(deviceName)) {
 				return entry.getKey();
 			}
 		}
