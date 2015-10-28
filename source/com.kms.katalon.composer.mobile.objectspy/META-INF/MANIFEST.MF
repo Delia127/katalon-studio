@@ -27,7 +27,10 @@ Require-Bundle: com.kms.katalon.entity;bundle-version="1.0.0",
  com.kms.katalon.core.mobile,
  com.kms.katalon.composer.testcase;bundle-version="1.0.0",
  org.json,
- com.kms.katalon.selenium-standalone;bundle-version="1.0.0"
+ com.kms.katalon.selenium-standalone;bundle-version="1.0.0",
+ com.kms.katalon.execution.mobile,
+ com.kms.katalon.execution,
+ com.kms.katalon.core
 Bundle-ClassPath: .
 Export-Package: com.kms.katalon.composer.mobile.objectspy.dialog
 

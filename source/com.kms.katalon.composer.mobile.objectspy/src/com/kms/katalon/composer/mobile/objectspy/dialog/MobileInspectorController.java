@@ -1,8 +1,5 @@
 package com.kms.katalon.composer.mobile.objectspy.dialog;
 
-import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.ios.IOSDriver;
-
 import java.io.File;
 import java.io.StringReader;
 import java.util.Date;
@@ -24,10 +21,18 @@ import com.google.gson.Gson;
 import com.kms.katalon.composer.mobile.constants.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
 import com.kms.katalon.composer.mobile.objectspy.util.Util;
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.configuration.RunConfiguration;
+import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.keyword.AndroidProperties;
 import com.kms.katalon.core.mobile.keyword.GUIObject;
 import com.kms.katalon.core.mobile.keyword.IOSProperties;
 import com.kms.katalon.core.mobile.keyword.MobileDriverFactory;
+import com.kms.katalon.execution.configuration.IDriverConnector;
+import com.kms.katalon.execution.mobile.util.MobileExecutionUtil;
+
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.ios.IOSDriver;
 
 public class MobileInspectorController {
 
@@ -42,12 +47,17 @@ public class MobileInspectorController {
                 driver.quit();
                 Thread.sleep(2000);
             }
+            IDriverConnector mobileDriverConnector = null;
             switch (MobileDriverFactory.getInstance().getDeviceOs(deviceId)) {
             case IOS:
+            	mobileDriverConnector = MobileExecutionUtil.getMobileDriverConnector(MobileDriverType.IOS_DRIVER, ProjectController.getInstance().getCurrentProject().getFolderLocation());
+            	RunConfiguration.setExecutionSetting(mobileDriverConnector.getExecutionSettingPropertyMap());
                 driver = MobileDriverFactory.getInstance().getIosDriver(deviceId, appFile, uninstallAfterCloseApp);
                 break;
 
             case ANDROID:
+            	mobileDriverConnector = MobileExecutionUtil.getMobileDriverConnector(MobileDriverType.ANDROID_DRIVER, ProjectController.getInstance().getCurrentProject().getFolderLocation());
+            	RunConfiguration.setExecutionSetting(mobileDriverConnector.getExecutionSettingPropertyMap());
                 driver = MobileDriverFactory.getInstance().getAndroidDriver(deviceId, appFile, uninstallAfterCloseApp);
                 break;
 
@@ -106,6 +116,7 @@ public class MobileInspectorController {
                 Map<Object, Object> map = (Map<Object, Object>) driver.executeScript("UIATarget.localTarget().frontMostApp().getTree()");
                 Gson gson = new Gson();
                 JSONObject jsonObject = new JSONObject(gson.toJson(map));
+                //JSONObject jsonObject = new JSONObject(map);
                 renderTree(jsonObject, htmlMobileElementRootNode);
             } else {
                 String pageSource = driver.getPageSource();
