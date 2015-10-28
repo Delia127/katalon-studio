@@ -2456,10 +2456,11 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 				if (password == null) {
 					throw new IllegalArgumentException(StringConstants.KW_EXC_PASSWORD_IS_NULL);
 				}
+                WebDriver driver = DriverFactory.getWebDriver();
 				logger.logInfo(MessageFormat.format(StringConstants.KW_LGO_INFO_NAVIGATING_TO_AUTHENTICATED_PAGE, url, userName, password));
 				navigateThread = new Thread() {
 							public void run() {
-								DriverFactory.getWebDriver().get(url);
+								driver.get(url);
 							}
 						};
 				navigateThread.start();
@@ -2643,9 +2644,9 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 			frames.add(parentObject);
 			parentObject = parentObject.getParentObject();
 		}
+        boolean isSwitchIntoFrame = false;
 		if (frames.size() > 0) {
 			logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_OBJ_X_HAS_PARENT_FRAME, to.getObjectId()));
-			boolean isSwitchIntoFrame = false;
 			WebDriver webDriver = DriverFactory.getWebDriver();
 			for (int i = frames.size() - 1; i >= 0; i--) {
 				TestObject frameObject = frames.get(i);
@@ -2657,9 +2658,8 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 					logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHED_TO_IFRAME_X, frameObject.getObjectId()));
 				}
 			}
-			return isSwitchIntoFrame;
 		}
-		return false;
+		return isSwitchIntoFrame;
 	}
 
 	@CompileStatic

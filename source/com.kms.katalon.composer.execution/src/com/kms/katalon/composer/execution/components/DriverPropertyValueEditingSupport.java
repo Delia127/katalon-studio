@@ -53,6 +53,9 @@ public class DriverPropertyValueEditingSupport extends EditingSupport {
             return ((Entry<?, ?>) element).getValue();
         case Integer:
         case String:
+            if (((Entry<?, ?>) element).getValue() instanceof Double) {
+                return String.valueOf(((Double) ((Entry<?, ?>) element).getValue()).intValue());
+            }
             return String.valueOf(((Entry<?, ?>) element).getValue());
         }
         return null;
@@ -75,12 +78,10 @@ public class DriverPropertyValueEditingSupport extends EditingSupport {
             }
             break;
         case Integer:
-            if (value instanceof String) {
-                try {
-                    property.setValue(Integer.valueOf(String.valueOf(value)));
-                } catch (NumberFormatException e) {
-                    // not a number, so not setting value
-                }
+            try {
+                property.setValue(Integer.valueOf(String.valueOf(value)));
+            } catch (NumberFormatException e) {
+                // not a number, so not setting value
             }
             break;
         case List:
