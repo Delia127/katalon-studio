@@ -14,6 +14,7 @@ import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
 public class WebElementTreeEntity extends AbstractTreeEntity {
 	
@@ -49,6 +50,9 @@ public class WebElementTreeEntity extends AbstractTreeEntity {
 	
 	@Override
 	public Image getImage() throws Exception {
+	    if (webElement instanceof WebServiceRequestEntity) {
+	        return ImageConstants.IMG_16_WS_TEST_OBJECT;
+	    }
 		return ImageConstants.IMG_16_TEST_OBJECT;
 	}
 
