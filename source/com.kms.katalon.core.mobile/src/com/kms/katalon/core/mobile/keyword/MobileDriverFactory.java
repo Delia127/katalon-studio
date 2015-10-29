@@ -262,13 +262,13 @@ public class MobileDriverFactory {
 		}
 
 		for (Map.Entry<String, String> entry : androidDevices.entrySet()) {
-			if (entry.getValue().equalsIgnoreCase(deviceName)) {
+			if (entry.getValue().equalsIgnoreCase(deviceName) || entry.getKey().equalsIgnoreCase(deviceName)) {
 				return entry.getKey();
 			}
 		}
 
 		for (Map.Entry<String, String> entry : iosDevices.entrySet()) {
-			if (entry.getValue().equalsIgnoreCase(deviceName)) {
+			if (entry.getValue().equalsIgnoreCase(deviceName) || entry.getKey().equalsIgnoreCase(deviceName)) {
 				return entry.getKey();
 			}
 		}
