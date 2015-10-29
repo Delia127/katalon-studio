@@ -57,6 +57,9 @@ public class StringConstants extends GlobalStringConstants {
             + "you want to reload it?";
     public static final String PA_ERROR_MSG_FILE_X_IS_WRONG_FORMAT_AT_LINE_Y = "The file ''{0}'' is wrong format at line"
             + " number [{1}]";
+    public static final String PA_FILE_TOO_LARGE = "We only display first {0} columns for you because it''s not a good "
+            + "practice to have so many columns in the current sheet. Please break down your data into smaller ones for "
+            + "better execution and displaying.";
 
     // NewTestDataColumnDialog
     public static final String VIEW_COL_COL_NAME = "Column Name";
