@@ -25,6 +25,7 @@ import com.kms.katalon.entity.dal.exception.TestCaseIsReferencedByTestSuiteExepc
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.groovy.util.GroovyRefreshUtil;
 
 public class DeleteTestCaseHandler extends AbstractDeleteReferredEntityHandler implements IDeleteEntityHandler {
 
@@ -47,7 +48,7 @@ public class DeleteTestCaseHandler extends AbstractDeleteReferredEntityHandler i
             }
 
             final TestCaseEntity testCase = (TestCaseEntity) entity.getObject();
-            monitor.subTask("Deleting test case: " + testCase.getName() + "...");
+            monitor.subTask("Deleting '" + TestCaseController.getInstance().getIdForDisplay(testCase) + "'...");
             deleteTestCase(testCase, sync, eventBroker);
 
             eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, TestCaseController.getInstance()
@@ -63,6 +64,7 @@ public class DeleteTestCaseHandler extends AbstractDeleteReferredEntityHandler i
             return false;
         } finally {
             monitor.done();
+            eventBroker.post(EventConstants.EXPLORER_REFRESH_ALL_ITEMS, null);
         }
     }
 
@@ -96,6 +98,11 @@ public class DeleteTestCaseHandler extends AbstractDeleteReferredEntityHandler i
                     return false;
                 }
             }
+            
+            // Remove test case references in other Test Cases
+            GroovyRefreshUtil.removeScriptReferencesInTestCaseScripts(
+                    TestCaseController.getInstance().getIdForDisplay(testCase), testCase.getProject());
+            
             // remove TestCase part from its partStack if it exists
             EntityPartUtil.closePart(testCase);
 

@@ -122,4 +122,11 @@ public class GroovyRefreshUtil {
 			updateScriptFile(oldScript, newScript, scriptFile);
 		}
 	}
+	
+	public static void removeScriptReferencesInTestCaseScripts(String testCaseIdForDisplay, ProjectEntity projectEntity) throws CoreException, IOException {
+	    // Test Case ID is covered by single quote
+	    updateScriptReferencesInTestCaseScripts("TestCaseFactory.findTestCase('" + testCaseIdForDisplay + "')", "null", projectEntity);
+	    // Test Case ID is covered by double quote
+	    updateScriptReferencesInTestCaseScripts("TestCaseFactory.findTestCase(\"" + testCaseIdForDisplay + "\")", "null", projectEntity);
+	}
 }
