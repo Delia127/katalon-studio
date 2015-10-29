@@ -25,6 +25,7 @@ public class StringConstants {
 	public static final String LOG_LVL_START = "START";
 	public static final String LOG_LVL_END = "END";
 	public static final String LOG_LVL_INCOMPLETE = "INCOMPLETE";
+	public static final String LOG_LVL_RUN_DATA = "RUN_DATA";
 
 	// TestCaseMain
 	public static final String MAIN_LOG_ERROR_UNKNOWN_PROP_OF_TEST_CASE = "System doesn''t know property: {0} of Test Case: {1}";

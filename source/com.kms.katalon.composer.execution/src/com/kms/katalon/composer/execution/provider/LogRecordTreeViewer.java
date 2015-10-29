@@ -46,7 +46,9 @@ public class LogRecordTreeViewer extends TreeViewer {
 
 	public void addRecords(List<XmlLogRecord> records) {
 		for (XmlLogRecord record : records) {
-			addRecord(record);
+		    if (record.getLevel() != LogLevel.RUN_DATA) {
+	            addRecord(record);
+		    }
 		}
 	}
 
@@ -114,7 +116,7 @@ public class LogRecordTreeViewer extends TreeViewer {
 				eventBroker.post(EventConstants.CONSOLE_LOG_UPDATE_PROGRESS_BAR, currentParentNodeImpl.getResult());
 			}
 
-		} else {
+		} else if (record.getLevel() != LogLevel.RUN_DATA) {
 			ILogTreeNode newChildTreeNode = new LogChildTreeNode(currentParentTreeNode, record);
 			currentParentTreeNode.addChild(newChildTreeNode);
 			refresh(currentParentTreeNode);

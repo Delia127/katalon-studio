@@ -1,5 +1,8 @@
 package com.kms.katalon.core.logging.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 
 
@@ -10,10 +13,12 @@ public class TestSuiteLogRecord extends AbstractLogRecord {
 	private String os;
 	private String logFolder;
 	private String hostName;
+	private Map<String, String> runData;
 	
 	public TestSuiteLogRecord(String name, String logFolder) {
 		super(name);
 		this.logFolder = logFolder;
+		runData = new HashMap<String, String>();
 	}
 	
 	public String getBrowser() {
@@ -90,4 +95,15 @@ public class TestSuiteLogRecord extends AbstractLogRecord {
 		this.hostName = hostName;
 	}
 
+    public Map<String, String> getRunData() {
+        return runData;
+    }
+    
+    public void addRunData(String dataKey, String dataValue) {
+        runData.put(dataKey, dataValue);
+    }
+    
+    public void addRunDatas(Map<String, String> runData) {
+        this.runData.putAll(runData);
+    }
 }

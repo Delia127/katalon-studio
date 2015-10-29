@@ -185,6 +185,8 @@ public class ReportUtil {
 						processEndLog(stack, xmlLogRecord);
 						break;
 					}
+                } else if (xmlLogRecord.getLevel().getName().equals(LogLevel.RUN_DATA.toString())) {
+                    testSuiteLogRecord.addRunDatas(xmlLogRecord.getProperties());
 				} else {
 					Object object = stack.peekLast();
 					if (object instanceof ILogRecord) {

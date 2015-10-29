@@ -17,15 +17,22 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
@@ -93,6 +100,7 @@ public class ReportPart implements EventHandler {
     private Button btnFilterTestCaseFailed;
     private Button btnFilterTestCaseError;
 
+    private TableViewer runDataTable;
     private ReportPartTestLogView testLogView;
 
     private Map<String, AbstractReportTestCaseIntegrationView> integratingCompositeMap;
@@ -122,7 +130,8 @@ public class ReportPart implements EventHandler {
             public void selectionChanged(SelectionChangedEvent event) {
                 ILogRecord selectedLogRecord = (ILogRecord) getSelectedTestCaseLogRecord();
 
-                if (selectedLogRecord == null) return;
+                if (selectedLogRecord == null)
+                    return;
                 testLogView.updateSelectedTestCase(selectedLogRecord);
             }
         });
@@ -267,7 +276,8 @@ public class ReportPart implements EventHandler {
         try {
             this.report = report;
 
-            if (report == null) return;
+            if (report == null)
+                return;
 
             this.testSuiteLogRecord = LogRecordLookup.getInstance().getTestSuiteLogRecord(report);
 
@@ -350,12 +360,14 @@ public class ReportPart implements EventHandler {
             testCaseTableViewer.setInput(testSuiteLogRecord.getChildRecords());
 
             testLogView.loadTestCaseIntegrationToolbar(report, testSuiteLogRecord);
+            runDataTable.setInput(testSuiteLogRecord.getRunData() != null ? testSuiteLogRecord.getRunData().entrySet()
+                    : null);
+            runDataTable.refresh();
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
     }
 
-    
     public ILogRecord getSelectedTestCaseLogRecord() {
         StructuredSelection selection = (StructuredSelection) testCaseTableViewer.getSelection();
         if (selection == null || selection.size() != 1) {
@@ -513,7 +525,16 @@ public class ReportPart implements EventHandler {
     }
 
     private void createCompositeSummary(Composite sashFormSummary) {
-        Composite compositeSummary = new Composite(sashFormSummary, SWT.BORDER);
+        final CTabFolder tabFolder = new CTabFolder(sashFormSummary, SWT.NONE);
+        tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false, 1, 1));
+        tabFolder.setSelectionBackground(Display.getCurrent().getSystemColor(
+                SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
+
+        final CTabItem tbtmSummary = new CTabItem(tabFolder, SWT.NONE);
+        tbtmSummary.setText(StringConstants.TITLE_SUMMARY);
+
+        Composite compositeSummary = new Composite(tabFolder, SWT.BORDER);
+        tbtmSummary.setControl(compositeSummary);
         compositeSummary.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false, 1, 1));
         GridLayout gl_compositeSummary = new GridLayout(1, false);
         gl_compositeSummary.horizontalSpacing = 0;
@@ -521,16 +542,6 @@ public class ReportPart implements EventHandler {
         gl_compositeSummary.marginHeight = 0;
         gl_compositeSummary.marginWidth = 0;
         compositeSummary.setLayout(gl_compositeSummary);
-
-        Composite compositeSummaryHeader = new Composite(compositeSummary, SWT.NONE);
-        compositeSummaryHeader.setLayout(new GridLayout(1, false));
-        GridData gd_compositeSummaryHeader = new GridData(SWT.FILL, SWT.BOTTOM, true, false, 1, 1);
-        gd_compositeSummaryHeader.heightHint = 30;
-        compositeSummaryHeader.setLayoutData(gd_compositeSummaryHeader);
-
-        Label lblSummary = new Label(compositeSummaryHeader, SWT.NONE);
-        lblSummary.setText(StringConstants.TITLE_SUMMARY);
-        setLabelToBeBold(lblSummary);
 
         Composite compositeSummaryDetails = new Composite(compositeSummary, SWT.NONE);
         compositeSummaryDetails.setBackground(ColorUtil.getWhiteBackgroundColor());
@@ -653,6 +664,111 @@ public class ReportPart implements EventHandler {
         txtTCIncompleted = new StyledText(composite, SWT.READ_ONLY);
         txtTCIncompleted.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
         txtTCIncompleted.setForeground(ColorUtil.getWarningLogBackgroundColor());
+
+        createRunDataTabControls(tabFolder);
+
+        tabFolder.setSelection(0);
+    }
+
+    private void createRunDataTabControls(final CTabFolder tabFolder) {
+        final CTabItem tbtmRunData = new CTabItem(tabFolder, SWT.NONE);
+        tbtmRunData.setText(StringConstants.TITLE_RUNDATA);
+
+        Composite compositeRunData = new Composite(tabFolder, SWT.BORDER);
+        tbtmRunData.setControl(compositeRunData);
+        compositeRunData.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false, 1, 1));
+
+        TableColumnLayout tableColumnLayout = new TableColumnLayout();
+        compositeRunData.setLayout(tableColumnLayout);
+
+        runDataTable = new TableViewer(compositeRunData, SWT.BORDER);
+        runDataTable.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        runDataTable.getTable().setLinesVisible(true);
+        runDataTable.getTable().setHeaderVisible(true);
+        runDataTable.setContentProvider(new ArrayContentProvider());
+        runDataTable.setLabelProvider(new ColumnLabelProvider());
+
+        TableViewerColumn tableColumnRunDataKey = new TableViewerColumn(runDataTable, SWT.NONE);
+        tableColumnRunDataKey.getColumn().setText(StringConstants.COLUMN_LBL_RUN_DATA_KEY);
+        tableColumnRunDataKey.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                if (element instanceof Entry) {
+                    return String.valueOf(((Entry<?, ?>) element).getKey());
+                }
+                return "";
+            }
+        });
+        tableColumnRunDataKey.setEditingSupport(new EditingSupport(runDataTable) {
+
+            @Override
+            protected void setValue(Object element, Object value) {
+                // do nothing
+            }
+
+            @Override
+            protected Object getValue(Object element) {
+                if (element instanceof Entry) {
+                    return ((Entry<?, ?>) element).getKey();
+                }
+                return null;
+            }
+
+            @Override
+            protected CellEditor getCellEditor(Object element) {
+                return new TextCellEditor(runDataTable.getTable());
+            }
+
+            @Override
+            protected boolean canEdit(Object element) {
+                return true;
+            }
+
+        });
+
+        tableColumnLayout.setColumnData(tableColumnRunDataKey.getColumn(), new ColumnWeightData(50,
+                tableColumnRunDataKey.getColumn().getWidth()));
+
+        TableViewerColumn tableColumnRunDataValue = new TableViewerColumn(runDataTable, SWT.NONE);
+        tableColumnRunDataValue.getColumn().setText(StringConstants.COLUMN_LBL_RUN_DATA_VALUE);
+        tableColumnRunDataValue.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                if (element instanceof Entry) {
+                    return String.valueOf(((Entry<?, ?>) element).getValue());
+                }
+                return "";
+            }
+        });
+        tableColumnRunDataValue.setEditingSupport(new EditingSupport(runDataTable) {
+
+            @Override
+            protected void setValue(Object element, Object value) {
+                // do nothing
+            }
+
+            @Override
+            protected Object getValue(Object element) {
+                if (element instanceof Entry) {
+                    return ((Entry<?, ?>) element).getValue();
+                }
+                return null;
+            }
+
+            @Override
+            protected CellEditor getCellEditor(Object element) {
+                return new TextCellEditor(runDataTable.getTable());
+            }
+
+            @Override
+            protected boolean canEdit(Object element) {
+                return true;
+            }
+
+        });
+        
+        tableColumnLayout.setColumnData(tableColumnRunDataValue.getColumn(), new ColumnWeightData(50,
+                tableColumnRunDataValue.getColumn().getWidth()));
     }
 
     private void createControls(Composite parent) {
