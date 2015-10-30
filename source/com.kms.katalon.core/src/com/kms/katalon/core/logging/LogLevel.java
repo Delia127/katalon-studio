@@ -19,6 +19,8 @@ public class LogLevel extends Level {
 	public static final LogLevel ERROR = new LogLevel(StringConstants.LOG_LVL_ERROR, 1006);
 	public static final LogLevel ABORTED = new LogLevel(StringConstants.LOG_LVL_ABORTED, 1009);
 	public static final LogLevel INCOMPLETE = new LogLevel(StringConstants.LOG_LVL_INCOMPLETE, 1010);
+	
+	public static final LogLevel RUN_DATA = new LogLevel(StringConstants.LOG_LVL_RUN_DATA, 2000);
 
 	protected LogLevel(String arg0, int arg1) {
 		super(arg0, arg1);
@@ -44,6 +46,8 @@ public class LogLevel extends Level {
 			return END;
 		case (StringConstants.LOG_LVL_INCOMPLETE):
 			return INCOMPLETE;
+		case (StringConstants.LOG_LVL_RUN_DATA):
+            return RUN_DATA;
 		}
 		return null;
 	}

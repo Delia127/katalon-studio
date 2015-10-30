@@ -94,8 +94,9 @@ public class AbstractEntityDialog extends TitleAreaDialog {
                 updateStatus();
             }
         });
-
-        createEmptySpace(parent, span);
+        if (span > 0) {
+            createEmptySpace(parent, span);
+        }
         return parent;
     }
 

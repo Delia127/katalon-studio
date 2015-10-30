@@ -30,6 +30,9 @@ public class MapPropertyLabelProvider extends LabelProvider implements ITableLab
 		case COLUMN_TYPE_INDEX:
 			return DriverPropertyValueType.fromValue(property.getValue()).toString();
 		case COLUMN_VALUE_INDEX:
+		    if (property.getValue() instanceof Double) {
+		        return String.valueOf(((Double) property.getValue()).intValue());
+		    }
 			return String.valueOf(property.getValue());
 		}
 		return null;

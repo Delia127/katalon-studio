@@ -185,7 +185,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 				timeOut = WebUiCommonHelper.checkTimeout(timeOut);
 				isSwitchIntoFrame = switchToFrame(to, timeOut);
 				boolean elementNotFound = false;
-				final By locator = buildLocator(to);
+				final By locator = WebUiCommonHelper.buildLocator(to);
 				try {
 					if (locator != null) {
 						logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID, to.getObjectId(), locator.toString(), timeOut));
@@ -1063,7 +1063,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 				timeOut = WebUiCommonHelper.checkTimeout(timeOut);
 				isSwitchIntoFrame = switchToFrame(to, timeOut);
 				boolean elementNotFound = false;
-				final By locator = buildLocator(to);
+				final By locator = WebUiCommonHelper.buildLocator(to);
 				try {
 					if (locator != null) {
 						logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID, to.getObjectId(), locator.toString(), timeOut));
@@ -2092,85 +2092,6 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 	}
 
 	@CompileStatic
-	private static By buildLocator(TestObject to) {
-		By locator = null;
-		Map<String, String> binding = buildLocator(to.getActiveProperties());
-		if (binding.containsKey("id")) {
-			locator = By.id(binding.get("id"));
-		} else if (binding.containsKey("name")) {
-			locator = By.name(binding.get("name"));
-		} else if (binding.containsKey("xpath")) {
-			locator = By.xpath(binding.get("xpath"));
-		} else if (binding.containsKey("css")) {
-			locator = By.cssSelector(binding.get("css"));
-		} else if (binding.containsKey("cssSelector")) {
-			locator = By.cssSelector(binding.get("cssSelector"));
-		}
-		return locator;
-	}
-
-	@CompileStatic
-	private static Map<String, String> buildLocator(List<TestObjectProperty> propEntities) {
-		Map<String, String> binding = new HashMap<String, String>();
-		StringBuilder exp = new StringBuilder();
-		String tagName = "";
-		for (int i = 0; i < propEntities.size(); i++) {
-			TestObjectProperty prop = propEntities.get(i);
-			String propName = prop.getName();
-			String propVal = prop.getValue();
-			String mCondition = prop.getCondition().toString();
-			if (propName.equals("id") || propName.equals("name")) {
-				if (propEntities.size() == 1 && mCondition.equals(ConditionType.EQUALS.toString())) {
-					binding.put(propName, propVal);
-					break;
-				}
-			} else if (propName.equals("xpath") || propName.equals("css") || propName.equals("cssSelector")) {
-				binding.put(propName, propVal);
-				break;
-			}
-			if (propName.equalsIgnoreCase("ref_element") || propName.equalsIgnoreCase("parent_frame")) {
-				continue;
-			}
-			if (propName.equalsIgnoreCase("tagName") || propName.equalsIgnoreCase("tag")) {
-				tagName = propVal;
-				continue;
-			}
-			if (!exp.toString().isEmpty()) {
-				exp.append(" and ");
-			}
-			if (propName.equals("text") || propName.equals("link_text")) {
-				propName = "text()";
-			}
-			// If attribute, append '@' before attribute name, skip it if method
-			if (!propName.endsWith("()")) {
-				propName = "@" + propName;
-			}
-			if (mCondition.equals(ConditionType.EQUALS.toString())) {
-				exp.append(String.format("%s = '%s'", propName, propVal));
-			} else if (mCondition.equals(ConditionType.NOT_EQUAL.toString())) {
-				exp.append(String.format("%s != '%s'", propName, propVal));
-			} else if (mCondition.equals(ConditionType.CONTAINS.toString())) {
-				exp.append(String.format("contains(%s,'%s')", propName, propVal));
-			} else if (mCondition.equals(ConditionType.NOT_CONTAIN.toString())) {
-				exp.append(String.format("not(contains(%s,'%s'))", propName, propVal));
-			} else if (mCondition.equals(ConditionType.STARTS_WITH.toString())) {
-				exp.append(String.format("starts-with(%s,'%s')", propName, propVal));
-			}
-		}
-		if (!binding.containsKey("name") && !binding.containsKey("id") && !binding.containsKey("xpath")
-		&& !binding.containsKey("css") && !binding.containsKey("cssSelector") && !exp.toString().equals("")) {
-			StringBuilder xpath = new StringBuilder();
-			xpath.append("//");
-			xpath.append(tagName.equals("") ? "*" : tagName);
-			xpath.append("[" + exp + "]");
-
-			binding.put("xpath", xpath.toString());
-		}
-
-		return binding;
-	}
-
-	@CompileStatic
 	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
 	public static void deleteAllCookies(FailureHandling flowControl) throws StepFailedException {
 		WebUIKeywordMain.runKeyword({
@@ -2456,10 +2377,11 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 				if (password == null) {
 					throw new IllegalArgumentException(StringConstants.KW_EXC_PASSWORD_IS_NULL);
 				}
+                WebDriver driver = DriverFactory.getWebDriver();
 				logger.logInfo(MessageFormat.format(StringConstants.KW_LGO_INFO_NAVIGATING_TO_AUTHENTICATED_PAGE, url, userName, password));
 				navigateThread = new Thread() {
 							public void run() {
-								DriverFactory.getWebDriver().get(url);
+								driver.get(url);
 							}
 						};
 				navigateThread.start();
@@ -2592,14 +2514,14 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 		if (elements != null && elements.size() > 0) {
 			return elements.get(0);
 		} else {
-			throw new WebElementNotFoundException(to.getObjectId(), buildLocator(to));
+			throw new WebElementNotFoundException(to.getObjectId(), WebUiCommonHelper.buildLocator(to));
 		}
 	}
 
 	@CompileStatic
 	public static List<WebElement> findWebElements(TestObject to, int timeOut) throws WebElementNotFoundException {
 		timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-		final By locator = buildLocator(to);
+		final By locator = WebUiCommonHelper.buildLocator(to);
 		try {
 			if (locator != null) {
 				logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID, to.getObjectId(), locator.toString(), timeOut));
@@ -2643,9 +2565,9 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 			frames.add(parentObject);
 			parentObject = parentObject.getParentObject();
 		}
+        boolean isSwitchIntoFrame = false;
 		if (frames.size() > 0) {
 			logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_OBJ_X_HAS_PARENT_FRAME, to.getObjectId()));
-			boolean isSwitchIntoFrame = false;
 			WebDriver webDriver = DriverFactory.getWebDriver();
 			for (int i = frames.size() - 1; i >= 0; i--) {
 				TestObject frameObject = frames.get(i);
@@ -2657,9 +2579,8 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 					logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHED_TO_IFRAME_X, frameObject.getObjectId()));
 				}
 			}
-			return isSwitchIntoFrame;
 		}
-		return false;
+		return isSwitchIntoFrame;
 	}
 
 	@CompileStatic
