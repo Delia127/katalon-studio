@@ -31,6 +31,7 @@ public class StringConstants extends GlobalStringConstants {
     // ExcelTestDataPart
     public static final String PA_LBL_SHEET_NAME = "Sheet Name";
     public static final String WARN_TITLE = WARN;
+    public static final String PA_WARN_MSG_SHEET_NOT_FOUND = "Sheet ''{0}'' not found. Please choose another one.";
     public static final String PA_WARN_MSG_UNABLE_TO_LOAD_SHEET_NAME = "Unable to load sheet names.";
     public static final String PA_WARN_MSG_UNABLE_TO_LOAD_SOURCE_FILE = "Unable to load selected file.";
 
@@ -82,4 +83,8 @@ public class StringConstants extends GlobalStringConstants {
     // TestDataReferencesDialog
     public static final String DIA_MSG_HEADER_TEST_DATA_REFERENCES = "Test data ''{0}'' has been referred by some test "
             + "suites listed below.\nDo you want to delete all these references?";
+    
+    //LoadExcelFileJob
+    public static final String JOB_LOAD_EXCL_TITLE = "Load excel file";
+    public static final String JOB_LOAD_EXCL_TASK_NAME = "Loading excel file...";
 }

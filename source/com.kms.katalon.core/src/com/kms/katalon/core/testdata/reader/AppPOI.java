@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -16,19 +15,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.kms.katalon.core.constants.StringConstants;
 
 public class AppPOI {
-
-    private HSSFWorkbook xlsInstance  = null; // for XLS format  (Office 2003)
+    private HSSFWorkbook xlsInstance = null; // for XLS format (Office 2003)
     private XSSFWorkbook xlsxInstance = null; // for XLSX format (Office 2007 or higher)
 
-    private ArrayList<SheetPOI> sheets = new ArrayList<SheetPOI>();
-
-    public ArrayList<SheetPOI> getSheets() {
-        return sheets;
-    }
-
     /**
-     * Creates an APPOI instance by reading excel file with
-     * <code> fullFilePath <code> absolute path.
+     * Creates an APPOI instance by reading excel file with <code> fullFilePath <code> absolute path.
      * 
      * @param fullFilePath
      *            absolute path of the excel file.
@@ -41,15 +32,13 @@ public class AppPOI {
             File inputFile = new File(fullFilePath);
             if (inputFile != null && inputFile.exists()) {
                 String fileExt = FilenameUtils.getExtension(fullFilePath);
-                if (fileExt.toLowerCase().equals("xls")) {
+                if ("xls".equalsIgnoreCase(fileExt)) {
                     is = new FileInputStream(inputFile);
                     POIFSFileSystem fs = new POIFSFileSystem(is);
                     xlsInstance = new HSSFWorkbook(fs);
-                    loadSheets();
-                } else if (fileExt.toLowerCase().equals("xlsx")) {
+                } else if ("xlsx".equalsIgnoreCase(fileExt)) {
                     is = new FileInputStream(inputFile);
                     xlsxInstance = new XSSFWorkbook(is);
-                    loadSheets();
                 } else {
                     throw new IllegalArgumentException(MessageFormat.format(
                             StringConstants.UTIL_EXC_FILE_IS_UNSUPPORTED, fullFilePath));
@@ -64,14 +53,34 @@ public class AppPOI {
         }
     }
 
-    private void loadSheets() {
-        sheets.clear();
+    public SheetPOI getSheetPOI(String sheetName) {
         if (xlsInstance != null) {
-            for (int i = 0; i < xlsInstance.getNumberOfSheets(); i++)
-                sheets.add(new HFFPOI(xlsInstance, xlsInstance.getSheetAt(i), xlsInstance.getSheetName(i)));
+            return new HFFPOI(xlsInstance, xlsInstance.getSheet(sheetName), sheetName);
         } else if (xlsxInstance != null) {
-            for (int i = 0; i < xlsxInstance.getNumberOfSheets(); i++)
-                sheets.add(new XSSPOI(xlsxInstance, xlsxInstance.getSheetAt(i), xlsxInstance.getSheetName(i)));
+            return new XSSPOI(xlsxInstance, xlsxInstance.getSheet(sheetName), sheetName);
         }
+        return null;
+    }
+
+    public String[] getSheetNames() {
+        int numberOfSheets = 0;
+        if (xlsInstance != null) {
+            numberOfSheets = xlsInstance.getNumberOfSheets();
+        } else if (xlsxInstance != null) {
+            numberOfSheets = xlsxInstance.getNumberOfSheets();
+        }
+        
+        String[] sheetNames = new String[numberOfSheets];
+        if (xlsInstance != null) {
+            for (int i = 0; i < numberOfSheets; i++) {
+                sheetNames[i] = xlsInstance.getSheetName(i);
+            }
+        } else if (xlsxInstance != null) {
+            for (int i = 0; i < numberOfSheets; i++) {
+                sheetNames[i] = xlsxInstance.getSheetName(i);
+            }
+        }
+
+        return sheetNames;
     }
 }

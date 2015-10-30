@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
+import com.kms.katalon.composer.testdata.constants.StringConstants;
 import com.kms.katalon.core.testdata.reader.AppPOI;
 
 public class LoadExcelFileJob extends Job {
@@ -15,14 +16,14 @@ public class LoadExcelFileJob extends Job {
     private String[] fSheetNames;
 
     public LoadExcelFileJob(String sourceUrl) {
-        super("Load excel file");
+        super(StringConstants.JOB_LOAD_EXCL_TITLE);
         fSourceUrl = sourceUrl;
     }
 
     @Override
     protected IStatus run(IProgressMonitor monitor) {
         try {
-            monitor.beginTask("Loading excel file...", 1);
+            monitor.beginTask(StringConstants.JOB_LOAD_EXCL_TASK_NAME, 1);
             AppPOI appoi = new AppPOI(fSourceUrl);
             fSheetNames = appoi.getSheetNames();
             return Status.OK_STATUS;
