@@ -27,7 +27,6 @@ import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 public class OptionalSettingWizardPage extends AbstractWizardPage {
 
     private Button chckAutoSubmitTestRun;
-    private Button chckEnableCheckBeforeUploading;
     private Composite compositeOptions;
     private Group grpResultOptions;
     private Group grpAttachmentOptions;
@@ -57,10 +56,6 @@ public class OptionalSettingWizardPage extends AbstractWizardPage {
         gl_settingComposite.verticalSpacing = 10;
         settingComposite.setLayout(gl_settingComposite);
         settingComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-
-        chckEnableCheckBeforeUploading = new Button(settingComposite, SWT.CHECK);
-        chckEnableCheckBeforeUploading.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
-        chckEnableCheckBeforeUploading.setText(StringConstants.DIA_TITLE_CHECK_DUPLICATES_TEST_CASE);
 
         chckAutoSubmitTestRun = new Button(settingComposite, SWT.CHECK);
         chckAutoSubmitTestRun.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
@@ -107,23 +102,20 @@ public class OptionalSettingWizardPage extends AbstractWizardPage {
     @SuppressWarnings("unchecked")
     @Override
     public void setInput(final Map<String, Object> sharedData) {
-        Object isEnableCheckDuplicates = sharedData.get(QTestSettingStore.CHECK_BEFORE_UPLOADING);
-        if (isEnableCheckDuplicates != null && isEnableCheckDuplicates instanceof Boolean) {
-            chckEnableCheckBeforeUploading.setSelection((boolean) isEnableCheckDuplicates);
-        }
-        
         Object isEnableAutoSubmit = sharedData.get(QTestSettingStore.AUTO_SUBMIT_RESULT_PROPERTY);
         if (isEnableAutoSubmit != null && isEnableAutoSubmit instanceof Boolean) {
             chckAutoSubmitTestRun.setSelection((boolean) isEnableAutoSubmit);
         }
-        
+
         // set input for grpResults
         List<QTestResultSendingType> selectedResultSendingTypes = (List<QTestResultSendingType>) sharedData
                 .get(QTestSettingStore.SEND_RESULT_PROPERTY);
         if (selectedResultSendingTypes != null) {
             for (Control chckButton : grpResultOptions.getChildren()) {
-                if (!(chckButton instanceof Button)) { continue; }
-                
+                if (!(chckButton instanceof Button)) {
+                    continue;
+                }
+
                 if (selectedResultSendingTypes.contains(chckButton.getData())) {
                     ((Button) chckButton).setSelection(true);
                 } else {
@@ -131,14 +123,16 @@ public class OptionalSettingWizardPage extends AbstractWizardPage {
                 }
             }
         }
-        
+
         // set input for grpAttachment
         List<QTestAttachmentSendingType> selectedAttachmentSendingType = (List<QTestAttachmentSendingType>) sharedData
                 .get(QTestSettingStore.SEND_ATTACHMENTS_PROPERTY);
         if (selectedAttachmentSendingType != null) {
             for (Control chckButton : grpAttachmentOptions.getChildren()) {
-                if (!(chckButton instanceof Button)) { continue; }
-                
+                if (!(chckButton instanceof Button)) {
+                    continue;
+                }
+
                 if (selectedAttachmentSendingType.contains(chckButton.getData())) {
                     ((Button) chckButton).setSelection(true);
                 } else {
@@ -148,7 +142,7 @@ public class OptionalSettingWizardPage extends AbstractWizardPage {
         }
         enableAttachmentsGroup();
     }
-    
+
     private void enableAttachmentsGroup() {
         if (chckAutoSubmitTestRun.getSelection()) {
             ControlUtils.recursiveSetEnabled(compositeOptions, true);
@@ -172,7 +166,6 @@ public class OptionalSettingWizardPage extends AbstractWizardPage {
     @Override
     public Map<String, Object> storeControlStates() {
         Map<String, Object> sharedData = new HashMap<String, Object>();
-        sharedData.put(QTestSettingStore.CHECK_BEFORE_UPLOADING, chckEnableCheckBeforeUploading.getSelection());
         sharedData.put(QTestSettingStore.AUTO_SUBMIT_RESULT_PROPERTY, chckAutoSubmitTestRun.getSelection());
 
         saveAttachmentSendingStatus(sharedData);

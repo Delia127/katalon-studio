@@ -1,14 +1,18 @@
 package com.kms.katalon.composer.testdata.parts;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.IJobChangeListener;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.e4.ui.di.Persist;
+import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -41,7 +45,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.testdata.constants.ImageConstants;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
-import com.kms.katalon.composer.testdata.util.ExcelUtil;
+import com.kms.katalon.composer.testdata.job.LoadExcelFileJob;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestDataController;
@@ -60,6 +64,9 @@ public class ExcelTestDataPart extends TestDataMainPart {
     @Inject
     private EPartService partService;
 
+    @Inject
+    private UISynchronize sync;
+
     private Text txtFileName;
     private Combo cbbSheets;
     private TableViewer tableViewer;
@@ -71,7 +78,16 @@ public class ExcelTestDataPart extends TestDataMainPart {
     private Composite compositeFileInfoHeader;
     private Composite compositeTable;
     private Composite compositeFileInfo;
+
+    // Control status
     private boolean isFileInfoExpanded;
+    private boolean ableToReload;
+
+    // Field
+    private String fCurrentPath;
+    private String fCurrentSheetName;
+
+    private LoadExcelFileJob loadFileJob;
 
     private Listener layoutFileInfoCompositeListener = new Listener() {
 
@@ -85,6 +101,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
     @PostConstruct
     public void createControls(Composite parent, MPart mpart) {
+        ableToReload = true;
         super.createControls(parent, mpart);
     }
 
@@ -198,7 +215,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
         return compositeFileInfo;
     }
 
-    private String getSourceUrlAbsolutePath() throws Exception {
+    private String getSourceUrlAbsolutePath() {
         String sourceUrl = txtFileName.getText();
         if (ckcbUseRelativePath.getSelection()) {
             sourceUrl = PathUtils.relativeToAbsolutePath(sourceUrl, getProjectFolderLocation());
@@ -240,25 +257,47 @@ public class ExcelTestDataPart extends TestDataMainPart {
     }
 
     private void loadInput(final DataFileEntity dataFile) {
-        txtFileName.setText(dataFile.getDataSourceUrl());
+        fCurrentPath = dataFile.getDataSourceUrl();
+
+        txtFileName.setText(fCurrentPath);
+
         ckcbUseRelativePath.setSelection(dataFile.getIsInternalPath());
 
-        Thread loadSheetThread = new Thread(new Runnable() {
+        fCurrentSheetName = dataFile.getSheetName();
 
-            @Override
-            public void run() {
-                loadSheetNames();
-                if (!cbbSheets.isDisposed()) {
-                    cbbSheets.setText(dataFile.getSheetName());
-                    loadExcelData();
-                }
-            }
-        });
-
-        currentThreads.add(loadSheetThread);
-        Display.getCurrent().asyncExec(loadSheetThread);
-
+        readExcelFile();
     }
+
+    private void readExcelFile() {
+        if (ableToReload) {
+            if (loadFileJob != null && loadFileJob.getState() == Job.RUNNING) {
+                loadFileJob.cancel();
+                loadFileJob.removeJobChangeListener(readExcelJobListener);
+            }
+
+            loadFileJob = new LoadExcelFileJob(getSourceUrlAbsolutePath());
+            loadFileJob.setUser(true);
+            loadFileJob.schedule();
+
+            loadFileJob.addJobChangeListener(readExcelJobListener);
+        }
+    }
+
+    private IJobChangeListener readExcelJobListener = new JobChangeAdapter() {
+
+        @Override
+        public void done(IJobChangeEvent event) {
+            if (event.getResult() == Status.OK_STATUS) {
+                sync.syncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        loadSheetNames(loadFileJob.getSheetNames());
+                        loadExcelDataToTable();
+                    }
+                });
+            }
+        }
+    };
 
     private void addControlListeners() {
         btnBrowse.addSelectionListener(new SelectionAdapter() {
@@ -270,14 +309,21 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 dialog.setFilterPath(getProjectFolderLocation());
 
                 String absolutePath = dialog.open();
-                if (absolutePath == null) return;
-                if (ckcbUseRelativePath.getSelection()) {
-                    txtFileName.setText(PathUtils.absoluteToRelativePath(absolutePath, getProjectFolderLocation()));
-                } else {
-                    txtFileName.setText(absolutePath);
+                if (absolutePath == null || absolutePath.equals(fCurrentPath)) {
+                    return;
                 }
-                loadSheetNames();
-                loadExcelData();
+
+                fCurrentPath = absolutePath;
+                fCurrentSheetName = "";
+
+                if (ckcbUseRelativePath.getSelection()) {
+                    txtFileName.setText(PathUtils.absoluteToRelativePath(fCurrentPath, getProjectFolderLocation()));
+                } else {
+                    txtFileName.setText(fCurrentPath);
+                }
+
+                readExcelFile();
+
                 dirtyable.setDirty(true);
             }
         });
@@ -286,7 +332,13 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                loadExcelData();
+                String selectedSheetName = cbbSheets.getText();
+
+                if (fCurrentSheetName.equals(selectedSheetName)) {
+                    return;
+                }
+                fCurrentSheetName = selectedSheetName;
+                loadExcelDataToTable();
                 dirtyable.setDirty(true);
             }
         });
@@ -323,16 +375,34 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
     }
 
-    private void loadSheetNames() {
+    private void selectDefaultSheet(String[] sheetNames) {
+        fCurrentSheetName = sheetNames[0];
+        cbbSheets.select(0);
+    }
+
+    private void loadSheetNames(String[] sheetNames) {
         try {
             if (cbbSheets.isDisposed()) {
                 return;
             }
 
-            cbbSheets.setItems(ExcelUtil.loadSheetName(getSourceUrlAbsolutePath()).toArray(new String[] {}));
-            cbbSheets.select(0);
+            cbbSheets.setItems(sheetNames);
+
+            if (StringUtils.isBlank(fCurrentSheetName)) {
+                selectDefaultSheet(sheetNames);
+            } else {
+                int currentIdx = cbbSheets.indexOf(fCurrentSheetName);
+                if (currentIdx < 0) {
+                    MessageDialog.openWarning(null, StringConstants.WARN_TITLE,
+                            MessageFormat.format(StringConstants.PA_WARN_MSG_SHEET_NOT_FOUND, fCurrentSheetName));
+                    selectDefaultSheet(sheetNames);
+                } else {
+                    cbbSheets.select(cbbSheets.indexOf(fCurrentSheetName));
+                }
+            }
+
         } catch (Exception e) {
-            MessageDialog.openConfirm(Display.getCurrent().getActiveShell(), StringConstants.WARN_TITLE,
+            MessageDialog.openWarning(null, StringConstants.WARN_TITLE,
                     StringConstants.PA_WARN_MSG_UNABLE_TO_LOAD_SHEET_NAME);
         }
     }
@@ -344,35 +414,36 @@ public class ExcelTestDataPart extends TestDataMainPart {
         tableViewer.getTable().clearAll();
     }
 
-    private void loadExcelData() {
+    private void loadExcelDataToTable() {
         try {
-            String[] headers = new String[] {};
-            List<String[]> data = new ArrayList<>();
-
-            if (cbbSheets.getSelectionIndex() >= 0) {
-                ExcelData excelData = new ExcelData(cbbSheets.getText(), getSourceUrlAbsolutePath());
-                headers = excelData.getColumnNames();
-                if (headers.length > 0) {
-                    for (int i = 1; i <= excelData.getRowNumbers(); i++) {
-                        List<String> arrayValues = new ArrayList<>();
-
-                        for (int columnIndex = 1; columnIndex <= excelData.getColumnNumbers(); columnIndex++) {
-                            try {
-                                String cellValue = excelData.getValue(columnIndex, i);
-                                arrayValues.add(cellValue);
-                            } catch (IllegalArgumentException ex) {
-                                arrayValues.add("");
-                            }
-                        }
-
-                        data.add(arrayValues.toArray(new String[arrayValues.size()]));
-                    }
-                }
-            }
-
             tableViewer.getTable().setRedraw(false);
             clearTable();
-            for (int i = 0; i < headers.length; i++) {
+
+            String[] headers = new String[] {};
+            if (cbbSheets.getSelectionIndex() < 0) {
+                return;
+            }
+
+            final ExcelData excelData = new ExcelData(cbbSheets.getText(), getSourceUrlAbsolutePath());
+            headers = excelData.getColumnNames();
+            if (headers.length <= 0) {
+                return;
+            }
+
+            int rowNumbers = excelData.getRowNumbers();
+            int columnNumbers = excelData.getColumnNumbers();
+
+            if (columnNumbers > MAX_COLUMN_COUNT) {
+                MessageDialog.openWarning(null, StringConstants.WARN,
+                        MessageFormat.format(StringConstants.PA_FILE_TOO_LARGE, MAX_COLUMN_COUNT));
+                columnNumbers = MAX_COLUMN_COUNT;
+            }
+
+            final String[][] data = new String[rowNumbers][columnNumbers];
+
+            tableViewer.getTable().setItemCount(rowNumbers);
+
+            for (int i = 0; i < columnNumbers; i++) {
                 final int idx = i;
                 if (idx >= tableViewer.getTable().getColumnCount() - 1) {
                     TableViewerColumn columnViewer = new TableViewerColumn(tableViewer, SWT.NONE);
@@ -383,16 +454,32 @@ public class ExcelTestDataPart extends TestDataMainPart {
                         columnViewer.getColumn().setText(StringUtils.EMPTY);
                     }
 
-                    columnViewer.getColumn().setWidth(200);
+                    columnViewer.getColumn().setWidth(COLUMN_WIDTH);
                     columnViewer.setLabelProvider(new ColumnLabelProvider() {
                         @Override
-                        public String getText(Object element) {
-                            if (element != null) {
-                                if (element instanceof String[]) {
-                                    return ((String[]) element)[idx];
+                        public void update(final ViewerCell cell) {
+                            final int columnIndex = cell.getColumnIndex() - 1;
+                            final int rowIndex = tableViewer.getTable().indexOf((TableItem) cell.getItem());
+                            String text = "...";
+                            cell.setText(text);
+
+                            sync.asyncExec(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    if (data[rowIndex][columnIndex] == null) {
+                                        final String text = excelData.getValue(columnIndex + 1, rowIndex + 1);
+                                        if (text == null) {
+                                            data[rowIndex][columnIndex] = "";
+                                        } else {
+                                            data[rowIndex][columnIndex] = text;
+                                        }
+                                        if (!cell.getItem().isDisposed()) {
+                                            cell.setText(text);
+                                        }
+                                    }
                                 }
-                            }
-                            return element != null ? element.toString() : StringUtils.EMPTY;
+                            });
                         }
                     });
                 }
@@ -401,16 +488,18 @@ public class ExcelTestDataPart extends TestDataMainPart {
             tableViewer.setInput(data);
             tableViewer.getTable().setHeaderVisible(true);
             tableViewer.getTable().setLinesVisible(true);
-            tableViewer.getTable().setRedraw(true);
 
         } catch (Exception e) {
             LoggerSingleton.logError(e);
+        } finally {
+            tableViewer.getTable().setRedraw(true);
         }
     }
 
     @Persist
     public void save() {
         try {
+            ableToReload = false;
             String oldPk = originalDataFile.getId();
             String oldName = originalDataFile.getName();
             String oldIdForDisplay = TestDataController.getInstance().getIdForDisplay(originalDataFile);
@@ -432,6 +521,8 @@ public class ExcelTestDataPart extends TestDataMainPart {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_TEST_DATA, e
                     .getClass().getSimpleName());
+        } finally {
+            ableToReload = true;
         }
     }
 
