@@ -6,6 +6,7 @@ import java.util.Map;
 import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
+import com.kms.katalon.execution.configuration.IDriverConnector;
 
 public class ChromeDriverConnector extends WebUiDriverConnector {
 	private String chromeDriverPath;
@@ -34,5 +35,19 @@ public class ChromeDriverConnector extends WebUiDriverConnector {
 	public void setChromeDriverPath(String chromeDriverPath) {
 		this.chromeDriverPath = chromeDriverPath;
 	}
+	
+	@SuppressWarnings("unchecked")
+    @Override
+    public IDriverConnector clone() {
+        try {
+            ChromeDriverConnector iosDriverConnector = new ChromeDriverConnector(getParentFolderPath());
+            iosDriverConnector.setChromeDriverPath(getChromeDriverPath());
+            iosDriverConnector.driverProperties = (Map<String, Object>) cloneDriverPropertyValue(getDriverProperties());
+            return iosDriverConnector;
+        } catch (IOException e) {
+            // do nothing
+        }
+        return null;
+    }
 
 }

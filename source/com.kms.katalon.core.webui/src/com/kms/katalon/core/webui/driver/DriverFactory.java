@@ -405,6 +405,16 @@ public class DriverFactory {
         if (null != webDriver && null != ((RemoteWebDriver) webDriver).getSessionId()) {
             try {
                 webDriver.quit();
+                WebUIDriverType driver = (WebUIDriverType) getExecutedBrowser();
+                switch (driver) {
+                case ANDROID_DRIVER:
+                case IOS_DRIVER:
+                    WebMobileDriverFactory.getInstance().quitServer();
+                    break;
+                default:
+                    break;
+
+                }
             } catch (UnreachableBrowserException e) {
                 KeywordLogger.getInstance().logWarning(StringConstants.DRI_LOG_WARNING_BROWSER_NOT_REACHABLE);
             }

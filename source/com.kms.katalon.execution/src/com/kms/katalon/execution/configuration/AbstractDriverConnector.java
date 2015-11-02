@@ -3,8 +3,10 @@ package com.kms.katalon.execution.configuration;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -130,5 +132,27 @@ public abstract class AbstractDriverConnector implements IDriverConnector {
     @Override
     public String toString() {
         return getDriverProperties().toString();
+    }
+    
+    public abstract IDriverConnector clone();
+    
+    protected Object cloneDriverPropertyValue(Object propertyValue) {
+        if (propertyValue instanceof String) {
+            return new String((String) propertyValue);
+        } else if (propertyValue instanceof List) {
+            List<Object> newList = new ArrayList<Object>();
+            for (Object object : (List<?>) propertyValue) {
+                newList.add(cloneDriverPropertyValue(object));
+            }
+            return newList;
+        } else if (propertyValue instanceof Map) {
+            Map<Object, Object> newMap = new LinkedHashMap<Object, Object>();
+            for (Entry<?, ?> entry : ((Map<?, ?>) propertyValue).entrySet()) {
+                newMap.put(cloneDriverPropertyValue(entry.getKey()), cloneDriverPropertyValue(entry.getValue()));
+            }
+            return newMap;
+        } else {
+            return propertyValue;
+        }
     }
 }

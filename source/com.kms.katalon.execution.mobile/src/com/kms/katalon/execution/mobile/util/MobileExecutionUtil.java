@@ -190,20 +190,15 @@ public class MobileExecutionUtil {
         switch (mobileDriverType) {
         case ANDROID_DRIVER:
             deviceMap = MobileExecutionUtil.getAndroidDevices();
-            for (Entry<String, String> device : deviceMap.entrySet()) {
-                if (device.getValue().equals(deviceName)) {
-                    return true;
-                }
-            }
             break;
         case IOS_DRIVER:
             deviceMap = MobileExecutionUtil.getIosDevices();
-            for (Entry<String, String> device : deviceMap.entrySet()) {
-                if (device.getKey().equals(deviceName)) {
-                    return true;
-                }
-            }
             break;
+        }
+        for (Entry<String, String> device : deviceMap.entrySet()) {
+            if (device.getKey().equals(deviceName)) {
+                return true;
+            }
         }
         return false;
     }

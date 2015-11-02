@@ -7,6 +7,7 @@ import java.util.Map;
 import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
+import com.kms.katalon.execution.configuration.IDriverConnector;
 
 public class RemoteWebDriverConnector extends WebUiDriverConnector {
     public enum RemoteWebDriverConnectorType {
@@ -83,5 +84,20 @@ public class RemoteWebDriverConnector extends WebUiDriverConnector {
 
     public void setRemoteWebDriverConnectorType(RemoteWebDriverConnectorType remoteWebDriverConnectorType) {
         this.remoteWebDriverConnectorType = remoteWebDriverConnectorType;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public IDriverConnector clone() {
+        try {
+            RemoteWebDriverConnector remoteDriverConnector = new RemoteWebDriverConnector(getParentFolderPath());
+            remoteDriverConnector.setRemoteServerUrl(getRemoteServerUrl());
+            remoteDriverConnector.setRemoteWebDriverConnectorType(getRemoteWebDriverConnectorType());
+            remoteDriverConnector.driverProperties = (Map<String, Object>) cloneDriverPropertyValue(getDriverProperties());
+            return remoteDriverConnector;
+        } catch (IOException e) {
+            // do nothing
+        }
+        return null;
     }
 }
