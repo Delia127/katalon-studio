@@ -15,7 +15,7 @@ public class MobileDriverConnectorBuilderDialog extends DriverConnectorBuilderDi
 
     public MobileDriverConnectorBuilderDialog(Shell parentShell, MobileDriverConnector mobileDriverConnector) {
         super(parentShell);
-        this.mobileDriverConnector = mobileDriverConnector;
+        this.mobileDriverConnector = (MobileDriverConnector) mobileDriverConnector.clone();
     }
 
     @Override

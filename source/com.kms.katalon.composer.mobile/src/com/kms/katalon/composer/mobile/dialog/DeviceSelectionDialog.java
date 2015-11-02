@@ -39,7 +39,7 @@ public class DeviceSelectionDialog extends TitleAreaDialog {
     }
 
     private void updateStatus() {
-        if (deviceSelectionComposite.getDeviceName() == null) {
+        if (deviceSelectionComposite.getDeviceUUID() == null) {
             super.getButton(OK).setEnabled(false);
         } else {
             super.getButton(OK).setEnabled(true);
@@ -66,7 +66,7 @@ public class DeviceSelectionDialog extends TitleAreaDialog {
 
     @Override
     protected void okPressed() {
-        deviceName = deviceSelectionComposite.getDeviceName();
+        deviceName = deviceSelectionComposite.getDeviceUUID();
         super.okPressed();
     }
 
