@@ -25,12 +25,10 @@ import com.kms.katalon.execution.mobile.util.MobileExecutionUtil;
 public class DeviceSelectionComposite extends Composite {
     private Combo cbbDevices;
     private Map<String, String> devicesList;
-    private MobileDriverType platForm;
     private List<SelectionListener> selectionListenerList;
 
     public DeviceSelectionComposite(Composite parent, int style, MobileDriverType platForm) {
         super(parent, style);
-        this.platForm = platForm;
         devicesList = new HashMap<String, String>();
         selectionListenerList = new ArrayList<SelectionListener>();
         setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -76,37 +74,32 @@ public class DeviceSelectionComposite extends Composite {
 
     }
 
-    public void setDeviceName(String deviceName) {
-        if (deviceName == null || deviceName.isEmpty()) {
+    public void setDeviceName(String deviceUUID) {
+        if (deviceUUID == null || deviceUUID.isEmpty()) {
             return;
         }
-        if (platForm == MobileDriverType.IOS_DRIVER) {
-            for (Entry<String, String> device : devicesList.entrySet()) {
-                if (device.getValue().equals(deviceName)) {
-                    deviceName = device.getKey();
-                    break;
-                }
+        String deviceName = null;
+        for (Entry<String, String> device : devicesList.entrySet()) {
+            if (device.getKey().equals(deviceUUID)) {
+                deviceName = device.getValue();
+                break;
             }
         }
         if (cbbDevices.getItemCount() == 0 || cbbDevices.indexOf(deviceName) == -1) {
-            cbbDevices.setText(deviceName);
+            cbbDevices.setText(deviceUUID);
         } else {
             cbbDevices.select(cbbDevices.indexOf(deviceName));
         }
     }
 
-    public String getDeviceName() {
+    public String getDeviceUUID() {
         if (cbbDevices.getSelectionIndex() < 0) {
             return null;
         }
-        if (platForm == MobileDriverType.ANDROID_DRIVER) {
-            return cbbDevices.getText();
-        } else if (platForm == MobileDriverType.IOS_DRIVER) {
-            String selectedDevice = cbbDevices.getText();
-            for (Entry<String, String> device : devicesList.entrySet()) {
-                if (device.getValue().equals(selectedDevice)) {
-                    return device.getKey();
-                }
+        String selectedDevice = cbbDevices.getText();
+        for (Entry<String, String> device : devicesList.entrySet()) {
+            if (device.getValue().equals(selectedDevice)) {
+                return device.getKey();
             }
         }
         return null;

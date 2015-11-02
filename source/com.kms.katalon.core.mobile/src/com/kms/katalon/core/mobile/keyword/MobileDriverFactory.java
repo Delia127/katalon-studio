@@ -84,6 +84,7 @@ public class MobileDriverFactory {
                 RunConfiguration.getExecutionDriverProperty(), MobileDriverType.ANDROID_DRIVER);
 		capabilities.setPlatform(Platform.ANDROID);
 		capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceId);
+		capabilities.setCapability("udid", deviceId);
 		capabilities.setCapability(MobileCapabilityType.APP, appFile);
 		capabilities.setCapability("fullReset", uninstallAfterCloseApp);
 		capabilities.setCapability("noReset", !uninstallAfterCloseApp);

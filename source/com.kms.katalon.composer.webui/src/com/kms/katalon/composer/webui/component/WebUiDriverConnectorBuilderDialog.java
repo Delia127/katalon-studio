@@ -19,7 +19,7 @@ public class WebUiDriverConnectorBuilderDialog extends DriverConnectorBuilderDia
 
     public WebUiDriverConnectorBuilderDialog(Shell parentShell, WebUiDriverConnector webUiDriverConnector) {
         super(parentShell);
-        this.webUiDriverConnector = webUiDriverConnector;
+        this.webUiDriverConnector = (WebUiDriverConnector) webUiDriverConnector.clone();
     }
 
     @Override

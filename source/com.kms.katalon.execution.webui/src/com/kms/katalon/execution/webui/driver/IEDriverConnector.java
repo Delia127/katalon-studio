@@ -7,6 +7,7 @@ import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
+import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.webui.util.WebUIExecutionUtil;
 
 public class IEDriverConnector extends WebUiDriverConnector {
@@ -48,4 +49,16 @@ public class IEDriverConnector extends WebUiDriverConnector {
 		this.waitForHang = waitForHang;
 	}
 
+	@SuppressWarnings("unchecked")
+    @Override
+    public IDriverConnector clone() {
+        try {
+            IEDriverConnector ieDriverConnector = new IEDriverConnector(getParentFolderPath());
+            ieDriverConnector.driverProperties = (Map<String, Object>) cloneDriverPropertyValue(getDriverProperties());
+            return ieDriverConnector;
+        } catch (IOException e) {
+            // do nothing
+        }
+        return null;
+    }
 }
