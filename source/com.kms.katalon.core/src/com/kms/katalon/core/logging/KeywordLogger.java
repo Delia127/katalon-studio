@@ -236,6 +236,12 @@ public class KeywordLogger {
     public void logInfo(String message, Map<String, String> attributes) {
         logMessage(LogLevel.INFO, message, attributes);
     }
+    
+    public void logRunData(String dataKey, String dataValue) {
+        Map<String, String> attributeMap = new HashMap<String, String>();
+        attributeMap.put(dataKey, dataValue);
+        logMessage(LogLevel.RUN_DATA, "", attributeMap);
+    }
 
     public void logError(String message) {
         logMessage(LogLevel.ERROR, message);

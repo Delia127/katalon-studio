@@ -37,9 +37,9 @@ public abstract class AbstractDeleteEntityDialog extends AbstractDialog {
         super.okPressed();
     }
 
-    protected void createButtonsForButtonBar(Composite parent) {
+    protected final void createButtonsForButtonBar(Composite parent) {
         // create OK and Cancel buttons by default
-        for (YesNoAllOptions option : YesNoAllOptions.values()) {
+        for (YesNoAllOptions option : fHandler.getAvailableDeletionOptions()) {
             createButton(parent, option.ordinal(), option.toString(), true);
         }
     }

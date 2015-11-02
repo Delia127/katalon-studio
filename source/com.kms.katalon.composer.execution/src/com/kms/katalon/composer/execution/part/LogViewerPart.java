@@ -887,6 +887,9 @@ public class LogViewerPart implements EventHandler {
             treeViewer.addRecords(records);
         } else {
             for (XmlLogRecord record : records) {
+                if (record.getLevel() == LogLevel.RUN_DATA) {
+                    continue;
+                }
                 tableViewer.add(record);
             }
         }

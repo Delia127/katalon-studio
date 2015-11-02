@@ -47,6 +47,7 @@ public class ImageConstants {
 
     // WebElementTreeEntity
     public static final Image IMG_16_TEST_OBJECT = ImageUtil.loadImage(currentBundle, "/icons/test_object_16.png");
+    public static final Image IMG_16_WS_TEST_OBJECT = ImageUtil.loadImage(currentBundle, "/icons/ws_test_object_16.png");
 
     // Some common images
     public static final Image IMG_16_CHECKED = ImageUtil.loadImage(currentBundle, "/icons/checkbox_checked_16.png");

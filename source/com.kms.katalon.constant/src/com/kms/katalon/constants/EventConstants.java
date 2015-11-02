@@ -1,6 +1,6 @@
 package com.kms.katalon.constants;
 
-public interface EventConstants {
+public class EventConstants {
     // Property's name of event that is broadcast by IEventBroker
     public static final String EVENT_DATA_PROPERTY_NAME = "org.eclipse.e4.data";
 

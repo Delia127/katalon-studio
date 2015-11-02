@@ -3,6 +3,8 @@ package com.kms.katalon.composer.objectrepository.views;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 
+import javax.annotation.PreDestroy;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
@@ -62,7 +64,7 @@ import com.kms.katalon.entity.dal.exception.DuplicatedFileNameException;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 
-public class ObjectPropertyView {
+public class ObjectPropertyView implements EventHandler {
     private static final String[] FILTER_NAMES = { "Image Files (*.gif,*.png,*.jpg)" };
 
     private static final String[] FILTER_EXTS = { "*.gif; *.png; *.jpg" };
@@ -129,37 +131,8 @@ public class ObjectPropertyView {
         this.eventBroker = eventBroker;
         this.dirtyable = dt;
 
-        eventBroker.subscribe(ObjectEventConstants.OBJECT_UPDATE_DIRTY, new EventHandler() {
-
-            @Override
-            public void handleEvent(Event event) {
-                Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-                if (object != null && object instanceof TableViewer) {
-                    if (object.equals(treeViewer)) {
-                        dirtyable.setDirty(true);
-                    }
-                }
-            }
-        });
-
-        eventBroker.subscribe(ObjectEventConstants.OBJECT_UPDATE_IS_SELECTED_COLUMN_HEADER, new EventHandler() {
-            @Override
-            public void handleEvent(Event event) {
-                Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-                if (object != null && object instanceof TableViewer) {
-                    if (object.equals(treeViewer)) {
-                        boolean isSelectedAll = treeViewer.getIsSelectedAll();
-                        Image isSelectedColumnImageHeader;
-                        if (isSelectedAll) {
-                            isSelectedColumnImageHeader = ImageConstants.IMG_16_CHECKBOX_CHECKED;
-                        } else {
-                            isSelectedColumnImageHeader = ImageConstants.IMG_16_CHECKBOX_UNCHECKED;
-                        }
-                        trclmnColumnSelected.setImage(isSelectedColumnImageHeader);
-                    }
-                }
-            }
-        });
+        eventBroker.subscribe(ObjectEventConstants.OBJECT_UPDATE_DIRTY, this);
+        eventBroker.subscribe(ObjectEventConstants.OBJECT_UPDATE_IS_SELECTED_COLUMN_HEADER, this);
     }
 
     protected void layoutGeneralComposite() {
@@ -202,10 +175,10 @@ public class ObjectPropertyView {
 
         Composite compositeInfoHeader = new Composite(compositeInfo, SWT.NONE);
         compositeInfoHeader.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        GridLayout gl_compositeInfoHeader = new GridLayout(2, false);
-        gl_compositeInfoHeader.marginWidth = 0;
-        gl_compositeInfoHeader.marginHeight = 0;
-        compositeInfoHeader.setLayout(gl_compositeInfoHeader);
+        GridLayout glCompositeInfoHeader = new GridLayout(2, false);
+        glCompositeInfoHeader.marginWidth = 0;
+        glCompositeInfoHeader.marginHeight = 0;
+        compositeInfoHeader.setLayout(glCompositeInfoHeader);
         compositeInfoHeader.setCursor(compositeInfoHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
 
         btnExpandGeneralInformation = new ImageButton(compositeInfoHeader, SWT.NONE);
@@ -676,5 +649,42 @@ public class ObjectPropertyView {
 
         des.setImagePath(src.getImagePath());
         des.setUseRalativeImagePath(src.getUseRalativeImagePath());
+    }
+
+    @PreDestroy
+    public void preDestroy() {
+        eventBroker.unsubscribe(this);
+    }
+
+    @Override
+    public void handleEvent(Event event) {
+        String topic = event.getTopic();
+        Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+        switch (topic) {
+            case ObjectEventConstants.OBJECT_UPDATE_DIRTY: {
+                if (object != null && object instanceof TableViewer) {
+                    if (object.equals(treeViewer)) {
+                        dirtyable.setDirty(true);
+                    }
+                }
+            }
+            case ObjectEventConstants.OBJECT_UPDATE_IS_SELECTED_COLUMN_HEADER: {
+                if (object != null && object instanceof TableViewer) {
+                    if (object.equals(treeViewer)) {
+                        boolean isSelectedAll = treeViewer.getIsSelectedAll();
+                        Image isSelectedColumnImageHeader;
+                        if (isSelectedAll) {
+                            isSelectedColumnImageHeader = ImageConstants.IMG_16_CHECKBOX_CHECKED;
+                        } else {
+                            isSelectedColumnImageHeader = ImageConstants.IMG_16_CHECKBOX_UNCHECKED;
+                        }
+                        trclmnColumnSelected.setImage(isSelectedColumnImageHeader);
+                    }
+                }
+            }
+            default:
+                break;
+        }
+
     }
 }

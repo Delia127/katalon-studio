@@ -45,7 +45,7 @@ public class DeleteTestCaseFolderHandler extends DeleteTestCaseHandler implement
             
             String folderId = FolderController.getInstance().getIdForDisplay(folder);
             List<Object> descendant = FolderController.getInstance().getAllDescentdantEntities(folder);
-            monitor.beginTask("Deleting folder: " + folder.getName() + "...", descendant.size() + 1);
+            monitor.beginTask("Deleting folder '" + folder.getName() + "'...", descendant.size() + 1);
 
             List<IEntity> undeletedTestCases = new ArrayList<IEntity>();
 
@@ -91,7 +91,7 @@ public class DeleteTestCaseFolderHandler extends DeleteTestCaseHandler implement
                 }
             }
             if (canDelete) {
-                monitor.subTask("Deleting folder: " + folderId + "...");
+                monitor.subTask("Deleting folder '" + folderId + "'...");
                 FolderController.getInstance().deleteFolder(folder);
             } else {
                 undeletedTestCases.add(folder);
@@ -107,7 +107,7 @@ public class DeleteTestCaseFolderHandler extends DeleteTestCaseHandler implement
     private boolean deleteTestCase(final TestCaseEntity testCase, IProgressMonitor monitor) {
         try {
             String testCaseId = TestCaseController.getInstance().getIdForDisplay(testCase);
-            monitor.subTask("Deleting test case: " + testCaseId + "...");
+            monitor.subTask("Deleting '" + testCaseId + "'...");
             return deleteTestCase(testCase, sync, eventBroker);
         } catch (Exception ex) {
             LoggerSingleton.logError(ex);

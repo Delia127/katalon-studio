@@ -138,6 +138,8 @@ public class DriverFactory {
             }
             localWebServerStorage.set(webDriver);
             setTimeout();
+            KeywordLogger.getInstance()
+                    .logRunData("sessionId", ((RemoteWebDriver) webDriver).getSessionId().toString());
             return webDriver;
         } catch (Error e) {
             KeywordLogger.getInstance().logMessage(LogLevel.WARNING, e.getMessage());

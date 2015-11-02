@@ -142,7 +142,7 @@ public class TestSuiteController extends EntityController {
             String testDataLinkId = variableLink.getTestDataLinkId();
 
             TestCaseTestDataLink testDataLink = testDataLinkMap.get(testDataLinkId);
-            if (testDataLink != null) {
+            if (testDataLink != null && !testDataLinkUsed.contains(testDataLink)) {
                 testDataLinkUsed.add(testDataLink);
             }
         }
