@@ -55,4 +55,15 @@ public class ImageConstants {
     public static final Image IMG_16_NOTIFICATION_HEADER = ImageUtil.loadImage(currentBundle,
             "/icons/notification_16.gif");
     public static final URL URL_16_LOADING = currentBundle.getEntry("/icons/loading_16.gif");
+    
+    public static final Image IMG_16_ADD = ImageUtil.loadImage(currentBundle, "/icons/add_16.png");
+    public static final Image IMG_16_REMOVE = ImageUtil.loadImage(currentBundle, "/icons/remove_16.png");
+    public static final Image IMG_16_CLEAR = ImageUtil.loadImage(currentBundle, "/icons/clear_16.png");
+    public static final Image IMG_16_EDIT = ImageUtil.loadImage(currentBundle, "/icons/edit_16.png");
+    public static final Image IMG_16_REFRESH = ImageUtil.loadImage(currentBundle, "/icons/refresh_16.png");
+    
+    public static final Image IMG_24_ADD = ImageUtil.loadImage(currentBundle, "/icons/add_24.png");
+    public static final Image IMG_24_CLEAR = ImageUtil.loadImage(currentBundle, "/icons/clear_24.png");
+    public static final Image IMG_24_EDIT = ImageUtil.loadImage(currentBundle, "/icons/edit_24.png");
+    public static final Image IMG_24_REMOVE = ImageUtil.loadImage(currentBundle, "/icons/remove_24.png");
 }
