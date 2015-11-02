@@ -35,6 +35,9 @@ public class LoadExcelFileJob extends Job {
     }
 
     public String[] getSheetNames() {
+        if (fSheetNames == null) {
+            fSheetNames = new String[0];
+        }
         return fSheetNames;
     }
 }

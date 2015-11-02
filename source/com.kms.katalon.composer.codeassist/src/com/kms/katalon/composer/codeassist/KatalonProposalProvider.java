@@ -21,8 +21,7 @@ import com.kms.katalon.core.annotation.Keyword;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 /**
- * Provides proposal for Katalon's keywords as methods and test case's binding
- * variables.
+ * Provides proposal for Katalon's keywords as methods and test case's binding variables.
  * 
  * @see KatalonMethodNodeProposal
  * @see KatalonLocalVariableProposal
@@ -38,8 +37,7 @@ public class KatalonProposalProvider implements IProposalProvider {
         // Add keyword proposals for BuiltinKeyword class
         if (KatalonContextUtil.isBuiltinKeywordCompletionClassNode(context)) {
             for (MethodNode methodNode : completionType.getAllDeclaredMethods()) {
-                if (methodNode.getName().startsWith(completionExpression.trim())
-                        && isKeywordNode(methodNode)) {
+                if (methodNode.getName().startsWith(completionExpression.trim()) && isKeywordNode(methodNode)) {
                     groovyProposals.add(new KatalonMethodNodeProposal(methodNode));
                 }
             }
@@ -75,16 +73,17 @@ public class KatalonProposalProvider implements IProposalProvider {
     @Override
     public List<MethodNode> getNewMethodProposals(ContentAssistContext context) {
         return null;
-
     }
 
     @Override
     public List<String> getNewFieldProposals(ContentAssistContext context) {
         return null;
     }
-    
+
     private boolean isKeywordNode(MethodNode methodNode) {
-        if (!methodNode.isStatic() || !methodNode.isPublic()) { return false; }
+        if (!methodNode.isStatic() || !methodNode.isPublic()) {
+            return false;
+        }
         for (AnnotationNode annotatedNode : methodNode.getAnnotations()) {
             if (annotatedNode.getClassNode().getName().equals(Keyword.class.getName())) {
                 return true;

@@ -497,4 +497,9 @@ public class CSVTestDataPart extends TestDataMainPart {
     protected EPartService getPartService() {
         return partService;
     }
+
+    @Override
+    protected void preDestroy() {
+        
+    }
 }
