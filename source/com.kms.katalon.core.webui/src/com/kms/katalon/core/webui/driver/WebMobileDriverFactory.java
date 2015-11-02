@@ -38,6 +38,38 @@ class WebMobileDriverFactory {
     static WebMobileDriverFactory getInstance() {
         return localWebMobileDriverFactoryStorage.get();
     }
+    
+    private void cleanup() {
+        String os = System.getProperty("os.name");
+        if (os.toLowerCase().contains("win")) {
+            killProcessOnWin("adb.exe");
+            killProcessOnWin("node.exe");
+        } else {
+            killProcessOnMac("adb");
+            killProcessOnMac("node");
+            killProcessOnMac("instruments");
+            killProcessOnMac("deviceconsole");
+            killProcessOnMac("ios_webkit_debug_proxy");
+        }
+    }
+
+    private void killProcessOnWin(String processName) {
+        ProcessBuilder pb = new ProcessBuilder("taskkill", "/f", "/im", processName, "/t");
+        try {
+            pb.start().waitFor();
+        } catch (Exception e) {
+            // LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    private void killProcessOnMac(String processName) {
+        ProcessBuilder pb = new ProcessBuilder("killall", processName);
+        try {
+            pb.start().waitFor();
+        } catch (Exception e) {
+            // LOGGER.error(e.getMessage(), e);
+        }
+    }
 
     AppiumDriver<?> getAndroidDriver(String deviceName) throws Exception {
         if (!isServerStarted()) {
@@ -69,6 +101,7 @@ class WebMobileDriverFactory {
 
     @SuppressWarnings("rawtypes")
     AppiumDriver<?> getIosDriver(String deviceName) throws Exception {
+        cleanup();
         if (!isWebProxyServerStarted()) {
             startWebProxyServer(deviceName);
         }
@@ -171,7 +204,7 @@ class WebMobileDriverFactory {
 
     private void startWebProxyServer(String deviceId) throws Exception {
         String webProxyServerLocation = "ios_webkit_debug_proxy";
-        int webProxyPort = getFreePort();
+        int webProxyPort = 27753;
         String[] webProxyServerCmd = { webProxyServerLocation, "-c", deviceId + ":" + webProxyPort };
         ProcessBuilder webProxyServerProcessBuilder = new ProcessBuilder(webProxyServerCmd);
         webProxyServerProcessBuilder.redirectOutput(new File(new File(RunConfiguration.getLogFilePath()).getParent()
