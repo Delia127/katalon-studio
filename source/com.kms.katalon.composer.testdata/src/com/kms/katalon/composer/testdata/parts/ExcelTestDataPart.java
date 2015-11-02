@@ -6,7 +6,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
@@ -86,6 +85,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
     // Field
     private String fCurrentPath;
     private String fCurrentSheetName;
+    private String[][] fData;
 
     private LoadExcelFileJob loadFileJob;
 
@@ -179,7 +179,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
         lblFileName.setText(StringConstants.PA_LBL_FILE_NAME);
         txtFileName = new Text(compositeFileName, SWT.BORDER);
         GridData gdTxtFileName = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-        gdTxtFileName.heightHint = 18;
+        gdTxtFileName.heightHint = 20;
         txtFileName.setLayoutData(gdTxtFileName);
         txtFileName.setEditable(false);
         btnBrowse = new Button(compositeFileName, SWT.FLAT);
@@ -238,6 +238,9 @@ public class ExcelTestDataPart extends TestDataMainPart {
         tableViewer = new TableViewer(compositeTable, SWT.VIRTUAL | SWT.FULL_SELECTION);
         tableViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
+        tableViewer.getTable().setHeaderVisible(true);
+        tableViewer.getTable().setLinesVisible(true);
+
         TableViewerColumn tbviewerClmnNo = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tbclmnNo = tbviewerClmnNo.getColumn();
         tbclmnNo.setText(StringConstants.NO_);
@@ -287,15 +290,13 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
         @Override
         public void done(IJobChangeEvent event) {
-            if (event.getResult() == Status.OK_STATUS) {
-                sync.syncExec(new Runnable() {
-                    @Override
-                    public void run() {
-                        loadSheetNames(loadFileJob.getSheetNames());
-                        loadExcelDataToTable();
-                    }
-                });
-            }
+            sync.syncExec(new Runnable() {
+                @Override
+                public void run() {
+                    loadSheetNames(loadFileJob.getSheetNames());
+                    loadExcelDataToTable();
+                }
+            });
         }
     };
 
@@ -376,8 +377,10 @@ public class ExcelTestDataPart extends TestDataMainPart {
     }
 
     private void selectDefaultSheet(String[] sheetNames) {
-        fCurrentSheetName = sheetNames[0];
-        cbbSheets.select(0);
+        if (sheetNames.length > 0) {
+            fCurrentSheetName = sheetNames[0];
+            cbbSheets.select(0);
+        }
     }
 
     private void loadSheetNames(String[] sheetNames) {
@@ -439,7 +442,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 columnNumbers = MAX_COLUMN_COUNT;
             }
 
-            final String[][] data = new String[rowNumbers][columnNumbers];
+            fData = new String[rowNumbers][columnNumbers];
 
             tableViewer.getTable().setItemCount(rowNumbers);
 
@@ -467,12 +470,12 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
                                 @Override
                                 public void run() {
-                                    if (data[rowIndex][columnIndex] == null) {
+                                    if (fData[rowIndex][columnIndex] == null) {
                                         final String text = excelData.getValue(columnIndex + 1, rowIndex + 1);
                                         if (text == null) {
-                                            data[rowIndex][columnIndex] = "";
+                                            fData[rowIndex][columnIndex] = "";
                                         } else {
-                                            data[rowIndex][columnIndex] = text;
+                                            fData[rowIndex][columnIndex] = text;
                                         }
                                         if (!cell.getItem().isDisposed()) {
                                             cell.setText(text);
@@ -485,11 +488,12 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 }
             }
 
-            tableViewer.setInput(data);
-            tableViewer.getTable().setHeaderVisible(true);
-            tableViewer.getTable().setLinesVisible(true);
+            tableViewer.setInput(fData);
 
+        } catch (IllegalArgumentException ex) {
+            fData = null;
         } catch (Exception e) {
+            fData = null;
             LoggerSingleton.logError(e);
         } finally {
             tableViewer.getTable().setRedraw(true);
@@ -556,5 +560,12 @@ public class ExcelTestDataPart extends TestDataMainPart {
     @Override
     protected EPartService getPartService() {
         return partService;
+    }
+
+    @Override
+    protected void preDestroy() {
+        fCurrentPath = "";
+        fCurrentSheetName = "";
+        fData = null;
     }
 }

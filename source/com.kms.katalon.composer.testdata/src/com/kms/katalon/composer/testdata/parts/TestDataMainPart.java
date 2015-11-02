@@ -478,6 +478,7 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
 
     @PreDestroy
     private void destroy() {
+        preDestroy();
         eventBroker.unsubscribe(this);
         Iterator<Thread> threadIterator = currentThreads.iterator();
         while (threadIterator.hasNext()) {
@@ -486,7 +487,10 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
                 currentThread.interrupt();
             }
         }
+        threadIterator = null;
     }
+    
+    protected abstract void preDestroy();
 
     public void partActivated(MPart part) {
 

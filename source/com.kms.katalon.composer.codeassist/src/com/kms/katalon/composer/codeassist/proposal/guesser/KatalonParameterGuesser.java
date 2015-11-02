@@ -6,9 +6,9 @@ import org.eclipse.jdt.internal.ui.text.java.ParameterGuesser;
 @SuppressWarnings("restriction")
 public class KatalonParameterGuesser extends ParameterGuesser {
 
-	public KatalonParameterGuesser(IJavaElement enclosingElement) {
-		super(enclosingElement);
-		// TODO Auto-generated constructor stub
-	}
+    public KatalonParameterGuesser(IJavaElement enclosingElement) {
+        super(enclosingElement);
+        // TODO Auto-generated constructor stub
+    }
 
 }

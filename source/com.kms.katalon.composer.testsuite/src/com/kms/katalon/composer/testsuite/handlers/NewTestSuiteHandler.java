@@ -143,7 +143,7 @@ public class NewTestSuiteHandler {
     private String getDefaultEmail() {
         IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
                 PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
-        return store.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_USERNAME);
+        return store.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_REPORT_RECIPIENTS);
     }
     
 }

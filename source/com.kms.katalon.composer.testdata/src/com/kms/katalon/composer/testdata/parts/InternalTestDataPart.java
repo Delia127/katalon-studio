@@ -552,4 +552,10 @@ public class InternalTestDataPart extends TestDataMainPart {
     protected EPartService getPartService() {
         return partService;
     }
+
+    @Override
+    protected void preDestroy() {
+        // TODO Auto-generated method stub
+        
+    }
 }
