@@ -32,21 +32,20 @@ import com.kms.katalon.preferences.internal.PreferencesRegistry;
 
 public class PreferencesHandler {
 
-	@CanExecute
-	public boolean canExecute() {
-		return true;
-	}
+    @CanExecute
+    public boolean canExecute() {
+        return true;
+    }
 
-	@Execute
-	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
-			PreferencesRegistry preferencesRegistry) {
-		PreferenceManager pm = preferencesRegistry.getPreferenceManager(PreferencesRegistry.PREFS_PAGE_XP);
-		PreferenceDialog dialog = new PreferenceDialog(shell, pm);
-		dialog.create();
-		dialog.getTreeViewer().setComparator(new ViewerComparator());
-		dialog.getTreeViewer().expandAll();		
-		dialog.setMinimumPageSize(500, 500);
-		dialog.open();
-	}
+    @Execute
+    public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell, PreferencesRegistry preferencesRegistry) {
+        PreferenceManager pm = preferencesRegistry.getPreferenceManager(PreferencesRegistry.PREFS_PAGE_XP);
+        PreferenceDialog dialog = new PreferenceDialog(shell, pm);
+        dialog.create();
+        dialog.getTreeViewer().setComparator(new ViewerComparator());
+        dialog.getTreeViewer().expandAll();
+        dialog.setMinimumPageSize(500, 500);
+        dialog.open();
+    }
 
 }

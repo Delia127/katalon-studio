@@ -7,6 +7,7 @@ import com.kms.katalon.core.constants.StringConstants;
 public abstract class SheetPOI {
     private static final int COLUMN_HEADER_ROW_NUMBER = 0;
 
+    private int columnCount = -1;
     private String sheetName;
 
     public SheetPOI(String sheetName) {
@@ -35,8 +36,8 @@ public abstract class SheetPOI {
         }
 
         if (col > maxColumnAtRow) {
-//            throw new IllegalArgumentException(MessageFormat.format(StringConstants.EXCEL_INVALID_COL_NUMBER, col,
-//                    maxColumnAtRow));
+            // throw new IllegalArgumentException(MessageFormat.format(StringConstants.EXCEL_INVALID_COL_NUMBER, col,
+            // maxColumnAtRow));
             return "";
         }
 
@@ -76,16 +77,37 @@ public abstract class SheetPOI {
     public abstract int getMaxColumn(int rowIndex);
 
     public String[] getColumnNames() {
-        int maxColumnCounts = getMaxColumn(COLUMN_HEADER_ROW_NUMBER);
+        int maxColumnCounts = getColumnCount();
+
         if (maxColumnCounts < 0) {
             return new String[0];
         }
 
         String[] columnNames = new String[maxColumnCounts];
-        for (int i = 0; i < getMaxColumn(COLUMN_HEADER_ROW_NUMBER); i++) {
+        for (int i = 0; i < maxColumnCounts; i++) {
             columnNames[i] = getCellText(i, COLUMN_HEADER_ROW_NUMBER);
 
         }
         return columnNames;
+    }
+
+    public int getColumnCount() {
+        if (columnCount < 0) {
+            for (int rowIndex = 0; rowIndex < getMaxRow(); rowIndex++) {
+                int maxColumnRow = getMaxColumn(rowIndex);
+                if (maxColumnRow > columnCount) {
+                    columnCount = maxColumnRow;
+                }
+            }
+        }
+        return columnCount;
+    }
+    
+    protected String getFormatString(String rawFormatString) {
+        if (rawFormatString == null || rawFormatString.isEmpty()) {
+            return rawFormatString;
+        }
+
+        return rawFormatString.replace("_(*", "_(\"\"*");
     }
 }
