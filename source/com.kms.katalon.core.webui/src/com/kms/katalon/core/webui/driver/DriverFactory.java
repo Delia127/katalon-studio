@@ -154,6 +154,7 @@ public class DriverFactory {
         KeywordLogger logger = KeywordLogger.getInstance();
         logger.logRunData("sessionId", ((RemoteWebDriver) webDriver).getSessionId().toString());
         logger.logRunData("browser", WebUiCommonHelper.getBrowserAndVersion(webDriver));
+        logger.logRunData("platform", ((RemoteWebDriver) webDriver).getCapabilities().getPlatform().toString());
     }
 
     public static WebDriver openWebDriver(DriverType driver, String projectDir, Object options) throws Exception {
