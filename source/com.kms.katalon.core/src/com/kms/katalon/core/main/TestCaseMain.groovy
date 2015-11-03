@@ -239,9 +239,7 @@ public class TestCaseMain {
 				logger.logPassed(testCaseId);
 			}
 		} catch (Throwable t) {
-			if (!(t instanceof StepFailedException)) {
-				logError(t, ExceptionsUtil.getMessageForThrowable(t));
-			}
+			logError(t, ExceptionsUtil.getMessageForThrowable(t));
 			endAllUnfinishedKeywords(keywordStack);
 			statusEntity.setStatusValue(getResultByError(t, testCaseId));
 			String message = MessageFormat.format(StringConstants.MAIN_LOG_MSG_FAILED_BECAUSE_OF, testCaseId, ExceptionsUtil.getMessageForThrowable(t));

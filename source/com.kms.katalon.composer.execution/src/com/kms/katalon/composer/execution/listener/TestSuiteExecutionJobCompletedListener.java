@@ -35,6 +35,7 @@ public class TestSuiteExecutionJobCompletedListener implements EventHandler {
                             && reRunTime < testSuite.getNumberOfRerun()) {
                         if (runConfig instanceof AbstractRunConfiguration) {
                             AbstractRunConfiguration abstractRunConfiguration = (AbstractRunConfiguration) runConfig;
+                            abstractRunConfiguration.generateLogFolder(testSuite);
                             abstractRunConfiguration.generateLogFilePath(testSuite);
                             ExecuteHandler.executeTestSuite(testSuite, launchMode, runConfig, reRunTime + 1);
                         }
