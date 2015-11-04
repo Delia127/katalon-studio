@@ -49,11 +49,14 @@ public class DeleteTestCaseHandler extends AbstractDeleteReferredEntityHandler i
 
             final TestCaseEntity testCase = (TestCaseEntity) entity.getObject();
             monitor.subTask("Deleting '" + TestCaseController.getInstance().getIdForDisplay(testCase) + "'...");
-            deleteTestCase(testCase, sync, eventBroker);
-
-            eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, TestCaseController.getInstance()
-                    .getIdForDisplay(testCase));
-            return true;
+            
+            if (deleteTestCase(testCase, sync, eventBroker)) {
+                eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, TestCaseController.getInstance()
+                        .getIdForDisplay(testCase));
+                return true;
+            } else {
+                return false;
+            }
         } catch (TestCaseIsReferencedByTestSuiteExepception e) {
             MessageDialog.openError(null, StringConstants.ERROR_TITLE, e.getMessage());
             return false;
@@ -79,9 +82,9 @@ public class DeleteTestCaseHandler extends AbstractDeleteReferredEntityHandler i
                     if (!needToShowPreferenceDialog()) {
                         return false;
                     }
-                    
+
                     final DeleteTestCaseHandler handler = this;
-                    
+
                     sync.syncExec(new Runnable() {
                         @Override
                         public void run() {
@@ -98,11 +101,11 @@ public class DeleteTestCaseHandler extends AbstractDeleteReferredEntityHandler i
                     return false;
                 }
             }
-            
+
             // Remove test case references in other Test Cases
             GroovyRefreshUtil.removeScriptReferencesInTestCaseScripts(
                     TestCaseController.getInstance().getIdForDisplay(testCase), testCase.getProject());
-            
+
             // remove TestCase part from its partStack if it exists
             EntityPartUtil.closePart(testCase);
 
@@ -128,7 +131,6 @@ public class DeleteTestCaseHandler extends AbstractDeleteReferredEntityHandler i
 
                 eventBroker.post(EventConstants.TEST_SUITE_UPDATED, new Object[] { testSuite.getId(), testSuite });
             }
-
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }

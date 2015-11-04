@@ -5,8 +5,8 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
 
-import com.kms.katalon.composer.objectrepository.events.ObjectEventConstants;
-import com.kms.katalon.composer.objectrepository.providers.ObjectPropetiesTableViewer;
+import com.kms.katalon.composer.objectrepository.constant.ObjectEventConstants;
+import com.kms.katalon.composer.objectrepository.provider.ObjectPropetiesTableViewer;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 
 public class PropertySelectedEditingSupport extends EditingSupport {

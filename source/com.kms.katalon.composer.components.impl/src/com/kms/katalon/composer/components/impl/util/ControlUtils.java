@@ -11,6 +11,10 @@ public class ControlUtils {
         //Disable default constructor.
     }
     
+    public static final int DF_CONTROL_HEIGHT = 18;
+    public static final int DF_VERTICAL_SPACING = 10;
+    public static final int DF_HORIZONTAL_SPACING = 10;
+    
     public static void recursiveSetEnabled(Control ctrl, boolean enabled) {
         if (ctrl instanceof Composite) {
             Composite comp = (Composite) ctrl;
@@ -28,7 +32,7 @@ public class ControlUtils {
     
     public static void setFontSize(Control ctrl, int height) {
         if (height <= 0) {
-            throw new IllegalArgumentException("Font's size must be bigger than 0");
+            throw new IllegalArgumentException("Font's size must be a positive number");
         }
         FontData[] fD = ctrl.getFont().getFontData();
         fD[0].setHeight(height);

@@ -107,9 +107,9 @@ public class TestDataReferencesDialog extends AbstractDeleteEntityDialog {
         mainComposite.setLayout(glMainComposite);
 
         Composite compositeHeader = new Composite(mainComposite, SWT.NONE);
-        GridLayout gl_compositeHeader = new GridLayout(2, false);
-        gl_compositeHeader.horizontalSpacing = 15;
-        compositeHeader.setLayout(gl_compositeHeader);
+        GridLayout glCompositeHeader = new GridLayout(2, false);
+        glCompositeHeader.horizontalSpacing = 15;
+        compositeHeader.setLayout(glCompositeHeader);
         compositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
         Label lblImage = new Label(compositeHeader, SWT.NONE);
@@ -161,7 +161,7 @@ public class TestDataReferencesDialog extends AbstractDeleteEntityDialog {
 
         TableViewerColumn tableViewerColumnTestCaseOrder = new TableViewerColumn(testCaseLinkTableViewer, SWT.NONE);
         TableColumn tblclmnTestCaseLinkOrder = tableViewerColumnTestCaseOrder.getColumn();
-        tblclmnTestCaseLinkOrder.setText("No.");
+        tblclmnTestCaseLinkOrder.setText(StringConstants.ID);
         tableViewerColumnTestCaseOrder.setLabelProvider(new ColumnLabelProvider());
         tableViewerColumnTestCaseOrder.setLabelProvider(new ColumnLabelProvider() {
             @Override

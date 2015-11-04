@@ -25,6 +25,9 @@ public abstract class AbstractDeleteReferredEntityHandler {
     }
 
     public YesNoAllOptions[] getAvailableDeletionOptions() {
+        if (availableDeletionOptions == null) {
+            availableDeletionOptions = new YesNoAllOptions[] { YesNoAllOptions.YES, YesNoAllOptions.NO};
+        }
         return availableDeletionOptions;
     }
 
