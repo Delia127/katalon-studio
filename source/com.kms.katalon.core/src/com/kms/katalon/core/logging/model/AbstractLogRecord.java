@@ -117,6 +117,10 @@ public abstract class AbstractLogRecord implements ILogRecord {
         childRecord.setParentLogRecord(this);
     }
 
+    public void removeChildRecord(ILogRecord childRecord){
+    	childRecords.remove(childRecord);
+    }
+    
     public String getMessage() {
         return message;
     }
