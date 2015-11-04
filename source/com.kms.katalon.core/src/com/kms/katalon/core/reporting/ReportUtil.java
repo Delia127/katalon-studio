@@ -55,13 +55,17 @@ public class ReportUtil {
 				StringBuilder stringSb = listToStringArray(strings);
 				sb.append(stringSb);
 			} else if (line.equals(ResourceLoader.HTML_TEMPLATE_EXEC_ENV_TOKEN)) {
-				String hostName = getHostName();
 				StringBuilder envInfoSb = new StringBuilder();
 				envInfoSb.append("{");
-				envInfoSb.append(String.format("\"host\" : \"%s\", ", hostName));
-				envInfoSb.append(String.format("\"os\" : \"%s\", ", getOs()));
+				envInfoSb.append(String.format("\"host\" : \"%s\", ", suiteLogEntity.getHostName()));
+				envInfoSb.append(String.format("\"os\" : \"%s\", ", suiteLogEntity.getOs()));
 				if(suiteLogEntity.getBrowser() != null && !suiteLogEntity.getBrowser().equals("")){
-					envInfoSb.append(String.format("\"browser\" : \"%s\",", suiteLogEntity.getBrowser()));	
+					if(suiteLogEntity.getRunData().containsKey("browser")){
+						envInfoSb.append(String.format("\"browser\" : \"%s\",", suiteLogEntity.getRunData().get("browser")));
+					}
+					else{
+						envInfoSb.append(String.format("\"browser\" : \"%s\",", suiteLogEntity.getBrowser()));
+					}	
 				}
 				if(suiteLogEntity.getDeviceName() != null && !suiteLogEntity.getDeviceName().equals("")){
 					envInfoSb.append(String.format("\"deviceName\" : \"%s\",", suiteLogEntity.getDeviceName()));
