@@ -1,10 +1,10 @@
-package com.kms.katalon.composer.objectrepository.providers;
+package com.kms.katalon.composer.objectrepository.provider;
 
 import org.eclipse.jface.viewers.OwnerDrawLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Event;
 
-import com.kms.katalon.composer.objectrepository.constants.ImageConstants;
+import com.kms.katalon.composer.objectrepository.constant.ImageConstants;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 
 public class IsSelectedColumnLabelProvider extends OwnerDrawLabelProvider {

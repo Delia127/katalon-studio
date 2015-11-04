@@ -1,5 +1,5 @@
  
-package com.kms.katalon.composer.objectrepository.handlers;
+package com.kms.katalon.composer.objectrepository.handler;
 
 import java.util.ArrayList;
 import java.util.List;

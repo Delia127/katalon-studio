@@ -14,8 +14,8 @@ import org.eclipse.e4.ui.workbench.modeling.ISelectionListener;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.menu.MenuFactory;
-import com.kms.katalon.composer.objectrepository.constants.StringConstants;
-import com.kms.katalon.composer.objectrepository.handlers.NewTestObjectHandler;
+import com.kms.katalon.composer.objectrepository.constant.StringConstants;
+import com.kms.katalon.composer.objectrepository.handler.NewTestObjectHandler;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.helper.ConstantsHelper;
 

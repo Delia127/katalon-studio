@@ -1,15 +1,15 @@
-package com.kms.katalon.composer.objectrepository.addons;
+package com.kms.katalon.composer.objectrepository.addon;
 import javax.annotation.PostConstruct;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 
-import com.kms.katalon.composer.objectrepository.handlers.AddToObjectSpyHandler;
-import com.kms.katalon.composer.objectrepository.handlers.DeleteTestObjectHandler;
-import com.kms.katalon.composer.objectrepository.handlers.OpenTestObjectHandler;
-import com.kms.katalon.composer.objectrepository.handlers.RefreshTestObjectHandler;
-import com.kms.katalon.composer.objectrepository.handlers.RenameTestObjectHandler;
-import com.kms.katalon.composer.objectrepository.handlers.SpyObjectHandler;
+import com.kms.katalon.composer.objectrepository.handler.AddToObjectSpyHandler;
+import com.kms.katalon.composer.objectrepository.handler.DeleteTestObjectHandler;
+import com.kms.katalon.composer.objectrepository.handler.OpenTestObjectHandler;
+import com.kms.katalon.composer.objectrepository.handler.RefreshTestObjectHandler;
+import com.kms.katalon.composer.objectrepository.handler.RenameTestObjectHandler;
+import com.kms.katalon.composer.objectrepository.handler.SpyObjectHandler;
 
 public class TestObjectInjectionManagerAddon {
     

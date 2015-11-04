@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.objectrepository.events;
+package com.kms.katalon.composer.objectrepository.constant;
 
 public class ObjectEventConstants {
     public static final String OBJECT_UPDATE_DIRTY = "OBJECT/UPDATE_DIRTY";

@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.objectrepository.providers;
+package com.kms.katalon.composer.objectrepository.provider;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Composite;
 
-import com.kms.katalon.composer.objectrepository.events.ObjectEventConstants;
+import com.kms.katalon.composer.objectrepository.constant.ObjectEventConstants;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 
 public class ObjectPropetiesTableViewer extends TableViewer {

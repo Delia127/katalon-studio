@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.objectrepository.handlers;
+package com.kms.katalon.composer.objectrepository.handler;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -10,7 +10,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.objectrepository.constants.StringConstants;
+import com.kms.katalon.composer.objectrepository.constant.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.entity.repository.WebElementEntity;
@@ -25,7 +25,7 @@ public class SaveTestObjectHandler {
 
     @Inject
     @Optional
-    private void getNotificationsFromTestCase(@UIEventTopic(EventConstants.TEST_OBJECT_SAVE) WebElementEntity entity) {
+    private void getNotificationsFromTestObject(@UIEventTopic(EventConstants.TEST_OBJECT_SAVE) WebElementEntity entity) {
         if (entity != null) {
             try {
             	ObjectRepositoryController.getInstance().saveWebElement(entity);

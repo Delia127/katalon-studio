@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.objectrepository.handlers;
+package com.kms.katalon.composer.objectrepository.handler;
 
 import java.util.List;
 
@@ -24,8 +24,8 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
-import com.kms.katalon.composer.objectrepository.constants.StringConstants;
-import com.kms.katalon.composer.objectrepository.dialogs.NewTestObjectDialog;
+import com.kms.katalon.composer.objectrepository.constant.StringConstants;
+import com.kms.katalon.composer.objectrepository.dialog.NewTestObjectDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;

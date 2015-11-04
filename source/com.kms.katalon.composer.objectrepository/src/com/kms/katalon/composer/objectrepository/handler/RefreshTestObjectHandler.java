@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.objectrepository.handlers;
+package com.kms.katalon.composer.objectrepository.handler;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;

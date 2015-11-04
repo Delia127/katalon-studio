@@ -9,92 +9,92 @@ import com.kms.katalon.entity.file.FileEntity;
 
 public class WebElementEntity extends FileEntity {
 
-	private static final long serialVersionUID = 1L;
-	public static final String ref_element = "ref_element";
-	public static final String defaultElementGUID = "00000000-0000-0000-0000-000000000000";
-	public static final String DEFAULT_EMPTY_STRING = "";
+    private static final long serialVersionUID = 1L;
+    public static final String ref_element = "ref_element";
+    public static final String defaultElementGUID = "00000000-0000-0000-0000-000000000000";
+    public static final String DEFAULT_EMPTY_STRING = "";
 
-	private String elementGuidId;
+    private String elementGuidId;
 
-	private List<WebElementPropertyEntity> webElementProperties;
-	
-	private String imagePath;
-	
-	private boolean useRalativeImagePath;
+    private List<WebElementPropertyEntity> webElementProperties;
 
-	public WebElementEntity() {
-		super();
-		webElementProperties = new ArrayList<WebElementPropertyEntity>(0);
-		elementGuidId = defaultElementGUID;
+    private String imagePath;
 
-		name = DEFAULT_EMPTY_STRING;
-		description = DEFAULT_EMPTY_STRING;
-	}
+    private boolean useRalativeImagePath;
 
-	public String getElementGuidId() {
-		return this.elementGuidId;
-	}
+    public WebElementEntity() {
+        super();
+        webElementProperties = new ArrayList<WebElementPropertyEntity>(0);
+        elementGuidId = defaultElementGUID;
 
-	public void setElementGuidId(String elementGuidId) {
-		this.elementGuidId = elementGuidId;
-	}
+        name = DEFAULT_EMPTY_STRING;
+        description = DEFAULT_EMPTY_STRING;
+    }
 
-	public List<WebElementPropertyEntity> getWebElementProperties() {
-		return this.webElementProperties;
-	}
+    public String getElementGuidId() {
+        return this.elementGuidId;
+    }
 
-	public void setWebElementProperties(List<WebElementPropertyEntity> webElementProperties) {
-		this.webElementProperties = webElementProperties;
-	}
+    public void setElementGuidId(String elementGuidId) {
+        this.elementGuidId = elementGuidId;
+    }
 
-	public WebElementEntity clone() {
-		WebElementEntity newWebElement = (WebElementEntity) super.clone();
-		newWebElement.setElementGuidId(UUID.randomUUID().toString());
-		return newWebElement;
-	}
+    public List<WebElementPropertyEntity> getWebElementProperties() {
+        return this.webElementProperties;
+    }
 
-	public static String getWebElementFileExtension() {
-		return ".rs";
-	}
+    public void setWebElementProperties(List<WebElementPropertyEntity> webElementProperties) {
+        this.webElementProperties = webElementProperties;
+    }
 
-	@Override
-	public String getFileExtension() {
-		return getWebElementFileExtension();
-	}
+    public WebElementEntity clone() {
+        WebElementEntity newWebElement = (WebElementEntity) super.clone();
+        newWebElement.setElementGuidId(UUID.randomUUID().toString());
+        return newWebElement;
+    }
 
-	public String getRelativePathForUI() {
-		if (parentFolder != null) {
-			return parentFolder.getRelativePath() + File.separator + this.name;
-		}
-		return "";
-	}
-	
+    public static String getWebElementFileExtension() {
+        return ".rs";
+    }
+
+    @Override
+    public String getFileExtension() {
+        return getWebElementFileExtension();
+    }
+
+    public String getRelativePathForUI() {
+        if (parentFolder != null) {
+            return parentFolder.getRelativePath() + File.separator + this.name;
+        }
+        return "";
+    }
+
     @Override
     public boolean equals(Object that) {
         boolean equals = super.equals(that);
         if (equals) {
             WebElementEntity anotherWebElement = (WebElementEntity) that;
-            
+
             if (!getWebElementProperties().equals(anotherWebElement.getWebElementProperties())) {
                 return false;
             }
         }
         return equals;
     }
-    
-	public String getImagePath() {
-		return imagePath;
-	}
 
-	public void setImagePath(String imagePath) {
-		this.imagePath = imagePath;
-	}
-	
-	public boolean getUseRalativeImagePath() {
-		return useRalativeImagePath;
-	}
+    public String getImagePath() {
+        return imagePath;
+    }
 
-	public void setUseRalativeImagePath(boolean useRalativeImagePath) {
-		this.useRalativeImagePath = useRalativeImagePath;
-	}
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    public boolean getUseRalativeImagePath() {
+        return useRalativeImagePath;
+    }
+
+    public void setUseRalativeImagePath(boolean useRalativeImagePath) {
+        this.useRalativeImagePath = useRalativeImagePath;
+    }
 }

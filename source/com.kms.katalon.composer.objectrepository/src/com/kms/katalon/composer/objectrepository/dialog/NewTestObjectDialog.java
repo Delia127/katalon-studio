@@ -1,9 +1,9 @@
-package com.kms.katalon.composer.objectrepository.dialogs;
+package com.kms.katalon.composer.objectrepository.dialog;
 
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.AbstractEntityDialog;
-import com.kms.katalon.composer.objectrepository.constants.StringConstants;
+import com.kms.katalon.composer.objectrepository.constant.StringConstants;
 import com.kms.katalon.entity.folder.FolderEntity;
 
 public class NewTestObjectDialog extends AbstractEntityDialog {

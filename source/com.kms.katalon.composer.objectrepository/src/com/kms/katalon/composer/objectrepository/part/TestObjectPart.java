@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.objectrepository.parts;
+package com.kms.katalon.composer.objectrepository.part;
 
 import java.text.MessageFormat;
 
@@ -26,8 +26,8 @@ import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
-import com.kms.katalon.composer.objectrepository.constants.StringConstants;
-import com.kms.katalon.composer.objectrepository.views.ObjectPropertyView;
+import com.kms.katalon.composer.objectrepository.constant.StringConstants;
+import com.kms.katalon.composer.objectrepository.view.ObjectPropertyView;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
@@ -119,7 +119,7 @@ public class TestObjectPart implements EventHandler {
                     }
                 }
             } catch (Exception e) {
-            	LoggerSingleton.logError(e);
+                LoggerSingleton.logError(e);
             }
         }
     }
@@ -139,7 +139,7 @@ public class TestObjectPart implements EventHandler {
     public void save() {
         objPropertyView.save();
     }
-    
+
     @Focus
     private void onFocused() {
         try {
@@ -149,10 +149,11 @@ public class TestObjectPart implements EventHandler {
                 if (srcWebElement != null) {
                     if (!srcWebElement.equals(originalTestObject) && !isConfirmationDialogShowed) {
                         isConfirmationDialogShowed = true;
-                        if (MessageDialog.openConfirm(Display.getCurrent().getActiveShell(), 
-                        		StringConstants.PA_CONFIRM_TITLE_FILE_CHANGED,
-                                MessageFormat.format(StringConstants.PA_CONFIRM_MSG_RELOAD_FILE, 
-                                		originalTestObject.getLocation()))) {
+                        if (MessageDialog.openConfirm(
+                                Display.getCurrent().getActiveShell(),
+                                StringConstants.PA_CONFIRM_TITLE_FILE_CHANGED,
+                                MessageFormat.format(StringConstants.PA_CONFIRM_MSG_RELOAD_FILE,
+                                        originalTestObject.getLocation()))) {
                             originalTestObject = srcWebElement;
                             objPropertyView.changeOriginalTestObject(srcWebElement);
                             dirtyable.setDirty(false);
@@ -160,7 +161,7 @@ public class TestObjectPart implements EventHandler {
                         isConfirmationDialogShowed = false;
                     }
                 } else {
-                    FolderTreeEntity parentTreeEntity = getParentFolderTreeEntity(originalTestObject.getParentFolder(), 
+                    FolderTreeEntity parentTreeEntity = getParentFolderTreeEntity(originalTestObject.getParentFolder(),
                             FolderController.getInstance().getObjectRepositoryRoot(originalTestObject.getProject()));
                     if (parentTreeEntity != null) {
                         eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
@@ -169,20 +170,19 @@ public class TestObjectPart implements EventHandler {
                 }
             }
         } catch (Exception e) {
-        	LoggerSingleton.logError(e);
+            LoggerSingleton.logError(e);
         }
     }
-    
+
     @PreDestroy
     private void destroy() {
         eventBroker.unsubscribe(this);
     }
-    
+
     private FolderTreeEntity getParentFolderTreeEntity(FolderEntity folderEntity, FolderEntity rootFolder) {
         if (folderEntity == null || folderEntity.equals(rootFolder)) {
             return null;
         }
-        return new FolderTreeEntity(folderEntity, getParentFolderTreeEntity(folderEntity.getParentFolder(),
-                rootFolder));
+        return new FolderTreeEntity(folderEntity, getParentFolderTreeEntity(folderEntity.getParentFolder(), rootFolder));
     }
 }

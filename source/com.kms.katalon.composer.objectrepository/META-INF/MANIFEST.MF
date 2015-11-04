@@ -4,7 +4,7 @@ Bundle-Name: Objectrepository
 Bundle-SymbolicName: com.kms.katalon.composer.objectrepository;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
-Export-Package: com.kms.katalon.composer.objectrepository.providers
+Export-Package: com.kms.katalon.composer.objectrepository.provider
 Require-Bundle: com.kms.katalon.composer.explorer;bundle-version="1.0.0",
  com.kms.katalon.composer.components,
  com.kms.katalon.entity,
@@ -30,7 +30,9 @@ Require-Bundle: com.kms.katalon.composer.explorer;bundle-version="1.0.0",
  org.eclipse.equinox.registry,
  com.kms.katalon.composer.testdata;bundle-version="1.0.0",
  com.kms.katalon.composer.webui.objectspy;bundle-version="1.0.0",
- com.kms.katalon.core
+ com.kms.katalon.core,
+ org.eclipse.ui,
+ com.kms.katalon.composer.folder;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Import-Package: javax.annotation;version="1.2.0"
