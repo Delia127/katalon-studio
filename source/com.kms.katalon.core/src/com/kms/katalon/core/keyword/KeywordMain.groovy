@@ -4,6 +4,7 @@ import groovy.transform.CompileStatic
 
 import com.kms.katalon.core.exception.ExceptionsUtil
 import com.kms.katalon.core.exception.StepFailedException
+import com.kms.katalon.core.logging.ErrorCollector;
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.model.FailureHandling
 
@@ -20,6 +21,7 @@ public class KeywordMain {
                 break;
             case FailureHandling.CONTINUE_ON_FAILURE:
                 logger.logFailed(failMessage.toString(), attributes);
+                ErrorCollector.getCollector().addError(new StepFailedException(failMessage.toString()));
                 break;
             default:
                 throw new StepFailedException(failMessage.toString());
