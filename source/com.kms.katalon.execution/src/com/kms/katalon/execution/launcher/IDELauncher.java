@@ -210,7 +210,11 @@ public class IDELauncher extends AbstractLauncher {
 
                 Date currentModified = testSuite.getDateModified();
 
-                uploadReportToIntegratingProduct(suiteLog);
+                try {
+                    uploadReportToIntegratingProduct(suiteLog);
+                } catch (Exception e) {
+                    systemLogger.error(e);
+                }
 
                 if (testSuite.getDateModified().after(currentModified)) {
                     eventBroker.send(EventConstants.TEST_SUITE_UPDATED, new Object[] { testSuite.getId(), testSuite });
@@ -226,6 +230,7 @@ public class IDELauncher extends AbstractLauncher {
                     }
                     sendReportEmail(testSuite, logFile);
                 }
+                eventBroker.send(EventConstants.REPORT_UPDATED, reportFolder.getAbsolutePath());
             }
         } catch (Exception ex) {
             systemLogger.error(ex);
