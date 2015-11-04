@@ -26,6 +26,7 @@ import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.LogLevel;
+import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.exception.BrowserNotOpenedException;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
@@ -138,13 +139,22 @@ public class DriverFactory {
             }
             localWebServerStorage.set(webDriver);
             setTimeout();
-            KeywordLogger.getInstance()
-                    .logRunData("sessionId", ((RemoteWebDriver) webDriver).getSessionId().toString());
+            logBrowserRunData(webDriver);
             return webDriver;
         } catch (Error e) {
             KeywordLogger.getInstance().logMessage(LogLevel.WARNING, e.getMessage());
             throw new StepFailedException(e);
         }
+    }
+
+    private static void logBrowserRunData(WebDriver webDriver) {
+        if (webDriver == null) {
+            return;
+        }
+        KeywordLogger logger = KeywordLogger.getInstance();
+        logger.logRunData("sessionId", ((RemoteWebDriver) webDriver).getSessionId().toString());
+        logger.logRunData("browser", WebUiCommonHelper.getBrowserAndVersion(webDriver));
+        logger.logRunData("platform", ((RemoteWebDriver) webDriver).getCapabilities().getPlatform().toString());
     }
 
     public static WebDriver openWebDriver(DriverType driver, String projectDir, Object options) throws Exception {
@@ -405,6 +415,16 @@ public class DriverFactory {
         if (null != webDriver && null != ((RemoteWebDriver) webDriver).getSessionId()) {
             try {
                 webDriver.quit();
+                WebUIDriverType driver = (WebUIDriverType) getExecutedBrowser();
+                switch (driver) {
+                case ANDROID_DRIVER:
+                case IOS_DRIVER:
+                    WebMobileDriverFactory.getInstance().quitServer();
+                    break;
+                default:
+                    break;
+
+                }
             } catch (UnreachableBrowserException e) {
                 KeywordLogger.getInstance().logWarning(StringConstants.DRI_LOG_WARNING_BROWSER_NOT_REACHABLE);
             }

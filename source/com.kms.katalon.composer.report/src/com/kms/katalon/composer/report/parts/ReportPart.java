@@ -861,6 +861,7 @@ public class ReportPart implements EventHandler {
 
                 if (updatedReportId.equals(report.getId())) {
                     prepareBeforeReloading();
+                    LogRecordLookup.getInstance().refreshLogRecord(report);
                     updateInput(ReportController.getInstance().getReportEntity(updatedReportId));
                     prepareAfterReloading();
                 }

@@ -11,6 +11,7 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
+import com.kms.katalon.composer.report.lookup.LogRecordLookup;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
@@ -53,6 +54,8 @@ public class RefreshReportHandler {
         } else {
         	ReportEntity report = (ReportEntity) reportTreeEntity.getObject();
         	FolderController.getInstance().refreshFolder(report.getParentFolder());
+        	LogRecordLookup.getInstance().refreshLogRecord(report);
+        	eventBroker.post(EventConstants.REPORT_UPDATED, report.getId());
         }
     }
 }

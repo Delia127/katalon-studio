@@ -1583,9 +1583,9 @@ $.template('statColumnsTemplate',
 );
 $.template('suiteStatusMessageTemplate',
     '${total} test total, ' +
-    '${totalPassed} passed, ' +
-    '<span class="{{if totalFailed}}failed{{else}}passed{{/if}}">${totalFailed} failed</span>' + ', ' +
-	'<span class="{{if totalError}}error{{/if}}">${totalError} error</span>'
+    '<span class="passed">${totalPassed} passed</span>' + ', ' +    
+    '<span class="failed">${totalFailed} failed</span>' + ', ' +
+	'<span class="error">{{if totalError}}${totalError}{{else}}0{{/if}} error</span>'
 );
 // For complete cross-browser experience..
 // http://www.quirksmode.org/js/events_order.html

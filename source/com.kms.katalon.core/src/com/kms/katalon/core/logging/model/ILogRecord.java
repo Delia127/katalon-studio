@@ -35,6 +35,8 @@ public interface ILogRecord {
 	
 	public void addChildRecord(ILogRecord childRecord);
 	
+	public void removeChildRecord(ILogRecord childRecord);
+	
 	public String getMessage();
 
 	public void setMessage(String message);

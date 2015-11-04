@@ -36,7 +36,7 @@ public class MobileDriverPreferenceComposite extends DriverPreferenceComposite {
             @Override
             public void widgetDisposed(DisposeEvent e) {
                 if (driverConnector != null && deviceSelectionComposite != null) {
-                    ((MobileDriverConnector) driverConnector).setDeviceName(deviceSelectionComposite.getDeviceName());
+                    ((MobileDriverConnector) driverConnector).setDeviceName(deviceSelectionComposite.getDeviceUUID());
                 }
             }
         });
