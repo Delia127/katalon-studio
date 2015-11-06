@@ -88,6 +88,13 @@ public class SeleniumWebDriverProvider {
 			// do nothing
 		}
 		return "";
-
 	}
+	
+	public static String getEdgeDriverPath() {
+	    if (getOSArch().equals(ARCH_X86_64)) {
+            return "C:\\Program Files (x86)\\Microsoft Web Driver\\MicrosoftWebDriver.exe";
+        } else {
+            return "C:\\Program Files\\Microsoft Web Driver\\MicrosoftWebDriver.exe";
+        }
+    }
 }
