@@ -540,6 +540,12 @@ public class ObjectPropertyView implements EventHandler {
                         } else {
                             txtImage.setText(PathUtils.relativeToAbsolutePath(thePath, projectFolder));
                         }
+                        
+                        File file = new File(thePath);
+                        if (!file.exists() || !file.isFile()) {
+                            MessageDialog.openWarning(null, StringConstants.WARN_TITLE,
+                                    StringConstants.VIEW_WARN_FILE_NOT_FOUND);
+                        }
                     }
                     dirtyable.setDirty(true);
                 } catch (Exception ex) {
@@ -904,7 +910,7 @@ public class ObjectPropertyView implements EventHandler {
                 }
             }
             case (EventConstants.TEST_OBJECT_UPDATED): {
-                //Check if the referred object is updated. 
+                // Check if the referred object is updated.
                 if (object != null && object instanceof Object[]) {
                     Object[] objects = (Object[]) object;
                     String testObjectId = (String) objects[0];

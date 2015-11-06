@@ -66,6 +66,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String VIEW_ERROR_REASON_OBJ_EXISTED = "Object ''{0}'' has already existed";
     public static final String VIEW_ERROR_REASON_OBJ_PROP_EXISTED = "Duplicated test object property name ''{0}''";
     public static final String VIEW_LBL_USE_IFRAME = "Use below object as parent iframe of this object";
+    public static final String VIEW_WARN_FILE_NOT_FOUND = "File not found. Please choose another file.";
 
     // TestObjectReferencesDialog
     public static final String DIA_MSG_HEADER_TEST_OBJECT_REFERENCES = "Test object ''{0}'' has been referred by some test "

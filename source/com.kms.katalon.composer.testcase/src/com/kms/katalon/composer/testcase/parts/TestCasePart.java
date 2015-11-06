@@ -962,7 +962,8 @@ public class TestCasePart implements EventHandler {
             ASTNode astNode = null;
             if (!StringUtils.isBlank(defaultSettingKeywordName)
                     && KeywordController.getInstance().getBuiltInKeywordByName(className, defaultSettingKeywordName) != null) {
-                astNode = AstTreeTableInputUtil.createBuiltInKeywordMethodCall(className, defaultSettingKeywordName);
+                astNode = AstTreeTableInputUtil.createBuiltInKeywordMethodCall(clazz.getSimpleName(),
+                        defaultSettingKeywordName);
             } else {
                 astNode = AstTreeTableEntityUtil.getNewKeyword(false, clazz.getSimpleName());
             }
