@@ -112,8 +112,6 @@ class WebMobileDriverFactory {
         capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceName);
         capabilities.setCapability(MobileCapabilityType.BROWSER_NAME, "Safari");
         capabilities.setCapability(MobileCapabilityType.UDID, deviceName);
-        capabilities.setCapability("autoAcceptAlerts", true);
-        capabilities.setCapability("waitForAppScript", true);
         int time = 0;
         long currentMilis = System.currentTimeMillis();
         AppiumDriver<?> appiumDriver = null;
