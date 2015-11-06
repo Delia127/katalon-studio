@@ -12,6 +12,9 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_HmAuIHfUEeWiVci6VZKWGw" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:3">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_jWHIQFqZEeWwu6VuxUpakQ" elementId="com.kms.katalon.composer.webui.execution.handledmenuitem.Safari" label="Safari" iconURI="platform:/plugin/com.kms.katalon.composer.webui/icons/safari_16.png" command="_6EqcEEusEeWj7OhDHfltSQ"/>
   </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_m1k4MIOrEeWd2KCe_pA0jw" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:5">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_m1k4MoOrEeWd2KCe_pA0jw" elementId="com.kms.katalon.composer.webui.execution.handledmenuitem.edge" label="Edge" iconURI="platform:/plugin/com.kms.katalon.composer.webui/icons/ie_16.png" command="_1MCncIOrEeWd2KCe_pA0jw"/>
+  </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_I_kiEHfUEeWiVci6VZKWGw" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:4">
     <elements xsi:type="menu:MenuSeparator" xmi:id="_5g0xkHfSEeWiVci6VZKWGw" elementId="com.kms.katalon.composer.webui.menuseparator.0"/>
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_jaHegFqZEeWwu6VuxUpakQ" elementId="com.kms.katalon.composer.webui.execution.handledmenuitem.remote" label="Remote" iconURI="platform:/plugin/com.kms.katalon.composer.webui/icons/remote_web_driver_16.png" command="_M23AkFIgEeWdwJZaPXJ0_w"/>
@@ -22,6 +25,7 @@
     <elements xsi:type="commands:Command" xmi:id="_3o9OoEusEeWj7OhDHfltSQ" elementId="com.kms.katalon.composer.webui.execution.command.ie" commandName="IE"/>
     <elements xsi:type="commands:Command" xmi:id="_6EqcEEusEeWj7OhDHfltSQ" elementId="com.kms.katalon.composer.webui.execution.command.safari" commandName="Safari"/>
     <elements xsi:type="commands:Command" xmi:id="_M23AkFIgEeWdwJZaPXJ0_w" elementId="com.kms.katalon.composer.webui.execution.command.remoteweb" commandName="Remote"/>
+    <elements xsi:type="commands:Command" xmi:id="_1MCncIOrEeWd2KCe_pA0jw" elementId="com.kms.katalon.composer.webui.execution.command.edge" commandName="Edge"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_89TdIEusEeWj7OhDHfltSQ" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Handler" xmi:id="_N130cE_ZEeWHcr3axp_7hQ" elementId="com.kms.katalon.composer.webui.execution.handler.chrome" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.handler.ChromeExecutionHandler" command="_xoxN0EusEeWj7OhDHfltSQ"/>
@@ -29,5 +33,6 @@
     <elements xsi:type="commands:Handler" xmi:id="_QuBtUE_ZEeWHcr3axp_7hQ" elementId="com.kms.katalon.composer.webui.execution.handler.ie" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.handler.IEExecutionHandler" command="_3o9OoEusEeWj7OhDHfltSQ"/>
     <elements xsi:type="commands:Handler" xmi:id="_SPm00E_ZEeWHcr3axp_7hQ" elementId="com.kms.katalon.composer.webui.execution.handler.safari" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.handler.SafariExecutionHandler" command="_6EqcEEusEeWj7OhDHfltSQ"/>
     <elements xsi:type="commands:Handler" xmi:id="_PgQrwFIgEeWdwJZaPXJ0_w" elementId="com.kms.katalon.composer.webui.handler.remoteweb" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.handler.RemoteWebDriverExecutionHandler" command="_M23AkFIgEeWdwJZaPXJ0_w"/>
+    <elements xsi:type="commands:Handler" xmi:id="_2uxlgIOrEeWd2KCe_pA0jw" elementId="com.kms.katalon.composer.webui.handler.edge" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.handler.EdgeExecutionHandler" command="_1MCncIOrEeWd2KCe_pA0jw"/>
   </fragments>
 </fragment:ModelFragments>
