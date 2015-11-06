@@ -285,13 +285,13 @@ function addExecutionEnvironmentInfo(environment_info) {
       {{if doc()}}
       <span>Description: <font>{{html doc()}}</font></span>	
       {{else}}
-      <span>{{html name}}</span>
-      <span class="arg">{{html arguments}}</span>
+      <span style="color:#808080; font-style: italic">{{html name}}</span>
+      <span style="color:#808080; font-style: italic" class="arg">{{html arguments}}</span>
       {{/if}}
       
     </div>
     {{if doc()}}
-      	<div style="margin-left: 2.6cm"><span>{{html name}}</span><span class="arg">{{html arguments}}</span></div>
+      	<div style="margin-left: 2.6cm; color:#808080; font-style: italic"><span>{{html name}}</span><span class="arg">{{html arguments}}</span></div>
     {{/if}}
     
     <div class="children">

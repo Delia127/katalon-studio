@@ -264,12 +264,13 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
 	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_APPLICATION)
 	public static void runIOSAppInBackgroundAndWait(int seconds, FailureHandling flowControl) throws StepFailedException {
 		KeywordMain.runKeyword({
-			String command = String.format("UIATarget.localTarget().deactivateAppForDuration(%d);", seconds);
 			String osVersion = MobileCommonHelper.getDeviceOSVersion();
 			int majorversion = Integer.parseInt(osVersion.split("\\.")[0]);
 			if (majorversion >= 8) {
+				String command = String.format("UIATarget.localTarget().deactivateAppForDuration(%d);", (int)(seconds/2));
 				driver.executeScript(command + command);
 			} else {
+				String command = String.format("UIATarget.localTarget().deactivateAppForDuration(%d);", seconds);
 				driver.executeScript(command);
 			}
 			logger.logPassed(StringConstants.KW_LOG_PASSED_RUN_IOS_APP_PASSED);

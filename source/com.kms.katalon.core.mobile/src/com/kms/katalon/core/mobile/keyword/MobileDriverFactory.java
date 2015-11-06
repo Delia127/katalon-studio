@@ -88,6 +88,7 @@ public class MobileDriverFactory {
 		capabilities.setCapability(MobileCapabilityType.APP, appFile);
 		capabilities.setCapability("fullReset", uninstallAfterCloseApp);
 		capabilities.setCapability("noReset", !uninstallAfterCloseApp);
+		capabilities.setCapability("newCommandTimeout", 1800);
 		return new SwipeableAndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
 	}
 
@@ -104,7 +105,8 @@ public class MobileDriverFactory {
 		capabilities.setCapability("udid", deviceId);
 		capabilities.setCapability("fullReset", uninstallAfterCloseApp);
 		capabilities.setCapability("noReset", !uninstallAfterCloseApp);
-		capabilities.setCapability("autoAcceptAlerts", false);
+		capabilities.setCapability("newCommandTimeout", 1800);
+		capabilities.setCapability("autoAcceptAlerts", true);
 		capabilities.setCapability("waitForAppScript", true);
 		return new IOSDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
 	}
@@ -138,7 +140,7 @@ public class MobileDriverFactory {
 		// String appium = System.getenv("APPIUM_HOME") + "/appium.js";
 	    String nodeHome = System.getenv("NODE_HOME") != null ? System.getenv("NODE_HOME") + File.separator : "";
         String node = nodeHome + "node";
-		String appium = System.getenv("APPIUM_HOME") + "/bin" + "/appium.js";
+		String appium = System.getenv("APPIUM_HOME") + "/bin/appium.js";
 		String appiumTemp = System.getProperty("user.home") + File.separator + "Appium_Temp";
 		String[] cmd = { node, appium, "--command-timeout", "3600", "--tmp", appiumTemp };
 		ProcessBuilder pb = new ProcessBuilder(cmd);
