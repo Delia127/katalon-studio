@@ -360,6 +360,8 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
                 getQTestSuites().add(qTestSuite);
                 testSuiteParentTableViewer.refresh();
 
+                updateIntegratedEntity();
+                
                 TestSuiteParentCreationOption creationOption = QTestPreferenceDefaultValueInitializer
                         .getCreationOption();
                 switch (creationOption) {
@@ -487,6 +489,12 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
 
     @Override
     public void setDirty(boolean dirty) {
+        updateIntegratedEntity();
+
+        super.setDirty(dirty);
+    }
+    
+    private void updateIntegratedEntity() {
         IntegratedEntity testSuiteIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(testSuiteEntity);
 
         if (testSuiteIntegratedEntity == null) {
@@ -500,8 +508,6 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
                         getQTestSuites().indexOf(qTestSuite));
             }
         }
-
-        super.setDirty(dirty);
     }
 
     private void reloadView() {

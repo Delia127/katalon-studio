@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.execution.dialog;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Point;
@@ -44,9 +45,9 @@ public class LogPropertyDialog extends Dialog {
         ControlUtils.setFontToBeBold(lblRecordTime);
 
         StyledText txtRecordTime = new StyledText(mainComposite, SWT.BORDER | SWT.READ_ONLY);
-        GridData gd_txtRecordTime = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-        gd_txtRecordTime.heightHint = 18;
-        txtRecordTime.setLayoutData(gd_txtRecordTime);
+        GridData gdTxtRecordTime = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        gdTxtRecordTime.heightHint = 18;
+        txtRecordTime.setLayoutData(gdTxtRecordTime);
         txtRecordTime.setText(record.getLogTimeString());
 
         Label lblLevel = new Label(mainComposite, SWT.NONE);
@@ -54,9 +55,9 @@ public class LogPropertyDialog extends Dialog {
         ControlUtils.setFontToBeBold(lblLevel);
         
         StyledText txtLevel = new StyledText(mainComposite, SWT.BORDER | SWT.READ_ONLY);
-        GridData gd_txtLevel = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
-        gd_txtLevel.heightHint = 18;
-        txtLevel.setLayoutData(gd_txtLevel);
+        GridData gdTxtLevel = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+        gdTxtLevel.heightHint = 18;
+        txtLevel.setLayoutData(gdTxtLevel);
         txtLevel.setText(record.getLevel().toString());
 
         Label lblMessage = new Label(mainComposite, SWT.NONE);
@@ -89,5 +90,13 @@ public class LogPropertyDialog extends Dialog {
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
         newShell.setText(StringConstants.DIA_TITLE_LOG_PROPERTIES);
+    }
+    
+    //Creates button bar with OK button only.
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        // create OK and Cancel buttons by default
+        createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
+                true);
     }
 }

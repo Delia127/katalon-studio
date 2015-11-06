@@ -145,6 +145,7 @@ public class OpenProjectHandler {
                     monitor.worked(1);
 
                     TimeUnit.SECONDS.sleep(1);
+                    eventBroker.send(EventConstants.PROJECT_OPENED, null);
                     return Status.OK_STATUS;
                 } catch (final Exception e) {
                     sync.syncExec(new Runnable() {
@@ -158,7 +159,7 @@ public class OpenProjectHandler {
                     LoggerSingleton.logError(e);
                     return Status.CANCEL_STATUS;
                 } finally {
-                    eventBroker.send(EventConstants.PROJECT_OPENED, null);
+                    monitor.done();
                 }
             }
         };

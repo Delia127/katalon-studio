@@ -42,9 +42,9 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.global.constants.ImageConstants;
 import com.kms.katalon.composer.global.constants.StringConstants;
 import com.kms.katalon.composer.global.dialog.GlobalVariableBuilderDialog;
 import com.kms.katalon.constants.EventConstants;

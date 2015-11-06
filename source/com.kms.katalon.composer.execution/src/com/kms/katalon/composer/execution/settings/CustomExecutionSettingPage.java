@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
+import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.components.DriverConnectorListCellEditor;
 import com.kms.katalon.composer.execution.constants.StringConstants;
@@ -78,8 +79,27 @@ public class CustomExecutionSettingPage extends PreferencePage {
         container.setLayoutData(new GridData(GridData.FILL_BOTH));
 
         Composite formComposite = new Composite(container, SWT.NONE);
-        formComposite.setLayout(new GridLayout(2, false));
+        formComposite.setLayout(new GridLayout(1, false));
         formComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
+
+        Composite toolbarComposite = new Composite(formComposite, SWT.NONE);
+        toolbarComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
+        toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+
+        ToolBar toolBar = new ToolBar(toolbarComposite, SWT.FLAT | SWT.RIGHT);
+
+        tltmAddProperty = new ToolItem(toolBar, SWT.NONE);
+        tltmAddProperty.setText(StringConstants.SETT_TOOLITEM_ADD);
+        tltmAddProperty.setImage(ImageConstants.IMG_24_ADD);
+
+        tltmRemoveProperty = new ToolItem(toolBar, SWT.NONE);
+        tltmRemoveProperty.setText(StringConstants.SETT_TOOLITEM_REMOVE);
+        tltmRemoveProperty.setImage(ImageConstants.IMG_24_REMOVE);
+
+        tltmClearProperty = new ToolItem(toolBar, SWT.NONE);
+        tltmClearProperty.setText(StringConstants.SETT_TOOLITEM_CLEAR);
+        tltmClearProperty.setImage(ImageConstants.IMG_24_CLEAR);
+        addToolItemListeners();
 
         Composite composite = new Composite(formComposite, SWT.NONE);
         GridLayout gl_composite = new GridLayout(1, false);
@@ -206,22 +226,6 @@ public class CustomExecutionSettingPage extends PreferencePage {
 
         tableViewer.setContentProvider(new ArrayContentProvider());
         tableViewer.setInput(customRunConfigurationList);
-
-        Composite toolbarComposite = new Composite(formComposite, SWT.NONE);
-        toolbarComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
-        toolbarComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true, 1, 1));
-
-        ToolBar toolBar = new ToolBar(toolbarComposite, SWT.FLAT | SWT.RIGHT | SWT.VERTICAL);
-
-        tltmAddProperty = new ToolItem(toolBar, SWT.NONE);
-        tltmAddProperty.setText(StringConstants.SETT_TOOLITEM_ADD);
-
-        tltmRemoveProperty = new ToolItem(toolBar, SWT.NONE);
-        tltmRemoveProperty.setText(StringConstants.SETT_TOOLITEM_REMOVE);
-
-        tltmClearProperty = new ToolItem(toolBar, SWT.NONE);
-        tltmClearProperty.setText(StringConstants.SETT_TOOLITEM_CLEAR);
-        addToolItemListeners();
 
         return container;
     }

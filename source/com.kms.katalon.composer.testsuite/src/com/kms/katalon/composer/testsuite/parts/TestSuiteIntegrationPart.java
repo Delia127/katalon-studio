@@ -97,7 +97,6 @@ public class TestSuiteIntegrationPart {
 
         for (ToolItem item : toolBar.getItems()) {
             item.addSelectionListener(new SelectionAdapter() {
-
                 @Override
                 public void widgetSelected(SelectionEvent e) {
                     ToolItem toolItem = (ToolItem) e.getSource();
@@ -107,7 +106,6 @@ public class TestSuiteIntegrationPart {
                         clearContainer();
                     }
                 }
-
             });
         }
 
