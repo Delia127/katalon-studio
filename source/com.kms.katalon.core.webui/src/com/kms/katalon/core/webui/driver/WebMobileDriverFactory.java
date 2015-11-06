@@ -112,7 +112,7 @@ class WebMobileDriverFactory {
         capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceName);
         capabilities.setCapability(MobileCapabilityType.BROWSER_NAME, "Safari");
         capabilities.setCapability(MobileCapabilityType.UDID, deviceName);
-        capabilities.setCapability("autoAcceptAlerts", false);
+        capabilities.setCapability("autoAcceptAlerts", true);
         capabilities.setCapability("waitForAppScript", true);
         int time = 0;
         long currentMilis = System.currentTimeMillis();
@@ -187,7 +187,7 @@ class WebMobileDriverFactory {
     }
 
     private void startAppiumServer() throws Exception {
-        String appium = System.getenv("APPIUM_HOME") + "/bin" + "/appium.js";
+        String appium = System.getenv("APPIUM_HOME") + "/bin/appium.js";
         String appiumTemp = System.getProperty("user.home") + File.separator + "Appium_Temp"
                 + System.currentTimeMillis();
         appiumPort = getFreePort();
