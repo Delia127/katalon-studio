@@ -24,6 +24,7 @@ import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -34,6 +35,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TreeViewerColumn;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyleRange;
@@ -268,7 +270,9 @@ public class LogViewerPart implements EventHandler {
 
         treeViewer = new LogRecordTreeViewer(compositeTreeDetails, SWT.BORDER, eventBroker);
         treeViewer.setContentProvider(new LogRecordTreeViewerContentProvider());
-
+        treeViewer.getTree().setToolTipText("");
+        ColumnViewerToolTipSupport.enableFor(treeViewer, ToolTip.NO_RECREATE);
+        
         TreeViewerColumn treeViewerColumn = new TreeViewerColumn(treeViewer, SWT.NONE);
         TreeColumn treeColumn = treeViewerColumn.getColumn();
         treeColumn.setWidth(400);

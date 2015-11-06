@@ -32,7 +32,7 @@ public class LogRecordTreeViewerLabelProvider extends StyledCellLabelProvider {
                     } else if (resultLevel == LogLevel.ERROR) {
                         return ImageConstants.IMG_16_LOGVIEW_ERROR;
                     }
-                } else if (logParentNode.getParent() == null){
+                } else if (logParentNode.getParent() == null) {
                     return com.kms.katalon.composer.components.impl.constants.ImageConstants.IMG_16_TEST_SUITE;
                 }
             }
@@ -41,7 +41,7 @@ public class LogRecordTreeViewerLabelProvider extends StyledCellLabelProvider {
         } else {
             return ImageConstants.IMG_16_LOGVIEW_INFO;
         }
-        
+
     }
 
     @Override
@@ -67,6 +67,26 @@ public class LogRecordTreeViewerLabelProvider extends StyledCellLabelProvider {
         cell.setStyleRanges(styledString.getStyleRanges());
         cell.setImage(getImage(cell.getElement()));
         super.update(cell);
+    }
+
+    @Override
+    public String getToolTipText(Object element) {
+        StringBuilder cellTextBuilder = new StringBuilder();
+        if (element != null) {
+            if (element instanceof ILogTreeNode) {
+                ILogTreeNode logTreeNode = (ILogTreeNode) element;
+                String indexString = logTreeNode.getIndexString();
+                cellTextBuilder.append((indexString.isEmpty() ? "" : (indexString + " - ")) + logTreeNode.getMessage());
+            }
+
+            if (element instanceof ILogParentTreeNode) {
+                ILogParentTreeNode logParentNode = (ILogParentTreeNode) element;
+                if (logParentNode.getElapsedTime() != null && !logParentNode.getElapsedTime().isEmpty()) {
+                    cellTextBuilder.append(" (" + logParentNode.getElapsedTime() + ")");
+                }
+            }
+        }
+        return cellTextBuilder.toString();
     }
 
 }
