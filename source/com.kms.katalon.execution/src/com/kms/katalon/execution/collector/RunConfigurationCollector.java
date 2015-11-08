@@ -80,7 +80,7 @@ public class RunConfigurationCollector {
                     + CUSTOM_EXECUTION_CONFIG_ROOT_FOLDLER_RELATIVE_PATH);
             if (customProfileSettingFolder.exists() && customProfileSettingFolder.isDirectory()) {
                 for (File customProfile : customProfileSettingFolder.listFiles()) {
-                    if (customProfile.isDirectory()) {
+                    if (customProfile.isDirectory() && !customProfile.isHidden()) {
                         customRunConfigContributorList.add(new CustomRunConfigurationContributor(customProfile
                                 .getName()));
                     }

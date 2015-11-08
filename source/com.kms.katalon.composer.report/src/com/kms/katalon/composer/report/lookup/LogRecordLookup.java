@@ -46,6 +46,17 @@ public class LogRecordLookup implements EventHandler {
         
         return suiteLogRecord;
     }
+    
+    public void refreshLogRecord(ReportEntity reportEntity) {
+        if (reportEntity != null) {
+            try {
+                TestSuiteLogRecord suiteLogRecord = ReportUtil.generate(reportEntity.getLocation());
+                suiteLogRecordMap.put(reportEntity.getId(), suiteLogRecord);
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+    }
 
     @Override
     public void handleEvent(Event event) {

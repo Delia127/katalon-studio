@@ -422,7 +422,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
             tableViewer.getTable().setRedraw(false);
             clearTable();
 
-            String[] headers = new String[] {};
+            String[] headers = null;
             if (cbbSheets.getSelectionIndex() < 0) {
                 return;
             }

@@ -240,7 +240,7 @@ public class KeywordLogger {
     public void logRunData(String dataKey, String dataValue) {
         Map<String, String> attributeMap = new HashMap<String, String>();
         attributeMap.put(dataKey, dataValue);
-        logMessage(LogLevel.RUN_DATA, "", attributeMap);
+        logMessage(LogLevel.RUN_DATA, "Logging run data '" + dataKey + "' with value '" + dataValue + "'", attributeMap);
     }
 
     public void logError(String message) {

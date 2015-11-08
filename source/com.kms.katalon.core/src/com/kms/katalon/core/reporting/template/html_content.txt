@@ -280,17 +280,20 @@ function addExecutionEnvironmentInfo(environment_info) {
 <script type="text/x-jquery-tmpl" id="keywordTemplate">
   <div id="${id}" class="keyword">
     <div class="element-header closed" onclick="toggleKeyword('${id}')" title="${name}">
-      <!-- Replace label KEYWORD by TEST STEP -->
-      <!-- <span class="${status.toLowerCase()}">${type}: </span> -->
       <span class="${status.toLowerCase()}">TEST STEP: </span>
-      <span class="name">{{html name}}</span>
-      <span class="arg">{{html arguments}}</span>
       
       {{if doc()}}
-      	<span>Description: <font color="blue">{{html doc()}}</font></span>
+      <span>Description: <font>{{html doc()}}</font></span>	
+      {{else}}
+      <span style="color:#808080; font-style: italic">{{html name}}</span>
+      <span style="color:#808080; font-style: italic" class="arg">{{html arguments}}</span>
       {{/if}}
-        
+      
     </div>
+    {{if doc()}}
+      	<div style="margin-left: 2.6cm; color:#808080; font-style: italic"><span>{{html name}}</span><span class="arg">{{html arguments}}</span></div>
+    {{/if}}
+    
     <div class="children">
       <table class="metadata keyword-metadata">
         {{if timeout}}

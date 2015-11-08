@@ -886,7 +886,7 @@ public class AstTreeTableInputUtil {
 				} catch (ClassNotFoundException e) {
 					// Class not found, do nothing
 				}
-				if (objectClass != null && objectClass.isAssignableFrom(TestObject.class)) {
+				if (objectClass != null && TestObject.class.isAssignableFrom(objectClass)) {
 					return existingParam;
 				} else {
 					return new ConstantExpression(null);
@@ -899,7 +899,7 @@ public class AstTreeTableInputUtil {
 				} catch (ClassNotFoundException e) {
 					// Class not found, do nothing
 				}
-				if (testCaseClass != null && testCaseClass.isAssignableFrom(TestCase.class)) {
+				if (testCaseClass != null && TestCase.class.isAssignableFrom(testCaseClass)) {
 					return existingParam;
 				} else {
 					return new ConstantExpression(null);

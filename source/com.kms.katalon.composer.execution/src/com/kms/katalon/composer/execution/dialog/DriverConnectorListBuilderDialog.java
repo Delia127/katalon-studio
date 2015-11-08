@@ -76,10 +76,10 @@ public class DriverConnectorListBuilderDialog extends Dialog {
         formComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
         Composite composite = new Composite(formComposite, SWT.NONE);
-        GridLayout gl_composite = new GridLayout(1, false);
-        gl_composite.marginWidth = 0;
-        gl_composite.marginHeight = 0;
-        composite.setLayout(gl_composite);
+        GridLayout glComposite = new GridLayout(1, false);
+        glComposite.marginWidth = 0;
+        glComposite.marginHeight = 0;
+        composite.setLayout(glComposite);
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
         Composite tableComposite = new Composite(composite, SWT.NONE);

@@ -8,8 +8,10 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.SaveWebElementInfoEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
 @Creatable
@@ -98,5 +100,15 @@ public class ObjectRepositoryController extends EntityController {
     public WebServiceRequestEntity addNewRequest(FolderEntity parentFolder, WebServiceRequestEntity request)
             throws Exception {
         return dataProviderSetting.getWebElementDataProvider().addNewRequest(parentFolder, request);
+    }
+
+    public List<WebElementEntity> getTestObjectReferences(WebElementEntity webElement, ProjectEntity projectEntity)
+            throws Exception {
+        return dataProviderSetting.getWebElementDataProvider().getWebElementPropertyByRefELement(
+                getIdForDisplay(webElement), projectEntity, true);
+    }
+    
+    public static WebElementPropertyEntity getRefElementProperty(WebElementEntity webElement) {
+        return dataProviderSetting.getWebElementDataProvider().getRefElementProperty(webElement);
     }
 }
