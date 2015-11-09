@@ -18,6 +18,7 @@ public class StringConstants extends GlobalStringConstants {
 	// PasteFolderHandler
 	public static final String HAND_ERROR_MSG_UNABLE_TO_PASTE_DATA = "Unable to paste data.";
 	public static final String HAND_ERROR_MSG_UNABLE_TO_PASTE_SAME_SRC_DEST = "Unable to paste folder ''{0}'' : source and destination folders are the same.";
+	public static final String HAND_ERROR_MSG_CANNOT_PASTE_INTO_DIFF_REGION = "Cannot paste ''{0}'' type into ''{1}'' region";
 
 	// RenameFolderHandler
 	public static final String HAND_ERROR_MSG_UNABLE_TO_RENAME_FOLDER = "Unable to rename folder";

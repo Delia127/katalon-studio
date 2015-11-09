@@ -54,7 +54,9 @@ public class RenameKeywordHandler {
         try {
             if (keywordTreeEntity.getParent() instanceof PackageTreeEntity) {
                 IFile keywordFile = (IFile) ((ICompilationUnit) keywordTreeEntity.getObject()).getResource();
-                RenameKeywordDialog dialog = new RenameKeywordDialog(parentShell, keywordTreeEntity);
+                IPackageFragment packageFragment = ((IPackageFragment) ((PackageTreeEntity) keywordTreeEntity
+                        .getParent()).getObject());
+                RenameKeywordDialog dialog = new RenameKeywordDialog(parentShell, packageFragment);
                 String kwName = StringUtils.removeEndIgnoreCase(keywordTreeEntity.getText(),
                         GroovyConstants.GROOVY_FILE_EXTENSION);
                 dialog.setName(kwName);
@@ -62,8 +64,6 @@ public class RenameKeywordHandler {
                 if (dialog.getReturnCode() == Dialog.OK) {
                     ProjectEntity project = ProjectController.getInstance().getCurrentProject();
                     KeywordController.getInstance().removeMethodNodesCustomKeywordFile(keywordFile, project);
-                    IPackageFragment packageFragment = ((IPackageFragment) ((PackageTreeEntity) keywordTreeEntity
-                            .getParent()).getObject());
 
                     // Do rename KeywordTreeEntity
                     GroovyCompilationUnit cu = (GroovyCompilationUnit) keywordTreeEntity.getObject();

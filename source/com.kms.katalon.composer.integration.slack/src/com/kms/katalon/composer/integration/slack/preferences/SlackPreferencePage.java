@@ -48,8 +48,8 @@ public class SlackPreferencePage extends FieldEditorPreferencePage {
 	private BooleanFieldEditor sendUpdateTestData;
 	private BooleanFieldEditor sendCreateTestObject;
 	private BooleanFieldEditor sendUpdateTestObject;
+    private BooleanFieldEditor sendCreateFolder;
 	private BooleanFieldEditor sendCreateKeyword;
-	private BooleanFieldEditor sendCreateFolder;
 	private BooleanFieldEditor sendCreatePackage;
 	private BooleanFieldEditor sendPasteFromCopy;
 	private BooleanFieldEditor sendPasteFromCut;
@@ -161,13 +161,13 @@ public class SlackPreferencePage extends FieldEditorPreferencePage {
 				PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_UPDATE_TEST_OBJECT,
 				StringConstants.PREF_SEND_UPDATE_TEST_OBJECT, fieldsetSend);
 
+        sendCreateFolder = new BooleanFieldEditor(
+                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_FOLDER,
+                StringConstants.PREF_SEND_CREATE_FOLDER, fieldsetSend);
+
 		sendCreateKeyword = new BooleanFieldEditor(
 				PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_KEYWORD,
 				StringConstants.PREF_SEND_CREATE_KEYWORD, fieldsetSend);
-
-		sendCreateFolder = new BooleanFieldEditor(
-				PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_FOLDER,
-				StringConstants.PREF_SEND_CREATE_FOLDER, fieldsetSend);
 
 		sendCreatePackage = new BooleanFieldEditor(
 				PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_PACKAGE,
@@ -199,8 +199,8 @@ public class SlackPreferencePage extends FieldEditorPreferencePage {
 		addField(sendUpdateTestData);
 		addField(sendCreateTestObject);
 		addField(sendUpdateTestObject);
+        addField(sendCreateFolder);
 		addField(sendCreateKeyword);
-		addField(sendCreateFolder);
 		addField(sendCreatePackage);
 		addField(sendPasteFromCopy);
 		addField(sendPasteFromCut);
@@ -268,8 +268,8 @@ public class SlackPreferencePage extends FieldEditorPreferencePage {
 		sendUpdateTestData.setEnabled(isEnabled, fieldsetSend);
 		sendCreateTestObject.setEnabled(isEnabled, fieldsetSend);
 		sendUpdateTestObject.setEnabled(isEnabled, fieldsetSend);
+        sendCreateFolder.setEnabled(isEnabled, fieldsetSend);
 		sendCreateKeyword.setEnabled(isEnabled, fieldsetSend);
-		sendCreateFolder.setEnabled(isEnabled, fieldsetSend);
 		sendCreatePackage.setEnabled(isEnabled, fieldsetSend);
 		sendPasteFromCopy.setEnabled(isEnabled, fieldsetSend);
 		sendPasteFromCut.setEnabled(isEnabled, fieldsetSend);
