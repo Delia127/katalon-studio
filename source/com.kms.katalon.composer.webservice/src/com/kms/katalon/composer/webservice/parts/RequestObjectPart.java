@@ -79,6 +79,8 @@ public abstract class RequestObjectPart implements EventHandler {
 
     protected List<WebElementPropertyEntity> listHttpHeaderProps = new ArrayList<WebElementPropertyEntity>();
 
+    protected List<WebElementPropertyEntity> tempPropList = new ArrayList<WebElementPropertyEntity>();
+
     @Inject
     protected MDirtyable dirtyable;
 
@@ -348,7 +350,9 @@ public abstract class RequestObjectPart implements EventHandler {
 
         txtHttpBody.setText(originalWsObject.getHttpBody());
 
-        listHttpHeaderProps.addAll(originalWsObject.getHttpHeaderProperties());
+        tempPropList = new ArrayList<WebElementPropertyEntity>(originalWsObject.getHttpHeaderProperties());
+        listHttpHeaderProps.clear();
+        listHttpHeaderProps.addAll(tempPropList);
         tblHttpHeader.refresh();
     }
 

@@ -139,7 +139,9 @@ public class SoapRequestObjectPart extends RequestObjectPart {
         txtServiceFunction.setText(originalWsObject.getSoapServiceFunction());
         txtSoapHeader.setText(originalWsObject.getSoapHeader());
         txtSoapBody.setText(originalWsObject.getSoapBody());
-        listSoapParams.addAll(originalWsObject.getSoapParameters());
+        tempPropList = new ArrayList<WebElementPropertyEntity>(originalWsObject.getSoapParameters());
+        listSoapParams.clear();
+        listSoapParams.addAll(tempPropList);
         tblSoapParams.refresh();
         dirtyable.setDirty(false);
     }
