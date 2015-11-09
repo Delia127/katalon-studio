@@ -250,6 +250,8 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String KW_LOG_PASSED_ALERT_IS_PRESENT_AFTER_X_SEC = "Alert is present after {0} second(s).";
 	public static final String KW_MSG_NO_ALERT_FOUND_AFTER_X_SEC = "No alert found after {0} second(s).";
 	public static final String KW_MSG_CANNOT_WAIT_FOR_ALERT = "Unable to wait for alert";
+	public static final String KW_MSG_CANNOT_VERIFY_ALERT_PRESENT = "Unable to verify alert present";
+	public static final String KW_MSG_CANNOT_VERIFY_ALERT_NOT_PRESENT = "Unable to verify alert not present";
 	public static final String KW_LOG_PASSED_TXT_X_IS_PRESENT_ON_PAGE_Y = "Text ''{0}'' is present on page {1}";
 	public static final String KW_MSG_TXT_X_IS_NOT_PRESENT_ON_PAGE_Y = "Text ''{0}'' is not present on page {1}";
 	public static final String KW_MSG_CANNOT_VERIFY_TXT_X_IS_PRESENT_Y = "Unable to verify text ''{0}'' is present {1}";

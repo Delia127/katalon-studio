@@ -20,9 +20,11 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String DIA_TOOLITEM_TIP_NEW_FRAME_ELEMENT = "New frame element";
 	public static final String DIA_TOOLITEM_TIP_NEW_ELEMENT = "New element";
 	public static final String DIA_TOOLITEM_TIP_REMOVE_ELEMENT = "Delete element";
+	public static final String DIA_TOOLITEM_TIP_ADD_ELEMENT_TO_OBJECT_REPO = "Add to Object Repository";
 	public static final String DIA_COL_NAME = NAME;
 	public static final String DIA_COL_VALUE = VALUE;
 	public static final String ERROR_TITLE = ERROR;
+	public static final String DIA_WARN_SELECT_PARENT_FOLDER_FOR_ELEMENT = "Please select an object repository folder before adding element";
 
 	// CheckboxTreeSelectionHelper
 	public static final String TREE_ERROR_MSG_CONTENT_PROVIDER_IS_REQUIRED = "Content provider is required";
