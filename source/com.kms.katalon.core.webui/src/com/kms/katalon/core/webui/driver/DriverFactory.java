@@ -351,17 +351,20 @@ public class DriverFactory {
     public static boolean waitForAlert(int timeOut) {
         verifyWebDriverIsOpen();
         float count = 0;
+        long miliseconds = System.currentTimeMillis();
         while (count < timeOut) {
             Alert alert = getAlert();
             if (alert != null) {
                 return true;
             }
+            count += ((System.currentTimeMillis() - miliseconds) / 1000);
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
                 // Thread is interrupted, do nothing
             }
             count += 0.5;
+            miliseconds = System.currentTimeMillis();
         }
         return false;
     }
