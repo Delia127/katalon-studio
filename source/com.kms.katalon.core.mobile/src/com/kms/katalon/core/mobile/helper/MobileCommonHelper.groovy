@@ -32,17 +32,9 @@ public class MobileCommonHelper {
         OsType deviceOs = MobileDriverFactory.getInstance().getDeviceOs(deviceId);
         switch (deviceOs) {
         case OsType.IOS:
-            try {
-                return MobileDriverFactory.getInstance().getIosDriver(deviceId, appFile, uninstallAfterCloseApp);
-            } catch (Exception e) {
-                return null;
-            }
+            return MobileDriverFactory.getInstance().getIosDriver(deviceId, appFile, uninstallAfterCloseApp);
         case OsType.ANDROID:
-            try {
-                return MobileDriverFactory.getInstance().getAndroidDriver(deviceId, appFile, uninstallAfterCloseApp);
-            } catch (Exception e) {
-                return null;
-            }
+            return MobileDriverFactory.getInstance().getAndroidDriver(deviceId, appFile, uninstallAfterCloseApp);
         default:
             return null;
         }
