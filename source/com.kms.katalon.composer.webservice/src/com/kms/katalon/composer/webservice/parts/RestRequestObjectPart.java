@@ -54,7 +54,7 @@ public class RestRequestObjectPart extends RequestObjectPart {
 
         // Service Url
         Label lblRestUrl = new Label(restContainerComposite, SWT.LEFT | SWT.WRAP);
-        lblRestUrl.setText(StringConstants.PA_LBL_REST_URL);
+        lblRestUrl.setText(StringConstants.PA_LBL_URL);
         lblRestUrl.setLayoutData(labelGridData);
 
         txtRestUrl = new Text(restContainerComposite, SWT.BORDER);
@@ -99,7 +99,9 @@ public class RestRequestObjectPart extends RequestObjectPart {
         int index = Arrays.asList(WebServiceRequestEntity.REST_REQUEST_METHODS).indexOf(
                 originalWsObject.getRestRequestMethod());
         cbbRestRequestMethod.select(index < 0 ? 0 : index);
-        listRestParams.addAll(originalWsObject.getRestParameters());
+        tempPropList = new ArrayList<WebElementPropertyEntity>(originalWsObject.getRestParameters());
+        listRestParams.clear();
+        listRestParams.addAll(tempPropList);
         tblRestParams.refresh();
         dirtyable.setDirty(false);
     }

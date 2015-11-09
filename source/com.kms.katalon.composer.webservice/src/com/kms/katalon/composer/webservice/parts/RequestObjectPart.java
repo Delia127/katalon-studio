@@ -16,6 +16,9 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.FillLayout;
@@ -35,6 +38,7 @@ import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.support.PropertyNameEditingSupport;
 import com.kms.katalon.composer.webservice.support.PropertyValueEditingSupport;
@@ -63,6 +67,8 @@ public abstract class RequestObjectPart implements EventHandler {
 
     protected WebServiceRequestEntity originalWsObject;
 
+    protected ScrolledComposite sComposite;
+
     protected Composite mainComposite;
 
     protected ModifyListener modifyListener;
@@ -79,6 +85,8 @@ public abstract class RequestObjectPart implements EventHandler {
 
     protected List<WebElementPropertyEntity> listHttpHeaderProps = new ArrayList<WebElementPropertyEntity>();
 
+    protected List<WebElementPropertyEntity> tempPropList = new ArrayList<WebElementPropertyEntity>();
+
     @Inject
     protected MDirtyable dirtyable;
 
@@ -90,9 +98,21 @@ public abstract class RequestObjectPart implements EventHandler {
 
         parent.setLayout(new FillLayout());
 
-        mainComposite = new Composite(parent, SWT.NULL);
+        sComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
+        sComposite.setExpandHorizontal(true);
+        sComposite.setExpandVertical(true);
+        sComposite.setBackground(ColorUtil.getCompositeBackgroundColor());
+        sComposite.setBackgroundMode(SWT.INHERIT_DEFAULT);
+        sComposite.addControlListener(new ControlAdapter() {
+            public void controlResized(ControlEvent e) {
+                sComposite.setMinSize(mainComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+            }
+        });
+
+        mainComposite = new Composite(sComposite, SWT.NONE);
         GridLayout glMainComposite = new GridLayout(1, false);
         mainComposite.setLayout(glMainComposite);
+        sComposite.setContent(mainComposite);
 
         createModifyListener();
 
@@ -348,7 +368,9 @@ public abstract class RequestObjectPart implements EventHandler {
 
         txtHttpBody.setText(originalWsObject.getHttpBody());
 
-        listHttpHeaderProps.addAll(originalWsObject.getHttpHeaderProperties());
+        tempPropList = new ArrayList<WebElementPropertyEntity>(originalWsObject.getHttpHeaderProperties());
+        listHttpHeaderProps.clear();
+        listHttpHeaderProps.addAll(tempPropList);
         tblHttpHeader.refresh();
     }
 
