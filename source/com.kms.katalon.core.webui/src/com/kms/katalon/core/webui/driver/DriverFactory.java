@@ -145,14 +145,13 @@ public class DriverFactory {
             case IOS_DRIVER:
                 webDriver = WebMobileDriverFactory.getInstance().getIosDriver(getMobileDeviceName());
                 break;
-            case EDGE_DRIVER: 
+            case EDGE_DRIVER:
                 EdgeDriverService edgeService = localEdgeDriverServiceStorage.get();
                 if (!edgeService.isRunning()) {
                     edgeService.start();
                 }
                 webDriver = new EdgeDriver(edgeService, WebDriverPropertyUtil.toDesireCapabilities(
-                        RunConfiguration.getExecutionDriverProperty(),
-                        DesiredCapabilities.edge(), false));
+                        RunConfiguration.getExecutionDriverProperty(), DesiredCapabilities.edge(), false));
                 break;
             default:
                 throw new StepFailedException(MessageFormat.format(StringConstants.DRI_ERROR_DRIVER_X_NOT_IMPLEMENTED,
@@ -175,7 +174,8 @@ public class DriverFactory {
         KeywordLogger logger = KeywordLogger.getInstance();
         logger.logRunData("sessionId", ((RemoteWebDriver) webDriver).getSessionId().toString());
         logger.logRunData("browser", WebUiCommonHelper.getBrowserAndVersion(webDriver));
-        logger.logRunData("platform", ((RemoteWebDriver) webDriver).getCapabilities().getPlatform().toString());
+        logger.logRunData("platform", webDriver.getClass() == RemoteWebDriver.class ? ((RemoteWebDriver) webDriver)
+                .getCapabilities().getPlatform().toString() : System.getProperty("os.name"));
     }
 
     public static WebDriver openWebDriver(DriverType driver, String projectDir, Object options) throws Exception {
