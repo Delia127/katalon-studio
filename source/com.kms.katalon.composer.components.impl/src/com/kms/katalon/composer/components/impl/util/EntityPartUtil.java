@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.components.impl.util;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
@@ -8,6 +9,7 @@ import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.composer.components.services.ModelServiceSingleton;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.IEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
@@ -69,4 +71,21 @@ public class EntityPartUtil {
         }
     }
 
+    public static IEntity getEntityByPartId(String partElementId) {
+        try {
+            if (StringUtils.isBlank(partElementId)) {
+                return null;
+            }
+
+            if (partElementId.startsWith(IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX)) {
+                String testCaseId = partElementId.substring(
+                        IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX.length() + 1,
+                        partElementId.lastIndexOf(")"));
+                return TestCaseController.getInstance().getTestCase(testCaseId);
+            }
+            return null;
+        } catch (Exception ex) {
+            return null;
+        }
+    }
 }
