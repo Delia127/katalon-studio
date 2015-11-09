@@ -128,7 +128,7 @@ public class MobileDriverFactory {
 		capabilities.setCapability("fullReset", uninstallAfterCloseApp);
 		capabilities.setCapability("noReset", !uninstallAfterCloseApp);
 		capabilities.setCapability("newCommandTimeout", 1800);
-		capabilities.setCapability("autoAcceptAlerts", true);
+		//capabilities.setCapability("autoAcceptAlerts", true);
 		capabilities.setCapability("waitForAppScript", true);
 		int time = 0;
         long currentMilis = System.currentTimeMillis();

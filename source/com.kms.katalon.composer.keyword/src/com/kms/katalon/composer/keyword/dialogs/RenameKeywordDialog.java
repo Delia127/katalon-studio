@@ -12,32 +12,25 @@ import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.AbstractEntityDialog;
-import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
-import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.keyword.constants.StringConstants;
 import com.kms.katalon.groovy.constant.GroovyConstants;
 
 @SuppressWarnings("restriction")
 public class RenameKeywordDialog extends AbstractEntityDialog {
 
-    private KeywordTreeEntity keywordTreeEntity;
+    private IPackageFragment parentPackage;
 
-    private IPackageFragment parentPackage = null;
-
-    public RenameKeywordDialog(Shell parentShell, KeywordTreeEntity keywordTreeEntity) {
+    public RenameKeywordDialog(Shell parentShell, IPackageFragment parentPackage) {
         super(parentShell, null);
         setWindowTitle(StringConstants.DIA_TITLE_RENAME);
         setDialogTitle(StringConstants.DIA_TITLE_KEYWORD);
         setDialogMsg(StringConstants.DIA_MSG_RENAME_KEYWORD);
-        this.keywordTreeEntity = keywordTreeEntity;
+        this.parentPackage = parentPackage;
     }
 
     @Override
     public void validateEntityName(String entityName) throws Exception {
         entityName = entityName + GroovyConstants.GROOVY_FILE_EXTENSION;
-        if (parentPackage == null) {
-            parentPackage = (IPackageFragment) ((PackageTreeEntity) keywordTreeEntity.getParent()).getObject();
-        }
 
         ICompilationUnit[] cuList = parentPackage.getCompilationUnits();
         for (ICompilationUnit cu : cuList) {

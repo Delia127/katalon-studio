@@ -20,6 +20,9 @@ public class StringConstants extends GlobalStringConstants {
 
     // PastePackageHandler
     public static final String HAND_ERROR_MSG_UNABLE_TO_PASTE_DATA = "Unable to paste data.";
+    public static final String HAND_ERROR_MSG_FILE_NOT_EXIST = "File does not exist!";
+    public static final String HAND_TITLE_NAME_CONFLICT = "Name Conflict";
+    public static final String HAND_MSG_KW_NAME_ALREADY_EXISTS = "Keyword ''{0}'' already exists. Please enter a new name.";
 
     // RenamePackageHandler
     public static final String HAND_ERROR_MSG_UNABLE_TO_RENAME_PACKAGE = "Unable to rename package.";
