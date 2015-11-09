@@ -9,8 +9,10 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.ui.di.Persist;
+import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellLabelProvider;
@@ -68,10 +70,18 @@ public class CSVTestDataPart extends TestDataMainPart {
     private Composite compositeTable;
     private ImageButton btnExpandFileInfoComposite;
     private Label lblFileInfo;
+
     private boolean isFileInfoExpanded;
+    private boolean enableToReload;
+
+    private String fCurrentFilePath;
+    private String fSelectedSeperator;
 
     @Inject
-    EPartService partService;
+    private EPartService partService;
+
+    @Inject
+    private UISynchronize sync;
 
     private Listener layoutFileInfoCompositeListener = new Listener() {
 
@@ -80,10 +90,13 @@ public class CSVTestDataPart extends TestDataMainPart {
             layoutFileInfoComposite();
         }
     };
-    
-    
+
     @PostConstruct
     public void createControls(Composite parent, MPart mpart) {
+        enableToReload = true;
+        fCurrentFilePath = "";
+        fSelectedSeperator = CSVSeperator.COMMA.toString();
+
         super.createControls(parent, mpart);
     }
 
@@ -208,14 +221,14 @@ public class CSVTestDataPart extends TestDataMainPart {
 
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
-        addListeners();
+        addControlModifyListeners();
         return compositeTable;
     }
 
-    private void addListeners() {
+    private void addControlModifyListeners() {
         btnExpandFileInfoComposite.addListener(SWT.MouseDown, layoutFileInfoCompositeListener);
         lblFileInfo.addListener(SWT.MouseDown, layoutFileInfoCompositeListener);
-        
+
         btnBrowse.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -224,16 +237,21 @@ public class CSVTestDataPart extends TestDataMainPart {
                 dialog.setFilterExtensions(FILTER_EXTS);
                 dialog.setFilterPath(getProjectFolderLocation());
                 String path = dialog.open();
-                if (path == null) return;
+
+                // Don't need to reload if user selects the current path again.
+                if (path == null || path.equals(fCurrentFilePath)) {
+                    return;
+                }
+                fCurrentFilePath = path;
+                
                 if (chckIsRelativePath.getSelection()) {
                     txtFileName.setText(PathUtils.absoluteToRelativePath(path, getProjectFolderLocation()));
                 } else {
-                    txtFileName.setText(path);
+                    txtFileName.setText(fCurrentFilePath);
                 }
 
-                loadCSVData();
+                loadCSVDataToTable();
                 dirtyable.setDirty(true);
-
             }
         });
 
@@ -241,7 +259,14 @@ public class CSVTestDataPart extends TestDataMainPart {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                loadCSVData();
+                // Don't need to reload if user selects the current index again.
+                if (fSelectedSeperator.equals(cbSeperator.getText())) {
+                    return;
+                }
+                
+                fSelectedSeperator = cbSeperator.getText();
+
+                loadCSVDataToTable();
                 dirtyable.setDirty(true);
             }
         });
@@ -260,13 +285,13 @@ public class CSVTestDataPart extends TestDataMainPart {
                         }
                     }
                     dirtyable.setDirty(true);
-                } catch (Exception e1) {
-                    LoggerSingleton.logError(e1);
+                } catch (Exception ex) {
+                    LoggerSingleton.logError(ex);
                 }
             }
         });
     }
-    
+
     private void layoutFileInfoComposite() {
         Display.getDefault().timerExec(10, new Runnable() {
 
@@ -300,16 +325,22 @@ public class CSVTestDataPart extends TestDataMainPart {
     }
 
     private void loadTestData(DataFileEntity dataFile) {
-        txtFileName.setText(dataFile.getDataSourceUrl());
+        if (!enableToReload) {
+            return;
+        }
+
+        fCurrentFilePath = dataFile.getDataSourceUrl();
+        txtFileName.setText(fCurrentFilePath);
 
         if (dataFile.getCsvSeperator() != null) {
-            cbSeperator.setText(dataFile.getCsvSeperator());
+            fSelectedSeperator = dataFile.getCsvSeperator();
+            cbSeperator.setText(fSelectedSeperator);
         }
 
         chckIsRelativePath.setSelection(dataFile.getIsInternalPath());
 
         if (cbSeperator.getText() != null && !cbSeperator.getText().isEmpty()) {
-            loadCSVData();
+            loadCSVDataToTable();
         }
     }
 
@@ -339,7 +370,18 @@ public class CSVTestDataPart extends TestDataMainPart {
         return sourceUrl;
     }
 
-    private void loadCSVData() {
+    private void warnFileToLarge() {
+        sync.asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                MessageDialog.openWarning(null, StringConstants.WARN,
+                        MessageFormat.format(StringConstants.PA_FILE_TOO_LARGE, MAX_COLUMN_COUNT));
+
+            }
+        });
+    }
+
+    private void loadCSVDataToTable() {
         try {
             tableViewer.getTable().setRedraw(false);
             clearTable();
@@ -349,10 +391,17 @@ public class CSVTestDataPart extends TestDataMainPart {
                 final CSVReader reader = new CSVReader(fileName, seperator, true);
 
                 List<String[]> data = reader.getData();
-                for (int i = 0; i < reader.getColumnCount(); i++) {
+
+                int columnNumbers = reader.getColumnCount();
+                if (columnNumbers > MAX_COLUMN_COUNT) {
+                    warnFileToLarge();
+                    columnNumbers = MAX_COLUMN_COUNT;
+                }
+
+                for (int i = 0; i < columnNumbers; i++) {
                     final int idx = i;
                     TableViewerColumn column = new TableViewerColumn(tableViewer, SWT.NONE);
-                    column.getColumn().setWidth(200);
+                    column.getColumn().setWidth(COLUMN_WIDTH);
                     column.setLabelProvider(new ColumnLabelProvider() {
                         @Override
                         public String getText(Object element) {
@@ -375,25 +424,25 @@ public class CSVTestDataPart extends TestDataMainPart {
                     }
                     column.setText(header);
                 }
-
                 tableViewer.setInput(data);
             }
-
-            tableViewer.getTable().setRedraw(true);
             tableViewer.getTable().setHeaderVisible(true);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
+        } finally {
+            tableViewer.getTable().setRedraw(true);
         }
     }
 
     @Persist
     public void save() {
         try {
+            enableToReload = false;
             String oldPk = originalDataFile.getId();
             String oldName = originalDataFile.getName();
             String oldIdForDisplay = TestDataController.getInstance().getIdForDisplay(originalDataFile);
-            originalDataFile = updateDataFileProperty(originalDataFile.getLocation(), txtName.getText(), txtDesc.getText(),
-                    DataFileDriverType.CSV, txtFileName.getText(), cbSeperator.getText(),
+            originalDataFile = updateDataFileProperty(originalDataFile.getLocation(), txtName.getText(),
+                    txtDesc.getText(), DataFileDriverType.CSV, txtFileName.getText(), cbSeperator.getText(),
                     chckIsRelativePath.getSelection());
 
             updateDataFile(originalDataFile);
@@ -411,6 +460,8 @@ public class CSVTestDataPart extends TestDataMainPart {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_TEST_DATA, e
                     .getClass().getSimpleName());
+        } finally {
+            enableToReload = true;
         }
     }
 
@@ -441,9 +492,14 @@ public class CSVTestDataPart extends TestDataMainPart {
     protected void updateChildInfo(DataFileEntity dataFile) {
         loadTestData(dataFile);
     }
-    
+
     @Override
     protected EPartService getPartService() {
         return partService;
+    }
+
+    @Override
+    protected void preDestroy() {
+        
     }
 }

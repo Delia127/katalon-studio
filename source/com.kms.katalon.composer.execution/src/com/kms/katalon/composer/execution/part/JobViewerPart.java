@@ -359,18 +359,18 @@ public class JobViewerPart implements EventHandler {
                 updateToolItemStatus();
             } else if (event.getTopic().equals(EventConstants.JOB_UPDATE_PROGRESS)) {
                 Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-                if (object == null || !(object instanceof String)) return;
+                if (object == null || !(object instanceof String)) { return; }
 
                 for (Control control : listCompositeLauncher.getChildren()) {
-                    if (control.getData(CONTROL_ID) == null) continue;
+                    if (control.getData(CONTROL_ID) == null) { continue; }
 
                     String launcherCompositeId = (String) control.getData(CONTROL_ID);
 
-                    if (!launcherCompositeId.equals(object)) continue;
+                    if (!launcherCompositeId.equals(object)) { continue; }
 
                     AbstractLauncher launcher = LauncherManager.getInstance().getLauncherInRunningList(
                             launcherCompositeId);
-                    if (launcher == null) continue;
+                    if (launcher == null) { continue; }
 
                     Composite laucherComposite = (Composite) control;
                     for (Control launcherControl : laucherComposite.getChildren()) {

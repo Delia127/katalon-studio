@@ -681,12 +681,11 @@ public class ReportPart implements EventHandler {
         TableColumnLayout tableColumnLayout = new TableColumnLayout();
         compositeRunData.setLayout(tableColumnLayout);
 
-        runDataTable = new TableViewer(compositeRunData, SWT.BORDER);
+        runDataTable = new TableViewer(compositeRunData, SWT.MULTI | SWT.FULL_SELECTION);
         runDataTable.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         runDataTable.getTable().setLinesVisible(true);
         runDataTable.getTable().setHeaderVisible(true);
         runDataTable.setContentProvider(new ArrayContentProvider());
-        runDataTable.setLabelProvider(new ColumnLabelProvider());
 
         TableViewerColumn tableColumnRunDataKey = new TableViewerColumn(runDataTable, SWT.NONE);
         tableColumnRunDataKey.getColumn().setText(StringConstants.COLUMN_LBL_RUN_DATA_KEY);
@@ -861,6 +860,7 @@ public class ReportPart implements EventHandler {
 
                 if (updatedReportId.equals(report.getId())) {
                     prepareBeforeReloading();
+                    LogRecordLookup.getInstance().refreshLogRecord(report);
                     updateInput(ReportController.getInstance().getReportEntity(updatedReportId));
                     prepareAfterReloading();
                 }

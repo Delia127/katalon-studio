@@ -25,7 +25,7 @@ public class KatalonContextUtil {
     private KatalonContextUtil() {
         // Disable default constructor
     }
-    
+
     public static boolean isCustomKeywordCompletionClassNode(ContentAssistContext context) {
         if (context.getPerceivedCompletionNode() instanceof ClassExpression) {
             ClassExpression classExprs = (ClassExpression) context.getPerceivedCompletionNode();
@@ -37,6 +37,10 @@ public class KatalonContextUtil {
             if (GroovyConstants.CUSTOM_KEYWORD_LIB_FILE_NAME.equals(className)) {
                 return true;
             }
+        }
+        
+        if ((GroovyConstants.CUSTOM_KEYWORD_LIB_FILE_NAME + ".").equals(context.fullCompletionExpression)) {
+            return true;
         }
         return false;
     }
@@ -50,6 +54,14 @@ public class KatalonContextUtil {
             }
 
             if (KeywordController.getInstance().isBuiltinKeywordClassName(className)) {
+                return true;
+            }
+        }
+        
+        String fullCompletion = context.fullCompletionExpression;
+        if (fullCompletion.endsWith(".")) {
+            String classNamePotential = fullCompletion.substring(0, fullCompletion.lastIndexOf("."));
+            if (KeywordController.getInstance().getBuiltInKeywordClass(classNamePotential) != null) {
                 return true;
             }
         }
@@ -89,7 +101,7 @@ public class KatalonContextUtil {
             return false;
         }
     }
-    
+
     public static StyledString getKatalonSignature() {
         return new StyledString(" (Katalon)", StyledString.DECORATIONS_STYLER);
     }

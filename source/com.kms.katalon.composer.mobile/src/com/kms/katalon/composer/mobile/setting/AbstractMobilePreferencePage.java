@@ -51,7 +51,7 @@ public abstract class AbstractMobilePreferencePage extends DriverPreferencePage 
     @Override
     public boolean performOk() {
         if (abstractMobileDriverConnector != null && deviceSelectionComposite != null) {
-            abstractMobileDriverConnector.setDeviceName(deviceSelectionComposite.getDeviceName());
+            abstractMobileDriverConnector.setDeviceName(deviceSelectionComposite.getDeviceUUID());
         }
         return super.performOk();
     }

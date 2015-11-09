@@ -2,6 +2,7 @@ package com.kms.katalon.core.webui.driver;
 
 import io.appium.java_client.ios.IOSDriver;
 
+import java.io.File;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Set;
@@ -13,6 +14,8 @@ import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeDriverService;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.ie.InternetExplorerDriver;
@@ -26,6 +29,7 @@ import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.LogLevel;
+import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.exception.BrowserNotOpenedException;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
@@ -42,6 +46,7 @@ public class DriverFactory {
     // https://code.google.com/p/selenium/issues/detail?id=7977
     private static final String JAVA_SCRIPT_ERROR_H_IS_NULL_MESSAGE = "[JavaScript Error: \"h is null\"";
     public static final String IE_DRIVER_PATH_PROPERTY = StringConstants.CONF_PROPERTY_IE_DRIVER_PATH;
+    public static final String EDGE_DRIVER_PATH_PROPERTY = StringConstants.CONF_PROPERTY_EDGE_DRIVER_PATH;
     public static final String CHROME_DRIVER_PATH_PROPERTY = StringConstants.CONF_PROPERTY_CHROME_DRIVER_PATH;
     public static final String WAIT_FOR_IE_HANGING_PROPERTY = StringConstants.CONF_PROPERTY_WAIT_FOR_IE_HANGING;
     public static final String EXECUTED_BROWSER_PROPERTY = StringConstants.CONF_PROPERTY_EXECUTED_BROWSER;
@@ -54,6 +59,14 @@ public class DriverFactory {
         @Override
         protected WebDriver initialValue() {
             return null;
+        }
+    };
+
+    private static final ThreadLocal<EdgeDriverService> localEdgeDriverServiceStorage = new ThreadLocal<EdgeDriverService>() {
+        @Override
+        protected EdgeDriverService initialValue() {
+            return new EdgeDriverService.Builder().usingDriverExecutable(new File(getEdgeDriverPath()))
+                    .usingAnyFreePort().build();
         }
     };
 
@@ -132,19 +145,37 @@ public class DriverFactory {
             case IOS_DRIVER:
                 webDriver = WebMobileDriverFactory.getInstance().getIosDriver(getMobileDeviceName());
                 break;
+            case EDGE_DRIVER: 
+                EdgeDriverService edgeService = localEdgeDriverServiceStorage.get();
+                if (!edgeService.isRunning()) {
+                    edgeService.start();
+                }
+                webDriver = new EdgeDriver(edgeService, WebDriverPropertyUtil.toDesireCapabilities(
+                        RunConfiguration.getExecutionDriverProperty(),
+                        DesiredCapabilities.edge(), false));
+                break;
             default:
                 throw new StepFailedException(MessageFormat.format(StringConstants.DRI_ERROR_DRIVER_X_NOT_IMPLEMENTED,
                         driver.getName()));
             }
             localWebServerStorage.set(webDriver);
             setTimeout();
-            KeywordLogger.getInstance()
-                    .logRunData("sessionId", ((RemoteWebDriver) webDriver).getSessionId().toString());
+            logBrowserRunData(webDriver);
             return webDriver;
         } catch (Error e) {
             KeywordLogger.getInstance().logMessage(LogLevel.WARNING, e.getMessage());
             throw new StepFailedException(e);
         }
+    }
+
+    private static void logBrowserRunData(WebDriver webDriver) {
+        if (webDriver == null) {
+            return;
+        }
+        KeywordLogger logger = KeywordLogger.getInstance();
+        logger.logRunData("sessionId", ((RemoteWebDriver) webDriver).getSessionId().toString());
+        logger.logRunData("browser", WebUiCommonHelper.getBrowserAndVersion(webDriver));
+        logger.logRunData("platform", ((RemoteWebDriver) webDriver).getCapabilities().getPlatform().toString());
     }
 
     public static WebDriver openWebDriver(DriverType driver, String projectDir, Object options) throws Exception {
@@ -191,6 +222,9 @@ public class DriverFactory {
     }
 
     private static void setTimeout() {
+        if (localWebServerStorage.get() instanceof EdgeDriver) {
+            return;
+        }
         localWebServerStorage.get().manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
     }
 
@@ -362,6 +396,10 @@ public class DriverFactory {
         return RunConfiguration.getStringProperty(IE_DRIVER_PATH_PROPERTY);
     }
 
+    private static String getEdgeDriverPath() {
+        return RunConfiguration.getStringProperty(EDGE_DRIVER_PATH_PROPERTY);
+    }
+
     private static String getChromeDriverPath() {
         return RunConfiguration.getStringProperty(CHROME_DRIVER_PATH_PROPERTY);
     }
@@ -405,6 +443,22 @@ public class DriverFactory {
         if (null != webDriver && null != ((RemoteWebDriver) webDriver).getSessionId()) {
             try {
                 webDriver.quit();
+                WebUIDriverType driver = (WebUIDriverType) getExecutedBrowser();
+                switch (driver) {
+                case ANDROID_DRIVER:
+                case IOS_DRIVER:
+                    WebMobileDriverFactory.getInstance().quitServer();
+                    break;
+                case EDGE_DRIVER:
+                    EdgeDriverService edgeDriverService = localEdgeDriverServiceStorage.get();
+                    if (edgeDriverService.isRunning()) {
+                        edgeDriverService.stop();
+                    }
+                    break;
+                default:
+                    break;
+
+                }
             } catch (UnreachableBrowserException e) {
                 KeywordLogger.getInstance().logWarning(StringConstants.DRI_LOG_WARNING_BROWSER_NOT_REACHABLE);
             }

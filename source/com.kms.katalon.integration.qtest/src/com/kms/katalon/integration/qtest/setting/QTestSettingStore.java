@@ -20,7 +20,6 @@ public class QTestSettingStore {
     public static final String ENABLE_INTEGRATION_PROPERTY = "enableIntegration";
     public static final String SEND_ATTACHMENTS_PROPERTY = "sendAttachments";
     public static final String SEND_RESULT_PROPERTY = "sendResult";
-    public static final String CHECK_BEFORE_UPLOADING = "checkBeforeUploading";
     public static final String FIRST_TIME_USING = "firstTimeUsing";
 
     public static File getPropertyFile(String projectDir) throws IOException {
@@ -103,15 +102,6 @@ public class QTestSettingStore {
         }
     }
 
-    public static boolean isEnableCheckBeforeUploading(String projectDir) {
-        try {
-            return Boolean.parseBoolean(PropertySettingStoreUtil.getPropertyValue(CHECK_BEFORE_UPLOADING,
-                    getPropertyFile(projectDir)));
-        } catch (IOException e) {
-            return false;
-        }
-    }
-
     public static void saveAutoSubmit(boolean autoSubmit, String projectDir) throws IOException {
         PropertySettingStoreUtil.addNewProperty(AUTO_SUBMIT_RESULT_PROPERTY, Boolean.toString(autoSubmit),
                 getPropertyFile(projectDir));
@@ -119,11 +109,6 @@ public class QTestSettingStore {
 
     public static void saveEnableIntegration(boolean isIntegration, String projectDir) throws IOException {
         PropertySettingStoreUtil.addNewProperty(ENABLE_INTEGRATION_PROPERTY, Boolean.toString(isIntegration),
-                getPropertyFile(projectDir));
-    }
-
-    public static void saveEnableCheckBeforeUploading(boolean isEnableCheck, String projectDir) throws IOException {
-        PropertySettingStoreUtil.addNewProperty(CHECK_BEFORE_UPLOADING, Boolean.toString(isEnableCheck),
                 getPropertyFile(projectDir));
     }
 

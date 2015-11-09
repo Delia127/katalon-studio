@@ -60,7 +60,6 @@ public class QTestPreferenceMainPage extends PreferencePage {
     private Composite projectComposite;
     private Group grpAuthentication;
     private GridData gdTxtToken;
-    private Button chckEnableCheckBeforeUploading;
     private Group grpAttachmentOptions;
     private Group grpResultOptions;
     private Composite compositeOptions;
@@ -121,10 +120,6 @@ public class QTestPreferenceMainPage extends PreferencePage {
         GridLayout glProjectComposite = new GridLayout(3, false);
         glProjectComposite.verticalSpacing = 10;
         projectComposite.setLayout(glProjectComposite);
-
-        chckEnableCheckBeforeUploading = new Button(projectComposite, SWT.CHECK);
-        chckEnableCheckBeforeUploading.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
-        chckEnableCheckBeforeUploading.setText(StringConstants.DIA_TITLE_CHECK_DUPLICATES_TEST_CASE);
 
         chckAutoSubmitTestRun = new Button(projectComposite, SWT.CHECK);
         chckAutoSubmitTestRun.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
@@ -269,14 +264,11 @@ public class QTestPreferenceMainPage extends PreferencePage {
         String token = QTestSettingStore.getToken(projectDir);
         boolean autoSubmitResult = QTestSettingStore.isAutoSubmitResultActive(projectDir);
         boolean isIntegrationActive = QTestSettingStore.isIntegrationActive(projectDir);
-        boolean isEnableCheckBeforeUploading = QTestSettingStore.isEnableCheckBeforeUploading(projectDir);
 
         txtToken.setText(token != null ? token : "");
 
         chckAutoSubmitTestRun.setSelection(autoSubmitResult);
         chckEnableIntegration.setSelection(isIntegrationActive);
-        chckEnableCheckBeforeUploading.setSelection(isEnableCheckBeforeUploading);
-
         // set input for grpResults
         List<QTestResultSendingType> selectedResultSendingTypes = QTestSettingStore.getResultSendingTypes(projectDir);
         for (Control chckButton : grpResultOptions.getChildren()) {
@@ -314,7 +306,6 @@ public class QTestPreferenceMainPage extends PreferencePage {
             QTestSettingStore.saveAutoSubmit(chckAutoSubmitTestRun.getSelection(), projectDir);
             QTestSettingStore.saveToken(txtToken.getText(), projectDir);
             QTestSettingStore.saveEnableIntegration(chckEnableIntegration.getSelection(), projectDir);
-            QTestSettingStore.saveEnableCheckBeforeUploading(chckEnableCheckBeforeUploading.getSelection(), projectDir);
 
             saveAttachmentSendingStatus();
 

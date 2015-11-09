@@ -57,6 +57,12 @@
             id="com.kms.katalon.composer.webui.page.remoteweb"
             name="Remote Web">
       </page>
+      <page
+            category="com.kms.katalon.composer.webui.mainPage"
+            class="com.kms.katalon.composer.webui.setting.EdgePreferencePage"
+            id="com.kms.katalon.composer.webui.page.edge"
+            name="Edge">
+      </page>
    </extension>
 	<extension
 	       point="com.kms.katalon.composer.execution.driverConnectorEditor">
@@ -86,6 +92,12 @@
 	       point="com.kms.katalon.composer.execution.driverConnectorEditor">
 		  <client
 		        driver.connector.editor="com.kms.katalon.composer.webui.component.contributor.RemoteWebDriverEditorContributor">
+		  </client>
+	 </extension>
+	 <extension
+	       point="com.kms.katalon.composer.execution.driverConnectorEditor">
+		  <client
+		        driver.connector.editor="com.kms.katalon.composer.webui.component.contributor.EdgeDriverEditorContributor">
 		  </client>
 	 </extension>
 </plugin>

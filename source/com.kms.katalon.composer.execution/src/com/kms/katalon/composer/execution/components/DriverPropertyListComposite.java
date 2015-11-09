@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
+import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.provider.ListPropertyLabelProvider;
 import com.kms.katalon.core.setting.DriverPropertyValueType;
@@ -38,15 +39,34 @@ public class DriverPropertyListComposite extends Composite {
     public DriverPropertyListComposite(Composite parent) {
         super(parent, SWT.NONE);
 
-        setLayout(new GridLayout(2, false));
+        setLayout(new GridLayout(1, false));
         setLayoutData(new GridData(GridData.FILL_BOTH));
 
         Composite composite = new Composite(this, SWT.NONE);
-        GridLayout gl_composite = new GridLayout(1, false);
-        gl_composite.marginWidth = 0;
-        gl_composite.marginHeight = 0;
-        composite.setLayout(gl_composite);
+        GridLayout glComposite = new GridLayout(1, false);
+        glComposite.marginWidth = 0;
+        glComposite.marginHeight = 0;
+        composite.setLayout(glComposite);
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+
+
+        Composite toolbarComposite = new Composite(composite, SWT.NONE);
+        toolbarComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
+        toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+
+        ToolBar toolBar = new ToolBar(toolbarComposite, SWT.FLAT | SWT.RIGHT);
+
+        tltmAddProperty = new ToolItem(toolBar, SWT.NONE);
+        tltmAddProperty.setText(StringConstants.SETT_TOOLITEM_ADD);
+        tltmAddProperty.setImage(ImageConstants.IMG_24_ADD);
+
+        tltmRemoveProperty = new ToolItem(toolBar, SWT.NONE);
+        tltmRemoveProperty.setText(StringConstants.SETT_TOOLITEM_REMOVE);
+        tltmRemoveProperty.setImage(ImageConstants.IMG_24_REMOVE);
+
+        tltmClearProperty = new ToolItem(toolBar, SWT.NONE);
+        tltmClearProperty.setText(StringConstants.SETT_TOOLITEM_CLEAR);
+        tltmClearProperty.setImage(ImageConstants.IMG_24_CLEAR);
         
         Composite tableComposite = new Composite(composite, SWT.NONE);
         tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -191,21 +211,6 @@ public class DriverPropertyListComposite extends Composite {
 
         tableViewer.setLabelProvider(new ListPropertyLabelProvider());
         tableViewer.setContentProvider(new ArrayContentProvider());
-
-        Composite toolbarComposite = new Composite(this, SWT.NONE);
-        toolbarComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
-        toolbarComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true, 1, 1));
-
-        ToolBar toolBar = new ToolBar(toolbarComposite, SWT.FLAT | SWT.RIGHT | SWT.VERTICAL);
-
-        tltmAddProperty = new ToolItem(toolBar, SWT.NONE);
-        tltmAddProperty.setText(StringConstants.SETT_TOOLITEM_ADD);
-
-        tltmRemoveProperty = new ToolItem(toolBar, SWT.NONE);
-        tltmRemoveProperty.setText(StringConstants.SETT_TOOLITEM_REMOVE);
-
-        tltmClearProperty = new ToolItem(toolBar, SWT.NONE);
-        tltmClearProperty.setText(StringConstants.SETT_TOOLITEM_CLEAR);
     }
     
     public static int indexOfUsingObject(List<?> objectList, Object object) {

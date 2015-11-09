@@ -1,9 +1,10 @@
 package com.kms.katalon.core.testdata.reader;
 
-import org.apache.poi.ss.format.CellDateFormatter;
+import java.util.Locale;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellValue;
-import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -46,16 +47,12 @@ public class XSSPOI extends SheetPOI {
         switch (curCell.getCellType()) {
             case Cell.CELL_TYPE_STRING:
                 return curCell.getRichStringCellValue().getString();
-            case Cell.CELL_TYPE_NUMERIC:
-                if (DateUtil.isCellDateFormatted(curCell)) {
-                    return curCell.getDateCellValue().toString();
-                } else {
-                    double cel_value = curCell.getNumericCellValue();
-                    if (cel_value == (long) cel_value)
-                        return Integer.toString((int) cel_value);
-                    else
-                        return Double.toString(curCell.getNumericCellValue());
-                }
+            case Cell.CELL_TYPE_NUMERIC: {
+                DataFormatter formatter = new DataFormatter(Locale.getDefault());
+
+                return formatter.formatRawCellContents(curCell.getNumericCellValue(), -1,
+                        getFormatString(curCell.getCellStyle().getDataFormatString()));
+            }
             case Cell.CELL_TYPE_BOOLEAN:
                 return Boolean.toString(curCell.getBooleanCellValue());
             case Cell.CELL_TYPE_FORMULA: {
@@ -69,16 +66,10 @@ public class XSSPOI extends SheetPOI {
                         case Cell.CELL_TYPE_STRING:
                             return cellVal.getStringValue();
                         case Cell.CELL_TYPE_NUMERIC:
-                            if (DateUtil.isCellDateFormatted(curCell)) {
-                                String cellFormatString = curCell.getCellStyle().getDataFormatString();
-                                return new CellDateFormatter(cellFormatString).simpleFormat(curCell.getDateCellValue());
-                            } else {
-                                double celValue = cellVal.getNumberValue();
-                                if (celValue == (long) celValue)
-                                    return Integer.toString((int) celValue);
-                                else
-                                    return Double.toString(curCell.getNumericCellValue());
-                            }
+                            DataFormatter formatter = new DataFormatter(Locale.getDefault());
+
+                            return formatter.formatRawCellContents(curCell.getNumericCellValue(), -1,
+                                    getFormatString(curCell.getCellStyle().getDataFormatString()));
                         default:
                             return cellVal.formatAsString();
                     }
@@ -86,18 +77,17 @@ public class XSSPOI extends SheetPOI {
                 }
                 // try with number
                 try {
-                    if (DateUtil.isCellDateFormatted(curCell)) {
-                        return curCell.getDateCellValue().toString();
-                    } else {
-                        double cellValue = curCell.getNumericCellValue();
-                        if (cellValue == (long) cellValue)
-                            return Integer.toString((int) cellValue);
-                        else
-                            return Double.toString(curCell.getNumericCellValue());
-                    }
+                    DataFormatter formatter = new DataFormatter(Locale.getDefault());
+
+                    return formatter.formatRawCellContents(curCell.getNumericCellValue(), -1,
+                            getFormatString(curCell.getCellStyle().getDataFormatString()));
                 } catch (Exception e1) {
                 }
-                return curCell.getStringCellValue();
+                try {
+                    return curCell.getStringCellValue();
+                } catch (java.lang.IllegalStateException ex) {
+                    return curCell.getRawValue();
+                }
             }
             default:
                 return curCell.getStringCellValue();
@@ -127,6 +117,7 @@ public class XSSPOI extends SheetPOI {
     @Override
     public int getMaxColumn(int rowIndex) {
         XSSFRow curRow = sheetInstance.getRow(rowIndex);
+        
         if (curRow != null) {
             return curRow.getLastCellNum();
         } else {

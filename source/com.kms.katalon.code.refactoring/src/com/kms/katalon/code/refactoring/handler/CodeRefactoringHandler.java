@@ -55,6 +55,10 @@ public class CodeRefactoringHandler implements EventHandler {
                         }
                         
                         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
+                        if (projectEntity == null) {
+                            return;
+                        }
+                        
                         String projectDir = projectEntity.getFolderLocation();
                         boolean isMigrated = CodeRefactoringSettingStore.isMigrated(projectDir);
                         if (!isMigrated) {

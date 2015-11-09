@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
+import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.provider.MapPropertyLabelProvider;
 import com.kms.katalon.composer.execution.provider.MapPropertyTableViewerContentProvider;
@@ -32,15 +33,15 @@ public class DriverPropertyMapComposite extends Composite {
     private ToolItem tltmAddProperty;
     private ToolItem tltmRemoveProperty;
     private ToolItem tltmClearProperty;
-    
+
     private Map<String, Object> driverPropertyList;
 
     public DriverPropertyMapComposite(Composite parent) {
         super(parent, SWT.NONE);
-        
-        setLayout(new GridLayout(2, false));
+
+        setLayout(new GridLayout(1, false));
         setLayoutData(new GridData(GridData.FILL_BOTH));
-        
+
         Composite composite = new Composite(this, SWT.NONE);
         GridLayout gl_composite = new GridLayout(1, false);
         gl_composite.marginWidth = 0;
@@ -48,9 +49,27 @@ public class DriverPropertyMapComposite extends Composite {
         composite.setLayout(gl_composite);
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
+        Composite toolbarComposite = new Composite(composite, SWT.NONE);
+        toolbarComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
+        toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        ToolBar toolBar = new ToolBar(toolbarComposite, SWT.FLAT | SWT.RIGHT);
+
+        tltmAddProperty = new ToolItem(toolBar, SWT.NONE);
+        tltmAddProperty.setText(StringConstants.SETT_TOOLITEM_ADD);
+        tltmAddProperty.setImage(ImageConstants.IMG_24_ADD);
+
+        tltmRemoveProperty = new ToolItem(toolBar, SWT.NONE);
+        tltmRemoveProperty.setText(StringConstants.SETT_TOOLITEM_REMOVE);
+        tltmRemoveProperty.setImage(ImageConstants.IMG_24_REMOVE);
+
+        tltmClearProperty = new ToolItem(toolBar, SWT.NONE);
+        tltmClearProperty.setText(StringConstants.SETT_TOOLITEM_CLEAR);
+        tltmClearProperty.setImage(ImageConstants.IMG_24_CLEAR);
+        addToolItemListeners();
+
         Composite tableComposite = new Composite(composite, SWT.NONE);
         tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        
+
         tableViewer = new TableViewer(tableComposite, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION);
         table = tableViewer.getTable();
         table.setHeaderVisible(true);
@@ -59,31 +78,18 @@ public class DriverPropertyMapComposite extends Composite {
 
         TableColumnLayout tableColumnLayout = new TableColumnLayout();
         tableComposite.setLayout(tableColumnLayout);
-        
-        addTableColumn(tableViewer, tableColumnLayout, StringConstants.SETT_COL_PREFERENCE_NAME, 100, 30, new DriverPropertyNameEditingSupport(tableViewer));
-        addTableColumn(tableViewer, tableColumnLayout, StringConstants.SETT_COL_PREFERENCE_TYPE, 100, 30, new DriverPropertyTypeEditingSupport(tableViewer));
-        addTableColumn(tableViewer, tableColumnLayout, StringConstants.SETT_COL_PREFERENCE_VALUE, 100, 30, new DriverPropertyValueEditingSupport(tableViewer));
+
+        addTableColumn(tableViewer, tableColumnLayout, StringConstants.SETT_COL_PREFERENCE_NAME, 100, 30,
+                new DriverPropertyNameEditingSupport(tableViewer));
+        addTableColumn(tableViewer, tableColumnLayout, StringConstants.SETT_COL_PREFERENCE_TYPE, 100, 30,
+                new DriverPropertyTypeEditingSupport(tableViewer));
+        addTableColumn(tableViewer, tableColumnLayout, StringConstants.SETT_COL_PREFERENCE_VALUE, 100, 30,
+                new DriverPropertyValueEditingSupport(tableViewer));
 
         tableViewer.setLabelProvider(new MapPropertyLabelProvider());
         tableViewer.setContentProvider(new MapPropertyTableViewerContentProvider());
-
-        Composite toolbarComposite = new Composite(this, SWT.NONE);
-        toolbarComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
-        toolbarComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true, 1, 1));
-
-        ToolBar toolBar = new ToolBar(toolbarComposite, SWT.FLAT | SWT.RIGHT | SWT.VERTICAL);
-
-        tltmAddProperty = new ToolItem(toolBar, SWT.NONE);
-        tltmAddProperty.setText(StringConstants.SETT_TOOLITEM_ADD);
-
-        tltmRemoveProperty = new ToolItem(toolBar, SWT.NONE);
-        tltmRemoveProperty.setText(StringConstants.SETT_TOOLITEM_REMOVE);
-
-        tltmClearProperty = new ToolItem(toolBar, SWT.NONE);
-        tltmClearProperty.setText(StringConstants.SETT_TOOLITEM_CLEAR);
-        addToolItemListeners();
     }
-    
+
     private void addTableColumn(TableViewer parent, TableColumnLayout tableColumnLayout, String headerText, int width,
             int weight, EditingSupport editingSupport) {
         TableViewerColumn tableColumn = new TableViewerColumn(parent, SWT.NONE);
@@ -91,10 +97,10 @@ public class DriverPropertyMapComposite extends Composite {
         tableColumn.getColumn().setMoveable(true);
         tableColumn.getColumn().setText(headerText);
         tableColumn.setEditingSupport(editingSupport);
-        tableColumnLayout.setColumnData(tableColumn.getColumn(), new ColumnWeightData(weight, tableColumn
-                .getColumn().getWidth()));
+        tableColumnLayout.setColumnData(tableColumn.getColumn(), new ColumnWeightData(weight, tableColumn.getColumn()
+                .getWidth()));
     }
-    
+
     public void setInput(Map<String, Object> driverPropertyList) {
         this.driverPropertyList = driverPropertyList;
         tableViewer.setInput(driverPropertyList);
@@ -117,7 +123,7 @@ public class DriverPropertyMapComposite extends Composite {
                 if (!selection.isEmpty()) {
                     for (Object selectedObject : selection.toList()) {
                         if (selectedObject instanceof Entry<?, ?>) {
-                            driverPropertyList.remove(((Entry<?, ?>)selectedObject).getKey());
+                            driverPropertyList.remove(((Entry<?, ?>) selectedObject).getKey());
                         }
                     }
                     tableViewer.refresh();
@@ -134,7 +140,7 @@ public class DriverPropertyMapComposite extends Composite {
             }
         });
     }
-    
+
     public static String generateNewPropertyName(Map<String, Object> driverPropertyDictionary) {
         String name = DEFAULT_DRIVER_PROPERTY_NAME;
         if (driverPropertyDictionary.get(name) == null) {

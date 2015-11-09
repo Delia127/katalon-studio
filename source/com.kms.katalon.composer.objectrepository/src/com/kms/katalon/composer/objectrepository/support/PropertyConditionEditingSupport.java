@@ -7,7 +7,7 @@ import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 
-import com.kms.katalon.composer.objectrepository.events.ObjectEventConstants;
+import com.kms.katalon.composer.objectrepository.constant.ObjectEventConstants;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 
 public class PropertyConditionEditingSupport extends EditingSupport{

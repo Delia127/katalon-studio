@@ -18,6 +18,9 @@ public abstract class AbstractDialog extends Dialog {
         super(parentShell);
     }
     
+    /**
+     * Creates parent container that includes child container and horizontal line. 
+     */
     @Override
     protected Control createDialogArea(Composite parent) {
         mainComposite = (Composite) super.createDialogArea(parent);
@@ -42,10 +45,21 @@ public abstract class AbstractDialog extends Dialog {
         registerControlModifyListeners();
     }
 
+    /**
+     * Used for children can register event listener of their control after creating them.
+     */
     protected abstract void registerControlModifyListeners();
-
+    
+    /**
+     * Used for children set value to their control after creating them.
+     */
     protected abstract void setInput();
 
+    /**
+     * Let children create its control.
+     * @param parent main container.
+     * @return main area of children.
+     */
     protected abstract Control createDialogContainer(Composite parent);
 
     @Override
@@ -59,6 +73,11 @@ public abstract class AbstractDialog extends Dialog {
         newShell.setText(getDialogTitle());
     }
 
-    protected abstract String getDialogTitle();
+    /**
+     * @return Title of the dialog.
+     */
+    protected String getDialogTitle() {
+        return "";
+    }
     
 }

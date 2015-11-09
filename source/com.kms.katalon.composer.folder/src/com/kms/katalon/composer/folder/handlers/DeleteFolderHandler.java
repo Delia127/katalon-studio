@@ -121,6 +121,7 @@ public class DeleteFolderHandler extends AbstractDeleteReferredEntityHandler imp
                     if (handler instanceof AbstractDeleteReferredEntityHandler) {
                         ((AbstractDeleteReferredEntityHandler) handler)
                                 .setDeletePreferenceOption(getDeletePreferenceOption());
+                        ((AbstractDeleteReferredEntityHandler) handler).setAvailableDeletionOptions(getAvailableDeletionOptions());
                     }
                     handler.execute((FolderTreeEntity) entity, monitor);
 

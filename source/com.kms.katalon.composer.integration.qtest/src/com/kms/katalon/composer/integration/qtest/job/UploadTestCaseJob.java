@@ -31,7 +31,6 @@ import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
 import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
 import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
-import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class UploadTestCaseJob extends UploadJob {
 
@@ -108,20 +107,19 @@ public class UploadTestCaseJob extends UploadJob {
                     folderEntity.getParentFolder());
 
             QTestModule qTestModule = null;
-            if (QTestSettingStore.isEnableCheckBeforeUploading(projectDir)) {
-                QTestIntegrationFolderManager.updateModule(projectDir, qTestProject.getId(), qTestParentModule, false);
+            
+            QTestIntegrationFolderManager.updateModule(projectDir, qTestProject.getId(), qTestParentModule, false);
 
-                for (QTestModule siblingQTestModule : qTestParentModule.getChildModules()) {
-                    if (!folderEntity.getName().equalsIgnoreCase(siblingQTestModule.getName())) {
-                        continue;
-                    }
-                    // let user choose merge or not
-                    performFolderDuplicatedConfirmation(folderId, siblingQTestModule);
+            for (QTestModule siblingQTestModule : qTestParentModule.getChildModules()) {
+                if (!folderEntity.getName().equalsIgnoreCase(siblingQTestModule.getName())) {
+                    continue;
+                }
+                // let user choose merge or not
+                performFolderDuplicatedConfirmation(folderId, siblingQTestModule);
 
-                    if (isMergeConfirmed) {
-                        qTestModule = siblingQTestModule;
-                        break;
-                    }
+                if (isMergeConfirmed) {
+                    qTestModule = siblingQTestModule;
+                    break;
                 }
             }
 
@@ -153,18 +151,16 @@ public class UploadTestCaseJob extends UploadJob {
 
         QTestTestCase qTestTestCase = null;
 
-        if (QTestSettingStore.isEnableCheckBeforeUploading(projectDir)) {
-            QTestIntegrationFolderManager.updateModule(projectDir, qTestProject.getId(), qTestParentModule, false);
+        QTestIntegrationFolderManager.updateModule(projectDir, qTestProject.getId(), qTestParentModule, false);
 
-            for (QTestTestCase siblingQTestCase : qTestParentModule.getChildTestCases()) {
-                if (!testCaseEntity.getName().equalsIgnoreCase(siblingQTestCase.getName())) continue;
-                // let user choose merge or not
-                performTestCaseDuplicatedConfirmation(testCaseId, siblingQTestCase);
+        for (QTestTestCase siblingQTestCase : qTestParentModule.getChildTestCases()) {
+            if (!testCaseEntity.getName().equalsIgnoreCase(siblingQTestCase.getName())) continue;
+            // let user choose merge or not
+            performTestCaseDuplicatedConfirmation(testCaseId, siblingQTestCase);
 
-                if (isMergeConfirmed) {
-                    qTestTestCase = siblingQTestCase;
-                    break;
-                }
+            if (isMergeConfirmed) {
+                qTestTestCase = siblingQTestCase;
+                break;
             }
         }
 

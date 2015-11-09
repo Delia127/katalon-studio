@@ -21,9 +21,9 @@ public class EntityViewerFilter extends AbstractEntityViewerFilter {
     public EntityViewerFilter(EntityProvider entityProvider) {
         this.entityProvider = entityProvider;
     }
-    
+
     public void setSearchString(String searchString) {
-    	this.searchString = searchString;
+        this.searchString = searchString;
     }
 
     @SuppressWarnings("restriction")
@@ -43,42 +43,44 @@ public class EntityViewerFilter extends AbstractEntityViewerFilter {
             if (returnValue) return true;
             ITreeEntity entity = ((ITreeEntity) element);
             try {
-				if (searchString.startsWith(ExplorerPart.KEYWORD_SEARCH_ALL)
-						|| searchString.startsWith(entity.getKeyWord())) {
-					if (entityProvider.getChildren(element) != null) {
-		                for (Object child : entityProvider.getChildren(element)) {
-		                    if (child != null) {
-		                        returnValue |= select(viewer, element, child);
-		                    }
-		                }
-		            }
-		            return returnValue;
-				}
-			} catch (Exception e) {
-				return false;
-			}
-            
+                if (searchString.startsWith(ExplorerPart.KEYWORD_SEARCH_ALL)
+                        || searchString.startsWith(entity.getKeyWord())) {
+                    if (entityProvider.getChildren(element) != null) {
+                        for (Object child : entityProvider.getChildren(element)) {
+                            if (child != null) {
+                                returnValue |= select(viewer, element, child);
+                            }
+                        }
+                    }
+                    return returnValue;
+                }
+            } catch (Exception e) {
+                return false;
+            }
+
         }
         return false;
     }
 
     /**
      * filter all tree elements by searched string
-     * @param element is a instance of ITreeEntity
+     * 
+     * @param element
+     *            is a instance of ITreeEntity
      * @return
      */
     @SuppressWarnings("restriction")
     private boolean searchElement(Object element) {
         try {
             ITreeEntity entity = ((ITreeEntity) element);
-            //entity keyword
+            // entity keyword
             String keyWord = entity.getKeyWord() + ":";
             String regex = "^" + keyWord + ".*$";
-            
-            //keyword all
+
+            // keyword all
             String keyWordAll = ExplorerPart.KEYWORD_SEARCH_ALL + ":";
             String regexKeyWordAll = "^" + keyWordAll + ".*$";
-            
+
             String contentString = searchString.toLowerCase().trim();
             if (searchString.matches(regex) || searchString.matches(regexKeyWordAll)) {
                 // cut keyword
@@ -87,11 +89,11 @@ public class EntityViewerFilter extends AbstractEntityViewerFilter {
                 } else {
                     contentString = contentString.substring(keyWordAll.length()).trim();
                 }
-                
+
                 if (contentString.isEmpty()) return true;
-                
+
                 if (entity.getText().toLowerCase().contains(contentString)) return true;
-                
+
                 Map<String, String> tagMap = parseSearchedString(entity.getSearchTags(), contentString);
                 if (tagMap != null && !tagMap.isEmpty()) {
                     for (Entry<String, String> entry : tagMap.entrySet()) {
@@ -106,16 +108,16 @@ public class EntityViewerFilter extends AbstractEntityViewerFilter {
                     }
                     return true;
                 }
-                
+
                 if (entity.getSearchTags() != null) {
                     for (String tag : entity.getSearchTags()) {
                         String entityValue = entity.getPropertyValue(tag);
                         if (entityValue != null && entityValue.toLowerCase().contains(contentString)) return true;
                     }
-                }                
+                }
             }
         } catch (Exception e) {
-            LoggerSingleton.getInstance().getLogger().error(e);            
+            LoggerSingleton.getInstance().getLogger().error(e);
         }
         return false;
     }

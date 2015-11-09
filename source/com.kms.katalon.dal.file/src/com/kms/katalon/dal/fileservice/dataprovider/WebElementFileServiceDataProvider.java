@@ -9,8 +9,10 @@ import com.kms.katalon.dal.IWebElementDataProvider;
 import com.kms.katalon.dal.fileservice.manager.FolderFileServiceManager;
 import com.kms.katalon.dal.fileservice.manager.WebElementFileServiceManager;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.SaveWebElementInfoEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
 public class WebElementFileServiceDataProvider implements IWebElementDataProvider {
@@ -106,4 +108,15 @@ public class WebElementFileServiceDataProvider implements IWebElementDataProvide
 	public WebServiceRequestEntity addNewRequest(FolderEntity parentFolder, WebServiceRequestEntity request) throws Exception {
 		return WebElementFileServiceManager.addNewRequest(parentFolder, request);
 	}
+
+    @Override
+    public List<WebElementEntity> getWebElementPropertyByRefELement(String refElement, ProjectEntity project,
+            boolean isExactly) throws Exception {
+        return WebElementFileServiceManager.getWebElementPropertyByRefELement(refElement, project, isExactly);
+    }
+
+    @Override
+    public WebElementPropertyEntity getRefElementProperty(WebElementEntity webElement) {
+        return WebElementFileServiceManager.getRefElementProperty(webElement);
+    }
 }

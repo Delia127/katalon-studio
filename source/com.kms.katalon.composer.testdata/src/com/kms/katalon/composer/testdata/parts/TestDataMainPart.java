@@ -52,6 +52,8 @@ import com.kms.katalon.entity.testdata.DataFileEntity;
 
 public abstract class TestDataMainPart implements EventHandler, IPartListener {
     public static final int MAX_LABEL_WIDTH = 70;
+    protected static final int MAX_COLUMN_COUNT = 100;
+    protected static final int COLUMN_WIDTH = 200;
 
     @Inject
     protected IEventBroker eventBroker;
@@ -336,13 +338,16 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
 
                 if (elementId.equalsIgnoreCase(mpart.getElementId())) {
                     DataFileEntity dataFile = (DataFileEntity) ((Object[]) object)[1];
+                    if (dataFile.equals(originalDataFile)) {
+                        return;
+                    }
+                    
                     this.originalDataFile = dataFile;
 
                     boolean oldDirty = dirtyable.isDirty();
                     updateDataFile(dataFile);
                     dirtyable.setDirty(oldDirty);
                 }
-
             }
         } else if (event.getTopic().equals(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM)) {
             try {
@@ -473,6 +478,7 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
 
     @PreDestroy
     private void destroy() {
+        preDestroy();
         eventBroker.unsubscribe(this);
         Iterator<Thread> threadIterator = currentThreads.iterator();
         while (threadIterator.hasNext()) {
@@ -481,7 +487,10 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
                 currentThread.interrupt();
             }
         }
+        threadIterator = null;
     }
+    
+    protected abstract void preDestroy();
 
     public void partActivated(MPart part) {
 

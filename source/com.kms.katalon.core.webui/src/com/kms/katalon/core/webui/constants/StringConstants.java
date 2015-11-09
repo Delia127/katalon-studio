@@ -56,6 +56,7 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String DRI_MISSING_PROPERTY_X_FOR_APPIUM_REMOTE_WEB_DRIVER = "Missing property ''{0}'' for appium remote web driver";
 	public static final String DRI_PLATFORM_NAME_X_IS_NOT_SUPPORTED_FOR_APPIUM_REMOTE_WEB_DRIVER = "Platform name ''{0}'' is not supported for appium remote web driver";
 	public static final String CONF_PROPERTY_IE_DRIVER_PATH = "ieDriverPath";
+	public static final String CONF_PROPERTY_EDGE_DRIVER_PATH = "edgeDriverPath";
 	public static final String CONF_PROPERTY_CHROME_DRIVER_PATH = "chromeDriverPath";
 	public static final String CONF_PROPERTY_WAIT_FOR_IE_HANGING = "waitForIEHanging";
 	public static final String CONF_PROPERTY_EXECUTED_BROWSER = XML_LOG_BROWSER_TYPE_PROPERTY;

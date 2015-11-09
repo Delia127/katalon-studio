@@ -1,13 +1,19 @@
 package com.kms.katalon.core.reporting;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.io.BaseEncoding;
 import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.MessageLogRecord;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
-import com.kms.katalon.core.logging.model.TestStepLogRecord;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
+import com.kms.katalon.core.logging.model.TestStepLogRecord;
+import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 
 public class JsStepModel extends JsModel {
 
@@ -148,13 +154,52 @@ public class JsStepModel extends JsModel {
 				jsLogRecModel.props.add(new JsModelProperty("startTime", logStartTime + "", null));
 				jsLogRecModel.props.add(new JsModelProperty("status", logStatVal, null));
 				jsLogRecModel.props.add(new JsModelProperty("message", logStatMsg, listStrings));
-				if (stepLogEntity.getAttachment() != null
-						&& !stepLogEntity.getAttachment().isEmpty()) {
-					jsLogRecModel.props.add(new JsModelProperty("link", stepLogEntity.getAttachment(), listStrings));
+				//if (stepLogEntity.getAttachment() != null && !stepLogEntity.getAttachment().isEmpty()) {
+				if (messageLog.getAttachment() != null && !messageLog.getAttachment().isEmpty()) {
+					//Find log folder
+					String logFolder = null;
+					ILogRecord testSuiteLogRecord = messageLog;
+					while(testSuiteLogRecord != null){
+						if(testSuiteLogRecord instanceof TestSuiteLogRecord){
+							logFolder = ((TestSuiteLogRecord)testSuiteLogRecord).getLogFolder();
+							break;
+						}
+						testSuiteLogRecord = testSuiteLogRecord.getParentLogRecord();
+					}
+					if(logFolder != null){
+						try{
+							String md5 = encodeFileContent(logFolder + File.separator + messageLog.getAttachment());
+							jsLogRecModel.props.add(new JsModelProperty("link", "data:image/png;base64," + md5, listStrings));
+						}
+						catch(Exception ex){}
+					}
 				}
 				logRecords.add(jsLogRecModel);
 			}
 		}
 	}
 
+	private String encodeFileContent(String filePath) throws Exception {
+        InputStream is = null;
+        try {
+            is = new FileInputStream(new File(filePath));
+            return BaseEncoding.base64().encode(getBinaryFromInputStream(is));
+        } finally {
+            if (is != null) {
+                is.close();
+            }
+        }
+    }
+	
+	private byte[] getBinaryFromInputStream(InputStream content) throws Exception {
+		ByteArrayOutputStream output = new ByteArrayOutputStream(1024);
+        byte[] buffer = new byte[8096];
+        int length;
+        while ((length = content.read(buffer)) > -1) {
+            output.write(buffer, 0, length);
+        }
+        output.close();
+        return output.toByteArray();
+    }
+	
 }
