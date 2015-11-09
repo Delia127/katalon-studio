@@ -12,12 +12,12 @@
     <elements xsi:type="basic:Part" xmi:id="_1oZzMBb9EeSOVencM6x_7w" elementId="com.kms.katalon.composer.part.explorer" contributionURI="bundleclass://com.kms.katalon.composer.explorer/com.kms.katalon.composer.explorer.parts.ExplorerPart" label="Tests Explorer" iconURI="platform:/plugin/com.kms.katalon.composer.explorer/icons/project_16.png">
       <menus xsi:type="menu:PopupMenu" xmi:id="_xkKI0B3bEeS9B51WlLqF9g" elementId="com.kms.katalon.composer.explorer.popupmenu">
         <children xsi:type="menu:Menu" xmi:id="_OFWksB4ZEeS_4pHoXlVSlg" elementId="com.kms.katalon.composer.explorer.popupmenu.new" label="New"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_-a-DMB3bEeS9B51WlLqF9g" elementId="com.kms.katalon.composer.explorer.popupmenu.delete" label="Delete" command="_PMBCoCEKEeSe6pqNW7uvMw"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_3XD7kB3bEeS9B51WlLqF9g" elementId="com.kms.katalon.composer.explorer.popupmenu.open" label="Open" command="_DfqvoB7uEeSCzrWY6RMEZw"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_DkjBoCH5EeSLeYgXIq1FKQ" elementId="com.kms.katalon.composer.explorer.popupmenu.rename" label="Rename" command="_ZMWQgCH5EeSLeYgXIq1FKQ"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_PlaG8CNjEeSA7eQW_3uciQ" elementId="com.kms.katalon.composer.explorer.popupmenu.copy" label="Copy" command="_X1bcYCNjEeSA7eQW_3uciQ"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_TwiIYImREeSwnaro5Nln-g" elementId="com.kms.katalon.composer.explorer.popupmenu.cut" label="Cut" command="_Phq7QImREeSwnaro5Nln-g"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_2j0ncCPTEeStgKkqz5sGOw" elementId="com.kms.katalon.composer.explorer.popupmenu.paste" label="Paste" command="_8CRNICPTEeStgKkqz5sGOw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_-a-DMB3bEeS9B51WlLqF9g" elementId="com.kms.katalon.composer.explorer.popupmenu.delete" label="Delete" command="_PMBCoCEKEeSe6pqNW7uvMw"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_v2hIgKCDEeS_c-2UCFgVmQ" elementId="com.kms.katalon.composer.explorer.popupmenu.refresh" label="Refresh" command="_zBE1cKCCEeS_c-2UCFgVmQ"/>
       </menus>
     </elements>
