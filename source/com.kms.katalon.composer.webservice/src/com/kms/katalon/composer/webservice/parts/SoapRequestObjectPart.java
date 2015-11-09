@@ -59,7 +59,7 @@ public class SoapRequestObjectPart extends RequestObjectPart {
 
         // WSDL
         Label lblWsdl = new Label(soapDetailsComposite, SWT.LEFT | SWT.WRAP);
-        lblWsdl.setText(StringConstants.PA_LBL_WSDL_ADDR);
+        lblWsdl.setText(StringConstants.PA_LBL_URL);
         lblWsdl.setLayoutData(labelGridData);
 
         txtWSDL = new Text(soapDetailsComposite, SWT.BORDER);

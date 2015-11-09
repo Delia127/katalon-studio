@@ -27,16 +27,15 @@ public class StringConstants extends GlobalStringConstants {
 
 	// RestRequestObjectPart
 	public static final String PA_TITLE_REST = "REST";
-	public static final String PA_LBL_REST_URL = "REST URL";
+	public static final String PA_LBL_URL = "URL";
 	public static final String PA_LBL_REQ_METHOD = "Request Method";
 	public static final String PA_LBL_REST_PARAMS = "REST Parameters";
 
 	// SoapRequestObjectPart
 	public static final String PA_TITLE_SOAP = "SOAP";
-	public static final String PA_LBL_WSDL_ADDR = "WSDL Address";
 	public static final String PA_LBL_SERVICE_FUNCTION = "Service Function";
 	public static final String PA_LBL_PARAMS = "Parameters";
-	public static final String PA_LBL_SOAP_HEADER_OPT = "SOAP Header (Optional)";
+	public static final String PA_LBL_SOAP_HEADER_OPT = "SOAP Header";
 	public static final String PA_LBL_SOAP_BODY = "SOAP Body";
 
 	// NewRequestDialog

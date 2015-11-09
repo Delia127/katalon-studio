@@ -54,7 +54,7 @@ public class RestRequestObjectPart extends RequestObjectPart {
 
         // Service Url
         Label lblRestUrl = new Label(restContainerComposite, SWT.LEFT | SWT.WRAP);
-        lblRestUrl.setText(StringConstants.PA_LBL_REST_URL);
+        lblRestUrl.setText(StringConstants.PA_LBL_URL);
         lblRestUrl.setLayoutData(labelGridData);
 
         txtRestUrl = new Text(restContainerComposite, SWT.BORDER);
