@@ -1,15 +1,11 @@
 package com.kms.katalon.composer.objectrepository.handler;
 
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -36,8 +32,6 @@ public class SpyObjectHandler implements EventHandler {
 
 	@Inject
 	private ESelectionService selectionService;
-
-	private FolderTreeEntity objectRepositoryTreeRoot;
 
 	private ObjectSpyDialog objectSpyDialog;
 	
@@ -124,27 +118,6 @@ public class SpyObjectHandler implements EventHandler {
 	}
 
 	@SuppressWarnings("restriction")
-	@Inject
-	@Optional
-	private void catchObjectTreeEntitiesRoot(
-			@UIEventTopic(EventConstants.EXPLORER_RELOAD_INPUT) List<Object> treeEntities) {
-		try {
-			for (Object o : treeEntities) {
-				Object entityObject = ((ITreeEntity) o).getObject();
-				if (entityObject instanceof FolderEntity) {
-					FolderEntity folder = (FolderEntity) entityObject;
-					if (folder.getFolderType() == FolderType.WEBELEMENT) {
-						objectRepositoryTreeRoot = (FolderTreeEntity) o;
-						return;
-					}
-				}
-			}
-		} catch (Exception e) {
-			LoggerSingleton.getInstance().getLogger().error(e);
-		}
-	}
-
-	@SuppressWarnings("restriction")
 	@Override
 	public void handleEvent(Event event) {
 		if (event.getTopic().equals(EventConstants.OBJECT_SPY_RESET_SELECTED_TARGET)) {
@@ -172,7 +145,7 @@ public class SpyObjectHandler implements EventHandler {
 		Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
 		ITreeEntity parentTreeEntity = getParentTreeEntity(selectedObjects);
 		if (parentTreeEntity == null) {
-			parentTreeEntity = objectRepositoryTreeRoot;
+			return null;
 		}
 		if (parentTreeEntity != null && parentTreeEntity.getObject() instanceof FolderEntity) {
 			FolderEntity parentFolder = (FolderEntity) parentTreeEntity.getObject();

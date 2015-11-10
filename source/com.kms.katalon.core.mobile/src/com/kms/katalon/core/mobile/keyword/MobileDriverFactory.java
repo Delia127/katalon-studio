@@ -8,22 +8,29 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
+import java.net.ServerSocket;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.UnreachableBrowserException;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
+import com.kms.katalon.core.exception.StepFailedException;
+import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.util.MobileDriverPropertyUtil;
 
 public class MobileDriverFactory {
+    private static final String APPIUM_SERVER_URL_SUFFIX = "/wd/hub";
+    private static final String APPIUM_SERVER_URL_PREFIX = "http://127.0.0.1:";
+    private int appiumPort;
 	private Process appiumServer;
 	private Map<String, String> androidDevices;
 	private Map<String, String> iosDevices;
@@ -76,7 +83,6 @@ public class MobileDriverFactory {
 
 	public AppiumDriver<?> getAndroidDriver(String deviceId, String appFile, boolean uninstallAfterCloseApp)
 			throws Exception {
-		cleanup();
 		if (!isServerStarted()) {
 			startAppiumServer();
 		}
@@ -88,7 +94,24 @@ public class MobileDriverFactory {
 		capabilities.setCapability(MobileCapabilityType.APP, appFile);
 		capabilities.setCapability("fullReset", uninstallAfterCloseApp);
 		capabilities.setCapability("noReset", !uninstallAfterCloseApp);
-		return new SwipeableAndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
+		capabilities.setCapability("newCommandTimeout", 1800);
+		int time = 0;
+        long currentMilis = System.currentTimeMillis();
+        AppiumDriver<?> appiumDriver = null;
+        while (time < RunConfiguration.getTimeOut()) {
+            try {
+                appiumDriver = new SwipeableAndroidDriver(new URL(APPIUM_SERVER_URL_PREFIX + appiumPort
+                        + APPIUM_SERVER_URL_SUFFIX), capabilities);
+                return appiumDriver;
+            } catch (UnreachableBrowserException e) {
+                long newMilis = System.currentTimeMillis();
+                time += ((newMilis - currentMilis) / 1000);
+                currentMilis = newMilis;
+                continue;
+            }
+        }
+        throw new StepFailedException("Could not connect to appium server after " + RunConfiguration.getTimeOut()
+                + " seconds");
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -104,48 +127,82 @@ public class MobileDriverFactory {
 		capabilities.setCapability("udid", deviceId);
 		capabilities.setCapability("fullReset", uninstallAfterCloseApp);
 		capabilities.setCapability("noReset", !uninstallAfterCloseApp);
-		capabilities.setCapability("autoAcceptAlerts", false);
+		capabilities.setCapability("newCommandTimeout", 1800);
+		//capabilities.setCapability("autoAcceptAlerts", true);
 		capabilities.setCapability("waitForAppScript", true);
-		return new IOSDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
+		int time = 0;
+        long currentMilis = System.currentTimeMillis();
+        AppiumDriver<?> appiumDriver = null;
+        while (time < RunConfiguration.getTimeOut()) {
+            try {
+                appiumDriver = new IOSDriver(new URL(APPIUM_SERVER_URL_PREFIX + appiumPort + APPIUM_SERVER_URL_SUFFIX),
+                        capabilities);
+                return appiumDriver;
+            } catch (UnreachableBrowserException e) {
+                long newMilis = System.currentTimeMillis();
+                time += ((newMilis - currentMilis) / 1000);
+                currentMilis = newMilis;
+                continue;
+            }
+        }
+        throw new StepFailedException("Could not connect to appium server after " + RunConfiguration.getTimeOut()
+                + " seconds");
 	}
 
 	private boolean isServerStarted() {
-		if (appiumServer == null) {
-			return false;
-		} else {
-			try {
-				appiumServer.exitValue();
-				return false;
-			} catch (Exception e) {
-				// LOGGER.warn(e.getMessage(), e);
-				try {
-					URL url = new URL("http://127.0.0.1:4723/wd/hub/status");
-					HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-					int responseCode = connection.getResponseCode();
-					if (200 == responseCode) {
-						return true;
-					}
-				} catch (Exception e1) {
-					// LOGGER.warn(e1.getMessage(), e1);
-				}
-			}
-		}
-		return false;
-	}
+        if (appiumServer == null) {
+            return false;
+        } else {
+            try {
+                appiumServer.exitValue();
+                return false;
+            } catch (Exception e) {
+                // LOGGER.warn(e.getMessage(), e);
+                try {
+                    String logContent = FileUtils.readFileToString(new File(new File(RunConfiguration.getLogFilePath())
+                            .getParent() + File.separator + "appium.log"));
+                    if (logContent.contains("Console LogLevel: debug")) {
+                        return true;
+                    }
+                } catch (Exception e1) {
+                    // LOGGER.warn(e1.getMessage(), e1);
+                }
+            }
+        }
+        return false;
+    }
+	
+	private static synchronized int getFreePort() {
+        ServerSocket s = null;
+        try {
+            s = new ServerSocket(0);
+            return s.getLocalPort();
+        } catch (IOException e) {
+            // do nothing
+        } finally {
+            try {
+                s.close();
+            } catch (IOException e) {
+                // do nothing
+            }
+        }
+        return -1;
+    }
 
 	private void startAppiumServer() throws Exception {
-		// String node = System.getenv("NODE_HOME") + "/node";
-		// String appium = System.getenv("APPIUM_HOME") + "/appium.js";
-	    String nodeHome = System.getenv("NODE_HOME") != null ? System.getenv("NODE_HOME") + File.separator : "";
-        String node = nodeHome + "node";
-		String appium = System.getenv("APPIUM_HOME") + "/bin" + "/appium.js";
-		String appiumTemp = System.getProperty("user.home") + File.separator + "Appium_Temp";
-		String[] cmd = { node, appium, "--command-timeout", "3600", "--tmp", appiumTemp };
-		ProcessBuilder pb = new ProcessBuilder(cmd);
-		pb.redirectOutput(new File("appium.log"));
-		appiumServer = pb.start();
-		while (!isServerStarted()) {
-		}
+	    String appium = System.getenv("APPIUM_HOME") + "/bin/appium.js";
+        String appiumTemp = System.getProperty("user.home") + File.separator + "Appium_Temp"
+                + System.currentTimeMillis();
+        appiumPort = getFreePort();
+        String[] cmd = { "node", appium, "--command-timeout", "3600", "--tmp", appiumTemp, "-p",
+                String.valueOf(appiumPort), "--chromedriver-port", String.valueOf(getFreePort())};
+        ProcessBuilder pb = new ProcessBuilder(cmd);
+        pb.redirectOutput(new File(new File(RunConfiguration.getLogFilePath()).getParent() + File.separator
+                + "appium.log"));
+        appiumServer = pb.start();
+        while (!isServerStarted()) {
+        }
+        KeywordLogger.getInstance().logInfo("Appium server started on port " + appiumPort);
 	}
 
 	public void quitServer() {

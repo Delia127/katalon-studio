@@ -111,8 +111,6 @@ public class ReportPart implements EventHandler {
 
     private Combo comboTestCaseIntegration;
 
-    private StyledText txtExecutedMachine;
-
     @PostConstruct
     public void init(Composite parent, ReportEntity report) {
         testLogView = new ReportPartTestLogView(this);
@@ -310,10 +308,6 @@ public class ReportPart implements EventHandler {
                 txtOS.setText(testSuiteLogRecord.getOs());
             } else {
                 txtOS.setText(ReportUtil.getOs());
-            }
-
-            if (testSuiteLogRecord.getDeviceName() != null && !testSuiteLogRecord.getDeviceName().isEmpty()) {
-                txtExecutedMachine.setText(testSuiteLogRecord.getDeviceName());
             }
 
             if (testSuiteLogRecord.getBrowser() != null && !testSuiteLogRecord.getBrowser().isEmpty()) {
@@ -574,15 +568,7 @@ public class ReportPart implements EventHandler {
 
         txtOS = new StyledText(compositeSummaryDetails, SWT.READ_ONLY);
         txtOS.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
-        Label lblExecutedMachine = new Label(compositeSummaryDetails, SWT.NONE);
-        lblExecutedMachine.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
-        lblExecutedMachine.setText("Machine Ex");
-        setLabelToBeBold(lblExecutedMachine);
-
-        txtExecutedMachine = new StyledText(compositeSummaryDetails, SWT.READ_ONLY);
-        txtExecutedMachine.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
+        
         Label lblPlatform = new Label(compositeSummaryDetails, SWT.NONE);
         lblPlatform.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
         lblPlatform.setText("Platform");
@@ -590,6 +576,8 @@ public class ReportPart implements EventHandler {
 
         txtPlatform = new StyledText(compositeSummaryDetails, SWT.READ_ONLY);
         txtPlatform.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        new Label(compositeSummaryDetails, SWT.NONE);
+        new Label(compositeSummaryDetails, SWT.NONE);
 
         Label lblStart = new Label(compositeSummaryDetails, SWT.NONE);
         lblStart.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
@@ -681,12 +669,11 @@ public class ReportPart implements EventHandler {
         TableColumnLayout tableColumnLayout = new TableColumnLayout();
         compositeRunData.setLayout(tableColumnLayout);
 
-        runDataTable = new TableViewer(compositeRunData, SWT.BORDER);
+        runDataTable = new TableViewer(compositeRunData, SWT.MULTI | SWT.FULL_SELECTION);
         runDataTable.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         runDataTable.getTable().setLinesVisible(true);
         runDataTable.getTable().setHeaderVisible(true);
         runDataTable.setContentProvider(new ArrayContentProvider());
-        runDataTable.setLabelProvider(new ColumnLabelProvider());
 
         TableViewerColumn tableColumnRunDataKey = new TableViewerColumn(runDataTable, SWT.NONE);
         tableColumnRunDataKey.getColumn().setText(StringConstants.COLUMN_LBL_RUN_DATA_KEY);

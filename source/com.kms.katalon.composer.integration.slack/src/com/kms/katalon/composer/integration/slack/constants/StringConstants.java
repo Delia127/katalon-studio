@@ -27,8 +27,8 @@ public class StringConstants {
 	public static final String PREF_SEND_UPDATE_TEST_DATA = "Update Data File (Test Data)";
 	public static final String PREF_SEND_UPDATE_TEST_OBJECT = "Update Test Object (in Object Repository)";
 	public static final String PREF_SEND_RENAME_ITEM = "Rename any folder, package, or file";
-	public static final String PREF_SEND_PASTE_FROM_COPY = "Paste any folder, package, or file from COPY";
-	public static final String PREF_SEND_PASTE_FROM_CUT = "Paste any folder, package, or file from CUT";
+	public static final String PREF_SEND_PASTE_FROM_COPY = "Paste any folder or file from COPY";
+	public static final String PREF_SEND_PASTE_FROM_CUT = "Paste any folder or file from CUT";
 	public static final String PREF_SEND_DELETE_ITEM = "Delete any folder, package, or file";
 	public static final String PREF_SEND_CREATE_TEST_CASE = "Create Test Case";
 	public static final String PREF_SEND_CREATE_TEST_SUITE = "Create Test Suite";
