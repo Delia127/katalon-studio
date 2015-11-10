@@ -518,6 +518,14 @@ public class ExplorerPart {
             eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, treeRootEntity);
         }
     }
+    
+    @Inject
+    @Optional
+    private void collapseAllItems(@UIEventTopic(EventConstants.EXPLORER_COLLAPSE_ALL_ITEMS) Object object) {
+       if (getTreeViewer() != null) {
+           getTreeViewer().collapseAll();
+       }
+    }
 
     private void hookDoubleClickEvent() {
         getViewer().addDoubleClickListener(new IDoubleClickListener() {

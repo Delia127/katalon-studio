@@ -33,6 +33,10 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_6fOqMHCMEeSG_-6adg2jcw" featurename="children" parentElementId="com.kms.katalon.partstack.console">
     <elements xsi:type="basic:Part" xmi:id="_BxJYoHCNEeSG_-6adg2jcw" elementId="com.kms.katalon.partstack.console.log" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.part.LogViewerPart" label="Log Viewer" iconURI="platform:/plugin/com.kms.katalon.composer.execution/icons/log_16.png">
+      <menus xmi:id="_X9J4sIabEeWaecTtagm34w" elementId="com.kms.katalon.composer.execution.menu.treeview" label="">
+        <tags>ViewMenu</tags>
+        <children xsi:type="menu:DirectMenuItem" xmi:id="_xOUuEIazEeWaecTtagm34w" elementId="com.kms.katalon.composer.execution.handledmenuitem.wordWrap" label="Word Wrap" type="Check" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.handlers.WrapMessageLogHandler"/>
+      </menus>
       <toolbar xmi:id="_C1lCYIaMEeS32ZF8sInjdQ" elementId="com.kms.katalon.composer.execution.log.toolbar">
         <children xsi:type="menu:DirectToolItem" xmi:id="_FZmZ0P-XEeSaTs31EuBZQQ" elementId="com.kms.katalon.composer.execution.directtoolitem.tree" label="" iconURI="platform:/plugin/com.kms.katalon.composer.execution/icons/tree_16.png" tooltip="Tree View" type="Check" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.handlers.ChangeLogStructureHandler"/>
         <children xsi:type="menu:DirectToolItem" xmi:id="__-bmYApyEeWMYutPg3HXPw" elementId="com.kms.katalon.composer.execution.directtoolitem.pin" label="" iconURI="platform:/plugin/com.kms.katalon.composer.execution/icons/lock_16.png" tooltip="Scroll Lock" type="Check" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.handlers.PinLogViewHander"/>

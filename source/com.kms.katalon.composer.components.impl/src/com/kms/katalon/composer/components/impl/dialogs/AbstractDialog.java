@@ -62,9 +62,12 @@ public abstract class AbstractDialog extends Dialog {
      */
     protected abstract Control createDialogContainer(Composite parent);
 
+    /**
+     * Creates shell without focusing to another shell ({@link SWT.PRIMARY_MODAL}), can resize, can close and has title. 
+     */
     @Override
     protected void setShellStyle(int arg) {
-        super.setShellStyle(SWT.CLOSE | SWT.TITLE | SWT.RESIZE);
+        super.setShellStyle(arg | SWT.PRIMARY_MODAL | SWT.CLOSE | SWT.TITLE | SWT.RESIZE);
     }
     
     @Override

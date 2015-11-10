@@ -92,7 +92,7 @@ public class TestSuiteRepoPreferencePage extends AbstractQTestIntegrationPage {
 
         TableViewerColumn tableViewerColumnKatalonFolder = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnKatalonFolder = tableViewerColumnKatalonFolder.getColumn();
-        tblclmnKatalonFolder.setText(StringConstants.DIA_TITLE_KATALON_FOLDER);
+        tblclmnKatalonFolder.setText(StringConstants.DIA_TITLE_TEST_SUITE_FOLDER);
 
         tableViewer.setLabelProvider(new TestSuiteRepoTableLabelProvider());
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
