@@ -15,18 +15,22 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.window.DefaultToolTip;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
@@ -262,7 +266,7 @@ public abstract class RequestObjectPart implements EventHandler {
         lblHttpHeader.setText(StringConstants.PA_LBL_HTTP_HEADER);
         lblHttpHeader.setLayoutData(labelGridData);
 
-        tblHttpHeader = createParamsTable(httpContainerComposite);
+        tblHttpHeader = createParamsTable(httpContainerComposite, true);
         tblHttpHeader.setInput(listHttpHeaderProps);
 
         // HTTP Body
@@ -279,7 +283,7 @@ public abstract class RequestObjectPart implements EventHandler {
 
     protected abstract void createServiceInfoComposite(Composite mainComposite);
 
-    protected ParameterTable createParamsTable(Composite containerComposite) {
+    protected ParameterTable createParamsTable(Composite containerComposite, boolean isHttpHeader) {
         Composite compositeTableDetails = new Composite(containerComposite, SWT.NONE);
         GridLayout glCompositeTableDetails = new GridLayout(1, false);
         glCompositeTableDetails.marginWidth = 0;
@@ -289,7 +293,7 @@ public abstract class RequestObjectPart implements EventHandler {
         gdData.heightHint = 100;
         compositeTableDetails.setLayoutData(gdData);
 
-        ParameterTable tblProperties = new ParameterTable(compositeTableDetails, SWT.BORDER | SWT.FULL_SELECTION,
+        final ParameterTable tblProperties = new ParameterTable(compositeTableDetails, SWT.BORDER | SWT.FULL_SELECTION,
                 dirtyable);
         tblProperties.createTableEditor();
 
@@ -301,11 +305,26 @@ public abstract class RequestObjectPart implements EventHandler {
         gridDataTable.heightHint = 150;
         table.setLayoutData(gridDataTable);
 
+        // Double click to add new property
+        table.addListener(SWT.MouseDoubleClick, new Listener() {
+            @Override
+            public void handleEvent(org.eclipse.swt.widgets.Event event) {
+                WebElementPropertyEntity newProp = new WebElementPropertyEntity(StringConstants.EMPTY,
+                        StringConstants.EMPTY);
+
+                // Add new row
+                tblProperties.addRow(newProp);
+
+                // Focus on the new row
+                tblProperties.editElement(newProp, 0);
+            }
+        });
+
         TableViewerColumn treeViewerColumnName = new TableViewerColumn(tblProperties, SWT.NONE);
         TableColumn trclmnColumnName = treeViewerColumnName.getColumn();
         trclmnColumnName.setText(ParameterTable.columnNames[0]);
         trclmnColumnName.setWidth(200);
-        treeViewerColumnName.setEditingSupport(new PropertyNameEditingSupport(tblProperties, dirtyable));
+        treeViewerColumnName.setEditingSupport(new PropertyNameEditingSupport(tblProperties, dirtyable, isHttpHeader));
         treeViewerColumnName.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -326,6 +345,12 @@ public abstract class RequestObjectPart implements EventHandler {
         });
 
         tblProperties.setContentProvider(ArrayContentProvider.getInstance());
+
+        // Set tooltip for table
+        DefaultToolTip toolTip = new DefaultToolTip(tblProperties.getControl(), ToolTip.RECREATE, false);
+        toolTip.setText(StringConstants.PA_TOOLTIP_DOUBLE_CLICK_FOR_QUICK_INSERT);
+        toolTip.setPopupDelay(0);
+        toolTip.setShift(new Point(15, 0));
 
         return tblProperties;
     }
@@ -396,4 +421,5 @@ public abstract class RequestObjectPart implements EventHandler {
                     .openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, e1.getMessage());
         }
     }
+
 }
