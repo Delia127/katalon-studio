@@ -85,7 +85,7 @@ public class DriverFactory {
             KeywordLogger.getInstance().logInfo(
                     MessageFormat.format(StringConstants.XML_LOG_STARTING_DRIVER_X, driver.toString()));
             DesiredCapabilities desireCapibilities = WebDriverPropertyUtil.toDesireCapabilities(
-                    RunConfiguration.getExecutionDriverProperty(), driver);
+                    RunConfiguration.getExecutionProperties(), driver);
             WebDriver webDriver = null;
             switch (driver) {
             case FIREFOX_DRIVER:
@@ -122,12 +122,12 @@ public class DriverFactory {
                         if (APPIUM_CAPABILITY_PLATFORM_NAME_ADROID.equalsIgnoreCase((String) platformName)) {
                             webDriver = new SwipeableAndroidDriver(new URL(remoteWebServerUrl),
                                     WebDriverPropertyUtil.toDesireCapabilities(
-                                            RunConfiguration.getExecutionDriverProperty(),
+                                            RunConfiguration.getExecutionProperties(),
                                             DesiredCapabilities.android(), false));
                         } else if (APPIUM_CAPABILITY_PLATFORM_NAME_IOS.equalsIgnoreCase((String) platformName)) {
                             webDriver = new IOSDriver(new URL(remoteWebServerUrl),
                                     WebDriverPropertyUtil.toDesireCapabilities(
-                                            RunConfiguration.getExecutionDriverProperty(),
+                                            RunConfiguration.getExecutionProperties(),
                                             DesiredCapabilities.iphone(), false));
                         } else {
                             throw new StepFailedException(MessageFormat.format(
@@ -151,7 +151,7 @@ public class DriverFactory {
                     edgeService.start();
                 }
                 webDriver = new EdgeDriver(edgeService, WebDriverPropertyUtil.toDesireCapabilities(
-                        RunConfiguration.getExecutionDriverProperty(), DesiredCapabilities.edge(), false));
+                        RunConfiguration.getExecutionProperties(), DesiredCapabilities.edge(), false));
                 break;
             default:
                 throw new StepFailedException(MessageFormat.format(StringConstants.DRI_ERROR_DRIVER_X_NOT_IMPLEMENTED,
