@@ -118,7 +118,9 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_TITLE_TEST_CASE_FOLDER_BROWSER = "Test Case Folder Browser";
     public static final String DIA_TITLE_TEST_SUITE_FOLDER_BROWSER = "Test Suite Folder Browser";
     public static final String DIA_TITLE_CREATE_TEST_CASE_REPO = "Create Test Case Repository";
+    public static final String DIA_TITLE_EDIT_TEST_CASE_REPO = "Edit Test Case Repository";
     public static final String DIA_TITLE_CREATE_TEST_SUITE_REPO = "Create Test Suite Repository";
+    public static final String DIA_TITLE_EDIT_TEST_SUITE_REPO = "Edit Test Case Repository";
     public static final String DIA_MSG_UNABLE_TO_UPDATE_PROJECT = "Unable to update qTest projects.";
     public static final String DIA_MSG_UNABLE_TO_UPDATE_MODULE = "Unable to update qTest modules.";
     public static final String DIA_MSG_UNABLE_TO_FIND_TEST_CASE_FOLDER = "Unable to find test case folder.";
@@ -156,11 +158,14 @@ public class StringConstants extends GlobalStringConstants {
 
     // TestCaseRepoPreferencePage
     public static final String DIA_MSG_UNABLE_GET_PROJECT_INFO = "Unable to get qTest projects's information.";
-    public static final String DIA_TITLE_TEST_CASE_FOLDER = "Test Case's Folder";
+    public static final String DIA_TITLE_TEST_CASE_FOLDER = "Katalon Test Case's Folder";
     public static final String DIA_MSG_UNABLE_MOFIDY_TEST_CASE_REPO = "Unable to modify Test Case Repository.";
     public static final String DIA_MSG_UNABLE_REMOVE_TEST_CASE_REPO = "Unable to remove Test Case Repository.";
     public static final String DIA_CONFIRM_DISINTEGRATE_TEST_CASE_FOLDER = "Are you sure you want to disintegrate all "
             + "test cases in this folder with qTest?";
+    
+    // TestSuiteRepoPreferencePage
+    public static final String DIA_TITLE_TEST_SUITE_FOLDER = "Katalon Test Suite's Folder";
 
     // QTestIntegrationReportTestCaseView
     public static final String VIEW_TITLE_TEST_LOG_ID = "Test Log ID";
