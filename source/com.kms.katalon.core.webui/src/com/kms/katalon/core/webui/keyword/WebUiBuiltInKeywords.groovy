@@ -2652,4 +2652,36 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 		} , flowControl, true, StringConstants.KW_LOG_WARNING_CANNOT_TAKE_SCREENSHOT)
 		
 	}
+    
+    /**
+     * Upload file to an input html element with type = "file"
+     * @param to 
+     *          : test object.
+     * @param fileAbsolutePath
+     *          : absolute path of the file on local machine
+     * @param flowControl
+     *          : flow control
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_KEYBOARD)
+    public static void uploadFile(TestObject to, String fileAbsolutePath, FailureHandling flowControl) throws StepFailedException {
+        WebUIKeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = false;
+            try {
+                WebUiCommonHelper.checkTestObjectParameter(to)
+                isSwitchIntoFrame = switchToFrame(to);
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_UPLOADING_FILE_X_TO_OBJ_Y, fileAbsolutePath, to.getObjectId()));
+                WebElement webElement = findWebElement(to);
+                webElement.sendKeys(fileAbsolutePath);
+                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_FILE_X_SENT_TO_OBJ_Y, fileAbsolutePath, to.getObjectId()));
+            } finally {
+                if (isSwitchIntoFrame) {
+                    switchToDefaultContent();
+                }
+            }
+        }
+        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_UPLOAD_FILE_X_TO_OBJ_Y, fileAbsolutePath, to.getObjectId())
+        : MessageFormat.format(StringConstants.KW_MSG_CANNOT_UPLOAD_FILE_X, fileAbsolutePath))
+    }
 }
