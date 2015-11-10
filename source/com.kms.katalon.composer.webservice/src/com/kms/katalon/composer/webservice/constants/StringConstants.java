@@ -24,6 +24,7 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String PA_LBL_HTTP_HEADER = "HTTP Header";
 	public static final String PA_LBL_HTTP_BODY = "HTTP Body";
 	public static final String VIEW_ERROR_MSG_FAILED_TO_LOAD_OBJ_REPOSITORY = "Failed to load Object Repository";
+	public static final String PA_TOOLTIP_DOUBLE_CLICK_FOR_QUICK_INSERT = "Double-click for quick insert";
 
 	// RestRequestObjectPart
 	public static final String PA_TITLE_REST = "REST";
