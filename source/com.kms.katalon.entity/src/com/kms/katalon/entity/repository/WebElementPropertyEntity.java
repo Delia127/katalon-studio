@@ -5,132 +5,147 @@ import java.io.Serializable;
 import org.apache.commons.lang.SerializationUtils;
 
 public class WebElementPropertyEntity implements Serializable {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public static final String defaultMatchCondition = "equals";
-	public static final String TYPE_MAIN = "Main";
-	public static final String TYPE_RELATION = "Relation";
-	public static final String TYPE_ADDITION = "Additional";
+    public static final String defaultMatchCondition = "equals";
 
-	private String name;
+    public static final String TYPE_MAIN = "Main";
 
-	private String type = TYPE_MAIN; // Default property type
+    public static final String TYPE_RELATION = "Relation";
 
-	private String value;
+    public static final String TYPE_ADDITION = "Additional";
 
-	private String matchCondition = defaultMatchCondition;
+    private String name;
 
-	private boolean isSelected;
+    private String type = TYPE_MAIN; // Default property type
 
-	public String getName() {
-		return name;
-	}
+    private String value;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    private String matchCondition = defaultMatchCondition;
 
-	public String getType() {
-		return this.type;
-	}
+    private boolean isSelected;
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public WebElementPropertyEntity() {
+    }
 
-	public String getValue() {
-		return this.value;
-	}
+    public WebElementPropertyEntity(String name, String value) {
+        this.name = name;
+        this.value = value;
+        this.isSelected = true;
+    }
 
-	public void setValue(String value) {
-		this.value = value;
-	}
+    public WebElementPropertyEntity(String name, String type, String value, String matchCondition, boolean isSelected) {
+        this.name = name;
+        this.type = type;
+        this.value = value;
+        this.matchCondition = matchCondition;
+        this.isSelected = isSelected;
+    }
 
-	public String getMatchCondition() {
-		return this.matchCondition;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setMatchCondition(String matchCondition) {
-		if (matchCondition.equals("is exactly")) {
-			this.matchCondition = MATCH_CONDITION.EQUAL.getText();
-		} else {
-			this.matchCondition = matchCondition;
-		}
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public Boolean getIsSelected() {
-		return this.isSelected;
-	}
+    public String getType() {
+        return this.type;
+    }
 
-	public void setIsSelected(Boolean isSelected) {
-		this.isSelected = isSelected;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public WebElementPropertyEntity clone() {
-		return (WebElementPropertyEntity) SerializationUtils.clone(this);
-	}
+    public String getValue() {
+        return this.value;
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		return result;
-	}
+    public void setValue(String value) {
+        this.value = value;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		WebElementPropertyEntity other = (WebElementPropertyEntity) obj;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		return true;
-	}
+    public String getMatchCondition() {
+        return this.matchCondition;
+    }
 
-	public enum MATCH_CONDITION {
-		EQUAL("equals"), NOT_EQUAL("not equal"), CONTAINS("contains"), NOT_CONTAIN("not contain"), STARTS_WITH(
-				"starts with"), ENDS_WITH("ends with"), MATCH_REGEX("matches regex"), NOT_MATCH_REGEX("not match regex");
+    public void setMatchCondition(String matchCondition) {
+        if (matchCondition.equals("is exactly")) {
+            this.matchCondition = MATCH_CONDITION.EQUAL.getText();
+        } else {
+            this.matchCondition = matchCondition;
+        }
+    }
 
-		private String text;
+    public Boolean getIsSelected() {
+        return this.isSelected;
+    }
 
-		private MATCH_CONDITION(String value) {
-			this.text = value;
-		}
+    public void setIsSelected(Boolean isSelected) {
+        this.isSelected = isSelected;
+    }
 
-		public String getText() {
-			return text;
-		}
+    public WebElementPropertyEntity clone() {
+        return (WebElementPropertyEntity) SerializationUtils.clone(this);
+    }
 
-		@Override
-		public String toString() {
-			return this.text;
-		}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        return result;
+    }
 
-		public static String[] getTextVlues() {
-			String[] values = new String[MATCH_CONDITION.values().length];
-			for (int i = 0; i < MATCH_CONDITION.values().length; i++) {
-				MATCH_CONDITION con = MATCH_CONDITION.values()[i];
-				values[i] = con.getText();
-			}
-			return values;
-		}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        WebElementPropertyEntity other = (WebElementPropertyEntity) obj;
+        if (name == null) {
+            if (other.name != null) return false;
+        } else if (!name.equals(other.name)) return false;
+        return true;
+    }
 
-		public static int indexOf(String text) {
-			for (int i = 0; i < MATCH_CONDITION.values().length; i++) {
-				MATCH_CONDITION con = MATCH_CONDITION.values()[i];
-				if (con.getText().equals(text)) {
-					return i;
-				}
-			}
-			return -1;
-		}
-	}
+    public enum MATCH_CONDITION {
+        EQUAL("equals"), NOT_EQUAL("not equal"), CONTAINS("contains"), NOT_CONTAIN("not contain"), STARTS_WITH(
+                "starts with"), ENDS_WITH("ends with"), MATCH_REGEX("matches regex"), NOT_MATCH_REGEX("not match regex");
+
+        private String text;
+
+        private MATCH_CONDITION(String value) {
+            this.text = value;
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        @Override
+        public String toString() {
+            return this.text;
+        }
+
+        public static String[] getTextVlues() {
+            String[] values = new String[MATCH_CONDITION.values().length];
+            for (int i = 0; i < MATCH_CONDITION.values().length; i++) {
+                MATCH_CONDITION con = MATCH_CONDITION.values()[i];
+                values[i] = con.getText();
+            }
+            return values;
+        }
+
+        public static int indexOf(String text) {
+            for (int i = 0; i < MATCH_CONDITION.values().length; i++) {
+                MATCH_CONDITION con = MATCH_CONDITION.values()[i];
+                if (con.getText().equals(text)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+    }
 }

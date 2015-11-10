@@ -72,6 +72,7 @@ public class GlobalStringConstants {
     public static final String UP = "Move Up";
     public static final String DOWN = "Move Down";
     public static final String UPDATE = "Update";
+    public static final String EMPTY = "";
 
     // Dialog Title
     public static final String CONFIRMATION = "Confirmation";

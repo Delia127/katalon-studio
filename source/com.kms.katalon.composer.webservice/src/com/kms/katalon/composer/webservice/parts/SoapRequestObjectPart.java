@@ -91,7 +91,7 @@ public class SoapRequestObjectPart extends RequestObjectPart {
         lblFunctionParams.setText(StringConstants.PA_LBL_PARAMS);
         lblFunctionParams.setLayoutData(labelGridData);
 
-        tblSoapParams = createParamsTable(soapDetailsComposite);
+        tblSoapParams = createParamsTable(soapDetailsComposite, false);
         tblSoapParams.setInput(listSoapParams);
 
         // SOAP Header
