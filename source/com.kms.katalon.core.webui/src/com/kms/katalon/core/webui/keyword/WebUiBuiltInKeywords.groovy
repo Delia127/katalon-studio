@@ -1225,6 +1225,56 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 			}
 		} , flowControl, true, StringConstants.KW_MSG_CANNOT_WAIT_FOR_ALERT)
 	}
+    
+    /**
+     * Verify if alert presents
+     *
+     * @param timeout
+     *            timeout waiting for alert to present
+     * @param flowControl
+     * @return true if alert is present and false if alert is not present
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ALERT)
+    public static boolean verifyAlertPresent(int timeOut, FailureHandling flowControl) throws StepFailedException {
+        WebUIKeywordMain.runKeyword({
+            timeOut = WebUiCommonHelper.checkTimeout(timeOut);
+            boolean isAlertPresent = DriverFactory.waitForAlert(timeOut);
+            if (isAlertPresent) {
+                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ALERT_IS_PRESENT_AFTER_X_SEC, timeOut));
+                return true;
+            } else {
+                WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_NO_ALERT_FOUND_AFTER_X_SEC, timeOut), flowControl, null, true);
+                return false;
+            }
+        } , flowControl, true, StringConstants.KW_MSG_CANNOT_VERIFY_ALERT_PRESENT)
+    }
+    
+    /**
+     * Verify if alert does not present
+     *
+     * @param timeout
+     *            timeout waiting for alert to not present
+     * @param flowControl
+     * @return true if alert is not present and false if alert is present
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ALERT)
+    public static boolean verifyAlertNotPresent(int timeOut, FailureHandling flowControl) throws StepFailedException {
+        WebUIKeywordMain.runKeyword({
+            timeOut = WebUiCommonHelper.checkTimeout(timeOut);
+            boolean isAlertPresent = DriverFactory.waitForAlert(timeOut);
+            if (isAlertPresent) {
+                WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ALERT_IS_PRESENT_AFTER_X_SEC, timeOut), flowControl, null, true);
+                return false;
+            } else {
+                logger.logPassed(MessageFormat.format(StringConstants.KW_MSG_NO_ALERT_FOUND_AFTER_X_SEC, timeOut));
+                return true;
+            }
+        } , flowControl, true, StringConstants.KW_MSG_CANNOT_VERIFY_ALERT_NOT_PRESENT)
+    }
 
 	/**
 	 * Verify if the given text exist anywhere in page source.
@@ -2530,6 +2580,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 				WebDriver webDriver = DriverFactory.getWebDriver();
 
 				float timeCount = 0;
+                long miliseconds = System.currentTimeMillis();
 				while (timeCount < timeOut) {
 					try {
 						List<WebElement> webElements = webDriver.findElements(locator);
@@ -2541,8 +2592,13 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 					} catch (NoSuchElementException e) {
 						// not found element yet, moving on
 					}
-					Thread.sleep(500);
-					timeCount += 0.5;
+                    
+                    timeCount += ((System.currentTimeMillis() - miliseconds) / 1000);
+                    
+                    Thread.sleep(500);
+                    timeCount += 0.5;
+                    
+                    miliseconds = System.currentTimeMillis();
 				}
 			} else {
 				throw new IllegalArgumentException(MessageFormat.format(StringConstants.KW_EXC_WEB_ELEMENT_W_ID_DOES_NOT_HAVE_SATISFY_PROP, to.getObjectId()));

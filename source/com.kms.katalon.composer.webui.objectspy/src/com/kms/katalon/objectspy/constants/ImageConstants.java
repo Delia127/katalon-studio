@@ -14,6 +14,7 @@ public class ImageConstants {
 	public static final Image IMG_24_NEW_FRAME_ELEMENT = ImageUtil.loadImage(currentBundle, "/icons/new_frame_element_24.png");
 	public static final Image IMG_24_NEW_ELEMENT = ImageUtil.loadImage(currentBundle, "/icons/new_element_24.png");
 	public static final Image IMG_16_DELETE = ImageUtil.loadImage(currentBundle, "/icons/delete_16.png");
+	public static final Image IMG_24_ADD_TO_OBJECT_REPOSITORY = ImageUtil.loadImage(currentBundle, "/icons/add_to_object_repository_24.png");
 	
 	// HTMLElementLabelProvider
 	public static final Image IMG_16_PAGE_OBJECT = ImageUtil.loadImage(currentBundle, "/icons/page_element_16.png");
