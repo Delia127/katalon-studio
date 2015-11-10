@@ -3,41 +3,29 @@ package com.kms.katalon.composer.testcase.dialogs;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.VariableBuilderDialog;
+import com.kms.katalon.composer.components.impl.model.VariableDialogModel;
 import com.kms.katalon.entity.variable.VariableEntity;
 
 public class TestCaseVariableBuilderDialog extends VariableBuilderDialog {
     private VariableEntity param;
 
     public TestCaseVariableBuilderDialog(Shell parentShell) {
-        super(parentShell, DialogType.NEW);
+        super(parentShell, DialogType.NEW, null);
     }
 
     public TestCaseVariableBuilderDialog(Shell parentShell, VariableEntity param) {
-        super(parentShell, DialogType.EDIT);
+        super(parentShell, DialogType.EDIT, new VariableDialogModel(param.getName(), param.getDefaultValue()));
         this.param = param;
     }
 
     @Override
     protected void okPressed() {
+        super.okPressed();
         if (param == null) {
             param = new VariableEntity();
         }
-        param.setName(textVariableName.getText());
-        param.setDefaultValue(textDefaultValue.getText());
-        super.okPressed();
-    }
-
-    @Override
-    public void create() {
-        super.create();
-        setInput();
-    }
-
-    private void setInput() {
-        if (param != null) {
-            textVariableName.setText(param.getName());
-            textDefaultValue.setText(param.getDefaultValue());
-        }
+        param.setName(getVariable().getName());
+        param.setDefaultValue(getVariable().getValue());
     }
 
     public VariableEntity getParam() {

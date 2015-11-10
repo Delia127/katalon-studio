@@ -30,6 +30,7 @@ public interface PreferenceConstants {
         public static final String EXECUTION_SHOW_ERROR_LOGS = "log.showErrors";        
         public static final String EXECUTION_SHOW_LOGS_AS_TREE = "log.treeView";
         public static final String EXECUTION_PIN_LOG = "log.pinView";
+        public static final String EXECUTION_ENABLE_WORD_WRAP = "log.wordWrap";
         
         // Mail configuration preferences
         public static final String MAIL_CONFIG_HOST = "mailConfig.host";

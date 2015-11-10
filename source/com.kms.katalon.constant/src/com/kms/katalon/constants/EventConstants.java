@@ -36,6 +36,8 @@ public class EventConstants {
     public static final String EXPLORER_HIGHLIGH_FILTER_ITEM = "EXPLORER/HIGHLIGH_FILTER_ITEM";
     public static final String EXPLORER_REFRESH_SELECTED_ITEM = "EXPLORER/REFRESH_SELECTED_ITEM";
     public static final String EXPLORER_REFRESH_ALL_ITEMS = "EXPLORER/REFRESH_ALL_ITEMS";
+    public static final String EXPLORER_COLLAPSE_ALL_ITEMS = "EXPLORER/COLLAPSE_ALL_ITEMS";
+    public static final String EXPLORER_LINK_ITEM_WITH_SELECTED_PART = "EXPLORER/LINK_ITEM_WITH_SELECTED_PART";
 
     
     public static final String EXPLORER_DELETE_TEST_CASE_FOLDER = "EXPLORER/DELETE_TEST_CASE_FOLDER";
@@ -87,6 +89,7 @@ public class EventConstants {
     public static final String CONSOLE_LOG_REFRESH = "CONSOLE_LOG/REFRESH";
     public static final String CONSOLE_LOG_UPDATE_PROGRESS_BAR = "CONSOLE_LOG/UPDATE_PROGRESS_BAR";
     public static final String CONSOLE_LOG_CHANGE_VIEW_TYPE = "CONSOLE_LOG/CHANGE_VIEW_TYPE";
+    public static final String CONSOLE_LOG_WORD_WRAP = "CONSOLE_LOG/WORD_WRAP";
 
     // Job Events
     public static final String JOB_REFRESH = "JOB/REFRESH";
