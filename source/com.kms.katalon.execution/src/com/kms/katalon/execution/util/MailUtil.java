@@ -65,7 +65,7 @@ public class MailUtil {
         return arrayValues;
     }
 
-    public static void sendSummaryMail(EmailConfig conf, File csvFile, List<Object[]> suitesSummaryForEmail)
+    public static void sendSummaryMail(EmailConfig conf, File csvFile, File logFile, List<Object[]> suitesSummaryForEmail)
             throws Exception {
 
         HtmlEmail email = new HtmlEmail();
@@ -86,22 +86,41 @@ public class MailUtil {
             break;
 
         }
-
+        //HTML content
         StringBuilder sbHtml = new StringBuilder();
         sbHtml.append("<html>");
         sbHtml.append("<head><title>Katalon Summary Report</title></head>");
         sbHtml.append("<body>");
         sbHtml.append("<div>Dear Sir, Madam !</div><br/>");
-        sbHtml.append("<div>Here is the summary of test run. For more details, please see attached file</div>");
+        sbHtml.append("<div>Here is the summary of test run:</div>");
         sbHtml.append("<br/>");
-        // Footer
+        for (Object[] arrSum : suitesSummaryForEmail) {
+            String suiteName = (String) arrSum[0];
+            Integer passed = (Integer) arrSum[1];
+            Integer failed = (Integer) arrSum[2];
+            Integer error = (Integer) arrSum[3];
+            Integer notRun = (Integer) arrSum[4];
+            String hostName = String.valueOf(arrSum[5]);
+            String os = String.valueOf(arrSum[6]);
+            String browser = String.valueOf(arrSum[7]);
+            // Suite 1: 7 failed 13 passed
+            sbHtml.append("Suite " + suiteName);
+            sbHtml.append(" : ");
+            sbHtml.append(passed > 0 ? passed + " passed " : "");
+            sbHtml.append(failed > 0 ? failed + " failed " : "");
+            sbHtml.append(error > 0 ? error + " error " : "");
+            sbHtml.append(notRun > 0 ? notRun + " Not Run " : "");
+            sbHtml.append(". On host " + hostName + ", OS " + os + ", browser " + browser);
+            sbHtml.append("<br/>");
+        }        
         sbHtml.append("<br/>");
+        sbHtml.append("<div>For more details, please see attached file</div><br/>");
         sbHtml.append("<div>This email is automatically sent. Please do not reply<div><br/>");
         sbHtml.append("<div>Thanks,<div>");
         sbHtml.append("<div>" + conf.signature + "<div>");
         sbHtml.append("</body>");
         sbHtml.append("</html>");
-        email.setHtmlMsg(sbHtml.toString());
+        email.setHtmlMsg(sbHtml.toString());        
         // set the alternative message
         StringBuilder sbText = new StringBuilder();
         sbText.append("Dear Sir, Madam !\n\n");
@@ -132,8 +151,11 @@ public class MailUtil {
         sbText.append(conf.signature);
         email.setTextMsg(sbText.toString());
         // Attachment
-        if (conf.sendAttachment) {
+        if (conf.sendAttachment && csvFile != null && csvFile.exists()) {
             attachSummary(email, csvFile);
+        }
+        if (conf.sendAttachment && logFile != null && logFile.exists()) {
+            attach(email, logFile);
         }
         email.send();
     }
@@ -167,7 +189,7 @@ public class MailUtil {
         }
         tmpReportDir.mkdir();
         for (File f : file.getParentFile().listFiles()) {
-            if (f.getName().endsWith(".html") || f.getName().endsWith(".png") || f.getName().endsWith(".csv")) {
+            if (f.getName().endsWith(".html") || f.getName().endsWith(".csv")) {
                 FileUtils.copyFileToDirectory(f, tmpReportDir);
             }
         }

@@ -59,7 +59,7 @@ public class JsStepModel extends JsModel {
 				if (logRecord instanceof TestCaseLogRecord) {
 					calledTests.add(new JsCallStepModel(stepLogEntity, (TestCaseLogRecord) logRecord, listStrings));
 				} else if (logRecord instanceof TestStepLogRecord) {
-					calledSteps.add(new JsStepModel((TestStepLogRecord) logRecord, listStrings, logRecord.getName()));
+					calledSteps.add(new JsStepModel((TestStepLogRecord) logRecord, listStrings, ""));
 				}
 			}
 		}
