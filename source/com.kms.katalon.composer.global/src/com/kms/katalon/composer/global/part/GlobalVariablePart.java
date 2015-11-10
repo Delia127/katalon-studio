@@ -194,7 +194,7 @@ public class GlobalVariablePart implements EventHandler {
                 Point pt = composite.toDisplay(1, 1);
                 GlobalVariableBuilderDialog dialog = new GlobalVariableBuilderDialog(composite.getShell(), pt);
                 if (dialog.open() == Dialog.OK) {
-                    GlobalVariableEntity variable = dialog.getVariable();
+                    GlobalVariableEntity variable = dialog.getVariableEntity();
                     tableViewer.add(variable);
                     tableViewer.refresh(variable);
                     setDirty(true);
@@ -215,7 +215,7 @@ public class GlobalVariablePart implements EventHandler {
                 String variableName = selectedVariable.getName();
                 String variableValue = selectedVariable.getInitValue();
                 if (dialog.open() == Dialog.OK) {
-                    GlobalVariableEntity variable = dialog.getVariable();
+                    GlobalVariableEntity variable = dialog.getVariableEntity();
                     tableViewer.refresh(variable);
 
                     boolean needToUpdateReferences = false;
