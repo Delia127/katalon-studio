@@ -215,7 +215,7 @@ public abstract class VariableBuilderDialog extends AbstractDialog {
         } else {
             enable &= true;
         }
-
+        
         String value = fVariable.getValue();
         VariableType variableType = VariableType.parse(cbbValueType.getText());
         switch (variableType) {

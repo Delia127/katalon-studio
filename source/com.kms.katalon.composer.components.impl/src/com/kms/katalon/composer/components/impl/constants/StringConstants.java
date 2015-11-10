@@ -33,7 +33,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_INFO_MSG_CREATE_NEW_VAR = "Create a new variable";
     public static final String DIA_INFO_MSG_EDIT_NEW_VAR = "Edit an existing variable";
     public static final String DIA_CTRL_VAR_INFO = "Variable names are case-sensitive.\n"
-            + "A variable's name can be any letters, digits, the dollar sign \"$\", or the underscore charater \"_\"";
+            + "A variable's name can be any letters, digits, the dollar sign \"$\", or the underscore charater \"_\".\n"
+            + "However, it cannot start with a digit.";
 
     // FolderTreeEntity
     public static final String TREE_FOLDER_TYPE_NAME = FOLDER;
