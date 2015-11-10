@@ -77,7 +77,7 @@ public class RestRequestObjectPart extends RequestObjectPart {
         lblRestParam.setText(StringConstants.PA_LBL_REST_PARAMS);
         lblRestParam.setLayoutData(labelGridData);
 
-        tblRestParams = createParamsTable(restContainerComposite);
+        tblRestParams = createParamsTable(restContainerComposite, false);
         tblRestParams.setInput(listRestParams);
     }
 

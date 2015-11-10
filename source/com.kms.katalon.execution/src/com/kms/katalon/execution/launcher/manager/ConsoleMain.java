@@ -1,18 +1,12 @@
 package com.kms.katalon.execution.launcher.manager;
 
 import java.io.File;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.text.MessageFormat;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
@@ -20,10 +14,6 @@ import org.eclipse.ui.PlatformUI;
 
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteController;
-import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
-import com.kms.katalon.core.testdata.reader.CSVReader;
-import com.kms.katalon.core.testdata.reader.CSVSeperator;
-import com.kms.katalon.core.testdata.reader.CsvWriter;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
@@ -184,7 +174,8 @@ public class ConsoleMain {
                         File csvFile = new File(logFolder, logFolder.getName() + ".csv");
                         csvReports.add(csvFile.getAbsolutePath());
                     }
-                    sendReport(csvReports);
+                    
+                    //sendReport(csvReports);
 
                     // @author: Tuan Nguyen Manh.
                     // Exit code is 0 if the executed test suite is passed, 1 if
@@ -327,6 +318,7 @@ public class ConsoleMain {
         return builder.toString();
     }
 
+    /*
     private void sendReport(List<String> csvReports) throws Exception {
         List<Object[]> newDatas = new ArrayList<Object[]>();
         // PASSED, FAILED, ERROR, NOT_RUN
@@ -397,9 +389,9 @@ public class ConsoleMain {
         CsvWriter.writeArraysToCsv(newDatas, csvSummaryFile);
 
         AbstractLauncher.sendSummaryEmail(csvSummaryFile, suitesSummaryForEmail);
-
-        // AbstractLauncher.sendReportEmail(testSuite, logFile);
+		
     }
+    */
 
     public static String getReportFileName() {
         return reportFileName;
