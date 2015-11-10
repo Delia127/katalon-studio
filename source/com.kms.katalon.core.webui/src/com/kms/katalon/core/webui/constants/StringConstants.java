@@ -151,6 +151,10 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String KW_LOG_PASSED_KEYS_SENT_TO_OBJ = "Keys ''{0}'' sent to object: ''{1}''";
 	public static final String KW_MSG_CANNOT_SED_KEYS_TO_OBJ_X = "Unable to send keys ''{0}'' to object ''{1}''";
 	public static final String KW_MSG_CANNOT_SED_KEYS_TO_OBJ = "Unable to send keys ''{0}'' to object";
+    public static final String KW_LOG_INFO_UPLOADING_FILE_X_TO_OBJ_Y = "Uploading file ''{0}'' to object: ''{1}''";
+    public static final String KW_LOG_PASSED_FILE_X_SENT_TO_OBJ_Y = "File ''{0}'' sent to object: ''{1}''";
+    public static final String KW_MSG_CANNOT_UPLOAD_FILE_X_TO_OBJ_Y = "Unable to upload file ''{0}'' to object ''{1}''";
+    public static final String KW_MSG_CANNOT_UPLOAD_FILE_X = "Unable to upload file ''{0}'' to object";
 	public static final String KW_LOG_INFO_FOCUSING_ON_OBJ = "Focusing on object: ''{0}''";
 	public static final String KW_LOG_PASSED_OBJ_IS_FOCUSED = "Object: ''{0}'' is focused";
 	public static final String KW_MSG_CANNOT_FOCUS_ON_OBJ_X = "Unable to focus on object ''{0}''";

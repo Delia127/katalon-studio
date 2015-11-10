@@ -120,8 +120,16 @@ public class RunConfiguration {
     }
 
     @SuppressWarnings("unchecked")
-    public static Map<String, Object> getExecutionDriverProperty() {
+    public static Map<String, Object> getExecutionProperties() {
         return (Map<String, Object>) getProperty(EXECUTION_DRIVER_PROPERTY);
+    }
+    
+    public static Object getExecutionProperty(String propertyName) {
+        Map<String, Object> executionDriverProperty = getExecutionProperties();
+        if (executionDriverProperty != null) {
+            return executionDriverProperty.get(propertyName);
+        }
+        return null;
     }
 
 }

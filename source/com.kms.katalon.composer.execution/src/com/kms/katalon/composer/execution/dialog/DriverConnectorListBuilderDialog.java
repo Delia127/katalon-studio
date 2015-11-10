@@ -2,6 +2,7 @@ package com.kms.katalon.composer.execution.dialog;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -49,15 +50,16 @@ public class DriverConnectorListBuilderDialog extends Dialog {
     private ToolItem tltmAddProperty;
     private ToolItem tltmRemoveProperty;
     private ToolItem tltmClearProperty;
-    private CustomRunConfiguration customRunConfig;
+    private File settingFolder;
 
     public DriverConnectorListBuilderDialog(Shell parentShell, List<IDriverConnector> driverConnectorList,
             CustomRunConfiguration customRunConfig) {
         super(parentShell);
         this.driverConnectorList = driverConnectorList;
-        this.customRunConfig = customRunConfig;
         driverConnectorContributonList = DriverConnectorCollector.getInstance()
                 .getAllBuiltinDriverConnectorContributors();
+
+        settingFolder = customRunConfig.getConfigFolder();
     }
 
     @Override
@@ -75,7 +77,7 @@ public class DriverConnectorListBuilderDialog extends Dialog {
         Composite formComposite = new Composite(container, SWT.NONE);
         formComposite.setLayout(new GridLayout(1, false));
         formComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
-        
+
         Composite toolbarComposite = new Composite(formComposite, SWT.NONE);
         toolbarComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
         toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
@@ -101,7 +103,7 @@ public class DriverConnectorListBuilderDialog extends Dialog {
         glComposite.marginHeight = 0;
         composite.setLayout(glComposite);
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        
+
         Composite tableComposite = new Composite(composite, SWT.NONE);
         tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
@@ -116,17 +118,29 @@ public class DriverConnectorListBuilderDialog extends Dialog {
 
         addTableColumn(tableViewer, tableColumnLayout, StringConstants.SETT_COL_DRIVER_PREFERENCE_NAME, 100, 30,
                 new EditingSupport(tableViewer) {
+                    List<String> driverConnectorNames = new ArrayList<String>();
+
                     @Override
                     protected void setValue(Object element, Object value) {
                         if (element instanceof IDriverConnector && value instanceof Integer
-                                && driverConnectorContributonList != null) {
+                                && driverConnectorNames != null && (int) value >= 0
+                                && (int) value <= driverConnectorNames.size()) {
                             try {
                                 IDriverConnector existingDriverConnector = (IDriverConnector) element;
-                                IDriverConnector newDriverConnector = driverConnectorContributonList[(int) value]
-                                        .getDriverConnector(existingDriverConnector.getParentFolderPath());
+                                IDriverConnector newDriverConnector = null;
+                                String newDriverConnectorName = driverConnectorNames.get((int) value);
+
+                                for (IDriverConnectorContributor driverConnectorContributor : driverConnectorContributonList) {
+                                    for (IDriverConnector driverConnector : driverConnectorContributor
+                                            .getDriverConnector(settingFolder.getAbsolutePath())) {
+                                        if (driverConnector.getDriverType().toString().equals(newDriverConnectorName)) {
+                                            newDriverConnector = driverConnector;
+                                        }
+                                    }
+                                }
 
                                 int index = driverConnectorList.indexOf(existingDriverConnector);
-                                if (index >= 0 && index < driverConnectorList.size()) {
+                                if (index >= 0 && index < driverConnectorList.size() && newDriverConnector != null) {
                                     driverConnectorList.set(index, newDriverConnector);
                                     tableViewer.refresh();
                                 }
@@ -140,8 +154,8 @@ public class DriverConnectorListBuilderDialog extends Dialog {
                     protected Object getValue(Object element) {
                         if (element instanceof IDriverConnector) {
                             IDriverConnector existingDriverConnector = (IDriverConnector) element;
-                            for (int i = 0; i < driverConnectorContributonList.length; i++) {
-                                if (driverConnectorContributonList[i].getName().equals(
+                            for (int i = 0; i < driverConnectorNames.size(); i++) {
+                                if (driverConnectorNames.get(i).equals(
                                         existingDriverConnector.getDriverType().toString())) {
                                     return i;
                                 }
@@ -153,11 +167,37 @@ public class DriverConnectorListBuilderDialog extends Dialog {
 
                     @Override
                     protected CellEditor getCellEditor(Object element) {
-                        String[] driverList = new String[driverConnectorContributonList.length];
-                        for (int i = 0; i < driverConnectorContributonList.length; i++) {
-                            driverList[i] = driverConnectorContributonList[i].getName();
+                        driverConnectorNames.clear();
+                        try {
+                            if (element instanceof IDriverConnector) {
+                                IDriverConnector selectedDriverConnector = (IDriverConnector) element; 
+                                for (IDriverConnectorContributor driverConnectorContributor : driverConnectorContributonList) {
+                                    boolean isExists = false;
+                                    for (IDriverConnector existingDriverConnector : driverConnectorList) {
+                                        if (selectedDriverConnector.getDriverType() == existingDriverConnector.getDriverType()) {
+                                            continue;
+                                        }
+                                        for (IDriverConnector driverConnector : driverConnectorContributor
+                                                .getDriverConnector(settingFolder.getAbsolutePath())) {
+                                            if (existingDriverConnector.getDriverType() == driverConnector.getDriverType()) {
+                                                isExists = true;
+                                            }
+                                        }
+                                    }
+                                    if (!isExists) {
+                                        for (IDriverConnector driverConnector : driverConnectorContributor
+                                                .getDriverConnector(settingFolder.getAbsolutePath())) {
+                                            driverConnectorNames.add(driverConnector.getDriverType().toString());
+                                        }
+                                    }
+                                }
+                                return new ComboBoxCellEditor(tableViewer.getTable(), driverConnectorNames
+                                        .toArray(new String[driverConnectorNames.size()]));
+                            }
+                        } catch (IOException e) {
+                            LoggerSingleton.logError(e);
                         }
-                        return new ComboBoxCellEditor(tableViewer.getTable(), driverList);
+                        return null;
                     }
 
                     @Override
@@ -258,11 +298,27 @@ public class DriverConnectorListBuilderDialog extends Dialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 if (driverConnectorContributonList.length > 0) {
-                    File settingFolder = customRunConfig.getConfigFolder();
                     try {
-                        driverConnectorList.add(driverConnectorContributonList[0].getDriverConnector(settingFolder
-                                .getAbsolutePath()));
-                        tableViewer.refresh();
+                        for (IDriverConnectorContributor driverConnectorContributor : driverConnectorContributonList) {
+                            boolean isExists = false;
+                            for (IDriverConnector existingDriverConnector : driverConnectorList) {
+                                for (IDriverConnector driverConnector : driverConnectorContributor
+                                        .getDriverConnector(settingFolder.getAbsolutePath())) {
+                                    if (existingDriverConnector.getDriverType() == driverConnector.getDriverType()) {
+                                        isExists = true;
+                                    }
+                                }
+                            }
+                            if (!isExists) {
+                                IDriverConnector[] newDriverConnectorList = driverConnectorContributor
+                                        .getDriverConnector(settingFolder.getAbsolutePath());
+                                if (newDriverConnectorList.length > 0) {
+                                    driverConnectorList.add(newDriverConnectorList[0]);
+                                    tableViewer.refresh();
+                                    return;
+                                }
+                            }
+                        }
                     } catch (IOException exception) {
                         LoggerSingleton.logError(exception);
                     }
