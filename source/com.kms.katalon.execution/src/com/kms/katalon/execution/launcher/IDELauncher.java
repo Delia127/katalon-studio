@@ -228,7 +228,14 @@ public class IDELauncher extends AbstractLauncher {
                         ReportEntity report = ReportController.getInstance().getReportEntity(testSuite, reportName);
                         eventBroker.send(EventConstants.REPORT_OPEN, report);
                     }
-                    sendReportEmail(testSuite, logFile);
+
+                    List<String> csvReports = new ArrayList<String>();
+                    
+                    csvReports.add(htmlFile.getAbsolutePath().replace(".html", ".csv"));
+                    
+                    List<Object[]> suitesSummaryForEmail = collectSummaryData(csvReports);
+
+                    sendReportEmail(testSuite, null, logFile, suitesSummaryForEmail);
                 }
                 eventBroker.send(EventConstants.REPORT_UPDATED, reportFolder.getAbsolutePath());
             }
