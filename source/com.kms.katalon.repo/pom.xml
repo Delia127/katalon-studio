@@ -100,7 +100,7 @@
 									<id>org.apache:xml.apis:1.4.01</id>
 								</artifact>								
 								<artifact>
-									<id>org.apache.commons:commons-email:1.3.3</id>
+									<id>org.apache.commons:commons-email:1.4</id>
 								</artifact>
 								<artifact>
 									<id>org.apache.xmlbeans:xmlbeans:2.6.0</id>
