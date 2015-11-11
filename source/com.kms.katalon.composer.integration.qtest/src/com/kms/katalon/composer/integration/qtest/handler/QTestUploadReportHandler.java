@@ -96,7 +96,7 @@ public class QTestUploadReportHandler extends AbstractQTestHandler {
      * 
      * @param testCasesCanBeUploaded
      * @param reportEntity
-     * @param shell
+     * @param shell used when system need to open a confirmation dialog.
      */
     public static void performUploadTestCaseLogs(List<TestCaseLogRecord> testCasesCanBeUploaded,
             ReportEntity reportEntity, Shell shell) {

@@ -2,6 +2,7 @@ package com.kms.katalon.composer.components.impl.util;
 
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
@@ -49,6 +50,27 @@ public class ControlUtils {
         @Override
         public void handleEvent(final Event event) {
             final  Text t = (Text) event.widget;
+            final Rectangle r1 = t.getClientArea();
+            final Rectangle r2 = t.computeTrim(r1.x, r1.y, r1.width, r1.height);
+            final Point p = t.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
+            t.getDisplay().timerExec(50, new Runnable() {
+                @Override
+                public void run() {
+                    t.getHorizontalBar().setVisible(r2.width <= p.x);
+                    t.getVerticalBar().setVisible(r2.height <= p.y);
+                    if (event.type == SWT.Modify) {
+                        t.getParent().layout(true);
+                        t.showSelection();
+                    }
+                }
+            });
+        }
+    };
+    
+    public static Listener getAutoHideStyledTextScrollbarListener = new Listener() {
+        @Override
+        public void handleEvent(final Event event) {
+            final StyledText t = (StyledText) event.widget;
             final Rectangle r1 = t.getClientArea();
             final Rectangle r2 = t.computeTrim(r1.x, r1.y, r1.width, r1.height);
             final Point p = t.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);

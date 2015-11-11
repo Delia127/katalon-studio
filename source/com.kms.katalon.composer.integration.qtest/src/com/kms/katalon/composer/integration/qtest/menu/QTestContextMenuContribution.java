@@ -29,7 +29,6 @@ import com.kms.katalon.composer.integration.qtest.handler.QTestUploadTestSuiteHa
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
-import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
@@ -52,8 +51,7 @@ public class QTestContextMenuContribution {
     @AboutToShow
     public void aboutToShow(List<MMenuElement> menuItems) {
         try {
-            String projectDir = ProjectController.getInstance().getCurrentProject()
-                    .getFolderLocation();
+            String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
             if (!QTestSettingStore.isIntegrationActive(projectDir)) {
                 return;
             }
@@ -69,7 +67,7 @@ public class QTestContextMenuContribution {
             MDirectMenuItem uploadMenuItem = getUploadMenuItem();
             MDirectMenuItem downloadMenuItem = getDownloadMenuItem();
             MDirectMenuItem disintegrateMenuItem = getDisintegrateMenuItem();
-            MDirectMenuItem manageMenuItem = getManageMenuItem();
+            MDirectMenuItem settingsMenuItem = getManageMenuItem();
 
             if (selectedObject instanceof TestCaseTreeEntity) {
                 // Add Upload menu item for test case
@@ -81,7 +79,7 @@ public class QTestContextMenuContribution {
                 disintegrateMenuItem.setContributionURI(StringConstants.CM_QTEST_COMPOSER_BUNDLE_URI
                         + QTestDisintegrateTestCaseHandler.class.getName());
                 qTestMenu.getChildren().add(disintegrateMenuItem);
-                qTestMenu.getChildren().add(manageMenuItem);
+                qTestMenu.getChildren().add(settingsMenuItem);
             } else if (selectedObject instanceof TestSuiteTreeEntity) {
                 // Add Upload menu item for test suite
                 uploadMenuItem.setContributionURI(StringConstants.CM_QTEST_COMPOSER_BUNDLE_URI
@@ -92,7 +90,7 @@ public class QTestContextMenuContribution {
                 disintegrateMenuItem.setContributionURI(StringConstants.CM_QTEST_COMPOSER_BUNDLE_URI
                         + QTestDisintegrateTestSuiteHandler.class.getName());
                 qTestMenu.getChildren().add(disintegrateMenuItem);
-                qTestMenu.getChildren().add(manageMenuItem);
+                qTestMenu.getChildren().add(settingsMenuItem);
             } else if (selectedObject instanceof ReportTreeEntity) {
                 // Add Upload menu item for test suite
                 uploadMenuItem.setContributionURI(StringConstants.CM_QTEST_COMPOSER_BUNDLE_URI
@@ -103,29 +101,58 @@ public class QTestContextMenuContribution {
                 disintegrateMenuItem.setContributionURI(StringConstants.CM_QTEST_COMPOSER_BUNDLE_URI
                         + QTestDisintegrateReportHandler.class.getName());
                 qTestMenu.getChildren().add(disintegrateMenuItem);
-                qTestMenu.getChildren().add(manageMenuItem);
+                qTestMenu.getChildren().add(settingsMenuItem);
             } else if (selectedObject instanceof FolderTreeEntity
                     && ((FolderTreeEntity) selectedObject).getObject() instanceof FolderEntity) {
                 FolderEntity folderEntity = (FolderEntity) ((FolderTreeEntity) selectedObject).getObject();
-                if (folderEntity.getFolderType() != FolderType.TESTCASE) {
-                    return;
+
+                switch (folderEntity.getFolderType()) {
+                    case TESTCASE: {
+                        // Add Upload menu item for test case folder
+                        uploadMenuItem.setContributionURI(StringConstants.CM_QTEST_COMPOSER_BUNDLE_URI
+                                + QTestUploadTestCaseHandler.class.getName());
+                        qTestMenu.getChildren().add(uploadMenuItem);
+                        
+                        // Add Download menu item for test case folder
+                        downloadMenuItem.setContributionURI(StringConstants.CM_QTEST_COMPOSER_BUNDLE_URI
+                                + QTestDownloadTestCaseHandler.class.getName());
+                        qTestMenu.getChildren().add(downloadMenuItem);
+                        
+                        // Add Disintegrate menu item for test case folder
+                        disintegrateMenuItem.setContributionURI(StringConstants.CM_QTEST_COMPOSER_BUNDLE_URI
+                                + QTestDisintegrateTestCaseHandler.class.getName());
+                        qTestMenu.getChildren().add(disintegrateMenuItem);
+                        break;
+                    }
+                    case TESTSUITE: {
+                        // Add Upload menu item for test suite folder
+                        uploadMenuItem.setContributionURI(StringConstants.CM_QTEST_COMPOSER_BUNDLE_URI
+                                + QTestUploadTestSuiteHandler.class.getName());
+                        qTestMenu.getChildren().add(uploadMenuItem);
+                        
+                        // Add Disintegrate menu item for test suite folder
+                        disintegrateMenuItem.setContributionURI(StringConstants.CM_QTEST_COMPOSER_BUNDLE_URI
+                                + QTestDisintegrateTestSuiteHandler.class.getName());
+                        qTestMenu.getChildren().add(disintegrateMenuItem);
+                        break;
+                    }
+                    case REPORT: {
+                        // Add Upload menu item for report folder
+                        uploadMenuItem.setContributionURI(StringConstants.CM_QTEST_COMPOSER_BUNDLE_URI
+                                + QTestUploadReportHandler.class.getName());
+                        qTestMenu.getChildren().add(uploadMenuItem);
+                        
+                        // Add Disintegrate menu item for report folder
+                        disintegrateMenuItem.setContributionURI(StringConstants.CM_QTEST_COMPOSER_BUNDLE_URI
+                                + QTestDisintegrateReportHandler.class.getName());
+                        qTestMenu.getChildren().add(disintegrateMenuItem);
+                        break;
+                    }
+                    default: {
+                        return;
+                    }
                 }
-
-                // Add Upload menu item for test folder
-                uploadMenuItem.setContributionURI(StringConstants.CM_QTEST_COMPOSER_BUNDLE_URI
-                        + QTestUploadTestCaseHandler.class.getName());
-                qTestMenu.getChildren().add(uploadMenuItem);
-
-                // Add Download menu item for test folder
-                downloadMenuItem.setContributionURI(StringConstants.CM_QTEST_COMPOSER_BUNDLE_URI
-                        + QTestDownloadTestCaseHandler.class.getName());
-                qTestMenu.getChildren().add(downloadMenuItem);
-
-                // Add Disintegrate menu item for test case
-                disintegrateMenuItem.setContributionURI(StringConstants.CM_QTEST_COMPOSER_BUNDLE_URI
-                        + QTestDisintegrateTestCaseHandler.class.getName());
-                qTestMenu.getChildren().add(disintegrateMenuItem);
-                qTestMenu.getChildren().add(manageMenuItem);
+                qTestMenu.getChildren().add(settingsMenuItem);
             }
 
             if (qTestMenu.getChildren().size() > 0) {

@@ -26,10 +26,13 @@ import com.kms.katalon.integration.qtest.QTestIntegrationProjectManager;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 
 public class DisintegrateTestCaseJob extends UploadJob {
+    
+    private boolean fCleanRepo;
 
-    public DisintegrateTestCaseJob() {
+    public DisintegrateTestCaseJob(boolean cleanRepo) {
         super(StringConstants.JOB_TITLE_DISINTEGRATE_TEST_CASE);
         setUser(true);
+        fCleanRepo = cleanRepo;
     }
 
     @Override
@@ -65,9 +68,11 @@ public class DisintegrateTestCaseJob extends UploadJob {
 
                     if (folderIntegratedEntity != null) {
                         TestCaseRepo repo = QTestIntegrationUtil.getTestCaseRepo(folderEntity, projectEntity);
-                        if (repo != null) {
-                            if (repo.getFolderId().equals(folderId)) {
+                        if (repo != null && repo.getFolderId().equals(folderId)) {
+                            if (fCleanRepo) {
                                 removeFolderIdFromProject(folderId, repo.getQTestProject());
+                            } else {
+                                continue;
                             }
                         }
 
@@ -136,30 +141,9 @@ public class DisintegrateTestCaseJob extends UploadJob {
         IntegratedEntity projectNewIntegratedEntity = QTestIntegrationProjectManager
                 .getIntegratedEntityByQTestProjects(qTestProjects);
 
-        projectEntity = (ProjectEntity) updateFileIntegratedEntity(projectEntity, projectNewIntegratedEntity);
+        projectEntity = (ProjectEntity) QTestIntegrationUtil.updateFileIntegratedEntity(projectEntity,
+                projectNewIntegratedEntity);
 
         ProjectController.getInstance().updateProject(projectEntity);
     }
-
-    private IntegratedFileEntity updateFileIntegratedEntity(IntegratedFileEntity entity, IntegratedEntity newIntegrated) {
-        IntegratedEntity oldIntegrated = QTestIntegrationUtil.getIntegratedEntity(entity);
-
-        // Otherwise, add the new one to integrated list
-        int index = 0;
-        if (oldIntegrated == null) {
-            index = entity.getIntegratedEntities().size();
-        } else {
-            index = entity.getIntegratedEntities().indexOf(oldIntegrated);
-            entity.getIntegratedEntities().remove(index);
-        }
-
-        if (index >= entity.getIntegratedEntities().size()) {
-            entity.getIntegratedEntities().add(newIntegrated);
-        } else {
-            entity.getIntegratedEntities().add(index, oldIntegrated);
-        }
-
-        return entity;
-    }
-
 }

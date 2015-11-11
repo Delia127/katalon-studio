@@ -267,7 +267,6 @@ public class QTestIntegrationUtil {
             return false;
 
         } else if (entity instanceof TestCaseEntity) {
-
             return isIntegrated && (getTestCaseRepo(entity, projectEntity) != null);
         } else if (entity instanceof TestSuiteEntity) {
             return isIntegrated && (getTestSuiteRepo(entity, projectEntity) != null);
@@ -526,6 +525,12 @@ public class QTestIntegrationUtil {
         return QTestLogEvaluation.CAN_INTEGRATE;
     }
 
+    /**
+     * Checks that the givens parameters has the same {@link QTestProject} or not.
+     * @param testCaseLogRecord
+     * @param testSuiteLogRecord
+     * @return true if same. Otherwise, false.
+     */
     private static boolean isSameQTestProject(TestCaseLogRecord testCaseLogRecord, TestSuiteLogRecord testSuiteLogRecord) {
         try {
             ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
