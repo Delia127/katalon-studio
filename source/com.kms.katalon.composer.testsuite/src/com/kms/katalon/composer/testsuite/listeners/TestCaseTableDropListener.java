@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.testsuite.listeners;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -17,20 +18,16 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.testsuite.providers.TestCaseTableViewer;
 import com.kms.katalon.composer.testsuite.transfer.TestSuiteTestCaseLinkTransferData;
-import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class TestCaseTableDropListener extends TableDropTargetEffect {
 
     private TestCaseTableViewer viewer;
-    private TestSuiteEntity parentTestSuite;
 
-    public TestCaseTableDropListener(TestCaseTableViewer viewer, TestSuiteEntity parentTestSuite) {
+    public TestCaseTableDropListener(TestCaseTableViewer viewer) {
         super(viewer.getTable());
         this.viewer = viewer;
-        this.parentTestSuite = parentTestSuite;
     }
 
     @Override
@@ -41,15 +38,15 @@ public class TestCaseTableDropListener extends TableDropTargetEffect {
             TableItem tableItem = viewer.getTable().getItem(pt);
             TestSuiteTestCaseLink selectedItem = (tableItem != null && tableItem.getData() instanceof TestSuiteTestCaseLink) ? (TestSuiteTestCaseLink) tableItem
                     .getData() : null;
-            int selectedIndex = (selectedItem != null) ? viewer.getIndex(selectedItem) : viewer.getInput().size();
+            int selectedIndex = (selectedItem != null) ? viewer.getIndex(selectedItem) : viewer.getInput().size() - 1;
 
             List<TestSuiteTestCaseLink> addedTestCaseLinked = new ArrayList<TestSuiteTestCaseLink>();
             if (event.data instanceof ITreeEntity[]) {
                 ITreeEntity[] treeEntities = (ITreeEntity[]) event.data;
                 for (int i = treeEntities.length - 1; i >= 0; i--) {
                     if (treeEntities[i] instanceof TestCaseTreeEntity) {
-                        TestSuiteTestCaseLink link = viewer.insertTestCase((TestCaseEntity) ((TestCaseTreeEntity) treeEntities[i]).getObject(),
-                                selectedIndex);
+                        TestSuiteTestCaseLink link = viewer.insertTestCase(
+                                (TestCaseEntity) ((TestCaseTreeEntity) treeEntities[i]).getObject(), selectedIndex);
                         addedTestCaseLinked.add(link);
                     } else if (treeEntities[i] instanceof FolderTreeEntity) {
                         for (TestCaseEntity testCase : getTestCasesFromFolderTree((FolderTreeEntity) treeEntities[i])) {
@@ -59,26 +56,17 @@ public class TestCaseTableDropListener extends TableDropTargetEffect {
                 }
             } else if (event.data instanceof TestSuiteTestCaseLinkTransferData[]) {
                 TestSuiteTestCaseLinkTransferData[] testSuiteTestCaseLinkTransferDatas = (TestSuiteTestCaseLinkTransferData[]) event.data;
-                if (testSuiteTestCaseLinkTransferDatas.length == 0) {
+                if (testSuiteTestCaseLinkTransferDatas.length != 1) {
                     return;
                 }
-                
-                if (testSuiteTestCaseLinkTransferDatas[0].getTestSuite().getId().equals(parentTestSuite.getId())) {
-                    List<TestSuiteTestCaseLink> removeTestSuiteTestCaseLinks = new ArrayList<TestSuiteTestCaseLink>();
-                    for (TestSuiteTestCaseLinkTransferData transferData : testSuiteTestCaseLinkTransferDatas) {
-                        removeTestSuiteTestCaseLinks.add(transferData.getTestSuiteTestCaseLink());
-                    }
-                    viewer.removeTestCases(removeTestSuiteTestCaseLinks);
+
+                int previousIndex = viewer.getIndex(testSuiteTestCaseLinkTransferDatas[0].getTestSuiteTestCaseLink());
+                if (previousIndex == selectedIndex) {
+                    return;
                 }
-                
-                for (int i = testSuiteTestCaseLinkTransferDatas.length - 1; i >= 0; i--) {
-                    TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByDisplayId(
-                            testSuiteTestCaseLinkTransferDatas[i].getTestSuiteTestCaseLink().getTestCaseId());
-                    if (testCase != null) {
-                        TestSuiteTestCaseLink link = viewer.insertTestCase(testCase, selectedIndex);
-                        addedTestCaseLinked.add(link);
-                    }
-                }
+                Collections.swap(viewer.getInput(), previousIndex, selectedIndex);
+                addedTestCaseLinked.add(testSuiteTestCaseLinkTransferDatas[0].getTestSuiteTestCaseLink());
+                viewer.updateDirty(true);
             }
 
             // Force focus to the test suite part

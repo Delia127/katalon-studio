@@ -206,11 +206,11 @@ public class TestSuitePartTestCaseView {
     }
 
     private void hookDropTestCaseEvent() {
-        DropTarget dt = new DropTarget(testCaseTableViewer.getTable(), DND.DROP_MOVE);
+        DropTarget dt = new DropTarget(testCaseTableViewer.getTable(), DND.DROP_MOVE | DND.DROP_COPY);
         List<Transfer> treeEntityTransfers = TransferTypeCollection.getInstance().getTreeEntityTransfer();
         treeEntityTransfers.add(new TestSuiteTestCaseLinkTransfer());
         dt.setTransfer(treeEntityTransfers.toArray(new Transfer[treeEntityTransfers.size()]));
-        dt.addDropListener(new TestCaseTableDropListener(testCaseTableViewer, getTestSuite()));
+        dt.addDropListener(new TestCaseTableDropListener(testCaseTableViewer));
     }
 
     private void hookDragTestCaseEvent() {

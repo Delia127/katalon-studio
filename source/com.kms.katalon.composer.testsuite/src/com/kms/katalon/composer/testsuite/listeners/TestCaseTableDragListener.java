@@ -24,7 +24,7 @@ public class TestCaseTableDragListener implements DragSourceListener {
 
     public void dragStart(DragSourceEvent event) {
         TableItem[] selection = testCaseTableViewer.getTable().getSelection();
-        if (selection.length > 0) {
+        if (selection.length == 1) {
             event.doit = true;
         } else {
             event.doit = false;

@@ -294,4 +294,8 @@ public class TestCaseTableViewer extends TableViewer {
     public void setSearchedString(String searchedString) {
         this.searchedString = searchedString;
     }
+    
+    public void updateDirty(boolean dirty) {
+        parentView.setDirty(dirty);
+    }
 }

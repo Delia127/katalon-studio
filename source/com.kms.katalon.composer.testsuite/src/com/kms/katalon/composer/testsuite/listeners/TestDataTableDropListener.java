@@ -27,7 +27,7 @@ public class TestDataTableDropListener extends TableDropTargetEffect {
 
     @Override
     public void drop(DropTargetEvent event) {
-        event.detail = DND.DROP_COPY;
+        event.detail = DND.DROP_MOVE;
         List<TestCaseTestDataLink> input = fView.getSelectedTestCaseLink().getTestDataLinks();
         Point pt = Display.getCurrent().map(null, fTableViewer.getTable(), event.x, event.y);
         TableItem tableItem = fTableViewer.getTable().getItem(pt);
