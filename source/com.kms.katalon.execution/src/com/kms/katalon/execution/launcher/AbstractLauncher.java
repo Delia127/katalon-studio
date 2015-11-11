@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Platform;
@@ -103,7 +104,8 @@ public abstract class AbstractLauncher {
                     PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
 
             EmailConfig conf = new EmailConfig();
-            conf.tos = testSuite.getMailRecipient().split(";");
+            conf.tos = getRecipients(testSuite.getMailRecipient(),
+                    prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_REPORT_RECIPIENTS));
             conf.host = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_HOST);
             conf.port = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_PORT);
             conf.from = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_USERNAME);
@@ -120,7 +122,7 @@ public abstract class AbstractLauncher {
         }
     }
 
-    public static void sendSummaryEmail(File csvFile, List<Object[]> suitesSummaryForEmail) throws Exception {
+    public static void sendSummaryEmail(TestSuiteEntity testSuite, File csvFile, List<Object[]> suitesSummaryForEmail) throws Exception {
         String prefFile = Platform.getInstallLocation()
                 .getDataArea("config/.metadata/.plugins/org.eclipse.core.runtime/.settings/com.kms.katalon.dal.prefs")
                 .getFile();
@@ -128,11 +130,8 @@ public abstract class AbstractLauncher {
             PreferenceStore prefs = new PreferenceStore(prefFile);
             prefs.load();
             EmailConfig conf = new EmailConfig();
-            String receipts = prefs
-                    .getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_REPORT_RECIPIENTS);
-            if (receipts != null && !receipts.trim().equals("")) {
-                conf.tos = receipts.trim().split(";");
-            }
+            conf.tos = getRecipients(testSuite.getMailRecipient(),
+                    prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_REPORT_RECIPIENTS));
             conf.host = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_HOST);
             conf.port = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_PORT);
             conf.from = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_USERNAME);
@@ -346,5 +345,26 @@ public abstract class AbstractLauncher {
                 reportContributorEntry.getValue().uploadTestSuiteResult((TestSuiteEntity) executedEntity, suiteLog);
             }
         }
+    }
+
+    /**
+     * Get all recipient email address from Preference and Test Suite without duplication
+     * 
+     * @param testSuiteRecipients recipients from Test Suite
+     * @param reportRecipients recipients from Preferences > Execution > Email > Report Recipients
+     * @return non-duplicated recipients
+     */
+    private static String[] getRecipients(String testSuiteRecipients, String reportRecipients) {
+        String[] tsRecipients = StringUtils.split(testSuiteRecipients, ";");
+        String[] rptRecipients = StringUtils.split(reportRecipients, ";");
+        List<String> recipientList = new ArrayList<String>(Arrays.asList((rptRecipients != null) ? rptRecipients
+                : new String[] {}));
+        if (tsRecipients != null) {
+            for (String recipient : tsRecipients) {
+                if (recipientList.contains(recipient.trim())) continue;
+                recipientList.add(recipient);
+            }
+        }
+        return recipientList.toArray(new String[recipientList.size()]);
     }
 }
