@@ -230,7 +230,7 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
         }
     }
 
-    private boolean prepareForeSaving() {
+    private boolean prepareForSaving() {
         return childTestSuiteMainPart.prepareForSaving();
     }
 
@@ -241,7 +241,7 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
     @Override
     public void save() throws Exception {
         // if prepare for saving have problems then cancel save
-        if (!prepareForeSaving()) {
+        if (!prepareForSaving()) {
             return;
         }
         // back-up

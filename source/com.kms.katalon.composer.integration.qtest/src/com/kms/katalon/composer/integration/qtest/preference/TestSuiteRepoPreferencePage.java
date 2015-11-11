@@ -19,14 +19,17 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
+import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
@@ -40,19 +43,39 @@ import com.kms.katalon.integration.qtest.QTestIntegrationProjectManager;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 
 public class TestSuiteRepoPreferencePage extends AbstractQTestIntegrationPage {
+    public TestSuiteRepoPreferencePage() {
+    }
 
     private Composite container;
     private TableViewer tableViewer;
-    private Button btnAdd;
-    private Button btnEdit;
-    private Button btnRemove;
+    private ToolItem btnAdd, btnEdit, btnRemove;
     private List<QTestProject> qTestProjects;
     private List<TestSuiteRepo> testSuiteRepositories;
 
     @Override
     protected Control createContents(Composite parent) {
         container = new Composite(parent, SWT.NONE);
-        container.setLayout(new GridLayout(2, false));
+        container.setLayout(new GridLayout(1, false));
+
+        Composite compositeToolbar = new Composite(container, SWT.NONE);
+        compositeToolbar.setLayout(new FillLayout(SWT.HORIZONTAL));
+        compositeToolbar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+
+        ToolBar toolbar = new ToolBar(compositeToolbar, SWT.FLAT | SWT.RIGHT);
+
+        btnAdd = new ToolItem(toolbar, SWT.NONE);
+        btnAdd.setText(StringConstants.ADD);
+        btnAdd.setImage(ImageConstants.IMG_24_ADD);
+
+        btnEdit = new ToolItem(toolbar, SWT.NONE);
+        btnEdit.setText(StringConstants.EDIT);
+        btnEdit.setEnabled(false);
+        btnEdit.setImage(ImageConstants.IMG_24_EDIT);
+
+        btnRemove = new ToolItem(toolbar, SWT.NONE);
+        btnRemove.setText(StringConstants.REMOVE);
+        btnRemove.setImage(ImageConstants.IMG_24_REMOVE);
+        btnRemove.setEnabled(false);
 
         Composite compositeTable = new Composite(container, SWT.NONE);
         compositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -79,27 +102,7 @@ public class TestSuiteRepoPreferencePage extends AbstractQTestIntegrationPage {
         tableLayout.setColumnData(tblclmnKatalonFolder, new ColumnWeightData(90, 100));
         compositeTable.setLayout(tableLayout);
 
-        Composite compositeButton = new Composite(container, SWT.NONE);
-        compositeButton.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true, 1, 1));
-        GridLayout glCompositeButton = new GridLayout(1, false);
-        glCompositeButton.marginHeight = 0;
-        compositeButton.setLayout(glCompositeButton);
-
-        btnAdd = new Button(compositeButton, SWT.NONE);
-        btnAdd.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-        btnAdd.setText(StringConstants.ADD);
-
-        btnEdit = new Button(compositeButton, SWT.NONE);
-        btnEdit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-        btnEdit.setText(StringConstants.EDIT);
-        btnEdit.setEnabled(false);
-
-        btnRemove = new Button(compositeButton, SWT.NONE);
-        btnRemove.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-        btnRemove.setText(StringConstants.REMOVE);
-        btnRemove.setEnabled(false);
-
-        addButtonSelectionListeners();
+        addControlModifySelectionListeners();
         initialize();
 
         return container;
@@ -132,7 +135,7 @@ public class TestSuiteRepoPreferencePage extends AbstractQTestIntegrationPage {
         tableViewer.setInput(testSuiteRepositories);
     }
 
-    private void addButtonSelectionListeners() {
+    private void addControlModifySelectionListeners() {
         btnAdd.addSelectionListener(new SelectionAdapter() {
 
             @Override

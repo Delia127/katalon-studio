@@ -95,6 +95,9 @@ public class MobileDriverFactory {
 		capabilities.setCapability("fullReset", uninstallAfterCloseApp);
 		capabilities.setCapability("noReset", !uninstallAfterCloseApp);
 		capabilities.setCapability("newCommandTimeout", 1800);
+<<<<<<< HEAD
+		return new SwipeableAndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
+=======
 		int time = 0;
         long currentMilis = System.currentTimeMillis();
         AppiumDriver<?> appiumDriver = null;
@@ -112,6 +115,7 @@ public class MobileDriverFactory {
         }
         throw new StepFailedException("Could not connect to appium server after " + RunConfiguration.getTimeOut()
                 + " seconds");
+>>>>>>> origin/release
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -190,6 +194,20 @@ public class MobileDriverFactory {
     }
 
 	private void startAppiumServer() throws Exception {
+<<<<<<< HEAD
+		// String node = System.getenv("NODE_HOME") + "/node";
+		// String appium = System.getenv("APPIUM_HOME") + "/appium.js";
+	    String nodeHome = System.getenv("NODE_HOME") != null ? System.getenv("NODE_HOME") + File.separator : "";
+        String node = nodeHome + "node";
+		String appium = System.getenv("APPIUM_HOME") + "/bin/appium.js";
+		String appiumTemp = System.getProperty("user.home") + File.separator + "Appium_Temp";
+		String[] cmd = { node, appium, "--command-timeout", "3600", "--tmp", appiumTemp };
+		ProcessBuilder pb = new ProcessBuilder(cmd);
+		pb.redirectOutput(new File("appium.log"));
+		appiumServer = pb.start();
+		while (!isServerStarted()) {
+		}
+=======
 	    String appium = System.getenv("APPIUM_HOME") + "/bin/appium.js";
         String appiumTemp = System.getProperty("user.home") + File.separator + "Appium_Temp"
                 + System.currentTimeMillis();
@@ -203,6 +221,7 @@ public class MobileDriverFactory {
         while (!isServerStarted()) {
         }
         KeywordLogger.getInstance().logInfo("Appium server started on port " + appiumPort);
+>>>>>>> origin/release
 	}
 
 	public void quitServer() {

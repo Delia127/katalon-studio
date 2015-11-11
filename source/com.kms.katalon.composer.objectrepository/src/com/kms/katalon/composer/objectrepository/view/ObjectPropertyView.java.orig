@@ -910,7 +910,11 @@ public class ObjectPropertyView implements EventHandler {
                 }
             }
             case (EventConstants.TEST_OBJECT_UPDATED): {
+<<<<<<< HEAD:source/com.kms.katalon.composer.objectrepository/src/com/kms/katalon/composer/objectrepository/view/ObjectPropertyView.java
+                //Check if the referred object is updated. 
+=======
                 // Check if the referred object is updated.
+>>>>>>> origin/release:source/com.kms.katalon.composer.objectrepository/src/com/kms/katalon/composer/objectrepository/view/ObjectPropertyView.java
                 if (object != null && object instanceof Object[]) {
                     Object[] objects = (Object[]) object;
                     String testObjectId = (String) objects[0];
