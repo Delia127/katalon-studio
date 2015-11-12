@@ -50,4 +50,8 @@ public abstract class UploadJob extends Job {
 
         return wrappedName;
     }
+    
+    protected String getProjectDir() {
+        return ProjectController.getInstance().getCurrentProject().getFolderLocation();
+    }
 }

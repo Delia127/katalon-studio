@@ -34,7 +34,7 @@ import org.eclipse.ui.part.FileEditorInput;
 
 @SuppressWarnings("restriction")
 public class GroovyEditorUtil {
-    private static final String GROOVY_EDITOR_URI = "org.codehaus.groovy.eclipse.editor.GroovyEditor";
+   public static final String GROOVY_EDITOR_URI = "org.codehaus.groovy.eclipse.editor.GroovyEditor";
 
     public static MPart createTestCaseEditorPart(IFile scriptFile, MPartStack parentPartStack, String testCaseEditorId,
             EPartService partService, int index) throws Exception {
@@ -60,7 +60,7 @@ public class GroovyEditorUtil {
         history.add(input, descriptor);
     }
 
-    private static IEditorPart getEditor(MPart part) {
+    public static IEditorPart getEditor(MPart part) {
         if (part != null) {
             Object clientObject = part.getObject();
             if (clientObject instanceof CompatibilityEditor) {

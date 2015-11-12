@@ -10,20 +10,22 @@ import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
-import com.kms.katalon.composer.integration.qtest.dialog.ListReportUploadingPreviewDialog;
 import com.kms.katalon.composer.integration.qtest.job.UploadTestCaseResultJob;
+import com.kms.katalon.composer.integration.qtest.model.ReportTestCaseLogPair;
+import com.kms.katalon.composer.integration.qtest.model.ReportUploadedPreviewPair;
 import com.kms.katalon.composer.report.lookup.LogRecordLookup;
+import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
+import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -36,10 +38,8 @@ import com.kms.katalon.integration.qtest.entity.QTestSuite;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
 
 public class QTestUploadReportHandler extends AbstractQTestHandler {
+    private List<ReportTestCaseLogPair> fPairs;
 
-    private ReportEntity fReportEntity;
-    private List<TestCaseLogRecord> fTestCasesCanBeUploaded;
-    
     @Named(IServiceConstants.ACTIVE_SHELL)
     private Shell activeShell;
 
@@ -51,34 +51,35 @@ public class QTestUploadReportHandler extends AbstractQTestHandler {
         try {
             Object selectedEntity = getFirstSelectedObject(selectionService);
 
-            if (selectedEntity == null || !(selectedEntity instanceof ReportEntity)) {
+            if (selectedEntity == null) {
                 return false;
             }
 
-            fReportEntity = (ReportEntity) selectedEntity;
-            TestSuiteLogRecord testSuiteLogRecord = LogRecordLookup.getInstance().getTestSuiteLogRecord(fReportEntity);
-            if (testSuiteLogRecord == null) {
-                return false;
-            }
+            fPairs = new ArrayList<ReportTestCaseLogPair>();
+            if (selectedEntity instanceof ReportEntity) {
+                ReportTestCaseLogPair pair = getTestCaseLogPair((ReportEntity) selectedEntity);
+                if (pair != null) {
+                    fPairs.add(pair);
+                }
+            } else if (selectedEntity instanceof FolderEntity) {
+                FolderEntity folderEntity = (FolderEntity) selectedEntity;
+                if (!QTestIntegrationUtil.isFolderReportInTestSuiRepo(folderEntity, getProjectEntity())) {
+                    return false;
+                }
+                
+                for (Object childObject : FolderController.getInstance().getAllDescentdantEntities(folderEntity)) {
+                    if (!(childObject instanceof ReportEntity)) {
+                        continue;
+                    }
 
-            fTestCasesCanBeUploaded = new ArrayList<TestCaseLogRecord>();
-
-            for (ILogRecord selectedTestCaseLogObject : testSuiteLogRecord.getChildRecords()) {
-                TestCaseLogRecord testCaseLogRecord = (TestCaseLogRecord) selectedTestCaseLogObject;
-                switch (QTestIntegrationUtil.evaluateTestCaseLog(testCaseLogRecord,
-                        QTestIntegrationUtil.getSelectedQTestSuite(testSuiteLogRecord), fReportEntity)) {
-                    case CAN_INTEGRATE:
-                        fTestCasesCanBeUploaded.add(testCaseLogRecord);
-                        break;
-                    default:
-                        break;
+                    ReportTestCaseLogPair pair = getTestCaseLogPair((ReportEntity) childObject);
+                    if (pair != null) {
+                        fPairs.add(pair);
+                    }
                 }
             }
 
-            if (fTestCasesCanBeUploaded.size() > 0) {
-                return true;
-            }
-
+            return fPairs.size() > 0;
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
@@ -87,7 +88,47 @@ public class QTestUploadReportHandler extends AbstractQTestHandler {
 
     @Execute
     public void execute() {
-        performUploadTestCaseLogs(fTestCasesCanBeUploaded, fReportEntity, activeShell);
+        performUploadTestCaseLogs(fPairs, activeShell);
+    }
+
+    public static void performUploadTestCaseLogs(List<ReportTestCaseLogPair> testCaseLogPairs, Shell shell) {
+        List<ReportUploadedPreviewPair> uploadedPairs = new ArrayList<ReportUploadedPreviewPair>();
+        for (ReportTestCaseLogPair testCaseLogPair : testCaseLogPairs) {
+            ReportUploadedPreviewPair uploadedPair = transform(testCaseLogPair, shell);
+            if (uploadedPair != null) {
+                uploadedPairs.add(uploadedPair);
+            }
+        }
+        UploadTestCaseResultJob job = new UploadTestCaseResultJob(uploadedPairs);
+        job.setUser(true);
+        job.schedule();
+    }
+
+    private ReportTestCaseLogPair getTestCaseLogPair(ReportEntity reportEntity) throws Exception {
+        TestSuiteLogRecord testSuiteLogRecord = LogRecordLookup.getInstance().getTestSuiteLogRecord(reportEntity);
+        if (testSuiteLogRecord == null) {
+            return null;
+        }
+
+        List<TestCaseLogRecord> testCasesCanBeUploaded = new ArrayList<TestCaseLogRecord>();
+
+        for (ILogRecord selectedTestCaseLogObject : testSuiteLogRecord.getChildRecords()) {
+            TestCaseLogRecord testCaseLogRecord = (TestCaseLogRecord) selectedTestCaseLogObject;
+            switch (QTestIntegrationUtil.evaluateTestCaseLog(testCaseLogRecord,
+                    QTestIntegrationUtil.getSelectedQTestSuite(testSuiteLogRecord), reportEntity)) {
+                case CAN_INTEGRATE:
+                    testCasesCanBeUploaded.add(testCaseLogRecord);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if (testCasesCanBeUploaded.size() > 0) {
+            return new ReportTestCaseLogPair(reportEntity, testCasesCanBeUploaded);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -97,16 +138,19 @@ public class QTestUploadReportHandler extends AbstractQTestHandler {
      * @param testCasesCanBeUploaded
      * @param reportEntity
      * @param shell
+     *            used when system needs to open a warning dialog.
      */
-    public static void performUploadTestCaseLogs(List<TestCaseLogRecord> testCasesCanBeUploaded,
-            ReportEntity reportEntity, Shell shell) {
+    public static ReportUploadedPreviewPair transform(ReportTestCaseLogPair testCaseLogPair, Shell shell) {
         try {
+            ReportEntity reportEntity = testCaseLogPair.getReportEntity();
+            List<TestCaseLogRecord> testCasesCanBeUploaded = testCaseLogPair.getTestCaseLogs();
             ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-            
-            TestSuiteLogRecord testSuiteLogRecord = LogRecordLookup.getInstance().getTestSuiteLogRecord(reportEntity);
+
+            TestSuiteLogRecord testSuiteLogRecord = LogRecordLookup.getInstance().getTestSuiteLogRecord(
+                    testCaseLogPair.getReportEntity());
 
             QTestSuite qTestSuite = QTestIntegrationUtil.getSelectedQTestSuite(testSuiteLogRecord);
-            
+
             TestSuiteEntity testSuiteEntity = QTestIntegrationUtil.getTestSuiteEntity(testSuiteLogRecord);
 
             QTestProject qTestProject = QTestIntegrationUtil.getTestSuiteRepo(testSuiteEntity, projectEntity)
@@ -138,17 +182,12 @@ public class QTestUploadReportHandler extends AbstractQTestHandler {
                 uploadedPreviewLst.add(uploadedPreviewItem);
             }
 
-            ListReportUploadingPreviewDialog dialog = new ListReportUploadingPreviewDialog(shell, uploadedPreviewLst);
-            if (dialog.open() == Dialog.OK) {
-                UploadTestCaseResultJob job = new UploadTestCaseResultJob(reportEntity, testSuiteEntity,
-                        uploadedPreviewLst, ProjectController.getInstance().getCurrentProject().getFolderLocation());
-                job.setUser(true);
-                job.doTask();
-            }
+            return new ReportUploadedPreviewPair(reportEntity, uploadedPreviewLst);
         } catch (Exception e) {
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.VIEW_MSG_UNABLE_UPLOAD_TEST_RESULT, e.getClass()
                     .getSimpleName());
             LoggerSingleton.logError(e);
+            return null;
         }
     }
 }

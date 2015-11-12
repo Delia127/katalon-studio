@@ -62,7 +62,7 @@ public class QTestDisintegrateTestCaseHandler extends AbstractQTestHandler {
     }
 
     private void disintegrateTestCases(List<IntegratedFileEntity> integratedTestCases) {
-        DisintegrateTestCaseJob job = new DisintegrateTestCaseJob();
+        DisintegrateTestCaseJob job = new DisintegrateTestCaseJob(false);
         job.setFileEntities(integratedTestCases);
         job.doTask();
     }

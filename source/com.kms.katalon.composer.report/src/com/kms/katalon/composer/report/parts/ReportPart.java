@@ -792,12 +792,10 @@ public class ReportPart implements EventHandler {
     }
 
     private void registerListeners() {
-        // TODO Auto-generated method stub
         eventBroker.subscribe(EventConstants.REPORT_UPDATED, this);
     }
 
     public MPart getMPart() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -840,16 +838,15 @@ public class ReportPart implements EventHandler {
     public void handleEvent(org.osgi.service.event.Event event) {
         if (event.getTopic().equals(EventConstants.REPORT_UPDATED)) {
             try {
-                Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-                String updatedReportId = (String) object;
+                Object[] objects = (Object[]) event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+                String updatedReportId = (String) objects[0];
                 if (updatedReportId == null) {
                     return;
                 }
 
                 if (updatedReportId.equals(report.getId())) {
                     prepareBeforeReloading();
-                    LogRecordLookup.getInstance().refreshLogRecord(report);
-                    updateInput(ReportController.getInstance().getReportEntity(updatedReportId));
+                    updateInput((ReportEntity) objects[1]);
                     prepareAfterReloading();
                 }
             } catch (Exception e) {

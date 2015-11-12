@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.swt.SWT;
@@ -257,7 +258,11 @@ public abstract class VariableBuilderDialog extends AbstractDialog {
         textVariableName.setText(fVariable.getName());
 
         String rawDefaultValue = fVariable.getValue();
-
+        if (StringUtils.isBlank(rawDefaultValue)) {
+            rawDefaultValue = "''";
+            fVariable.setValue(rawDefaultValue);
+        }
+        
         if (Pattern.matches(STRING_REGEX, rawDefaultValue)) {
             cbbValueType.select(VariableType.STRING.ordinal());
             textDefaultValue = new Text(container, SWT.BORDER | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
