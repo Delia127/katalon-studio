@@ -31,8 +31,10 @@ public class DriverConnectorCollector {
     public IDriverConnector getDriverConnector(String configFileName, String configFolderPath) throws IOException,
             ExecutionException {
         for (IDriverConnectorContributor driverConnectorContributor : driverConnectorContributorList) {
-            if ((driverConnectorContributor.getConfigFileName() + PropertySettingStoreUtil.PROPERTY_FILE_EXENSION).equals(configFileName)) {
-                return driverConnectorContributor.getDriverConnector(configFolderPath);
+            for (IDriverConnector driverConnector : driverConnectorContributor.getDriverConnector(configFolderPath)) {
+                if ((driverConnector.getSettingFileName() + PropertySettingStoreUtil.PROPERTY_FILE_EXENSION).equals(configFileName)) {
+                    return driverConnector;
+                }
             }
         }
         return null;
