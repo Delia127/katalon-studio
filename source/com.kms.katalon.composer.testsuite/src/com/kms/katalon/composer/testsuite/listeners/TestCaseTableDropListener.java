@@ -38,10 +38,10 @@ public class TestCaseTableDropListener extends TableDropTargetEffect {
             TableItem tableItem = viewer.getTable().getItem(pt);
             TestSuiteTestCaseLink selectedItem = (tableItem != null && tableItem.getData() instanceof TestSuiteTestCaseLink) ? (TestSuiteTestCaseLink) tableItem
                     .getData() : null;
-            int selectedIndex = (selectedItem != null) ? viewer.getIndex(selectedItem) : viewer.getInput().size() - 1;
 
             List<TestSuiteTestCaseLink> addedTestCaseLinked = new ArrayList<TestSuiteTestCaseLink>();
             if (event.data instanceof ITreeEntity[]) {
+                int selectedIndex = (selectedItem != null) ? viewer.getIndex(selectedItem) : viewer.getInput().size();
                 ITreeEntity[] treeEntities = (ITreeEntity[]) event.data;
                 for (int i = treeEntities.length - 1; i >= 0; i--) {
                     if (treeEntities[i] instanceof TestCaseTreeEntity) {
@@ -55,6 +55,8 @@ public class TestCaseTableDropListener extends TableDropTargetEffect {
                     }
                 }
             } else if (event.data instanceof TestSuiteTestCaseLinkTransferData[]) {
+                int selectedIndex = (selectedItem != null) ? viewer.getIndex(selectedItem)
+                        : viewer.getInput().size() - 1;
                 TestSuiteTestCaseLinkTransferData[] testSuiteTestCaseLinkTransferDatas = (TestSuiteTestCaseLinkTransferData[]) event.data;
                 if (testSuiteTestCaseLinkTransferDatas.length != 1) {
                     return;
