@@ -18,11 +18,9 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.preference.PreferenceStore;
 
 import com.google.gson.Gson;
 import com.kms.katalon.constants.PreferenceConstants;
@@ -97,15 +95,15 @@ public abstract class AbstractLauncher {
         FileUtils.writeStringToFile(executionFile, strJson);
     }
 
-    public static void sendReportEmail(TestSuiteEntity testSuite, File csvFile, File logFile, List<Object[]> suitesSummaryForEmail) throws Exception {
-        // Send report email
-        if (testSuite.getMailRecipient() != null && !testSuite.getMailRecipient().equals("")) {
-            IPreferenceStore prefs = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                    PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
-
+    public static void sendReportEmail(TestSuiteEntity testSuite, File csvFile, File logFile,
+            List<Object[]> suitesSummaryForEmail) throws Exception {
+        IPreferenceStore prefs = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
+                PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
+        String[] mailRecipients = getRecipients(testSuite.getMailRecipient(),
+                prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_REPORT_RECIPIENTS));
+        if (mailRecipients.length > 0) {
             EmailConfig conf = new EmailConfig();
-            conf.tos = getRecipients(testSuite.getMailRecipient(),
-                    prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_REPORT_RECIPIENTS));
+            conf.tos = mailRecipients;
             conf.host = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_HOST);
             conf.port = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_PORT);
             conf.from = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_USERNAME);
@@ -114,15 +112,16 @@ public abstract class AbstractLauncher {
             conf.username = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_USERNAME);
             conf.password = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_PASSWORD);
             conf.signature = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_SIGNATURE);
-            conf.sendAttachment = prefs.getBoolean(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_ATTACHMENT);
+            conf.sendAttachment = prefs
+                    .getBoolean(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_ATTACHMENT);
             conf.suitePath = testSuite.getRelativePathForUI();
             conf.logFile = logFile;
-
+            // Send report email
             MailUtil.sendSummaryMail(conf, csvFile, logFile, suitesSummaryForEmail);
         }
     }
 
-    public static void sendSummaryEmail(TestSuiteEntity testSuite, File csvFile, List<Object[]> suitesSummaryForEmail) throws Exception {
+    /*public static void sendSummaryEmail(TestSuiteEntity testSuite, File csvFile, List<Object[]> suitesSummaryForEmail) throws Exception {
         String prefFile = Platform.getInstallLocation()
                 .getDataArea("config/.metadata/.plugins/org.eclipse.core.runtime/.settings/com.kms.katalon.dal.prefs")
                 .getFile();
@@ -148,7 +147,7 @@ public abstract class AbstractLauncher {
                 MailUtil.sendSummaryMail(conf, csvFile, null, suitesSummaryForEmail);
             }
         }
-    }
+    }*/
 
     protected List<Object[]> collectSummaryData(List<String> csvReports) throws Exception {
         List<Object[]> newDatas = new ArrayList<Object[]>();
