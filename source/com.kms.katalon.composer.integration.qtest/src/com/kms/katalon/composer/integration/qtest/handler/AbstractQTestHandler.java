@@ -36,4 +36,12 @@ public class AbstractQTestHandler {
         }
         return null;
     }
+    
+    /**
+     * Gets current project entity
+     * @return
+     */
+    protected final ProjectEntity getProjectEntity() {
+        return ProjectController.getInstance().getCurrentProject();
+    }
 }

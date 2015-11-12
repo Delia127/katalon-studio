@@ -1012,16 +1012,9 @@ public class LogViewerPart implements EventHandler {
 
     private void setWrapTxtMessage() {
         boolean wrap = preferenceStore.getBoolean(ExecutionPreferenceConstans.EXECUTION_ENABLE_WORD_WRAP);
-        if (!wrap) {
-            if (txtMessage.getListeners(SWT.Modify).length == 0) {
-                txtMessage.addListener(SWT.Modify, ControlUtils.getAutoHideStyledTextScrollbarListener);
-                txtMessage.addListener(SWT.Resize, ControlUtils.getAutoHideStyledTextScrollbarListener);
-            }
-        } else {
-            if (txtMessage.getListeners(SWT.Modify).length > 0) {
-                txtMessage.removeListener(SWT.Modify, ControlUtils.getAutoHideStyledTextScrollbarListener);
-                txtMessage.removeListener(SWT.Resize, ControlUtils.getAutoHideStyledTextScrollbarListener);
-            }
+        if (txtMessage.getListeners(SWT.Modify).length == 0) {
+            txtMessage.addListener(SWT.Modify, ControlUtils.getAutoHideStyledTextScrollbarListener);
+            txtMessage.addListener(SWT.Resize, ControlUtils.getAutoHideStyledTextScrollbarListener);
         }
         txtMessage.setWordWrap(wrap);
         txtMessage.layout();

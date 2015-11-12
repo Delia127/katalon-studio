@@ -19,9 +19,7 @@ import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.model.TestSuiteQTestSuitePair;
 import com.kms.katalon.composer.integration.qtest.model.TestSuiteRepo;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteController;
-import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager;
 import com.kms.katalon.integration.qtest.credential.IQTestCredential;
@@ -127,11 +125,6 @@ public class UploadTestSuiteJob extends UploadJob {
             }
         }
         return -1;
-    }
-
-    private String getProjectDir() {
-        ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-        return projectEntity.getFolderLocation();
     }
 
     private SynchronizedConfirmationDialog getConfirmedDialog(final QTestSuite qTestSuite,

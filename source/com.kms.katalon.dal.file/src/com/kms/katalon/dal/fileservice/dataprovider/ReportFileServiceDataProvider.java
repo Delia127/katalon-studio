@@ -96,4 +96,10 @@ public class ReportFileServiceDataProvider implements IReportDataProvider {
         EntityService.getInstance().saveFolderMetadataEntity(report);
         return report;
     }
+
+    @Override
+    public FolderEntity getReportFolder(TestSuiteEntity testSuite, ProjectEntity project) throws Exception {
+        return FolderFileServiceManager.getFolder(ReportFileServiceManager.getReportFolderOfTestSuite(project,
+                testSuite));
+    }
 }

@@ -77,7 +77,11 @@ public class ControlUtils {
             t.getDisplay().timerExec(50, new Runnable() {
                 @Override
                 public void run() {
-                    t.getHorizontalBar().setVisible(r2.width <= p.x);
+                    if (!t.getWordWrap()) {
+                        t.getHorizontalBar().setVisible(r2.width <= p.x);
+                    } else {
+                        t.getHorizontalBar().setVisible(false);
+                    }
                     t.getVerticalBar().setVisible(r2.height <= p.y);
                     if (event.type == SWT.Modify) {
                         t.getParent().layout(true);
