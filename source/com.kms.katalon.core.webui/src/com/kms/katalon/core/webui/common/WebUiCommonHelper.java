@@ -466,7 +466,7 @@ public class WebUiCommonHelper extends KeywordHelper {
             return propertyValue;
         }
         if (propertyName.equals(WEB_ELEMENT_TAG)) {
-            return "//" + propertyName;
+            return "//" + propertyValue;
         }
         StringBuilder expression = new StringBuilder();
         if (propertyName.equals(WEB_ELEMENT_ATTRIBUTE_TEXT) || propertyName.equals(WEB_ELEMENT_ATTRIBUTE_LINK_TEXT)) {
