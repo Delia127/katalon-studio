@@ -15,10 +15,16 @@ public class VariableDialogModel {
     }
     
     public String getName() {
+        if (fName == null) {
+            fName = "";
+        }
         return fName;
     }
     
     public String getValue() {
+        if (fValue == null) {
+            fValue = "";
+        }
         return fValue;
     }
     
