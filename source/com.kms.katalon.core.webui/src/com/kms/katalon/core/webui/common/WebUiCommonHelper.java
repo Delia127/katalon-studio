@@ -25,6 +25,7 @@ import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 
 public class WebUiCommonHelper extends KeywordHelper {
+    private static final String WEB_ELEMENT_TAG = "tag";
     private static final String XPATH_PREFIX = "//";
     private static final String XPATH_ATTRIBUTE_PREFIX = "@";
     private static final String XPATH_CONDITION_TYPE_NOT_MATCHES = "not(matches(%s,'%s'))";
@@ -463,6 +464,9 @@ public class WebUiCommonHelper extends KeywordHelper {
         String propertyValue = property.getValue();
         if (propertyName.equals(WEB_ELEMENT_XPATH)) {
             return propertyValue;
+        }
+        if (propertyName.equals(WEB_ELEMENT_TAG)) {
+            return "//" + propertyName;
         }
         StringBuilder expression = new StringBuilder();
         if (propertyName.equals(WEB_ELEMENT_ATTRIBUTE_TEXT) || propertyName.equals(WEB_ELEMENT_ATTRIBUTE_LINK_TEXT)) {
