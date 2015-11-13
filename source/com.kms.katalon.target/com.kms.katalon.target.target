@@ -65,6 +65,8 @@
 <unit id="javax.persistence" version="2.1.0.v201304241213"/>
 <unit id="org.jboss.logging.jboss-logging-annotations" version="1.2.0.Beta1"/>
 <unit id="org.apache.xmlbeans" version="2.6.0"/>
+<unit id="org.apache.httpcomponents.httpclient" version="4.5.1"/>
+<unit id="org.apache.httpcomponents.httpcore" version="4.4.4"/>
 <repository location="http://localhost:9999/site"/>
 </location>
 </locations>

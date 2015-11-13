@@ -43,7 +43,6 @@ public class DeleteTestCaseFolderHandler extends DeleteTestCaseHandler implement
                 return false;
             }
             
-            String folderId = FolderController.getInstance().getIdForDisplay(folder);
             List<Object> descendant = FolderController.getInstance().getAllDescentdantEntities(folder);
             monitor.beginTask("Deleting folder '" + folder.getName() + "'...", descendant.size() + 1);
 
@@ -68,9 +67,7 @@ public class DeleteTestCaseFolderHandler extends DeleteTestCaseHandler implement
 
             deleteFolder(folder, undeletedTestCases, monitor);
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, folderTreeEntity.getParent());
-            eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, folderId);
             return true;
-
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE, "Unable to delete folder.");
