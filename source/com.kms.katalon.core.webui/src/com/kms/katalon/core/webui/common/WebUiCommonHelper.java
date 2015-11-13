@@ -42,6 +42,8 @@ public class WebUiCommonHelper extends KeywordHelper {
     private static final String WEB_ELEMENT_ATTRIBUTE_TEXT = "text";
     private static final String WEB_ELEMENT_XPATH = "xpath";
     private static KeywordLogger logger = KeywordLogger.getInstance();
+    
+    private static final String XPATH_INTESECTION_FORMULA = "%s[count(. | %s) = count(%s)]";
 
     public static boolean isTextPresent(WebDriver webDriver, String text, boolean isRegex) throws WebDriverException,
             IllegalArgumentException {
@@ -450,7 +452,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                 xpathString.append(xpath);
             } else {
                 String existingXpath = xpathString.toString();
-                xpathString = new StringBuilder("(" + xpath + ")[. = (" + existingXpath + ")]");
+                xpathString = new StringBuilder(String.format(XPATH_INTESECTION_FORMULA, existingXpath, xpath, xpath));
             }
         }
         if (!xpathString.toString().isEmpty()) {

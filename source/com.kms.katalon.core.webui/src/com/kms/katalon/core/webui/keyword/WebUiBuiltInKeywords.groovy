@@ -63,7 +63,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 			}
 			logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_BROWSER_IS_OPENED_W_URL, rawUrl));
 		}
-		, flowControl, true, (rawUrl != null) ? MessageFormat.format(StringConstants.KW_MSG_UNABLE_TO_OPEN_BROWSER_W_URL, rawUrl) : StringConstants.KW_MSG_UNABLE_TO_OPEN_BROWSER)
+		, flowControl, false, (rawUrl != null) ? MessageFormat.format(StringConstants.KW_MSG_UNABLE_TO_OPEN_BROWSER_W_URL, rawUrl) : StringConstants.KW_MSG_UNABLE_TO_OPEN_BROWSER)
 	}
 
 
