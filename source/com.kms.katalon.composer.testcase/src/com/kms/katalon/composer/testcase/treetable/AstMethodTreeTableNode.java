@@ -12,8 +12,8 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.testcase.ast.editors.MethodObjectBuilderCellEditor;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
-import com.kms.katalon.composer.testcase.editors.MethodObjectBuilderCellEditor;
 import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableUtil;
 import com.kms.katalon.core.groovy.GroovyParser;
