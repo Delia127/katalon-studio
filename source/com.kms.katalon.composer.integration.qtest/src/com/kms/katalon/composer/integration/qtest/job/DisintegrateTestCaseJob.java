@@ -60,7 +60,7 @@ public class DisintegrateTestCaseJob extends UploadJob {
                                     new Object[] { testCaseEntity.getId(), testCaseEntity });
                 } else if (fileEntity instanceof FolderEntity) {
                     FolderEntity folderEntity = (FolderEntity) fileEntity;
-                    if (folderEntity.getFolderType() != FolderType.TESTCASE) continue;
+                    if (folderEntity.getFolderType() != FolderType.TESTCASE) { continue; }
 
                     String folderId = FolderController.getInstance().getIdForDisplay(folderEntity);
                     monitor.subTask(MessageFormat.format(StringConstants.JOB_SUB_TASK_DISINTEGRATE_TEST_CASE, folderId));
@@ -71,14 +71,11 @@ public class DisintegrateTestCaseJob extends UploadJob {
                         if (repo != null && repo.getFolderId().equals(folderId)) {
                             if (fCleanRepo) {
                                 removeFolderIdFromProject(folderId, repo.getQTestProject());
-                            } else {
-                                continue;
+                                saveFolder(folderEntity, folderIntegratedEntity);
                             }
+                        } else {
+                            saveFolder(folderEntity, folderIntegratedEntity);
                         }
-
-                        folderEntity.getIntegratedEntities().remove(folderIntegratedEntity);
-
-                        FolderController.getInstance().saveFolder(folderEntity);
                     }
 
                     // Remove all descendant test cases or folders by removing qTest integrated entity in file system
@@ -126,6 +123,12 @@ public class DisintegrateTestCaseJob extends UploadJob {
 
         }
         return Status.OK_STATUS;
+    }
+    
+    private void saveFolder(FolderEntity folderEntity, IntegratedEntity folderIntegratedEntity) throws Exception {
+        folderEntity.getIntegratedEntities().remove(folderIntegratedEntity);
+
+        FolderController.getInstance().saveFolder(folderEntity);
     }
 
     private void removeFolderIdFromProject(String folderId, QTestProject qTestProject) throws Exception {

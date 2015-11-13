@@ -6,23 +6,21 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.e4.ui.di.UISynchronize;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.dialogs.SynchronizedConfirmationDialog;
+import com.kms.katalon.composer.components.impl.dialogs.YesNoAllOptions;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
-import com.kms.katalon.composer.integration.qtest.dialog.TestCaseRootSelectionDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
-import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationFolderManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestCaseManager;
@@ -30,20 +28,15 @@ import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
 import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
-import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 
 public class UploadTestCaseJob extends UploadJob {
 
     private UISynchronize sync;
-    private boolean isMergeConfirmed;
-    private boolean isUserCanceled;
-    private QTestModule qTestSelectedModule;
 
     public UploadTestCaseJob(String name, UISynchronize sync) {
         super(name);
         setUser(true);
         this.sync = sync;
-        isUserCanceled = false;
     }
 
     @Override
@@ -53,11 +46,10 @@ public class UploadTestCaseJob extends UploadJob {
 
         for (FileEntity fileEntity : getFileEntities()) {
             try {
-                if (isUserCanceled || monitor.isCanceled()) {
+                if (monitor.isCanceled()) {
                     return Status.CANCEL_STATUS;
                 }
 
-                isMergeConfirmed = false;
                 if (fileEntity instanceof TestCaseEntity) {
                     TestCaseEntity testCaseEntity = (TestCaseEntity) fileEntity;
                     uploadTestCase(testCaseEntity, monitor, projectDir);
@@ -83,55 +75,35 @@ public class UploadTestCaseJob extends UploadJob {
 
         QTestProject qTestProject = QTestIntegrationUtil.getTestCaseRepo(folderEntity, projectEntity).getQTestProject();
 
-        if (folderEntity.getParentFolder() == null) {
-            // folder is root of test case
-            // get moduleRoot from qTest and all its children for user can
-            // select
-            QTestModule moduleRoot = QTestIntegrationFolderManager.getModuleRoot(
-                    new QTestSettingCredential(projectDir), qTestProject.getId());
-            QTestIntegrationFolderManager.updateModule(projectDir, qTestProject.getId(), moduleRoot, true);
+        QTestModule qTestParentModule = QTestIntegrationFolderManager.getQTestModuleByFolderEntity(projectDir,
+                folderEntity.getParentFolder());
 
-            performTestCaseRootSelection(moduleRoot);
-            if (qTestSelectedModule != null) {
-                IntegratedEntity folderIntegratedEntity = QTestIntegrationFolderManager
-                        .getFolderIntegratedEntityByQTestModule(qTestSelectedModule);
-                folderEntity.getIntegratedEntities().add(folderIntegratedEntity);
+        QTestModule qTestModule = null;
 
-                FolderController.getInstance().saveFolder(folderEntity);
-            } else {
-                isUserCanceled = true;
-                return;
+        QTestIntegrationFolderManager.updateModule(projectDir, qTestProject.getId(), qTestParentModule, false);
+
+        for (QTestModule siblingQTestModule : qTestParentModule.getChildModules()) {
+            if (!folderEntity.getName().equalsIgnoreCase(siblingQTestModule.getName())) {
+                continue;
             }
-        } else {
-            QTestModule qTestParentModule = QTestIntegrationFolderManager.getQTestModuleByFolderEntity(projectDir,
-                    folderEntity.getParentFolder());
+            // let user choose merge or not
+            SynchronizedConfirmationDialog dialog = performFolderDuplicatedConfirmation(folderId, siblingQTestModule);
+            sync.syncExec(dialog);
 
-            QTestModule qTestModule = null;
-            
-            QTestIntegrationFolderManager.updateModule(projectDir, qTestProject.getId(), qTestParentModule, false);
-
-            for (QTestModule siblingQTestModule : qTestParentModule.getChildModules()) {
-                if (!folderEntity.getName().equalsIgnoreCase(siblingQTestModule.getName())) {
-                    continue;
-                }
-                // let user choose merge or not
-                performFolderDuplicatedConfirmation(folderId, siblingQTestModule);
-
-                if (isMergeConfirmed) {
-                    qTestModule = siblingQTestModule;
-                    break;
-                }
+            if (dialog.getConfirmedValue() == YesNoAllOptions.YES) {
+                qTestModule = siblingQTestModule;
             }
-
-            if (qTestModule == null) {
-                qTestModule = createNewQTestModule(qTestProject, qTestParentModule, projectDir, folderEntity);
-            }
-
-            folderEntity.getIntegratedEntities().add(
-                    QTestIntegrationFolderManager.getFolderIntegratedEntityByQTestModule(qTestModule));
-
-            FolderController.getInstance().saveFolder(folderEntity);
+            break;
         }
+
+        if (qTestModule == null) {
+            qTestModule = createNewQTestModule(qTestProject, qTestParentModule, projectDir, folderEntity);
+        }
+
+        folderEntity.getIntegratedEntities().add(
+                QTestIntegrationFolderManager.getFolderIntegratedEntityByQTestModule(qTestModule));
+
+        FolderController.getInstance().saveFolder(folderEntity);
     }
 
     private void uploadTestCase(TestCaseEntity testCaseEntity, IProgressMonitor monitor, String projectDir)
@@ -156,12 +128,13 @@ public class UploadTestCaseJob extends UploadJob {
         for (QTestTestCase siblingQTestCase : qTestParentModule.getChildTestCases()) {
             if (!testCaseEntity.getName().equalsIgnoreCase(siblingQTestCase.getName())) continue;
             // let user choose merge or not
-            performTestCaseDuplicatedConfirmation(testCaseId, siblingQTestCase);
+            SynchronizedConfirmationDialog dialog = performTestCaseDuplicatedConfirmation(testCaseId, siblingQTestCase);
+            sync.syncExec(dialog);
 
-            if (isMergeConfirmed) {
+            if (dialog.getConfirmedValue() == YesNoAllOptions.YES) {
                 qTestTestCase = siblingQTestCase;
-                break;
             }
+            break;
         }
 
         if (qTestTestCase == null) {
@@ -204,50 +177,33 @@ public class UploadTestCaseJob extends UploadJob {
         });
     }
 
-    private void performTestCaseDuplicatedConfirmation(final String testCaseId, final QTestTestCase siblingQTestCase) {
-        sync.syncExec(new Runnable() {
+    private SynchronizedConfirmationDialog performTestCaseDuplicatedConfirmation(final String testCaseId,
+            final QTestTestCase siblingQTestCase) {
+        return new SynchronizedConfirmationDialog() {
             @Override
             public void run() {
-                isMergeConfirmed = MessageDialog.open(
+                boolean confirmed = MessageDialog.open(
                         MessageDialog.QUESTION,
                         null,
                         StringConstants.DIA_TITLE_TEST_CASE_DUPLICATION,
                         MessageFormat.format(StringConstants.DIA_MSG_CONFIRM_MERGE_UPLOADED_TEST_CASE,
                                 siblingQTestCase.getId(), testCaseId), SWT.NONE);
+                setConfirmedValue(confirmed ? YesNoAllOptions.YES : YesNoAllOptions.NO);
             }
-        });
+        };
     }
 
-    private void performFolderDuplicatedConfirmation(final String folderId, final QTestModule siblingQTestModule) {
-        sync.syncExec(new Runnable() {
-
+    private SynchronizedConfirmationDialog performFolderDuplicatedConfirmation(final String folderId,
+            final QTestModule siblingQTestModule) {
+        return new SynchronizedConfirmationDialog() {
             @Override
             public void run() {
-                isMergeConfirmed = MessageDialog.open(MessageDialog.QUESTION, null,
+                boolean confirmed = MessageDialog.open(MessageDialog.QUESTION, null,
                         StringConstants.DIA_TITLE_FOLDER_DUPLICATION, MessageFormat.format(
                                 StringConstants.DIA_MSG_CONFIRM_MERGE_UPLOADED_TEST_CASE_FOLDER,
                                 siblingQTestModule.getId(), folderId), SWT.NONE);
+                setConfirmedValue(confirmed ? YesNoAllOptions.YES : YesNoAllOptions.NO);
             }
-        });
-    }
-
-    /**
-     * Open a confirmation dialog that requires user choose test case root folder
-     * 
-     * @param moduleRoot
-     */
-    private void performTestCaseRootSelection(final QTestModule moduleRoot) {
-        sync.syncExec(new Runnable() {
-            @Override
-            public void run() {
-                TestCaseRootSelectionDialog testCaseRootSelectionDialog = new TestCaseRootSelectionDialog(Display
-                        .getDefault().getActiveShell(), moduleRoot, false);
-                if (testCaseRootSelectionDialog.open() == Dialog.OK) {
-                    qTestSelectedModule = testCaseRootSelectionDialog.getSelectedModule();
-                } else {
-                    isUserCanceled = true;
-                }
-            }
-        });
+        };
     }
 }

@@ -255,18 +255,29 @@ public class QTestIntegrationUtil {
         if (entity instanceof FolderEntity) {
 
             FolderEntity folderEntity = (FolderEntity) entity;
-            if (isIntegrated) {
-                return true;
-            }
 
             if (folderEntity.getFolderType() == FolderType.TESTCASE) {
-                if (getTestCaseRepo(entity, projectEntity) == null) {
+                TestCaseRepo testCaseRepo = getTestCaseRepo(entity, projectEntity);
+                if (testCaseRepo == null) {
                     return false;
+                }
+                
+                if (testCaseRepo.getFolderId().equals(FolderController.getInstance().getIdForDisplay(folderEntity))) {
+                    isIntegrated = false;
                 }
             } else if (folderEntity.getFolderType() == FolderType.TESTSUITE) {
-                if (getTestSuiteRepo(entity, projectEntity) == null) {
+                TestSuiteRepo testSuiteRepo = getTestSuiteRepo(entity, projectEntity);
+                if (testSuiteRepo == null) {
                     return false;
                 }
+                
+                if (testSuiteRepo.getFolderId().equals(FolderController.getInstance().getIdForDisplay(folderEntity))) {
+                    isIntegrated = false;
+                }
+            }
+
+            if (isIntegrated) {
+                return true;
             }
 
             for (FileEntity childEntity : FolderController.getInstance().getChildren(folderEntity)) {
@@ -710,7 +721,9 @@ public class QTestIntegrationUtil {
                     .getQTestSuiteListByIntegratedEntity(testSuiteIntegratedEntity);
             QTestSuite selectedQTestSuite = QTestIntegrationTestSuiteManager
                     .getSelectedQTestSuiteByIntegratedEntity(qTestSuiteCollection);
-
+            if (selectedQTestSuite == null) {
+                return null;
+            }
             QTestProject qTestProject = QTestIntegrationUtil.getTestSuiteRepo(testSuiteEntity, projectEntity)
                     .getQTestProject();
             return QTestIntegrationTestSuiteManager.getTestRuns(selectedQTestSuite, qTestProject,

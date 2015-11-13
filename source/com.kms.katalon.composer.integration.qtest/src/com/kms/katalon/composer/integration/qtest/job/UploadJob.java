@@ -18,6 +18,7 @@ public abstract class UploadJob extends Job {
 
     public UploadJob(String name) {
         super(name);
+        projectEntity = ProjectController.getInstance().getCurrentProject();
     }
 
     public List<IntegratedFileEntity> getFileEntities() {
@@ -29,8 +30,6 @@ public abstract class UploadJob extends Job {
     }
 
     public void doTask() {
-        projectEntity = ProjectController.getInstance().getCurrentProject();
-
         token = QTestSettingStore.getToken(projectEntity.getFolderLocation());
         if (token == null || token.isEmpty()) {
             MessageDialog.openWarning(null, StringConstants.WARN, StringConstants.VIEW_MSG_INVALID_AUTHENTICATION);
