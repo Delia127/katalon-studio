@@ -39,11 +39,17 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  com.google.gson;bundle-version="2.3.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
-Export-Package: com.kms.katalon.composer.testcase.constants,
+Export-Package: com.kms.katalon.composer.testcase.ast.dialogs,
+ com.kms.katalon.composer.testcase.ast.editors,
+ com.kms.katalon.composer.testcase.constants,
+ com.kms.katalon.composer.testcase.dialogs,
+ com.kms.katalon.composer.testcase.editors,
+ com.kms.katalon.composer.testcase.model,
  com.kms.katalon.composer.testcase.parts,
  com.kms.katalon.composer.testcase.parts.integration,
  com.kms.katalon.composer.testcase.preferences,
  com.kms.katalon.composer.testcase.providers,
+ com.kms.katalon.composer.testcase.support,
  com.kms.katalon.composer.testcase.util
 Bundle-ClassPath: .
 Import-Package: com.kms.katalon.composer.testsuite.editors

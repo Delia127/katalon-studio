@@ -141,6 +141,8 @@ public class GroovyUtil {
     public static void initGroovyProjectClassPath(ProjectEntity projectEntity, FolderEntity testCaseRootFolder,
             boolean isNew, IProgressMonitor monitor) throws Exception {
         IProject groovyProject = getGroovyProject(projectEntity);
+        groovyProject.refreshLocal(IResource.DEPTH_ONE, monitor);
+        
         IFolder keywordSourceFolder = groovyProject.getFolder(KEYWORD_SOURCE_FOLDER_NAME);
         if (!keywordSourceFolder.exists()) {
             keywordSourceFolder.create(true, true, null);

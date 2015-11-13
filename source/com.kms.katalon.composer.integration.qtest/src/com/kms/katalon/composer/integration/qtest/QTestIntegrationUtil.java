@@ -197,15 +197,25 @@ public class QTestIntegrationUtil {
     public static TestSuiteRepo getTestSuiteRepo(IntegratedFileEntity entity, ProjectEntity projectEntity)
             throws Exception {
         if (entity == null) return null;
+        String entityId = entity.getRelativePathForUI().replace(File.separator,
+                GlobalStringConstants.ENTITY_ID_SEPERATOR);
+
+        return getTestSuiteRepo(entityId, projectEntity);
+    }
+    
+    /**
+     *  Returns {@link TestSuiteRepo} that the given <code>entityId</code> belongs to.
+     * @param entityId
+     * @param projectEntity
+     * @return
+     */
+    public static TestSuiteRepo getTestSuiteRepo(String entityId, ProjectEntity projectEntity) {
         IntegratedEntity projectIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(projectEntity);
         if (projectIntegratedEntity == null) {
             return null;
         }
-
         List<QTestProject> qTestProjects = QTestIntegrationProjectManager
                 .getQTestProjectsByIntegratedEntity(projectIntegratedEntity);
-        String entityId = entity.getRelativePathForUI().replace(File.separator,
-                GlobalStringConstants.ENTITY_ID_SEPERATOR);
 
         for (TestSuiteRepo testSuiteRepo : getTestSuiteRepositories(projectEntity, qTestProjects)) {
             String repoFolderId = testSuiteRepo.getFolderId();
@@ -245,18 +255,29 @@ public class QTestIntegrationUtil {
         if (entity instanceof FolderEntity) {
 
             FolderEntity folderEntity = (FolderEntity) entity;
-            if (isIntegrated) {
-                return true;
-            }
 
             if (folderEntity.getFolderType() == FolderType.TESTCASE) {
-                if (getTestCaseRepo(entity, projectEntity) == null) {
+                TestCaseRepo testCaseRepo = getTestCaseRepo(entity, projectEntity);
+                if (testCaseRepo == null) {
                     return false;
+                }
+                
+                if (testCaseRepo.getFolderId().equals(FolderController.getInstance().getIdForDisplay(folderEntity))) {
+                    isIntegrated = false;
                 }
             } else if (folderEntity.getFolderType() == FolderType.TESTSUITE) {
-                if (getTestSuiteRepo(entity, projectEntity) == null) {
+                TestSuiteRepo testSuiteRepo = getTestSuiteRepo(entity, projectEntity);
+                if (testSuiteRepo == null) {
                     return false;
                 }
+                
+                if (testSuiteRepo.getFolderId().equals(FolderController.getInstance().getIdForDisplay(folderEntity))) {
+                    isIntegrated = false;
+                }
+            }
+
+            if (isIntegrated) {
+                return true;
             }
 
             for (FileEntity childEntity : FolderController.getInstance().getChildren(folderEntity)) {
@@ -267,7 +288,6 @@ public class QTestIntegrationUtil {
             return false;
 
         } else if (entity instanceof TestCaseEntity) {
-
             return isIntegrated && (getTestCaseRepo(entity, projectEntity) != null);
         } else if (entity instanceof TestSuiteEntity) {
             return isIntegrated && (getTestSuiteRepo(entity, projectEntity) != null);
@@ -526,6 +546,12 @@ public class QTestIntegrationUtil {
         return QTestLogEvaluation.CAN_INTEGRATE;
     }
 
+    /**
+     * Checks that the givens parameters has the same {@link QTestProject} or not.
+     * @param testCaseLogRecord
+     * @param testSuiteLogRecord
+     * @return true if same. Otherwise, false.
+     */
     private static boolean isSameQTestProject(TestCaseLogRecord testCaseLogRecord, TestSuiteLogRecord testSuiteLogRecord) {
         try {
             ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
@@ -695,13 +721,35 @@ public class QTestIntegrationUtil {
                     .getQTestSuiteListByIntegratedEntity(testSuiteIntegratedEntity);
             QTestSuite selectedQTestSuite = QTestIntegrationTestSuiteManager
                     .getSelectedQTestSuiteByIntegratedEntity(qTestSuiteCollection);
-
+            if (selectedQTestSuite == null) {
+                return null;
+            }
             QTestProject qTestProject = QTestIntegrationUtil.getTestSuiteRepo(testSuiteEntity, projectEntity)
                     .getQTestProject();
             return QTestIntegrationTestSuiteManager.getTestRuns(selectedQTestSuite, qTestProject,
                     new QTestSettingCredential(projectEntity.getFolderLocation()));
         }
         return null;
+    }
+    
+    /**
+     * Checks the given report {@link FolderEntity} is in any {@link TestSuiteRepo} or not.
+     * @param folderEntity
+     * @param projectEntity
+     * @return true if it's in a {@link TestSuiteRepo}. Otherwise, false.
+     */
+    public static boolean isFolderReportInTestSuiRepo(FolderEntity folderEntity, ProjectEntity projectEntity) {
+        if (folderEntity.getFolderType() != FolderType.REPORT) {
+            return false;
+        }
 
+        String testSuiteId = ReportController.getInstance().getTestSuiteFolderId(
+                FolderController.getInstance().getIdForDisplay(folderEntity));
+        TestSuiteRepo testSuiteRepo = QTestIntegrationUtil.getTestSuiteRepo(testSuiteId, projectEntity);
+        if (testSuiteRepo == null) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }

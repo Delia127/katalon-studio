@@ -142,13 +142,14 @@ public class QTestUploadTestCaseHandler extends AbstractQTestHandler {
             } else if (selectedObject instanceof FolderEntity) {
                 FolderEntity folder = (FolderEntity) selectedObject;
                 switch (folder.getFolderType()) {
-                    case TESTCASE:
+                    case TESTCASE: {
                         List<IntegratedFileEntity> uploadedEntities = getNotIntegratedChildren(folder);
                         uploadTestCases(uploadedEntities);
                         if (QTestIntegrationUtil.getIntegratedEntity(folder) == null) {
                             addParentToUploadedEntities(folder, uploadedEntities);
                         }
                         break;
+                    }
                     default:
                         break;
                 }

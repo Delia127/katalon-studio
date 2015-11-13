@@ -82,6 +82,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String JOB_SUB_TASK_UPLOAD_TEST_RESULT = "Uploading result of test case: {0}...";
     
     //UploadTestSuiteJob
+    public static final String JOB_TASK_UPLOAD_TEST_SUITE = "Uploading test suite(s)...";
     public static final String DIA_TITLE_TEST_SUITE_DUPLICATION = "Test Suite Duplication Detected";
     public static final String DIA_MSG_CONFIRM_MERGE_UPLOADED_TEST_SUITE = "System has detected that a test suite on qTest"
             + " with id: {0} has the same name as test suite: ''{1}'' under {2}: ''{3}''.\nDo you want to merge them?";
@@ -211,8 +212,8 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String VIEW_MSG_TEST_SUITE_NOT_IN_REPO = "Please make sure this Test Suite is in a valid Test "
             + "Suite Repository.";
-    public static final String VIEW_CONFIRM_DISINTEGRATE_TEST_SUITE = "Are you sure you want to disintegrate this test "
-            + "suite with qTest?";
+    public static final String VIEW_CONFIRM_DISINTEGRATE_TEST_SUITE = "Are you sure you want to disintegrate this/these test "
+            + "suite(s) with qTest?";
     public static final String VIEW_MSG_UNABLE_DISINTEGRATE_TEST_SUITE = "Unable to disintegrate this test suite on "
             + "qTest.";
     public static final String VIEW_MSG_ENABLE_INTEGRATION = "Please enable qTest integration in Project Setting page.";

@@ -8,7 +8,7 @@ import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.swt.widgets.Composite;
 
-import com.kms.katalon.composer.testcase.dialogs.AstBuilderDialog;
+import com.kms.katalon.composer.testcase.ast.dialogs.AstBuilderDialog;
 import com.kms.katalon.composer.testcase.model.ConstantValueType;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
 

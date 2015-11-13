@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ASCII"?>
-<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_lZUq4EurEeWj7OhDHfltSQ">
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_lZUq4EurEeWj7OhDHfltSQ">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_uad7QEurEeWj7OhDHfltSQ" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:0">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_dSxs0FqZEeWwu6VuxUpakQ" elementId="com.kms.katalon.composer.webui.execution.handledmenuitem.chrome" label="Chrome" iconURI="platform:/plugin/com.kms.katalon.composer.webui/icons/chrome_16.png" command="_xoxN0EusEeWj7OhDHfltSQ"/>
   </fragments>
@@ -34,5 +34,8 @@
     <elements xsi:type="commands:Handler" xmi:id="_SPm00E_ZEeWHcr3axp_7hQ" elementId="com.kms.katalon.composer.webui.execution.handler.safari" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.handler.SafariExecutionHandler" command="_6EqcEEusEeWj7OhDHfltSQ"/>
     <elements xsi:type="commands:Handler" xmi:id="_PgQrwFIgEeWdwJZaPXJ0_w" elementId="com.kms.katalon.composer.webui.handler.remoteweb" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.handler.RemoteWebDriverExecutionHandler" command="_M23AkFIgEeWdwJZaPXJ0_w"/>
     <elements xsi:type="commands:Handler" xmi:id="_2uxlgIOrEeWd2KCe_pA0jw" elementId="com.kms.katalon.composer.webui.handler.edge" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.handler.EdgeExecutionHandler" command="_1MCncIOrEeWd2KCe_pA0jw"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_7NCxIIhMEeWcD-k4EBciyw" featurename="addons" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="application:Addon" xmi:id="_7NCxIYhMEeWcD-k4EBciyw" elementId="com.kms.katalon.composer.webui.addon.inject" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.addon.WebUIInjectionManagerAddon"/>
   </fragments>
 </fragment:ModelFragments>

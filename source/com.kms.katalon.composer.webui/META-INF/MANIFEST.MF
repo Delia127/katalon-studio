@@ -4,7 +4,9 @@ Bundle-Name: Webui
 Bundle-SymbolicName: com.kms.katalon.composer.webui;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
-Require-Bundle: com.kms.katalon.custom,
+Require-Bundle: org.eclipse.jdt.core,
+ org.codehaus.groovy,
+ com.kms.katalon.custom,
  org.eclipse.osgi,
  com.kms.katalon.core.webui,
  org.eclipse.jface,
@@ -16,12 +18,16 @@ Require-Bundle: com.kms.katalon.custom,
  com.kms.katalon.constant,
  org.eclipse.e4.ui.model.workbench,
  org.eclipse.e4.ui.di,
- javax.inject,
  org.eclipse.e4.core.di,
  com.kms.katalon.composer.execution,
  org.eclipse.e4.core.commands,
  com.kms.katalon.composer.components,
- org.eclipse.core.runtime,
  org.eclipse.e4.core.services,
- com.kms.katalon.execution.webui;bundle-version="1.0.0"
+ com.kms.katalon.execution.webui;bundle-version="1.0.0",
+ com.kms.katalon.composer.testcase;bundle-version="1.0.0",
+ org.eclipse.osgi.services,
+ com.kms.katalon.selenium-standalone,
+ org.eclipse.equinox.preferences
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Import-Package: javax.annotation;version="1.2.0",
+ org.eclipse.core.runtime

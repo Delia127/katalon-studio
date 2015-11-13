@@ -29,6 +29,7 @@ import com.kms.katalon.composer.integration.qtest.constant.ImageConstants;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.handler.QTestDisintegrateReportHandler;
 import com.kms.katalon.composer.integration.qtest.handler.QTestUploadReportHandler;
+import com.kms.katalon.composer.integration.qtest.model.ReportTestCaseLogPair;
 import com.kms.katalon.composer.report.parts.integration.AbstractReportTestCaseIntegrationView;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
@@ -193,12 +194,12 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
         try {
             ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
             String projectDir = projectEntity.getFolderLocation();
-            
+
             QTestProject qTestProject = QTestIntegrationUtil.getTestSuiteRepo(
                     QTestIntegrationUtil.getTestSuiteEntity(testSuiteLogRecord), projectEntity).getQTestProject();
-            
+
             URL url = QTestIntegrationReportManager.getTestLogURL(projectDir, qTestProject, qTestRun, qTestCaseLog);
-            
+
             IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser();
             browser.openURL(url);
         } catch (Exception e) {
@@ -221,10 +222,14 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
     public Image getImage(TestCaseLogRecord testCaseLogRecord) {
         try {
             QTestTestCase qTestCase = QTestIntegrationUtil.getQTestCase(testCaseLogRecord);
-            if (qTestCase == null) { return null; }
+            if (qTestCase == null) {
+                return null;
+            }
 
             QTestSuite qTestSuite = QTestIntegrationUtil.getSelectedQTestSuite(testSuiteLogRecord);
-            if (qTestSuite == null) { return null; }
+            if (qTestSuite == null) {
+                return null;
+            }
 
             QTestRun qTestRun = QTestIntegrationTestSuiteManager.getTestRunByTestSuiteAndTestCaseId(qTestSuite,
                     qTestCase.getId());
@@ -313,12 +318,17 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
     }
 
     private void performDisintegrateTestCaseLogs(MenuItem menuItem, List<TestCaseLogRecord> testCasesCanBeDisintegrated) {
-        QTestDisintegrateReportHandler.performDisintegrateTestCaseLogs(testCasesCanBeDisintegrated, reportEntity);
+        List<ReportTestCaseLogPair> testCaseLogPairs = new ArrayList<ReportTestCaseLogPair>();
+        ReportTestCaseLogPair pair = new ReportTestCaseLogPair(reportEntity, testCasesCanBeDisintegrated);
+        testCaseLogPairs.add(pair);
+        QTestDisintegrateReportHandler.performDisintegrateTestCaseLogs(testCaseLogPairs);
     }
 
     private void performUploadTestCaseLogs(MenuItem menuItem, List<TestCaseLogRecord> testCasesCanBeUploaded) {
-        QTestUploadReportHandler.performUploadTestCaseLogs(testCasesCanBeUploaded, reportEntity, menuItem.getDisplay()
-                .getActiveShell());
+        List<ReportTestCaseLogPair> testCaseLogPairs = new ArrayList<ReportTestCaseLogPair>();
+        ReportTestCaseLogPair pair = new ReportTestCaseLogPair(reportEntity, testCasesCanBeUploaded);
+        testCaseLogPairs.add(pair);
+        QTestUploadReportHandler.performUploadTestCaseLogs(testCaseLogPairs, menuItem.getDisplay().getActiveShell());
     }
 
 }
