@@ -171,6 +171,7 @@ public class CustomKeywordParser {
         IFile iFile = null;
         File file = new File(libFolderRaw, "CustomKeywords.groovy");
         if (!file.exists()) {
+            file.getParentFile().mkdirs();
             file.createNewFile();
         }
 

@@ -498,7 +498,7 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
                 }
             }
 
-            DisintegrateTestCaseJob job = new DisintegrateTestCaseJob();
+            DisintegrateTestCaseJob job = new DisintegrateTestCaseJob(false);
             job.setFileEntities(integratedTestCaseFolder);
             job.doTask();
             job.join();

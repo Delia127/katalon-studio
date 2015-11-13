@@ -237,7 +237,7 @@ public class IDELauncher extends AbstractLauncher {
 
                     sendReportEmail(testSuite, null, logFile, suitesSummaryForEmail);
                 }
-                eventBroker.send(EventConstants.REPORT_UPDATED, reportFolder.getAbsolutePath());
+                //eventBroker.send(EventConstants.REPORT_UPDATED, reportFolder.getAbsolutePath());
             }
         } catch (Exception ex) {
             systemLogger.error(ex);

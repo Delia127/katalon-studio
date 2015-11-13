@@ -65,4 +65,32 @@ public class TreeEntityUtil {
         return new TestCaseTreeEntity(testCaseEntity, createSelectedTreeEntityHierachy(
                 testCaseEntity.getParentFolder(), testCaseRootFolder));
     }
+    
+    public static WebElementTreeEntity getWebElementTreeEntity(WebElementEntity testObjectEntity, ProjectEntity projectEntity)
+            throws Exception {
+        FolderEntity testCaseRootFolder = FolderController.getInstance().getObjectRepositoryRoot(projectEntity);
+        return new WebElementTreeEntity(testObjectEntity, createSelectedTreeEntityHierachy(
+                testObjectEntity.getParentFolder(), testCaseRootFolder));
+    }
+    
+    public static TestDataTreeEntity getTestDataTreeEntity(DataFileEntity testDataEntity, ProjectEntity projectEntity)
+            throws Exception {
+        FolderEntity testCaseRootFolder = FolderController.getInstance().getTestDataRoot(projectEntity);
+        return new TestDataTreeEntity(testDataEntity, createSelectedTreeEntityHierachy(
+                testDataEntity.getParentFolder(), testCaseRootFolder));
+    }
+    
+    public static TestSuiteTreeEntity getTestSuiteTreeEntity(TestSuiteEntity testSuiteEntity, ProjectEntity projectEntity)
+            throws Exception {
+        FolderEntity testCaseRootFolder = FolderController.getInstance().getTestSuiteRoot(projectEntity);
+        return new TestSuiteTreeEntity(testSuiteEntity, createSelectedTreeEntityHierachy(
+                testSuiteEntity.getParentFolder(), testCaseRootFolder));
+    }
+    
+    public static ReportTreeEntity getReportTreeEntity(ReportEntity reportEntity, ProjectEntity projectEntity)
+            throws Exception {
+        FolderEntity testCaseRootFolder = FolderController.getInstance().getReportRoot(projectEntity);
+        return new ReportTreeEntity(reportEntity, createSelectedTreeEntityHierachy(
+                reportEntity.getParentFolder(), testCaseRootFolder));
+    }
 }

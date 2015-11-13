@@ -30,6 +30,8 @@ public interface IdConstants {
 
     // Explorer part content
     public static final String EXPLORER_PART_ID = "com.kms.katalon.composer.part.explorer";
+    public static final String EXPLORER_TOOL_ITEM_COLLAPSE_ALL = "com.kms.katalon.composer.explorer.handledtoolitem.collapseAll";
+    public static final String EXPLORER_TOOL_ITEM_LINK_PART = "com.kms.katalon.composer.explorer.handledtoolitem.linkPart";
 
     // Test Case Part content
     public static final String TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".testcase";

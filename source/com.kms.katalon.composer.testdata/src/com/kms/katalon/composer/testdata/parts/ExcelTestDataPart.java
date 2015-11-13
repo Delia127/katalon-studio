@@ -6,6 +6,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
@@ -289,12 +290,14 @@ public class ExcelTestDataPart extends TestDataMainPart {
     private IJobChangeListener readExcelJobListener = new JobChangeAdapter() {
 
         @Override
-        public void done(IJobChangeEvent event) {
+        public void done(final IJobChangeEvent event) {
             sync.syncExec(new Runnable() {
                 @Override
                 public void run() {
-                    loadSheetNames(loadFileJob.getSheetNames());
-                    loadExcelDataToTable();
+                    if (event.getResult() == Status.OK_STATUS) {
+                        loadSheetNames(loadFileJob.getSheetNames());
+                        loadExcelDataToTable();
+                    }
                 }
             });
         }
@@ -467,7 +470,6 @@ public class ExcelTestDataPart extends TestDataMainPart {
                             cell.setText(text);
 
                             sync.asyncExec(new Runnable() {
-
                                 @Override
                                 public void run() {
                                     if (fData[rowIndex][columnIndex] == null) {

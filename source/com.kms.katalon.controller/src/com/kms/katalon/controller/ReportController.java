@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -138,14 +139,30 @@ public class ReportController extends EntityController {
         if (report == null || report.getParentFolder() == null) {
             return null;
         }
-        
-        String testSuiteDisplayId = FolderController.getInstance().getIdForDisplay(report.getParentFolder())
-                .replaceFirst("Reports/", "Test Suites/");
-        return TestSuiteController.getInstance().getTestSuiteByDisplayId(testSuiteDisplayId, report.getProject());
+
+        return getTestSuiteByReportParentFolder(report.getParentFolder());
     }
 
     public List<ReportEntity> listReportEntities(TestSuiteEntity testSuiteEntity, ProjectEntity projectEntity)
             throws Exception {
         return dataProviderSetting.getReportDataProvider().listReportEntities(testSuiteEntity, projectEntity);
+    }
+
+    public FolderEntity getReportFolder(TestSuiteEntity testSuiteEntity, ProjectEntity projectEntity) throws Exception {
+        return dataProviderSetting.getReportDataProvider().getReportFolder(testSuiteEntity, projectEntity);
+    }
+
+    public String getTestSuiteFolderId(String reportFolderId) {
+        if (reportFolderId == null) {
+            return null;
+        }
+        return reportFolderId.replaceFirst("Reports", "Test Suites");
+    }
+
+    public TestSuiteEntity getTestSuiteByReportParentFolder(FolderEntity parentReportFolder) throws Exception {
+        String testSuiteDisplayId = FolderController.getInstance().getIdForDisplay(parentReportFolder)
+                .replaceFirst("Reports", "Test Suites");
+        return TestSuiteController.getInstance().getTestSuiteByDisplayId(testSuiteDisplayId,
+                parentReportFolder.getProject());
     }
 }
