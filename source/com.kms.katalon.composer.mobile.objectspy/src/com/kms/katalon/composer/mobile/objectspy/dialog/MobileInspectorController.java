@@ -28,6 +28,7 @@ import com.kms.katalon.core.mobile.keyword.AndroidProperties;
 import com.kms.katalon.core.mobile.keyword.GUIObject;
 import com.kms.katalon.core.mobile.keyword.IOSProperties;
 import com.kms.katalon.core.mobile.keyword.MobileDriverFactory;
+import com.kms.katalon.core.mobile.keyword.MobileDriverFactory.OsType;
 import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.mobile.util.MobileExecutionUtil;
 
@@ -48,21 +49,24 @@ public class MobileInspectorController {
                 Thread.sleep(2000);
             }
             IDriverConnector mobileDriverConnector = null;
-            switch (MobileDriverFactory.getInstance().getDeviceOs(deviceId)) {
-            case IOS:
+            if(MobileDriverFactory.getInstance().getDeviceOs(deviceId) == OsType.IOS){
             	mobileDriverConnector = MobileExecutionUtil.getMobileDriverConnector(MobileDriverType.IOS_DRIVER, ProjectController.getInstance().getCurrentProject().getFolderLocation());
-            	RunConfiguration.setExecutionSetting(mobileDriverConnector.getExecutionSettingPropertyMap());
+            	Map<String, Object> confs = mobileDriverConnector.getExecutionSettingPropertyMap();
+            	confs.put(RunConfiguration.TIMEOUT_PROPERTY, 60);
+            	RunConfiguration.setExecutionSetting(confs);
+            	RunConfiguration.setLogFile(ProjectController.getInstance().getCurrentProject().getFolderLocation() + File.separator + "appium.log");
                 driver = MobileDriverFactory.getInstance().getIosDriver(deviceId, appFile, uninstallAfterCloseApp);
-                break;
-
-            case ANDROID:
-            	mobileDriverConnector = MobileExecutionUtil.getMobileDriverConnector(MobileDriverType.ANDROID_DRIVER, ProjectController.getInstance().getCurrentProject().getFolderLocation());
-            	RunConfiguration.setExecutionSetting(mobileDriverConnector.getExecutionSettingPropertyMap());
+            }
+            else if(MobileDriverFactory.getInstance().getDeviceOs(deviceId) == OsType.ANDROID){
+            	mobileDriverConnector = MobileExecutionUtil.getMobileDriverConnector(MobileDriverType.ANDROID_DRIVER, ProjectController.getInstance().getCurrentProject().getFolderLocation());   	
+            	Map<String, Object> confs = mobileDriverConnector.getExecutionSettingPropertyMap();
+            	confs.put(RunConfiguration.TIMEOUT_PROPERTY, 60);
+            	RunConfiguration.setExecutionSetting(confs);
+            	RunConfiguration.setLogFile(ProjectController.getInstance().getCurrentProject().getFolderLocation() + File.separator + "appium.log");
                 driver = MobileDriverFactory.getInstance().getAndroidDriver(deviceId, appFile, uninstallAfterCloseApp);
-                break;
-
-            default:
-                return false;
+            }
+            else{
+            	return false;
             }
         } catch (Exception e) {
             return false;
