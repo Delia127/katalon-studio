@@ -18,6 +18,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
 import com.google.gson.Gson;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.mobile.constants.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
 import com.kms.katalon.composer.mobile.objectspy.util.Util;
@@ -131,6 +132,7 @@ public class MobileInspectorController {
                 renderTree(doc.getDocumentElement(), htmlMobileElementRootNode);
             }
         } catch (Exception ex) {
+            LoggerSingleton.logError(ex);
         }
         return htmlMobileElementRootNode;
     }
@@ -292,33 +294,33 @@ public class MobileInspectorController {
             if (rect.has(IOSProperties.IOS_ORIGIN)) {
                 JSONObject origin = rect.getJSONObject(IOSProperties.IOS_ORIGIN);
                 if (origin.has(GUIObject.X)) {
-                    properties.put(GUIObject.X, origin.getString(GUIObject.X));
+                    properties.put(GUIObject.X, String.valueOf(origin.getDouble(GUIObject.X)));
                 }
                 if (origin.has(GUIObject.Y)) {                    
-                    properties.put(GUIObject.Y, origin.getString(GUIObject.Y));
+                    properties.put(GUIObject.Y, String.valueOf(origin.getDouble(GUIObject.Y)));
                 }
             }
             if (rect.has(IOSProperties.IOS_SIZE)) {
                 JSONObject size = rect.getJSONObject(IOSProperties.IOS_SIZE);
                 if (size.has(GUIObject.WIDTH)) {                 
-                    properties.put(GUIObject.WIDTH, size.getString(GUIObject.WIDTH));
+                    properties.put(GUIObject.WIDTH, String.valueOf(size.getDouble(GUIObject.WIDTH)));
                 }
                 if (size.has(GUIObject.HEIGHT)) {                    
-                    properties.put(GUIObject.HEIGHT, size.getString(GUIObject.HEIGHT));
+                    properties.put(GUIObject.HEIGHT, String.valueOf(size.getDouble(GUIObject.HEIGHT)));
                 }
             }
         }
         
         if (jsonObject.has(IOSProperties.IOS_ENABLED)) {            
-            properties.put(IOSProperties.IOS_ENABLED, jsonObject.getString(IOSProperties.IOS_ENABLED));
+            properties.put(IOSProperties.IOS_ENABLED, String.valueOf(jsonObject.getBoolean(IOSProperties.IOS_ENABLED)));
         }
 
         if (jsonObject.has(IOSProperties.IOS_VALID)) {            
-            properties.put(IOSProperties.IOS_VALID, jsonObject.getString(IOSProperties.IOS_VALID));
+            properties.put(IOSProperties.IOS_VALID, String.valueOf(jsonObject.getBoolean(IOSProperties.IOS_VALID)));
         }
 
         if (jsonObject.has(IOSProperties.IOS_VISIBLE)) {
-            properties.put(IOSProperties.IOS_VISIBLE, jsonObject.getString(IOSProperties.IOS_VISIBLE));
+            properties.put(IOSProperties.IOS_VISIBLE, String.valueOf(jsonObject.getBoolean(IOSProperties.IOS_VISIBLE)));
         }
 
         String guiName = propType;

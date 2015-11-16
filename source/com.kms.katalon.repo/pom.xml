@@ -112,7 +112,7 @@
 									<id>wsdl4j:wsdl4j:1.6.2</id>
 								</artifact>
 								<artifact>
-									<id>io.appium:java-client:3.1.0</id>
+									<id>io.appium:java-client:3.2.0</id>
 									<transitive>false</transitive>
 								</artifact>
 								<artifact>
@@ -125,7 +125,7 @@
 									<id>org.jsoup:jsoup:1.7.2</id>
 								</artifact>
 								<artifact>
-									<id>org.json:json:20141113</id>
+									<id>org.json:json:20140107</id>
 								</artifact>
 							</artifacts>
 						</configuration>
