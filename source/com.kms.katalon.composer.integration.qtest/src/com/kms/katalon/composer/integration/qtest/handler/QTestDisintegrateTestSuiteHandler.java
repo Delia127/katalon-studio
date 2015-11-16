@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.integration.qtest.handler;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,17 +7,15 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.MessageDialog;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
-import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.composer.integration.qtest.job.DisintegrateTestSuiteJob;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
@@ -29,8 +26,6 @@ import com.kms.katalon.integration.qtest.entity.QTestSuite;
 import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 
 public class QTestDisintegrateTestSuiteHandler extends AbstractQTestHandler {
-    @Inject
-    private IEventBroker eventBroker;
 
     @Inject
     private ESelectionService selectionService;
@@ -101,34 +96,8 @@ public class QTestDisintegrateTestSuiteHandler extends AbstractQTestHandler {
             return;
         }
         
-        for (TestSuiteEntity testSuite : fTestSuites) {
-            String testSuiteId = null;
-            try {
-                testSuiteId = TestSuiteController.getInstance().getIdForDisplay(testSuite);
-                List<QTestSuite> qTestSuites = QTestIntegrationTestSuiteManager
-                        .getQTestSuiteListByIntegratedEntity(QTestIntegrationUtil.getIntegratedEntity(testSuite));
-
-                for (QTestSuite availableQTestSuite : qTestSuites) {
-                    if (availableQTestSuite.getId() > 0) {
-                        availableQTestSuite.setId(0);
-                        availableQTestSuite.setPid("");
-                        availableQTestSuite.setSelected(false);
-                        availableQTestSuite.getTestRuns().clear();
-                    }
-                }
-
-                QTestIntegrationUtil.updateFileIntegratedEntity(testSuite,
-                        QTestIntegrationTestSuiteManager.getIntegratedEntityByTestSuiteList(qTestSuites));
-                TestSuiteController.getInstance().updateTestSuite(testSuite);
-                eventBroker.post(EventConstants.TEST_SUITE_UPDATED, new Object[] { testSuite.getId(), testSuite });
-            } catch (QTestInvalidFormatException e) {
-                MessageDialog.openError(null, StringConstants.WARN,
-                        MessageFormat.format(StringConstants.JOB_MSG_TEST_SUITE_INVALID_FORMAT, testSuiteId));
-            } catch (Exception e) {
-                LoggerSingleton.logError(e);
-                return;
-            }
-        }
+        DisintegrateTestSuiteJob job = new DisintegrateTestSuiteJob(fTestSuites);
+        job.schedule();
     }
 
     /**

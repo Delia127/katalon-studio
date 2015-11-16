@@ -1,16 +1,25 @@
 package com.kms.katalon.composer.integration.qtest.handler;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.ui.model.application.ui.MElementContainer;
+import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.model.application.ui.menu.MDirectMenuItem;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.MenuAdapter;
+import org.eclipse.swt.events.MenuEvent;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
@@ -47,44 +56,82 @@ public class QTestUploadReportHandler extends AbstractQTestHandler {
     @Inject
     private ESelectionService selectionService;
 
+    private boolean canExecute;
+
+    private Thread thread;
+
     @CanExecute
-    public boolean canExecute(MDirectMenuItem item) {
-        try {
-            Object selectedEntity = getFirstSelectedObject(selectionService);
-
-            if (selectedEntity == null) {
-                return false;
-            }
-
-            fPairs = new ArrayList<ReportTestCaseLogPair>();
-            if (selectedEntity instanceof ReportEntity) {
-                ReportTestCaseLogPair pair = getTestCaseLogPair((ReportEntity) selectedEntity);
-                if (pair != null) {
-                    fPairs.add(pair);
-                }
-            } else if (selectedEntity instanceof FolderEntity) {
-                FolderEntity folderEntity = (FolderEntity) selectedEntity;
-                if (!QTestIntegrationUtil.isFolderReportInTestSuiRepo(folderEntity, getProjectEntity())) {
-                    return false;
-                }
-
-                for (Object childObject : FolderController.getInstance().getAllDescentdantEntities(folderEntity)) {
-                    if (!(childObject instanceof ReportEntity)) {
-                        continue;
-                    }
-
-                    ReportTestCaseLogPair pair = getTestCaseLogPair((ReportEntity) childObject);
-                    if (pair != null) {
-                        fPairs.add(pair);
-                    }
-                }
-            }
-
-            return fPairs.size() > 0;
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
+    public boolean canExecute(final MDirectMenuItem item) {
+        if (canExecute) {
+            return canExecute;
         }
-        return false;
+        thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final String label = item.getLabel();
+                try {
+                    Object selectedEntity = getFirstSelectedObject(selectionService);
+
+                    if (selectedEntity == null) {
+                        return;
+                    }
+
+                    fPairs = new ArrayList<ReportTestCaseLogPair>();
+                    if (selectedEntity instanceof ReportEntity) {
+                        ReportTestCaseLogPair pair = getTestCaseLogPair((ReportEntity) selectedEntity);
+                        if (pair != null) {
+                            fPairs.add(pair);
+                        }
+                    } else if (selectedEntity instanceof FolderEntity) {
+                        FolderEntity folderEntity = (FolderEntity) selectedEntity;
+                        if (!QTestIntegrationUtil.isFolderReportInTestSuiRepo(folderEntity, getProjectEntity())) {
+                            return;
+                        }
+                        List<Object> children = FolderController.getInstance().getAllDescentdantEntities(folderEntity);
+                        for (int i = 0; i < children.size(); i++) {
+                            Object childObject = children.get(i);
+                            item.setLabel(MessageFormat.format(StringConstants.HDL_LABEL_VALIDATING_REPORT, label, i
+                                    * 100 / children.size()));
+                            if (!(childObject instanceof ReportEntity)) {
+                                continue;
+                            }
+
+                            ReportTestCaseLogPair pair = getTestCaseLogPair((ReportEntity) childObject);
+                            if (pair != null) {
+                                fPairs.add(pair);
+                            }
+                        }
+                    }
+
+                } catch (Exception e) {
+                    LoggerSingleton.logError(e);
+                } finally {
+                    item.setLabel(label);
+                    item.setEnabled(fPairs.size() > 0);
+                    canExecute = item.isEnabled();
+                    item.setIconURI(null);
+                }
+            }
+        });
+        thread.start();
+        
+        MElementContainer<MUIElement> menuImpl = item.getParent();
+        Menu menu = (Menu) menuImpl.getWidget();
+        menu.addMenuListener(new MenuAdapter() {
+            @Override
+            public void menuHidden(MenuEvent e) {
+                clearData();
+            }
+        });
+        
+        menu.addDisposeListener(new DisposeListener() {
+            
+            @Override
+            public void widgetDisposed(DisposeEvent e) {
+                clearData();
+            }
+        });
+        return canExecute;
     }
 
     @Execute
@@ -110,7 +157,7 @@ public class QTestUploadReportHandler extends AbstractQTestHandler {
         if (testSuiteLogRecord == null) {
             return null;
         }
-        
+
         if (QTestIntegrationUtil.getSelectedQTestSuite(testSuiteLogRecord) == null) {
             return null;
         }
@@ -194,6 +241,15 @@ public class QTestUploadReportHandler extends AbstractQTestHandler {
                     .getSimpleName());
             LoggerSingleton.logError(e);
             return null;
+        }
+    }
+
+    @PreDestroy
+    public void clearData() {
+        if (thread != null && thread.isAlive()) {
+            thread.interrupt();
+            thread = null;
+            canExecute = false;
         }
     }
 }

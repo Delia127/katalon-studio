@@ -1,13 +1,16 @@
 package com.kms.katalon.composer.integration.qtest.job;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.SynchronizedConfirmationDialog;
@@ -26,24 +29,38 @@ import com.kms.katalon.integration.qtest.credential.IQTestCredential;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
 import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 
-public class UploadTestSuiteJob extends UploadJob {
-    private List<TestSuiteQTestSuitePair> fPairs;
+public class UploadTestSuiteJob extends QTestJob {
+    // Represents collection of TestSuiteQTestSuitePair that each item is ready to be uploaded.
+    private List<TestSuiteQTestSuitePair> fUnuploadedPairs;
+
+    // Represents collection of uploaded TestSuiteQTestSuitePair, used for reverting data if user cancel the progress.
+    private List<TestSuiteQTestSuitePair> fUploadedPairs;
+
     private IQTestCredential fCredentials;
 
     public UploadTestSuiteJob(List<TestSuiteQTestSuitePair> pairs) {
         super(StringConstants.JOB_TITLE_UPLOAD_TEST_SUITE);
         setUser(true);
-        fPairs = pairs;
+        fUnuploadedPairs = pairs;
     }
 
     @Override
     protected IStatus run(IProgressMonitor monitor) {
         try {
             fCredentials = new QTestSettingCredential(getProjectDir());
-            int total = fPairs.size();
+            fUploadedPairs = new ArrayList<TestSuiteQTestSuitePair>();
+
+            int total = fUnuploadedPairs.size();
             monitor.beginTask(StringConstants.JOB_TASK_UPLOAD_TEST_SUITE, total);
-            for (TestSuiteQTestSuitePair pair : fPairs) {
-                uploadTestSuite(new SubProgressMonitor(monitor, 1, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK), pair);
+            for (TestSuiteQTestSuitePair pair : fUnuploadedPairs) {
+                if (monitor.isCanceled()) {
+                    return canceled();
+                }
+                IStatus status = uploadTestSuite(new SubProgressMonitor(monitor, 1,
+                        SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK), pair);
+                if (status == Status.CANCEL_STATUS) {
+                    return canceled();
+                }
             }
             return Status.OK_STATUS;
         } catch (Exception e) {
@@ -54,10 +71,46 @@ public class UploadTestSuiteJob extends UploadJob {
         }
     }
 
+    /**
+     * Cancels the uploading progress. If there is any uploaded items, opens a confirmation to let user keep them or
+     * not.
+     * 
+     * @return {@link Status#CANCEL_STATUS}
+     */
+    private IStatus canceled() {
+        final int uploadedCount = fUploadedPairs.size();
+        if (uploadedCount == 0) {
+            return Status.CANCEL_STATUS;
+        }
+
+        SynchronizedConfirmationDialog dialog = new SynchronizedConfirmationDialog() {
+            @Override
+            public void run() {
+                boolean confirmed = MessageDialog.open(MessageDialog.QUESTION, null, StringConstants.CONFIRMATION,
+                        MessageFormat.format(StringConstants.JOB_MSG_CONFIRM_CANCEL_UPLOAD, uploadedCount), SWT.NONE);
+                setConfirmedValue(confirmed ? YesNoAllOptions.YES : YesNoAllOptions.NO);
+            }
+        };
+
+        UISynchronizeService.getInstance().getSync().syncExec(dialog);
+        if (dialog.getConfirmedValue() == YesNoAllOptions.NO) {
+            List<TestSuiteEntity> testSuiteEntities = new ArrayList<TestSuiteEntity>();
+            for (TestSuiteQTestSuitePair pair : fUnuploadedPairs) {
+                testSuiteEntities.add(pair.getTestSuite());
+            }
+
+            DisintegrateTestSuiteJob job = new DisintegrateTestSuiteJob(testSuiteEntities);
+            job.schedule();
+        }
+        return Status.CANCEL_STATUS;
+    }
+
     private IStatus uploadTestSuite(IProgressMonitor monitor, TestSuiteQTestSuitePair pair) {
+        TestSuiteEntity testSuite = pair.getTestSuite();
+        List<QTestSuite> unUploadedQTestSuites = pair.getQTestSuites();
+        List<QTestSuite> uploadedQTestSuites = new ArrayList<QTestSuite>();
         try {
-            TestSuiteEntity testSuite = pair.getTestSuite();
-            List<QTestSuite> unUploadedQTestSuites = pair.getQTestSuites();
+
             String testSuiteId = TestSuiteController.getInstance().getIdForDisplay(testSuite);
 
             monitor.beginTask(MessageFormat.format(StringConstants.JOB_TASK_UPLOADING_TEST_SUITE_ENTITY,
@@ -73,16 +126,18 @@ public class UploadTestSuiteJob extends UploadJob {
                 }
                 monitor.subTask(getWrappedName(MessageFormat.format(StringConstants.JOB_SUB_TASK_UPLOADING_QTEST_SUITE,
                         qTestSuite.getParent().getTypeName(), qTestSuite.getParent().getName())) + "...");
-                if (monitor.isCanceled()) {
-                    return Status.CANCEL_STATUS;
-                }
                 QTestSuite newQTestSuite = null;
 
                 final QTestSuite duplicatedQTestSuite = QTestIntegrationTestSuiteManager.getDuplicatedTestSuiteOnQTest(
                         fCredentials, testSuite.getName(), qTestSuite.getParent(), repo.getQTestProject());
 
+                if (monitor.isCanceled()) {
+                    throw new OperationCanceledException();
+                }
+
+                // Duplication detected, let user choose merge or not.
                 if (duplicatedQTestSuite != null) {
-                    SynchronizedConfirmationDialog dialog = getConfirmedDialog(duplicatedQTestSuite, testSuite);
+                    SynchronizedConfirmationDialog dialog = getMergeConfirmedDialog(duplicatedQTestSuite, testSuite);
                     UISynchronizeService.getInstance().getSync().syncExec(dialog);
 
                     if (dialog.getConfirmedValue() == YesNoAllOptions.YES) {
@@ -97,6 +152,8 @@ public class UploadTestSuiteJob extends UploadJob {
 
                 qTestSuite.setId(newQTestSuite.getId());
                 qTestSuite.setPid(newQTestSuite.getPid());
+                uploadedQTestSuites.add(qTestSuite);
+
                 monitor.worked(1);
             }
 
@@ -108,12 +165,17 @@ public class UploadTestSuiteJob extends UploadJob {
             EventBrokerSingleton.getInstance().getEventBroker()
                     .post(EventConstants.TEST_SUITE_UPDATED, new Object[] { testSuite.getId(), testSuite });
             monitor.worked(1);
-            
+
             return Status.OK_STATUS;
+        } catch (OperationCanceledException ex) {
+            return Status.CANCEL_STATUS;
         } catch (Exception ex) {
             LoggerSingleton.logError(ex);
             return Status.CANCEL_STATUS;
         } finally {
+            if (uploadedQTestSuites.size() > 0) {
+                fUploadedPairs.add(new TestSuiteQTestSuitePair(testSuite, uploadedQTestSuites));
+            }
             monitor.done();
         }
     }
@@ -127,7 +189,7 @@ public class UploadTestSuiteJob extends UploadJob {
         return -1;
     }
 
-    private SynchronizedConfirmationDialog getConfirmedDialog(final QTestSuite qTestSuite,
+    private SynchronizedConfirmationDialog getMergeConfirmedDialog(final QTestSuite qTestSuite,
             final TestSuiteEntity testSuite) {
         return new SynchronizedConfirmationDialog() {
             @Override

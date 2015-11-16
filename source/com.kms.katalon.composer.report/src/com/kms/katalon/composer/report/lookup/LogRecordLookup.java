@@ -17,13 +17,14 @@ public class LogRecordLookup implements EventHandler {
     
     private static LogRecordLookup _instance;
     
-    //Key is id of report entity
+    //Key: id of report entity, Value: the relevant TestSuiteLogRecord instance of the report
     private Map<String, TestSuiteLogRecord> suiteLogRecordMap;
     
     private LogRecordLookup() {
         suiteLogRecordMap = new HashMap<String, TestSuiteLogRecord>();
         
         EventBrokerSingleton.getInstance().getEventBroker().subscribe(EventConstants.REPORT_DELETED, this);
+        EventBrokerSingleton.getInstance().getEventBroker().subscribe(EventConstants.PROJECT_OPENED, this);
     }
     
     public static LogRecordLookup getInstance() {
@@ -33,7 +34,7 @@ public class LogRecordLookup implements EventHandler {
         return _instance;
     }
     
-    public TestSuiteLogRecord getTestSuiteLogRecord(ReportEntity reportEntity) {
+    public synchronized TestSuiteLogRecord getTestSuiteLogRecord(ReportEntity reportEntity) {
         TestSuiteLogRecord suiteLogRecord = suiteLogRecordMap.get(reportEntity.getId());
         if (suiteLogRecord == null) {
             try {
@@ -61,10 +62,17 @@ public class LogRecordLookup implements EventHandler {
     @Override
     public void handleEvent(Event event) {
         String topic = event.getTopic();
-        if (EventConstants.REPORT_DELETED.equals(topic)) {
-            String reportId = (String) event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-            if (suiteLogRecordMap.containsKey(reportId)) {
-                suiteLogRecordMap.remove(reportId);
+        switch (topic) {
+            case EventConstants.REPORT_DELETED: {
+                String reportId = (String) event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+                if (suiteLogRecordMap.containsKey(reportId)) {
+                    suiteLogRecordMap.remove(reportId);
+                }
+                break;
+            }
+            case EventConstants.PROJECT_OPENED: {
+                getInstance().suiteLogRecordMap.clear();
+                break;
             }
         }
     }
