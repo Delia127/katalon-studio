@@ -92,6 +92,16 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PREF_LBL_SIGNATURE = "Signature";
     public static final String PREF_LBL_SEND_ATTACHMENT = "Send attachment";
     public static final String PREF_GROUP_LBL_EXECUTION_MAIL = "Post-Execution Options";    
+    public static final String WARN_EMPTY_RECIPIENTS = "Empty email recepients";
+    public static final String WARN_EMPTY_HOST = "Empty host";
+    public static final String WARN_EMPTY_PORT = "Empty port";
+    public static final String WARN_INVALID_PORT = "Invalid port. Port must be an integer number.";
+    public static final String WARN_EMPTY_USERNAME = "Empty username";
+    public static final String WARN_EMPTY_PASSWORD = "Empty password";
+    public static final String PREF_LBL_SEND_TEST_EMAIL = "Send test email";
+    public static final String PREF_SEND_TEST_EMAIL_JOB_NAME = "Sending test email";
+    public static final String PREF_BUTTON_SEND_TEST_EMAIL = "Send";
+    public static final String ERROR_SEND_TEST_EMAIL_FAIL =  "Unable to send test email ({0})";
 
     // DriverPreferencePage
     public static final String SETT_COL_PREFERENCE_NAME = NAME;
