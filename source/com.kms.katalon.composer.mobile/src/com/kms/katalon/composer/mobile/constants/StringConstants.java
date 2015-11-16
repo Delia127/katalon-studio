@@ -6,7 +6,6 @@ public class StringConstants extends GlobalStringConstants {
 	// DeviceSelectionDialog
 	public static final String OS_ANDROID = ANDROID;
 	public static final String OS_IOS = IOS;
-	public static final String MIXED_MODE = "Mixed mode";
 	public static final String DIA_DEVICE_NAME = "Device Name:";
 	public static final String DIA_BROWSER_NAME = "Browser Name:";
 	public static final String DIA_SELECT_DEVICE_NAME_MSG = "Select a device name to execute with";
