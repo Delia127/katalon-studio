@@ -35,8 +35,8 @@ Require-Bundle: net.sf.supercsv.super-csv,
  org.apache.commons.lang,
  org.apache.xmlbeans,
  com.kms.katalon.constant,
- com.google.gson,
- com.google.guava
+ com.google.gson
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
-Import-Package: org.qas.api.internal.util.google.io
+Import-Package: com.google.common.io,
+ org.qas.api.internal.util.google.io
