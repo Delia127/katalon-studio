@@ -8,46 +8,56 @@ import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.swt.widgets.Composite;
 
-import com.kms.katalon.composer.testcase.dialogs.AstBuilderDialog;
-import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
+import com.kms.katalon.composer.testcase.ast.dialogs.AstBuilderDialog;
+import com.kms.katalon.composer.testcase.model.IInputValueType;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
 
 public class AstInputBuilderValueColumnSupport extends EditingSupport {
-	protected AstBuilderDialog parentDialog;
-	private ClassNode scriptClass;
+    protected AstBuilderDialog parentDialog;
+    private ClassNode scriptClass;
 
-	public AstInputBuilderValueColumnSupport(ColumnViewer viewer, AstBuilderDialog parentDialog, ClassNode scriptClass) {
-		super(viewer);
-		this.parentDialog = parentDialog;
-		this.scriptClass = scriptClass;
-	}
+    public AstInputBuilderValueColumnSupport(ColumnViewer viewer, AstBuilderDialog parentDialog, ClassNode scriptClass) {
+        super(viewer);
+        this.parentDialog = parentDialog;
+        this.scriptClass = scriptClass;
+    }
 
-	@Override
-	protected void setValue(Object element, Object value) {
-		Object object = AstTreeTableValueUtil.setValue(element, value, scriptClass);
-		if (object != null) {
-			parentDialog.changeObject(element, object);
-			getViewer().refresh();
-		}
-	}
+    @Override
+    protected void setValue(Object element, Object value) {
+        IInputValueType inputValueType = AstTreeTableValueUtil.getTypeValue(element, scriptClass);
+        if (inputValueType != null) {
+            Object object = inputValueType.changeValue(element, value, scriptClass);
+            if (object != null) {
+                parentDialog.changeObject(element, object);
+                getViewer().refresh();
+            }
+        }
+    }
 
-	@Override
-	protected Object getValue(Object element) {
-		return AstTreeTableValueUtil.getValue(element, scriptClass);
-	}
+    @Override
+    protected Object getValue(Object element) {
+        IInputValueType inputValueType = AstTreeTableValueUtil.getTypeValue(element, scriptClass);
+        if (inputValueType != null) {
+            return inputValueType.getValueToEdit(element, scriptClass);
+        }
+        return null;
+    }
 
-	@Override
-	protected CellEditor getCellEditor(Object element) {
-		return AstTreeTableInputUtil.getCellEditorForAstObject((Composite) getViewer().getControl(), element,
-				scriptClass);
-	}
+    @Override
+    protected CellEditor getCellEditor(Object element) {
+        IInputValueType inputValueType = AstTreeTableValueUtil.getTypeValue(element, scriptClass);
+        if (inputValueType != null) {
+            return inputValueType.getCellEditorForValue((Composite) getViewer().getControl(), element, scriptClass);
+        }
+        return null;
+    }
 
-	@Override
-	protected boolean canEdit(Object element) {
-		if (element instanceof ASTNode || element instanceof Token) {
-			return true;
-		}
-		return false;
-	}
+    @Override
+    protected boolean canEdit(Object element) {
+        if (element instanceof ASTNode || element instanceof Token) {
+            return true;
+        }
+        return false;
+    }
 
 }

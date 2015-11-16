@@ -44,14 +44,14 @@ public abstract class AbstractDriverConnector implements IDriverConnector {
     // }
     // loadDriverProperties();
     // }
-    
+
     @Override
     public void setParentFolderPath(String parentFolderPath) {
         this.parentFolderPath = parentFolderPath;
         propertyConfigFile = new File(parentFolderPath + File.separator + getSettingFileName()
                 + PropertySettingStoreUtil.PROPERTY_FILE_EXENSION);
     }
-    
+
     @Override
     public String getParentFolderPath() {
         return parentFolderPath;
@@ -104,12 +104,46 @@ public abstract class AbstractDriverConnector implements IDriverConnector {
                 Type collectionType = new TypeToken<Map<String, Map<String, Object>>>() {
                 }.getType();
                 Map<String, Map<String, Object>> result = gsonObj.fromJson(propertyConfigFileContent, collectionType);
-                return (result == null) ? new LinkedHashMap<String, Map<String, Object>>() : result;
+                if (result == null) {
+                    return new LinkedHashMap<String, Map<String, Object>>();
+                }
+                for (Entry<String, Map<String, Object>> entry : result.entrySet()) {
+                    convertSettingValue(entry.getValue());
+                }
+                return result;
             } catch (IOException | JsonSyntaxException exception) {
                 // reading file failed or parsing json failed --> return empty map;
             }
         }
         return new HashMap<String, Map<String, Object>>();
+    }
+
+    @SuppressWarnings("unchecked")
+    public void convertSettingValue(List<Object> list) {
+        for (int i = 0; i < list.size(); i++) {
+            Object object = list.get(i);
+            if (object instanceof List) {
+                convertSettingValue((List<Object>) object);
+            } else if (object instanceof Map) {
+                convertSettingValue((Map<String, Object>) object);
+            } else if (object instanceof Double) {
+                list.set(i, ((Double) object).intValue());
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void convertSettingValue(Map<String, Object> map) {
+        for (Entry<String, Object> entry : map.entrySet()) {
+            Object object = entry.getValue();
+            if (object instanceof List) {
+                convertSettingValue((List<Object>) object);
+            } else if (object instanceof Map) {
+                convertSettingValue((Map<String, Object>) object);
+            } else if (object instanceof Double) {
+                entry.setValue(((Double) object).intValue());
+            }
+        }
     }
 
     public Object getDriverPropertyValue(String rawKey) {
@@ -133,9 +167,9 @@ public abstract class AbstractDriverConnector implements IDriverConnector {
     public String toString() {
         return getDriverProperties().toString();
     }
-    
+
     public abstract IDriverConnector clone();
-    
+
     protected Object cloneDriverPropertyValue(Object propertyValue) {
         if (propertyValue instanceof String) {
             return new String((String) propertyValue);

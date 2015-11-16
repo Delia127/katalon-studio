@@ -1,14 +1,20 @@
 package com.kms.katalon.composer.integration.slack.util;
 
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
@@ -24,146 +30,217 @@ import com.kms.katalon.constants.PreferenceConstants;
  * @see <a href="https://api.slack.com/methods/chat.postMessage">Slack Post Message API</a>
  *
  */
-@SuppressWarnings("restriction")
 public class SlackUtil {
-	private IPreferenceStore PREFERENCE;
-	private boolean ENABLED;
-	private String TOKEN;
-	private String CHANNEL;
-	private String USERNAME;
-	private boolean AS_USER;
 
-	public SlackUtil() {
-		PREFERENCE = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-				PreferenceConstants.IntegrationSlackPreferenceConstants.QUALIFIER);
-		ENABLED = PREFERENCE.getBoolean(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_ENABLED);
-		TOKEN = PREFERENCE.getString(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_AUTH_TOKEN);
-		CHANNEL = PREFERENCE.getString(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_CHANNEL_GROUP);
-		USERNAME = PREFERENCE.getString(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_USERNAME);
-		AS_USER = PREFERENCE.getBoolean(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_AS_USER);
-	}
+    public static final String RES_IS_OK = "isOk";
 
-	/**
-	 * Slack URL builder which will encode user info and message into URL
-	 * 
-	 * @param msg String message to send
-	 * @return String URL
-	 * @throws Exception UnsupportedEncodingException
-	 * @see UnsupportedEncodingException
-	 */
-	private String getSlackApiUrl(String msg) throws Exception {
-		String charset = "UTF-8";
-		String url = "https://slack.com/api/chat.postMessage?";
-		url += "token=" + URLEncoder.encode(TOKEN.trim(), charset);
-		url += "&channel=" + URLEncoder.encode(CHANNEL.trim(), charset);
-		if (!USERNAME.trim().isEmpty()) {
-			url += "&username=" + URLEncoder.encode(USERNAME.trim(), charset);
-		}
-		if (AS_USER) {
-			url += "&as_user=true";
-		}
-		url += "&text=" + URLEncoder.encode(msg, charset);
-		return url;
-	}
+    public static final String RES_ERROR_MSG = "errorMsg";
 
-	/**
-	 * Send message to Slack for Team Collaboration
-	 * 
-	 * @param msg String message to send
-	 */
-	public void sendMessage(String msg) {
-		if (ENABLED) {
-			try {
-				boolean connectSuccessfully = false;
-				String errorMsg = null;
+    private IPreferenceStore PREFERENCE;
 
-				URL api = new URL(getSlackApiUrl(msg));
-				HttpURLConnection con = (HttpURLConnection) api.openConnection();
-				con.setRequestMethod("GET");
-				// con.setRequestProperty("User-Agent", "Katalon Studio");
-				InputStreamReader in = new InputStreamReader(con.getInputStream());
+    private boolean isSlackEnabled;
 
-				JsonReader reader = new JsonReader(in);
-				reader.beginObject();
-				while (reader.hasNext()) {
-					String name = reader.nextName();
-					if (StringUtils.equals(name, "ok")) {
-						connectSuccessfully = reader.nextBoolean();
-					} else if (StringUtils.equals(name, "error")) {
-						errorMsg = reader.nextString();
-					} else {
-						reader.skipValue(); // avoid some unhandled events
-					}
-				}
-				reader.endObject();
-				reader.close();
+    private String token;
 
-				System.out.println(StringConstants.UTIL_SENDING_MSG_PREFIX + msg);
-				if (connectSuccessfully && errorMsg == null) {
-					System.out.println(StringConstants.UTIL_SUCCESS_MSG_PREFIX + msg);
-				} else if (!connectSuccessfully && errorMsg != null) {
-					System.out.println(StringConstants.UTIL_ERROR_MSG_PREFIX
-							+ SlackMsgStatus.getMsgDescription(errorMsg));
-					LoggerSingleton.getInstance().getLogger()
-							.warn(StringConstants.UTIL_ERROR_MSG_PREFIX + SlackMsgStatus.getMsgDescription(errorMsg));
-				} else {
-					System.out.println(StringConstants.UTIL_ERROR_MSG_PLS_CHK_INTERNET_CONNECTION);
-				}
-			} catch (Exception e) {
-				LoggerSingleton.getInstance().getLogger().error(e);
-			}
-		}
-	}
+    private String channel;
 
-	/**
-	 * Slack Bold format text message
-	 * 
-	 * @param msg String text message
-	 * @return String Bold format text message
-	 */
-	public String fmtBold(String msg) {
-		return "*" + msg + "*";
-	}
+    private String username;
 
-	/**
-	 * Slack Italic format text message
-	 * 
-	 * @param msg String text message
-	 * @return String Italic format text message
-	 */
-	public String fmtItalic(String msg) {
-		return "_" + msg + "_";
-	}
+    private boolean asIssuedTokenUser;
 
-	/**
-	 * Slack responded message status
-	 */
-	public static class SlackMsgStatus {
-		private static Map<String, String> msgMap;
+    private static SlackUtil _instance;
 
-		public SlackMsgStatus() {
-			msgMap = new HashMap<String, String>();
-			msgMap.put("channel_not_found", StringConstants.SLACK_ERROR_MSG_CHANNEL_NOT_FOUND);
-			msgMap.put("not_in_channel", StringConstants.SLACK_ERROR_MSG_NOT_IN_CHANNEL);
-			msgMap.put("is_archived", StringConstants.SLACK_ERROR_MSG_IS_ARCHIVED);
-			msgMap.put("msg_too_long", StringConstants.SLACK_ERROR_MSG_MSG_TOO_LONG);
-			msgMap.put("no_text", StringConstants.SLACK_ERROR_MSG_NO_TEXT);
-			msgMap.put("rate_limited", StringConstants.SLACK_ERROR_MSG_RATE_LIMITED);
-			msgMap.put("not_authed", StringConstants.SLACK_ERROR_MSG_NOT_AUTHED);
-			msgMap.put("invalid_auth", StringConstants.SLACK_ERROR_MSG_INVALID_AUTH);
-			msgMap.put("account_inactive", StringConstants.SLACK_ERROR_MSG_ACCOUNT_INACTIVE);
-		}
+    public static SlackUtil getInstance() {
+        if (_instance == null) {
+            _instance = new SlackUtil();
+        }
+        return _instance;
+    }
 
-		public static Map<String, String> getMsgMap() {
-			return msgMap;
-		}
+    public SlackUtil() {
+        PREFERENCE = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
+                PreferenceConstants.IntegrationSlackPreferenceConstants.QUALIFIER);
+        isSlackEnabled = PREFERENCE.getBoolean(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_ENABLED);
+        token = PREFERENCE.getString(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_AUTH_TOKEN);
+        channel = PREFERENCE.getString(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_CHANNEL_GROUP);
+        username = PREFERENCE.getString(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_USERNAME);
+        asIssuedTokenUser = PREFERENCE
+                .getBoolean(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_AS_USER);
+    }
 
-		public static String getMsgDescription(String msgCode) {
-			if (getMsgMap().get(msgCode) == null) {
-				// No message description found
-				return msgCode;
-			}
-			return getMsgMap().get(msgCode);
-		}
-	}
+    /**
+     * Slack URI builder which will encode user info and message into URI
+     * 
+     * @param token the authentication token
+     * @param channel Channel name
+     * @param username Bot name
+     * @param asIssuedTokenUser if true, Bot name will be ignore. Otherwise, message will be sent using Bot name
+     * @param msg Message to send
+     * @return URI
+     * @throws Exception UnsupportedEncodingException
+     * @see UnsupportedEncodingException
+     * @see <a href="https://api.slack.com/web">Create Slack auth token</a>
+     */
+    public URI buildSlackUri(String token, String channel, String username, boolean asIssuedTokenUser, String msg)
+            throws Exception {
+        // scheme:[//[user:password@]host[:port]][/]path[?query][#fragment]
+        URIBuilder uriBuilder = new URIBuilder().setScheme("https").setHost("slack.com")
+                .setPath("/api/chat.postMessage").addParameter("token", token).addParameter("channel", channel);
+        if (username != null && !username.trim().isEmpty()) {
+            uriBuilder.addParameter("username", username);
+        }
+        if (asIssuedTokenUser) {
+            uriBuilder.addParameter("as_user", "true");
+        }
+        uriBuilder.addParameter("text", msg);
+        return uriBuilder.build();
+    }
+
+    /**
+     * Slack URI builder which will encode user info and message into URI
+     * 
+     * @param msg String message to send
+     * @return URI
+     * @throws Exception UnsupportedEncodingException
+     * @see UnsupportedEncodingException
+     */
+    private URI buildSlackUri(String msg) throws Exception {
+        return buildSlackUri(token, channel, username, asIssuedTokenUser, msg);
+    }
+
+    /**
+     * Send message to Slack for Team Collaboration
+     * 
+     * @param msg String message to send
+     */
+    public void sendMessage(String msg) {
+        if (isSlackEnabled) {
+            try {
+                Map<String, Object> response = getResponseFromSendingMsg(buildSlackUri(msg));
+                boolean isOk = (boolean) response.get(RES_IS_OK);
+                String errorMsg = (String) response.get(RES_ERROR_MSG);
+
+                LoggerSingleton.logInfo(StringConstants.UTIL_SENDING_MSG_PREFIX + msg);
+                if (isOk && errorMsg == null) {
+                    LoggerSingleton.logInfo(StringConstants.UTIL_SUCCESS_MSG_PREFIX + msg);
+                } else if (!isOk && errorMsg != null) {
+                    LoggerSingleton.logWarn(StringConstants.UTIL_ERROR_MSG_PREFIX
+                            + SlackMsgStatus.getInstance().getMsgDescription(errorMsg));
+                } else {
+                    LoggerSingleton.logWarn(StringConstants.UTIL_ERROR_MSG_PLS_CHK_INTERNET_CONNECTION);
+                }
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+    }
+
+    /**
+     * Get response data from sending message to Slack
+     * 
+     * @param uri URI to send GET request
+     * @return A Map object with 2 keys SlackUtil.RES_IS_OK and SlackUtil.RES_ERROR_MSG
+     * @throws ClientProtocolException
+     * @throws IOException
+     */
+    public Map<String, Object> getResponseFromSendingMsg(URI uri) throws ClientProtocolException, IOException {
+        boolean isOk = false;
+        String errorMsg = null;
+
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        HttpGet httpget = new HttpGet(uri);
+        CloseableHttpResponse response = httpclient.execute(httpget);
+        try {
+            HttpEntity entity = response.getEntity();
+            if (entity != null) {
+                InputStreamReader in = new InputStreamReader(entity.getContent());
+                try {
+                    JsonReader reader = new JsonReader(in);
+                    reader.beginObject();
+                    while (reader.hasNext()) {
+                        String name = reader.nextName();
+                        if (StringUtils.equals(name, "ok")) {
+                            isOk = reader.nextBoolean();
+                        } else if (StringUtils.equals(name, "error")) {
+                            errorMsg = reader.nextString();
+                        } else {
+                            reader.skipValue(); // avoid some unhandled events
+                        }
+                    }
+                    reader.endObject();
+                    reader.close();
+                } finally {
+                    in.close();
+                }
+            }
+        } finally {
+            response.close();
+        }
+
+        Map<String, Object> res = new HashMap<String, Object>();
+        res.put(RES_IS_OK, isOk);
+        res.put(RES_ERROR_MSG, errorMsg);
+        return res;
+    }
+
+    /**
+     * Slack Bold format text message
+     * 
+     * @param msg String text message
+     * @return String Bold format text message
+     */
+    public String fmtBold(String msg) {
+        return "*" + msg + "*";
+    }
+
+    /**
+     * Slack Italic format text message
+     * 
+     * @param msg String text message
+     * @return String Italic format text message
+     */
+    public String fmtItalic(String msg) {
+        return "_" + msg + "_";
+    }
+
+    /**
+     * Slack responded message status
+     */
+    public static class SlackMsgStatus {
+        private static SlackMsgStatus _instance;
+
+        private static Map<String, String> msgMap;
+
+        public static SlackMsgStatus getInstance() {
+            if (_instance == null) {
+                _instance = new SlackMsgStatus();
+            }
+            return _instance;
+        }
+
+        public SlackMsgStatus() {
+            msgMap = new HashMap<String, String>();
+            msgMap.put("channel_not_found", StringConstants.SLACK_ERROR_MSG_CHANNEL_NOT_FOUND);
+            msgMap.put("not_in_channel", StringConstants.SLACK_ERROR_MSG_NOT_IN_CHANNEL);
+            msgMap.put("is_archived", StringConstants.SLACK_ERROR_MSG_IS_ARCHIVED);
+            msgMap.put("msg_too_long", StringConstants.SLACK_ERROR_MSG_MSG_TOO_LONG);
+            msgMap.put("no_text", StringConstants.SLACK_ERROR_MSG_NO_TEXT);
+            msgMap.put("rate_limited", StringConstants.SLACK_ERROR_MSG_RATE_LIMITED);
+            msgMap.put("not_authed", StringConstants.SLACK_ERROR_MSG_NOT_AUTHED);
+            msgMap.put("invalid_auth", StringConstants.SLACK_ERROR_MSG_INVALID_AUTH);
+            msgMap.put("account_inactive", StringConstants.SLACK_ERROR_MSG_ACCOUNT_INACTIVE);
+        }
+
+        public Map<String, String> getMsgMap() {
+            return msgMap;
+        }
+
+        public String getMsgDescription(String msgCode) {
+            if (getMsgMap().get(msgCode) == null) {
+                // No message description found
+                return msgCode;
+            }
+            return getMsgMap().get(msgCode);
+        }
+    }
 }

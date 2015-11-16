@@ -42,7 +42,6 @@ public class DeleteTestObjectFolderHandler extends DeleteTestObjectHandler imple
                 return false;
             }
 
-            String folderId = FolderController.getInstance().getIdForDisplay(folder);
             final List<Object> descendant = FolderController.getInstance().getAllDescentdantEntities(folder);
             monitor.beginTask(
                     MessageFormat.format(StringConstants.HAND_DELETE_OBJECT_FOLDER_TASK_NAME, folder.getName()),
@@ -69,9 +68,7 @@ public class DeleteTestObjectFolderHandler extends DeleteTestObjectHandler imple
 
             deleteFolder(folder, undeletedTestObjects, monitor);
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, folderTreeEntity.getParent());
-            eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, folderId);
             return true;
-
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             return false;
