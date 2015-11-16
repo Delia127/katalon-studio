@@ -75,7 +75,7 @@ public class StringConstants extends GlobalStringConstants {
 	
 	//ExecutionPreferencePage
     public static final String PREF_GRP_DEFAULT_EXECUTION_CONFIG = "Default execution";
-    public static final String PREF_LBL_DEFAULT_PAGE_LOAD_TIMEOUT = "Default load timeout (in seconds):";
+    public static final String PREF_LBL_DEFAULT_PAGE_LOAD_TIMEOUT = "Default load timeout (in seconds)";
     public static final String PREF_GRP_POST_EXECUTION_OPTIONS = "Post-Execution Options";
     public static final String PREF_CHKBOX_NOTIFY_ME_AFTER_EXE_COMPLETELY = "Notify me";
     public static final String PREF_CHKBOX_OPEN_RPT_AFTER_EXE_COMPLETELY = "Open report";
