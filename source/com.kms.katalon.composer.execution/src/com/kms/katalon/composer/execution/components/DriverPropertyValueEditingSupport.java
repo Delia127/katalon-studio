@@ -53,9 +53,6 @@ public class DriverPropertyValueEditingSupport extends EditingSupport {
             return ((Entry<?, ?>) element).getValue();
         case Integer:
         case String:
-            if (((Entry<?, ?>) element).getValue() instanceof Double) {
-                return String.valueOf(((Double) ((Entry<?, ?>) element).getValue()).intValue());
-            }
             return String.valueOf(((Entry<?, ?>) element).getValue());
         }
         return null;
