@@ -1,9 +1,12 @@
 package com.kms.katalon.composer.integration.qtest.job;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -20,6 +23,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.file.FileEntity;
+import com.kms.katalon.entity.file.IntegratedFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationFolderManager;
@@ -29,9 +33,10 @@ import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
 import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
 
-public class UploadTestCaseJob extends UploadJob {
+public class UploadTestCaseJob extends QTestJob {
 
     private UISynchronize sync;
+    private List<IntegratedFileEntity> uploadedEntities;
 
     public UploadTestCaseJob(String name, UISynchronize sync) {
         super(name);
@@ -41,13 +46,15 @@ public class UploadTestCaseJob extends UploadJob {
 
     @Override
     protected IStatus run(IProgressMonitor monitor) {
+        uploadedEntities = new ArrayList<IntegratedFileEntity>();
+
         monitor.beginTask(StringConstants.JOB_TASK_UPLOAD_TEST_CASE, getFileEntities().size());
         String projectDir = projectEntity.getFolderLocation();
 
         for (FileEntity fileEntity : getFileEntities()) {
             try {
                 if (monitor.isCanceled()) {
-                    return Status.CANCEL_STATUS;
+                    return canceled();
                 }
 
                 if (fileEntity instanceof TestCaseEntity) {
@@ -58,15 +65,46 @@ public class UploadTestCaseJob extends UploadJob {
                     uploadFolder(folderEntity, monitor, projectDir);
                 }
                 monitor.worked(1);
+            } catch (OperationCanceledException e) {
+                return canceled();
             } catch (Exception e) {
                 performErrorNotification(e);
                 monitor.setCanceled(true);
                 LoggerSingleton.logError(e);
                 return Status.CANCEL_STATUS;
             }
-
         }
         return Status.OK_STATUS;
+    }
+
+    /**
+     * Cancels the uploading progress. If there is any uploaded items, opens a confirmation to let user keep them or
+     * not.
+     * 
+     * @return {@link Status#CANCEL_STATUS}
+     */
+    private IStatus canceled() {
+        final int uploadedCount = uploadedEntities.size();
+        if (uploadedCount == 0) {
+            return Status.CANCEL_STATUS;
+        }
+
+        SynchronizedConfirmationDialog dialog = new SynchronizedConfirmationDialog() {
+            @Override
+            public void run() {
+                boolean confirmed = MessageDialog.open(MessageDialog.QUESTION, null, StringConstants.CONFIRMATION,
+                        MessageFormat.format(StringConstants.JOB_MSG_CONFIRM_CANCEL_UPLOAD, uploadedCount), SWT.NONE);
+                setConfirmedValue(confirmed ? YesNoAllOptions.YES : YesNoAllOptions.NO);
+            }
+        };
+        sync.syncExec(dialog);
+
+        if (dialog.getConfirmedValue() == YesNoAllOptions.NO) {
+            DisintegrateTestCaseJob job = new DisintegrateTestCaseJob(false);
+            job.setFileEntities(uploadedEntities);
+            job.doTask();
+        }
+        return Status.CANCEL_STATUS;
     }
 
     private void uploadFolder(FolderEntity folderEntity, IProgressMonitor monitor, String projectDir) throws Exception {
@@ -86,6 +124,10 @@ public class UploadTestCaseJob extends UploadJob {
             if (!folderEntity.getName().equalsIgnoreCase(siblingQTestModule.getName())) {
                 continue;
             }
+
+            if (monitor.isCanceled()) {
+                throw new OperationCanceledException();
+            }
             // let user choose merge or not
             SynchronizedConfirmationDialog dialog = performFolderDuplicatedConfirmation(folderId, siblingQTestModule);
             sync.syncExec(dialog);
@@ -104,6 +146,7 @@ public class UploadTestCaseJob extends UploadJob {
                 QTestIntegrationFolderManager.getFolderIntegratedEntityByQTestModule(qTestModule));
 
         FolderController.getInstance().saveFolder(folderEntity);
+        uploadedEntities.add(folderEntity);
     }
 
     private void uploadTestCase(TestCaseEntity testCaseEntity, IProgressMonitor monitor, String projectDir)
@@ -127,6 +170,10 @@ public class UploadTestCaseJob extends UploadJob {
 
         for (QTestTestCase siblingQTestCase : qTestParentModule.getChildTestCases()) {
             if (!testCaseEntity.getName().equalsIgnoreCase(siblingQTestCase.getName())) continue;
+
+            if (monitor.isCanceled()) {
+                throw new OperationCanceledException();
+            }
             // let user choose merge or not
             SynchronizedConfirmationDialog dialog = performTestCaseDuplicatedConfirmation(testCaseId, siblingQTestCase);
             sync.syncExec(dialog);
@@ -150,6 +197,7 @@ public class UploadTestCaseJob extends UploadJob {
                 QTestIntegrationTestCaseManager.getIntegratedEntityByQTestTestCase(qTestTestCase));
 
         TestCaseController.getInstance().updateTestCase(testCaseEntity);
+        uploadedEntities.add(testCaseEntity);
 
         EventBrokerSingleton.getInstance().getEventBroker()
                 .post(EventConstants.TESTCASE_UPDATED, new Object[] { testCaseEntity.getId(), testCaseEntity });

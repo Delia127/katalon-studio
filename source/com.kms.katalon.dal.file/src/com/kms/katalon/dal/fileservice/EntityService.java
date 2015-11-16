@@ -158,7 +158,7 @@ public final class EntityService {
         return cache.get(path.trim());
     }
 
-    public FileEntity loadEntityFromFile(String path) throws Exception {
+    public synchronized FileEntity loadEntityFromFile(String path) throws Exception {
         File file = new File(path);
         FileEntity entity = (FileEntity) unmarshaller.unmarshal(file);
         setEntityTimeAttributes(path, entity);

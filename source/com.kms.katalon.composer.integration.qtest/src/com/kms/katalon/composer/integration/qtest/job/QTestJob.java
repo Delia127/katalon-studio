@@ -11,12 +11,12 @@ import com.kms.katalon.entity.file.IntegratedFileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
-public abstract class UploadJob extends Job {
+public abstract class QTestJob extends Job {
     private List<IntegratedFileEntity> fileEntities;
     protected String token;
     protected ProjectEntity projectEntity;
 
-    public UploadJob(String name) {
+    public QTestJob(String name) {
         super(name);
         projectEntity = ProjectController.getInstance().getCurrentProject();
     }
