@@ -138,6 +138,26 @@ public class ReportUtil {
 		CsvWriter.writeCsvReport(suiteLogEntity, new File(logFolder, logFolder.getName() + ".csv"));
 	}
 
+	public static void writeLogRecordToFiles(TestSuiteLogRecord suiteLogEntity, File logFolder, String reportFile) throws Exception {
+		List<String> strings = new LinkedList<String>();
+
+		JsSuiteModel jsSuiteModel = new JsSuiteModel(suiteLogEntity, strings);
+		StringBuilder sbModel = jsSuiteModel.toArrayString();
+
+		StringBuilder htmlSb = new StringBuilder();
+		readFileToStringBuilder(ResourceLoader.HTML_TEMPLATE_FILE, htmlSb);
+		htmlSb.append(generateVars(strings, suiteLogEntity, sbModel));
+		readFileToStringBuilder(ResourceLoader.HTML_TEMPLATE_CONTENT, htmlSb);
+
+		// Write main HTML Report
+		if(reportFile == null || reportFile.equals("")){
+			FileUtils.writeStringToFile(new File(logFolder, logFolder.getName() + ".html"), htmlSb.toString());	
+		}
+		else{
+			FileUtils.writeStringToFile(new File(reportFile), htmlSb.toString());
+		}
+	}
+	
 	public static TestSuiteLogRecord generate(String logFolder) throws Exception {
 		File folder = new File(logFolder);
 		File[] files = folder.listFiles(new FilenameFilter() {
