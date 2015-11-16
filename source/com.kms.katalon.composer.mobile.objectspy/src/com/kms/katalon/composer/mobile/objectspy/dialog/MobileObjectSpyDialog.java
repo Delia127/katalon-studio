@@ -361,6 +361,7 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 						}
 						//Refresh explorer
 						eventBroker.post(EventConstants.OBJECT_SPY_REFRESH_SELECTED_TARGET, "");
+						eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);
 					}
 				} catch (Exception ex) {
 					logger.error(ex);
