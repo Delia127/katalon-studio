@@ -47,7 +47,7 @@ import com.kms.katalon.integration.qtest.entity.QTestStep;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
 import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 
-public class DownloadTestCaseJob extends UploadJob {
+public class DownloadTestCaseJob extends QTestJob {
 
     private UISynchronize sync;
     private Object[] selectedElements;

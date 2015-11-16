@@ -67,7 +67,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
 	public static void pressBack(FailureHandling flowControl) throws StepFailedException {
 		KeywordMain.runKeyword({
 			if (driver instanceof AndroidDriver) {
-				driver.sendKeyEvent(AndroidKeyCode.BACK);
+				((AndroidDriver)driver).pressKeyCode(AndroidKeyCode.BACK);
 			} else {
 				KeywordMain.stepFailed(StringConstants.KW_MSG_UNSUPPORT_ACT_FOR_THIS_DEVICE, flowControl, null);
 			}
@@ -127,7 +127,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
 	public static void pressHome(FailureHandling flowControl) throws StepFailedException {
 		KeywordMain.runKeyword({
 			if (driver instanceof AndroidDriver) {
-				driver.sendKeyEvent(AndroidKeyCode.HOME);
+				((AndroidDriver)driver).pressKeyCode(AndroidKeyCode.HOME);
 			} else {
 				KeywordMain.stepFailed(StringConstants.KW_MSG_UNSUPPORT_ACT_FOR_THIS_DEVICE, flowControl, null);
 			}
