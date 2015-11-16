@@ -1,386 +1,439 @@
 package com.kms.katalon.composer.integration.slack.preferences;
 
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
+import java.net.URI;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
 
-import com.google.gson.stream.JsonReader;
+import com.kms.katalon.composer.components.impl.control.GifCLabel;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.integration.slack.constants.ImageConstants;
 import com.kms.katalon.composer.integration.slack.constants.StringConstants;
+import com.kms.katalon.composer.integration.slack.util.SlackUtil;
 import com.kms.katalon.composer.integration.slack.util.SlackUtil.SlackMsgStatus;
 import com.kms.katalon.constants.PreferenceConstants;
 
 public class SlackPreferencePage extends FieldEditorPreferencePage {
-	private Composite fieldEditorParent;
-	private BooleanFieldEditor enabled;
-	private Group fieldsetSlack;
-	private Group fieldsetSend;
-	/** Slack User Token @see <a href="https://api.slack.com/web">Generate Slack User Token</a> */
-	private StringFieldEditor token;
-	private StringFieldEditor channel;
-	private StringFieldEditor username;
-	private BooleanFieldEditor asUser;
-	private Label lblConnectionStatus;
-	private Button btnTestConnection;
-	private BooleanFieldEditor sendOpenProject;
-	private BooleanFieldEditor sendCloseProject;
-	private BooleanFieldEditor sendCreateTestCase;
-	private BooleanFieldEditor sendUpdateTestCase;
-	private BooleanFieldEditor sendCreateTestSuite;
-	private BooleanFieldEditor sendUpdateTestSuite;
-	private BooleanFieldEditor sendCreateTestData;
-	private BooleanFieldEditor sendUpdateTestData;
-	private BooleanFieldEditor sendCreateTestObject;
-	private BooleanFieldEditor sendUpdateTestObject;
+    private Composite fieldEditorParent;
+
+    private BooleanFieldEditor enabled;
+
+    private Group fieldsetSlack;
+
+    private Group fieldsetSend;
+
+    /** Slack User Token @see <a href="https://api.slack.com/web">Generate Slack User Token</a> */
+    private StringFieldEditor token;
+
+    private StringFieldEditor channel;
+
+    private StringFieldEditor username;
+
+    private BooleanFieldEditor asUser;
+
+    private GifCLabel lblConnectionStatus;
+
+    private Button btnTestConnection;
+
+    private BooleanFieldEditor sendOpenProject;
+
+    private BooleanFieldEditor sendCloseProject;
+
+    private BooleanFieldEditor sendCreateTestCase;
+
+    private BooleanFieldEditor sendUpdateTestCase;
+
+    private BooleanFieldEditor sendCreateTestSuite;
+
+    private BooleanFieldEditor sendUpdateTestSuite;
+
+    private BooleanFieldEditor sendCreateTestData;
+
+    private BooleanFieldEditor sendUpdateTestData;
+
+    private BooleanFieldEditor sendCreateTestObject;
+
+    private BooleanFieldEditor sendUpdateTestObject;
+
     private BooleanFieldEditor sendCreateFolder;
-	private BooleanFieldEditor sendCreateKeyword;
-	private BooleanFieldEditor sendCreatePackage;
-	private BooleanFieldEditor sendPasteFromCopy;
-	private BooleanFieldEditor sendPasteFromCut;
-	private BooleanFieldEditor sendRenameItem;
-	private BooleanFieldEditor sendDeleteItem;
-	private boolean isValid = isValid();
-	private boolean loaded = false;
 
-	public SlackPreferencePage() {
-		super(GRID);
-		setMessage(StringConstants.PREF_LBL_TEAM_COLLABORATION);
-	}
+    private BooleanFieldEditor sendCreateKeyword;
 
-	@Override
-	protected void createFieldEditors() {
-		fieldEditorParent = new Composite(getFieldEditorParent(), SWT.NONE);
-		fieldEditorParent.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true, 1, 1));
+    private BooleanFieldEditor sendCreatePackage;
 
-		enabled = new BooleanFieldEditor(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_ENABLED,
-				StringConstants.PREF_LBL_SLACK_ENABLED, fieldEditorParent);
-		enabled.getDescriptionControl(fieldEditorParent).setToolTipText(StringConstants.PREF_LBL_TIP_SLACK_ENABLED);
+    private BooleanFieldEditor sendPasteFromCopy;
 
-		fieldsetSlack = new Group(fieldEditorParent, GRID);
-		fieldsetSlack.setText(StringConstants.PREF_LBL_SLACK);
-		fieldsetSlack.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true, 1, 1));
+    private BooleanFieldEditor sendPasteFromCut;
 
-		token = new StringFieldEditor(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_AUTH_TOKEN,
-				StringConstants.PREF_LBL_SLACK_AUTH_TOKEN, fieldsetSlack);
-		token.getTextControl(fieldsetSlack).setToolTipText(StringConstants.PREF_LBL_SLACK_AUTH_TOKEN);
+    private BooleanFieldEditor sendRenameItem;
 
-		channel = new StringFieldEditor(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_CHANNEL_GROUP,
-				StringConstants.PREF_LBL_SLACK_CHANNEL, fieldsetSlack);
-		channel.getTextControl(fieldsetSlack).setToolTipText(StringConstants.PREF_LBL_SLACK_CHANNEL_DESC);
+    private BooleanFieldEditor sendDeleteItem;
 
-		asUser = new BooleanFieldEditor(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_AS_USER,
-				StringConstants.PREF_LBL_SLACK_AS_USER, fieldsetSlack);
-		asUser.getDescriptionControl(fieldsetSlack).setToolTipText(StringConstants.PREF_LBL_SLACK_AS_USER_DESC);
+    private boolean isValid = isValid();
 
-		username = new StringFieldEditor(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_USERNAME,
-				StringConstants.PREF_LBL_SLACK_USERNAME, fieldsetSlack);
-		username.getTextControl(fieldsetSlack).setToolTipText(StringConstants.PREF_LBL_SLACK_USERNAME_DESC);
+    private boolean loaded = false;
 
-		btnTestConnection = new Button(fieldsetSlack, GRID);
-		btnTestConnection.setText(StringConstants.PREF_LBL_TEST_CONNECTION);
-		btnTestConnection.addSelectionListener(new SelectionListener() {
+    private boolean isSlackEnabled;
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				readResponse();
-			}
+    private boolean asUserValue;
 
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// Do nothing
-			}
-		});
+    private String tokenValue = "";
 
-		lblConnectionStatus = new Label(fieldsetSlack, GRID);
-		lblConnectionStatus.setText("");
-		lblConnectionStatus.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true, 1, 1));
+    private String channelValue = "";
 
-		addField(enabled);
-		addField(token);
-		addField(channel);
-		addField(asUser);
-		addField(username);
+    private String usernameValue = "";
 
-		fieldsetSend = new Group(fieldEditorParent, GRID);
-		fieldsetSend.setText(StringConstants.PREF_LBL_SEND_MSG_TO_SLACK_WHEN);
-		fieldsetSend.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true, 1, 1));
+    public SlackPreferencePage() {
+        super(GRID);
+        setMessage(StringConstants.PREF_LBL_TEAM_COLLABORATION);
+    }
 
-		sendOpenProject = new BooleanFieldEditor(
-				PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_OPEN_PROJECT,
-				StringConstants.PREF_SEND_OPEN_PROJECT, fieldsetSend);
+    @Override
+    protected void createFieldEditors() {
+        fieldEditorParent = new Composite(getFieldEditorParent(), SWT.NONE);
+        fieldEditorParent.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true, 1, 1));
 
-		sendCloseProject = new BooleanFieldEditor(
-				PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CLOSE_PROJECT,
-				StringConstants.PREF_SEND_CLOSE_PROJECT, fieldsetSend);
+        enabled = new BooleanFieldEditor(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_ENABLED,
+                StringConstants.PREF_LBL_SLACK_ENABLED, fieldEditorParent);
+        enabled.getDescriptionControl(fieldEditorParent).setToolTipText(StringConstants.PREF_LBL_TIP_SLACK_ENABLED);
 
-		sendCreateTestCase = new BooleanFieldEditor(
-				PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_TEST_CASE,
-				StringConstants.PREF_SEND_CREATE_TEST_CASE, fieldsetSend);
+        fieldsetSlack = new Group(fieldEditorParent, GRID);
+        fieldsetSlack.setText(StringConstants.PREF_LBL_SLACK);
+        fieldsetSlack.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true, 1, 1));
 
-		sendUpdateTestCase = new BooleanFieldEditor(
-				PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_UPDATE_TEST_CASE,
-				StringConstants.PREF_SEND_UPDATE_TEST_CASE, fieldsetSend);
+        token = new StringFieldEditor(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_AUTH_TOKEN,
+                StringConstants.PREF_LBL_SLACK_AUTH_TOKEN, fieldsetSlack);
+        token.getTextControl(fieldsetSlack).setToolTipText(StringConstants.PREF_LBL_SLACK_AUTH_TOKEN);
 
-		sendCreateTestSuite = new BooleanFieldEditor(
-				PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_TEST_SUITE,
-				StringConstants.PREF_SEND_CREATE_TEST_SUITE, fieldsetSend);
+        channel = new StringFieldEditor(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_CHANNEL_GROUP,
+                StringConstants.PREF_LBL_SLACK_CHANNEL, fieldsetSlack);
+        channel.getTextControl(fieldsetSlack).setToolTipText(StringConstants.PREF_LBL_SLACK_CHANNEL_DESC);
 
-		sendUpdateTestSuite = new BooleanFieldEditor(
-				PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_UPDATE_TEST_SUITE,
-				StringConstants.PREF_SEND_UPDATE_TEST_SUITE, fieldsetSend);
+        asUser = new BooleanFieldEditor(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_AS_USER,
+                StringConstants.PREF_LBL_SLACK_AS_USER, fieldsetSlack);
+        asUser.getDescriptionControl(fieldsetSlack).setToolTipText(StringConstants.PREF_LBL_SLACK_AS_USER_DESC);
 
-		sendCreateTestData = new BooleanFieldEditor(
-				PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_TEST_DATA,
-				StringConstants.PREF_SEND_CREATE_TEST_DATA, fieldsetSend);
+        username = new StringFieldEditor(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_USERNAME,
+                StringConstants.PREF_LBL_SLACK_USERNAME, fieldsetSlack);
+        username.getTextControl(fieldsetSlack).setToolTipText(StringConstants.PREF_LBL_SLACK_USERNAME_DESC);
 
-		sendUpdateTestData = new BooleanFieldEditor(
-				PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_UPDATE_TEST_DATA,
-				StringConstants.PREF_SEND_UPDATE_TEST_DATA, fieldsetSend);
+        btnTestConnection = new Button(fieldsetSlack, GRID);
+        btnTestConnection.setText(StringConstants.PREF_LBL_TEST_CONNECTION);
+        btnTestConnection.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                testSlackConnection();
+            }
+        });
 
-		sendCreateTestObject = new BooleanFieldEditor(
-				PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_TEST_OBJECT,
-				StringConstants.PREF_SEND_CREATE_TEST_OBJECT, fieldsetSend);
+        lblConnectionStatus = new GifCLabel(fieldsetSlack, GRID);
+        lblConnectionStatus.setText(StringConstants.EMPTY);
+        lblConnectionStatus.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true, 1, 1));
 
-		sendUpdateTestObject = new BooleanFieldEditor(
-				PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_UPDATE_TEST_OBJECT,
-				StringConstants.PREF_SEND_UPDATE_TEST_OBJECT, fieldsetSend);
+        addField(enabled);
+        addField(token);
+        addField(channel);
+        addField(asUser);
+        addField(username);
+
+        fieldsetSend = new Group(fieldEditorParent, GRID);
+        fieldsetSend.setText(StringConstants.PREF_LBL_SEND_MSG_TO_SLACK_WHEN);
+        fieldsetSend.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true, 1, 1));
+
+        sendOpenProject = new BooleanFieldEditor(
+                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_OPEN_PROJECT,
+                StringConstants.PREF_SEND_OPEN_PROJECT, fieldsetSend);
+
+        sendCloseProject = new BooleanFieldEditor(
+                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CLOSE_PROJECT,
+                StringConstants.PREF_SEND_CLOSE_PROJECT, fieldsetSend);
+
+        sendCreateTestCase = new BooleanFieldEditor(
+                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_TEST_CASE,
+                StringConstants.PREF_SEND_CREATE_TEST_CASE, fieldsetSend);
+
+        sendUpdateTestCase = new BooleanFieldEditor(
+                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_UPDATE_TEST_CASE,
+                StringConstants.PREF_SEND_UPDATE_TEST_CASE, fieldsetSend);
+
+        sendCreateTestSuite = new BooleanFieldEditor(
+                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_TEST_SUITE,
+                StringConstants.PREF_SEND_CREATE_TEST_SUITE, fieldsetSend);
+
+        sendUpdateTestSuite = new BooleanFieldEditor(
+                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_UPDATE_TEST_SUITE,
+                StringConstants.PREF_SEND_UPDATE_TEST_SUITE, fieldsetSend);
+
+        sendCreateTestData = new BooleanFieldEditor(
+                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_TEST_DATA,
+                StringConstants.PREF_SEND_CREATE_TEST_DATA, fieldsetSend);
+
+        sendUpdateTestData = new BooleanFieldEditor(
+                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_UPDATE_TEST_DATA,
+                StringConstants.PREF_SEND_UPDATE_TEST_DATA, fieldsetSend);
+
+        sendCreateTestObject = new BooleanFieldEditor(
+                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_TEST_OBJECT,
+                StringConstants.PREF_SEND_CREATE_TEST_OBJECT, fieldsetSend);
+
+        sendUpdateTestObject = new BooleanFieldEditor(
+                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_UPDATE_TEST_OBJECT,
+                StringConstants.PREF_SEND_UPDATE_TEST_OBJECT, fieldsetSend);
 
         sendCreateFolder = new BooleanFieldEditor(
                 PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_FOLDER,
                 StringConstants.PREF_SEND_CREATE_FOLDER, fieldsetSend);
 
-		sendCreateKeyword = new BooleanFieldEditor(
-				PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_KEYWORD,
-				StringConstants.PREF_SEND_CREATE_KEYWORD, fieldsetSend);
+        sendCreateKeyword = new BooleanFieldEditor(
+                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_KEYWORD,
+                StringConstants.PREF_SEND_CREATE_KEYWORD, fieldsetSend);
 
-		sendCreatePackage = new BooleanFieldEditor(
-				PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_PACKAGE,
-				StringConstants.PREF_SEND_CREATE_PACKAGE, fieldsetSend);
+        sendCreatePackage = new BooleanFieldEditor(
+                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_PACKAGE,
+                StringConstants.PREF_SEND_CREATE_PACKAGE, fieldsetSend);
 
-		sendPasteFromCopy = new BooleanFieldEditor(
-				PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_PASTE_FROM_COPY,
-				StringConstants.PREF_SEND_PASTE_FROM_COPY, fieldsetSend);
+        sendPasteFromCopy = new BooleanFieldEditor(
+                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_PASTE_FROM_COPY,
+                StringConstants.PREF_SEND_PASTE_FROM_COPY, fieldsetSend);
 
-		sendPasteFromCut = new BooleanFieldEditor(
-				PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_PASTE_FROM_CUT,
-				StringConstants.PREF_SEND_PASTE_FROM_CUT, fieldsetSend);
+        sendPasteFromCut = new BooleanFieldEditor(
+                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_PASTE_FROM_CUT,
+                StringConstants.PREF_SEND_PASTE_FROM_CUT, fieldsetSend);
 
-		sendRenameItem = new BooleanFieldEditor(
-				PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_RENAME_ITEM,
-				StringConstants.PREF_SEND_RENAME_ITEM, fieldsetSend);
+        sendRenameItem = new BooleanFieldEditor(
+                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_RENAME_ITEM,
+                StringConstants.PREF_SEND_RENAME_ITEM, fieldsetSend);
 
-		sendDeleteItem = new BooleanFieldEditor(
-				PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_DELETE_ITEM,
-				StringConstants.PREF_SEND_DELETE_ITEM, fieldsetSend);
+        sendDeleteItem = new BooleanFieldEditor(
+                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_DELETE_ITEM,
+                StringConstants.PREF_SEND_DELETE_ITEM, fieldsetSend);
 
-		addField(sendOpenProject);
-		addField(sendCloseProject);
-		addField(sendCreateTestCase);
-		addField(sendUpdateTestCase);
-		addField(sendCreateTestSuite);
-		addField(sendUpdateTestSuite);
-		addField(sendCreateTestData);
-		addField(sendUpdateTestData);
-		addField(sendCreateTestObject);
-		addField(sendUpdateTestObject);
+        addField(sendOpenProject);
+        addField(sendCloseProject);
+        addField(sendCreateTestCase);
+        addField(sendUpdateTestCase);
+        addField(sendCreateTestSuite);
+        addField(sendUpdateTestSuite);
+        addField(sendCreateTestData);
+        addField(sendUpdateTestData);
+        addField(sendCreateTestObject);
+        addField(sendUpdateTestObject);
         addField(sendCreateFolder);
-		addField(sendCreateKeyword);
-		addField(sendCreatePackage);
-		addField(sendPasteFromCopy);
-		addField(sendPasteFromCut);
-		addField(sendRenameItem);
-		addField(sendDeleteItem);
-		loaded = true;
-	}
+        addField(sendCreateKeyword);
+        addField(sendCreatePackage);
+        addField(sendPasteFromCopy);
+        addField(sendPasteFromCut);
+        addField(sendRenameItem);
+        addField(sendDeleteItem);
+        loaded = true;
+    }
 
-	@Override
-	protected void initialize() {
-		super.initialize();
-		enableFields(enabled.getBooleanValue());
-	}
+    @Override
+    protected void initialize() {
+        super.initialize();
+        isSlackEnabled = enabled.getBooleanValue();
+        asUserValue = asUser.getBooleanValue();
+        tokenValue = token.getStringValue().trim();
+        channelValue = channel.getStringValue().trim();
+        usernameValue = username.getStringValue().trim();
+        enableFields(isSlackEnabled);
+    }
 
-	@Override
-	public void propertyChange(PropertyChangeEvent event) {
-		lblConnectionStatus.setText("");
-		if (event.getSource() == enabled) {
-			enableFields((boolean) event.getNewValue());
-		} else if (event.getSource() == asUser) {
-			username.setEnabled(!(boolean) event.getNewValue(), fieldsetSlack);
-		}
-	}
+    @Override
+    public void propertyChange(PropertyChangeEvent event) {
+        lblConnectionStatus.setText(StringConstants.EMPTY);
+        if (event.getSource() == enabled) {
+            isSlackEnabled = (boolean) event.getNewValue();
+            enableFields(isSlackEnabled);
+        } else if (event.getSource() == asUser) {
+            asUserValue = (boolean) event.getNewValue();
+            username.setEnabled(!asUserValue, fieldsetSlack);
+        } else if (event.getSource() == token) {
+            tokenValue = ((String) event.getNewValue()).trim();
+        } else if (event.getSource() == channel) {
+            channelValue = ((String) event.getNewValue()).trim();
+        } else if (event.getSource() == username) {
+            usernameValue = ((String) event.getNewValue()).trim();
+        }
+    }
 
-	private void validate() {
-		// Skip checking if having any invalid state
-		if (!isValid) {
-			if (enabled.getBooleanValue() && (StringUtils.isBlank(token.getStringValue()))) {
-				MessageDialog.openWarning(getShell(), getTitle(), StringConstants.PREF_LBL_SLACK_AUTH_TOKEN
-						+ StringConstants.PREF_ERROR_MSG_X_CANNOT_BE_EMPTY_OR_BLANK);
-			} else if (enabled.getBooleanValue() && StringUtils.isBlank(channel.getStringValue())) {
-				MessageDialog.openWarning(getShell(), getTitle(), StringConstants.PREF_LBL_SLACK_CHANNEL
-						+ StringConstants.PREF_ERROR_MSG_X_CANNOT_BE_EMPTY_OR_BLANK);
-			}
-			return;
-		}
+    private void validate() {
+        // Skip checking if having any invalid state
+        if (!isValid) {
+            if (isSlackEnabled && (StringUtils.isBlank(tokenValue))) {
+                MessageDialog.openWarning(getShell(), getTitle(), StringConstants.PREF_LBL_SLACK_AUTH_TOKEN
+                        + StringConstants.PREF_ERROR_MSG_X_CANNOT_BE_EMPTY_OR_BLANK);
+            } else if (isSlackEnabled && StringUtils.isBlank(channelValue)) {
+                MessageDialog.openWarning(getShell(), getTitle(), StringConstants.PREF_LBL_SLACK_CHANNEL
+                        + StringConstants.PREF_ERROR_MSG_X_CANNOT_BE_EMPTY_OR_BLANK);
+            }
+            return;
+        }
 
-		// Otherwise, do the checking
-		if (enabled.getBooleanValue() && (StringUtils.isBlank(token.getStringValue()))) {
-			MessageDialog.openWarning(getShell(), getTitle(), StringConstants.PREF_LBL_SLACK_AUTH_TOKEN
-					+ StringConstants.PREF_ERROR_MSG_X_CANNOT_BE_EMPTY_OR_BLANK);
-			isValid = false;
-		} else if (enabled.getBooleanValue() && StringUtils.isBlank(channel.getStringValue())) {
-			MessageDialog.openWarning(getShell(), getTitle(), StringConstants.PREF_LBL_SLACK_CHANNEL
-					+ StringConstants.PREF_ERROR_MSG_X_CANNOT_BE_EMPTY_OR_BLANK);
-			isValid = false;
-		} else {
-			isValid = true;
-		}
-		return;
-	}
+        // Otherwise, do the checking
+        if (isSlackEnabled && (StringUtils.isBlank(tokenValue))) {
+            MessageDialog.openWarning(getShell(), getTitle(), StringConstants.PREF_LBL_SLACK_AUTH_TOKEN
+                    + StringConstants.PREF_ERROR_MSG_X_CANNOT_BE_EMPTY_OR_BLANK);
+            isValid = false;
+        } else if (isSlackEnabled && StringUtils.isBlank(channelValue)) {
+            MessageDialog.openWarning(getShell(), getTitle(), StringConstants.PREF_LBL_SLACK_CHANNEL
+                    + StringConstants.PREF_ERROR_MSG_X_CANNOT_BE_EMPTY_OR_BLANK);
+            isValid = false;
+        } else {
+            isValid = true;
+        }
+        return;
+    }
 
-	private void enableFields(boolean isEnabled) {
-		token.setEnabled(isEnabled, fieldsetSlack);
-		channel.setEnabled(isEnabled, fieldsetSlack);
-		asUser.setEnabled(isEnabled, fieldsetSlack);
-		username.setEnabled(isEnabled && !asUser.getBooleanValue(), fieldsetSlack);
-		sendOpenProject.setEnabled(isEnabled, fieldsetSend);
-		sendCloseProject.setEnabled(isEnabled, fieldsetSend);
-		sendCreateTestCase.setEnabled(isEnabled, fieldsetSend);
-		sendUpdateTestCase.setEnabled(isEnabled, fieldsetSend);
-		sendCreateTestSuite.setEnabled(isEnabled, fieldsetSend);
-		sendUpdateTestSuite.setEnabled(isEnabled, fieldsetSend);
-		sendCreateTestData.setEnabled(isEnabled, fieldsetSend);
-		sendUpdateTestData.setEnabled(isEnabled, fieldsetSend);
-		sendCreateTestObject.setEnabled(isEnabled, fieldsetSend);
-		sendUpdateTestObject.setEnabled(isEnabled, fieldsetSend);
+    private void enableFields(boolean isEnabled) {
+        token.setEnabled(isEnabled, fieldsetSlack);
+        channel.setEnabled(isEnabled, fieldsetSlack);
+        asUser.setEnabled(isEnabled, fieldsetSlack);
+        username.setEnabled(isEnabled && !asUserValue, fieldsetSlack);
+        sendOpenProject.setEnabled(isEnabled, fieldsetSend);
+        sendCloseProject.setEnabled(isEnabled, fieldsetSend);
+        sendCreateTestCase.setEnabled(isEnabled, fieldsetSend);
+        sendUpdateTestCase.setEnabled(isEnabled, fieldsetSend);
+        sendCreateTestSuite.setEnabled(isEnabled, fieldsetSend);
+        sendUpdateTestSuite.setEnabled(isEnabled, fieldsetSend);
+        sendCreateTestData.setEnabled(isEnabled, fieldsetSend);
+        sendUpdateTestData.setEnabled(isEnabled, fieldsetSend);
+        sendCreateTestObject.setEnabled(isEnabled, fieldsetSend);
+        sendUpdateTestObject.setEnabled(isEnabled, fieldsetSend);
         sendCreateFolder.setEnabled(isEnabled, fieldsetSend);
-		sendCreateKeyword.setEnabled(isEnabled, fieldsetSend);
-		sendCreatePackage.setEnabled(isEnabled, fieldsetSend);
-		sendPasteFromCopy.setEnabled(isEnabled, fieldsetSend);
-		sendPasteFromCut.setEnabled(isEnabled, fieldsetSend);
-		sendRenameItem.setEnabled(isEnabled, fieldsetSend);
-		sendDeleteItem.setEnabled(isEnabled, fieldsetSend);
-		btnTestConnection.setEnabled(isEnabled);
-		lblConnectionStatus.setText("");
-		if (!isValid) {
-			isValid = true;
-		}
-	}
+        sendCreateKeyword.setEnabled(isEnabled, fieldsetSend);
+        sendCreatePackage.setEnabled(isEnabled, fieldsetSend);
+        sendPasteFromCopy.setEnabled(isEnabled, fieldsetSend);
+        sendPasteFromCut.setEnabled(isEnabled, fieldsetSend);
+        sendRenameItem.setEnabled(isEnabled, fieldsetSend);
+        sendDeleteItem.setEnabled(isEnabled, fieldsetSend);
+        btnTestConnection.setEnabled(isEnabled);
+        lblConnectionStatus.setText(StringConstants.EMPTY);
+        if (!isValid) {
+            isValid = true;
+        }
+    }
 
-	private String getSlackApiUrl(String msg) throws Exception {
-		String charset = "UTF-8";
-		String url = "https://slack.com/api/chat.postMessage?";
-		url += "token=" + URLEncoder.encode(token.getStringValue().trim(), charset);
-		url += "&channel=" + URLEncoder.encode(channel.getStringValue().trim(), charset);
-		if (!username.getStringValue().trim().isEmpty()) {
-			url += "&username=" + URLEncoder.encode(username.getStringValue().trim(), charset);
-		}
-		if (asUser.getBooleanValue()) {
-			url += "&as_user=true";
-		}
-		url += "&text=" + URLEncoder.encode(msg, charset);
-		return url;
-	}
+    @Override
+    public boolean okToLeave() {
+        boolean ignoreChanges = false;
+        if (isSlackEnabled && (StringUtils.isBlank(tokenValue) || StringUtils.isBlank(channelValue))) {
+            ignoreChanges = MessageDialog.openQuestion(getShell(), getTitle(),
+                    StringConstants.PREF_QUESTION_MSG_DO_YOU_WANT_TO_DISABLE_SLACK);
+        }
 
-	@Override
-	public boolean okToLeave() {
-		boolean ignoreChanges = false;
-		if (enabled.getBooleanValue()
-				&& (StringUtils.isBlank(token.getStringValue()) || StringUtils.isBlank(channel.getStringValue()))) {
-			ignoreChanges = MessageDialog.openQuestion(getShell(), getTitle(),
-					StringConstants.PREF_QUESTION_MSG_DO_YOU_WANT_TO_DISABLE_SLACK);
-		}
+        if (ignoreChanges) {
+            // Disable Slack setting if fields are empty
+            enabled.loadDefault();
+            isSlackEnabled = enabled.getBooleanValue();
+            enableFields(isSlackEnabled);
+        }
 
-		if (ignoreChanges) {
-			// Disable Slack setting if fields are empty
-			enabled.loadDefault();
-			enableFields(enabled.getBooleanValue());
-		}
+        // Then free to leave
+        return super.okToLeave();
+    }
 
-		// Then free to leave
-		return super.okToLeave();
-	}
+    @Override
+    protected void performDefaults() {
+        super.performDefaults();
+        isSlackEnabled = enabled.getBooleanValue();
+        enableFields(isSlackEnabled);
+    }
 
-	@Override
-	protected void performDefaults() {
-		super.performDefaults();
-		enableFields(enabled.getBooleanValue());
-	}
+    @Override
+    public boolean performOk() {
+        if (loaded) {
+            validate();
+            if (isValid) {
+                return super.performOk();
+            }
+            return isValid;
+        }
+        return super.performOk();
+    }
 
-	@Override
-	public boolean performOk() {
-		if (loaded) {
-			validate();
-			if (isValid) {
-				return super.performOk();
-			}
-			return isValid;
-		}
-		return super.performOk();
-	}
+    @Override
+    protected void performApply() {
+        if (loaded) {
+            validate();
+            if (isValid) {
+                super.performApply();
+            }
+        }
+    }
 
-	@Override
-	protected void performApply() {
-		if (loaded) {
-			validate();
-			if (isValid) {
-				super.performApply();
-			}
-		}
-	}
+    private void testSlackConnection() {
+        try {
+            lblConnectionStatus.setText(StringConstants.EMPTY);
+            // Show loading image
+            lblConnectionStatus.setGifImage(ImageConstants.URL_16_LOADING.openStream());
+            lblConnectionStatus.update();
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
 
-	@SuppressWarnings("restriction")
-	private void readResponse() {
-		try {
-			boolean connectSuccessfully = false;
-			String errorMsg = null;
+        Job job = new Job("Test Slack connection") {
+            @Override
+            protected IStatus run(IProgressMonitor monitor) {
+                try {
+                    URI uri = SlackUtil.getInstance().buildSlackUri(tokenValue, channelValue, usernameValue,
+                            asUserValue, StringConstants.PREF_MSG_TEST_CONNECTION);
+                    Map<String, Object> response = SlackUtil.getInstance().getResponseFromSendingMsg(uri);
+                    boolean isOk = (boolean) response.get(SlackUtil.RES_IS_OK);
+                    String errorMsg = (String) response.get(SlackUtil.RES_ERROR_MSG);
 
-			URL api = new URL(getSlackApiUrl(StringConstants.PREF_MSG_TEST_CONNECTION));
-			HttpURLConnection con = (HttpURLConnection) api.openConnection();
-			con.setRequestMethod("GET");
-			// con.setRequestProperty("User-Agent", "Katalon Studio");
-			InputStreamReader in = new InputStreamReader(con.getInputStream());
-
-			JsonReader reader = new JsonReader(in);
-			reader.beginObject();
-			while (reader.hasNext()) {
-				String name = reader.nextName();
-				if (StringUtils.equals(name, "ok")) {
-					connectSuccessfully = reader.nextBoolean();
-				} else if (StringUtils.equals(name, "error")) {
-					errorMsg = reader.nextString();
-				} else {
-					reader.skipValue(); // avoid some unhandled events
-				}
-			}
-			reader.endObject();
-			reader.close();
-
-			if (connectSuccessfully && errorMsg == null) {
-				lblConnectionStatus.setText(StringConstants.PREF_SUCCESS_MSG_STATUS);
-			} else if (!connectSuccessfully && errorMsg != null) {
-				lblConnectionStatus.setText(SlackMsgStatus.getMsgDescription(errorMsg));
-			} else {
-				lblConnectionStatus.setText(StringConstants.PREF_ERROR_MSG_PLS_CHK_INTERNET_CONNECTION);
-			}
-		} catch (Exception e) {
-			LoggerSingleton.getInstance().getLogger().error(e);
-		}
-	}
+                    String statusMessage = StringConstants.EMPTY;
+                    if (isOk && errorMsg == null) {
+                        statusMessage = StringConstants.PREF_SUCCESS_MSG_STATUS;
+                    } else if (!isOk && errorMsg != null) {
+                        statusMessage = SlackMsgStatus.getInstance().getMsgDescription(errorMsg);
+                    } else {
+                        statusMessage = StringConstants.PREF_ERROR_MSG_PLS_CHK_INTERNET_CONNECTION;
+                    }
+                    return new Status(Status.OK, "com.kms.katalon.composer.integration.slack", statusMessage);
+                } catch (Exception e) {
+                    LoggerSingleton.logError(e);
+                    return new Status(Status.ERROR, "com.kms.katalon.composer.integration.slack", e.getMessage());
+                } finally {
+                    monitor.done();
+                }
+            }
+        };
+        job.setUser(true);
+        job.addJobChangeListener(new JobChangeAdapter() {
+            @Override
+            public void done(IJobChangeEvent event) {
+                final String message = event.getResult().getMessage();
+                UISynchronizeService.getInstance().getSync().syncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        lblConnectionStatus.setText(message);
+                        // Hide loading image
+                        lblConnectionStatus.setImage(null);
+                    }
+                });
+            }
+        });
+        job.schedule();
+    }
 
 }
