@@ -8,6 +8,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -118,24 +119,14 @@ public abstract class Entity implements IEntity, Serializable, Cloneable {
 		}
 	}
 
-	@Override
-	public boolean equals(Object object) {
-		if (object == null) {
-			return false;
-		}
-
-		if (!(object instanceof Entity)) {
-			return false;
-		}
-
-		Entity entity = (Entity) object;
-
-		if (entity.getId().equals(this.getId())) {
-			return true;
-		}
-
-		return false;
-	}
+    @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof Entity)) {
+            return false;
+        }
+        Entity that = (Entity) object;
+        return new EqualsBuilder().append(this.getId(), that.getId()).isEquals();
+    }
 
 	@Override
 	public int hashCode() {

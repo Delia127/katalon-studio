@@ -2,6 +2,7 @@ package com.kms.katalon.composer.testcase.treetable;
 
 import java.util.List;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.codehaus.groovy.ast.ASTNode;
 import org.eclipse.jface.viewers.CellEditor;
@@ -10,19 +11,14 @@ import org.eclipse.swt.widgets.Composite;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 
 public abstract class AstAbstractTreeTableNode implements AstTreeTableNode {
-	@Override
-	public boolean equals(Object object) {
-		if (!(object instanceof AstTreeTableNode)) {
-			return false;
-		}
-
-		AstTreeTableNode anotherTreeTableNode = (AstTreeTableNode) object;
-		if (anotherTreeTableNode.getASTObject() == null || this.getASTObject() == null) {
-			return false;
-		}
-
-		return this.getASTObject().equals(anotherTreeTableNode.getASTObject());
-	}
+    @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof AstTreeTableNode)) {
+            return false;
+        }
+        AstTreeTableNode that = (AstTreeTableNode) object;
+        return new EqualsBuilder().append(this.getASTObject(), that.getASTObject()).isEquals();
+    }
 
 	@Override
 	public int hashCode() {

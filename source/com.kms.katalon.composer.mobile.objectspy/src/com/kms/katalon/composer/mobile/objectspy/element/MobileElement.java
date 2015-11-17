@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class MobileElement {
@@ -78,32 +79,15 @@ public class MobileElement {
 		this.xpath = xpath;
 	}
 
-	@Override
-	public boolean equals(Object object) {
-		if (object == null) {
-			return false;
-		}
-
-		if (!(object instanceof MobileElement)) {
-			return false;
-		}
-
-		if (!object.getClass().getName().equals(this.getClass().getName())) {
-			return false;
-		}
-
-		MobileElement otherElement = (MobileElement) object;
-
-		if (otherElement.getParentElement() != null && this.getParentElement() != null && !otherElement.getParentElement().equals(this.getParentElement())) {
-			return false;
-		}
-
-		if (otherElement.getXpath().equals(this.getXpath()) && otherElement.getName().equals(this.getName())) {
-			return true;
-		}
-
-		return false;
-	}
+    @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof MobileElement)) {
+            return false;
+        }
+        MobileElement that = (MobileElement) object;
+        return new EqualsBuilder().append(this.getParentElement(), that.getParentElement())
+                .append(this.getName(), that.getName()).append(this.getXpath(), that.getXpath()).isEquals();
+    }
 
 	@Override
 	public int hashCode() {

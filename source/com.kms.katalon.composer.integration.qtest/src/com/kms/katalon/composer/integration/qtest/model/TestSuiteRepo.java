@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.integration.qtest.model;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 
 public class TestSuiteRepo {
@@ -33,17 +35,12 @@ public class TestSuiteRepo {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
-        TestSuiteRepo other = (TestSuiteRepo) obj;
-        if (folderId == null) {
-            if (other.folderId != null) return false;
-        } else if (!folderId.equals(other.folderId)) return false;
-        if (qTestProject == null) {
-            if (other.qTestProject != null) return false;
-        } else if (!qTestProject.equals(other.qTestProject)) return false;
-        return true;
+        if (!(obj instanceof TestSuiteRepo)) {
+            return false;
+        }
+        TestSuiteRepo that = (TestSuiteRepo) obj;
+        return new EqualsBuilder().append(this.getFolderId(), that.getFolderId())
+                .append(this.getQTestProject(), that.getQTestProject()).isEquals();
     }
 
 }

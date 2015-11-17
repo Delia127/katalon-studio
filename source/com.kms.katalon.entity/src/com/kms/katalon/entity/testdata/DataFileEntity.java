@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
 
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.util.Util;
@@ -198,58 +199,24 @@ public class DataFileEntity extends FileEntity {
 	}
 	
     @Override
-    public boolean equals(Object that) {
-        boolean equals = super.equals(that);
-        if (equals) {
-            DataFileEntity anotherDataFile = (DataFileEntity) that;
-            if (!getDataFileGUID().equals(anotherDataFile.getDataFileGUID())) {
-                return false;
-            }
-            
-            if (!getDateCreated().equals(anotherDataFile.getDateCreated())) {
-                return false;
-            }
-            
-            if (!getDateModified().equals(anotherDataFile.getDateModified())) {
-                return false;
-            }
-            
-            if (!getDescription().equals(anotherDataFile.getDescription())) {
-                return false;
-            }
-            
-            if (isContainsHeaders() != anotherDataFile.isContainsHeaders()) { 
-                return false;
-            }
-            
-            if (!getDataSourceUrl().equals(anotherDataFile.getDataSourceUrl())) {
-                return false;
-            }
-            
-            if (!getSheetName().equals(anotherDataFile.getSheetName())) {
-                return false;
-            }
-            
-            if (!getCsvSeperator().equals(anotherDataFile.getCsvSeperator())) {
-                return false;
-            }
-            
-            if (getIsInternalPath() != anotherDataFile.getIsInternalPath()) {
-                return false;
-            }
-            
-            if (getIsInternalPath()) {
-                if (!getData().isEmpty()) {
-                    if (!getData().equals(anotherDataFile.getData())) {
-                        return false;
-                    }
-                } else {
-                    if (!anotherDataFile.getData().isEmpty()) {
-                        return false;
-                    }
-                }
-            }
+    public boolean equals(Object obj) {
+        boolean isEquals = super.equals(obj);
+        if (!(obj instanceof DataFileEntity)) {
+            return false;
         }
-        return equals;
+        DataFileEntity that = (DataFileEntity) obj;
+        EqualsBuilder equalsBuilder = new EqualsBuilder().append(this.getDataFileGUID(), that.getDataFileGUID())
+                .append(this.getDateCreated(), that.getDateCreated())
+                .append(this.getDateModified(), that.getDateModified())
+                .append(this.getDescription(), that.getDescription())
+                .append(this.isContainsHeaders(), that.isContainsHeaders())
+                .append(this.getDataSourceUrl(), that.getDataSourceUrl())
+                .append(this.getSheetName(), that.getSheetName())
+                .append(this.getCsvSeperator(), that.getCsvSeperator())
+                .append(this.getIsInternalPath(), that.getIsInternalPath());
+        if (this.getIsInternalPath() && equalsBuilder.isEquals()) {
+            equalsBuilder.append(this.getData(), that.getData());
+        }
+        return isEquals && equalsBuilder.isEquals();
     }
 }
