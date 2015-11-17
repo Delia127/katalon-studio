@@ -12,6 +12,7 @@ import net.lingala.zip4j.util.Zip4jConstants;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailAttachment;
+import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.apache.commons.mail.ImageHtmlEmail;
 import org.apache.commons.mail.resolver.DataSourceUrlResolver;
@@ -27,6 +28,10 @@ public class MailUtil {
 
     private static final String EMAIL_TEXT_TEMPLATE = "Dear Sir/Madam,\n\nHere is the summary of test suite execution.\n\nHost Name:\t\t\t{0}\nOperating System:\t\t\t{1}\nBrowser:\t\t\t{2}\nTest Suite:\t\t\t{3}\nResult\t\t\tPassed: {4}\t\tFailed: {5}\t\tError: {6}\t\tNot Run: {7}\n\n{8}\n\nThis email was sent automatically by Katalon System. Please do not reply.\n\nThanks,\n{9}";
 
+    private static final String EMAIL_TEST_TEMPLATE = "This is a test email from Katalon.";
+
+    private static final String EMAIL_TEST_SUBJECT = "Katalon Test Email";
+
     public static String[][] getMailSecurityProtocolTypeArrayValues() {
         MailSecurityProtocolType[] allSecurityProtocolTypes = MailSecurityProtocolType.values();
         String[][] arrayValues = new String[allSecurityProtocolTypes.length][2];
@@ -37,26 +42,38 @@ public class MailUtil {
         return arrayValues;
     }
 
-    public static void sendSummaryMail(EmailConfig conf, File csvFile, File logFile,
-            List<Object[]> suitesSummaryForEmail) throws Exception {
+    public static void sendTestMail(EmailConfig conf) throws Exception {
+        ImageHtmlEmail email = initEmail(conf, EMAIL_TEST_SUBJECT);
+        email.setMsg(EMAIL_TEST_TEMPLATE);
+        email.send();
+    }
 
+    private static ImageHtmlEmail initEmail(EmailConfig conf, String subject) throws EmailException {
         ImageHtmlEmail email = new ImageHtmlEmail();
         email.setHostName(conf.host);
         email.setFrom(conf.from, "");
         email.addTo(conf.tos);
-        email.setSubject(SUBJECT);
+        email.setSubject(subject);
+
         email.setAuthenticator(new DefaultAuthenticator(conf.username, conf.password));
         switch (conf.securityProtocol) {
-            case SSL:
-                email.setSSLOnConnect(true);
-                email.setSslSmtpPort(conf.port);
-                break;
-            case TLS:
-                email.setStartTLSEnabled(true);
-                break;
-            default:
-                break;
+        case SSL:
+            email.setSSLOnConnect(true);
+            email.setSslSmtpPort(conf.port);
+            break;
+        case TLS:
+            email.setStartTLSEnabled(true);
+            break;
+        default:
+            break;
         }
+        return email;
+    }
+
+    public static void sendSummaryMail(EmailConfig conf, File csvFile, File logFile,
+            List<Object[]> suitesSummaryForEmail) throws Exception {
+
+        ImageHtmlEmail email = initEmail(conf, SUBJECT);
 
         String emailMsg = "You can now go to your test project to view the execution report.";
         if (conf.sendAttachment) {
@@ -159,7 +176,8 @@ public class MailUtil {
         File folder = new File(directory);
         if (folder.isDirectory()) {
             File file = new File(folder.getParent() + File.separator + zipName + ".zip");
-            if (file.exists()) file.delete();
+            if (file.exists())
+                file.delete();
             ZipFile zipFile = new ZipFile(folder.getParent() + File.separator + zipName + ".zip");
             ZipParameters parameters = new ZipParameters();
             parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
