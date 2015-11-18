@@ -100,4 +100,8 @@ public class ColorUtil {
     public static Color getErrorTableItemForegroundColor() {
         return new Color(Display.getCurrent(), 189, 44, 0);
     }
+    
+    public static Color getWarningForegroudColor() {
+        return new Color(Display.getCurrent(), 255, 128, 0); 
+    }
 }

@@ -161,9 +161,11 @@ public class KeywordController extends EntityController {
     }
 
     public void parseCustomKeywordFile(IFile file, ProjectEntity project) throws Exception {
-        IFolder libFolder = GroovyUtil.getCustomKeywordLibFolder(project);
-        CustomKeywordParser.getInstance().parseCustomKeywordFile(file, libFolder, true);
-        refreshCustomKeywordLibFile(project, null);
+        synchronized (file) {
+            IFolder libFolder = GroovyUtil.getCustomKeywordLibFolder(project);
+            CustomKeywordParser.getInstance().parseCustomKeywordFile(file, libFolder, true);
+            refreshCustomKeywordLibFile(project, null);
+        }
     }
 
     public void removeMethodNodesCustomKeywordFile(IFile file, ProjectEntity project) throws Exception {
