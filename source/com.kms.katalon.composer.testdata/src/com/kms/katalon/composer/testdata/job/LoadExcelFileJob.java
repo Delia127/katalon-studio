@@ -23,6 +23,9 @@ public class LoadExcelFileJob extends Job {
     @Override
     protected IStatus run(IProgressMonitor monitor) {
         try {
+            //free memory because an AppPOI instance takes too much memory.
+            Runtime.getRuntime().gc();
+            
             monitor.beginTask(StringConstants.JOB_LOAD_EXCL_TASK_NAME, IProgressMonitor.UNKNOWN);
             AppPOI appoi = new AppPOI(fSourceUrl);
             fSheetNames = appoi.getSheetNames();
