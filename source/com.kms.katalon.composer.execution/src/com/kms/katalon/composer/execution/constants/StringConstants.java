@@ -92,7 +92,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PREF_LBL_SIGNATURE = "Signature";
     public static final String PREF_LBL_SEND_ATTACHMENT = "Send attachment";
     public static final String PREF_GROUP_LBL_EXECUTION_MAIL = "Post-Execution Options";    
-    public static final String WARN_EMPTY_RECIPIENTS = "Empty email recepients";
+    public static final String WARN_EMPTY_RECIPIENTS = "Empty email recipients";
     public static final String WARN_EMPTY_HOST = "Empty host";
     public static final String WARN_EMPTY_PORT = "Empty port";
     public static final String WARN_INVALID_PORT = "Invalid port. Port must be an integer number.";
