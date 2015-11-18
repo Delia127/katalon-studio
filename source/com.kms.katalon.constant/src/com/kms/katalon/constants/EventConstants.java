@@ -18,6 +18,7 @@ public class EventConstants {
 
     // Eclipse Events
     public static final String ECLIPSE_EDITOR_CLOSED = "EDITORS_CLOSED";
+    public static final String ECLIPSE_EDITOR_SAVED = "EDITORS_SAVED";
 
     // Explorer Events
     public static final String EXPLORER_RELOAD_INPUT = "EXPLORER/RELOAD_INPUT";

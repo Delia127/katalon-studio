@@ -4,12 +4,14 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.EventConstants;
@@ -28,7 +30,6 @@ public class RefreshKeywordHandler {
     @PostConstruct
     private void registerEventHandler() {
         eventBroker.subscribe(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, new EventHandler() {
-            @SuppressWarnings("restriction")
             @Override
             public void handleEvent(Event event) {
                 try {
@@ -36,6 +37,7 @@ public class RefreshKeywordHandler {
                     if (selectedObject != null && selectedObject instanceof KeywordTreeEntity) {
                         KeywordTreeEntity keywordTreeEntity = (KeywordTreeEntity) selectedObject;
                         IFile keywordFile = (IFile) ((ICompilationUnit) keywordTreeEntity.getObject()).getResource();
+                        keywordFile.refreshLocal(IResource.DEPTH_ZERO, null);
                         if (keywordFile != null && keywordFile.exists()) {
                             eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, keywordTreeEntity);
                             KeywordController.getInstance().parseCustomKeywordFile(keywordFile,
@@ -46,7 +48,8 @@ public class RefreshKeywordHandler {
                    
                     }
                 } catch (Exception e) {
-                    LoggerSingleton.getInstance().getLogger().error(e);
+                    LoggerSingleton.logError(e);
+                    MultiStatusErrorDialog.showErrorDialog(e, "Unable to refresh this keyword", e.getMessage());
                 }
             }
         });

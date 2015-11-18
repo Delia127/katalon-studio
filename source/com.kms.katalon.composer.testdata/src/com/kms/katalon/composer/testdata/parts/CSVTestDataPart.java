@@ -13,7 +13,6 @@ import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -38,6 +37,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.control.ImageButton;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.testdata.constants.ImageConstants;
@@ -50,8 +50,8 @@ import com.kms.katalon.core.testdata.reader.CSVSeperator;
 import com.kms.katalon.core.util.PathUtils;
 import com.kms.katalon.entity.dal.exception.DuplicatedFileNameException;
 import com.kms.katalon.entity.testdata.DataFileEntity;
-import com.kms.katalon.entity.testdata.DataFilePropertyInputEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity.DataFileDriverType;
+import com.kms.katalon.entity.testdata.DataFilePropertyInputEntity;
 
 public class CSVTestDataPart extends TestDataMainPart {
     private static final String[] FILTER_NAMES = { "Comma Separated Values Files (*.csv)", "All Files (*.*)" };
@@ -90,6 +90,7 @@ public class CSVTestDataPart extends TestDataMainPart {
             layoutFileInfoComposite();
         }
     };
+    private Label lblFileInfoStatus;
 
     @PostConstruct
     public void createControls(Composite parent, MPart mpart) {
@@ -116,7 +117,7 @@ public class CSVTestDataPart extends TestDataMainPart {
 
         compositeFileInfoHeader = new Composite(compositeFileInfo, SWT.NONE);
         compositeFileInfoHeader.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        GridLayout glCompositeFileInfoHeader = new GridLayout(2, false);
+        GridLayout glCompositeFileInfoHeader = new GridLayout(3, false);
         glCompositeFileInfoHeader.marginWidth = 0;
         glCompositeFileInfoHeader.marginHeight = 0;
         compositeFileInfoHeader.setLayout(glCompositeFileInfoHeader);
@@ -125,9 +126,16 @@ public class CSVTestDataPart extends TestDataMainPart {
         btnExpandFileInfoComposite = new ImageButton(compositeFileInfoHeader, SWT.NONE);
 
         lblFileInfo = new Label(compositeFileInfoHeader, SWT.NONE);
-        lblFileInfo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        lblFileInfo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
         lblFileInfo.setText(StringConstants.PA_LBL_FILE_INFO);
-        lblFileInfo.setFont(JFaceResources.getFontRegistry().getBold(""));
+        ControlUtils.setFontToBeBold(lblFileInfo);
+
+        lblFileInfoStatus = new Label(compositeFileInfoHeader, SWT.NONE);
+        GridData gd_lblFileInfoStatus = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        gd_lblFileInfoStatus.horizontalIndent = 5;
+        lblFileInfoStatus.setLayoutData(gd_lblFileInfoStatus);
+        lblFileInfoStatus.setForeground(ColorUtil.getWarningForegroudColor());
+        ControlUtils.setFontToBeBold(lblFileInfoStatus);
 
         compositeFileInfoDetails = new Composite(compositeFileInfo, SWT.NONE);
         compositeFileInfoDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
@@ -228,6 +236,7 @@ public class CSVTestDataPart extends TestDataMainPart {
     private void addControlModifyListeners() {
         btnExpandFileInfoComposite.addListener(SWT.MouseDown, layoutFileInfoCompositeListener);
         lblFileInfo.addListener(SWT.MouseDown, layoutFileInfoCompositeListener);
+        lblFileInfoStatus.addListener(SWT.MouseDown, layoutFileInfoCompositeListener);
 
         btnBrowse.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -242,8 +251,11 @@ public class CSVTestDataPart extends TestDataMainPart {
                 if (path == null || path.equals(fCurrentFilePath)) {
                     return;
                 }
+
+                lblFileInfoStatus.setText("");
+
                 fCurrentFilePath = path;
-                
+
                 if (chckIsRelativePath.getSelection()) {
                     txtFileName.setText(PathUtils.absoluteToRelativePath(path, getProjectFolderLocation()));
                 } else {
@@ -263,7 +275,7 @@ public class CSVTestDataPart extends TestDataMainPart {
                 if (fSelectedSeperator.equals(cbSeperator.getText())) {
                     return;
                 }
-                
+                lblFileInfoStatus.setText("");
                 fSelectedSeperator = cbSeperator.getText();
 
                 loadCSVDataToTable();
@@ -416,13 +428,22 @@ public class CSVTestDataPart extends TestDataMainPart {
                     });
                 }
 
+                int numEmptyHeader = 0;
                 for (int i = 0; i < tableViewer.getTable().getColumnCount() - 1; i++) {
                     TableColumn column = tableViewer.getTable().getColumns()[i + 1];
                     String header = reader.getColumnNames()[i];
-                    if (header == null) {
+                    if (StringUtils.isBlank(header)) {
+                        numEmptyHeader++;
                         header = StringUtils.EMPTY;
+                        column.setImage(ImageConstants.IMG_16_WARN_TABLE_ITEM);
+                        column.setToolTipText(StringConstants.PA_HEADER_WARNING_COLUMN_HEADER);
                     }
                     column.setText(header);
+                }
+
+                if (numEmptyHeader > 0) {
+                    lblFileInfoStatus.setText(MessageFormat.format(StringConstants.PA_LBL_WARNING_COLUMN_HEADER,
+                            numEmptyHeader, columnNumbers));
                 }
                 tableViewer.setInput(data);
             }
@@ -500,6 +521,6 @@ public class CSVTestDataPart extends TestDataMainPart {
 
     @Override
     protected void preDestroy() {
-        
+
     }
 }

@@ -45,7 +45,8 @@ Require-Bundle: org.eclipse.e4.core.di,
  org.eclipse.e4.core.commands,
  org.eclipse.e4.core.contexts,
  org.eclipse.e4.ui.workbench.renderers.swt,
- com.kms.katalon.composer.preferences
+ com.kms.katalon.composer.preferences,
+ org.apache.commons.lang
 Export-Package: com.kms.katalon.composer.execution.components,
  com.kms.katalon.composer.execution.components.contributor,
  com.kms.katalon.composer.execution.constants,
