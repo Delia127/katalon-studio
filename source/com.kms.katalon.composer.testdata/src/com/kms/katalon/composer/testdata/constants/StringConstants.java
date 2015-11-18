@@ -20,7 +20,7 @@ public class StringConstants extends GlobalStringConstants {
 
     //MainTestDataPart
     public static final String PA_HEADER_WARNING_COLUMN_HEADER = "This column has empty header";
-    public static final String PA_LBL_WARNING_COLUMN_HEADER = "Warning: {0}/{1} empty column headers(s)";
+    public static final String PA_LBL_WARNING_COLUMN_HEADER = "Warning: {0}/{1} empty column header(s)";
     
     // CSVTestDataPart
     public static final String PA_LBL_FILE_INFO = "File's Information";
