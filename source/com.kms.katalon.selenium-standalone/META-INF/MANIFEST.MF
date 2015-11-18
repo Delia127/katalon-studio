@@ -7,7 +7,9 @@ Bundle-Vendor: KMS
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .,
  resources/lib/selenium-server-standalone-2.47.1.jar
-Export-Package: com.kms.katalon.selenium,
+Export-Package: com.google.common.base,
+ com.google.common.collect,
+ com.kms.katalon.selenium,
  org.openqa.selenium;version="2.47.0",
  org.openqa.selenium.browserlaunchers.locators;version="2.47.0",
  org.openqa.selenium.chrome;version="2.47.0",

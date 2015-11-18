@@ -33,6 +33,12 @@ $(document).ready(function() {
     } else {
         expandSuite(topsuite);
     }
+    
+    $("#s1 :first-child").click();
+	$("#s1").find("div[id*='s1-t']").each(function(){
+		$("#"+this.id+" :first-child").click();
+	});
+    
 });
 
 function addLogLevelSelector(minLevel, defaultLevel) {
@@ -376,6 +382,5 @@ function addExecutionEnvironmentInfo(environment_info) {
   	
   </table>
 </script>
-
 </body>
 </html>

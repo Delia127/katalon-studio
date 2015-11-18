@@ -63,6 +63,12 @@
             id="com.kms.katalon.composer.webui.page.edge"
             name="Edge">
       </page>
+       <page
+             category="com.kms.katalon.composer.webui.mainPage"
+             class="com.kms.katalon.composer.webui.setting.SafariPreferencePage"
+             id="com.kms.katalon.composer.webui.page.safari"
+             name="Safari">
+       </page>
    </extension>
 	<extension
 	       point="com.kms.katalon.composer.execution.driverConnectorEditor">
