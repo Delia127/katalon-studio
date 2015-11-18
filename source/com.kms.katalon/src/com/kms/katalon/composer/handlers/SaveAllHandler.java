@@ -7,17 +7,19 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.ui.PlatformUI;
 
 public class SaveAllHandler {
-	@CanExecute
-	boolean canExecute(@Optional EPartService partService) {
-		if (partService != null) {
-			return !partService.getDirtyParts().isEmpty();
-		}
-		return false;
-	}
+    
+    @CanExecute
+    private boolean canExecute(@Optional EPartService partService) {
+        if (partService != null) {
+            return !partService.getDirtyParts().isEmpty();
+        }
+        return false;
+    }
 
-	@Execute
-	void execute(EPartService partService) {
-		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().saveAllEditors(false);
-		partService.saveAll(false);
-	}
+    
+    @Execute
+    void execute(EPartService partService) {
+        partService.saveAll(false);
+        PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().saveAllEditors(false);
+    }
 }

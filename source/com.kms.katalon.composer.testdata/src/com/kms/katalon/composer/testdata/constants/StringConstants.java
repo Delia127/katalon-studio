@@ -18,6 +18,10 @@ public class StringConstants extends GlobalStringConstants {
     public static final String MENU_CONTEXT_TEST_DATA = TEST_DATA;
     public static final String COMMAND_ID_NEW_TEST_DATA = "com.kms.katalon.composer.testdata.command.add";
 
+    //MainTestDataPart
+    public static final String PA_HEADER_WARNING_COLUMN_HEADER = "This column has empty header";
+    public static final String PA_LBL_WARNING_COLUMN_HEADER = "Warning: {0}/{1} empty column headers(s)";
+    
     // CSVTestDataPart
     public static final String PA_LBL_FILE_INFO = "File's Information";
     public static final String PA_LBL_FILE_NAME = "File Name";

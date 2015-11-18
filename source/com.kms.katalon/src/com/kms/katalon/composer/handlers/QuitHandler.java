@@ -23,21 +23,19 @@ import org.eclipse.swt.widgets.Shell;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 
-
 public class QuitHandler {
-	@Inject
-	IEventBroker eventBroker;
-	
-	@Execute
-	public boolean execute(IWorkbench workbench, Shell shell, EPartService partService){
-		if (MessageDialog.openConfirm(shell, StringConstants.HAND_QUIT_DIA_TITLE,
-				StringConstants.HAND_QUIT_DIA_MSG)) {
-			if (partService.saveAll(true)) {
-				eventBroker.send(EventConstants.PROJECT_CLOSE, null);
-				workbench.close();		
-				return true;
-			}
-		}
-		return false;
-	}
+    @Inject
+    IEventBroker eventBroker;
+
+    @Execute
+    public boolean execute(IWorkbench workbench, Shell shell, EPartService partService) {
+        if (MessageDialog.openConfirm(shell, StringConstants.HAND_QUIT_DIA_TITLE, StringConstants.HAND_QUIT_DIA_MSG)) {
+            if (partService.saveAll(true)) {
+                eventBroker.send(EventConstants.PROJECT_CLOSE, null);
+                workbench.close();
+                return true;
+            }
+        }
+        return false;
+    }
 }
