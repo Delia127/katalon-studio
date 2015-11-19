@@ -1,6 +1,8 @@
 package com.kms.katalon.execution.util;
 
 import java.io.File;
+import java.net.URL;
+import java.text.MessageFormat;
 import java.util.List;
 
 import net.lingala.zip4j.core.ZipFile;
@@ -10,50 +12,25 @@ import net.lingala.zip4j.util.Zip4jConstants;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailAttachment;
+import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
+import org.apache.commons.mail.ImageHtmlEmail;
+import org.apache.commons.mail.resolver.DataSourceUrlResolver;
 
 public class MailUtil {
     public enum MailSecurityProtocolType {
         None, SSL, TLS;
     }
 
-    private static final String SUBJECT = "Katalon Report";
+    private static final String SUBJECT = "Katalon Summary Report";
 
-    public static void sendHtmlMail(EmailConfig conf) throws Exception {
+    private static final String EMAIL_HTML_TEMPLATE = "<html><head><style type=\"text/css\">body'{'margin:0;padding:0;min-width:100%;background-color:#f5f7fa;font-family:Tahoma,Droid Sans,Verdana,sans-serif;color:#60666d;font-size:14;font-style:normal;'}'table'{'border-collapse:collapse;border-spacing:0;margin:0 auto 24px;font-size:14;'}'td'{'padding:5px;word-break:break-word;word-wrap:break-word;vertical-align:middle;'}'.border td'{'border:1px solid #dddee1;'}'</style></head><body><center style=\"padding-bottom:24px\"><table width=\"600\" style=\"width:600px\"><tbody><tr height=\"101\" style=\"padding-top:24px;padding-bottom:24px\"><td width=\"50%\" style=\"width:50%;padding:0\"><img src=\"http://katalon.kms-technology.com/assets/images/katalon_logo.png\" alt=\"KATALON LOGO\" /></td><td width=\"50%\" valign=\"middle\" style=\"width:50%;vertical-align:middle;padding:0\"><h2 style=\"margin:0;font-size:18px;color:#04a0dc;text-align:right\">Test Suite Execution Report</h2></td></tr><tr style=\"background-color:#fff\"><td style=\"border:1px solid #dddee1;padding:24px;word-break:break-word;word-wrap:break-word\" colspan=\"2\"><p>Dear Sir/Madam,<br><br>Your test suite has just finished its execution. Here is the summary report.</p><table class=\"border\" width=\"100%\" border=\"1\" bgcolor=\"#f5f7fa\" style=\"width:100%;background-color:#f5f7fa;border:1px solid #dddee1\"><tbody><tr><td width=\"24%\" style=\"width:24%\">Host Name</td><td colspan=\"4\" class=\"border\">{0}</td></tr><tr><td>Operating System</td><td colspan=\"4\">{1}</td></tr><tr><td class=\"border\">Browser</td><td colspan=\"4\">{2}</td></tr><tr><td>Test Suite</td><td colspan=\"4\">{3}</td></tr><tr><td>Result</td><td width=\"19%\" style=\"width:19%;color:green\">Passed: {4}</td><td width=\"19%\" style=\"width:19%;color:orange\">Failed: {5}</td><td width=\"19%\" style=\"width:19%;color:red\">Error: {6}</td><td width=\"19%\" style=\"width:19%;color:black\">Not Run: {7}</td></tr></tbody></table><p>{8}<br><br>This email was sent automatically by Katalon System. Please do not reply.<br><br>Thanks,<br>{9}</p></td></tr></tbody></table></center></body></html>";
 
-        File reportFolder = conf.logFile.getParentFile();
-        HtmlEmail email = new HtmlEmail();
-        email.setHostName(conf.host);
-        email.setSmtpPort(Integer.valueOf(conf.port));
-        email.setFrom(conf.from, "");
-        email.addTo(conf.tos);
-        email.setSubject(SUBJECT + " for Test Suite: " + conf.suitePath);
-        email.setAuthenticator(new DefaultAuthenticator(conf.username, conf.password));
-        switch (conf.securityProtocol) {
-        case SSL:
-            email.setSSLOnConnect(true);
-             email.setSslSmtpPort(conf.port);
-            break;
-        case TLS:
-            email.setStartTLSEnabled(true);
-            break;
-        default:
-            break;
+    private static final String EMAIL_TEXT_TEMPLATE = "Dear Sir/Madam,\n\nHere is the summary of test suite execution.\n\nHost Name:\t\t\t{0}\nOperating System:\t\t\t{1}\nBrowser:\t\t\t{2}\nTest Suite:\t\t\t{3}\nResult\t\t\tPassed: {4}\t\tFailed: {5}\t\tError: {6}\t\tNot Run: {7}\n\n{8}\n\nThis email was sent automatically by Katalon System. Please do not reply.\n\nThanks,\n{9}";
 
-        }
+    private static final String EMAIL_TEST_TEMPLATE = "This is a test email from Katalon.";
 
-        StringBuilder sbHtml = buildMailContent(conf.signature);
-        email.setHtmlMsg(sbHtml.toString());
-        // set the alternative message
-        email.setTextMsg("Dear Sir/Madam !\nHere is the summary of test suite run. Please see attached file For more details\nThis email is automatically sent. "
-                + "Please do not reply\nThanks,\n" + conf.signature + "\n");
-
-        // Attachment
-        if (conf.sendAttachment) {
-            attach(email, new File(reportFolder, reportFolder.getName() + ".html"));
-        }
-        email.send();
-    }
+    private static final String EMAIL_TEST_SUBJECT = "Katalon Test Email";
 
     public static String[][] getMailSecurityProtocolTypeArrayValues() {
         MailSecurityProtocolType[] allSecurityProtocolTypes = MailSecurityProtocolType.values();
@@ -65,98 +42,78 @@ public class MailUtil {
         return arrayValues;
     }
 
-    public static void sendSummaryMail(EmailConfig conf, File csvFile, List<Object[]> suitesSummaryForEmail)
-            throws Exception {
+    public static void sendTestMail(EmailConfig conf) throws Exception {
+        ImageHtmlEmail email = initEmail(conf, EMAIL_TEST_SUBJECT);
+        email.setMsg(EMAIL_TEST_TEMPLATE);
+        email.send();
+    }
 
-        HtmlEmail email = new HtmlEmail();
+    private static ImageHtmlEmail initEmail(EmailConfig conf, String subject) throws EmailException {
+        ImageHtmlEmail email = new ImageHtmlEmail();
         email.setHostName(conf.host);
         email.setFrom(conf.from, "");
         email.addTo(conf.tos);
-        email.setSubject(SUBJECT + " for summary run");
+        email.setSubject(subject);
+
         email.setAuthenticator(new DefaultAuthenticator(conf.username, conf.password));
         switch (conf.securityProtocol) {
         case SSL:
             email.setSSLOnConnect(true);
-             email.setSslSmtpPort(conf.port);
+            email.setSslSmtpPort(conf.port);
             break;
         case TLS:
             email.setStartTLSEnabled(true);
             break;
         default:
             break;
-
         }
-
-        StringBuilder sbHtml = new StringBuilder();
-        sbHtml.append("<html>");
-        sbHtml.append("<head><title>Katalon Summary Report</title></head>");
-        sbHtml.append("<body>");
-        sbHtml.append("<div>Dear Sir, Madam !</div><br/>");
-        sbHtml.append("<div>Here is the summary of test run. For more details, please see attached file</div>");
-        sbHtml.append("<br/>");
-        // Footer
-        sbHtml.append("<br/>");
-        sbHtml.append("<div>This email is automatically sent. Please do not reply<div><br/>");
-        sbHtml.append("<div>Thanks,<div>");
-        sbHtml.append("<div>" + conf.signature + "<div>");
-        sbHtml.append("</body>");
-        sbHtml.append("</html>");
-        email.setHtmlMsg(sbHtml.toString());
-        // set the alternative message
-        StringBuilder sbText = new StringBuilder();
-        sbText.append("Dear Sir, Madam !\n\n");
-        sbText.append("Here is the summary of test run:\n");
-        for (Object[] arrSum : suitesSummaryForEmail) {
-            String suiteName = (String) arrSum[0];
-            Integer passed = (Integer) arrSum[1];
-            Integer failed = (Integer) arrSum[2];
-            Integer error = (Integer) arrSum[3];
-            Integer notRun = (Integer) arrSum[4];
-            String hostName = String.valueOf(arrSum[5]);
-            String os = String.valueOf(arrSum[6]);
-            String browser = String.valueOf(arrSum[7]);
-            // Suite 1: 7 failed 13 passed
-            sbText.append("Suite " + suiteName);
-            sbText.append(" : ");
-            sbText.append(passed > 0 ? passed + " passed " : "");
-            sbText.append(failed > 0 ? failed + " failed " : "");
-            sbText.append(error > 0 ? error + " error " : "");
-            sbText.append(notRun > 0 ? notRun + " Not Run " : "");
-            sbText.append(". On host " + hostName + ", OS " + os + ", browser " + browser);
-            sbText.append("\n");
-        }
-
-        sbText.append("\nFor more details, please see attached file\n");
-        sbText.append("\nThis email is automatically sent. Please do not reply\n\n");
-        sbText.append("Thanks,\n");
-        sbText.append(conf.signature);
-        email.setTextMsg(sbText.toString());
-        // Attachment
-        if (conf.sendAttachment) {
-            attachSummary(email, csvFile);
-        }
-        email.send();
+        return email;
     }
 
-    private static StringBuilder buildMailContent(String signature) {
-        StringBuilder sb = new StringBuilder();
-        // Header
-        sb.append("<html>\n");
-        sb.append("<head><title>Katalon Summary Report</title></head>\n");
-        sb.append("<body>\n");
-        sb.append("<div>Dear Sir/Madam !</div><br/>\n");
-        sb.append("<div>Here is the summary of test suite run. Please see attached file For more details</div>\n");
-        sb.append("<br/>\n");
-        // Main content
-        // sb.append(FileUtils.readFileToString(sumFile));
-        // Footer
-        // sb.append("<br/>\n");
-        sb.append("<div>This email is automatically sent. Please do not reply<div><br/>\n");
-        sb.append("<div>Thanks,<div>\n");
-        sb.append("<div>" + signature + "<div>\n");
-        sb.append("</body>\n");
-        sb.append("</html>\n");
-        return sb;
+    public static void sendSummaryMail(EmailConfig conf, File csvFile, File logFile,
+            List<Object[]> suitesSummaryForEmail) throws Exception {
+
+        ImageHtmlEmail email = initEmail(conf, SUBJECT);
+
+        String emailMsg = "You can now go to your test project to view the execution report.";
+        if (conf.sendAttachment) {
+            emailMsg = "Please see attached file for more details.";
+        }
+
+        // Attachment
+        if (conf.sendAttachment && csvFile != null && csvFile.exists()) {
+            attachSummary(email, csvFile);
+        }
+        if (conf.sendAttachment && logFile != null && logFile.exists()) {
+            attach(email, logFile);
+        }
+
+        String suiteName = (String) suitesSummaryForEmail.get(0)[0];
+        Integer passed = (Integer) suitesSummaryForEmail.get(0)[1];
+        Integer failed = (Integer) suitesSummaryForEmail.get(0)[2];
+        Integer error = (Integer) suitesSummaryForEmail.get(0)[3];
+        Integer notRun = (Integer) suitesSummaryForEmail.get(0)[4];
+        String hostName = String.valueOf(suitesSummaryForEmail.get(0)[5]);
+        String os = String.valueOf(suitesSummaryForEmail.get(0)[6]);
+        String browser = String.valueOf(suitesSummaryForEmail.get(0)[7]);
+
+        // Prepare email message
+        String htmlMessage = MessageFormat.format(EMAIL_HTML_TEMPLATE, hostName, os, browser, suiteName, passed,
+                failed, error, notRun, emailMsg, conf.signature);
+        String textMessage = MessageFormat.format(EMAIL_TEXT_TEMPLATE, hostName, os, browser, suiteName, passed,
+                failed, error, notRun, emailMsg, conf.signature);
+
+        // Define the base URL to resolve relative resource locations
+        URL url = new URL("http://katalon.kms-technology.com");
+        email.setDataSourceResolver(new DataSourceUrlResolver(url));
+
+        // Set HTML formatted message
+        email.setHtmlMsg(htmlMessage);
+
+        // Set fallback text email message
+        email.setTextMsg(textMessage);
+
+        email.send();
     }
 
     private static void attach(HtmlEmail email, File file) throws Exception {
@@ -167,7 +124,7 @@ public class MailUtil {
         }
         tmpReportDir.mkdir();
         for (File f : file.getParentFile().listFiles()) {
-            if (f.getName().endsWith(".html") || f.getName().endsWith(".png") || f.getName().endsWith(".csv")) {
+            if (f.getName().endsWith(".html") || f.getName().endsWith(".csv")) {
                 FileUtils.copyFileToDirectory(f, tmpReportDir);
             }
         }
@@ -193,15 +150,25 @@ public class MailUtil {
 
     public static class EmailConfig {
         public String host = "";
+
         public String port = "";
+
         public MailSecurityProtocolType securityProtocol = MailSecurityProtocolType.None;
+
         public String username;
+
         public String password;
+
         public String[] tos = {};
+
         public String from = "";
+
         public File logFile;
+
         public String suitePath = "";
+
         public String signature = "";
+
         public boolean sendAttachment = false;
     }
 

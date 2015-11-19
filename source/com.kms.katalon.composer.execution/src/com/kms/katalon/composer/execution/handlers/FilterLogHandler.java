@@ -21,7 +21,6 @@ public class FilterLogHandler {
     @Inject
     private IEventBroker eventBroker;
 
-    @SuppressWarnings("restriction")
     @Execute
     public void execute(@Optional MDirectToolItem item) {
         try {
@@ -52,7 +51,7 @@ public class FilterLogHandler {
             store.save();
             eventBroker.post(EventConstants.CONSOLE_LOG_REFRESH, null);
         } catch (IOException e) {
-            LoggerSingleton.getInstance().getLogger().error(e);
+            LoggerSingleton.logError(e);
         }
 
     }

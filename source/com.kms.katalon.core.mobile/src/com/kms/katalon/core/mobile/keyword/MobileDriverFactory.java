@@ -87,7 +87,7 @@ public class MobileDriverFactory {
 			startAppiumServer();
 		}
 		DesiredCapabilities capabilities = MobileDriverPropertyUtil.toDesireCapabilities(
-                RunConfiguration.getExecutionDriverProperty(), MobileDriverType.ANDROID_DRIVER);
+                RunConfiguration.getExecutionProperties(), MobileDriverType.ANDROID_DRIVER);
 		capabilities.setPlatform(Platform.ANDROID);
 		capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceId);
 		capabilities.setCapability("udid", deviceId);
@@ -121,14 +121,14 @@ public class MobileDriverFactory {
 			startAppiumServer();
 		}
 		DesiredCapabilities capabilities = MobileDriverPropertyUtil.toDesireCapabilities(
-                RunConfiguration.getExecutionDriverProperty(), MobileDriverType.IOS_DRIVER);
+                RunConfiguration.getExecutionProperties(), MobileDriverType.IOS_DRIVER);
 		capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceId);
 		capabilities.setCapability(MobileCapabilityType.APP, appFile);
 		capabilities.setCapability("udid", deviceId);
 		capabilities.setCapability("fullReset", uninstallAfterCloseApp);
 		capabilities.setCapability("noReset", !uninstallAfterCloseApp);
 		capabilities.setCapability("newCommandTimeout", 1800);
-		capabilities.setCapability("autoAcceptAlerts", true);
+		//capabilities.setCapability("autoAcceptAlerts", true);
 		capabilities.setCapability("waitForAppScript", true);
 		int time = 0;
         long currentMilis = System.currentTimeMillis();

@@ -43,6 +43,7 @@ import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.CreateNewTestSuiteParentDialog;
 import com.kms.katalon.composer.integration.qtest.dialog.model.TestSuiteParentCreationOption;
 import com.kms.katalon.composer.integration.qtest.job.UploadTestSuiteJob;
+import com.kms.katalon.composer.integration.qtest.model.TestSuiteQTestSuitePair;
 import com.kms.katalon.composer.integration.qtest.model.TestSuiteRepo;
 import com.kms.katalon.composer.integration.qtest.preference.QTestPreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.integration.qtest.view.testsuite.provider.QTestSuiteTableLabelProvider;
@@ -460,9 +461,14 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
                 showTestSuiteNotValidNotification();
                 return;
             }
+            
             List<QTestSuite> uploadedQTestSuites = new ArrayList<QTestSuite>();
             uploadedQTestSuites.add(selectedQTestSuite);
-            UploadTestSuiteJob job = new UploadTestSuiteJob(testSuiteEntity, uploadedQTestSuites);
+            TestSuiteQTestSuitePair pair = new TestSuiteQTestSuitePair(testSuiteEntity, uploadedQTestSuites);
+            
+            List<TestSuiteQTestSuitePair> pairs = new ArrayList<TestSuiteQTestSuitePair>();
+            pairs.add(pair);
+            UploadTestSuiteJob job = new UploadTestSuiteJob(pairs);
             job.doTask();
         } catch (QTestException ex) {
             MultiStatusErrorDialog.showErrorDialog(ex, StringConstants.VIEW_MSG_UNABLE_UPLOAD_TEST_SUITE, ex.getClass()

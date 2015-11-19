@@ -16,6 +16,8 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.workbench.IPresentationEngine;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -34,7 +36,7 @@ import org.eclipse.ui.part.FileEditorInput;
 
 @SuppressWarnings("restriction")
 public class GroovyEditorUtil {
-    private static final String GROOVY_EDITOR_URI = "org.codehaus.groovy.eclipse.editor.GroovyEditor";
+    public static final String GROOVY_EDITOR_URI = "org.codehaus.groovy.eclipse.editor.GroovyEditor";
 
     public static MPart createTestCaseEditorPart(IFile scriptFile, MPartStack parentPartStack, String testCaseEditorId,
             EPartService partService, int index) throws Exception {
@@ -60,7 +62,7 @@ public class GroovyEditorUtil {
         history.add(input, descriptor);
     }
 
-    private static IEditorPart getEditor(MPart part) {
+    public static IEditorPart getEditor(MPart part) {
         if (part != null) {
             Object clientObject = part.getObject();
             if (clientObject instanceof CompatibilityEditor) {
@@ -70,6 +72,27 @@ public class GroovyEditorUtil {
         return null;
     }
 
+    public static void saveEditor(MPart part) {
+        if (!part.isDirty()) {
+            return;
+        }
+        GroovyEditor editor= (GroovyEditor) getEditor(part);
+        if (editor instanceof GroovyEditor) {
+            ICompilationUnit unit = (ICompilationUnit) editor.getGroovyCompilationUnit();
+            try {
+                if (!unit.isWorkingCopy()) {
+                   unit.becomeWorkingCopy(null);
+                }
+                
+                unit.commitWorkingCopy(true, null);
+            } catch (JavaModelException e) {
+                // User typing error, don't care about it.
+            } finally {
+                part.setDirty(false);
+            }
+        }
+    }
+    
     private static void updateActiveEditorSources(MPart part) {
         IEditorPart editor = getEditor(part);
         WorkbenchPage page = (WorkbenchPage) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();

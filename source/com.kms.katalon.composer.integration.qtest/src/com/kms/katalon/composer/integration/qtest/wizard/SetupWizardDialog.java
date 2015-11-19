@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -498,7 +498,7 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
                 }
             }
 
-            DisintegrateTestCaseJob job = new DisintegrateTestCaseJob();
+            DisintegrateTestCaseJob job = new DisintegrateTestCaseJob(false);
             job.setFileEntities(integratedTestCaseFolder);
             job.doTask();
             job.join();

@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.components.impl.util;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
@@ -8,6 +9,11 @@ import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.composer.components.services.ModelServiceSingleton;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.ObjectRepositoryController;
+import com.kms.katalon.controller.ReportController;
+import com.kms.katalon.controller.TestCaseController;
+import com.kms.katalon.controller.TestDataController;
+import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.IEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
@@ -69,4 +75,41 @@ public class EntityPartUtil {
         }
     }
 
+    public static IEntity getEntityByPartId(String partElementId) {
+        try {
+            if (StringUtils.isBlank(partElementId)) {
+                return null;
+            }
+
+            if (partElementId.startsWith(IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX)) {
+                String testCaseId = partElementId.substring(
+                        IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX.length() + 1,
+                        partElementId.lastIndexOf(")"));
+                return TestCaseController.getInstance().getTestCase(testCaseId);
+            } else if (partElementId.startsWith(IdConstants.TESTOBJECT_CONTENT_PART_ID_PREFIX)) {
+                String testObjectId = partElementId.substring(
+                        IdConstants.TESTOBJECT_CONTENT_PART_ID_PREFIX.length() + 1,
+                        partElementId.lastIndexOf(")"));
+                return ObjectRepositoryController.getInstance().getWebElement(testObjectId);
+            } else if (partElementId.startsWith(IdConstants.TESTDATA_CONTENT_PART_ID_PREFIX)) {
+                String testDataId = partElementId.substring(
+                        IdConstants.TESTDATA_CONTENT_PART_ID_PREFIX.length() + 1,
+                        partElementId.lastIndexOf(")"));
+                return TestDataController.getInstance().getTestData(testDataId);
+            } else if (partElementId.startsWith(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX)) {
+                String testSuiteId = partElementId.substring(
+                        IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX.length() + 1,
+                        partElementId.lastIndexOf(")"));
+                return TestSuiteController.getInstance().getTestSuite(testSuiteId);
+            } else if (partElementId.startsWith(IdConstants.REPORT_CONTENT_PART_ID_PREFIX)) {
+                String reportId = partElementId.substring(
+                        IdConstants.REPORT_CONTENT_PART_ID_PREFIX.length() + 1,
+                        partElementId.lastIndexOf(")"));
+                return ReportController.getInstance().getReportEntity(reportId);
+            }
+            return null;
+        } catch (Exception ex) {
+            return null;
+        }
+    }
 }

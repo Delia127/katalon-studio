@@ -16,13 +16,20 @@ import com.kms.katalon.composer.components.services.ModelServiceSingleton;
 import com.kms.katalon.constants.IdConstants;
 
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
-
+    
+    private IWorkbenchWindowConfigurer fConfigurer;
+    
     public ApplicationWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {
         super(configurer);
+        fConfigurer = configurer;
     }
 
     public ActionBarAdvisor createActionBarAdvisor(IActionBarConfigurer configurer) {
         return new ApplicationActionBarAdvisor(configurer);
+    }
+    
+    public void preWindowOpen() {
+        fConfigurer.setShowProgressIndicator(true);
     }
 
     @Override

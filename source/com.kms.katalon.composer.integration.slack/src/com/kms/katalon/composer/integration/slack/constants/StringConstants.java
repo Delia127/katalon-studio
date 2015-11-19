@@ -1,6 +1,8 @@
 package com.kms.katalon.composer.integration.slack.constants;
 
-public class StringConstants {
+import com.kms.katalon.constants.GlobalStringConstants;
+
+public class StringConstants extends GlobalStringConstants {
 	// SlackPreferencePage
 	public static final String PREF_LBL_SLACK = "Slack";
 	public static final String PREF_LBL_TEAM_COLLABORATION = "Team Collaboration";
@@ -27,8 +29,8 @@ public class StringConstants {
 	public static final String PREF_SEND_UPDATE_TEST_DATA = "Update Data File (Test Data)";
 	public static final String PREF_SEND_UPDATE_TEST_OBJECT = "Update Test Object (in Object Repository)";
 	public static final String PREF_SEND_RENAME_ITEM = "Rename any folder, package, or file";
-	public static final String PREF_SEND_PASTE_FROM_COPY = "Paste any folder, package, or file from COPY";
-	public static final String PREF_SEND_PASTE_FROM_CUT = "Paste any folder, package, or file from CUT";
+	public static final String PREF_SEND_PASTE_FROM_COPY = "Paste any folder or file from COPY";
+	public static final String PREF_SEND_PASTE_FROM_CUT = "Paste any folder or file from CUT";
 	public static final String PREF_SEND_DELETE_ITEM = "Delete any folder, package, or file";
 	public static final String PREF_SEND_CREATE_TEST_CASE = "Create Test Case";
 	public static final String PREF_SEND_CREATE_TEST_SUITE = "Create Test Suite";
@@ -46,14 +48,15 @@ public class StringConstants {
 	public static final String UTIL_ERROR_MSG_PREFIX = UTIL_MSG_PREFIX_TEAM_COLLABORATION + "[ERROR] ";
 	
 	// SlackSendMsgHandler
-	public static final String EMOJI_MSG_OPEN_PROJECT = ":open_file_folder:[Open project] ";
-	public static final String EMOJI_MSG_CLOSE_PROJECT = ":heavy_multiplication_x:[Close project] ";
-	public static final String EMOJI_MSG_NEW = ":new:[Create] ";
-	public static final String EMOJI_MSG_DELETE = ":x:[Delete] ";
-	public static final String EMOJI_MSG_UPDATE = ":white_check_mark:[Update] ";
-	public static final String EMOJI_MSG_RENAME = ":pencil2:[Rename] ";
-	public static final String EMOJI_MSG_COPY = ":heavy_plus_sign:[Copy] ";
-	public static final String EMOJI_MSG_MOVE = ":arrow_right:[Move] ";
+	public static final String EMOJI_MSG_OPEN_PROJECT = ":open_file_folder:[Open project] {0}";
+	public static final String EMOJI_MSG_CLOSE_PROJECT = ":heavy_multiplication_x:[Close project] {0}";
+	public static final String EMOJI_MSG_NEW = ":new:[Create] {0}";
+	public static final String EMOJI_MSG_DELETE = ":x:[Delete] {0}";
+	public static final String EMOJI_MSG_DELETE_FOLDER = ":x:[Delete] {0} and all its belongings";
+	public static final String EMOJI_MSG_UPDATE = ":white_check_mark:[Update] {0}";
+	public static final String EMOJI_MSG_RENAME = ":pencil2:[Rename] {0} to {1}";
+	public static final String EMOJI_MSG_COPY = ":heavy_plus_sign:[Copy] {0} to {1}";
+	public static final String EMOJI_MSG_MOVE = ":arrow_right:[Move] {0} to {1}";
 
 	// Slack Error Messages
 	public static final String SLACK_ERROR_MSG_CHANNEL_NOT_FOUND = "Value passed for Channel/Group was invalid.";

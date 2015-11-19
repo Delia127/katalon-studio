@@ -13,24 +13,22 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants;
 
 public class PinLogViewHander {
-
-	@SuppressWarnings("restriction")
-	@Execute
-	public void execute(@Optional MDirectToolItem item) {
-		try {
-			ScopedPreferenceStore store = new ScopedPreferenceStore(InstanceScope.INSTANCE,
-					PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
-			switch (item.getElementId()) {
-			case IdConstants.LOG_VIEWER_MENU_ITEM_PIN_ID:
-				store.setValue(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_PIN_LOG, item.isSelected());
-				break;
-			default:
-				break;
-			}
-			store.save();
-		} catch (IOException e) {
-			LoggerSingleton.getInstance().getLogger().error(e);
-		}
-
-	}
+    
+    @Execute
+    public void execute(@Optional MDirectToolItem item) {
+        try {
+            ScopedPreferenceStore store = new ScopedPreferenceStore(InstanceScope.INSTANCE,
+                    PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
+            switch (item.getElementId()) {
+                case IdConstants.LOG_VIEWER_TOOL_ITEM_PIN_ID:
+                    store.setValue(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_PIN_LOG, item.isSelected());
+                    break;
+                default:
+                    break;
+            }
+            store.save();
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+        }
+    }
 }

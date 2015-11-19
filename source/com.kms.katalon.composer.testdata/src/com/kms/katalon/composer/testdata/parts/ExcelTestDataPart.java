@@ -6,6 +6,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
@@ -15,7 +16,6 @@ import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -40,6 +40,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.control.ImageButton;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.testdata.constants.ImageConstants;
@@ -143,7 +144,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
         compositeFileInfoHeader = new Composite(compositeFileInfo, SWT.NONE);
         compositeFileInfoHeader.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        GridLayout glFileCompositeHeader = new GridLayout(2, false);
+        GridLayout glFileCompositeHeader = new GridLayout(3, false);
         glFileCompositeHeader.marginWidth = 0;
         glFileCompositeHeader.marginHeight = 0;
         compositeFileInfoHeader.setLayout(glFileCompositeHeader);
@@ -152,9 +153,14 @@ public class ExcelTestDataPart extends TestDataMainPart {
         btnExpandFileInfo = new ImageButton(compositeFileInfoHeader, SWT.NONE);
 
         lblFileInfo = new Label(compositeFileInfoHeader, SWT.NONE);
-        lblFileInfo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        lblFileInfo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
         lblFileInfo.setText(StringConstants.PA_LBL_FILE_INFO);
-        lblFileInfo.setFont(JFaceResources.getFontRegistry().getBold(""));
+        ControlUtils.setFontToBeBold(lblFileInfo);
+
+        lblFileInfoStatus = new Label(compositeFileInfoHeader, SWT.NONE);
+        lblFileInfoStatus.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        lblFileInfoStatus.setForeground(ColorUtil.getWarningForegroudColor());
+        ControlUtils.setFontToBeBold(lblFileInfoStatus);
 
         compositeFileInfoDetails = new Composite(compositeFileInfo, SWT.NONE);
         compositeFileInfoDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
@@ -289,16 +295,19 @@ public class ExcelTestDataPart extends TestDataMainPart {
     private IJobChangeListener readExcelJobListener = new JobChangeAdapter() {
 
         @Override
-        public void done(IJobChangeEvent event) {
+        public void done(final IJobChangeEvent event) {
             sync.syncExec(new Runnable() {
                 @Override
                 public void run() {
-                    loadSheetNames(loadFileJob.getSheetNames());
-                    loadExcelDataToTable();
+                    if (event.getResult() == Status.OK_STATUS) {
+                        loadSheetNames(loadFileJob.getSheetNames());
+                        loadExcelDataToTable();
+                    }
                 }
             });
         }
     };
+    private Label lblFileInfoStatus;
 
     private void addControlListeners() {
         btnBrowse.addSelectionListener(new SelectionAdapter() {
@@ -313,7 +322,9 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 if (absolutePath == null || absolutePath.equals(fCurrentPath)) {
                     return;
                 }
-
+                
+                lblFileInfoStatus.setText("");
+                    
                 fCurrentPath = absolutePath;
                 fCurrentSheetName = "";
 
@@ -338,6 +349,8 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 if (fCurrentSheetName.equals(selectedSheetName)) {
                     return;
                 }
+                lblFileInfoStatus.setText("");
+                
                 fCurrentSheetName = selectedSheetName;
                 loadExcelDataToTable();
                 dirtyable.setDirty(true);
@@ -362,7 +375,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
         btnExpandFileInfo.addListener(SWT.MouseDown, layoutFileInfoCompositeListener);
         lblFileInfo.addListener(SWT.MouseDown, layoutFileInfoCompositeListener);
-
+        lblFileInfoStatus.addListener(SWT.MouseDown, layoutFileInfoCompositeListener);
     }
 
     private void redrawBtnExpandFileInfo() {
@@ -446,15 +459,19 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
             tableViewer.getTable().setItemCount(rowNumbers);
 
+            int numEmptyHeader = 0;
             for (int i = 0; i < columnNumbers; i++) {
                 final int idx = i;
                 if (idx >= tableViewer.getTable().getColumnCount() - 1) {
                     TableViewerColumn columnViewer = new TableViewerColumn(tableViewer, SWT.NONE);
                     String header = headers[i];
-                    if (header != null) {
+                    if (!StringUtils.isBlank(header)) {
                         columnViewer.getColumn().setText(header);
                     } else {
+                        columnViewer.getColumn().setImage(ImageConstants.IMG_16_WARN_TABLE_ITEM);
+                        columnViewer.getColumn().setToolTipText(StringConstants.PA_LBL_WARNING_COLUMN_HEADER);
                         columnViewer.getColumn().setText(StringUtils.EMPTY);
+                        numEmptyHeader++;
                     }
 
                     columnViewer.getColumn().setWidth(COLUMN_WIDTH);
@@ -467,9 +484,11 @@ public class ExcelTestDataPart extends TestDataMainPart {
                             cell.setText(text);
 
                             sync.asyncExec(new Runnable() {
-
                                 @Override
                                 public void run() {
+                                    if (fData == null) {
+                                        return;
+                                    }
                                     if (fData[rowIndex][columnIndex] == null) {
                                         final String text = excelData.getValue(columnIndex + 1, rowIndex + 1);
                                         if (text == null) {
@@ -486,6 +505,11 @@ public class ExcelTestDataPart extends TestDataMainPart {
                         }
                     });
                 }
+            }
+
+            if (numEmptyHeader > 0) {
+                lblFileInfoStatus.setText(MessageFormat.format(StringConstants.PA_LBL_WARNING_COLUMN_HEADER,
+                        numEmptyHeader, rowNumbers));
             }
 
             tableViewer.setInput(fData);

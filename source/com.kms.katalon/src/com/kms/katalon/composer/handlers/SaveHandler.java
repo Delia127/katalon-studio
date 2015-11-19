@@ -11,6 +11,8 @@
  *******************************************************************************/
 package com.kms.katalon.composer.handlers;
 
+import javax.inject.Named;
+
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
@@ -18,101 +20,102 @@ import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor;
 
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.PartServiceSingleton;
 import com.kms.katalon.composer.parts.MultipleTabsCompositePart;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.groovy.util.GroovyEditorUtil;
 
 @SuppressWarnings("restriction")
 public class SaveHandler implements IHandler {
-	
-	@CanExecute
-	public static boolean canExecute() {
-		EPartService partService = PartServiceSingleton.getInstance().getPartService();
-		MPart part = partService.getActivePart();
-		if (getCompositeParentPart(part) != null) {
-			return true;
-		} else if (part != null) {
-			return part.isDirty();
-		}
-		return false;
-	}
 
-	private static MultipleTabsCompositePart getCompositeParentPart(MPart part) {
-		EPartService partService = PartServiceSingleton.getInstance().getPartService();
-		MultipleTabsCompositePart parentCompositePart = null;
-		for (MPart dirtyPart : partService.getDirtyParts()) {
-			if (dirtyPart.getObject() instanceof MultipleTabsCompositePart) {
-				MultipleTabsCompositePart compositePart = (MultipleTabsCompositePart) dirtyPart.getObject();
-				if (compositePart.getChildParts() != null && compositePart.getChildParts().contains(part)) {
-					return compositePart;
-				}
-			}
-		}
-		return parentCompositePart;
-	}
+    @CanExecute
+    public boolean canExecute() {
+        EPartService partService = PartServiceSingleton.getInstance().getPartService();
+        MPart part = partService.getActivePart();
+        if (getCompositeParentPart(part) != null) {
+            return true;
+        } else if (part != null) {
+            return part.isDirty();
+        }
+        return false;
+    }
 
-	@Execute
-	public static void execute() {
-		try {
-			EPartService partService = PartServiceSingleton.getInstance().getPartService();
-			MPart part = partService.getActivePart();
-			MultipleTabsCompositePart parentCompositePart = getCompositeParentPart(part);
-			if (parentCompositePart != null) {
-				if (parentCompositePart.getChildParts().contains(part)) {
-					parentCompositePart.save();
-				}
-			} else {
-				if (part.getObject() instanceof CompatibilityEditor) {
-					PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-							.saveEditor(((CompatibilityEditor) part.getObject()).getEditor(), false);
-				} else {
-					partService.savePart(part, false);
-				}
-			}
-		} catch (Exception e) {
-			MessageDialog.openError(Display.getCurrent().getActiveShell(),
-					StringConstants.ERROR_TITLE,
-					StringConstants.HAND_SAVE_DIA_MSG);
-			LoggerSingleton.getInstance().getLogger().error(e);
-		}
-	}
+    private MultipleTabsCompositePart getCompositeParentPart(MPart part) {
+        EPartService partService = PartServiceSingleton.getInstance().getPartService();
+        MultipleTabsCompositePart parentCompositePart = null;
+        for (MPart dirtyPart : partService.getDirtyParts()) {
+            if (dirtyPart.getObject() instanceof MultipleTabsCompositePart) {
+                MultipleTabsCompositePart compositePart = (MultipleTabsCompositePart) dirtyPart.getObject();
+                if (compositePart.getChildParts() != null && compositePart.getChildParts().contains(part)) {
+                    return compositePart;
+                }
+            }
+        }
+        return parentCompositePart;
+    }
 
-	@Override
-	public void addHandlerListener(IHandlerListener handlerListener) {
-		// TODO Auto-generated method stub
-	}
+    @Execute
+    public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part) {
+        try {
+            MultipleTabsCompositePart parentCompositePart = getCompositeParentPart(part);
+            if (parentCompositePart != null) {
+                if (parentCompositePart.getChildParts().contains(part)) {
+                    parentCompositePart.save();
+                }
+            } else {
+                if (part.getObject() instanceof CompatibilityEditor) {
+                    GroovyEditorUtil.saveEditor(part);
+                    EventBrokerSingleton.getInstance().getEventBroker()
+                            .post(EventConstants.ECLIPSE_EDITOR_SAVED, part);
+                } else {
+                    EPartService partService = PartServiceSingleton.getInstance().getPartService();
+                    partService.savePart(part, false);
+                }
+            }
 
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
-	}
+        } catch (Exception e) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                    StringConstants.HAND_SAVE_DIA_MSG);
+            LoggerSingleton.logError(e);
+        }
+    }
 
-	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
-		execute();
-		return null;
-	}
+    @Override
+    public void addHandlerListener(IHandlerListener handlerListener) {
+    }
 
-	@Override
-	public boolean isEnabled() {
-		return canExecute();
-	}
+    @Override
+    public void dispose() {
+    }
 
-	@Override
-	public boolean isHandled() {
-		return true;
-	}
+    @Override
+    public Object execute(ExecutionEvent event) throws ExecutionException {
+        EPartService partService = PartServiceSingleton.getInstance().getPartService();
+        MPart part = partService.getActivePart();
+        execute(part);
+        return null;
+    }
 
-	@Override
-	public void removeHandlerListener(IHandlerListener handlerListener) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public boolean isEnabled() {
+        return canExecute();
+    }
+
+    @Override
+    public boolean isHandled() {
+        return true;
+    }
+
+    @Override
+    public void removeHandlerListener(IHandlerListener handlerListener) {
+    }
 }

@@ -213,7 +213,19 @@ public class ConsoleLauncher extends AbstractLauncher {
 			}
 
 			try {
-				sendReportEmail(testSuite, logFile);
+				File testSuiteReportSourceFolder = logFile.getParentFile();
+				
+				File csvFile = new File(testSuiteReportSourceFolder, FilenameUtils.getBaseName(testSuiteReportSourceFolder.getName()) + ".csv");
+				
+				List<String> csvReports = new ArrayList<String>();
+                
+                csvReports.add(csvFile.getAbsolutePath());
+				
+                List<Object[]> suitesSummaryForEmail = collectSummaryData(csvReports);
+				
+				sendReportEmail(testSuite, null, logFile, suitesSummaryForEmail);
+				
+				//sendReportEmail(TestSuiteEntity testSuite, File csvFile, File logFile, List<Object[]> suitesSummaryForEmail)
 				return true;
 			} catch (Exception e) {
 				System.out.println(MessageFormat.format(StringConstants.LAU_PRT_CANNOT_SEND_EMAIL, e.getMessage()));

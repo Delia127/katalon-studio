@@ -7,7 +7,6 @@ Bundle-Vendor: KMS
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.codehaus.groovy,
  com.kms.katalon.core,
- com.google.guava,
  org.apache.commons.io,
  com.kms.katalon.selenium-standalone;bundle-version="1.0.0",
  io.appium.java-client,

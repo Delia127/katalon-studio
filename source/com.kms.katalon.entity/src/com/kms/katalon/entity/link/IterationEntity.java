@@ -7,6 +7,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+
 public class IterationEntity implements Serializable {
     private static final long serialVersionUID = 1L;
     private String value;
@@ -34,17 +36,12 @@ public class IterationEntity implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        if (object == null) return false;
-
-        if (!(object instanceof IterationEntity)) return false;
-
+        if (!(object instanceof IterationEntity)) {
+            return false;
+        }
         IterationEntity that = (IterationEntity) object;
-
-        if (this.getIterationType() != that.getIterationType()) return false;
-
-        if (!this.getValue().equals(that.getValue())) return false;
-
-        return true;
+        return new EqualsBuilder().append(this.getIterationType(), that.getIterationType())
+                .append(this.getValue(), that.getValue()).isEquals();
     }
 
     public String getValue() {

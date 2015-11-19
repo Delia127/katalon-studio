@@ -151,6 +151,10 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String KW_LOG_PASSED_KEYS_SENT_TO_OBJ = "Keys ''{0}'' sent to object: ''{1}''";
 	public static final String KW_MSG_CANNOT_SED_KEYS_TO_OBJ_X = "Unable to send keys ''{0}'' to object ''{1}''";
 	public static final String KW_MSG_CANNOT_SED_KEYS_TO_OBJ = "Unable to send keys ''{0}'' to object";
+    public static final String KW_LOG_INFO_UPLOADING_FILE_X_TO_OBJ_Y = "Uploading file ''{0}'' to object: ''{1}''";
+    public static final String KW_LOG_PASSED_FILE_X_SENT_TO_OBJ_Y = "File ''{0}'' sent to object: ''{1}''";
+    public static final String KW_MSG_CANNOT_UPLOAD_FILE_X_TO_OBJ_Y = "Unable to upload file ''{0}'' to object ''{1}''";
+    public static final String KW_MSG_CANNOT_UPLOAD_FILE_X = "Unable to upload file ''{0}'' to object";
 	public static final String KW_LOG_INFO_FOCUSING_ON_OBJ = "Focusing on object: ''{0}''";
 	public static final String KW_LOG_PASSED_OBJ_IS_FOCUSED = "Object: ''{0}'' is focused";
 	public static final String KW_MSG_CANNOT_FOCUS_ON_OBJ_X = "Unable to focus on object ''{0}''";
@@ -250,6 +254,8 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String KW_LOG_PASSED_ALERT_IS_PRESENT_AFTER_X_SEC = "Alert is present after {0} second(s).";
 	public static final String KW_MSG_NO_ALERT_FOUND_AFTER_X_SEC = "No alert found after {0} second(s).";
 	public static final String KW_MSG_CANNOT_WAIT_FOR_ALERT = "Unable to wait for alert";
+	public static final String KW_MSG_CANNOT_VERIFY_ALERT_PRESENT = "Unable to verify alert present";
+	public static final String KW_MSG_CANNOT_VERIFY_ALERT_NOT_PRESENT = "Unable to verify alert not present";
 	public static final String KW_LOG_PASSED_TXT_X_IS_PRESENT_ON_PAGE_Y = "Text ''{0}'' is present on page {1}";
 	public static final String KW_MSG_TXT_X_IS_NOT_PRESENT_ON_PAGE_Y = "Text ''{0}'' is not present on page {1}";
 	public static final String KW_MSG_CANNOT_VERIFY_TXT_X_IS_PRESENT_Y = "Unable to verify text ''{0}'' is present {1}";

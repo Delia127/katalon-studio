@@ -33,6 +33,7 @@ public class GlobalVariableParser {
             throws Exception {
         File file = new File(libFolder.getRawLocation().toString(), "GlobalVariable.groovy");
         if (!file.exists()) {
+            file.getParentFile().mkdirs();
             file.createNewFile();
         }
 

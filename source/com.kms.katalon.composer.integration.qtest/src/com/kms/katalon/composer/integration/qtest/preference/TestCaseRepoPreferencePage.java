@@ -330,7 +330,7 @@ public class TestCaseRepoPreferencePage extends AbstractQTestIntegrationPage {
     }
 
     private void performRemoveTestCaseRepo(final FolderEntity folderEntity, final TestCaseRepo repo) {
-        DisintegrateTestCaseJob job = new DisintegrateTestCaseJob();
+        DisintegrateTestCaseJob job = new DisintegrateTestCaseJob(true);
         job.setFileEntities(Arrays.asList((IntegratedFileEntity) folderEntity));
         job.doTask();
         job.addJobChangeListener(new DisintegrateJobListener() {
@@ -348,7 +348,7 @@ public class TestCaseRepoPreferencePage extends AbstractQTestIntegrationPage {
     }
 
     private void performInsertTestCaseRepor(final FolderEntity folderEntity, final TestCaseRepo newRepo, final int index) {
-        DisintegrateTestCaseJob job = new DisintegrateTestCaseJob();
+        DisintegrateTestCaseJob job = new DisintegrateTestCaseJob(true);
         job.setFileEntities(Arrays.asList((IntegratedFileEntity) folderEntity));
         job.doTask();
         job.addJobChangeListener(new DisintegrateJobListener() {

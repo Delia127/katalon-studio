@@ -427,8 +427,12 @@ public class QTestIntegrationTestSuiteManager {
         testSuite.setFieldValues(fieldValues);
 
         CreateTestSuiteRequest request = new CreateTestSuiteRequest().withProjectId(qTestProject.getId())
-                .withArtifactId(parent.getId()).withArtifactLevel(parent.getArtifactLevel()).withTestSuite(testSuite);
-
+               .withTestSuite(testSuite);
+        if (parent.getArtifactLevel() != ArtifactLevel.ROOT) {
+            request.setArtifactId(parent.getId());
+            request.setArtifactLevel(parent.getArtifactLevel());
+        }
+        
         testSuite = executionService.createTestSuite(request);
 
         return new QTestSuite(testSuite.getId(), name,
@@ -447,17 +451,17 @@ public class QTestIntegrationTestSuiteManager {
         TestExecutionService executionService = new TestExecutionServiceClient(new BasicQTestCredentials(token));
         executionService.setEndpoint(serverUrl);
 
-        ListTestSuiteRequest request = new ListTestSuiteRequest().withProjectId(qTestProject.getId()).withArtifactId(
-                parent.getId());
+        ListTestSuiteRequest request = new ListTestSuiteRequest().withProjectId(qTestProject.getId());
         switch (parent.getType()) {
-            case QTestSuiteParent.RELEASE_ROOT_TYPE:
-                request.setArtifactLevel(ArtifactLevel.ROOT);
-                break;
             case QTestSuiteParent.RELEASE_TYPE:
+                request.setArtifactId(parent.getId());
                 request.setArtifactLevel(ArtifactLevel.RELEASE);
                 break;
             case QTestSuiteParent.CYCLE_TYPE:
+                request.setArtifactId(parent.getId());
                 request.setArtifactLevel(ArtifactLevel.TEST_CYCLE);
+                break;
+            case QTestSuiteParent.RELEASE_ROOT_TYPE:
                 break;
         }
 

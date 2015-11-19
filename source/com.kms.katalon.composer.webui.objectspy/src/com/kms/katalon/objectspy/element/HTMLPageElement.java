@@ -3,6 +3,7 @@ package com.kms.katalon.objectspy.element;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class HTMLPageElement extends HTMLFrameElement {
@@ -26,24 +27,15 @@ public class HTMLPageElement extends HTMLFrameElement {
 		this.url = url;
 	}
 
-	@Override
-	public boolean equals(Object object) {
-		if (object == null) {
-			return false;
-		}
-
-		if (!(object instanceof HTMLPageElement)) {
-			return false;
-		}
-
-		HTMLPageElement otherPage = (HTMLPageElement) object;
-
-		if (otherPage.getUrl().equals(this.getUrl()) && otherPage.getName().equals(this.getName())) {
-			return true;
-		}
-
-		return false;
-	}
+    @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof HTMLPageElement)) {
+            return false;
+        }
+        HTMLPageElement that = (HTMLPageElement) object;
+        return new EqualsBuilder().append(this.getUrl(), that.getUrl()).append(this.getName(), that.getName())
+                .isEquals();
+    }
 
 	@Override
 	public int hashCode() {

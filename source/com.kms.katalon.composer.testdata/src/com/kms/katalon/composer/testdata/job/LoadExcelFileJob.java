@@ -23,12 +23,18 @@ public class LoadExcelFileJob extends Job {
     @Override
     protected IStatus run(IProgressMonitor monitor) {
         try {
-            monitor.beginTask(StringConstants.JOB_LOAD_EXCL_TASK_NAME, 1);
+            //free memory because an AppPOI instance takes too much memory.
+            Runtime.getRuntime().gc();
+            
+            monitor.beginTask(StringConstants.JOB_LOAD_EXCL_TASK_NAME, IProgressMonitor.UNKNOWN);
             AppPOI appoi = new AppPOI(fSourceUrl);
             fSheetNames = appoi.getSheetNames();
+            if (monitor.isCanceled()) {
+                return Status.CANCEL_STATUS;
+            }
             return Status.OK_STATUS;
         } catch (IOException e) {
-            return Status.CANCEL_STATUS;
+            return Status.OK_STATUS;
         } finally {
             monitor.done();
         }

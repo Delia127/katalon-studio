@@ -28,10 +28,10 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.components.adapter.CComboContentAdapter;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.testcase.ast.editors.InputCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.TestObjectCellEditor;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.editors.ComboBoxCellEditorWithContentProposal;
-import com.kms.katalon.composer.testcase.editors.InputCellEditor;
-import com.kms.katalon.composer.testcase.editors.TestObjectCellEditor;
 import com.kms.katalon.composer.testcase.model.ContentProposalCheck;
 import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;

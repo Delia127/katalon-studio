@@ -47,22 +47,18 @@ public class ExecutionPreferencePage extends PreferencePage {
         defaultExecutionComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
         Label lblDefaultExecution = new Label(defaultExecutionComposite, SWT.NONE);
-        lblDefaultExecution.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+        lblDefaultExecution.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false, false, 1, 1));
         lblDefaultExecution.setText(StringConstants.PREF_GRP_DEFAULT_EXECUTION_CONFIG);
 
         executionOptionCombo = new Combo(defaultExecutionComposite, SWT.DROP_DOWN);
+        executionOptionCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-        Composite pageLoadTimeOutComposite = new Composite(fieldEditorParent, SWT.NONE);
-        GridLayout glComposite = new GridLayout(2, false);
-        pageLoadTimeOutComposite.setLayout(glComposite);
-        pageLoadTimeOutComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-
-        Label lblDefaultTimeout = new Label(pageLoadTimeOutComposite, SWT.NONE);
-        lblDefaultTimeout.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+        Label lblDefaultTimeout = new Label(defaultExecutionComposite, SWT.NONE);
+        lblDefaultTimeout.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false, false, 1, 1));
         lblDefaultTimeout.setText(StringConstants.PREF_LBL_DEFAULT_PAGE_LOAD_TIMEOUT);
 
-        txtPageLoadTimeout = new Text(pageLoadTimeOutComposite, SWT.BORDER);
-        txtPageLoadTimeout.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+        txtPageLoadTimeout = new Text(defaultExecutionComposite, SWT.BORDER);
+        txtPageLoadTimeout.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Group grpAfterExecuting = new Group(fieldEditorParent, SWT.NONE);
         grpAfterExecuting.setText(StringConstants.PREF_GRP_POST_EXECUTION_OPTIONS);

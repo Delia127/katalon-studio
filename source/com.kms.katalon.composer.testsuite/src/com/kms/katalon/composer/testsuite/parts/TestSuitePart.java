@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.testsuite.parts;
 
-import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,6 +27,8 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -53,7 +54,6 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestDataController;
-import com.kms.katalon.controller.TestEnvironmentController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -61,24 +61,6 @@ import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class TestSuitePart implements EventHandler {
-
-    private static final String LAST_UPDATE_LABEL = StringConstants.PA_LBL_LAST_UPDATED;
-
-    private static final String CREATED_DATE_LABEL = StringConstants.PA_LBL_CREATED_DATE;
-
-    private static final String DESCRIPTION_LABEL = StringConstants.PA_LBL_DESC;
-
-    private static final String LAST_RUN_LABEL = StringConstants.PA_LBL_LAST_RUN;
-
-    private static final String LAST_RUN_LABEL_TOOLTIP = StringConstants.PA_LBL_TIP_LAST_RUN;
-
-    private static final String TEST_SUITE_ID_LABEL = StringConstants.PA_LBL_ID;
-
-    private static final String TEST_SUITE_NAME_LABEL = StringConstants.PA_LBL_NAME;
-
-    private static final String MAIL_RECIPIENTS_LABEL = StringConstants.PA_LBL_MAIL_RECIPIENTS;
-
-    private static final String PAGE_LOAD_TIMEOUT_LABEL = StringConstants.PA_LBL_PAGE_LOAD_TIMEOUT;
 
     private static final int MINIMUM_COMPOSITE_SIZE = 300;
 
@@ -168,7 +150,7 @@ public class TestSuitePart implements EventHandler {
 
         createComponents(parent);
 
-        registerControlModifyListeners();
+        registerControlListeners();
 
         layoutGeneralInfo();
         layoutExecutionInfo();
@@ -245,7 +227,7 @@ public class TestSuitePart implements EventHandler {
         });
     }
 
-    private void registerControlModifyListeners() {
+    private void registerControlListeners() {
         textTestSuiteName.addModifyListener(new ModifyListener() {
 
             @Override
@@ -331,21 +313,36 @@ public class TestSuitePart implements EventHandler {
             }
         });
 
+        // Number input only
+        VerifyListener verifyNumberListener = new VerifyListener() {
+
+            @Override
+            public void verifyText(VerifyEvent e) {
+                String string = e.text;
+                char[] chars = new char[string.length()];
+                string.getChars(0, chars.length, chars, 0);
+                for (int i = 0; i < chars.length; i++) {
+                    if (!('0' <= chars[i] && chars[i] <= '9')) {
+                        e.doit = false;
+                        return;
+                    }
+                }
+                setDirty(true);
+            }
+        };
+
         txtUserDefinePageLoadTimeout.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                String text = txtUserDefinePageLoadTimeout.getText();
+                String text = ((Text) e.getSource()).getText();
                 try {
                     int timeout = Integer.parseInt(text);
-                    if (timeout >= TestEnvironmentController.getInstance().getPageLoadTimeOutMinimumValue()
-                            && timeout <= TestEnvironmentController.getInstance().getPageLoadTimeOutMaximumValue()) {
-                        getTestSuite().setPageLoadTimeout((short) timeout);
-                    }
+                    getTestSuite().setPageLoadTimeout((short) timeout);
                 } catch (NumberFormatException ex) {
-                    // Users input wrong key, do not care about that.
                 }
             }
         });
+        txtUserDefinePageLoadTimeout.addVerifyListener(verifyNumberListener);
 
         lblLastRun.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -358,9 +355,20 @@ public class TestSuitePart implements EventHandler {
 
             @Override
             public void modifyText(ModifyEvent e) {
-                setDirty(true);
+                String text = ((Text) e.getSource()).getText();
+                try {
+                    int rerun = Integer.parseInt(text);
+                    // limit to 100 times only
+                    if (rerun > 100) {
+                        rerun = 100;
+                        ((Text) e.getSource()).setText(String.valueOf(rerun));
+                    }
+                    getTestSuite().setNumberOfRerun(rerun);
+                } catch (NumberFormatException ex) {
+                }
             }
         });
+        txtRerun.addVerifyListener(verifyNumberListener);
 
         childrenView.registerControlModifyListeners();
     }
@@ -436,11 +444,11 @@ public class TestSuitePart implements EventHandler {
         }
 
         if (testSuite.getLastRun() != null) {
-            lblLastRun.setText("<A>" + LAST_RUN_LABEL + "</A>");
-            lblLastRun.setToolTipText(LAST_RUN_LABEL_TOOLTIP);
+            lblLastRun.setText("<A>" + StringConstants.PA_LBL_LAST_RUN + "</A>");
+            lblLastRun.setToolTipText(StringConstants.PA_LBL_TIP_LAST_RUN);
             txtLastRun.setText(testSuite.getLastRun().toString());
         } else {
-            lblLastRun.setText(LAST_RUN_LABEL);
+            lblLastRun.setText(StringConstants.PA_LBL_LAST_RUN);
             lblLastRun.setToolTipText("");
         }
 
@@ -526,7 +534,7 @@ public class TestSuitePart implements EventHandler {
         GridData gdLblTestSuiteID = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdLblTestSuiteID.widthHint = 50;
         lblTestSuiteID.setLayoutData(gdLblTestSuiteID);
-        lblTestSuiteID.setText(TEST_SUITE_ID_LABEL);
+        lblTestSuiteID.setText(StringConstants.PA_LBL_ID);
 
         txtTestSuiteId = new Text(compositeTestSuiteIdAndName, SWT.BORDER | SWT.READ_ONLY);
         GridData gdTxtTestSuiteId = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
@@ -537,7 +545,7 @@ public class TestSuitePart implements EventHandler {
         GridData gdLblTestSuiteName = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdLblTestSuiteName.widthHint = 50;
         lblTestSuiteName.setLayoutData(gdLblTestSuiteName);
-        lblTestSuiteName.setText(TEST_SUITE_NAME_LABEL);
+        lblTestSuiteName.setText(StringConstants.PA_LBL_NAME);
 
         textTestSuiteName = new Text(compositeTestSuiteIdAndName, SWT.BORDER);
         GridData gdTextTestSuiteName = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
@@ -556,7 +564,7 @@ public class TestSuitePart implements EventHandler {
         GridData gdLblCreatedDate = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdLblCreatedDate.widthHint = 85;
         lblCreatedDate.setLayoutData(gdLblCreatedDate);
-        lblCreatedDate.setText(CREATED_DATE_LABEL);
+        lblCreatedDate.setText(StringConstants.PA_LBL_CREATED_DATE);
 
         txtCreatedDate = new Text(compositeUpdateAndRun, SWT.BORDER | SWT.READ_ONLY);
         GridData gdTxtCreatedDate = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
@@ -564,7 +572,7 @@ public class TestSuitePart implements EventHandler {
         txtCreatedDate.setLayoutData(gdTxtCreatedDate);
 
         Label lblLastUpdate = new Label(compositeUpdateAndRun, SWT.NONE);
-        lblLastUpdate.setText(LAST_UPDATE_LABEL);
+        lblLastUpdate.setText(StringConstants.PA_LBL_LAST_UPDATED);
 
         txtLastUpdate = new Text(compositeUpdateAndRun, SWT.BORDER | SWT.READ_ONLY);
         GridData gdTxtLastUpdate = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
@@ -584,7 +592,7 @@ public class TestSuitePart implements EventHandler {
         gdLblDescription.widthHint = 85;
         gdLblDescription.heightHint = 20;
         lblDescription.setLayoutData(gdLblDescription);
-        lblDescription.setText(DESCRIPTION_LABEL);
+        lblDescription.setText(StringConstants.PA_LBL_DESC);
 
         textDescription = new Text(compositeDescription, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
         GridData gdTextDescription = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2);
@@ -665,7 +673,7 @@ public class TestSuitePart implements EventHandler {
         compositePageLoadTimeout.setLayout(glCompositePageLoadTimeout);
 
         Group grpPageLoadTimeout = new Group(compositePageLoadTimeout, SWT.NONE);
-        grpPageLoadTimeout.setText(PAGE_LOAD_TIMEOUT_LABEL);
+        grpPageLoadTimeout.setText(StringConstants.PA_LBL_PAGE_LOAD_TIMEOUT);
         grpPageLoadTimeout.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         GridLayout gl_grpPageLoadTimeout = new GridLayout(2, false);
         gl_grpPageLoadTimeout.marginLeft = 50;
@@ -673,19 +681,23 @@ public class TestSuitePart implements EventHandler {
         grpPageLoadTimeout.setLayout(gl_grpPageLoadTimeout);
 
         radioUseDefaultPageLoadTimeout = new Button(grpPageLoadTimeout, SWT.RADIO);
-        radioUseDefaultPageLoadTimeout.setText("Use default");
+        radioUseDefaultPageLoadTimeout.setText(StringConstants.PA_LBL_USE_DEFAULT);
         new Label(grpPageLoadTimeout, SWT.NONE);
 
         radioUserDefinePageLoadTimeout = new Button(grpPageLoadTimeout, SWT.RADIO);
         GridData gd_radioUserDefinePageLoadTimeout = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gd_radioUserDefinePageLoadTimeout.widthHint = 83;
         radioUserDefinePageLoadTimeout.setLayoutData(gd_radioUserDefinePageLoadTimeout);
-        radioUserDefinePageLoadTimeout.setText("User define");
+        radioUserDefinePageLoadTimeout.setText(StringConstants.PA_LBL_USER_DEFINE);
 
         txtUserDefinePageLoadTimeout = new Text(grpPageLoadTimeout, SWT.BORDER);
         GridData gdTxtUserDefinePageLoadTimeout = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         gdTxtUserDefinePageLoadTimeout.heightHint = 20;
         txtUserDefinePageLoadTimeout.setLayoutData(gdTxtUserDefinePageLoadTimeout);
+        // limit the input length for the range of
+        // TestEnvironmentController.getInstance().getPageLoadTimeOutMinimumValue() and
+        // TestEnvironmentController.getInstance().getPageLoadTimeOutMaximumValue()
+        txtUserDefinePageLoadTimeout.setTextLimit(4);
 
         compositeLastRunAndReRun = new Composite(compositeExecutionDetails, SWT.NONE);
         GridData gdCompositeTestDataAndLastRun = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
@@ -699,7 +711,7 @@ public class TestSuitePart implements EventHandler {
         GridData gdLblLastRun = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdLblLastRun.widthHint = 85;
         lblLastRun.setLayoutData(gdLblLastRun);
-        lblLastRun.setText(LAST_RUN_LABEL);
+        lblLastRun.setText(StringConstants.PA_LBL_LAST_RUN);
 
         txtLastRun = new Text(compositeLastRunAndReRun, SWT.BORDER | SWT.READ_ONLY);
         GridData gdTxtLastRun = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
@@ -718,6 +730,7 @@ public class TestSuitePart implements EventHandler {
         gdTxtRerun.heightHint = 20;
         txtRerun.setLayoutData(gdTxtRerun);
         txtRerun.setToolTipText(StringConstants.PA_LBL_TOOLTIP_RETRY);
+        txtRerun.setTextLimit(3);
 
         Composite compositeMailRecipients = new Composite(compositeExecutionDetails, SWT.NONE);
         GridData gdCompositeMailRecipients = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
@@ -730,7 +743,7 @@ public class TestSuitePart implements EventHandler {
         GridData gdLblMailRecipients = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
         gdLblMailRecipients.verticalIndent = 5;
         lblMailRecipients.setLayoutData(gdLblMailRecipients);
-        lblMailRecipients.setText(MAIL_RECIPIENTS_LABEL);
+        lblMailRecipients.setText(StringConstants.PA_LBL_MAIL_RECIPIENTS);
 
         listMailRcpViewer = new ListViewer(compositeMailRecipients, SWT.BORDER | SWT.V_SCROLL);
         listMailRcp = listMailRcpViewer.getList();
@@ -806,24 +819,7 @@ public class TestSuitePart implements EventHandler {
         return parentTestSuiteCompositePart.getTestSuiteClone();
     }
 
-    private boolean verifyRerunInputValue() {
-        int rerunNumber;
-        try {
-            rerunNumber = Integer.valueOf(txtRerun.getText());
-        } catch (NumberFormatException exception) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
-                    MessageFormat.format(StringConstants.PA_ERROR_MSG_RERUN_NUMBER_X_INVALID, txtRerun.getText()));
-            return false;
-        }
-        getTestSuite().setNumberOfRerun(rerunNumber);
-        return true;
-    }
-
     public boolean prepareForSaving() {
-        if (!verifyRerunInputValue()) {
-            return false;
-        }
-
         childrenView.beforeSaving();
 
         getTestSuite().setMailRecipient(

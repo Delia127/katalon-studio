@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class HTMLElement {
@@ -76,32 +77,15 @@ public class HTMLElement {
 		return attributes.get("xpath");
 	}
 
-	@Override
-	public boolean equals(Object object) {
-		if (object == null) {
-			return false;
-		}
-
-		if (!(object instanceof HTMLElement)) {
-			return false;
-		}
-
-		if (!object.getClass().getName().equals(this.getClass().getName())) {
-			return false;
-		}
-
-		HTMLElement otherElement = (HTMLElement) object;
-
-		if (!otherElement.getParentElement().equals(this.getParentElement())) {
-			return false;
-		}
-
-		if (otherElement.getXpath().equals(this.getXpath()) && otherElement.getName().equals(this.getName())) {
-			return true;
-		}
-
-		return false;
-	}
+    @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof HTMLElement)) {
+            return false;
+        }
+        HTMLElement that = (HTMLElement) object;
+        return new EqualsBuilder().append(this.getParentElement(), that.getParentElement())
+                .append(this.getName(), that.getName()).append(this.getXpath(), that.getXpath()).isEquals();
+    }
 
 	@Override
 	public int hashCode() {

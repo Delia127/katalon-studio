@@ -1,5 +1,7 @@
 package com.kms.katalon.integration.qtest.entity;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+
 public class QTestTestCase extends QTestEntity {	
 	private long versionId;
     private long parentId;
@@ -58,15 +60,14 @@ public class QTestTestCase extends QTestEntity {
 		return result;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (getClass() != obj.getClass()) return false;
-		QTestTestCase other = (QTestTestCase) obj;
-		if (parentId != other.parentId) return false;
-		if (id != other.id) return false;
-		return true;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof QTestTestCase)) {
+            return false;
+        }
+        QTestTestCase that = (QTestTestCase) obj;
+        return new EqualsBuilder().append(this.getParentId(), that.getParentId()).append(this.getId(), that.getId())
+                .isEquals();
+    }
 
 }

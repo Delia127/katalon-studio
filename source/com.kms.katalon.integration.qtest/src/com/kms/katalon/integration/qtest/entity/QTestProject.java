@@ -5,6 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+
 
 public class QTestProject extends QTestEntity {
 	private String token;
@@ -82,17 +84,13 @@ public class QTestProject extends QTestEntity {
 		return result;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (getClass() != obj.getClass()) return false;
-		QTestProject other = (QTestProject) obj;
-		if (id != other.id) return false;
-		if (name == null) {
-			if (other.name != null) return false;
-		} else if (!name.equals(other.name)) return false;		
-		return true;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof QTestProject)) {
+            return false;
+        }
+        QTestProject that = (QTestProject) obj;
+        return new EqualsBuilder().append(this.getId(), that.getId()).append(this.getName(), that.getName()).isEquals();
+    }
 
 }

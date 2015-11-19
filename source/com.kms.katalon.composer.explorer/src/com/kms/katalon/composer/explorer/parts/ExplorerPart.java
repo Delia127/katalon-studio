@@ -8,6 +8,7 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -15,9 +16,12 @@ import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.menu.MHandledToolItem;
+import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
 import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -73,6 +77,9 @@ import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.constants.PreferenceConstants;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 @SuppressWarnings("restriction")
 public class ExplorerPart {
@@ -134,6 +141,7 @@ public class ExplorerPart {
     public void createPartControl(final Composite parent, MPart mpart) {
         this.parent = parent;
         this.part = mpart;
+        updateToolItemStatus();
         parent.setLayoutData(new GridData(GridData.FILL_BOTH));
         parent.setLayout(new GridLayout(2, false));
 
@@ -151,9 +159,9 @@ public class ExplorerPart {
 
         searchDropDownBox = new SearchDropDownBox(searchComposite, SWT.NONE, this);
         Label seperator = new Label(searchComposite, SWT.SEPARATOR | SWT.VERTICAL);
-        GridData gd_seperator = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
-        gd_seperator.heightHint = 22;
-        seperator.setLayoutData(gd_seperator);
+        GridData gdSeperator = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
+        gdSeperator.heightHint = 22;
+        seperator.setLayoutData(gdSeperator);
 
         txtInput = new Text(searchComposite, SWT.NONE);
         txtInput.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
@@ -195,8 +203,7 @@ public class ExplorerPart {
 
             @Override
             public void keyReleased(KeyEvent e) {
-                // TODO Auto-generated method stub
-
+                //Nothing to do here
             }
 
             @Override
@@ -239,7 +246,6 @@ public class ExplorerPart {
 
             @Override
             public void handleEvent(Event event) {
-                // TODO Auto-generated method stub
                 if (isSearching) {
                     isSearching = false;
                     txtInput.setText(StringUtils.EMPTY);
@@ -283,6 +289,22 @@ public class ExplorerPart {
         handlerService.activateHandler(IWorkbenchCommandConstants.EDIT_CUT, new CutHandler());
         handlerService.activateHandler(IWorkbenchCommandConstants.EDIT_PASTE, new PasteHandler());
         handlerService.activateHandler(IWorkbenchCommandConstants.FILE_REFRESH, new RefreshHandler());
+    }
+
+    private void updateToolItemStatus() {
+        IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
+                PreferenceConstants.ExplorerPreferenceConstants.QUALIFIER);
+        for (MToolBarElement toolbarElement : part.getToolbar().getChildren()) {
+            if (!(toolbarElement instanceof MHandledToolItem)) { continue; }
+            MHandledToolItem toolItem = (MHandledToolItem) toolbarElement;
+            switch (toolItem.getElementId()) {
+                case IdConstants.EXPLORER_TOOL_ITEM_LINK_PART: {
+                    toolItem.setSelected(store
+                            .getBoolean(PreferenceConstants.ExplorerPreferenceConstants.EXPLORER_LINK_WITH_PART));
+                    break;
+                }
+            }
+        }
     }
 
     /**
@@ -510,12 +532,30 @@ public class ExplorerPart {
         getViewer().setExpandedState(object, true);
         setFocus();
     }
+    
+    @Inject
+    @Optional
+    private void showItem(@UIEventTopic(EventConstants.EXPLORER_SHOW_ITEM) Object object) {
+        if (object == null || !(object instanceof ITreeEntity)) {
+            return;
+        }
+        getViewer().setSelection(new StructuredSelection(object));
+        getViewer().setExpandedState(object, true);
+    }
 
     @Inject
     @Optional
     private void refreshAllItems(@UIEventTopic(EventConstants.EXPLORER_REFRESH_ALL_ITEMS) Object object) {
         for (ITreeEntity treeRootEntity : treeEntities) {
             eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, treeRootEntity);
+        }
+    }
+
+    @Inject
+    @Optional
+    private void collapseAllItems(@UIEventTopic(EventConstants.EXPLORER_COLLAPSE_ALL_ITEMS) Object object) {
+        if (getTreeViewer() != null) {
+            getTreeViewer().collapseAll();
         }
     }
 

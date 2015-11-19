@@ -17,7 +17,10 @@ import org.eclipse.debug.internal.ui.views.console.ProcessConsole;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.menu.MDirectMenuItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MDirectToolItem;
+import org.eclipse.e4.ui.model.application.ui.menu.MMenu;
+import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
@@ -71,6 +74,7 @@ import org.eclipse.ui.internal.console.ConsoleView;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.execution.constants.ImageConstants;
@@ -84,10 +88,10 @@ import com.kms.katalon.composer.execution.provider.LogTableViewerFilter;
 import com.kms.katalon.composer.execution.trace.LogExceptionNavigator;
 import com.kms.katalon.composer.execution.tree.ILogParentTreeNode;
 import com.kms.katalon.composer.execution.tree.ILogTreeNode;
-import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants;
+import com.kms.katalon.constants.PreferenceConstants.ExecutionPreferenceConstans;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XMLLoggerParser;
@@ -97,6 +101,7 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.execution.launcher.AbstractLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.logging.LogExceptionFilter;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 @SuppressWarnings("restriction")
 public class LogViewerPart implements EventHandler {
@@ -113,10 +118,7 @@ public class LogViewerPart implements EventHandler {
     private LogTableViewer tableViewer;
     private ProgressBar progressBar;
     private int maxValue;
-    private Label lblNumTestcases;
-    private Label lblNumFailures;
-    private Label lblNumPasses;
-    private Label lblNumErrors;
+    private Label lblNumTestcases, lblNumFailures, lblNumPasses, lblNumErrors;
     private Composite parentComposite;
 
     private AbstractLauncher launcherWatched;
@@ -124,10 +126,7 @@ public class LogViewerPart implements EventHandler {
     private boolean stopAdding;
 
     private LogRecordTreeViewer treeViewer;
-    private StyledText txtStartTime;
-    private StyledText txtEndTime;
-    private StyledText txtEslapedTime;
-    private StyledText txtMessage;
+    private StyledText txtStartTime, txtEndTime, txtEslapedTime, txtMessage;
 
     private ToolItem btnShowAllLogs, btnShowInfoLogs, btnShowPassedLogs, btnShowFailedLogs, btnShowErrorLogs;
     private List<XmlLogRecord> currentRecords;
@@ -136,27 +135,55 @@ public class LogViewerPart implements EventHandler {
 
     private LogExceptionNavigator logNavigator;
 
-    private void updateToolItemsStatus(MPart mpart) {
-        IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
+    private MPart fMPart;
 
+    private IPreferenceStore preferenceStore;
+
+    private void updateToolItemsStatus(MPart mpart) {
         for (MToolBarElement toolbarElement : mpart.getToolbar().getChildren()) {
             MDirectToolItem toolItem = (MDirectToolItem) toolbarElement;
             switch (toolItem.getElementId()) {
-                case IdConstants.LOG_VIEWER_MENU_ITEM_TREE_ID:
-                    toolItem.setSelected(store
+                case IdConstants.LOG_VIEWER_TOOL_ITEM_TREE_ID:
+                    toolItem.setSelected(preferenceStore
                             .getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_LOGS_AS_TREE));
                     break;
-                case IdConstants.LOG_VIEWER_MENU_ITEM_PIN_ID:
-                    toolItem.setSelected(store
+                case IdConstants.LOG_VIEWER_TOOL_ITEM_PIN_ID:
+                    toolItem.setSelected(preferenceStore
                             .getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_PIN_LOG));
                     break;
             }
         }
     }
 
+    private void updateMenuStatus(MPart mpart) {
+        boolean isShowLogAsTree = preferenceStore
+                .getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_LOGS_AS_TREE);
+        for (MMenu menu : mpart.getMenus()) {
+            if (!IdConstants.LOG_VIEWER_MENU_TREEVIEW.equals(menu.getElementId())) {
+                continue;
+            }
+            if (isShowLogAsTree) {
+                menu.setVisible(true);
+                for (MMenuElement childElement : menu.getChildren()) {
+                    //
+                    if (childElement instanceof MDirectMenuItem
+                            && IdConstants.LOG_VIEWER_MENU_ITEM_WORD_WRAP.equals(childElement.getElementId())) {
+                        MDirectMenuItem wordWrapElement = (MDirectMenuItem) childElement;
+                        wordWrapElement.setSelected(preferenceStore
+                                .getBoolean(ExecutionPreferenceConstans.EXECUTION_ENABLE_WORD_WRAP));
+                    }
+                }
+            } else {
+                menu.setVisible(false);
+            }
+        }
+    }
+
     @PostConstruct
     public void init(Composite parent, MPart mpart) {
+        preferenceStore = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
+                PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
+        fMPart = mpart;
         logNavigator = new LogExceptionNavigator();
         launcherWatched = null;
         isBusy = false;
@@ -187,6 +214,7 @@ public class LogViewerPart implements EventHandler {
             createTableComposite(parent);
         }
         parent.layout(true);
+        updateMenuStatus(fMPart);
     }
 
     private void registerListeners() {
@@ -196,7 +224,8 @@ public class LogViewerPart implements EventHandler {
         eventBroker.subscribe(EventConstants.CONSOLE_LOG_UPDATE_PROGRESS_BAR, this);
         eventBroker.subscribe(EventConstants.CONSOLE_LOG_CHANGE_VIEW_TYPE, this);
         eventBroker.subscribe(EventConstants.EXPLORER_RELOAD_INPUT, this);
-
+        eventBroker.subscribe(EventConstants.CONSOLE_LOG_WORD_WRAP, this);
+        
         PlatformUI.getWorkbench().getActiveWorkbenchWindow().getPages()[0].addPostSelectionListener(
                 IConsoleConstants.ID_CONSOLE_VIEW, new ISelectionListener() {
 
@@ -272,7 +301,7 @@ public class LogViewerPart implements EventHandler {
         treeViewer.setContentProvider(new LogRecordTreeViewerContentProvider());
         treeViewer.getTree().setToolTipText("");
         ColumnViewerToolTipSupport.enableFor(treeViewer, ToolTip.NO_RECREATE);
-        
+
         TreeViewerColumn treeViewerColumn = new TreeViewerColumn(treeViewer, SWT.NONE);
         TreeColumn treeColumn = treeViewerColumn.getColumn();
         treeColumn.setWidth(400);
@@ -397,7 +426,6 @@ public class LogViewerPart implements EventHandler {
                                     exceptionLogString = exceptionLogEntry.toString().replace(
                                             exceptionLogEntry.getClassName(), testCaseId);
                                 }
-
                             }
 
                             messageBuilder.append(exceptionLogString);
@@ -423,21 +451,7 @@ public class LogViewerPart implements EventHandler {
                                         txtMessage.getListeners(SWT.MouseDown)[txtMessage.getListeners(SWT.MouseDown).length - 1]);
                     }
 
-                    txtMessage.addListener(SWT.MouseDown, new Listener() {
-                        @Override
-                        public void handleEvent(org.eclipse.swt.widgets.Event event) {
-                            try {
-                                int offset = txtMessage.getOffsetAtLocation(new Point(event.x, event.y));
-                                StyleRange style = txtMessage.getStyleRangeAtOffset(offset);
-                                if (style != null && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK) {
-                                    XmlLogRecordException logException = (XmlLogRecordException) style.data;
-                                    navigateScriptByLogExpcetion(logException);
-                                }
-                            } catch (IllegalArgumentException e) {
-                                // no character under event.x, event.y
-                            }
-                        }
-                    });
+                    txtMessage.addListener(SWT.MouseDown, mouseDownListener);
                 }
             } else {
                 txtMessage.setText(result.getMessage());
@@ -446,6 +460,23 @@ public class LogViewerPart implements EventHandler {
             txtMessage.setText("");
         }
     }
+
+    // Handle mouse down event on txtMessage
+    private Listener mouseDownListener = new Listener() {
+        @Override
+        public void handleEvent(org.eclipse.swt.widgets.Event event) {
+            try {
+                int offset = txtMessage.getOffsetAtLocation(new Point(event.x, event.y));
+                StyleRange style = txtMessage.getStyleRangeAtOffset(offset);
+                if (style != null && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK) {
+                    XmlLogRecordException logException = (XmlLogRecordException) style.data;
+                    navigateScriptByLogExpcetion(logException);
+                }
+            } catch (IllegalArgumentException e) {
+                // no character under event.x, event.y
+            }
+        }
+    };
 
     private void showTreeLogProperties() throws Exception {
         StructuredSelection selection = (StructuredSelection) treeViewer.getSelection();
@@ -520,9 +551,10 @@ public class LogViewerPart implements EventHandler {
         lblMessage.setFont(JFaceResources.getFontRegistry().getBold(""));
         lblMessage.setText(StringConstants.PA_LBL_MESSAGE);
 
-        txtMessage = new StyledText(compositeTreeNodeProperties, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
+        txtMessage = new StyledText(compositeTreeNodeProperties, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
         txtMessage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         txtMessage.setEditable(false);
+        setWrapTxtMessage();
     }
 
     private void createStatusComposite(Composite container) {
@@ -804,7 +836,7 @@ public class LogViewerPart implements EventHandler {
 
     private void showRecordProperties() {
         int index = table.getSelectionIndex();
-        
+
         if (index == -1) {
             return; // no row selected
         }
@@ -937,36 +969,62 @@ public class LogViewerPart implements EventHandler {
     @Override
     public void handleEvent(Event event) {
         try {
-            if (event.getTopic().equals(EventConstants.CONSOLE_LOG_RESET)
-                    || event.getTopic().equals(EventConstants.EXPLORER_RELOAD_INPUT)) {
-                changeObservedLauncher(event);
-            } else if (event.getTopic().equals(EventConstants.CONSOLE_LOG_ADD_ITEMS)) {
-                if (!stopAdding && launcherWatched != null) {
-                    List<XmlLogRecord> logRecords = launcherWatched.getAllRecords();
-                    if (currentRecords.size() < logRecords.size()) {
-                        addRecords(logRecords.subList(currentRecords.size(), logRecords.size()));
+            String topic = event.getTopic();
+            switch (topic) {
+                case EventConstants.CONSOLE_LOG_RESET: {
+                    changeObservedLauncher(event);
+                    break;
+                }
+                case EventConstants.CONSOLE_LOG_ADD_ITEMS: {
+                    if (!stopAdding && launcherWatched != null) {
+                        List<XmlLogRecord> logRecords = launcherWatched.getAllRecords();
+                        if (currentRecords.size() < logRecords.size()) {
+                            addRecords(logRecords.subList(currentRecords.size(), logRecords.size()));
+                        }
                     }
+                    break;
                 }
-            } else if (event.getTopic().equals(EventConstants.CONSOLE_LOG_REFRESH)) {
-                // tableViewer.refresh();
-            } else if (event.getTopic().equals(EventConstants.CONSOLE_LOG_UPDATE_PROGRESS_BAR)) {
-                Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-                if (object != null && object instanceof XmlLogRecord) {
-                    updateProgressBar((XmlLogRecord) object);
+                case EventConstants.CONSOLE_LOG_UPDATE_PROGRESS_BAR: {
+                    Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+                    if (object != null && object instanceof XmlLogRecord) {
+                        updateProgressBar((XmlLogRecord) object);
+                    }
+                    break;
                 }
-            } else if (event.getTopic().equals(EventConstants.CONSOLE_LOG_CHANGE_VIEW_TYPE)) {
-                if (stopAdding) return;
-                stopAdding = true;
-                resetProgressBar();
-                createLogViewerControl(parentComposite);
+                case EventConstants.CONSOLE_LOG_CHANGE_VIEW_TYPE: {
+                    if (stopAdding) {
+                        return;
+                    }
+                    stopAdding = true;
+                    resetProgressBar();
+                    createLogViewerControl(parentComposite);
+                    break;
+                }
+                case EventConstants.CONSOLE_LOG_WORD_WRAP: {
+                    setWrapTxtMessage();
+                    break;
+                }
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
     }
 
+    private void setWrapTxtMessage() {
+        boolean wrap = preferenceStore.getBoolean(ExecutionPreferenceConstans.EXECUTION_ENABLE_WORD_WRAP);
+        if (txtMessage.getListeners(SWT.Modify).length == 0) {
+            txtMessage.addListener(SWT.Modify, ControlUtils.getAutoHideStyledTextScrollbarListener);
+            txtMessage.addListener(SWT.Resize, ControlUtils.getAutoHideStyledTextScrollbarListener);
+        }
+        txtMessage.setWordWrap(wrap);
+        txtMessage.layout();
+    }
+
     private void setSelectedConsoleView() {
-        if (launcherWatched == null || launcherWatched.getLaunch() == null) return;
+        if (launcherWatched == null || launcherWatched.getLaunch() == null) {
+            return;
+        }
+
         IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getPages()[0];
         ConsoleView consoleView = (ConsoleView) workbenchPage.findView(IConsoleConstants.ID_CONSOLE_VIEW);
 

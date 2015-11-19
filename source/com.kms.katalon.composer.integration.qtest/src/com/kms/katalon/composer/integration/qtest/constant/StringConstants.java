@@ -29,17 +29,16 @@ public class StringConstants extends GlobalStringConstants {
     public static final String CM_YES = "Yes";
     public static final String CM_NO = "No";
     public static final String CM_SETTINGS = "Settings";
-    
+
     /******************************************************************************************************************/
-    
-    
-    
+
     /*********************************************** Job **************************************************************/
     // Job
     public static final String JOB_TITLE_DISINTEGRATE_TEST_CASE = "Disintegrate test case(s)";
     public static final String JOB_TITLE_UPLOAD_TEST_CASE = "Upload test case(s)";
     public static final String JOB_TITLE_UPLOAD_TEST_SUITE = "Upload test suite";
     public static final String JOB_MSG_TEST_SUITE_INVALID_FORMAT = "qTest integrated information of test suite: {0} is invalid.";
+    public static final String JOB_MSG_CONFIRM_CANCEL_UPLOAD = "{0} item(s) uploaded. Do you want to keep them?";
 
     // UploadTestSuiteJob
     public static final String JOB_TASK_UPLOADING_TEST_SUITE_ENTITY = "Uploading test suite: {0}...";
@@ -75,22 +74,24 @@ public class StringConstants extends GlobalStringConstants {
             + " with id: {0} has the same name as test case: {1}.\nDo you want to merge them?";
     public static final String DIA_MSG_CONFIRM_MERGE_UPLOADED_TEST_CASE_FOLDER = "System has detected that a test folder"
             + " on qTest with id: {0} has the same name as test case folder: {1}.\nDo you want to merge them?";
-    
-    //UploadTestCaseResultJob
+
+    // UploadTestCaseResultJob
     public static final String JOB_TITLE_UPLOAD_TEST_RESULT = "Upload Test Case's Result";
     public static final String JOB_TASK_UPLOAD_TEST_RESULT = "Uploading Test Case's Result...";
     public static final String JOB_SUB_TASK_UPLOAD_TEST_RESULT = "Uploading result of test case: {0}...";
-    
-    //UploadTestSuiteJob
+
+    // UploadTestSuiteJob
+    public static final String JOB_TASK_UPLOAD_TEST_SUITE = "Uploading test suite(s)...";
     public static final String DIA_TITLE_TEST_SUITE_DUPLICATION = "Test Suite Duplication Detected";
     public static final String DIA_MSG_CONFIRM_MERGE_UPLOADED_TEST_SUITE = "System has detected that a test suite on qTest"
             + " with id: {0} has the same name as test suite: ''{1}'' under {2}: ''{3}''.\nDo you want to merge them?";
     
+    //DisintegrateTestSuiteJob
+    public static final String JOB_TITLE_DISINTEGRATE_TEST_SUITE = "Disintegrate test suites";
+    public static final String JOB_TASK_DISINTEGRATE_TEST_SUITE = "Disintegrating test suites...";
+
     /******************************************************************************************************************/
-    
-    
-    
-    
+
     /*********************************************** Dialog ***********************************************************/
     // CreateNewTestSuiteParentDialog
     public static final String DIA_TITLE_CREATE_TEST_SUITE_PARENT = "Create Test Suite's parent";
@@ -118,7 +119,9 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_TITLE_TEST_CASE_FOLDER_BROWSER = "Test Case Folder Browser";
     public static final String DIA_TITLE_TEST_SUITE_FOLDER_BROWSER = "Test Suite Folder Browser";
     public static final String DIA_TITLE_CREATE_TEST_CASE_REPO = "Create Test Case Repository";
+    public static final String DIA_TITLE_EDIT_TEST_CASE_REPO = "Edit Test Case Repository";
     public static final String DIA_TITLE_CREATE_TEST_SUITE_REPO = "Create Test Suite Repository";
+    public static final String DIA_TITLE_EDIT_TEST_SUITE_REPO = "Edit Test Case Repository";
     public static final String DIA_MSG_UNABLE_TO_UPDATE_PROJECT = "Unable to update qTest projects.";
     public static final String DIA_MSG_UNABLE_TO_UPDATE_MODULE = "Unable to update qTest modules.";
     public static final String DIA_MSG_UNABLE_TO_FIND_TEST_CASE_FOLDER = "Unable to find test case folder.";
@@ -138,10 +141,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_TITLE_TEST_CASE_DOWNLOADED_PREVIEW = "Downloaded test cases preview.";
 
     /******************************************************************************************************************/
-    
-    
-    
-    
+
     /*********************************************** Preference *******************************************************/
     // QTestIntegrationPage
     public static final String DIA_MSG_UNABLE_TO_SAVE_SETTING_PAGE = "Unable to save qTest's settings.";
@@ -152,15 +152,18 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_TITLE_SEND_ATTACHMENT = "Attachment included";
     public static final String DIA_TITLE_ASK_USE_SETUP = "For quickly setting, we already provide a setup wizard. Would "
             + "you like to take a tour with us?";
-    public static final String DIA_INFO_QUICK_SETUP = "<a>Quick Setup...</a>";    
+    public static final String DIA_INFO_QUICK_SETUP = "<a>Quick Setup...</a>";
 
     // TestCaseRepoPreferencePage
     public static final String DIA_MSG_UNABLE_GET_PROJECT_INFO = "Unable to get qTest projects's information.";
-    public static final String DIA_TITLE_TEST_CASE_FOLDER = "Test Case's Folder";
+    public static final String DIA_TITLE_TEST_CASE_FOLDER = "Katalon Test Case's Folder";
     public static final String DIA_MSG_UNABLE_MOFIDY_TEST_CASE_REPO = "Unable to modify Test Case Repository.";
     public static final String DIA_MSG_UNABLE_REMOVE_TEST_CASE_REPO = "Unable to remove Test Case Repository.";
     public static final String DIA_CONFIRM_DISINTEGRATE_TEST_CASE_FOLDER = "Are you sure you want to disintegrate all "
             + "test cases in this folder with qTest?";
+
+    // TestSuiteRepoPreferencePage
+    public static final String DIA_TITLE_TEST_SUITE_FOLDER = "Katalon Test Suite's Folder";
 
     // QTestIntegrationReportTestCaseView
     public static final String VIEW_TITLE_TEST_LOG_ID = "Test Log ID";
@@ -206,8 +209,8 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String VIEW_MSG_TEST_SUITE_NOT_IN_REPO = "Please make sure this Test Suite is in a valid Test "
             + "Suite Repository.";
-    public static final String VIEW_CONFIRM_DISINTEGRATE_TEST_SUITE = "Are you sure you want to disintegrate this test "
-            + "suite with qTest?";
+    public static final String VIEW_CONFIRM_DISINTEGRATE_TEST_SUITE = "Are you sure you want to disintegrate this/these test "
+            + "suite(s) with qTest?";
     public static final String VIEW_MSG_UNABLE_DISINTEGRATE_TEST_SUITE = "Unable to disintegrate this test suite on "
             + "qTest.";
     public static final String VIEW_MSG_ENABLE_INTEGRATION = "Please enable qTest integration in Project Setting page.";
@@ -219,10 +222,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_CONFIRM_DISINTEGRATE_TEST_CASE = "Are you sure you want to disintegrate this test "
             + "case with qTest?";
     /******************************************************************************************************************/
-    
-    
-    
-    
+
     /*********************************************** Wizard ***********************************************************/
 
     // SetupWizardDialog
@@ -254,18 +254,23 @@ public class StringConstants extends GlobalStringConstants {
     public static final String WZ_P_TEST_CASE_TITLE = "Test Case Folder Registration";
     public static final String WZ_P_TEST_CASE_INFO = "Please choose a test case's folder you want to integrate with module"
             + " '''{0}'''.";
-    
+
     // TestCaseFolderSelectionWizardPage
     public static final String WZ_P_TEST_SUITE_TITLE = "Test Suite Folder Registration";
     public static final String WZ_P_TEST_SUITE_INFO = "Please choose test suite's folder you want to integrate with qTest. "
             + "Only folders and test suites under your selection can be integrated with qTest.";
-    
-    //OptionalSettingWizardPage
+
+    // OptionalSettingWizardPage
     public static final String WZ_P_OPTIONAL_TITLE = "Optional Settings";
     public static final String WZ_P_OPTIONAL_INFO = "Select your desired settings:";
-    
-    //FinishPage
+
+    // FinishPage
     public static final String WZ_P_FINISH_TITLE = "Finish Up";
     public static final String WZ_P_FINISH_INFO = "Congratulations! You've finished your integration setup with qTest.";
+    /******************************************************************************************************************/
+    
+    /*********************************************** Handler **********************************************************/
+    //ReportHandler
+    public static final String HDL_LABEL_VALIDATING_REPORT = "{0}\tValidating...({1}%)";
     /******************************************************************************************************************/
 }

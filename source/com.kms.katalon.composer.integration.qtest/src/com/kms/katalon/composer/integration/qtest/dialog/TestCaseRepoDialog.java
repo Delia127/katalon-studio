@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -224,7 +225,12 @@ public class TestCaseRepoDialog extends Dialog {
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText(StringConstants.DIA_TITLE_CREATE_TEST_CASE_REPO);
+        if (StringUtils.isBlank(folderId)) {
+            newShell.setText(StringConstants.DIA_TITLE_CREATE_TEST_CASE_REPO);
+        } else {
+            newShell.setText(StringConstants.DIA_TITLE_EDIT_TEST_CASE_REPO);
+        }
+        
     }
 
     public List<String> getFolderIds() {

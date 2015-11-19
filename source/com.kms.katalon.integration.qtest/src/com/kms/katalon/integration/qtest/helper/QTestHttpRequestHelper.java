@@ -21,7 +21,6 @@ import org.apache.http.message.BasicNameValuePair;
 
 import com.kms.katalon.integration.qtest.exception.QTestIOException;
 
-@SuppressWarnings("restriction")
 public class QTestHttpRequestHelper {
 
     public static String sendPostRequest(String serverUrl, String url, String username, String password,

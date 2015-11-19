@@ -3,6 +3,8 @@ package com.kms.katalon.integration.qtest.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+
 public class QTestModule extends QTestEntity {
 	private String gid;
 	private long parentId;
@@ -69,15 +71,14 @@ public class QTestModule extends QTestEntity {
 		return result;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (getClass() != obj.getClass()) return false;
-		QTestModule other = (QTestModule) obj;
-		if (id != other.id) return false;
-		if (parentId != other.parentId) return false;
-		return true;
-	}
-	    
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof QTestModule)) {
+            return false;
+        }
+        QTestModule that = (QTestModule) obj;
+        return new EqualsBuilder().append(this.getId(), that.getId()).append(this.getParentId(), that.getParentId())
+                .isEquals();
+    }
+
 }

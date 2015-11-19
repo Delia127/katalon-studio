@@ -55,330 +55,345 @@ import com.kms.katalon.groovy.util.GroovyUtil;
 @SuppressWarnings("restriction")
 public class PasteFolderHandler {
 
-	@Inject
-	IEventBroker eventBroker;
+    @Inject
+    IEventBroker eventBroker;
 
-	@Inject
-	MApplication application;
+    @Inject
+    MApplication application;
 
-	@Inject
-	EModelService modelService;
+    @Inject
+    EModelService modelService;
 
-	@Named(IServiceConstants.ACTIVE_SHELL)
-	Shell parentShell;
+    @Named(IServiceConstants.ACTIVE_SHELL)
+    Shell parentShell;
 
-	@PostConstruct
-	private void registerEventHandler() {
-		eventBroker.subscribe(EventConstants.EXPLORER_PASTE_SELECTED_ITEM, new EventHandler() {
-			@Override
-			public void handleEvent(Event event) {
-				try {
-					Object targetObject = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-					if (targetObject != null) {
-						ITreeEntity targetTreeEntity = null;
-						FolderEntity targetFolder = null;
-						if (targetObject instanceof FolderTreeEntity) {
-							targetFolder = (FolderEntity) ((FolderTreeEntity) targetObject).getObject();
-							targetTreeEntity = (ITreeEntity) targetObject;
-						} else if (targetObject instanceof ITreeEntity
-								&& ((ITreeEntity) targetObject).getParent() instanceof FolderTreeEntity) {
-							targetFolder = (FolderEntity) ((FolderTreeEntity) ((ITreeEntity) targetObject).getParent())
-									.getObject();
-							targetTreeEntity = (ITreeEntity) ((ITreeEntity) targetObject).getParent();
-						}
-						if (targetFolder != null) {
-							Clipboard clipboard = new Clipboard(Display.getCurrent());
+    @PostConstruct
+    private void registerEventHandler() {
+        eventBroker.subscribe(EventConstants.EXPLORER_PASTE_SELECTED_ITEM, new EventHandler() {
+            @Override
+            public void handleEvent(Event event) {
+                try {
+                    Object targetObject = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+                    if (targetObject != null) {
+                        ITreeEntity targetTreeEntity = null;
+                        FolderEntity targetFolder = null;
+                        if (targetObject instanceof FolderTreeEntity) {
+                            targetFolder = (FolderEntity) ((FolderTreeEntity) targetObject).getObject();
+                            targetTreeEntity = (ITreeEntity) targetObject;
+                        } else if (targetObject instanceof ITreeEntity
+                                && ((ITreeEntity) targetObject).getParent() instanceof FolderTreeEntity) {
+                            targetFolder = (FolderEntity) ((FolderTreeEntity) ((ITreeEntity) targetObject).getParent())
+                                    .getObject();
+                            targetTreeEntity = (ITreeEntity) ((ITreeEntity) targetObject).getParent();
+                        }
+                        if (targetFolder != null) {
+                            Clipboard clipboard = new Clipboard(Display.getCurrent());
 
-							ITreeEntity[] treeEntities = (ITreeEntity[]) clipboard.getContents(TreeEntityTransfer
-									.getInstance());
-							if (verifyPaste(treeEntities, targetFolder)) {
-								if (TransferMoveFlag.isMove()) {
-									move(treeEntities, targetFolder);
-									for (ITreeEntity treeEntity : treeEntities) {
-										eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
-												treeEntity.getParent());
-									}
-								} else {
-									copy(treeEntities, targetFolder);
-								}
-								eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, targetTreeEntity);
-							}
-						}
-					}
-				} catch (Exception ex) {
-					LoggerSingleton.getInstance().getLogger().error(ex);
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, 
-							StringConstants.HAND_ERROR_MSG_UNABLE_TO_PASTE_DATA);
-				}
-			}
-		});
-	}
-
-	private void copy(ITreeEntity[] treeEntities, FolderEntity targetFolder) throws Exception {
-		try {
-			for (ITreeEntity treeEntity : treeEntities) {
-				if (treeEntity instanceof TestCaseTreeEntity && targetFolder.getFolderType() == FolderType.TESTCASE) {
-					copyTestCase((TestCaseEntity) ((TestCaseTreeEntity) treeEntity).getObject(), targetFolder);
-				} else if (treeEntity instanceof FolderTreeEntity
-						&& targetFolder.getFolderType() == ((FolderEntity) ((FolderTreeEntity) treeEntity).getObject())
-								.getFolderType()) {
-					copyFolder((FolderEntity) ((FolderTreeEntity) treeEntity).getObject(), targetFolder);
-				} else if (treeEntity instanceof TestSuiteTreeEntity && targetFolder.getFolderType() == FolderType.TESTSUITE) {
-					copyTestSuite((TestSuiteEntity) ((TestSuiteTreeEntity) treeEntity).getObject(), targetFolder);
-				} else if (treeEntity instanceof TestDataTreeEntity && targetFolder.getFolderType() == FolderType.DATAFILE) {
-					copyTestData((DataFileEntity) ((TestDataTreeEntity) treeEntity).getObject(), targetFolder);
-				} else if (treeEntity instanceof WebElementTreeEntity && targetFolder.getFolderType() == FolderType.WEBELEMENT) {
-					copyTestObject((WebElementEntity) ((WebElementTreeEntity) treeEntity).getObject(), targetFolder);
-				} else if (treeEntity instanceof PackageTreeEntity && targetFolder.getFolderType() == FolderType.KEYWORD) {
-					copyKeywordPackage((IPackageFragment) ((PackageTreeEntity) treeEntity).getObject(), targetFolder, null);
-				}
-				GroovyUtil.getGroovyProject(targetFolder.getProject()).refreshLocal(IResource.DEPTH_INFINITE, null);
-			}
-		} catch (OperationCanceledException operationCanceledException) {
-			return;
-		}
-	}
-
-	private void move(ITreeEntity[] treeEntities, FolderEntity targetFolder) throws Exception {
-		try {
-			for (ITreeEntity treeEntity : treeEntities) {
-				if (treeEntity instanceof TestCaseTreeEntity) {
-					moveTestCase((TestCaseEntity) ((TestCaseTreeEntity) treeEntity).getObject(), targetFolder);
-				} else if (treeEntity instanceof FolderTreeEntity) {
-					moveFolder((FolderEntity) ((FolderTreeEntity) treeEntity).getObject(), targetFolder);
-				} else if (treeEntity instanceof TestSuiteTreeEntity) {
-					moveTestSuite((TestSuiteEntity) ((TestSuiteTreeEntity) treeEntity).getObject(), targetFolder);
-				} else if (treeEntity instanceof TestDataTreeEntity) {
-					moveTestData((DataFileEntity) ((TestDataTreeEntity) treeEntity).getObject(), targetFolder);
-				} else if (treeEntity instanceof WebElementTreeEntity) {
-					moveTestObject((WebElementEntity) ((WebElementTreeEntity) treeEntity).getObject(), targetFolder);
-				} else if (treeEntity instanceof PackageTreeEntity) {
-					moveKeywordPackage((IPackageFragment) ((PackageTreeEntity) treeEntity).getObject(), targetFolder);
-				}
-			}
-			GroovyUtil.getGroovyProject(targetFolder.getProject()).refreshLocal(IResource.DEPTH_INFINITE, null);
-		} catch (OperationCanceledException operationCanceledException) {
-			return;
-		}
-	}
-
-	private boolean verifyPaste(ITreeEntity[] treeEntities, FolderEntity targetFolder) throws Exception {
-		for (ITreeEntity treeEntity : treeEntities) {
-			if (treeEntity instanceof FolderTreeEntity && treeEntity.getObject() instanceof FolderEntity) {
-				FolderEntity folder = (FolderEntity) treeEntity.getObject();
-				if (folder.equals(targetFolder)) {
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, 
-							MessageFormat.format(StringConstants.HAND_ERROR_MSG_UNABLE_TO_PASTE_SAME_SRC_DEST, folder.getName()));
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
-	private void copyTestCase(TestCaseEntity testCase, FolderEntity targetFolder) throws Exception {
-		if (testCase != null) {
-			TestCaseEntity copiedTestCase = TestCaseController.getInstance().copyTestCase(testCase, targetFolder);
-			if (copiedTestCase != null) {
-				eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM, new Object[] {
-						TestCaseController.getInstance().getIdForDisplay(testCase),
-						TestCaseController.getInstance().getIdForDisplay(copiedTestCase) });
-			}
-		}
-	}
-
-	private void copyFolder(FolderEntity folder, FolderEntity targetFolder) throws Exception {
-		FolderEntity copiedFolder = FolderController.getInstance().copyFolder(folder, targetFolder);
-		if (copiedFolder != null) {
-			eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM, new Object[] {
-					folder.getRelativePathForUI().replace('\\', IPath.SEPARATOR) + IPath.SEPARATOR,
-					copiedFolder.getRelativePathForUI().replace('\\', IPath.SEPARATOR) + IPath.SEPARATOR });
-		}
-	}
-
-	private void copyTestSuite(TestSuiteEntity testSuite, FolderEntity targetFolder) throws Exception {
-		if (testSuite != null) {
-			TestSuiteEntity copiedTestSuite = TestSuiteController.getInstance().copyTestSuite(testSuite, targetFolder);
-			if (copiedTestSuite != null) {
-				eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM, new Object[] {
-						TestSuiteController.getInstance().getIdForDisplay(testSuite),
-						TestSuiteController.getInstance().getIdForDisplay(copiedTestSuite) });
-			}
-		}
-	}
-
-	private void copyTestData(DataFileEntity dataFile, FolderEntity targetFolder) throws Exception {
-		if (dataFile != null) {
-			DataFileEntity copiedDataFile = TestDataController.getInstance().copyDataFile(dataFile, targetFolder);
-			if (copiedDataFile != null) {
-				eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM, new Object[] {
-						TestDataController.getInstance().getIdForDisplay(dataFile),
-						TestDataController.getInstance().getIdForDisplay(copiedDataFile) });
-			}
-		}
-	}
-
-	private void copyTestObject(WebElementEntity webElement, FolderEntity targetFolder) throws Exception {
-		if (webElement != null) {
-			WebElementEntity copiedWebElement = ObjectRepositoryController.getInstance().copyWebElement(webElement, targetFolder);
-			if (copiedWebElement != null) {
-				eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM, new Object[] {
-						ObjectRepositoryController.getInstance().getIdForDisplay(webElement),
-						ObjectRepositoryController.getInstance().getIdForDisplay(copiedWebElement) });
-			}
-		}
-	}
-
-	private void copyKeywordPackage(IPackageFragment packageFragment, FolderEntity targetFolder, String newPackageName) throws Exception {
-		try {
-			String parentPath = packageFragment.getParent().getElementName() + IPath.SEPARATOR;
-	        String packageName = packageFragment.getElementName();
-			GroovyUtil.copyPackage(packageFragment, targetFolder, newPackageName);
-            if (newPackageName == null) {
-            	newPackageName = packageName;
+                            ITreeEntity[] treeEntities = (ITreeEntity[]) clipboard.getContents(TreeEntityTransfer
+                                    .getInstance());
+                            if (verifyPaste(treeEntities, targetFolder)) {
+                                if (TransferMoveFlag.isMove()) {
+                                    move(treeEntities, targetFolder);
+                                    for (ITreeEntity treeEntity : treeEntities) {
+                                        eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
+                                                treeEntity.getParent());
+                                    }
+                                } else {
+                                    copy(treeEntities, targetFolder);
+                                }
+                                eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, targetTreeEntity);
+                            }
+                        }
+                    }
+                } catch (Exception ex) {
+                    LoggerSingleton.logError(ex);
+                    MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                            StringConstants.HAND_ERROR_MSG_UNABLE_TO_PASTE_DATA);
+                }
             }
-			eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM, new Object[] {
-					parentPath + (packageName.isEmpty() ? StringConstants.DEFAULT_PACKAGE_NAME : packageName),
-					parentPath + newPackageName });
-		} catch (JavaModelException javaModelException) {
-			if (javaModelException.getJavaModelStatus().getCode() == IJavaModelStatusConstants.NAME_COLLISION) {
-				NewNameQueries newNameQueries = new NewNameQueries(parentShell);
-				INewNameQuery newNameQuery = newNameQueries.createNewPackageNameQuery(packageFragment,
-						packageFragment.getElementName());
-				copyKeywordPackage(packageFragment, targetFolder, newNameQuery.getNewName());
-			}
-		}
-	}
+        });
+    }
 
-	private void moveTestCase(TestCaseEntity testCase, FolderEntity targetFolder) throws Exception {
-		if (testCase != null) {
-			TestCaseController testCaseController = TestCaseController.getInstance();
-			String oldPk = testCase.getId();
-			String oldIdForDisplay = testCaseController.getIdForDisplay(testCase);
-			testCase = testCaseController.moveTestCase(testCase, targetFolder);
-			String newPk = testCase.getId();
-			if (!oldPk.equals(newPk)) {
-				eventBroker.post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-						testCaseController.getIdForDisplay(testCase) });
-				eventBroker.post(EventConstants.TESTCASE_UPDATED, new Object[] { oldPk, testCase });
-			}
-		}
-	}
+    private void copy(ITreeEntity[] treeEntities, FolderEntity targetFolder) throws Exception {
+        try {
+            for (ITreeEntity treeEntity : treeEntities) {
+                if (treeEntity instanceof TestCaseTreeEntity && targetFolder.getFolderType() == FolderType.TESTCASE) {
+                    copyTestCase((TestCaseEntity) ((TestCaseTreeEntity) treeEntity).getObject(), targetFolder);
+                } else if (treeEntity instanceof FolderTreeEntity
+                        && targetFolder.getFolderType() == ((FolderEntity) ((FolderTreeEntity) treeEntity).getObject())
+                                .getFolderType()) {
+                    copyFolder((FolderEntity) ((FolderTreeEntity) treeEntity).getObject(), targetFolder);
+                } else if (treeEntity instanceof TestSuiteTreeEntity
+                        && targetFolder.getFolderType() == FolderType.TESTSUITE) {
+                    copyTestSuite((TestSuiteEntity) ((TestSuiteTreeEntity) treeEntity).getObject(), targetFolder);
+                } else if (treeEntity instanceof TestDataTreeEntity
+                        && targetFolder.getFolderType() == FolderType.DATAFILE) {
+                    copyTestData((DataFileEntity) ((TestDataTreeEntity) treeEntity).getObject(), targetFolder);
+                } else if (treeEntity instanceof WebElementTreeEntity
+                        && targetFolder.getFolderType() == FolderType.WEBELEMENT) {
+                    copyTestObject((WebElementEntity) ((WebElementTreeEntity) treeEntity).getObject(), targetFolder);
+                } else if (treeEntity instanceof PackageTreeEntity
+                        && targetFolder.getFolderType() == FolderType.KEYWORD) {
+                    copyKeywordPackage((IPackageFragment) ((PackageTreeEntity) treeEntity).getObject(), targetFolder,
+                            null);
+                }
+                GroovyUtil.getGroovyProject(targetFolder.getProject()).refreshLocal(IResource.DEPTH_INFINITE, null);
+            }
+        } catch (OperationCanceledException operationCanceledException) {
+            return;
+        }
+    }
 
-	private void moveFolder(FolderEntity folder, FolderEntity targetFolder) throws Exception {
-		if (targetFolder != null && folder != null && folder.getFolderType() == targetFolder.getFolderType()) {
+    private void move(ITreeEntity[] treeEntities, FolderEntity targetFolder) throws Exception {
+        try {
+            for (ITreeEntity treeEntity : treeEntities) {
+                if (treeEntity instanceof TestCaseTreeEntity) {
+                    moveTestCase((TestCaseEntity) ((TestCaseTreeEntity) treeEntity).getObject(), targetFolder);
+                } else if (treeEntity instanceof FolderTreeEntity) {
+                    moveFolder((FolderEntity) ((FolderTreeEntity) treeEntity).getObject(), targetFolder);
+                } else if (treeEntity instanceof TestSuiteTreeEntity) {
+                    moveTestSuite((TestSuiteEntity) ((TestSuiteTreeEntity) treeEntity).getObject(), targetFolder);
+                } else if (treeEntity instanceof TestDataTreeEntity) {
+                    moveTestData((DataFileEntity) ((TestDataTreeEntity) treeEntity).getObject(), targetFolder);
+                } else if (treeEntity instanceof WebElementTreeEntity) {
+                    moveTestObject((WebElementEntity) ((WebElementTreeEntity) treeEntity).getObject(), targetFolder);
+                } else if (treeEntity instanceof PackageTreeEntity) {
+                    moveKeywordPackage((IPackageFragment) ((PackageTreeEntity) treeEntity).getObject(), targetFolder);
+                }
+            }
+            GroovyUtil.getGroovyProject(targetFolder.getProject()).refreshLocal(IResource.DEPTH_INFINITE, null);
+        } catch (OperationCanceledException operationCanceledException) {
+            return;
+        }
+    }
 
-			//get collection of descendant entities that doesn't include descendant folder entity 
-			List<Object> allDescendantEntites = new ArrayList<Object>();
-			for (Object descendantEntity : 	FolderController.getInstance()
-					.getAllDescentdantEntities(folder)) {
-				if (!(descendantEntity instanceof FolderEntity)) {
-					allDescendantEntites.add(descendantEntity);
-				}
-			}
-			
-			List<String> lstDescendantEntityLocations = new ArrayList<>();
-			if (folder.getFolderType() == FolderType.TESTCASE) {
-				for (Object child : allDescendantEntites) {
-					if (child != null && child instanceof TestCaseEntity) {
-						lstDescendantEntityLocations.add(((TestCaseEntity) child).getId());
-					}
-				}
-			} else if (folder.getFolderType() == FolderType.DATAFILE) {
-				for (Object child : allDescendantEntites) {
-					if (child != null && child instanceof DataFileEntity) {
-						lstDescendantEntityLocations.add(((DataFileEntity) child).getId());
-					}
-				}
-			} else if (folder.getFolderType() == FolderType.TESTSUITE) {
-				for (Object child : allDescendantEntites) {
-					if (child != null && child instanceof TestSuiteEntity) {
-						lstDescendantEntityLocations.add(((TestSuiteEntity) child).getId());
-					}
-				}
-			} else if (folder.getFolderType() == FolderType.WEBELEMENT) {
-				for (Object child : allDescendantEntites) {
-					if (child != null && child instanceof WebElementEntity) {
-						lstDescendantEntityLocations.add(((WebElementEntity) child).getId());
-					}
-				}
-			}
+    private boolean verifyPaste(ITreeEntity[] treeEntities, FolderEntity targetFolder) throws Exception {
+        if (treeEntities == null) return false;
+        for (ITreeEntity treeEntity : treeEntities) {
+            if (treeEntity instanceof FolderTreeEntity && treeEntity.getObject() instanceof FolderEntity) {
+                FolderEntity folder = (FolderEntity) treeEntity.getObject();
+                if (folder.equals(targetFolder)) {
+                    MessageDialog.openError(
+                            Display.getCurrent().getActiveShell(),
+                            StringConstants.ERROR_TITLE,
+                            MessageFormat.format(StringConstants.HAND_ERROR_MSG_UNABLE_TO_PASTE_SAME_SRC_DEST,
+                                    folder.getName()));
+                    return false;
+                }
+            }
+            // Do not allow pasting across file type areas
+            if (!treeEntity.getCopyTag().equals(targetFolder.getFolderType().toString())) {
+                MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                        MessageFormat.format(StringConstants.HAND_ERROR_MSG_CANNOT_PASTE_INTO_DIFF_REGION,
+                                treeEntity.getCopyTag(), targetFolder.getFolderType().toString()));
+                return false;
+            }
+        }
+        return true;
+    }
 
-			FolderController.getInstance().moveFolder(folder, targetFolder);
-			// afterSave
-			// send notification event
-			if (folder.getFolderType() == FolderType.TESTCASE) {
-				for (int i = 0; i < lstDescendantEntityLocations.size(); i++) {
-					eventBroker.post(EventConstants.TESTCASE_UPDATED,
-							new Object[] { lstDescendantEntityLocations.get(i), allDescendantEntites.get(i) });
-				}
-			} else if (folder.getFolderType() == FolderType.DATAFILE) {
-				for (int i = 0; i < lstDescendantEntityLocations.size(); i++) {
-					eventBroker.post(EventConstants.TEST_DATA_UPDATED,
-							new Object[] { lstDescendantEntityLocations.get(i), allDescendantEntites.get(i) });
-				}
-			} else if (folder.getFolderType() == FolderType.TESTSUITE) {
-				for (int i = 0; i < lstDescendantEntityLocations.size(); i++) {
-					eventBroker.post(EventConstants.TEST_SUITE_UPDATED,
-							new Object[] { lstDescendantEntityLocations.get(i), allDescendantEntites.get(i) });
-				}
-			} else if (folder.getFolderType() == FolderType.WEBELEMENT) {
-				for (int i = 0; i < lstDescendantEntityLocations.size(); i++) {
-					eventBroker.post(EventConstants.TEST_OBJECT_UPDATED,
-							new Object[] { lstDescendantEntityLocations.get(i), allDescendantEntites.get(i) });
-				}
-			}
+    private void copyTestCase(TestCaseEntity testCase, FolderEntity targetFolder) throws Exception {
+        if (testCase != null) {
+            TestCaseEntity copiedTestCase = TestCaseController.getInstance().copyTestCase(testCase, targetFolder);
+            if (copiedTestCase != null) {
+                eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM, new Object[] {
+                        TestCaseController.getInstance().getIdForDisplay(testCase),
+                        TestCaseController.getInstance().getIdForDisplay(copiedTestCase) });
+            }
+        }
+    }
 
-		}
-	}
+    private void copyFolder(FolderEntity folder, FolderEntity targetFolder) throws Exception {
+        FolderEntity copiedFolder = FolderController.getInstance().copyFolder(folder, targetFolder);
+        if (copiedFolder != null) {
+            eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM, new Object[] {
+                    folder.getRelativePathForUI().replace('\\', IPath.SEPARATOR) + IPath.SEPARATOR,
+                    copiedFolder.getRelativePathForUI().replace('\\', IPath.SEPARATOR) + IPath.SEPARATOR });
+        }
+    }
 
-	private void moveTestSuite(TestSuiteEntity testSuite, FolderEntity targetFolder) throws Exception {
-		if (testSuite != null) {
-			TestSuiteController testSuiteController = TestSuiteController.getInstance();
-			String oldPk = testSuite.getId();
-			String oldIdForDisplay = testSuiteController.getIdForDisplay(testSuite);
-			testSuite = testSuiteController.moveTestSuite(testSuite, targetFolder);
-			String newPk = testSuite.getId();
-			if (!oldPk.equals(newPk)) {
-				eventBroker.post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-						testSuiteController.getIdForDisplay(testSuite) });
-				eventBroker.post(EventConstants.TEST_SUITE_UPDATED, new Object[] { oldPk, testSuite });
-			}
-		}
-	}
+    private void copyTestSuite(TestSuiteEntity testSuite, FolderEntity targetFolder) throws Exception {
+        if (testSuite != null) {
+            TestSuiteEntity copiedTestSuite = TestSuiteController.getInstance().copyTestSuite(testSuite, targetFolder);
+            if (copiedTestSuite != null) {
+                eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM, new Object[] {
+                        TestSuiteController.getInstance().getIdForDisplay(testSuite),
+                        TestSuiteController.getInstance().getIdForDisplay(copiedTestSuite) });
+            }
+        }
+    }
 
-	private void moveTestData(DataFileEntity dataFile, FolderEntity targetFolder) throws Exception {
-		if (dataFile != null) {
-			TestDataController testDataController = TestDataController.getInstance();
-			String oldPk = dataFile.getId();
-			String oldIdForDisplay = testDataController.getIdForDisplay(dataFile);
-			dataFile = testDataController.moveDataFile(dataFile, targetFolder);
-			String newPk = dataFile.getId();
-			if (!oldPk.equals(newPk)) {
-				eventBroker.post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-						testDataController.getIdForDisplay(dataFile) });
-				eventBroker.post(EventConstants.TEST_DATA_UPDATED, new Object[] { oldPk, dataFile });
-			}
-		}
-	}
+    private void copyTestData(DataFileEntity dataFile, FolderEntity targetFolder) throws Exception {
+        if (dataFile != null) {
+            DataFileEntity copiedDataFile = TestDataController.getInstance().copyDataFile(dataFile, targetFolder);
+            if (copiedDataFile != null) {
+                eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM, new Object[] {
+                        TestDataController.getInstance().getIdForDisplay(dataFile),
+                        TestDataController.getInstance().getIdForDisplay(copiedDataFile) });
+            }
+        }
+    }
 
-	private void moveTestObject(WebElementEntity webElement, FolderEntity targetFolder) throws Exception {
-		if (webElement != null) {
-			ObjectRepositoryController objectRepositoryController = ObjectRepositoryController.getInstance();
-			String oldPk = webElement.getId();
-			String oldIdForDisplay = objectRepositoryController.getIdForDisplay(webElement);
-			webElement = objectRepositoryController.moveWebElement(webElement, targetFolder);
-			String newPk = webElement.getId();
-			if (!oldPk.equals(newPk)) {
-				eventBroker.post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-						objectRepositoryController.getIdForDisplay(webElement) });
-				eventBroker.post(EventConstants.TEST_OBJECT_UPDATED, new Object[] { oldPk, webElement });
-			}
-		}
-	}
+    private void copyTestObject(WebElementEntity webElement, FolderEntity targetFolder) throws Exception {
+        if (webElement != null) {
+            WebElementEntity copiedWebElement = ObjectRepositoryController.getInstance().copyWebElement(webElement,
+                    targetFolder);
+            if (copiedWebElement != null) {
+                eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM, new Object[] {
+                        ObjectRepositoryController.getInstance().getIdForDisplay(webElement),
+                        ObjectRepositoryController.getInstance().getIdForDisplay(copiedWebElement) });
+            }
+        }
+    }
 
-	private void moveKeywordPackage(IPackageFragment packageFragment, FolderEntity targetFolder) {
-		// TODO Auto-generated method stub
+    private void copyKeywordPackage(IPackageFragment packageFragment, FolderEntity targetFolder, String newPackageName)
+            throws Exception {
+        try {
+            String parentPath = packageFragment.getParent().getElementName() + IPath.SEPARATOR;
+            String packageName = packageFragment.getElementName();
+            GroovyUtil.copyPackage(packageFragment, targetFolder, newPackageName);
+            if (newPackageName == null) {
+                newPackageName = packageName;
+            }
+            eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM, new Object[] {
+                    parentPath + (packageName.isEmpty() ? StringConstants.DEFAULT_PACKAGE_NAME : packageName),
+                    parentPath + newPackageName });
+        } catch (JavaModelException javaModelException) {
+            if (javaModelException.getJavaModelStatus().getCode() == IJavaModelStatusConstants.NAME_COLLISION) {
+                NewNameQueries newNameQueries = new NewNameQueries(parentShell);
+                INewNameQuery newNameQuery = newNameQueries.createNewPackageNameQuery(packageFragment,
+                        packageFragment.getElementName());
+                copyKeywordPackage(packageFragment, targetFolder, newNameQuery.getNewName());
+            }
+        }
+    }
 
-	}
+    private void moveTestCase(TestCaseEntity testCase, FolderEntity targetFolder) throws Exception {
+        if (testCase != null) {
+            TestCaseController testCaseController = TestCaseController.getInstance();
+            String oldPk = testCase.getId();
+            String oldIdForDisplay = testCaseController.getIdForDisplay(testCase);
+            testCase = testCaseController.moveTestCase(testCase, targetFolder);
+            String newPk = testCase.getId();
+            if (!oldPk.equals(newPk)) {
+                eventBroker.post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
+                        testCaseController.getIdForDisplay(testCase) });
+                eventBroker.post(EventConstants.TESTCASE_UPDATED, new Object[] { oldPk, testCase });
+            }
+        }
+    }
+
+    private void moveFolder(FolderEntity folder, FolderEntity targetFolder) throws Exception {
+        if (targetFolder != null && folder != null && folder.getFolderType() == targetFolder.getFolderType()) {
+
+            // get collection of descendant entities that doesn't include descendant folder entity
+            List<Object> allDescendantEntites = new ArrayList<Object>();
+            for (Object descendantEntity : FolderController.getInstance().getAllDescentdantEntities(folder)) {
+                if (!(descendantEntity instanceof FolderEntity)) {
+                    allDescendantEntites.add(descendantEntity);
+                }
+            }
+
+            List<String> lstDescendantEntityLocations = new ArrayList<>();
+            if (folder.getFolderType() == FolderType.TESTCASE) {
+                for (Object child : allDescendantEntites) {
+                    if (child != null && child instanceof TestCaseEntity) {
+                        lstDescendantEntityLocations.add(((TestCaseEntity) child).getId());
+                    }
+                }
+            } else if (folder.getFolderType() == FolderType.DATAFILE) {
+                for (Object child : allDescendantEntites) {
+                    if (child != null && child instanceof DataFileEntity) {
+                        lstDescendantEntityLocations.add(((DataFileEntity) child).getId());
+                    }
+                }
+            } else if (folder.getFolderType() == FolderType.TESTSUITE) {
+                for (Object child : allDescendantEntites) {
+                    if (child != null && child instanceof TestSuiteEntity) {
+                        lstDescendantEntityLocations.add(((TestSuiteEntity) child).getId());
+                    }
+                }
+            } else if (folder.getFolderType() == FolderType.WEBELEMENT) {
+                for (Object child : allDescendantEntites) {
+                    if (child != null && child instanceof WebElementEntity) {
+                        lstDescendantEntityLocations.add(((WebElementEntity) child).getId());
+                    }
+                }
+            }
+
+            FolderController.getInstance().moveFolder(folder, targetFolder);
+            // afterSave
+            // send notification event
+            if (folder.getFolderType() == FolderType.TESTCASE) {
+                for (int i = 0; i < lstDescendantEntityLocations.size(); i++) {
+                    eventBroker.post(EventConstants.TESTCASE_UPDATED,
+                            new Object[] { lstDescendantEntityLocations.get(i), allDescendantEntites.get(i) });
+                }
+            } else if (folder.getFolderType() == FolderType.DATAFILE) {
+                for (int i = 0; i < lstDescendantEntityLocations.size(); i++) {
+                    eventBroker.post(EventConstants.TEST_DATA_UPDATED,
+                            new Object[] { lstDescendantEntityLocations.get(i), allDescendantEntites.get(i) });
+                }
+            } else if (folder.getFolderType() == FolderType.TESTSUITE) {
+                for (int i = 0; i < lstDescendantEntityLocations.size(); i++) {
+                    eventBroker.post(EventConstants.TEST_SUITE_UPDATED,
+                            new Object[] { lstDescendantEntityLocations.get(i), allDescendantEntites.get(i) });
+                }
+            } else if (folder.getFolderType() == FolderType.WEBELEMENT) {
+                for (int i = 0; i < lstDescendantEntityLocations.size(); i++) {
+                    eventBroker.post(EventConstants.TEST_OBJECT_UPDATED,
+                            new Object[] { lstDescendantEntityLocations.get(i), allDescendantEntites.get(i) });
+                }
+            }
+
+        }
+    }
+
+    private void moveTestSuite(TestSuiteEntity testSuite, FolderEntity targetFolder) throws Exception {
+        if (testSuite != null) {
+            TestSuiteController testSuiteController = TestSuiteController.getInstance();
+            String oldPk = testSuite.getId();
+            String oldIdForDisplay = testSuiteController.getIdForDisplay(testSuite);
+            testSuite = testSuiteController.moveTestSuite(testSuite, targetFolder);
+            String newPk = testSuite.getId();
+            if (!oldPk.equals(newPk)) {
+                eventBroker.post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
+                        testSuiteController.getIdForDisplay(testSuite) });
+                eventBroker.post(EventConstants.TEST_SUITE_UPDATED, new Object[] { oldPk, testSuite });
+            }
+        }
+    }
+
+    private void moveTestData(DataFileEntity dataFile, FolderEntity targetFolder) throws Exception {
+        if (dataFile != null) {
+            TestDataController testDataController = TestDataController.getInstance();
+            String oldPk = dataFile.getId();
+            String oldIdForDisplay = testDataController.getIdForDisplay(dataFile);
+            dataFile = testDataController.moveDataFile(dataFile, targetFolder);
+            String newPk = dataFile.getId();
+            if (!oldPk.equals(newPk)) {
+                eventBroker.post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
+                        testDataController.getIdForDisplay(dataFile) });
+                eventBroker.post(EventConstants.TEST_DATA_UPDATED, new Object[] { oldPk, dataFile });
+            }
+        }
+    }
+
+    private void moveTestObject(WebElementEntity webElement, FolderEntity targetFolder) throws Exception {
+        if (webElement != null) {
+            ObjectRepositoryController objectRepositoryController = ObjectRepositoryController.getInstance();
+            String oldPk = webElement.getId();
+            String oldIdForDisplay = objectRepositoryController.getIdForDisplay(webElement);
+            webElement = objectRepositoryController.moveWebElement(webElement, targetFolder);
+            String newPk = webElement.getId();
+            if (!oldPk.equals(newPk)) {
+                eventBroker.post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
+                        objectRepositoryController.getIdForDisplay(webElement) });
+                eventBroker.post(EventConstants.TEST_OBJECT_UPDATED, new Object[] { oldPk, webElement });
+            }
+        }
+    }
+
+    private void moveKeywordPackage(IPackageFragment packageFragment, FolderEntity targetFolder) {
+    }
 }

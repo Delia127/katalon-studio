@@ -4,7 +4,6 @@
 		<java-type name="TestSuiteEntity">
 			<xml-root-element name="TestSuiteEntity" />
 			<java-attributes>
-				<xml-element java-attribute="comment" />
 				<xml-element java-attribute="testSuiteTestCaseLinks" name="testCaseLink"/>
 				<xml-element java-attribute="pageLoadTimeout" />
 				<xml-element java-attribute="isRerun" />

@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.integration.qtest.model;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 
@@ -48,19 +50,12 @@ public class TestCaseRepo {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
-        TestCaseRepo other = (TestCaseRepo) obj;
-        if (folderId == null) {
-            if (other.folderId != null) return false;
-        } else if (!folderId.equals(other.folderId)) return false;
-        if (qTestModule == null) {
-            if (other.qTestModule != null) return false;
-        } else if (!qTestModule.equals(other.qTestModule)) return false;
-        if (qTestProject == null) {
-            if (other.qTestProject != null) return false;
-        } else if (!qTestProject.equals(other.qTestProject)) return false;
-        return true;
+        if (!(obj instanceof TestCaseRepo)) {
+            return false;
+        }
+        TestCaseRepo that = (TestCaseRepo) obj;
+        return new EqualsBuilder().append(this.getFolderId(), that.getFolderId())
+                .append(this.getQTestModule(), that.getQTestModule())
+                .append(this.getQTestProject(), that.getQTestProject()).isEquals();
     }
 }
