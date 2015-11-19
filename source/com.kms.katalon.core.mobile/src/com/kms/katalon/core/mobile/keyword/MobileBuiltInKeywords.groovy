@@ -11,7 +11,7 @@ import io.appium.java_client.ios.IOSDriver
 import java.text.MessageFormat
 
 import org.apache.commons.io.FileUtils
-import org.apache.commons.lang3.StringUtils
+import org.apache.commons.lang.StringUtils
 import org.openqa.selenium.Dimension
 import org.openqa.selenium.OutputType
 import org.openqa.selenium.Point
@@ -19,7 +19,6 @@ import org.openqa.selenium.WebElement
 import org.openqa.selenium.interactions.touch.TouchActions
 
 import com.kms.katalon.core.annotation.Keyword
-import com.kms.katalon.core.configuration.RunConfiguration
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.helper.KeywordHelper
 import com.kms.katalon.core.keyword.BuiltinKeywords

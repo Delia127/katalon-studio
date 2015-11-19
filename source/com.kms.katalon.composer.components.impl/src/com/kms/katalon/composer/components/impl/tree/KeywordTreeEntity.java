@@ -110,28 +110,24 @@ public class KeywordTreeEntity implements ITreeEntity {
 		return StringUtils.EMPTY;
 	}
 
-	@SuppressWarnings("restriction")
-	@Override
-	public boolean equals(Object object) {
-		try {
-			if (object == null || !(object instanceof KeywordTreeEntity)) {
-				return false;
-			}
-			KeywordTreeEntity anotherKeywordTreeEntity = (KeywordTreeEntity) object;
-			if (anotherKeywordTreeEntity.getObject() == null
-					|| !(anotherKeywordTreeEntity.getObject() instanceof ICompilationUnit)) {
-				return false;
-			}
-			ICompilationUnit anotherKeywordFile = (ICompilationUnit) anotherKeywordTreeEntity.getObject();
-			if (!anotherKeywordFile.getPath().toString().equalsIgnoreCase(keywordFile.getPath().toString())) {
-				return false;
-			}
-			return true;
-		} catch (Exception e) {
-			LoggerSingleton.getInstance().getLogger().error(e);
-		}
-		return false;
-	}
+    @Override
+    public boolean equals(Object object) {
+        try {
+            if (!(object instanceof KeywordTreeEntity)) {
+                return false;
+            }
+            KeywordTreeEntity anotherKeywordTreeEntity = (KeywordTreeEntity) object;
+            if (!(anotherKeywordTreeEntity.getObject() instanceof ICompilationUnit)) {
+                return false;
+            }
+            ICompilationUnit anotherKeywordFile = (ICompilationUnit) anotherKeywordTreeEntity.getObject();
+            return StringUtils.equalsIgnoreCase(anotherKeywordFile.getPath().toString(), keywordFile.getPath()
+                    .toString());
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        return false;
+    }
 
 	@Override
 	public int hashCode() {
@@ -145,8 +141,6 @@ public class KeywordTreeEntity implements ITreeEntity {
 
 	@Override
 	public void loadAllDescentdantEntities() throws Exception {
-		// TODO Auto-generated method stub
-
 	}
 
 }

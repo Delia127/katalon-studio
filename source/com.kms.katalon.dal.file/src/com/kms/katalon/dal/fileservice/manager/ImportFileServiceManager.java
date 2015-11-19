@@ -680,7 +680,6 @@ public class ImportFileServiceManager {
 				saveTestSuiteEntity(testSuite, parentFolder, project);
 
 			} else if (importDuplicateEntityResultEntity.getImportType() == ImportType.Override) {
-				duplicateTestSuite.setComment(testSuite.getComment());
 				duplicateTestSuite.setDescription(testSuite.getDescription());
 				duplicateTestSuite.setIsRerun(testSuite.getIsRerun());
 				duplicateTestSuite.setNumberOfRerun(testSuite.getNumberOfRerun());
@@ -691,9 +690,6 @@ public class ImportFileServiceManager {
 				saveTestSuiteEntity(duplicateTestSuite, duplicateTestSuite.getParentFolder(), project);
 
 			} else if (importDuplicateEntityResultEntity.getImportType() == ImportType.Merge) {
-				if (duplicateTestSuite.getComment() == null || duplicateTestSuite.getComment().isEmpty()) {
-					duplicateTestSuite.setComment(testSuite.getComment());
-				}
 				if (duplicateTestSuite.getDescription() == null || duplicateTestSuite.getDescription().isEmpty()) {
 					duplicateTestSuite.setDescription(testSuite.getDescription());
 				}

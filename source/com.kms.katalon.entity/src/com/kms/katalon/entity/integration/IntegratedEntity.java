@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+
 public class IntegratedEntity implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = -5272475033476141937L;
@@ -56,27 +58,13 @@ public class IntegratedEntity implements Serializable, Cloneable {
 		return result;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		IntegratedEntity other = (IntegratedEntity) obj;
-		if (productName == null) {
-			if (other.productName != null)
-				return false;
-		} else if (!productName.equals(other.productName))
-			return false;
-		if (properties == null) {
-			if (other.properties != null)
-				return false;
-		} else if (!properties.equals(other.properties))
-			return false;
-		if (type != other.type)
-			return false;
-		return true;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof IntegratedEntity)) {
+            return false;
+        }
+        IntegratedEntity that = (IntegratedEntity) obj;
+        return new EqualsBuilder().append(this.getProductName(), that.getProductName())
+                .append(this.getProperties(), that.getProperties()).append(this.getType(), that.getType()).isEquals();
+    }
 }

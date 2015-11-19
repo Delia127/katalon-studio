@@ -2,12 +2,11 @@ package com.kms.katalon.entity.link;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+
 import com.kms.katalon.entity.util.Util;
 
 public class TestCaseTestDataLink implements Serializable {
-    /**
-	 * 
-	 */
     private static final long serialVersionUID = 1L;
     private String testDataId;
     private IterationEntity iterationEntity;
@@ -70,21 +69,13 @@ public class TestCaseTestDataLink implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
-        TestCaseTestDataLink other = (TestCaseTestDataLink) obj;
-        if (combinationType != other.combinationType) return false;
-        if (id == null) {
-            if (other.id != null) return false;
-        } else if (!id.equals(other.id)) return false;
-        if (iterationEntity == null) {
-            if (other.iterationEntity != null) return false;
-        } else if (!iterationEntity.equals(other.iterationEntity)) return false;
-        if (testDataId == null) {
-            if (other.testDataId != null) return false;
-        } else if (!testDataId.equals(other.testDataId)) return false;
-        return true;
+        if (!(obj instanceof TestCaseTestDataLink)) {
+            return false;
+        }
+        TestCaseTestDataLink that = (TestCaseTestDataLink) obj;
+        return new EqualsBuilder().append(this.getCombinationType(), that.getCombinationType())
+                .append(this.getId(), that.getId()).append(this.getIterationEntity(), that.getIterationEntity())
+                .append(this.getTestDataId(), that.getTestDataId()).isEquals();
     }
 
 }

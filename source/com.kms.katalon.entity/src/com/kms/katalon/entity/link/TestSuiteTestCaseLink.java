@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
 
 import com.kms.katalon.entity.util.Util;
 
@@ -65,20 +66,12 @@ public class TestSuiteTestCaseLink implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
-        TestSuiteTestCaseLink other = (TestSuiteTestCaseLink) obj;
-        
-        if (this.guid == null) {
-            if (other.guid != null) return false;
+        if (!(obj instanceof TestSuiteTestCaseLink)) {
+            return false;
         }
-
-        if (testCaseId == null) {
-            if (other.testCaseId != null) return false;
-        } else if (!testCaseId.equals(other.testCaseId)) return false;
-
-        return true;
+        TestSuiteTestCaseLink that = (TestSuiteTestCaseLink) obj;
+        return new EqualsBuilder().append(this.getTestCaseId(), that.getTestCaseId())
+                .append(this.getGuid(), that.getGuid()).isEquals();
     }
 
     public List<VariableLink> getVariableLinks() {

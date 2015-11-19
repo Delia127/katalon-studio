@@ -24,6 +24,7 @@ import org.codehaus.groovy.ast.stmt.ForStatement;
 import org.codehaus.groovy.ast.stmt.IfStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.ast.stmt.WhileStatement;
+import org.codehaus.groovy.syntax.Numbers;
 import org.codehaus.groovy.syntax.Token;
 import org.codehaus.groovy.syntax.Types;
 import org.eclipse.jdt.core.IType;
@@ -331,13 +332,15 @@ public class AstTreeTableValueUtil {
 
     private static Expression setValue(ConstantExpression constantExpression, Object value) {
         Expression newExpression = null;
-        if (constantExpression.getValue() instanceof Integer) {
+        if (constantExpression.getValue() instanceof Number) {
             if (value instanceof String) {
+                Number numValue = 0;
                 try {
-                    newExpression = new ConstantExpression(Integer.parseInt((String) value));
+                    numValue = Numbers.parseInteger((String) value);
                 } catch (NumberFormatException e) {
-                    newExpression = new ConstantExpression(0);
+                    numValue = Numbers.parseDecimal((String) value);
                 }
+                newExpression = new ConstantExpression(numValue);
             }
         } else if (constantExpression.getValue() instanceof Boolean) {
             if (value instanceof String) {

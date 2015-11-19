@@ -38,24 +38,20 @@ public abstract class AbstractTreeEntity implements ITreeEntity {
 		return entity.getName();
 	}
 
-	@SuppressWarnings("restriction")
 	@Override
 	public boolean equals(Object object) {
 		try {
-			if (object == null || !(object instanceof AbstractTreeEntity)) {
+			if (!(object instanceof AbstractTreeEntity)) {
 				return false;
 			}
 			AbstractTreeEntity anotherTreeEntity = (AbstractTreeEntity) object;
-			if (anotherTreeEntity.getObject() == null || !(anotherTreeEntity.getObject() instanceof Entity)) {
+			if (!(anotherTreeEntity.getObject() instanceof Entity)) {
 				return false;
 			}
 			Entity anotherEntity = (Entity) anotherTreeEntity.getObject();
-			if (!entity.equals(anotherEntity)) {
-				return false;
-			}
-			return true;
+			return entity.equals(anotherEntity);
 		} catch (Exception e) {
-			LoggerSingleton.getInstance().getLogger().error(e);
+			LoggerSingleton.logError(e);
 		}
 		return false;
 	}
