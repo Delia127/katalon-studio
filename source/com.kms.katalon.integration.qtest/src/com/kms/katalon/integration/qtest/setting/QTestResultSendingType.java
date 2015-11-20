@@ -1,8 +1,8 @@
 package com.kms.katalon.integration.qtest.setting;
 
 public enum QTestResultSendingType {
-    SEND_IF_PASSES("If test case passes"),
-    SEND_IF_FAILS("If test case fails");
+    SEND_IF_PASSES("Test case passes"),
+    SEND_IF_FAILS("Test case fails");
     
     private final String text;
 

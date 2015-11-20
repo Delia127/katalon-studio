@@ -148,8 +148,9 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_TITLE_ENABLE_INTEGRATION = "Enable integration";
     public static final String DIA_TITLE_CHECK_DUPLICATES_TEST_CASE = "Check duplicates before uploading test cases";
     public static final String DIA_TITLE_AUTO_SUBMIT_TEST_RESULT = "Automatically submit test run result";
-    public static final String DIA_TITLE_SEND_RESULT = "Send execution result";
-    public static final String DIA_TITLE_SEND_ATTACHMENT = "Attachment included";
+    public static final String DIA_TITLE_SEND_RESULT = "Send execution result if";
+    public static final String DIA_TITLE_SEND_ATTACHMENT = "Attachment included if";
+    public static final String DIA_TITLE_REPORT_FORMAT = "Report format";
     public static final String DIA_TITLE_ASK_USE_SETUP = "For quickly setting, we already provide a setup wizard. Would "
             + "you like to take a tour with us?";
     public static final String DIA_INFO_QUICK_SETUP = "<a>Quick Setup...</a>";
