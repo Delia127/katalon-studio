@@ -116,7 +116,5 @@ public class WebElementTreeEntity extends AbstractTreeEntity {
 
 	@Override
 	public void loadAllDescentdantEntities() throws Exception {
-		// TODO Auto-generated method stub
-		
 	}
 }

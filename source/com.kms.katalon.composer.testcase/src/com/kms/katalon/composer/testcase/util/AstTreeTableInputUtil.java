@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,6 +60,7 @@ import com.kms.katalon.composer.testcase.ast.editors.TestDataValueCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.TestObjectCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.TypeInputCellEditor;
 import com.kms.katalon.composer.testcase.editors.CallTestCaseCellEditor;
+import com.kms.katalon.composer.testcase.editors.NumberCellEditor;
 import com.kms.katalon.composer.testcase.model.ConstantValueType;
 import com.kms.katalon.composer.testcase.model.CustomInputValueTypeCollector;
 import com.kms.katalon.composer.testcase.model.ICustomInputValueType;
@@ -249,6 +252,9 @@ public class AstTreeTableInputUtil {
     private static CellEditor getCellEditorForConstantExpression(Composite parent, ConstantExpression constantExpression) {
         if (constantExpression.getValue() instanceof Boolean) {
             return new ComboBoxCellEditor(parent, new String[] { Boolean.TRUE.toString(), Boolean.FALSE.toString() });
+        }
+        if (constantExpression.getValue() instanceof Number) {
+            return new NumberCellEditor(parent);
         }
         return new TextCellEditor(parent);
     }
@@ -907,7 +913,8 @@ public class AstTreeTableInputUtil {
                 || paramClassName.equals(Integer.class.getName()) || paramClassName.equals(Integer.TYPE.getName())
                 || paramClassName.equals(Long.class.getName()) || paramClassName.equals(Long.TYPE.getName())
                 || paramClassName.equals(Float.class.getName()) || paramClassName.equals(Float.TYPE.getName())
-                || paramClassName.equals(Double.class.getName()) || paramClassName.equals(Double.TYPE.getName())) {
+                || paramClassName.equals(Double.class.getName()) || paramClassName.equals(Double.TYPE.getName())
+                || paramClassName.equals(BigInteger.class.getName()) || paramClassName.equals(BigDecimal.class.getName())) {
             if (existingParamClassName.equals(Byte.class.getName())
                     || existingParamClassName.equals(Byte.TYPE.getName())
                     || existingParamClassName.equals(Short.class.getName())
@@ -919,7 +926,9 @@ public class AstTreeTableInputUtil {
                     || existingParamClassName.equals(Float.class.getName())
                     || existingParamClassName.equals(Float.TYPE.getName())
                     || existingParamClassName.equals(Double.class.getName())
-                    || existingParamClassName.equals(Double.TYPE.getName())) {
+                    || existingParamClassName.equals(Double.TYPE.getName())
+                    || existingParamClassName.equals(BigInteger.class.getName())
+                    || existingParamClassName.equals(BigDecimal.class.getName())) {
                 return existingParam;
             } else {
                 return new ConstantExpression(0);
@@ -1056,7 +1065,7 @@ public class AstTreeTableInputUtil {
     public static ConstantValueType getConstantValueTypeFromConstantExpression(ConstantExpression constantExpression) {
         if (constantExpression.isFalseExpression() || constantExpression.isTrueExpression()) {
             return ConstantValueType.Boolean;
-        } else if (constantExpression.getValue() instanceof Integer) {
+        } else if (constantExpression.getValue() instanceof Number) {
             return ConstantValueType.Number;
         } else if (constantExpression.getValue() == null) {
             return ConstantValueType.Null;

@@ -98,6 +98,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_LBL_NAME = NAME;
     public static final String PA_LBL_MAIL_RECIPIENTS = "Mail Recipients";
     public static final String PA_LBL_PAGE_LOAD_TIMEOUT = "Page load timeout";
+    public static final String PA_LBL_USE_DEFAULT = "Use default";
+    public static final String PA_LBL_USER_DEFINE = "User define";
     public static final String WARN_TITLE = WARN;
     public static final String PA_WARN_MSG_REPORT_FILE_DOES_NOT_EXIST = "Report file doesn't exist";
     public static final String PA_ERROR_MSG_UNABLE_TO_OPEN_REPORT = "Unable to open Report";
@@ -126,7 +128,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_IMAGE_TIP_ADVANCED_SEARCH = "Advanced " + SEARCH;
     public static final String PA_IMAGE_TIP_SEARCH = SEARCH;
     public static final String PA_IMAGE_TIP_CLOSE_SEARCH = CLEAR;
-    public static final String PA_ERROR_MSG_RERUN_NUMBER_X_INVALID = "Invalid re-run value ''{0}'' (must be a number)";
     public static final String PA_LBL_TOOLTIP_RETRY = "Please define the maximum number of retries that a failed test case would be re-executed until it is successfully passed.";
 
     // VariableValueEditingSupport

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+
 import com.kms.katalon.entity.file.FileEntity;
 
 public class WebElementEntity extends FileEntity {
@@ -70,16 +72,16 @@ public class WebElementEntity extends FileEntity {
     }
 
     @Override
-    public boolean equals(Object that) {
-        boolean equals = super.equals(that);
-        if (equals) {
-            WebElementEntity anotherWebElement = (WebElementEntity) that;
-
-            if (!getWebElementProperties().equals(anotherWebElement.getWebElementProperties())) {
-                return false;
-            }
+    public boolean equals(Object obj) {
+        boolean isEquals = super.equals(obj);
+        if (!(obj instanceof WebElementEntity)) {
+            return false;
         }
-        return equals;
+        WebElementEntity that = (WebElementEntity) obj;
+        isEquals = isEquals
+                && new EqualsBuilder().append(this.getWebElementProperties(), that.getWebElementProperties())
+                        .isEquals();
+        return isEquals;
     }
 
     public String getImagePath() {

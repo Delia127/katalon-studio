@@ -20,7 +20,6 @@ import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
-@SuppressWarnings("restriction")
 public class PackageTreeEntity implements ITreeEntity {
 
     private static final long serialVersionUID = 2019661366633516087L;
@@ -126,21 +125,18 @@ public class PackageTreeEntity implements ITreeEntity {
     @Override
     public boolean equals(Object object) {
         try {
-            if (object == null || !(object instanceof PackageTreeEntity)) {
+            if (!(object instanceof PackageTreeEntity)) {
                 return false;
             }
             PackageTreeEntity anotherPackageTreeEntity = (PackageTreeEntity) object;
-            if (anotherPackageTreeEntity.getObject() == null
-                    || !(anotherPackageTreeEntity.getObject() instanceof IPackageFragment)) {
+            if (!(anotherPackageTreeEntity.getObject() instanceof IPackageFragment)) {
                 return false;
             }
             IPackageFragment anotherPackageFragment = (IPackageFragment) anotherPackageTreeEntity.getObject();
-            if (!anotherPackageFragment.getPath().toString().equalsIgnoreCase(packageFragment.getPath().toString())) {
-                return false;
-            }
-            return true;
+            return StringUtils.equalsIgnoreCase(anotherPackageFragment.getPath().toString(), packageFragment.getPath()
+                    .toString());
         } catch (Exception e) {
-            LoggerSingleton.getInstance().getLogger().error(e);
+            LoggerSingleton.logError(e);
         }
         return false;
     }
@@ -191,8 +187,6 @@ public class PackageTreeEntity implements ITreeEntity {
 
     @Override
     public void loadAllDescentdantEntities() throws Exception {
-        // TODO Auto-generated method stub
-
     }
 
 }

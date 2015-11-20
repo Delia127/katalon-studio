@@ -26,5 +26,6 @@ workspace/
 source/com.kms.katalon.composer.webui.objectspy/resources/extensions/Chrome/Object Spy/server.js
 source/com.kms.katalon.composer.webui.recorder/resources/extensions/Chrome/Recorder/server.js
 
-# Build Number
+# Build Mapping Files
 source/com.kms.katalon/buildNumber.properties
+source/com.kms.katalon/about.mappings

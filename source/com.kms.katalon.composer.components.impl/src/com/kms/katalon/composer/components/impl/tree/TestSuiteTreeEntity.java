@@ -115,7 +115,5 @@ public class TestSuiteTreeEntity extends AbstractTreeEntity {
 
 	@Override
 	public void loadAllDescentdantEntities() throws Exception {
-		// TODO Auto-generated method stub
-		
 	}
 }

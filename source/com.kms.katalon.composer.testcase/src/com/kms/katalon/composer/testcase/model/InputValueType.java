@@ -35,7 +35,7 @@ public enum InputValueType implements IInputValueType {
         case Constant:
             if (existingValue instanceof ConstantExpression) {
                 ConstantExpression constantExpression = (ConstantExpression) existingValue;
-                if (constantExpression.getValue() instanceof Integer) {
+                if (constantExpression.getValue() instanceof Number) {
                     return AstTreeTableEntityUtil.getNewNumberConstantExpression();
                 } else if (constantExpression.getValue() instanceof Boolean) {
                     return AstTreeTableEntityUtil.getNewBooleanConstantExpression();

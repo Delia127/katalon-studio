@@ -2,6 +2,7 @@ package com.kms.katalon.objectspy.element;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -84,12 +85,7 @@ public class HTMLRawElement {
 		} else {
 			xpath = String.valueOf(object);
 		}
-
-		if (xpath.equals(this.getAbsoluteXpath())) {
-			return true;
-		}
-		
-		return false;
+		return StringUtils.equals(xpath, getAbsoluteXpath());
 	}
 
 	@Override

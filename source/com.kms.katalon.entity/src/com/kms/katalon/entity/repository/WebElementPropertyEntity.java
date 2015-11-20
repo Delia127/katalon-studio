@@ -3,6 +3,7 @@ package com.kms.katalon.entity.repository;
 import java.io.Serializable;
 
 import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
 
 public class WebElementPropertyEntity implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -100,14 +101,12 @@ public class WebElementPropertyEntity implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
+        if (!(obj instanceof WebElementPropertyEntity)) {
+            return false;
+        }
         WebElementPropertyEntity other = (WebElementPropertyEntity) obj;
-        if (name == null) {
-            if (other.name != null) return false;
-        } else if (!name.equals(other.name)) return false;
-        return true;
+        // compare on name only
+        return new EqualsBuilder().append(this.getName(), other.getName()).isEquals();
     }
 
     public enum MATCH_CONDITION {

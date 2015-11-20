@@ -343,7 +343,6 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
     }
 
     private void interuptUIThreads() {
-        // TODO Auto-generated method stub
         childTestSuiteMainPart.interuptUIThreads();
     }
 
