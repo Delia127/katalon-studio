@@ -469,7 +469,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
                         columnViewer.getColumn().setText(header);
                     } else {
                         columnViewer.getColumn().setImage(ImageConstants.IMG_16_WARN_TABLE_ITEM);
-                        columnViewer.getColumn().setToolTipText(StringConstants.PA_LBL_WARNING_COLUMN_HEADER);
+                        columnViewer.getColumn().setToolTipText(StringConstants.PA_TOOLTIP_WARNING_COLUMN_HEADER);
                         columnViewer.getColumn().setText(StringUtils.EMPTY);
                         numEmptyHeader++;
                     }
@@ -509,7 +509,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
             if (numEmptyHeader > 0) {
                 lblFileInfoStatus.setText(MessageFormat.format(StringConstants.PA_LBL_WARNING_COLUMN_HEADER,
-                        numEmptyHeader, rowNumbers));
+                        numEmptyHeader, columnNumbers));
             }
 
             tableViewer.setInput(fData);
