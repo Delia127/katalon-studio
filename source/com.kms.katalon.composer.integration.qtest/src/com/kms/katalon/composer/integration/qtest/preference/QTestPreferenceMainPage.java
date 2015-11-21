@@ -38,6 +38,7 @@ import com.kms.katalon.composer.integration.qtest.wizard.SetupWizardDialog;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.integration.qtest.setting.QTestAttachmentSendingType;
+import com.kms.katalon.integration.qtest.setting.QTestReportFormatType;
 import com.kms.katalon.integration.qtest.setting.QTestResultSendingType;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
@@ -65,6 +66,7 @@ public class QTestPreferenceMainPage extends PreferencePage {
     private Composite compositeOptions;
     private Link setupLink;
     private Composite composite;
+    private Group grpFormatReportOptions;
 
     public QTestPreferenceMainPage() {
         projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
@@ -126,39 +128,54 @@ public class QTestPreferenceMainPage extends PreferencePage {
         chckAutoSubmitTestRun.setText(StringConstants.DIA_TITLE_AUTO_SUBMIT_TEST_RESULT);
 
         compositeOptions = new Composite(mainComposite, SWT.NONE);
-        GridData gdCompositeOptions = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
+        GridData gdCompositeOptions = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
         gdCompositeOptions.verticalIndent = -5;
         compositeOptions.setLayoutData(gdCompositeOptions);
-        GridLayout glComposite = new GridLayout(1, false);
+        GridLayout glComposite = new GridLayout(3, true);
         glComposite.marginLeft = 25;
         glComposite.marginWidth = 0;
         glComposite.marginHeight = 0;
         compositeOptions.setLayout(glComposite);
 
         grpResultOptions = new Group(compositeOptions, SWT.NONE);
-        grpResultOptions.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+        grpResultOptions.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         grpResultOptions.setText(StringConstants.DIA_TITLE_SEND_RESULT);
-        grpResultOptions.setLayout(new GridLayout(4, false));
+        grpResultOptions.setLayout(new GridLayout(1, true));
 
         for (QTestResultSendingType sendingType : QTestResultSendingType.values()) {
             Button btnSendingType = new Button(grpResultOptions, SWT.CHECK);
-            btnSendingType.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+            btnSendingType.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
             btnSendingType.setText(sendingType.toString());
             btnSendingType.setData(sendingType);
         }
 
         grpAttachmentOptions = new Group(compositeOptions, SWT.NONE);
-        grpAttachmentOptions.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+        grpAttachmentOptions.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         grpAttachmentOptions.setText(StringConstants.DIA_TITLE_SEND_ATTACHMENT);
-        grpAttachmentOptions.setLayout(new GridLayout(4, false));
+        grpAttachmentOptions.setLayout(new GridLayout(1, true));
 
         for (QTestAttachmentSendingType sendingType : QTestAttachmentSendingType.values()) {
             Button btnSendingType = new Button(grpAttachmentOptions, SWT.CHECK);
-            btnSendingType.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+            btnSendingType.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
             btnSendingType.setText(sendingType.toString());
             btnSendingType.setData(sendingType);
+        }
+
+        grpFormatReportOptions = new Group(compositeOptions, SWT.NONE);
+        grpFormatReportOptions.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        grpFormatReportOptions.setText(StringConstants.DIA_TITLE_REPORT_FORMAT);
+        grpFormatReportOptions.setLayout(new GridLayout(1, true));
+        for (QTestReportFormatType formatType : QTestReportFormatType.values()) {
+            if (formatType == QTestReportFormatType.PDF) {
+                //PDF format is not supported now.
+                continue;
+            }
+            Button btnFormmatingType = new Button(grpFormatReportOptions, SWT.CHECK);
+            btnFormmatingType.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+            btnFormmatingType.setText(formatType.toString());
+            btnFormmatingType.setData(formatType);
         }
 
         addToolItemListeners();
@@ -294,6 +311,19 @@ public class QTestPreferenceMainPage extends PreferencePage {
             }
         }
 
+        // set input for grpFormattedOptions
+        List<QTestReportFormatType> selectedFormattedReportTypes = QTestSettingStore
+                .getFormatReportTypes(projectDir);
+        for (Control chckButton : grpFormatReportOptions.getChildren()) {
+            if (chckButton instanceof Button) {
+                if (selectedFormattedReportTypes.contains(chckButton.getData())) {
+                    ((Button) chckButton).setSelection(true);
+                } else {
+                    ((Button) chckButton).setSelection(false);
+                }
+            }
+        }
+
         enableMainComposite();
         enableAttachmentsGroup();
         container.pack();
@@ -307,10 +337,10 @@ public class QTestPreferenceMainPage extends PreferencePage {
             QTestSettingStore.saveToken(txtToken.getText(), projectDir);
             QTestSettingStore.saveEnableIntegration(chckEnableIntegration.getSelection(), projectDir);
 
+            // Save sending result options
             saveAttachmentSendingStatus();
-
             saveResultSendingStatus();
-
+            saveFormatOptions();
             return true;
         } catch (IOException e) {
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.ERROR,
@@ -347,6 +377,21 @@ public class QTestPreferenceMainPage extends PreferencePage {
             }
         }
         QTestSettingStore.saveResultSendingType(selectedResultSendingType, projectDir);
+    }
+
+    private void saveFormatOptions() {
+        List<QTestReportFormatType> selectedFormat = new ArrayList<QTestReportFormatType>();
+        for (Control radioButtonControl : grpFormatReportOptions.getChildren()) {
+            if (radioButtonControl instanceof Button) {
+                Button formateTypeRadioButton = (Button) radioButtonControl;
+                if (formateTypeRadioButton.getSelection()) {
+                    QTestReportFormatType resultSendingType = (QTestReportFormatType) formateTypeRadioButton
+                            .getData();
+                    selectedFormat.add(resultSendingType);
+                }
+            }
+        }
+        QTestSettingStore.saveFormatReportTypes(selectedFormat, projectDir);
     }
 
     @Override

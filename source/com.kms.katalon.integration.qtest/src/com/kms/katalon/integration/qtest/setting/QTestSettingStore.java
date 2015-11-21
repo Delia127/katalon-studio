@@ -21,6 +21,7 @@ public class QTestSettingStore {
     public static final String SEND_ATTACHMENTS_PROPERTY = "sendAttachments";
     public static final String SEND_RESULT_PROPERTY = "sendResult";
     public static final String FIRST_TIME_USING = "firstTimeUsing";
+    public static final String REPORT_FORMAT = "reportFormat";
 
     public static File getPropertyFile(String projectDir) throws IOException {
         File configFile = new File(projectDir + File.separator
@@ -215,6 +216,47 @@ public class QTestSettingStore {
             PropertySettingStoreUtil.addNewProperty(FIRST_TIME_USING, Boolean.toString(false),
                     getPropertyFile(projectDir));
         } catch (IOException | IllegalArgumentException e) {
+        }
+    }
+
+    public static List<QTestReportFormatType> getFormatReportTypes(String projectDir) {
+        try {
+            List<QTestReportFormatType> reportFormatTypes = new ArrayList<QTestReportFormatType>();
+            String formatPropertyString = PropertySettingStoreUtil.getPropertyValue(REPORT_FORMAT,
+                    getPropertyFile(projectDir));
+
+            //By default, select them all.
+            if (formatPropertyString == null) {
+                return Arrays.asList(QTestReportFormatType.HTML, QTestReportFormatType.LOG);
+            }
+            
+            if (formatPropertyString.isEmpty()) {
+                return reportFormatTypes;
+            }
+
+            for (String sendingTypeName : formatPropertyString.trim().split(",")) {
+                reportFormatTypes.add(QTestReportFormatType.valueOf(sendingTypeName.trim()));
+            }
+
+            return reportFormatTypes;
+        } catch (IOException | IllegalArgumentException e) {
+            return Collections.emptyList();
+        }
+    }
+
+    public static void saveFormatReportTypes(List<QTestReportFormatType> types, String projectDir) {
+        try {
+            StringBuilder attachmentStringBuilder = new StringBuilder();
+            for (int index = 0; index < types.size(); index++) {
+                attachmentStringBuilder.append(types.get(index).name());
+                if (index != types.size() - 1) {
+                    attachmentStringBuilder.append(", ");
+                }
+            }
+            PropertySettingStoreUtil.addNewProperty(REPORT_FORMAT, attachmentStringBuilder.toString(),
+                    getPropertyFile(projectDir));
+        } catch (IOException | IllegalArgumentException e) {
+            // Do nothing
         }
     }
 }
