@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Deque;
@@ -32,9 +33,9 @@ import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.MessageLogRecord;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
 import com.kms.katalon.core.logging.model.TestStatus;
+import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.logging.model.TestStepLogRecord;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
-import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.reporting.template.ResourceLoader;
 import com.kms.katalon.core.testdata.reader.CsvWriter;
 
@@ -113,6 +114,29 @@ public class ReportUtil {
 		return sb;
 	}
 
+	private static void removeInfoLines(TestSuiteLogRecord testSuiteLogRecord){
+		for(ILogRecord testCaseLog : testSuiteLogRecord.getChildRecords()){
+			removeInfoLines(testCaseLog);
+		}
+	}
+	
+	private static void removeInfoLines(ILogRecord testCaseLog){
+		for(ILogRecord testStepLog : testCaseLog.getChildRecords()){
+			List<ILogRecord> rmvLogs = new ArrayList<>();
+			for(ILogRecord messageLogRecord : testStepLog.getChildRecords()){
+				if(messageLogRecord instanceof MessageLogRecord && messageLogRecord.getStatus().getStatusValue() == TestStatusValue.NOT_RUN){
+					rmvLogs.add(messageLogRecord);
+				}
+				if(messageLogRecord instanceof TestCaseLogRecord){
+					removeInfoLines(messageLogRecord);
+				}
+			}
+			for(ILogRecord rmLog : rmvLogs){
+				testStepLog.removeChildRecord(rmLog);
+			}
+		}
+	}
+	
 	public static void writeLogRecordToFiles(String logFolder) throws Exception {
 		TestSuiteLogRecord testSuiteLogRecord = generate(logFolder);
 		if (testSuiteLogRecord != null) {
@@ -121,6 +145,7 @@ public class ReportUtil {
 	}
 
 	public static void writeLogRecordToFiles(TestSuiteLogRecord suiteLogEntity, File logFolder) throws Exception {
+		
 		List<String> strings = new LinkedList<String>();
 
 		JsSuiteModel jsSuiteModel = new JsSuiteModel(suiteLogEntity, strings);
@@ -136,28 +161,19 @@ public class ReportUtil {
 
 		// Write CSV file
 		CsvWriter.writeCsvReport(suiteLogEntity, new File(logFolder, logFolder.getName() + ".csv"));
-	}
-
-	public static void writeLogRecordToFiles(TestSuiteLogRecord suiteLogEntity, File logFolder, String reportFile) throws Exception {
-		List<String> strings = new LinkedList<String>();
-
-		JsSuiteModel jsSuiteModel = new JsSuiteModel(suiteLogEntity, strings);
-		StringBuilder sbModel = jsSuiteModel.toArrayString();
-
-		StringBuilder htmlSb = new StringBuilder();
+		
+		
+		removeInfoLines(suiteLogEntity);
+		strings = new LinkedList<String>();
+		jsSuiteModel = new JsSuiteModel(suiteLogEntity, strings);
+		sbModel = jsSuiteModel.toArrayString();
+		htmlSb = new StringBuilder();
 		readFileToStringBuilder(ResourceLoader.HTML_TEMPLATE_FILE, htmlSb);
 		htmlSb.append(generateVars(strings, suiteLogEntity, sbModel));
 		readFileToStringBuilder(ResourceLoader.HTML_TEMPLATE_CONTENT, htmlSb);
-
-		// Write main HTML Report
-		if(reportFile == null || reportFile.equals("")){
-			FileUtils.writeStringToFile(new File(logFolder, logFolder.getName() + ".html"), htmlSb.toString());	
-		}
-		else{
-			FileUtils.writeStringToFile(new File(reportFile), htmlSb.toString());
-		}
+		FileUtils.writeStringToFile(new File(logFolder, "Report.html"), htmlSb.toString());
 	}
-	
+
 	public static TestSuiteLogRecord generate(String logFolder) throws Exception {
 		File folder = new File(logFolder);
 		File[] files = folder.listFiles(new FilenameFilter() {
