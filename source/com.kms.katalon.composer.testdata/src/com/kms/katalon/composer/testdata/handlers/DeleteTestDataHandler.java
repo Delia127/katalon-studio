@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.testdata.handlers;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +8,8 @@ import java.util.Map.Entry;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -32,6 +35,7 @@ import com.kms.katalon.entity.link.VariableLink;
 import com.kms.katalon.entity.link.VariableLink.VariableType;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.groovy.util.GroovyRefreshUtil;
 
 public class DeleteTestDataHandler extends AbstractDeleteReferredEntityHandler implements IDeleteEntityHandler {
 
@@ -59,6 +63,8 @@ public class DeleteTestDataHandler extends AbstractDeleteReferredEntityHandler i
             String taskName = "Deleting " + entity.getTypeName() + " '" + entity.getText() + "'...";
             monitor.beginTask(taskName, 1);
 
+            UISynchronize sync = UISynchronizeService.getInstance().getSync();
+
             final Map<String, List<TestSuiteTestCaseLink>> testDataReferences = TestDataController.getInstance()
                     .getTestDataReferences(testData);
 
@@ -70,7 +76,6 @@ public class DeleteTestDataHandler extends AbstractDeleteReferredEntityHandler i
 
                     final AbstractDeleteReferredEntityHandler handler = this;
 
-                    UISynchronize sync = UISynchronizeService.getInstance().getSync();
                     sync.syncExec(new Runnable() {
 
                         @Override
@@ -90,13 +95,37 @@ public class DeleteTestDataHandler extends AbstractDeleteReferredEntityHandler i
 
             }
 
+            final String testDataId = TestDataController.getInstance().getIdForDisplay(testData);
+            sync.syncExec(new Runnable() {
+
+                @Override
+                public void run() {
+                    try {
+                        // Find all Test Case script which has relationship with the Test Data
+                        List<IFile> affectedTestCaseScripts = GroovyRefreshUtil.findReferencesInTestCaseScripts(
+                                testDataId, testData.getProject());
+                        // Give a confirmation message for current Test Data to remove its references
+                        if (!affectedTestCaseScripts.isEmpty()) {
+                            // Depend on the user response, references will be removed or not
+                            boolean isRemovingRef = MessageDialog.openQuestion(Display.getCurrent().getActiveShell(),
+                                    StringConstants.HAND_TITLE_DELETE, StringConstants.HAND_MSG_REMOVE_ENTITY_REF);
+                            if (isRemovingRef) {
+                                GroovyRefreshUtil
+                                        .removeReferencesInTestCaseScripts(testDataId, affectedTestCaseScripts);
+                            }
+                        }
+                    } catch (CoreException | IOException e) {
+                        LoggerSingleton.logError(e);
+                    }
+                }
+            });
+
             // remove TestCase part from its partStack if it exists
             EntityPartUtil.closePart(testData);
 
             TestDataController.getInstance().deleteDataFile(testData);
 
-            eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, TestDataController.getInstance()
-                    .getIdForDisplay(testData));
+            eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, testDataId);
             return true;
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -110,7 +139,7 @@ public class DeleteTestDataHandler extends AbstractDeleteReferredEntityHandler i
 
     public static void deleteTestDataReferences(DataFileEntity dataFileEntity,
             Map<String, List<TestSuiteTestCaseLink>> testDataReferences, IEventBroker eventBroker) throws Exception {
-        String dataFileId = TestDataController.getInstance().getIdForDisplay(dataFileEntity);
+        final String dataFileId = TestDataController.getInstance().getIdForDisplay(dataFileEntity);
 
         for (Entry<String, List<TestSuiteTestCaseLink>> entry : testDataReferences.entrySet()) {
 

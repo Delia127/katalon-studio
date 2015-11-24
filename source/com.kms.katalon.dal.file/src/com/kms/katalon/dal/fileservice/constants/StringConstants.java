@@ -4,7 +4,7 @@ import com.kms.katalon.constants.GlobalStringConstants;
 
 public class StringConstants extends GlobalStringConstants {
 	// EntityService
-	public static final String FS_EXC_FILE_NAME_CONTAIN_SPECIAL_CHAR = "A file name cannot contain any of the following characters: / \\ : * ? \" ' < > | ";
+	public static final String FS_EXC_FILE_NAME_CONTAIN_SPECIAL_CHAR = "A file name cannot contain non English alphabet or any of the following characters: / \\ : * ? \" ' < > |";
 
 	// FileServiceConstant
 	public static final String FS_ROOT_FOLDER_NAME_TEST_CASE = ROOT_FOLDER_NAME_TEST_CASE;

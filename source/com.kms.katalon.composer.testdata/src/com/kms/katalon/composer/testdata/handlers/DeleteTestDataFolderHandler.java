@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -27,6 +28,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.testdata.DataFileEntity;
+import com.kms.katalon.groovy.util.GroovyRefreshUtil;
 
 public class DeleteTestDataFolderHandler extends AbstractDeleteReferredEntityHandler implements IDeleteFolderHandler {
 
@@ -35,6 +37,8 @@ public class DeleteTestDataFolderHandler extends AbstractDeleteReferredEntityHan
 
     @Inject
     private UISynchronize sync;
+
+    private boolean isRemovingRef = false;
 
     @Override
     public FolderType getFolderType() {
@@ -48,12 +52,24 @@ public class DeleteTestDataFolderHandler extends AbstractDeleteReferredEntityHan
                 return false;
             }
 
-            FolderEntity folderEntity = (FolderEntity) folderTreeEntity.getObject();
-
-            String folderId = FolderController.getInstance().getIdForDisplay(folderEntity);
-
+            final FolderEntity folderEntity = (FolderEntity) folderTreeEntity.getObject();
+            final String folderId = FolderController.getInstance().getIdForDisplay(folderEntity);
             List<Object> descendant = FolderController.getInstance().getAllDescentdantEntities(folderEntity);
+
             monitor.beginTask("Deleting folder: " + folderId + "...", descendant.size() + 1);
+
+            final boolean hasRef = GroovyRefreshUtil
+                    .hasReferencesInTestCaseScripts(folderId, folderEntity.getProject());
+            sync.syncExec(new Runnable() {
+
+                @Override
+                public void run() {
+                    if (hasRef) {
+                        isRemovingRef = MessageDialog.openQuestion(Display.getCurrent().getActiveShell(),
+                                StringConstants.HAND_TITLE_DELETE, StringConstants.HAND_MSG_REMOVE_FOLDER_REF);
+                    }
+                }
+            });
 
             List<IEntity> undeleteTestDatas = new ArrayList<IEntity>();
 
@@ -63,7 +79,7 @@ public class DeleteTestDataFolderHandler extends AbstractDeleteReferredEntityHan
                 }
 
                 if (descendantObject instanceof DataFileEntity) {
-                    if (!deleteTestData((DataFileEntity) descendantObject, monitor)) {
+                    if (!deleteTestData((DataFileEntity) descendantObject, monitor, isRemovingRef)) {
                         undeleteTestDatas.add((DataFileEntity) descendantObject);
                     }
                 } else if (descendantObject instanceof FolderEntity) {
@@ -83,7 +99,8 @@ public class DeleteTestDataFolderHandler extends AbstractDeleteReferredEntityHan
         }
     }
 
-    private boolean deleteTestData(final DataFileEntity testData, IProgressMonitor monitor) {
+    private boolean deleteTestData(final DataFileEntity testData, IProgressMonitor monitor,
+            boolean isRemovingRefInTestCaseScript) {
         try {
             monitor.subTask("Deleting folder: " + testData.getName() + "...");
 
@@ -95,11 +112,11 @@ public class DeleteTestDataFolderHandler extends AbstractDeleteReferredEntityHan
                     if (!needToShowPreferenceDialog()) {
                         return false;
                     }
-                    
+
                     final AbstractDeleteReferredEntityHandler handler = this;
-    
+
                     sync.syncExec(new Runnable() {
-                        
+
                         @Override
                         public void run() {
                             TestDataReferencesDialog dialog = new TestDataReferencesDialog(Display.getCurrent()
@@ -117,13 +134,20 @@ public class DeleteTestDataFolderHandler extends AbstractDeleteReferredEntityHan
 
             }
 
+            String testDataId = TestDataController.getInstance().getIdForDisplay(testData);
+            if (isRemovingRefInTestCaseScript) {
+                // Find all Test Case script which has relationship with the Test Object
+                List<IFile> affectedTestCaseScripts = GroovyRefreshUtil.findReferencesInTestCaseScripts(testDataId,
+                        testData.getProject());
+                GroovyRefreshUtil.removeReferencesInTestCaseScripts(testDataId, affectedTestCaseScripts);
+            }
+
             // remove TestCase part from its partStack if it exists
             EntityPartUtil.closePart(testData);
 
             TestDataController.getInstance().deleteDataFile(testData);
 
-            eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, TestDataController.getInstance()
-                    .getIdForDisplay(testData));
+            eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, testDataId);
             return true;
         } catch (Exception e) {
             LoggerSingleton.logError(e);

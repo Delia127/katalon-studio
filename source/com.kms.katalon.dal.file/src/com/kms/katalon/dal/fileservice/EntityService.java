@@ -290,7 +290,8 @@ public final class EntityService {
     }
 
     public void validateName(String name) throws InvalidNameException {
-        Pattern pattern = Pattern.compile("^[^/\\\\:*?\"'<>|]+$");
+        Pattern pattern = Pattern.compile("[\\w,\\s-().]+$");
+        // Pattern pattern = Pattern.compile("^[^/\\\\:*?\"'<>|]+$");
         Matcher matcher = pattern.matcher(name);
         if (!matcher.matches()) {
             throw new InvalidNameException(StringConstants.FS_EXC_FILE_NAME_CONTAIN_SPECIAL_CHAR);

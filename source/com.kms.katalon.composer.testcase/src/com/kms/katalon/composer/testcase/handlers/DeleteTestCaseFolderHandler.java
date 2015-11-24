@@ -3,12 +3,9 @@ package com.kms.katalon.composer.testcase.handlers;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -21,14 +18,9 @@ import com.kms.katalon.entity.IEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.groovy.util.GroovyRefreshUtil;
 
 public class DeleteTestCaseFolderHandler extends DeleteTestCaseHandler implements IDeleteFolderHandler {
-
-    @Inject
-    private IEventBroker eventBroker;
-
-    @Inject
-    private UISynchronize sync;
 
     @Override
     public FolderType getFolderType() {
@@ -42,9 +34,22 @@ public class DeleteTestCaseFolderHandler extends DeleteTestCaseHandler implement
             if (folder == null) {
                 return false;
             }
-            
+
             List<Object> descendant = FolderController.getInstance().getAllDescentdantEntities(folder);
-            monitor.beginTask("Deleting folder '" + folder.getName() + "'...", descendant.size() + 1);
+            String folderId = FolderController.getInstance().getIdForDisplay(folder);
+            monitor.beginTask("Deleting folder '" + folderId + "'...", descendant.size() + 1);
+
+            final boolean hasRef = GroovyRefreshUtil.hasReferencesInTestCaseScripts(folderId, folder.getProject());
+            sync.syncExec(new Runnable() {
+
+                @Override
+                public void run() {
+                    if (hasRef) {
+                        isRemovingRef = MessageDialog.openQuestion(Display.getCurrent().getActiveShell(),
+                                StringConstants.HAND_TITLE_DELETE, StringConstants.HAND_MSG_REMOVE_FOLDER_REF);
+                    }
+                }
+            });
 
             List<IEntity> undeletedTestCases = new ArrayList<IEntity>();
 
@@ -55,7 +60,7 @@ public class DeleteTestCaseFolderHandler extends DeleteTestCaseHandler implement
                 }
 
                 if (descendantObject instanceof TestCaseEntity) {
-                    if (!deleteTestCase((TestCaseEntity) descendantObject, monitor)) {
+                    if (!deleteTestCase((TestCaseEntity) descendantObject, monitor, isRemovingRef)) {
                         undeletedTestCases.add((TestCaseEntity) descendantObject);
                     }
                 } else if (descendantObject instanceof FolderEntity) {
@@ -101,11 +106,11 @@ public class DeleteTestCaseFolderHandler extends DeleteTestCaseHandler implement
         }
     }
 
-    private boolean deleteTestCase(final TestCaseEntity testCase, IProgressMonitor monitor) {
+    private boolean deleteTestCase(final TestCaseEntity testCase, IProgressMonitor monitor, boolean isRemovingRef) {
         try {
             String testCaseId = TestCaseController.getInstance().getIdForDisplay(testCase);
             monitor.subTask("Deleting '" + testCaseId + "'...");
-            return deleteTestCase(testCase, sync, eventBroker);
+            return deleteTestCase(testCase, sync, eventBroker, isRemovingRef);
         } catch (Exception ex) {
             LoggerSingleton.logError(ex);
             return false;
