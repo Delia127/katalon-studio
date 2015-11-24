@@ -68,5 +68,10 @@ public class RemoteWebRunConfigurationContributor implements IRunConfigurationCo
         }
         return runConfiguration;
     }
+    
+    @Override
+    public int getPreferredOrder() {
+        return 5;
+    }
 
 }

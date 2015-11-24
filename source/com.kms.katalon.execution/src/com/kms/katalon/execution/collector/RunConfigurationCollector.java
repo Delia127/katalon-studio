@@ -3,6 +3,8 @@ package com.kms.katalon.execution.collector;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -68,6 +70,13 @@ public class RunConfigurationCollector {
     }
 
     public IRunConfigurationContributor[] getAllBuiltinRunConfigurationContributors() {
+        Collections.sort(runConfigurationContributors, new Comparator<IRunConfigurationContributor>() {
+            @Override
+            public int compare(IRunConfigurationContributor runConfigContributor_1,
+                    IRunConfigurationContributor runConfigContributor_2) {
+                return runConfigContributor_1.getPreferredOrder() - runConfigContributor_2.getPreferredOrder();
+            }
+        });
         return runConfigurationContributors.toArray(new IRunConfigurationContributor[runConfigurationContributors
                 .size()]);
     }

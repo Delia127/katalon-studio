@@ -54,5 +54,10 @@ public class AndroidRunConfigurationContributor implements IRunConfigurationCont
         }
         return runConfiguration;
     }
+    
+    @Override
+    public int getPreferredOrder() {
+        return 6;
+    }
 
 }

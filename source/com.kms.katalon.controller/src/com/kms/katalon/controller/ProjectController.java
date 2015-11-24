@@ -94,6 +94,7 @@ public class ProjectController extends EntityController {
                 projectPk, (short) 0);
         if (project != null) {
             addRecentProject(project);
+            validateRecentProjects(getRecentProjects());
         }
     }
 

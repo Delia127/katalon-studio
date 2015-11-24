@@ -86,7 +86,7 @@ public class ObjectPropertyView implements EventHandler {
 
     private Composite compositeInfo, compositeInfoDetails, compositeObjectDetails;
 
-    private ToolItem toolItemAdd, toolItemDelete;
+    private ToolItem toolItemAdd, toolItemDelete, toolItemClear;
 
     private ObjectPropetiesTableViewer tableViewer;
 
@@ -320,6 +320,11 @@ public class ObjectPropertyView implements EventHandler {
         toolItemDelete.setText(StringConstants.VIEW_LBL_DELETE);
         toolItemDelete.setToolTipText(StringConstants.VIEW_LBL_DELETE);
         toolItemDelete.setImage(ImageConstants.IMG_24_REMOVE);
+
+        toolItemClear = new ToolItem(tableToolbar, SWT.NONE);
+        toolItemClear.setText(StringConstants.VIEW_LBL_CLEAR);
+        toolItemClear.setToolTipText(StringConstants.VIEW_LBL_CLEAR);
+        toolItemClear.setImage(ImageConstants.IMG_24_CLEAR);
     }
 
     private void createTableDetails() {
@@ -330,8 +335,8 @@ public class ObjectPropertyView implements EventHandler {
         glCompositeTableDetails.marginHeight = 0;
         compositeTableDetails.setLayout(glCompositeTableDetails);
 
-        tableViewer = new ObjectPropetiesTableViewer(compositeTableDetails, SWT.BORDER | SWT.FULL_SELECTION,
-                eventBroker);
+        tableViewer = new ObjectPropetiesTableViewer(compositeTableDetails,
+                SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, eventBroker);
 
         Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
@@ -540,7 +545,7 @@ public class ObjectPropertyView implements EventHandler {
                         } else {
                             txtImage.setText(PathUtils.relativeToAbsolutePath(thePath, projectFolder));
                         }
-                        
+
                         File file = new File(thePath);
                         if (!file.exists() || !file.isFile()) {
                             MessageDialog.openWarning(null, StringConstants.WARN_TITLE,
@@ -550,6 +555,15 @@ public class ObjectPropertyView implements EventHandler {
                     dirtyable.setDirty(true);
                 } catch (Exception ex) {
                     LoggerSingleton.logError(ex);
+                }
+            }
+        });
+
+        toolItemClear.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                if (tableViewer.getInput() != null && tableViewer.getInput().size() > 0) {
+                    tableViewer.clear();
+                    dirtyable.setDirty(true);
                 }
             }
         });
@@ -609,7 +623,8 @@ public class ObjectPropertyView implements EventHandler {
                 dialog.setFilterPath(projectFolder);
 
                 String absolutePath = dialog.open();
-                if (absolutePath == null) return;
+                if (absolutePath == null)
+                    return;
                 if (chckUseRelative.getSelection()) {
                     String relPath = PathUtils.absoluteToRelativePath(absolutePath, projectFolder);
                     txtImage.setText(relPath);
@@ -888,44 +903,44 @@ public class ObjectPropertyView implements EventHandler {
         String topic = event.getTopic();
         Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
         switch (topic) {
-            case ObjectEventConstants.OBJECT_UPDATE_DIRTY: {
-                if (object != null && object instanceof TableViewer) {
-                    if (object.equals(tableViewer)) {
-                        dirtyable.setDirty(true);
-                    }
+        case ObjectEventConstants.OBJECT_UPDATE_DIRTY: {
+            if (object != null && object instanceof TableViewer) {
+                if (object.equals(tableViewer)) {
+                    dirtyable.setDirty(true);
                 }
             }
-            case ObjectEventConstants.OBJECT_UPDATE_IS_SELECTED_COLUMN_HEADER: {
-                if (object != null && object instanceof TableViewer && !trclmnColumnSelected.isDisposed()) {
-                    if (object.equals(tableViewer)) {
-                        boolean isSelectedAll = tableViewer.getIsSelectedAll();
-                        Image isSelectedColumnImageHeader;
-                        if (isSelectedAll) {
-                            isSelectedColumnImageHeader = ImageConstants.IMG_16_CHECKBOX_CHECKED;
-                        } else {
-                            isSelectedColumnImageHeader = ImageConstants.IMG_16_CHECKBOX_UNCHECKED;
-                        }
-                        trclmnColumnSelected.setImage(isSelectedColumnImageHeader);
+        }
+        case ObjectEventConstants.OBJECT_UPDATE_IS_SELECTED_COLUMN_HEADER: {
+            if (object != null && object instanceof TableViewer && !trclmnColumnSelected.isDisposed()) {
+                if (object.equals(tableViewer)) {
+                    boolean isSelectedAll = tableViewer.getIsSelectedAll();
+                    Image isSelectedColumnImageHeader;
+                    if (isSelectedAll) {
+                        isSelectedColumnImageHeader = ImageConstants.IMG_16_CHECKBOX_CHECKED;
+                    } else {
+                        isSelectedColumnImageHeader = ImageConstants.IMG_16_CHECKBOX_UNCHECKED;
                     }
+                    trclmnColumnSelected.setImage(isSelectedColumnImageHeader);
                 }
             }
-            case (EventConstants.TEST_OBJECT_UPDATED): {
-                // Check if the referred object is updated.
-                if (object != null && object instanceof Object[]) {
-                    Object[] objects = (Object[]) object;
-                    String testObjectId = (String) objects[0];
-                    String projectFolderId = ProjectController.getInstance().getCurrentProject().getFolderLocation();
-                    String oldTestObjectRelativeId = testObjectId.replace(projectFolderId + File.separator, "")
-                            .replace(WebElementEntity.getWebElementFileExtension(), "")
-                            .replace(File.separator, StringConstants.ENTITY_ID_SEPERATOR);
-                    if (oldTestObjectRelativeId.equals(txtParentObject.getText())) {
-                        loadTestObject();
-                        dirtyable.setDirty(false);
-                    }
+        }
+        case (EventConstants.TEST_OBJECT_UPDATED): {
+            // Check if the referred object is updated.
+            if (object != null && object instanceof Object[]) {
+                Object[] objects = (Object[]) object;
+                String testObjectId = (String) objects[0];
+                String projectFolderId = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+                String oldTestObjectRelativeId = testObjectId.replace(projectFolderId + File.separator, "")
+                        .replace(WebElementEntity.getWebElementFileExtension(), "")
+                        .replace(File.separator, StringConstants.ENTITY_ID_SEPERATOR);
+                if (oldTestObjectRelativeId.equals(txtParentObject.getText())) {
+                    loadTestObject();
+                    dirtyable.setDirty(false);
                 }
             }
-            default:
-                break;
+        }
+        default:
+            break;
         }
 
     }
