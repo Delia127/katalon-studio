@@ -60,6 +60,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String VIEW_BTN_TIP_BROWSE = "Browse to select image file";
     public static final String VIEW_LBL_ADD = ADD;
     public static final String VIEW_LBL_DELETE = DELETE;
+    public static final String VIEW_LBL_CLEAR = CLEAR;
     public static final String VIEW_LBL_HIGHLIGHT = "Highlight";
     public static final String VIEW_ERROR_MSG_FAILED_TO_LOAD_OBJ_REPOSITORY = "Failed to load Object Repository";
     public static final String VIEW_ERROR_MSG_UNABLE_TO_SAVE_TEST_OBJ = "Unable to save Test Object";

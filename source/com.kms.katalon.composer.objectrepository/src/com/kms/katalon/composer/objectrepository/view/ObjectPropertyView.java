@@ -86,7 +86,7 @@ public class ObjectPropertyView implements EventHandler {
 
     private Composite compositeInfo, compositeInfoDetails, compositeObjectDetails;
 
-    private ToolItem toolItemAdd, toolItemDelete;
+    private ToolItem toolItemAdd, toolItemDelete, toolItemClear;
 
     private ObjectPropetiesTableViewer tableViewer;
 
@@ -320,6 +320,11 @@ public class ObjectPropertyView implements EventHandler {
         toolItemDelete.setText(StringConstants.VIEW_LBL_DELETE);
         toolItemDelete.setToolTipText(StringConstants.VIEW_LBL_DELETE);
         toolItemDelete.setImage(ImageConstants.IMG_24_REMOVE);
+
+        toolItemClear = new ToolItem(tableToolbar, SWT.NONE);
+        toolItemClear.setText(StringConstants.VIEW_LBL_CLEAR);
+        toolItemClear.setToolTipText(StringConstants.VIEW_LBL_CLEAR);
+        toolItemClear.setImage(ImageConstants.IMG_24_CLEAR);
     }
 
     private void createTableDetails() {
@@ -550,6 +555,15 @@ public class ObjectPropertyView implements EventHandler {
                     dirtyable.setDirty(true);
                 } catch (Exception ex) {
                     LoggerSingleton.logError(ex);
+                }
+            }
+        });
+
+        toolItemClear.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                if (tableViewer.getInput() != null && tableViewer.getInput().size() > 0) {
+                    tableViewer.clear();
+                    dirtyable.setDirty(true);
                 }
             }
         });
