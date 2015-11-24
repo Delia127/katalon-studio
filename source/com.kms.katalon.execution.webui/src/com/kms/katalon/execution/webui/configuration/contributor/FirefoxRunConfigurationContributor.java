@@ -29,5 +29,10 @@ public class FirefoxRunConfigurationContributor implements IRunConfigurationCont
             throws IOException, ExecutionException {
         return new FirefoxRunConfiguration(testSuite);
     }
+    
+    @Override
+    public int getPreferredOrder() {
+        return 1;
+    }
 
 }

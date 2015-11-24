@@ -10,6 +10,9 @@ import com.kms.katalon.execution.exception.ExecutionException;
 
 public interface IRunConfigurationContributor {
     public String getId();
+    
+    // Set preferred order for consistent with execution menu
+    public int getPreferredOrder();
 
     public IRunConfiguration getRunConfiguration(TestCaseEntity testCase, Map<String, String> runInput)
             throws IOException, ExecutionException;
