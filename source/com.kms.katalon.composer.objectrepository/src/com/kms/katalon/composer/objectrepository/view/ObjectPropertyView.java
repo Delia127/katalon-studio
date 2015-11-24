@@ -896,7 +896,7 @@ public class ObjectPropertyView implements EventHandler {
                 }
             }
             case ObjectEventConstants.OBJECT_UPDATE_IS_SELECTED_COLUMN_HEADER: {
-                if (object != null && object instanceof TableViewer) {
+                if (object != null && object instanceof TableViewer && !trclmnColumnSelected.isDisposed()) {
                     if (object.equals(tableViewer)) {
                         boolean isSelectedAll = tableViewer.getIsSelectedAll();
                         Image isSelectedColumnImageHeader;
