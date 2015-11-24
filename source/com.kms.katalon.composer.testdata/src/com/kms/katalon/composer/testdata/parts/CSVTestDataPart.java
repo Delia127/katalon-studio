@@ -436,7 +436,7 @@ public class CSVTestDataPart extends TestDataMainPart {
                         numEmptyHeader++;
                         header = StringUtils.EMPTY;
                         column.setImage(ImageConstants.IMG_16_WARN_TABLE_ITEM);
-                        column.setToolTipText(StringConstants.PA_HEADER_WARNING_COLUMN_HEADER);
+                        column.setToolTipText(StringConstants.PA_TOOLTIP_WARNING_COLUMN_HEADER);
                     }
                     column.setText(header);
                 }

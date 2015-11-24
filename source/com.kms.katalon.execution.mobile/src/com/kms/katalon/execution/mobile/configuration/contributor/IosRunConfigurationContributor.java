@@ -55,5 +55,9 @@ public class IosRunConfigurationContributor implements IRunConfigurationContribu
         }
         return runConfiguration;
     }
-
+    
+    @Override
+    public int getPreferredOrder() {
+        return 7;
+    }
 }

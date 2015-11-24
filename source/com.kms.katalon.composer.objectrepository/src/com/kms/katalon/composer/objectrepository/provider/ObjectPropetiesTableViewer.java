@@ -53,6 +53,13 @@ public class ObjectPropetiesTableViewer extends TableViewer {
         eventBroker.post(ObjectEventConstants.OBJECT_UPDATE_DIRTY, this);
     }
     
+    public void clear() {
+        data.clear();
+        refreshIsSelected();
+        this.refresh();
+        eventBroker.post(ObjectEventConstants.OBJECT_UPDATE_DIRTY, this);
+    }
+    
     public void setSelectedAll() {
         isSelectedAll = !isSelectedAll;
         for (Object o : data) {

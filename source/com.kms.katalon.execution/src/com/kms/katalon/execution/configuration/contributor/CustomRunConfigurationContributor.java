@@ -32,6 +32,11 @@ public class CustomRunConfigurationContributor implements IRunConfigurationContr
             throws IOException, ExecutionException {
         return new CustomRunConfiguration(testSuite, name);
     }
+
+    @Override
+    public int getPreferredOrder() {
+        return -1;
+    }
     
 
 }

@@ -282,6 +282,7 @@ public class TestCaseTreeTableInput {
 					refresh(parentNode);
 					setSelection(parentNode, newElseStatement);
 					setEdit(parentNode, newElseStatement);
+					setDirty(true);
 				}
 			}
 		}
@@ -335,6 +336,7 @@ public class TestCaseTreeTableInput {
 			refresh(parentNode);
 			setSelection(parentNode, newElseIfStatement);
 			setEdit(parentNode, newElseIfStatement);
+			setDirty(true);
 		}
 	}
 
@@ -352,6 +354,7 @@ public class TestCaseTreeTableInput {
 				refresh(parentNode);
 				setSelection(parentNode, newElseIfStatement);
 				setEdit(parentNode, newElseIfStatement);
+				setDirty(true);
 			}
 		}
 	}
@@ -370,6 +373,7 @@ public class TestCaseTreeTableInput {
 				refresh(parentNode);
 				setSelection(parentNode, newElseIfStatement);
 				setEdit(parentNode, newElseIfStatement);
+				setDirty(true);
 			}
 		}
 	}

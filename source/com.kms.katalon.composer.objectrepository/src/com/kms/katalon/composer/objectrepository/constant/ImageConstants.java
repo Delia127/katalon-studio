@@ -30,7 +30,7 @@ public class ImageConstants {
 
     public static final Image IMG_24_ADD = ImageUtil.loadImage(currentBundle, "/icons/add_24.png");
     public static final Image IMG_24_REMOVE = ImageUtil.loadImage(currentBundle, "/icons/remove_24.png");
-    public static final Image IMG_24_HIGHLIGHT = ImageUtil.loadImage(currentBundle, "/icons/highlight_24.png");
+    public static final Image IMG_24_CLEAR = ImageUtil.loadImage(sharedBundle, "/icons/clear_24.png");
 
     // Other icons are using in fragment.e4xmi: new_test_object_28.png, object_spy_28.png
 }

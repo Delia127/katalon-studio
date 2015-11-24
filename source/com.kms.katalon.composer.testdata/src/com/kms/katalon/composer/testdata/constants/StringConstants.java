@@ -24,7 +24,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String HAND_MSG_REMOVE_FOLDER_REF = "Currently, this folder children are used in some Test Cases. Do you want to remove all the references as well?";
 
     //MainTestDataPart
-    public static final String PA_HEADER_WARNING_COLUMN_HEADER = "This column has empty header";
+    public static final String PA_TOOLTIP_WARNING_COLUMN_HEADER = "This column has empty header";
     public static final String PA_LBL_WARNING_COLUMN_HEADER = "Warning: {0}/{1} empty column header(s)";
     
     // CSVTestDataPart

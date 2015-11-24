@@ -30,4 +30,9 @@ public class ChromeRunConfigurationContributor implements IRunConfigurationContr
         return new ChromeRunConfiguration(testSuite);
     }
 
+    @Override
+    public int getPreferredOrder() {
+        return 0;
+    }
+
 }

@@ -30,4 +30,8 @@ public class SafariRunConfigurationContributor implements IRunConfigurationContr
         return new SafariRunConfiguration(testSuite);
     }
 
+    @Override
+    public int getPreferredOrder() {
+        return 3;
+    }
 }

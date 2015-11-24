@@ -12,8 +12,10 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.DefaultToolTip;
 import org.eclipse.jface.window.ToolTip;
@@ -31,8 +33,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
@@ -284,34 +284,30 @@ public abstract class RequestObjectPart implements EventHandler {
     protected abstract void createServiceInfoComposite(Composite mainComposite);
 
     protected ParameterTable createParamsTable(Composite containerComposite, boolean isHttpHeader) {
+    	
+    	TableColumnLayout tableColumnLayout = new TableColumnLayout();
         Composite compositeTableDetails = new Composite(containerComposite, SWT.NONE);
-        GridLayout glCompositeTableDetails = new GridLayout(1, false);
-        glCompositeTableDetails.marginWidth = 0;
-        glCompositeTableDetails.marginHeight = 0;
-        compositeTableDetails.setLayout(glCompositeTableDetails);
         GridData gdData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
         gdData.heightHint = 100;
         compositeTableDetails.setLayoutData(gdData);
-
-        final ParameterTable tblProperties = new ParameterTable(compositeTableDetails, SWT.BORDER | SWT.FULL_SELECTION,
-                dirtyable);
+        compositeTableDetails.setLayout(tableColumnLayout);
+        
+        final ParameterTable tblProperties = new ParameterTable(compositeTableDetails, SWT.BORDER | SWT.FULL_SELECTION | SWT.NO_SCROLL | SWT.V_SCROLL, dirtyable);
         tblProperties.createTableEditor();
 
-        Table table = tblProperties.getTable();
-        table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        tblProperties.getTable().setHeaderVisible(true);
+        tblProperties.getTable().setLinesVisible(true);
         GridData gridDataTable = new GridData(GridData.FILL_BOTH);
         gridDataTable.horizontalSpan = 3;
         gridDataTable.heightHint = 150;
-        table.setLayoutData(gridDataTable);
+        tblProperties.getTable().setLayoutData(gridDataTable);
 
         // Double click to add new property
-        table.addListener(SWT.MouseDoubleClick, new Listener() {
+        tblProperties.getTable().addListener(SWT.MouseDoubleClick, new Listener() {
             @Override
             public void handleEvent(org.eclipse.swt.widgets.Event event) {
                 WebElementPropertyEntity newProp = new WebElementPropertyEntity(StringConstants.EMPTY,
                         StringConstants.EMPTY);
-
                 // Add new row
                 tblProperties.addRow(newProp);
 
@@ -321,9 +317,8 @@ public abstract class RequestObjectPart implements EventHandler {
         });
 
         TableViewerColumn treeViewerColumnName = new TableViewerColumn(tblProperties, SWT.NONE);
-        TableColumn trclmnColumnName = treeViewerColumnName.getColumn();
-        trclmnColumnName.setText(ParameterTable.columnNames[0]);
-        trclmnColumnName.setWidth(200);
+        treeViewerColumnName.getColumn().setText(ParameterTable.columnNames[0]);
+        treeViewerColumnName.getColumn().setWidth(400);
         treeViewerColumnName.setEditingSupport(new PropertyNameEditingSupport(tblProperties, dirtyable, isHttpHeader));
         treeViewerColumnName.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -331,11 +326,12 @@ public abstract class RequestObjectPart implements EventHandler {
                 return ((WebElementPropertyEntity) element).getName();
             }
         });
-
+        tableColumnLayout.setColumnData(treeViewerColumnName.getColumn(), new ColumnWeightData(30));
+        
+        
         TableViewerColumn treeViewerColumnValue = new TableViewerColumn(tblProperties, SWT.NONE);
-        TableColumn trclmnColumnValue = treeViewerColumnValue.getColumn();
-        trclmnColumnValue.setText(ParameterTable.columnNames[1]);
-        trclmnColumnValue.setWidth(400);
+        treeViewerColumnValue.getColumn().setText(ParameterTable.columnNames[1]);
+        treeViewerColumnValue.getColumn().setWidth(500);
         treeViewerColumnValue.setEditingSupport(new PropertyValueEditingSupport(tblProperties, dirtyable));
         treeViewerColumnValue.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -343,7 +339,9 @@ public abstract class RequestObjectPart implements EventHandler {
                 return ((WebElementPropertyEntity) element).getValue();
             }
         });
-
+        tableColumnLayout.setColumnData(treeViewerColumnValue.getColumn(), new ColumnWeightData(60));
+        
+        
         tblProperties.setContentProvider(ArrayContentProvider.getInstance());
 
         // Set tooltip for table

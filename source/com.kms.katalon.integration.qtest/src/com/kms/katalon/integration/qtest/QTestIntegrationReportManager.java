@@ -13,8 +13,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import net.lingala.zip4j.core.ZipFile;
-
 import org.apache.commons.io.FilenameUtils;
 import org.qas.api.internal.util.json.JsonArray;
 import org.qas.api.internal.util.json.JsonException;
@@ -42,6 +40,7 @@ import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
 import com.kms.katalon.integration.qtest.helper.QTestAPIRequestHelper;
 import com.kms.katalon.integration.qtest.setting.QTestAttachmentSendingType;
+import com.kms.katalon.integration.qtest.setting.QTestReportFormatType;
 import com.kms.katalon.integration.qtest.setting.QTestResultSendingType;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 import com.kms.katalon.integration.qtest.util.DateUtil;
@@ -57,8 +56,7 @@ public class QTestIntegrationReportManager {
     }
 
     /**
-     * Returns {@link URL} that navigates with given <code>qTestRun</code> on
-     * qTest
+     * Returns {@link URL} that navigates with given <code>qTestRun</code> on qTest
      * <p>
      * Used for navigating on UI
      * 
@@ -129,8 +127,7 @@ public class QTestIntegrationReportManager {
      * @param preparedTestCaseResult
      *            the prepared test log that's formated by user
      * @param tempDir
-     *            qTest folder inside Katalon temporary folder used for creating
-     *            ZIP file
+     *            qTest folder inside Katalon temporary folder used for creating ZIP file
      * @param logFolder
      *            the folder that contains the ZIP file a.k.a attachment
      * @return
@@ -174,19 +171,16 @@ public class QTestIntegrationReportManager {
         bodyProperties.put("test_case_version_id", testLongVersionId);
         bodyProperties.put("note", QTestIntegrationTestCaseManager.getUploadedDescription(message));
 
-        // zip report folder as a attachment
-        File reportZipFile = null;
         boolean attachmentIncluded = false;
 
         if ((qTestLog != null && qTestLog.isAttachmentIncluded())
                 || (qTestLog == null && isAvailableForSendingAttachment(testCaseStatus, projectDir))) {
-            reportZipFile = new File(tempDir, FilenameUtils.getBaseName(logFolder.getName()) + ".zip");
 
-            ZipFile zipFile = ZipUtil.getZipFile(reportZipFile, logFolder);
             List<JsonObject> jsonObjects = new ArrayList<JsonObject>();
-
-            JsonObject jsonObject = getAttachmentJsonObject(reportZipFile.getAbsolutePath(), zipFile);
-            jsonObjects.add(jsonObject);
+            for (File file : logFolder.listFiles()) {
+                if (!isValidFileToAttach(file, projectDir)) { continue; }
+                jsonObjects.add(getAttachmentJsonObject(file.getAbsolutePath())); 
+            }
             bodyProperties.put("attachments", new JsonArray(jsonObjects));
             attachmentIncluded = true;
         }
@@ -194,11 +188,6 @@ public class QTestIntegrationReportManager {
         // upload result of the given test run
         String result = uploadTestResult(serverUrl, token, qTestProject.getId(), qTestRun.getId(), new JsonObject(
                 bodyProperties).toString());
-
-        // clean ZIP file
-        if (reportZipFile != null && reportZipFile.exists()) {
-            reportZipFile.delete();
-        }
 
         try {
             if (result != null && !result.isEmpty()) {
@@ -217,11 +206,47 @@ public class QTestIntegrationReportManager {
         }
     }
 
-    private static JsonObject getAttachmentJsonObject(String filePath, ZipFile zipFile) throws QTestException,
-            IOException {
+//    private static JsonObject getAttachmentJsonObject(String filePath, ZipFile zipFile) throws QTestException,
+//            IOException {
+//        Map<String, Object> attachmentMap = new LinkedHashMap<String, Object>();
+//        attachmentMap.put("name", FilenameUtils.getName(filePath));
+//        attachmentMap.put("content_type", "application/octet-stream");
+//        attachmentMap.put("data", ZipUtil.encodeFileContent(filePath));
+//
+//        return new JsonObject(attachmentMap);
+//    }
+
+    private static boolean isValidFileToAttach(File file, String projectDir) {
+        String fileExt = FilenameUtils.getExtension(file.getAbsolutePath());
+        return QTestSettingStore.getFormatReportTypes(projectDir).contains(
+                QTestReportFormatType.getTypeByExtension(fileExt));
+    }
+
+    private static JsonObject getAttachmentJsonObject(String filePath) throws QTestException, IOException {
+        QTestReportFormatType format = QTestReportFormatType.getTypeByExtension(FilenameUtils.getExtension(filePath));
+        String contentType = "";
+        if (format == null) {
+            contentType = "application/octet-stream";
+        }
+        switch (format) {
+            case CSV:
+                contentType = "text/csv";
+                break;
+            case HTML:
+                contentType = "text/html";
+                break;
+            case LOG:
+                contentType = "application/xml";
+                break;
+            case PDF:
+                contentType = "application/pdf";
+                break;
+            default:
+                break;
+        }
         Map<String, Object> attachmentMap = new LinkedHashMap<String, Object>();
         attachmentMap.put("name", FilenameUtils.getName(filePath));
-        attachmentMap.put("content_type", "application/octet-stream");
+        attachmentMap.put("content_type", contentType);
         attachmentMap.put("data", ZipUtil.encodeFileContent(filePath));
 
         return new JsonObject(attachmentMap);
@@ -245,7 +270,7 @@ public class QTestIntegrationReportManager {
 
         return QTestSettingStore.getAttachmentSendingTypes(projectDir).contains(statusSendingType);
     }
-    
+
     public static boolean isAvailableForSendingResult(TestStatusValue status, String projectDir) {
         QTestResultSendingType statusSendingType = null;
         switch (status) {
@@ -265,13 +290,12 @@ public class QTestIntegrationReportManager {
         if (statusSendingType == null) {
             return false;
         }
-        
+
         return QTestSettingStore.getResultSendingTypes(projectDir).contains(statusSendingType);
     }
 
     /**
-     * Uploads the request that contains all the parameters to qTest via qTest
-     * API Returns the response body content
+     * Uploads the request that contains all the parameters to qTest via qTest API Returns the response body content
      * 
      * @param serverUrl
      * @param token
@@ -290,8 +314,7 @@ public class QTestIntegrationReportManager {
     }
 
     /**
-     * Uploads the request that contains all the parameters to qTest via qTest
-     * API Returns the response body content
+     * Uploads the request that contains all the parameters to qTest via qTest API Returns the response body content
      * 
      * @param serverUrl
      * @param token
@@ -317,11 +340,9 @@ public class QTestIntegrationReportManager {
     }
 
     /**
-     * For result submission, the result's format of Katalon has difference
-     * status with qTest status's result.
+     * For result submission, the result's format of Katalon has difference status with qTest status's result.
      * <p>
-     * This method will converts from Katalon {@link TestStatusValue} to the
-     * correct {@link TestStatusValue}
+     * This method will converts from Katalon {@link TestStatusValue} to the correct {@link TestStatusValue}
      * <p>
      * 
      * @param projectId

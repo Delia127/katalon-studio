@@ -30,4 +30,9 @@ public class EdgeRunConfigurationContributor implements IRunConfigurationContrib
         return new EdgeRunConfiguration(testSuite);
     }
 
+    @Override
+    public int getPreferredOrder() {
+        return 4;
+    }
+
 }
