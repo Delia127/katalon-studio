@@ -506,15 +506,15 @@ public class ImportFileServiceManager {
 	private WebElementEntity saveWebElementEntity(FolderEntity parentFolder, WebElementEntity parentWebElement,
 			WebElementEntity webElement, boolean isRenamed) throws Exception {
 
-		WebElementEntity newWebELement = webElement.clone();
+		WebElementEntity newWebElement = webElement.clone();
 		if (isRenamed) {
-			renameWebElement(parentFolder, parentWebElement, newWebELement);
+			renameWebElement(parentFolder, parentWebElement, newWebElement);
 		}
-		newWebELement.setParentFolder(parentFolder);
-		newWebELement.setProject(currentProject);
+		newWebElement.setParentFolder(parentFolder);
+		newWebElement.setProject(currentProject);
 
-		EntityService.getInstance().saveEntity(newWebELement);
-		return newWebELement;
+		EntityService.getInstance().saveEntity(newWebElement);
+		return newWebElement;
 	}
 
 	private boolean updateWebElementGUID(ProjectEntity project, String guid) throws Exception {
@@ -532,7 +532,7 @@ public class ImportFileServiceManager {
 	private void updateWebElementPropertyRefElement(ProjectEntity project, String guid,
 			WebElementEntity webElementEntity) throws Exception {
 		for (WebElementEntity webElementWithRefElements : WebElementFileServiceManager
-				.getWebElementPropertyByRefELement(guid, project, true)) {
+				.getWebElementPropertyByRefElement(guid, project, true)) {
 			for (WebElementPropertyEntity property : webElementWithRefElements.getWebElementProperties()) {
 				if (property.getName().equalsIgnoreCase(WebElementEntity.ref_element)) {
 					property.setValue(webElementEntity.getElementGuidId());

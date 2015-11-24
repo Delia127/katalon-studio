@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -28,6 +29,7 @@ import com.kms.katalon.entity.dal.exception.EntityIsReferencedException;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
+import com.kms.katalon.groovy.util.GroovyRefreshUtil;
 
 public class DeleteTestObjectHandler extends AbstractDeleteReferredEntityHandler implements IDeleteEntityHandler {
 
@@ -36,6 +38,8 @@ public class DeleteTestObjectHandler extends AbstractDeleteReferredEntityHandler
 
     @Inject
     private UISynchronize sync;
+
+    protected boolean isRemovingRef = false;
 
     @Override
     public Class<? extends ITreeEntity> entityType() {
@@ -55,14 +59,29 @@ public class DeleteTestObjectHandler extends AbstractDeleteReferredEntityHandler
             monitor.beginTask(taskName, 1);
 
             WebElementEntity webElement = (WebElementEntity) treeEntity.getObject();
-            if (performDeleteTestObject(webElement, sync, eventBroker, Collections.emptyList())) {
+            String testObjectId = ObjectRepositoryController.getInstance().getIdForDisplay(webElement);
+            final boolean hasRef = GroovyRefreshUtil.hasReferencesInTestCaseScripts(testObjectId,
+                    webElement.getProject());
+            sync.syncExec(new Runnable() {
+
+                @Override
+                public void run() {
+                    // Give a confirmation message for current Test Object to remove its references
+                    if (hasRef) {
+                        // Depend on the user response, references will be removed or not
+                        isRemovingRef = MessageDialog.openQuestion(Display.getCurrent().getActiveShell(),
+                                StringConstants.HAND_TITLE_DELETE, StringConstants.HAND_MSG_REMOVE_ENTITY_REF);
+                    }
+                }
+            });
+
+            if (performDeleteTestObject(webElement, sync, eventBroker, Collections.emptyList(), isRemovingRef)) {
                 // remove TestCase part from its partStack if it exists
                 EntityPartUtil.closePart(webElement);
 
                 ObjectRepositoryController.getInstance().deleteWebElement(webElement);
 
-                eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, ObjectRepositoryController
-                        .getInstance().getIdForDisplay(webElement));
+                eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, testObjectId);
                 return true;
             } else {
                 return false;
@@ -87,21 +106,21 @@ public class DeleteTestObjectHandler extends AbstractDeleteReferredEntityHandler
      * to let user choose continue or not.
      * <p>
      * If user choose continue then delete the given <code>webElement</code> and also remove ref_element
-     * {@link WebElementPropertyEntity} out of reference. Otherwise, don't delete the given
-     * <code>webElement</code>
+     * {@link WebElementPropertyEntity} out of reference. Otherwise, don't delete the given <code>webElement</code>
      * <p>
      * List of references contains all {@link WebElementEntity} that has parent object is the given
      * <code>webElement</code> but not a member of <code>elementsWillBeDeleted</code>
      * 
-     * @param webElement
-     *            the given {@link WebElementEntity} needs to delete.
+     * @param webElement the given {@link WebElementEntity} needs to delete.
      * @param sync
      * @param eventBroker
      * @param elementsWillBeDeleted
+     * @param isRemovingRefInTestCase
      * @return true if system deleted the given <code>webElement</code>. Otherwise, false.
      */
     protected boolean performDeleteTestObject(final WebElementEntity webElement, final UISynchronize sync,
-            final IEventBroker eventBroker, final List<Object> elementsWillBeDeleted) {
+            final IEventBroker eventBroker, final List<Object> elementsWillBeDeleted,
+            final boolean isRemovingRefInTestCase) {
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
         try {
             List<WebElementEntity> testObjectReferences = ObjectRepositoryController.getInstance()
@@ -109,9 +128,9 @@ public class DeleteTestObjectHandler extends AbstractDeleteReferredEntityHandler
 
             // List of references contains only elements that will not be deleted.
             final List<WebElementEntity> testObjectReferenceWithoutDeleting = new ArrayList<WebElementEntity>();
-            for (WebElementEntity reference : testObjectReferences) {
-                if (!elementsWillBeDeleted.contains(reference)) {
-                    testObjectReferenceWithoutDeleting.add(reference);
+            for (WebElementEntity testObject : testObjectReferences) {
+                if (!elementsWillBeDeleted.contains(testObject)) {
+                    testObjectReferenceWithoutDeleting.add(testObject);
                 }
             }
 
@@ -140,6 +159,15 @@ public class DeleteTestObjectHandler extends AbstractDeleteReferredEntityHandler
                 }
 
             }
+
+            if (isRemovingRefInTestCase) {
+                // Find all Test Case script which has relationship with the Test Object
+                String testObjectId = ObjectRepositoryController.getInstance().getIdForDisplay(webElement);
+                List<IFile> affectedTestCaseScripts = GroovyRefreshUtil.findReferencesInTestCaseScripts(testObjectId,
+                        currentProject);
+                GroovyRefreshUtil.removeReferencesInTestCaseScripts(testObjectId, affectedTestCaseScripts);
+            }
+
             return true;
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -147,6 +175,12 @@ public class DeleteTestObjectHandler extends AbstractDeleteReferredEntityHandler
         }
     }
 
+    /**
+     * Remove Test Object references in other Test Objects
+     * 
+     * @param testObjectReferences
+     * @param eventBroker
+     */
     private void deleteTestObjectReferences(final List<WebElementEntity> testObjectReferences,
             final IEventBroker eventBroker) {
         for (WebElementEntity referenceObject : testObjectReferences) {
@@ -162,4 +196,5 @@ public class DeleteTestObjectHandler extends AbstractDeleteReferredEntityHandler
             }
         }
     }
+
 }

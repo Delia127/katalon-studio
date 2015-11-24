@@ -122,6 +122,9 @@ public class StringConstants extends GlobalStringConstants {
 
     // DeleteTestCaseHandler
     public static final String HAND_ERROR_MSG_UNABLE_TO_DEL_TEST_CASE = "Unable to delete Test Case.";
+    public static final String HAND_TITLE_DELETE = DELETE;
+    public static final String HAND_MSG_REMOVE_ENTITY_REF = "Currently, this file is used in some Test Cases. Do you want to remove its references as well?";
+    public static final String HAND_MSG_REMOVE_FOLDER_REF = "Currently, this folder are used in some Test Cases. Do you want to remove all the references as well?";
 
     // NewTestCaseHandler
     public static final String HAND_NEW_TEST_CASE = "New Test Case";
