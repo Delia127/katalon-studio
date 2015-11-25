@@ -1152,6 +1152,26 @@ public class GroovyParser {
         return Collections.emptyList();
     }
 
+    public static ASTNode parseGroovyScriptAndGetFirstItem(String scriptContent) throws Exception {
+        List<ASTNode> astNodes = parseGroovyScriptIntoAstNodes(scriptContent);
+        for (ASTNode astNode : astNodes) {
+            if (astNode instanceof ClassNode) {
+                if (((ClassNode) astNode).isScript()) {
+                    ClassNode mainClassNode = ((ClassNode) astNode);
+                    for (MethodNode methodNode : mainClassNode.getMethods()) {
+                        if (methodNode.getName().equals("run") && methodNode.getCode() instanceof BlockStatement) {
+                            BlockStatement blockStatement = (BlockStatement) methodNode.getCode();
+                            if (blockStatement.getStatements().size() > 0) {
+                                return blockStatement.getStatements().get(0);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     private void parsePackageAndImport(List<? extends ASTNode> astNodes) {
         for (ASTNode astNode : astNodes) {
             if (astNode instanceof ClassNode) {

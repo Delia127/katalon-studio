@@ -61,7 +61,6 @@ import com.kms.katalon.composer.testcase.ast.editors.TestObjectCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.TypeInputCellEditor;
 import com.kms.katalon.composer.testcase.editors.CallTestCaseCellEditor;
 import com.kms.katalon.composer.testcase.editors.NumberCellEditor;
-import com.kms.katalon.composer.testcase.model.ConstantValueType;
 import com.kms.katalon.composer.testcase.model.CustomInputValueTypeCollector;
 import com.kms.katalon.composer.testcase.model.ICustomInputValueType;
 import com.kms.katalon.composer.testcase.model.IInputValueType;
@@ -1060,42 +1059,6 @@ public class AstTreeTableInputUtil {
         }
         return new PropertyExpression(new VariableExpression(InputValueType.GlobalVariable.name()),
                 new ConstantExpression(null));
-    }
-
-    public static ConstantValueType getConstantValueTypeFromConstantExpression(ConstantExpression constantExpression) {
-        if (constantExpression.isFalseExpression() || constantExpression.isTrueExpression()) {
-            return ConstantValueType.Boolean;
-        } else if (constantExpression.getValue() instanceof Number) {
-            return ConstantValueType.Number;
-        } else if (constantExpression.getValue() == null) {
-            return ConstantValueType.Null;
-        } else {
-            return ConstantValueType.String;
-        }
-    }
-
-    public static String[] getConstantValueTypeStringList() {
-        ConstantValueType[] values = ConstantValueType.values();
-        String[] names = new String[values.length];
-
-        for (int i = 0; i < values.length; i++) {
-            names[i] = values[i].name();
-        }
-        return names;
-    }
-
-    public static Expression generateNewConstantExpression(ConstantValueType constantValueType) {
-        switch (constantValueType) {
-        case Boolean:
-            return new ConstantExpression(true);
-        case Number:
-            return new ConstantExpression(0);
-        case String:
-            return new ConstantExpression("");
-        case Null:
-            return new ConstantExpression(null);
-        }
-        return null;
     }
 
     public static Class<?> loadType(String typeName, ClassNode scriptClass) {

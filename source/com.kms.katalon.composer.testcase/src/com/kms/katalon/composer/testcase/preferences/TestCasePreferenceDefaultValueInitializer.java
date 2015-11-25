@@ -29,7 +29,7 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
 
         // Default value type of variable
         store.setDefault(PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_VARIABLE_TYPE,
-                InputValueType.Constant.name());
+                InputValueType.String.name());
 
         // Test Case Calling
         store.setDefault(PreferenceConstants.TestCasePreferenceConstants.TESTCASE_GENERATE_DEFAULT_VARIABLE_VALUE, true);

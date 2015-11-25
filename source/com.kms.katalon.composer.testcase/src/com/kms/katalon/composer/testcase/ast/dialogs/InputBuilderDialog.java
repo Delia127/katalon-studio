@@ -7,7 +7,6 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -19,16 +18,13 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
-import com.kms.katalon.composer.testcase.model.ConstantValueType;
 import com.kms.katalon.composer.testcase.model.ICustomInputValueType;
 import com.kms.katalon.composer.testcase.model.IInputValueType;
 import com.kms.katalon.composer.testcase.model.InputParameter;
 import com.kms.katalon.composer.testcase.model.InputParameterClass;
 import com.kms.katalon.composer.testcase.model.InputValueType;
-import com.kms.katalon.composer.testcase.providers.AstInputConstantTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
-import com.kms.katalon.composer.testcase.support.AstInputBuilderConstantTypeColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
@@ -40,14 +36,12 @@ import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 public class InputBuilderDialog extends AbstractAstBuilderWithTableDialog {
-    private final InputValueType[] defaultInputValueTypes = { InputValueType.Constant, InputValueType.Variable,
-            InputValueType.GlobalVariable, InputValueType.TestDataValue, InputValueType.Binary, InputValueType.Boolean,
-            InputValueType.TestCase, InputValueType.TestData, InputValueType.TestObject, InputValueType.MethodCall,
-            InputValueType.Property, InputValueType.List, InputValueType.Map };
+    private final InputValueType[] defaultInputValueTypes = { InputValueType.String, InputValueType.Number,
+            InputValueType.Boolean, InputValueType.Null, InputValueType.Variable, InputValueType.GlobalVariable,
+            InputValueType.TestDataValue, InputValueType.Binary, InputValueType.Condition, InputValueType.TestCase,
+            InputValueType.TestData, InputValueType.TestObject, InputValueType.MethodCall, InputValueType.Property,
+            InputValueType.List, InputValueType.Map };
     private static final String DIALOG_TITLE = StringConstants.DIA_TITLE_INPUT;
-    private static final String[] COLUMN_NAMES = new String[] { StringConstants.DIA_COL_NO,
-            StringConstants.DIA_COL_PARAM_TYPE, StringConstants.DIA_COL_PARAM, StringConstants.DIA_COL_VALUE_TYPE,
-            StringConstants.DIA_COL_CONSTANT_TYPE, StringConstants.DIA_COL_VALUE };
 
     private List<InputParameter> inputParameters;
     private List<InputParameter> originalParameters;
@@ -126,6 +120,7 @@ public class InputBuilderDialog extends AbstractAstBuilderWithTableDialog {
     @Override
     protected void addTableColumns() {
         TableViewerColumn tableViewerColumnNo = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnNo.getColumn().setText(StringConstants.DIA_COL_NO);
         tableViewerColumnNo.getColumn().setWidth(40);
         tableViewerColumnNo.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -138,6 +133,7 @@ public class InputBuilderDialog extends AbstractAstBuilderWithTableDialog {
         });
 
         TableViewerColumn tableViewerColumnParamType = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnParamType.getColumn().setText(StringConstants.DIA_COL_PARAM_TYPE);
         tableViewerColumnParamType.getColumn().setWidth(100);
         tableViewerColumnParamType.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -160,6 +156,7 @@ public class InputBuilderDialog extends AbstractAstBuilderWithTableDialog {
         });
 
         TableViewerColumn tableViewerColumnParam = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnParam.getColumn().setText(StringConstants.DIA_COL_PARAM);
         tableViewerColumnParam.getColumn().setWidth(100);
         tableViewerColumnParam.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -172,6 +169,7 @@ public class InputBuilderDialog extends AbstractAstBuilderWithTableDialog {
         });
 
         TableViewerColumn tableViewerColumnValueType = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnValueType.getColumn().setText(StringConstants.DIA_COL_VALUE_TYPE);
         tableViewerColumnValueType.getColumn().setWidth(100);
         tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider(scriptClass) {
             @Override
@@ -183,8 +181,8 @@ public class InputBuilderDialog extends AbstractAstBuilderWithTableDialog {
             }
         });
 
-        tableViewerColumnValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer, defaultInputValueTypes, 
-                ICustomInputValueType.TAG_KEYWORD_INPUT, this, scriptClass) {
+        tableViewerColumnValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer,
+                defaultInputValueTypes, ICustomInputValueType.TAG_KEYWORD_INPUT, this, scriptClass) {
             @Override
             protected void setValue(Object element, Object value) {
                 if (element instanceof InputParameter && value instanceof Integer && (int) value > -1
@@ -225,57 +223,8 @@ public class InputBuilderDialog extends AbstractAstBuilderWithTableDialog {
             }
         });
 
-        TableViewerColumn tableViewerColumnConstantType = new TableViewerColumn(tableViewer, SWT.NONE);
-        tableViewerColumnConstantType.getColumn().setWidth(100);
-        tableViewerColumnConstantType.setLabelProvider(new AstInputConstantTypeLabelProvider() {
-            @Override
-            public String getText(Object element) {
-                if (element instanceof InputParameter) {
-                    return super.getText(((InputParameter) element).getValue());
-                }
-                return StringUtils.EMPTY;
-            }
-        });
-        tableViewerColumnConstantType
-                .setEditingSupport(new AstInputBuilderConstantTypeColumnSupport(tableViewer, this) {
-                    @Override
-                    protected void setValue(Object element, Object value) {
-                        if (element instanceof InputParameter
-                                && ((InputParameter) element).getValue() instanceof ConstantExpression) {
-                            ConstantValueType newConstantValueType = ConstantValueType.values()[(int) value];
-                            ConstantValueType oldConstantValueType = AstTreeTableInputUtil
-                                    .getConstantValueTypeFromConstantExpression((ConstantExpression) ((InputParameter) element)
-                                            .getValue());
-                            if (newConstantValueType != oldConstantValueType) {
-                                Expression newExpression = AstTreeTableInputUtil
-                                        .generateNewConstantExpression(newConstantValueType);
-                                if (newExpression != null) {
-                                    parentDialog.changeObject(element, newExpression);
-                                    getViewer().refresh();
-                                }
-                            }
-                        }
-
-                    }
-
-                    @Override
-                    protected Object getValue(Object element) {
-                        if (element instanceof InputParameter) {
-                            return super.getValue(((InputParameter) element).getValue());
-                        }
-                        return 0;
-                    }
-
-                    @Override
-                    protected boolean canEdit(Object element) {
-                        if (element instanceof InputParameter) {
-                            return super.canEdit(((InputParameter) element).getValue());
-                        }
-                        return false;
-                    }
-                });
-
         TableViewerColumn tableViewerColumnValue = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnValue.getColumn().setText(StringConstants.DIA_COL_VALUE);
         tableViewerColumnValue.getColumn().setWidth(300);
         tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider(scriptClass) {
             @Override
@@ -324,11 +273,6 @@ public class InputBuilderDialog extends AbstractAstBuilderWithTableDialog {
                 return null;
             }
         });
-
-        // set column's name
-        for (int i = 0; i < tableViewer.getTable().getColumnCount(); i++) {
-            tableViewer.getTable().getColumn(i).setText(COLUMN_NAMES[i]);
-        }
     }
 
     @Override

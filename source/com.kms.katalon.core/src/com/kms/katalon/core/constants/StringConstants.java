@@ -38,6 +38,9 @@ public class StringConstants {
 	public static final String MAIN_MSG_START_RUNNING_TEAR_DOWN_METHODS_FOR_ERROR_TC = "Start running tear down methods for error Test Case";
 	public static final String MAIN_LOG_MSG_FAILED_BECAUSE_OF = "{0} FAILED because (of) {1}";
 	public static final String MAIN_LOG_MSG_ERROR_BECAUSE_OF = "{0} has ERROR(s) because (of) {1}";
+	public static final String MAIN_LOG_INFO_START_EVALUATE_VARIABLE = "Evaluating variables for test case";
+	public static final String MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y = "Variable ''{0}'' is set to {1}";
+	public static final String MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y_AS_DEFAULT = "Variable ''{0}'' is set to {1} as default";
 	public static final String MAIN_LOG_MSG_SET_TEST_VARIABLE_ERROR_BECAUSE_OF = "Unable to set variable ''{0}'' for test case because (of) {1}";
 
 	// TestData

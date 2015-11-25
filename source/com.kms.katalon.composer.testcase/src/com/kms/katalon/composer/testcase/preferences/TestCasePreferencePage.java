@@ -66,7 +66,7 @@ public class TestCasePreferencePage extends PreferencePage {
 
         btnDefaultVariableIsConstant = new Button(grpDefaultVariableType, SWT.RADIO);
         btnDefaultVariableIsConstant.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        btnDefaultVariableIsConstant.setText(InputValueType.Constant.name());
+        btnDefaultVariableIsConstant.setText(InputValueType.String.name());
 
         btnDefaultVariableIsVariable = new Button(grpDefaultVariableType, SWT.RADIO);
         btnDefaultVariableIsVariable.setText(InputValueType.Variable.name());
@@ -324,9 +324,6 @@ public class TestCasePreferencePage extends PreferencePage {
 
         InputValueType valueType = InputValueType.valueOf(defaultVariableType);
         switch (valueType) {
-            case Constant:
-                btnDefaultVariableIsConstant.setSelection(true);
-                break;
             case Variable:
                 btnDefaultVariableIsVariable.setSelection(true);
                 break;
@@ -390,7 +387,7 @@ public class TestCasePreferencePage extends PreferencePage {
         if (btnDefaultVariableIsConstant.getSelection()) {
             getPreferenceStore().setValue(
                     PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_VARIABLE_TYPE,
-                    InputValueType.Constant.name());
+                    InputValueType.String.name());
         }
 
         if (btnDefaultVariableIsVariable.getSelection()) {

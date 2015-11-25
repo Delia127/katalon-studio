@@ -403,7 +403,15 @@ public class AstTreeTableValueUtil {
 
     private static InputValueType getInputValueTypeForExpression(Expression expression, ClassNode scriptClass) {
         if (expression instanceof ConstantExpression) {
-            return InputValueType.Constant;
+            ConstantExpression constantExpression = (ConstantExpression) expression;
+            if (constantExpression.isFalseExpression() || constantExpression.isTrueExpression()) {
+                return InputValueType.Boolean;
+            } else if (constantExpression.getValue() instanceof Number) {
+                return InputValueType.Number;
+            } else if (constantExpression.getValue() == null) {
+                return InputValueType.Null;
+            }
+            return InputValueType.String;
         } else if (expression instanceof VariableExpression) {
             if (expression.getText().equals("this")) {
                 return InputValueType.This;
@@ -431,7 +439,7 @@ public class AstTreeTableValueUtil {
             }
             return InputValueType.MethodCall;
         } else if (expression instanceof BooleanExpression) {
-            return InputValueType.Boolean;
+            return InputValueType.Condition;
         } else if (expression instanceof ClosureListExpression) {
             return InputValueType.ClosureList;
         } else if (expression instanceof ListExpression) {
@@ -455,7 +463,7 @@ public class AstTreeTableValueUtil {
         } else if (expression instanceof ClassExpression) {
             return InputValueType.Class;
         }
-        return InputValueType.Constant;
+        return InputValueType.Null;
     }
 
     public static boolean compareAstNode(Object astNode, Object anotherAstNode) {

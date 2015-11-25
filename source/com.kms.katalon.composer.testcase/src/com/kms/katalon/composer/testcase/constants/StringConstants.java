@@ -163,7 +163,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_MENU_SUB_AFTER = "Insert after";
     public static final String PA_BTN_TIP_REMOVE = DELETE;
     public static final String PA_BTN_TIP_CLEAR = CLEAR;
-    public static final String PA_BTN_TIP_EDIT = EDIT;
     public static final String PA_BTN_TIP_MOVE_UP = "Move up";
     public static final String PA_BTN_TIP_MOVE_DOWN = "Move down";
     public static final String PA_COL_INDEX = "#";
@@ -203,6 +202,7 @@ public class StringConstants extends GlobalStringConstants {
     // TestCaseVariablePart
     public static final String PA_COL_NO = NO_;
     public static final String PA_COL_NAME = NAME;
+    public static final String PA_COL_DEFAULT_VALUE_TYPE = "Default value type";
     public static final String PA_COL_DEFAULT_VALUE = "Default value";
     public static final String PA_ERROR_MSG_VAR_AT_INDEX_CANNOT_BE_NULL_OR_EMPTY = "The variable at index: {0} cannot be null or empty.\n";
     public static final String PA_ERROR_MSG_INVALID_VAR = "Variable {0} is not valid qualifier.\n";

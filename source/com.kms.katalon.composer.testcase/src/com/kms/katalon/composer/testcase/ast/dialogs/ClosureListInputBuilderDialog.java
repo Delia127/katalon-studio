@@ -16,23 +16,19 @@ import org.eclipse.swt.widgets.TableColumn;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.model.ICustomInputValueType;
 import com.kms.katalon.composer.testcase.model.InputValueType;
-import com.kms.katalon.composer.testcase.providers.AstInputConstantTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
-import com.kms.katalon.composer.testcase.support.AstInputBuilderConstantTypeColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
 import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
 import com.kms.katalon.core.groovy.GroovyParser;
 
 public class ClosureListInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
-    private final InputValueType[] defaultInputValueTypes = { InputValueType.Constant, InputValueType.Variable,
-            InputValueType.GlobalVariable, InputValueType.TestDataValue, InputValueType.MethodCall,
-            InputValueType.Binary, InputValueType.Property };
-    
+    private final InputValueType[] defaultInputValueTypes = { InputValueType.String, InputValueType.Number,
+            InputValueType.Boolean, InputValueType.Null, InputValueType.Variable, InputValueType.GlobalVariable,
+            InputValueType.TestDataValue, InputValueType.MethodCall, InputValueType.Binary, InputValueType.Property };
+
     private static final String DIALOG_TITLE = StringConstants.DIA_TITLE_CLOSURE_LIST_INPUT;
-    private static final String[] COLUMN_NAMES = new String[] { StringConstants.DIA_COL_NO,
-            StringConstants.DIA_COL_VALUE_TYPE, StringConstants.DIA_COL_CONSTANT_TYPE, StringConstants.DIA_COL_VALUE };
 
     private ClosureListExpression closureListExpression;
     private List<Expression> expressionLinkedList;
@@ -72,6 +68,7 @@ public class ClosureListInputBuilderDialog extends AbstractAstBuilderWithTableDi
     protected void addTableColumns() {
         TableViewerColumn tableViewerColumnNo = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnColumnNo = tableViewerColumnNo.getColumn();
+        tblclmnColumnNo.setText(StringConstants.DIA_COL_NO);
         tblclmnColumnNo.setWidth(40);
         tableViewerColumnNo.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -84,27 +81,18 @@ public class ClosureListInputBuilderDialog extends AbstractAstBuilderWithTableDi
         });
 
         TableViewerColumn tableViewerColumnValueType = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnValueType.getColumn().setText(StringConstants.DIA_COL_VALUE_TYPE);
         tableViewerColumnValueType.getColumn().setWidth(100);
         tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider(scriptClass));
         tableViewerColumnValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer,
                 defaultInputValueTypes, ICustomInputValueType.TAG_CLOSURE_LIST, this, scriptClass));
 
-        TableViewerColumn tableViewerColumnConstantType = new TableViewerColumn(tableViewer, SWT.NONE);
-        tableViewerColumnConstantType.getColumn().setWidth(100);
-        tableViewerColumnConstantType.setLabelProvider(new AstInputConstantTypeLabelProvider());
-        tableViewerColumnConstantType
-                .setEditingSupport(new AstInputBuilderConstantTypeColumnSupport(tableViewer, this));
-
         TableViewerColumn tableViewerColumnValue = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnNewColumnValue = tableViewerColumnValue.getColumn();
-        tblclmnNewColumnValue.setWidth(170);
+        tblclmnNewColumnValue.setText(StringConstants.DIA_COL_VALUE);
+        tblclmnNewColumnValue.setWidth(300);
         tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider(scriptClass));
         tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this, scriptClass));
-
-        // set column's name
-        for (int i = 0; i < tableViewer.getTable().getColumnCount(); i++) {
-            tableViewer.getTable().getColumn(i).setText(COLUMN_NAMES[i]);
-        }
 
     }
 
