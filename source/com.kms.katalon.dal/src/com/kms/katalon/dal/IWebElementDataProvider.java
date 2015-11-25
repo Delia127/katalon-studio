@@ -43,7 +43,7 @@ public interface IWebElementDataProvider {
     public WebServiceRequestEntity addNewRequest(FolderEntity parentFolder, WebServiceRequestEntity request)
             throws Exception;
 
-    public List<WebElementEntity> getWebElementPropertyByRefELement(String refElement, ProjectEntity project,
+    public List<WebElementEntity> getWebElementPropertyByRefElement(String refElement, ProjectEntity project,
             boolean isExactly) throws Exception;
 
     public WebElementPropertyEntity getRefElementProperty(WebElementEntity webElement);

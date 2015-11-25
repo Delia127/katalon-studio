@@ -85,7 +85,7 @@ public class EInput extends BaseObject {
 		String forAtt = webElement.getAttribute("for");
 		if (forAtt != null) {
 			// find web element by ID
-			return findWebELementById(forAtt);
+			return findWebElementById(forAtt);
 		} else {
 			WebElement parentElement = webElement.findElement(By.xpath(".."));
 			return findParentElementRecursively(parentElement);
@@ -99,7 +99,7 @@ public class EInput extends BaseObject {
 	 *            id
 	 * @return
 	 */
-	protected WebElement findWebELementById(String id) {
+	protected WebElement findWebElementById(String id) {
 		try {
 			if (id != null) {
 				//WebDriverWait wait = new WebDriverWait(driver, EProcess

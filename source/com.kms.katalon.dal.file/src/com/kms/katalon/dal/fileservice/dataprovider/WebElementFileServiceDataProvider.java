@@ -110,9 +110,9 @@ public class WebElementFileServiceDataProvider implements IWebElementDataProvide
 	}
 
     @Override
-    public List<WebElementEntity> getWebElementPropertyByRefELement(String refElement, ProjectEntity project,
+    public List<WebElementEntity> getWebElementPropertyByRefElement(String refElement, ProjectEntity project,
             boolean isExactly) throws Exception {
-        return WebElementFileServiceManager.getWebElementPropertyByRefELement(refElement, project, isExactly);
+        return WebElementFileServiceManager.getWebElementPropertyByRefElement(refElement, project, isExactly);
     }
 
     @Override
