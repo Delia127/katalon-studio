@@ -32,8 +32,6 @@ import com.kms.katalon.core.groovy.GroovyParser;
 
 public class PropertyInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
 	private static final String DIALOG_TITLE = StringConstants.DIA_TITLE_PROPERTY_INPUT;
-	private static final String[] COLUMN_NAMES = new String[] { StringConstants.DIA_COL_OBJ_TYPE,
-			StringConstants.DIA_COL_OBJ, StringConstants.DIA_COL_PROPERTY };
 
 	private static enum PropertyObjectType {
 		Class, Variable
@@ -116,6 +114,7 @@ public class PropertyInputBuilderDialog extends AbstractAstBuilderWithTableDialo
 		TableViewerColumn tableViewerColumnType = new TableViewerColumn(tableViewer, SWT.NONE);
 		TableColumn tblclmnNewColumnType = tableViewerColumnType.getColumn();
 		tblclmnNewColumnType.setWidth(152);
+		tblclmnNewColumnType.setText(StringConstants.DIA_COL_OBJ_TYPE);
 		tableViewerColumnType.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
@@ -178,6 +177,7 @@ public class PropertyInputBuilderDialog extends AbstractAstBuilderWithTableDialo
 		TableViewerColumn tableViewerColumnObject = new TableViewerColumn(tableViewer, SWT.NONE);
 		TableColumn tblclmnNewColumnObject = tableViewerColumnObject.getColumn();
 		tblclmnNewColumnObject.setWidth(152);
+		tblclmnNewColumnObject.setText(StringConstants.DIA_COL_OBJ);
 		tableViewerColumnObject.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
@@ -255,8 +255,8 @@ public class PropertyInputBuilderDialog extends AbstractAstBuilderWithTableDialo
 
 		TableViewerColumn tableViewerColumnProperty = new TableViewerColumn(tableViewer, SWT.NONE);
 		TableColumn tblclmnNewColumnProperty = tableViewerColumnProperty.getColumn();
+		tblclmnNewColumnProperty.setText(StringConstants.DIA_COL_PROPERTY);
 		tblclmnNewColumnProperty.setWidth(152);
-
 		tableViewerColumnProperty.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
@@ -334,10 +334,5 @@ public class PropertyInputBuilderDialog extends AbstractAstBuilderWithTableDialo
 				return true;
 			}
 		});
-
-		// set column's name
-		for (int i = 0; i < tableViewer.getTable().getColumnCount(); i++) {
-			tableViewer.getTable().getColumn(i).setText(COLUMN_NAMES[i]);
-		}
 	}
 }

@@ -64,8 +64,6 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
     private final InputValueType[] defaultInputValueTypes = { InputValueType.Variable };
 
     private static final String DIALOG_TITLE = StringConstants.DIA_TITLE_TEST_OBJ_INPUT;
-    private static final String[] COLUMN_NAMES = new String[] { StringConstants.DIA_COL_VALUE_TYPE,
-            StringConstants.DIA_COL_VALUE };
 
     private static final String OBJECT_FINDER_TAB_NAME = InputValueType.TestObject.toString();
     private static final String OTHER_TAB_NAME = StringConstants.DIA_TAB_OTHER;
@@ -197,6 +195,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
                             | ColumnViewerEditor.KEYBOARD_ACTIVATION);
 
             TableViewerColumn tableViewerColumnValueType = new TableViewerColumn(tableViewer, SWT.NONE);
+            tableViewerColumnValueType.getColumn().setText(StringConstants.DIA_COL_VALUE_TYPE);
             tableViewerColumnValueType.getColumn().setWidth(100);
             tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider(scriptClass));
 
@@ -204,15 +203,12 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
                     defaultInputValueTypes, ICustomInputValueType.TAG_TEST_OBJECT, this, scriptClass));
 
             TableViewerColumn tableViewerColumnValue = new TableViewerColumn(tableViewer, SWT.NONE);
+            tableViewerColumnValue.getColumn().setText(StringConstants.DIA_COL_VALUE);
             tableViewerColumnValue.getColumn().setWidth(300);
             tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider(scriptClass));
             tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this,
                     scriptClass));
 
-            // set column's name
-            for (int i = 0; i < table.getColumnCount(); i++) {
-                table.getColumn(i).setText(COLUMN_NAMES[i]);
-            }
             if (objectExpression instanceof MethodCallExpression
                     && AstTreeTableInputUtil.isObjectArgument((MethodCallExpression) objectExpression)) {
                 combo.select(0);

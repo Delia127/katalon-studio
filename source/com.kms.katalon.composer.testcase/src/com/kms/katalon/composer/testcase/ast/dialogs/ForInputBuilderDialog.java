@@ -28,12 +28,11 @@ import com.kms.katalon.core.groovy.GroovyParser;
 
 public class ForInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
     private final InputValueType[] defaultInputValueTypes = { InputValueType.Range, InputValueType.ClosureList,
-            InputValueType.Constant, InputValueType.Variable, InputValueType.GlobalVariable,
-            InputValueType.TestDataValue, InputValueType.Property };
+            InputValueType.String, InputValueType.Number, InputValueType.Boolean, InputValueType.Null,
+            InputValueType.Variable, InputValueType.GlobalVariable, InputValueType.TestDataValue,
+            InputValueType.Property };
 
     private static final String DIALOG_TITLE = StringConstants.DIA_TITLE_FOR_INPUT;
-    private static final String[] COLUMN_NAMES = new String[] { StringConstants.DIA_COL_OBJ,
-            StringConstants.DIA_COL_VALUE_TYPE, StringConstants.DIA_COL_VALUE };
 
     private Parameter variable;
     private Expression collectionExpression;
@@ -89,6 +88,7 @@ public class ForInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
     @Override
     protected void addTableColumns() {
         TableViewerColumn tableViewerColumnObject = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnObject.getColumn().setText(StringConstants.DIA_COL_OBJ);
         tableViewerColumnObject.getColumn().setWidth(100);
         tableViewerColumnObject.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -103,21 +103,16 @@ public class ForInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
         });
 
         TableViewerColumn tableViewerColumnValueType = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnValueType.getColumn().setText(StringConstants.DIA_COL_VALUE_TYPE);
         tableViewerColumnValueType.getColumn().setWidth(100);
         tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider(scriptClass));
-
         tableViewerColumnValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer,
                 defaultInputValueTypes, ICustomInputValueType.TAG_FOR, this, scriptClass));
 
         TableViewerColumn tableViewerColumnValue = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnValue.getColumn().setText(StringConstants.DIA_COL_VALUE);
         tableViewerColumnValue.getColumn().setWidth(300);
         tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider(scriptClass));
-
         tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this, scriptClass));
-
-        // set column's name
-        for (int i = 0; i < tableViewer.getTable().getColumnCount(); i++) {
-            tableViewer.getTable().getColumn(i).setText(COLUMN_NAMES[i]);
-        }
     }
 }

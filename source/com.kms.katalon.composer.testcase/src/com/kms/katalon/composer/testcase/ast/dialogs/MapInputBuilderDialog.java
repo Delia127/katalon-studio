@@ -3,7 +3,6 @@ package com.kms.katalon.composer.testcase.ast.dialogs;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.expr.MapEntryExpression;
 import org.codehaus.groovy.ast.expr.MapExpression;
@@ -20,14 +19,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableColumn;
 
 import com.kms.katalon.composer.testcase.constants.StringConstants;
-import com.kms.katalon.composer.testcase.model.ConstantValueType;
 import com.kms.katalon.composer.testcase.model.ICustomInputValueType;
 import com.kms.katalon.composer.testcase.model.IInputValueType;
 import com.kms.katalon.composer.testcase.model.InputValueType;
-import com.kms.katalon.composer.testcase.providers.AstInputConstantTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
-import com.kms.katalon.composer.testcase.support.AstInputBuilderConstantTypeColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
 import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
@@ -36,13 +32,10 @@ import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
 import com.kms.katalon.core.groovy.GroovyParser;
 
 public class MapInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
-    private final InputValueType[] defaultInputValueTypes = { InputValueType.Constant, InputValueType.Variable,
-            InputValueType.GlobalVariable, InputValueType.TestDataValue, InputValueType.MethodCall,
-            InputValueType.Property };
+    private final InputValueType[] defaultInputValueTypes = { InputValueType.String, InputValueType.Number,
+            InputValueType.Boolean, InputValueType.Null, InputValueType.Variable, InputValueType.GlobalVariable,
+            InputValueType.TestDataValue, InputValueType.MethodCall, InputValueType.Property };
     private static final String DIALOG_TITLE = StringConstants.DIA_TITLE_MAP_INPUT;
-    private static final String[] COLUMN_NAMES = new String[] { StringConstants.DIA_COL_NO,
-            StringConstants.DIA_COL_KEY_TYPE, StringConstants.DIA_COL_CONSTANT_TYPE, StringConstants.DIA_COL_KEY,
-            StringConstants.DIA_COL_VALUE_TYPE, StringConstants.DIA_COL_CONSTANT_TYPE, StringConstants.DIA_COL_VALUE };
     private static final String BUTTON_INSERT_LABEL = StringConstants.DIA_BTN_INSERT;
     private static final String BUTTON_REMOVE_LABEL = StringConstants.DIA_BTN_REMOVE;
 
@@ -119,6 +112,7 @@ public class MapInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
     protected void addTableColumns() {
         TableViewerColumn tableViewerColumnNo = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnColumnNo = tableViewerColumnNo.getColumn();
+        tblclmnColumnNo.setText(StringConstants.DIA_COL_NO);
         tblclmnColumnNo.setWidth(40);
         tableViewerColumnNo.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -131,6 +125,7 @@ public class MapInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
         });
 
         TableViewerColumn tableViewerColumnKeyType = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnKeyType.getColumn().setText(StringConstants.DIA_COL_KEY_TYPE);
         tableViewerColumnKeyType.getColumn().setWidth(100);
         tableViewerColumnKeyType.setLabelProvider(new AstInputTypeLabelProvider(scriptClass) {
             @Override
@@ -180,58 +175,9 @@ public class MapInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
             }
         });
 
-        TableViewerColumn tableViewerColumnKeyConstantType = new TableViewerColumn(tableViewer, SWT.NONE);
-        tableViewerColumnKeyConstantType.getColumn().setWidth(100);
-        tableViewerColumnKeyConstantType.setLabelProvider(new AstInputConstantTypeLabelProvider() {
-            @Override
-            public String getText(Object element) {
-                if (element instanceof MapEntryExpression) {
-                    return super.getText(((MapEntryExpression) element).getKeyExpression());
-                }
-                return StringUtils.EMPTY;
-            }
-        });
-
-        tableViewerColumnKeyConstantType.setEditingSupport(new AstInputBuilderConstantTypeColumnSupport(tableViewer,
-                this) {
-            @Override
-            protected void setValue(Object element, Object value) {
-                if (element instanceof MapEntryExpression && value instanceof Integer && (int) value != -1
-                        && (int) value < ConstantValueType.values().length) {
-                    ConstantValueType newConstantValueType = ConstantValueType.values()[(int) value];
-                    ConstantValueType oldConstantValueType = AstTreeTableInputUtil
-                            .getConstantValueTypeFromConstantExpression((ConstantExpression) ((MapEntryExpression) element)
-                                    .getKeyExpression());
-                    if (newConstantValueType != oldConstantValueType) {
-                        Expression newExpression = AstTreeTableInputUtil
-                                .generateNewConstantExpression(newConstantValueType);
-                        if (newExpression != null) {
-                            ((MapEntryExpression) element).setKeyExpression(newExpression);
-                            tableViewer.refresh();
-                        }
-                    }
-                }
-            }
-
-            @Override
-            protected Object getValue(Object element) {
-                if (element instanceof MapEntryExpression) {
-                    return super.getValue(((MapEntryExpression) element).getKeyExpression());
-                }
-                return 0;
-            }
-
-            @Override
-            protected boolean canEdit(Object element) {
-                if (element instanceof MapEntryExpression) {
-                    return super.canEdit(((MapEntryExpression) element).getKeyExpression());
-                }
-                return false;
-            }
-        });
-
         TableViewerColumn tableViewerColumnKeyValue = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnNewColumnKeyValue = tableViewerColumnKeyValue.getColumn();
+        tblclmnNewColumnKeyValue.setText(StringConstants.DIA_COL_KEY);
         tblclmnNewColumnKeyValue.setWidth(170);
         tableViewerColumnKeyValue.setLabelProvider(new AstInputValueLabelProvider(scriptClass) {
             @Override
@@ -277,6 +223,7 @@ public class MapInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
         });
 
         TableViewerColumn tableViewerColumnValueType = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnValueType.getColumn().setText(StringConstants.DIA_COL_VALUE_TYPE);
         tableViewerColumnValueType.getColumn().setWidth(100);
         tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider(scriptClass) {
             @Override
@@ -326,58 +273,9 @@ public class MapInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
             }
         });
 
-        TableViewerColumn tableViewerColumnValueConstantType = new TableViewerColumn(tableViewer, SWT.NONE);
-        tableViewerColumnValueConstantType.getColumn().setWidth(100);
-        tableViewerColumnValueConstantType.setLabelProvider(new AstInputConstantTypeLabelProvider() {
-            @Override
-            public String getText(Object element) {
-                if (element instanceof MapEntryExpression) {
-                    return super.getText(((MapEntryExpression) element).getValueExpression());
-                }
-                return StringUtils.EMPTY;
-            }
-        });
-
-        tableViewerColumnValueConstantType.setEditingSupport(new AstInputBuilderConstantTypeColumnSupport(tableViewer,
-                this) {
-            @Override
-            protected void setValue(Object element, Object value) {
-                if (element instanceof MapEntryExpression && value instanceof Integer && (int) value != -1
-                        && (int) value < ConstantValueType.values().length) {
-                    ConstantValueType newConstantValueType = ConstantValueType.values()[(int) value];
-                    ConstantValueType oldConstantValueType = AstTreeTableInputUtil
-                            .getConstantValueTypeFromConstantExpression((ConstantExpression) ((MapEntryExpression) element)
-                                    .getValueExpression());
-                    if (newConstantValueType != oldConstantValueType) {
-                        Expression newExpression = AstTreeTableInputUtil
-                                .generateNewConstantExpression(newConstantValueType);
-                        if (newExpression != null) {
-                            ((MapEntryExpression) element).setValueExpression(newExpression);
-                            tableViewer.refresh();
-                        }
-                    }
-                }
-            }
-
-            @Override
-            protected Object getValue(Object element) {
-                if (element instanceof MapEntryExpression) {
-                    return super.getValue(((MapEntryExpression) element).getValueExpression());
-                }
-                return 0;
-            }
-
-            @Override
-            protected boolean canEdit(Object element) {
-                if (element instanceof MapEntryExpression) {
-                    return super.canEdit(((MapEntryExpression) element).getValueExpression());
-                }
-                return false;
-            }
-        });
-
         TableViewerColumn tableViewerColumnValue = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnNewColumnValue = tableViewerColumnValue.getColumn();
+        tblclmnNewColumnValue.setText(StringConstants.DIA_COL_VALUE);
         tblclmnNewColumnValue.setWidth(170);
         tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider(scriptClass) {
             @Override
@@ -419,11 +317,6 @@ public class MapInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
                 return null;
             }
         });
-
-        // set column's name
-        for (int i = 0; i < tableViewer.getTable().getColumnCount(); i++) {
-            tableViewer.getTable().getColumn(i).setText(COLUMN_NAMES[i]);
-        }
     }
 
     @Override

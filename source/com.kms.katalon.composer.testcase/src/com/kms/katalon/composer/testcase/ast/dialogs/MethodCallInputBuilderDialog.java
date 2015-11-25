@@ -44,13 +44,10 @@ import com.kms.katalon.core.testdata.TestData;
 
 public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
     private final InputValueType[] defaultObjectValueTypes = { InputValueType.Class, InputValueType.This,
-            InputValueType.Constant, InputValueType.Variable, InputValueType.MethodCall, InputValueType.Property };
-
+            InputValueType.String, InputValueType.Number, InputValueType.Boolean, InputValueType.Null,
+            InputValueType.Variable, InputValueType.MethodCall, InputValueType.Property };
     private static final String THIS_VARIABLE = "this";
     private static final String DIALOG_TITLE = StringConstants.DIA_TITLE_METHOD_CALL_INPUT;
-    private static final String[] COLUMN_NAMES = new String[] { StringConstants.DIA_COL_OBJ_TYPE,
-            StringConstants.DIA_COL_OBJ, StringConstants.DIA_COL_METHOD, StringConstants.DIA_COL_INPUT };
-
     private MethodCallExpression methodCallExpression;
     private Class<?> type;
     private Method method;
@@ -294,6 +291,7 @@ public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDia
     @Override
     protected void addTableColumns() {
         TableViewerColumn tableViewerColumnObjectType = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnObjectType.getColumn().setText(StringConstants.DIA_COL_OBJ_TYPE);
         tableViewerColumnObjectType.getColumn().setWidth(100);
         tableViewerColumnObjectType.setLabelProvider(new AstInputTypeLabelProvider(scriptClass) {
             @Override
@@ -332,6 +330,7 @@ public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDia
 
         TableViewerColumn tableViewerColumnObject = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnNewColumnClass = tableViewerColumnObject.getColumn();
+        tblclmnNewColumnClass.setText(StringConstants.DIA_COL_OBJ);
         tblclmnNewColumnClass.setWidth(152);
         tableViewerColumnObject.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -371,8 +370,8 @@ public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDia
 
         TableViewerColumn tableViewerColumnMethod = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnNewColumnMethod = tableViewerColumnMethod.getColumn();
+        tblclmnNewColumnMethod.setText(StringConstants.DIA_COL_METHOD);
         tblclmnNewColumnMethod.setWidth(152);
-
         tableViewerColumnMethod.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -491,6 +490,7 @@ public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDia
 
         TableViewerColumn tableViewerColumnInput = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnNewColumnInput = tableViewerColumnInput.getColumn();
+        tblclmnNewColumnInput.setText(StringConstants.DIA_COL_INPUT);
         tblclmnNewColumnInput.setWidth(170);
         tableViewerColumnInput.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -557,11 +557,6 @@ public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDia
                         .getParameters().length > 0) || (method != null && method.getParameterTypes().length > 0)));
             }
         });
-
-        // set column's name
-        for (int i = 0; i < tableViewer.getTable().getColumnCount(); i++) {
-            tableViewer.getTable().getColumn(i).setText(COLUMN_NAMES[i]);
-        }
     }
 
     @Override
