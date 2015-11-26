@@ -753,7 +753,6 @@ public class ObjectPropertyView implements EventHandler {
     public void changeOriginalTestObject(WebElementEntity object) {
         originalTestObject = object;
         cloneTestObject = originalTestObject.clone();
-        copyObjectProperties(originalTestObject, cloneTestObject);
         loadTestObject();
         dirtyable.setDirty(!verifyObjectProperties());
     }
