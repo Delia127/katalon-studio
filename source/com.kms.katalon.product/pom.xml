@@ -12,13 +12,14 @@
 	<packaging>eclipse-repository</packaging>
 
 	<properties>
-		<tycho.version>0.19.0</tycho.version>
 		<product.id>com.kms.katalon.product.product</product.id>
 		<product.win32OutputDirectory>${project.build.directory}/products/${product.id}/win32/win32/x86</product.win32OutputDirectory>
 		<product.win64OutputDirectory>${project.build.directory}/products/${product.id}/win32/win32/x86_64</product.win64OutputDirectory>
 		<product.linux32OutputDirectory>${project.build.directory}/products/${product.id}/linux/gtk/x86</product.linux32OutputDirectory>
 		<product.linux64OutputDirectory>${project.build.directory}/products/${product.id}/linux/gtk/x86_64</product.linux64OutputDirectory>
 		<product.mac64OutputDirectory>${project.build.directory}/products/${product.id}/macosx/cocoa/x86_64</product.mac64OutputDirectory>
+		<product.resourcesDirectory>configuration/resources</product.resourcesDirectory>
+		<product.apidocDirectory>${product.resourcesDirectory}/apidocs</product.apidocDirectory>
 	</properties>
 
 	<build>
@@ -50,14 +51,13 @@
 					</execution>
 				</executions>
 			</plugin>
-			
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.6</version>
+				<version>${maven-resources-plugin.version}</version>
 				<executions>
 					<!-- copy selenium standalone into product's directory -->
 					<execution>						
-						<id>copy-selenium-win32</id>
+						<id>copy-resources-win32</id>
 						<phase>generate-resources</phase>
 						<goals>
 							<goal>copy-resources</goal>
@@ -66,14 +66,14 @@
 							<outputDirectory>${product.win32OutputDirectory}/configuration/resources/</outputDirectory>
 							<resources>
 								<resource>
-									<directory>${basedir}/../com.kms.katalon.selenium-standalone/resources</directory>
+									<directory>${project.parent.build.directory}/${resourcesDiretory}</directory>
 								</resource>
 							</resources>
 						</configuration>
 					</execution>
 					
 					<execution>						
-						<id>copy-selenium-win64</id>
+						<id>copy-resources-win64</id>
 						<phase>generate-resources</phase>
 						<goals>
 							<goal>copy-resources</goal>
@@ -82,14 +82,14 @@
 							<outputDirectory>${product.win64OutputDirectory}/configuration/resources/</outputDirectory>
 							<resources>
 								<resource>
-									<directory>${basedir}/../com.kms.katalon.selenium-standalone/resources</directory>
+									<directory>${project.parent.build.directory}/${resourcesDiretory}</directory>
 								</resource>
 							</resources>
 						</configuration>
 					</execution>
 					
 					<execution>						
-						<id>copy-selenium-linux32</id>
+						<id>copy-resources-linux32</id>
 						<phase>generate-resources</phase>
 						<goals>
 							<goal>copy-resources</goal>
@@ -98,14 +98,14 @@
 							<outputDirectory>${product.linux32OutputDirectory}/configuration/resources/</outputDirectory>
 							<resources>
 								<resource>
-									<directory>${basedir}/../com.kms.katalon.selenium-standalone/resources</directory>
+									<directory>${project.parent.build.directory}/${resourcesDiretory}</directory>
 								</resource>
 							</resources>
 						</configuration>
 					</execution>
 					
 					<execution>						
-						<id>copy-selenium-linux64</id>
+						<id>copy-resources-linux64</id>
 						<phase>generate-resources</phase>
 						<goals>
 							<goal>copy-resources</goal>
@@ -114,14 +114,14 @@
 							<outputDirectory>${product.linux64OutputDirectory}/configuration/resources/</outputDirectory>
 							<resources>
 								<resource>
-									<directory>${basedir}/../com.kms.katalon.selenium-standalone/resources</directory>
+									<directory>${project.parent.build.directory}/${resourcesDiretory}</directory>
 								</resource>
 							</resources>
 						</configuration>
 					</execution>
 					
 					<execution>						
-						<id>copy-selenium-mac64</id>
+						<id>copy-resources-mac64</id>
 						<phase>generate-resources</phase>
 						<goals>
 							<goal>copy-resources</goal>
@@ -130,254 +130,15 @@
 							<outputDirectory>${product.mac64OutputDirectory}/configuration/resources/</outputDirectory>
 							<resources>
 								<resource>
-									<directory>${basedir}/../com.kms.katalon.selenium-standalone/resources</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					
-					<!-- copy selenium's web drivers into product's directory -->
-					<execution>						
-						<id>copy-webdrivers-win32</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${product.win32OutputDirectory}/configuration/resources/</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${basedir}/../com.kms.katalon.core.webui/resources</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					
-					<execution>						
-						<id>copy-webdrivers-win64</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${product.win64OutputDirectory}/configuration/resources/</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${basedir}/../com.kms.katalon.core.webui/resources</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					
-					<execution>						
-						<id>copy-webdrivers-linux32</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${product.linux32OutputDirectory}/configuration/resources/</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${basedir}/../com.kms.katalon.core.webui/resources</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					
-					<execution>						
-						<id>copy-webdrivers-linux64</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${product.linux64OutputDirectory}/configuration/resources/</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${basedir}/../com.kms.katalon.core.webui/resources</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					
-					<execution>						
-						<id>copy-webdrivers-mac64</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${product.mac64OutputDirectory}/configuration/resources/</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${basedir}/../com.kms.katalon.core.webui/resources</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					
-					<execution>						
-						<id>copy-object-spy-extensions-win32</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${product.win32OutputDirectory}/configuration/resources/</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${basedir}/../com.kms.katalon.composer.webui.objectspy/resources</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					
-					<execution>						
-						<id>copy-object-spy-extensions-win64</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${product.win64OutputDirectory}/configuration/resources/</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${basedir}/../com.kms.katalon.composer.webui.objectspy/resources</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					
-					<execution>						
-						<id>copy-object-spy-extensions-linux32</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${product.linux32OutputDirectory}/configuration/resources/</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${basedir}/../com.kms.katalon.composer.webui.objectspy/resources</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					
-					<execution>						
-						<id>copy-object-spy-extensions-linux64</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${product.linux64OutputDirectory}/configuration/resources/</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${basedir}/../com.kms.katalon.composer.webui.objectspy/resources</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					
-					<execution>						
-						<id>copy-object-spy-extensions-mac64</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${product.mac64OutputDirectory}/configuration/resources/</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${basedir}/../com.kms.katalon.composer.webui.objectspy/resources</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					
-					<execution>						
-						<id>copy-recorder-extensions-win32</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${product.win32OutputDirectory}/configuration/resources/</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${basedir}/../com.kms.katalon.composer.webui.recorder/resources</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					
-					<execution>						
-						<id>copy-recorder-extensions-win64</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${product.win64OutputDirectory}/configuration/resources/</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${basedir}/../com.kms.katalon.composer.webui.recorder/resources</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					
-					<execution>						
-						<id>copy-recorder-extensions-linux32</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${product.linux32OutputDirectory}/configuration/resources/</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${basedir}/../com.kms.katalon.composer.webui.recorder/resources</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					
-					<execution>						
-						<id>copy-recorder-extensions-linux64</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${product.linux64OutputDirectory}/configuration/resources/</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${basedir}/../com.kms.katalon.composer.webui.recorder/resources</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					
-					<execution>						
-						<id>copy-recorder-extensions-mac64</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${product.mac64OutputDirectory}/configuration/resources/</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${basedir}/../com.kms.katalon.composer.webui.recorder/resources</directory>
+									<directory>${project.parent.build.directory}/${resourcesDiretory}</directory>
 								</resource>
 							</resources>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
+			
 		</plugins>
 	</build>
+
 </project> 
