@@ -219,9 +219,13 @@ public class EntityFileServiceManager {
     public static <T extends FileEntity> T copy(T entity, FolderEntity destinationFolder) throws Exception {
         if (entity != null && destinationFolder != null) {
             T clonedEntity = (T) entity.clone();
-            String name = entity.getName() + Util.STRING_COPY_OF_NAME;
-            name = EntityService.getInstance().getAvailableName(destinationFolder.getLocation(), name, true);
-            clonedEntity.setName(name);
+            File fEntity = new File(destinationFolder.getLocation() + File.separator + entity.getName() + entity.getFileExtension());
+            if (fEntity.exists()) {
+                // if entity existed, put a prefix "- Copy" into its name
+                String name = entity.getName() + Util.STRING_COPY_OF_NAME;
+                name = EntityService.getInstance().getAvailableName(destinationFolder.getLocation(), name, true);
+                clonedEntity.setName(name);
+            }
             clonedEntity.setParentFolder(destinationFolder);
             clonedEntity.setProject(destinationFolder.getProject());
             if (clonedEntity instanceof IntegratedFileEntity) {
@@ -237,9 +241,13 @@ public class EntityFileServiceManager {
     public static FolderEntity copyFolder(FolderEntity folder, FolderEntity destinationFolder) throws Exception {
         if (folder != null && destinationFolder != null) {
             FolderEntity clonedFolder = folder.clone();
-            String name = EntityService.getInstance().getAvailableName(destinationFolder.getLocation(),
-                    folder.getName() + Util.STRING_COPY_OF_NAME, false);
-            clonedFolder.setName(name);
+            File fFolder = new File(destinationFolder.getLocation() + File.separator + folder.getName());
+            if (fFolder.exists()) {
+                // if folder existed, put a prefix "- Copy" into its name
+                String name = EntityService.getInstance().getAvailableName(destinationFolder.getLocation(),
+                        folder.getName() + Util.STRING_COPY_OF_NAME, false);
+                clonedFolder.setName(name);
+            }
             clonedFolder.setParentFolder(destinationFolder);
             clonedFolder.setProject(destinationFolder.getProject());
             clonedFolder.getIntegratedEntities().clear();
