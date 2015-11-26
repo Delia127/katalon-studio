@@ -122,6 +122,9 @@ public class StringConstants extends GlobalStringConstants {
 
     // DeleteTestCaseHandler
     public static final String HAND_ERROR_MSG_UNABLE_TO_DEL_TEST_CASE = "Unable to delete Test Case.";
+    public static final String HAND_TITLE_DELETE = DELETE;
+    public static final String HAND_MSG_REMOVE_ENTITY_REF = "Currently, this file is used in some Test Cases. Do you want to remove its references as well?";
+    public static final String HAND_MSG_REMOVE_FOLDER_REF = "Currently, this folder are used in some Test Cases. Do you want to remove all the references as well?";
 
     // NewTestCaseHandler
     public static final String HAND_NEW_TEST_CASE = "New Test Case";
@@ -163,7 +166,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_MENU_SUB_AFTER = "Insert after";
     public static final String PA_BTN_TIP_REMOVE = DELETE;
     public static final String PA_BTN_TIP_CLEAR = CLEAR;
-    public static final String PA_BTN_TIP_EDIT = EDIT;
     public static final String PA_BTN_TIP_MOVE_UP = "Move up";
     public static final String PA_BTN_TIP_MOVE_DOWN = "Move down";
     public static final String PA_COL_INDEX = "#";
@@ -203,6 +205,7 @@ public class StringConstants extends GlobalStringConstants {
     // TestCaseVariablePart
     public static final String PA_COL_NO = NO_;
     public static final String PA_COL_NAME = NAME;
+    public static final String PA_COL_DEFAULT_VALUE_TYPE = "Default value type";
     public static final String PA_COL_DEFAULT_VALUE = "Default value";
     public static final String PA_ERROR_MSG_VAR_AT_INDEX_CANNOT_BE_NULL_OR_EMPTY = "The variable at index: {0} cannot be null or empty.\n";
     public static final String PA_ERROR_MSG_INVALID_VAR = "Variable {0} is not valid qualifier.\n";

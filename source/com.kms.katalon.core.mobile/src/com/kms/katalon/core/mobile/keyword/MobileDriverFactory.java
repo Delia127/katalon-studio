@@ -191,8 +191,8 @@ public class MobileDriverFactory {
 
 	private void startAppiumServer() throws Exception {
 	    String appium = System.getenv("APPIUM_HOME") + "/bin/appium.js";
-        String appiumTemp = System.getProperty("user.home") + File.separator + "Appium_Temp"
-                + System.currentTimeMillis();
+	    String appiumTemp = System.getProperty("java.io.tmpdir") + File.separator + "Katalon" + File.separator + "Appium"
+                + File.separator + "Temp" + System.currentTimeMillis();
         appiumPort = getFreePort();
         String[] cmd = { "node", appium, "--command-timeout", "3600", "--tmp", appiumTemp, "-p",
                 String.valueOf(appiumPort), "--chromedriver-port", String.valueOf(getFreePort())};

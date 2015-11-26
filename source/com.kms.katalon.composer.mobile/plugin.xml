@@ -14,20 +14,20 @@
       <page
       		category="com.kms.katalon.composer.execution.settings.default"
             class="com.kms.katalon.composer.mobile.setting.MobilePreferencePage"
-            id="com.kms.katalon.composer.mobile.mainPage"
+            id="com.kms.katalon.composer.execution.settings.default.2"
             name="Mobile">
       </page>
       <page
-            category="com.kms.katalon.composer.mobile.mainPage"
-            class="com.kms.katalon.composer.mobile.setting.IosPreferencePage"
-            id="com.kms.katalon.composer.mobile.page.ios"
-            name="iOS">
+            category="com.kms.katalon.composer.execution.settings.default.2"
+            class="com.kms.katalon.composer.mobile.setting.AndroidPreferencePage"
+            id="com.kms.katalon.composer.execution.settings.default.2.1"
+            name="Android">
       </page>
       <page
-            category="com.kms.katalon.composer.mobile.mainPage"
-            class="com.kms.katalon.composer.mobile.setting.AndroidPreferencePage"
-            id="com.kms.katalon.composer.mobile.page.android"
-            name="Android">
+            category="com.kms.katalon.composer.execution.settings.default.2"
+            class="com.kms.katalon.composer.mobile.setting.IosPreferencePage"
+            id="com.kms.katalon.composer.execution.settings.default.2.2"
+            name="iOS">
       </page>
    </extension>
 	 <extension

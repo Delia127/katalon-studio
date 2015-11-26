@@ -38,7 +38,7 @@ class WebMobileDriverFactory {
     static WebMobileDriverFactory getInstance() {
         return localWebMobileDriverFactoryStorage.get();
     }
-    
+
     private void cleanup() {
         String os = System.getProperty("os.name");
         if (os.toLowerCase().contains("win")) {
@@ -186,11 +186,11 @@ class WebMobileDriverFactory {
 
     private void startAppiumServer() throws Exception {
         String appium = System.getenv("APPIUM_HOME") + "/bin/appium.js";
-        String appiumTemp = System.getProperty("user.home") + File.separator + "Appium_Temp"
-                + System.currentTimeMillis();
+        String appiumTemp = System.getProperty("java.io.tmpdir") + File.separator + "Katalon" + File.separator + "Appium"
+                + File.separator + "Temp" + System.currentTimeMillis();
         appiumPort = getFreePort();
         String[] cmd = { "node", appium, "--command-timeout", "3600", "--tmp", appiumTemp, "-p",
-                String.valueOf(appiumPort), "--chromedriver-port", String.valueOf(getFreePort())};
+                String.valueOf(appiumPort), "--chromedriver-port", String.valueOf(getFreePort()) };
         ProcessBuilder pb = new ProcessBuilder(cmd);
         pb.redirectOutput(new File(new File(RunConfiguration.getLogFilePath()).getParent() + File.separator
                 + "appium.log"));

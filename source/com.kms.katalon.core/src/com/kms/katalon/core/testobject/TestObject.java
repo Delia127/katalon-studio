@@ -114,4 +114,9 @@ public class TestObject {
 	public void setUseRelativeImagePath(boolean useRelativeImagePath) {
 		this.useRelativeImagePath = useRelativeImagePath;
 	}
+	
+	@Override
+	public String toString() {
+	    return "TestObject - " + getObjectId();
+	}
 }

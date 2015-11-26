@@ -29,5 +29,9 @@ public class IERunConfigurationContributor implements IRunConfigurationContribut
             throws IOException, ExecutionException {
         return new IERunConfiguration(testSuite);
     }
-
+    
+    @Override
+    public int getPreferredOrder() {
+        return 2;
+    }
 }

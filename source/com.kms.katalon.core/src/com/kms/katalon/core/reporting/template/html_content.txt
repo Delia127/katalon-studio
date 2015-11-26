@@ -34,9 +34,11 @@ $(document).ready(function() {
         expandSuite(topsuite);
     }
     
-    $("#s1 :first-child").click();
+    if($("s1").attr('class') == 'element-header closed'){
+		toggleSuite('s1')
+	}
 	$("#s1").find("div[id*='s1-t']").each(function(){
-		$("#"+this.id+" :first-child").click();
+		toggleTest(this.id);
 	});
     
 });
