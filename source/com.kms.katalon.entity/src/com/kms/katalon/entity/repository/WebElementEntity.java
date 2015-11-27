@@ -52,6 +52,17 @@ public class WebElementEntity extends FileEntity {
     public WebElementEntity clone() {
         WebElementEntity newWebElement = (WebElementEntity) super.clone();
         newWebElement.setElementGuidId(UUID.randomUUID().toString());
+        newWebElement.setName(getName());
+        newWebElement.setParentFolder(getParentFolder());
+        newWebElement.setProject(getProject());
+        newWebElement.setDescription(getDescription());
+
+        newWebElement.getWebElementProperties().clear();
+        for (WebElementPropertyEntity webElementProperty : getWebElementProperties()) {
+            newWebElement.getWebElementProperties().add(webElementProperty.clone());
+        }
+        newWebElement.setImagePath(getImagePath());
+        newWebElement.setUseRalativeImagePath(getUseRalativeImagePath());
         return newWebElement;
     }
 

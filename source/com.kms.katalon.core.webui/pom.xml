@@ -10,4 +10,60 @@
 
 	<artifactId>com.kms.katalon.core.webui</artifactId>
 	<packaging>eclipse-plugin</packaging>
+	<build>
+		<plugins>		
+			<!-- Copies resources to parent's resources directory -->
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>${maven-resources-plugin.version}</version>
+				<executions>
+					<execution>						
+						<id>copy-core-webui-resources</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.parent.build.directory}/${resourcesDiretory}</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${basedir}/resources</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<!-- Generates groovy doc and copy output to parent's resources directory -->
+			<plugin>
+				<groupId>org.codehaus.gmavenplus</groupId>
+				<artifactId>gmavenplus-plugin</artifactId>
+				<version>${gmavenplus.version}</version>		
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<goals>
+							<goal>groovydoc</goal>
+						</goals>					
+					</execution>
+				</executions>				
+				<configuration>
+					<scope>public</scope>
+					<skipTests>true</skipTests>
+					<invokeDynamic>true</invokeDynamic>	
+					<groovydocOutputDirectory>${project.parent.build.directory}/${apidocDirectory}/${project.artifactId}</groovydocOutputDirectory>
+					<sources>
+						<source>
+							<directory>${project.basedir}/src</directory>
+							<includes>
+								<include>**/*.groovy</include>
+							</includes>
+						</source>			
+					</sources>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 </project> 
