@@ -33,10 +33,9 @@
 			s.display='block';
 			s.padding = '0px';
 			s.zIndex = "9999999";
-
 			document.body.appendChild(infoDiv);
-			infoDivHover=document.createElement('div');
 
+			infoDivHover=document.createElement('div');
 			s=infoDivHover.style;
 			s.fontWeight='bold';			
 			s.padding='2px';
@@ -46,10 +45,36 @@
 			s.borderColor='white';
 			s.backgroundColor='black';
 			s.color='white';
-			
 			infoDiv.appendChild(infoDivHover);			
 			hoverText=document.createTextNode('selecting');
 			infoDivHover.appendChild(hoverText);
+
+			// create instruction div to guide user how to capture object
+			var instructionDiv = document.createElement('div');
+			instructionDiv.style.position = 'fixed';
+			instructionDiv.style.zIndex = '99999999';
+			instructionDiv.style.display = 'none';
+			instructionDiv.style.opacity = '0.9';
+			instructionDiv.innerHTML = '<img src="data:image/png;base64,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" />';
+
+			document.body.appendChild(instructionDiv);
+			window.onmousemove = function(e) {
+				var x = e.clientX, y = e.clientY - 10;
+				var windowWidth = Math.max(
+						document.documentElement.clientWidth,
+						window.innerWidth || 0);
+				if ((e.clientX + 260) >= windowWidth) {
+					x = e.clientX - 260;
+				} else {
+					x = e.clientX + 20;
+				}
+				instructionDiv.style.display = 'block';
+				instructionDiv.style.left = x + 'px';
+				instructionDiv.style.top = y + 'px';
+			};
+			window.onmouseout = function() {
+				instructionDiv.style.display = 'none';
+			};
 		}
 	}
 	
