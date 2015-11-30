@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.testcase.treetable;
+package com.kms.katalon.composer.testcase.ast.treetable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,4 +60,5 @@ public class AstSwitchStatementTreeTableNode extends AstStatementTreeTableNode {
 	public int getChildObjectIndex(ASTNode astObject) {
 		return -1;
 	}
+	
 }

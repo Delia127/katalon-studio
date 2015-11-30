@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.testcase.treetable;
+package com.kms.katalon.composer.testcase.ast.treetable;
 
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;

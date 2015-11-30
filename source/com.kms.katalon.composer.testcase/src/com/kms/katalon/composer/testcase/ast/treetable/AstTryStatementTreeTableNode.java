@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.testcase.treetable;
+package com.kms.katalon.composer.testcase.ast.treetable;
 
 import java.util.List;
 

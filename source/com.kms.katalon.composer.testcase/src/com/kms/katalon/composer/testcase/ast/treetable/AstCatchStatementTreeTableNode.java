@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.testcase.treetable;
+package com.kms.katalon.composer.testcase.ast.treetable;
 
 import java.util.List;
 
@@ -10,6 +10,7 @@ import org.codehaus.groovy.ast.stmt.TryCatchStatement;
 
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.util.AstTreeTableUtil;
+import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
 
 public class AstCatchStatementTreeTableNode extends AstStatementTreeTableNode {
 	private CatchStatement catchStatement;
@@ -59,4 +60,18 @@ public class AstCatchStatementTreeTableNode extends AstStatementTreeTableNode {
 	private void setTryCatchStatement(TryCatchStatement tryCatchStatement) {
 		this.tryCatchStatement = tryCatchStatement;
 	}
+	
+	@Override
+    public boolean setInput(Object input) {
+        if (input instanceof CatchStatement) {
+            CatchStatement newCatchStatement = (CatchStatement) input;
+            if (!AstTreeTableValueUtil.compareAstNode(catchStatement, newCatchStatement) && getParent() != null) {
+                int index = tryCatchStatement.getCatchStatements().indexOf(catchStatement);
+                tryCatchStatement.getCatchStatements().remove(catchStatement);
+                tryCatchStatement.getCatchStatements().add(index, newCatchStatement);
+                return true;
+            }
+        }
+        return false;
+    }
 }

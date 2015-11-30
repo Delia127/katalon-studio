@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.testcase.util;
 
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.FieldNode;
 import org.codehaus.groovy.ast.Parameter;
 import org.codehaus.groovy.ast.expr.ArgumentListExpression;
@@ -53,6 +54,8 @@ public class AstTreeTableTextValueUtil {
 			if (parameter != ForStatement.FOR_LOOP_DUMMY) {
 				return parameter.getName();
 			}
+		} else if (object instanceof ClassNode) {
+            return ((ClassNode) object).getName();
 		}
 		return StringUtils.EMPTY;
 	}

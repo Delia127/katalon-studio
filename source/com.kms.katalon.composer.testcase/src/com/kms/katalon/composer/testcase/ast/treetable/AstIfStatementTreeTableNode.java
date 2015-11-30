@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.testcase.treetable;
+package com.kms.katalon.composer.testcase.ast.treetable;
 
 import java.util.List;
 
@@ -12,20 +12,17 @@ import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableUtil;
 
-public class AstElseIfStatementTreeTableNode extends AstStatementTreeTableNode {
+public class AstIfStatementTreeTableNode extends AstStatementTreeTableNode {
 	private IfStatement ifStatement;
-	private IfStatement rootIfStatement;
 
-	public AstElseIfStatementTreeTableNode(IfStatement statement, AstTreeTableNode parentNode, ASTNode parentObject,
-			IfStatement rootIfStatement, ClassNode scriptClass) {
+	public AstIfStatementTreeTableNode(IfStatement statement, AstTreeTableNode parentNode, ASTNode parentObject, ClassNode scriptClass) {
 		super(statement, parentNode, parentObject, scriptClass);
 		ifStatement = statement;
-		this.rootIfStatement = rootIfStatement;
 	}
 
 	@Override
 	public String getItemText() {
-		return StringConstants.TREE_ELSE_IF_STATEMENT;
+		return StringConstants.TREE_IF_STATEMENT;
 	}
 
 	@Override
@@ -53,8 +50,9 @@ public class AstElseIfStatementTreeTableNode extends AstStatementTreeTableNode {
 		return AstTreeTableUtil.getIndex(ifStatement.getIfBlock(), astObject);
 	}
 
-	public IfStatement getRootIfStatement() {
-		return rootIfStatement;
+	@Override
+	public boolean isInputEditable() {
+		return ifStatement.getBooleanExpression() != null;
 	}
 
 	@Override
@@ -67,6 +65,6 @@ public class AstElseIfStatementTreeTableNode extends AstStatementTreeTableNode {
 
 	@Override
 	public Image getNodeIcon() {
-		return ImageConstants.IMG_16_ELSE_IF;
+		return ImageConstants.IMG_16_IF;
 	}
 }

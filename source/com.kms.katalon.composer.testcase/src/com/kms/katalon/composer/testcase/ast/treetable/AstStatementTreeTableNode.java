@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.testcase.treetable;
+package com.kms.katalon.composer.testcase.ast.treetable;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,19 +25,6 @@ import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
 import com.kms.katalon.core.groovy.GroovyParser;
 
 public class AstStatementTreeTableNode extends AstAbstractTreeTableNode {
-	public class AstSwitchDefaultStatementTreeTableNode extends AstStatementTreeTableNode {
-    
-    	public AstSwitchDefaultStatementTreeTableNode(Statement statement, AstTreeTableNode parentNode,
-    			SwitchStatement parentSwitchStatement, ClassNode scriptClass) {
-    		super(statement, parentNode, parentSwitchStatement, scriptClass);
-    	}
-    
-    	@Override
-    	public String getItemText() {
-    		return StringConstants.TREE_DEFAULT_STATEMENT;
-    	}
-    }
-
     protected Statement statement;
 	protected AstTreeTableNode parentNode;
 	protected ASTNode parentAstObject;
