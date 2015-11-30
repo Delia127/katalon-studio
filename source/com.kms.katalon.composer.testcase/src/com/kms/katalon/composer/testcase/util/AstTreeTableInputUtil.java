@@ -34,10 +34,13 @@ import org.codehaus.groovy.ast.expr.PropertyExpression;
 import org.codehaus.groovy.ast.expr.RangeExpression;
 import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.codehaus.groovy.ast.stmt.AssertStatement;
+import org.codehaus.groovy.ast.stmt.CaseStatement;
+import org.codehaus.groovy.ast.stmt.CatchStatement;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.codehaus.groovy.ast.stmt.ForStatement;
 import org.codehaus.groovy.ast.stmt.IfStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
+import org.codehaus.groovy.ast.stmt.SwitchStatement;
 import org.codehaus.groovy.ast.stmt.WhileStatement;
 import org.codehaus.groovy.syntax.Token;
 import org.codehaus.groovy.syntax.Types;
@@ -49,6 +52,8 @@ import org.eclipse.swt.widgets.Composite;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.ast.editors.BinaryCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.BooleanCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.CaseCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.CatchCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.ClosureListInputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.ForInputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.ListInputCellEditor;
@@ -56,6 +61,7 @@ import com.kms.katalon.composer.testcase.ast.editors.MapInputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.MethodCallInputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.PropertyInputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.RangeInputCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.SwitchCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.TestDataValueCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.TestObjectCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.TypeInputCellEditor;
@@ -100,6 +106,8 @@ public class AstTreeTableInputUtil {
             return getCellEditorForToken(parent, (Token) astObject);
         } else if (astObject instanceof Parameter) {
             return getCellEditorForParameter(parent, (Parameter) astObject);
+        } else if (astObject instanceof ClassNode) {
+            return new TypeInputCellEditor(parent, AstTreeTableTextValueUtil.getTextValue(astObject));
         }
         return null;
     }
@@ -142,6 +150,15 @@ public class AstTreeTableInputUtil {
         } else if (statement instanceof WhileStatement) {
             return new BooleanCellEditor(parent, AstTreeTableTextValueUtil.getTextValue(((WhileStatement) statement)
                     .getBooleanExpression()), scriptClass);
+        } else if (statement instanceof SwitchStatement) {
+            return new SwitchCellEditor(parent, AstTreeTableTextValueUtil.getTextValue(((SwitchStatement) statement)
+                    .getExpression()), scriptClass);
+        } else if (statement instanceof CaseStatement) {
+            return new CaseCellEditor(parent, AstTreeTableTextValueUtil.getTextValue(((CaseStatement) statement)
+                    .getExpression()), scriptClass);
+        } else if (statement instanceof CatchStatement) {
+            return new CatchCellEditor(parent, AstTreeTableTextValueUtil.getTextValue(((CatchStatement) statement)
+                    .getVariable()), scriptClass);
         }
         return null;
     }
@@ -913,7 +930,8 @@ public class AstTreeTableInputUtil {
                 || paramClassName.equals(Long.class.getName()) || paramClassName.equals(Long.TYPE.getName())
                 || paramClassName.equals(Float.class.getName()) || paramClassName.equals(Float.TYPE.getName())
                 || paramClassName.equals(Double.class.getName()) || paramClassName.equals(Double.TYPE.getName())
-                || paramClassName.equals(BigInteger.class.getName()) || paramClassName.equals(BigDecimal.class.getName())) {
+                || paramClassName.equals(BigInteger.class.getName())
+                || paramClassName.equals(BigDecimal.class.getName())) {
             if (existingParamClassName.equals(Byte.class.getName())
                     || existingParamClassName.equals(Byte.TYPE.getName())
                     || existingParamClassName.equals(Short.class.getName())

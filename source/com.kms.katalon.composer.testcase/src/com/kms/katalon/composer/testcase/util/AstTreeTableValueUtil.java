@@ -19,10 +19,13 @@ import org.codehaus.groovy.ast.expr.PropertyExpression;
 import org.codehaus.groovy.ast.expr.RangeExpression;
 import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.codehaus.groovy.ast.stmt.AssertStatement;
+import org.codehaus.groovy.ast.stmt.CaseStatement;
+import org.codehaus.groovy.ast.stmt.CatchStatement;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.codehaus.groovy.ast.stmt.ForStatement;
 import org.codehaus.groovy.ast.stmt.IfStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
+import org.codehaus.groovy.ast.stmt.SwitchStatement;
 import org.codehaus.groovy.ast.stmt.WhileStatement;
 import org.codehaus.groovy.syntax.Numbers;
 import org.codehaus.groovy.syntax.Token;
@@ -142,7 +145,13 @@ public class AstTreeTableValueUtil {
             return statement;
         } else if (statement instanceof WhileStatement) {
             return ((WhileStatement) statement).getBooleanExpression();
-        }
+        } else if (statement instanceof SwitchStatement) {
+            return statement;
+        } else if (statement instanceof CaseStatement) {
+            return statement;
+        } else if (statement instanceof CatchStatement) {
+            return statement;
+        } 
         return null;
     }
 
@@ -167,6 +176,17 @@ public class AstTreeTableValueUtil {
             return setValue((Token) object, value);
         } else if (object instanceof Parameter) {
             return setValue((Parameter) object, value);
+        } else if (object instanceof ClassNode) {
+            return setValue((ClassNode) object, value, scriptClass);
+        }
+        return null;
+    }
+
+    private static Object setValue(ClassNode classNode, Object value, ClassNode scriptClass) {
+        if (value instanceof BinaryType) {
+            BinaryType binaryType = (BinaryType) value;
+            Class<?> valueClass = AstTreeTableInputUtil.loadType(binaryType.getFullyQualifiedName(), scriptClass);
+            return new ClassNode(valueClass);
         }
         return null;
     }
@@ -382,6 +402,14 @@ public class AstTreeTableValueUtil {
                 && !compareAstNode(((WhileStatement) statement).getBooleanExpression(), value)) {
             ((WhileStatement) statement).setBooleanExpression((BooleanExpression) value);
             return true;
+        } else if (statement instanceof SwitchStatement && value instanceof SwitchStatement
+                && !compareAstNode(statement, value)) {
+            ((SwitchStatement) statement).setExpression( ((SwitchStatement) value).getExpression());
+            return true;
+        } else if (statement instanceof CaseStatement && value instanceof CaseStatement
+                && !compareAstNode(statement, value)) {
+            ((CaseStatement) statement).setExpression( ((CaseStatement) value).getExpression());
+            return true;
         }
         return false;
     }
@@ -397,6 +425,8 @@ public class AstTreeTableValueUtil {
             return getInputValueTypeForExpression(((ExpressionStatement) object).getExpression(), scriptClass);
         } else if (object instanceof Expression) {
             return getInputValueTypeForExpression((Expression) object, scriptClass);
+        } else if (object instanceof ClassNode) {
+            return InputValueType.Class;
         }
         return null;
     }
