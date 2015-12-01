@@ -202,14 +202,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
             }
             setScriptContentToManual();
             childTestCaseVariablesPart.loadVariables();
-            
-            // load test case variables into script
-            try {
-                childTestCasePart.getTreeTableInput().reloadTreeTableNode();
-            } catch (Exception e) {
-                LoggerSingleton.logError(e);
-            }
-            
+            childTestCasePart.getTreeTableInput().reloadTestCaseVariables();
             childTestCaseIntegrationPart.loadInput();
             isInitialized = true;
         }

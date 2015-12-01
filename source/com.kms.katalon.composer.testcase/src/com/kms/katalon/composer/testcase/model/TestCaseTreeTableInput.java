@@ -624,6 +624,12 @@ public class TestCaseTreeTableInput {
                 }
             }
         }
+        reloadTestCaseVariables();
+        treeTableViewer.setInput(astTreeTableNodes);
+    }
+
+    public void reloadTestCaseVariables() {
+        mainClassNode.getFields().clear();
         for (VariableEntity variable : parentPart.getVariables()) {
             Expression defaultExpression = new ConstantExpression(null);
             try {
@@ -638,7 +644,6 @@ public class TestCaseTreeTableInput {
             mainClassNode.addField(new FieldNode(variable.getName(), Modifier.PUBLIC, new ClassNode(Object.class),
                     mainClassNode, defaultExpression));
         }
-        treeTableViewer.setInput(astTreeTableNodes);
     }
 
     public void removeSelectedRows() throws Exception {

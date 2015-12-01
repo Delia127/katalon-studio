@@ -327,6 +327,7 @@ public class TestCaseVariablePart {
 
     public void setDirty(boolean isDirty) {
         mpart.setDirty(isDirty);
+        parentTestCaseCompositePart.getChildTestCasePart().getTreeTableInput().reloadTestCaseVariables();
         parentTestCaseCompositePart.checkDirty();
     }
 
