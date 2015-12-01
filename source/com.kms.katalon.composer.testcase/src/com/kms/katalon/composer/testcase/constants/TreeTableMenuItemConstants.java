@@ -15,7 +15,6 @@ public class TreeTableMenuItemConstants {
 	
 	public static final String MENU_ITEM_ID_KEY = "MENU_ITEM_ID_KEY";
 	
-	public static final int CONTROL_STATEMENT_MENU_ITEM_ID = 1;
 	public static final int IF_STATEMENT_MENU_ITEM_ID = 1;
 	public static final int ELSE_STATEMENT_MENU_ITEM_ID = 2;
 	public static final int ELSE_IF_STATEMENT_MENU_ITEM_ID = 3;
@@ -24,6 +23,20 @@ public class TreeTableMenuItemConstants {
 	public static final int BINARY_STATEMENT_MENU_ITEM_ID = 6;
 	public static final int ASSERT_STATEMENT_MENU_ITEM_ID = 7;
 	public static final int CALL_METHOD_STATMENT_MENU_ITEM_ID = 8;
+	public static final int BREAK_STATMENT_MENU_ITEM_ID = 9;
+	public static final int CONTINUE_STATMENT_MENU_ITEM_ID = 10;
+	public static final int RETURN_STATMENT_MENU_ITEM_ID = 11;
+	public static final int SWITCH_STATMENT_MENU_ITEM_ID = 12;
+	public static final int CASE_STATMENT_MENU_ITEM_ID = 13;
+	public static final int DEFAULT_STATMENT_MENU_ITEM_ID = 14;
+	public static final int TRY_STATEMENT_MENU_ITEM_ID = 15;
+	public static final int CATCH_STATMENT_MENU_ITEM_ID = 16;
+	public static final int FINALLY_STATMENT_MENU_ITEM_ID = 17;
+	
+	public static final int DECISION_MAKING_STATEMENT_MENU_ITEM_ID = 20;
+    public static final int LOOPING_STATEMENT_MENU_ITEM_ID = 21;
+    public static final int BRANCHING_STATEMENT_MENU_ITEM_ID = 22;
+    public static final int EXCEPTION_HANDLING_STATEMENT_MENU_ITEM_ID = 23;
 	
 	public static final int CUSTOM_KEYWORD_MENU_ITEM_ID = 32;
 	public static final int BUILTIN_KEYWORD_MENU_ITEM_ID = 33;
@@ -39,17 +52,29 @@ public class TreeTableMenuItemConstants {
 	public static final int CHANGE_FAILURE_HANDLING_MENU_ITEM_ID = 128;
 	public static final String FAILURE_HANDLING_KEY = "FAILURE_HANDLING_KEY";
 
-	public static final String CONDITION_STATEMENT_MENU_ITEM_LABEL = StringConstants.CONS_MENU_CONTEXT_CONDITION_STATEMENT;
-	public static final String ASSERT_STATEMENT_MENU_ITEM_LABEL = StringConstants.CONS_MENU_CONTEXT_ASSERT_STATEMENT;
-	public static final String BINARY_STATEMENT_MENU_ITEM_LABEL = StringConstants.CONS_MENU_CONTEXT_BINARY_STATEMENT;
-	public static final String FOR_STATEMENT_MENU_ITEM_LABEL = StringConstants.CONS_MENU_CONTEXT_FOR_STATEMENT;
-	public static final String WHILE_STATEMENT_MENU_ITEM_LABEL = StringConstants.CONS_MENU_CONTEXT_WHILE_STATEMENT;
-	public static final String ELSE_IF_STATEMENT_MENU_ITEM_LABEL = StringConstants.CONS_MENU_CONTEXT_ELSE_IF_STATEMENT;
-	public static final String ELSE_STATEMENT_MENU_ITEM_LABEL = StringConstants.CONS_MENU_CONTEXT_ELSE_STATEMENT;
-	public static final String IF_STATEMENT_MENU_ITEM_LABEL = StringConstants.CONS_MENU_CONTEXT_IF_STATEMENT;
+	public static final String ASSERT_STATEMENT_MENU_ITEM_LABEL = StringConstants.TREE_ASSERT_STATEMENT;
+	public static final String BINARY_STATEMENT_MENU_ITEM_LABEL = StringConstants.TREE_BINARY_STATEMENT;
+	public static final String FOR_STATEMENT_MENU_ITEM_LABEL = StringConstants.TREE_FOR_STATEMENT;
+	public static final String WHILE_STATEMENT_MENU_ITEM_LABEL = StringConstants.TREE_WHILE_STATEMENT;
+	public static final String ELSE_IF_STATEMENT_MENU_ITEM_LABEL = StringConstants.TREE_ELSE_IF_STATEMENT;
+	public static final String ELSE_STATEMENT_MENU_ITEM_LABEL = StringConstants.TREE_ELSE_STATEMENT;
+	public static final String IF_STATEMENT_MENU_ITEM_LABEL = StringConstants.TREE_IF_STATEMENT;
 	public static final String CUSTOM_KEYWORD_MENU_ITEM_LABEL = StringConstants.CONS_MENU_CONTEXT_CUSTOM_KEYWORD;
 	public static final String CALL_TEST_CASE_MENU_ITEM_LABEL = StringConstants.CONS_MENU_CONTEXT_CALL_TEST_CASE;
-	public static final String CALL_METHOD_STATEMENT_MENU_ITEM_LABEL = StringConstants.CONS_MENU_CONTEXT_CALL_METHOD_STATEMENT;
+	public static final String SWITCH_STATEMENT_MENU_ITEM_LABEL = StringConstants.TREE_SWITCH_STATEMENT;
+	public static final String CASE_STATEMENT_MENU_ITEM_LABEL = StringConstants.TREE_CASE_STATEMENT;
+	public static final String DEFAULT_STATEMENT_MENU_ITEM_LABEL = StringConstants.TREE_DEFAULT_STATEMENT;
+	public static final String BREAK_STATEMENT_MENU_ITEM_LABEL = StringConstants.TREE_BREAK_STATEMENT;
+	public static final String CONTINUE_STATEMENT_MENU_ITEM_LABEL = StringConstants.TREE_CONTINUE_STATEMENT;
+	public static final String RETURN_STATEMENT_MENU_ITEM_LABEL = StringConstants.TREE_RETURN_STATEMENT;
+	public static final String TRY_STATEMENT_MENU_ITEM_LABEL = StringConstants.TREE_TRY_STATEMENT;
+	public static final String CATCH_STATEMENT_MENU_ITEM_LABEL = StringConstants.TREE_CATCH_STATEMENT;
+	public static final String FINALLY_STATEMENT_MENU_ITEM_LABEL = StringConstants.TREE_FINALLY_STATEMENT;
+	public static final String CALL_METHOD_STATEMENT_MENU_ITEM_LABEL = StringConstants.TREE_METHOD_CALL_STATEMENT;
+	public static final String DECISION_MAKING_STATEMENT_MENU_ITEM_LABEL = StringConstants.CONS_MENU_CONTEXT_DECISION_MAKING_STATEMENT;
+    public static final String LOOPING_STATEMENT_MENU_ITEM_LABEL = StringConstants.CONS_MENU_CONTEXT_LOOPING_STATEMENT;
+    public static final String BRANCHING_STATEMENT_MENU_ITEM_LABEL = StringConstants.CONS_MENU_CONTEXT_BRANCHING_STATEMENT;
+    public static final String EXCEPTION_HANDLING_STATEMENT_MENU_ITEM_LABEL = StringConstants.CONS_MENU_CONTEXT_EXCEPTION_HANDLING_STATEMENT;
 	
 	public static final String METHOD_MENU_ITEM_LABEL = StringConstants.CONS_MENU_CONTEXT_METHOD;
 	

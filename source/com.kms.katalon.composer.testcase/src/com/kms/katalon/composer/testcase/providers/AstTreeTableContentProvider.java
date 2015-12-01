@@ -8,8 +8,8 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.testcase.treetable.AstScriptMainBlockStatmentTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstScriptMainBlockStatmentTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 
 public class AstTreeTableContentProvider implements ITreeContentProvider {
 

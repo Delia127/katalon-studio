@@ -13,6 +13,8 @@ import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.expr.ArgumentListExpression;
 import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.codehaus.groovy.ast.stmt.AssertStatement;
+import org.codehaus.groovy.ast.stmt.BreakStatement;
+import org.codehaus.groovy.ast.stmt.ContinueStatement;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -84,6 +86,8 @@ import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.composer.testcase.adapters.TreeTableMouseAdapter;
 import com.kms.katalon.composer.testcase.ast.dialogs.MethodObjectBuilderDialog;
+import com.kms.katalon.composer.testcase.ast.treetable.AstStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.components.FocusCellOwnerDrawHighlighterForMultiSelection;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
@@ -103,8 +107,6 @@ import com.kms.katalon.composer.testcase.support.InputColumnEditingSupport;
 import com.kms.katalon.composer.testcase.support.ItemColumnEditingSupport;
 import com.kms.katalon.composer.testcase.support.OutputColumnEditingSupport;
 import com.kms.katalon.composer.testcase.support.TestObjectEditingSupport;
-import com.kms.katalon.composer.testcase.treetable.AstStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransfer;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransferData;
 import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
@@ -524,7 +526,8 @@ public class TestCasePart implements EventHandler {
             protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
                 if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION) {
                     EventObject source = event.sourceEvent;
-                    if (source instanceof MouseEvent && ((MouseEvent) source).button == 3) return false;
+                    if (source instanceof MouseEvent && ((MouseEvent) source).button == 3)
+                        return false;
 
                     return true;
                 } else if (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && event.keyCode == SWT.CR) {
@@ -817,75 +820,102 @@ public class TestCasePart implements EventHandler {
         Object value = menuItem.getData(TreeTableMenuItemConstants.MENU_ITEM_ACTION_KEY);
         if (value instanceof AddAction) {
             switch ((AddAction) value) {
-                case Add:
-                    addType = NodeAddType.Add;
-                    break;
-                case InsertAfter:
-                    addType = NodeAddType.InserAfter;
-                    break;
-                case InsertBefore:
-                    addType = NodeAddType.InserBefore;
-                    break;
+            case Add:
+                addType = NodeAddType.Add;
+                break;
+            case InsertAfter:
+                addType = NodeAddType.InserAfter;
+                break;
+            case InsertBefore:
+                addType = NodeAddType.InserBefore;
+                break;
 
             }
         }
         switch (menuItem.getID()) {
-            case TreeTableMenuItemConstants.CUSTOM_KEYWORD_MENU_ITEM_ID:
-                addNewCustomKeyword(addType);
-                break;
-            case TreeTableMenuItemConstants.IF_STATEMENT_MENU_ITEM_ID:
-                addNewIfStatement(addType);
-                break;
-            case TreeTableMenuItemConstants.ELSE_STATEMENT_MENU_ITEM_ID:
-                addNewElseStatement();
-                break;
-            case TreeTableMenuItemConstants.ELSE_IF_STATEMENT_MENU_ITEM_ID:
-                addNewElseIfStatement(addType);
-                break;
-            case TreeTableMenuItemConstants.WHILE_STATEMENT_MENU_ITEM_ID:
-                addNewWhileStatement(addType);
-                break;
-            case TreeTableMenuItemConstants.FOR_STATEMENT_MENU_ITEM_ID:
-                addNewForStatement(addType);
-                break;
-            case TreeTableMenuItemConstants.BINARY_STATEMENT_MENU_ITEM_ID:
-                addNewBinaryStatement(addType);
-                break;
-            case TreeTableMenuItemConstants.ASSERT_STATEMENT_MENU_ITEM_ID:
-                addNewAssertStatement(addType);
-                break;
-            case TreeTableMenuItemConstants.CALL_METHOD_STATMENT_MENU_ITEM_ID:
-                addNewMethodCall(addType);
-                break;
-            case TreeTableMenuItemConstants.REMOVE_MENU_ITEM_ID:
-                removeTestStep();
-                break;
-            case TreeTableMenuItemConstants.CHANGE_FAILURE_HANDLING_MENU_ITEM_ID:
-                Object failureHandlingValue = menuItem.getData(TreeTableMenuItemConstants.FAILURE_HANDLING_KEY);
-                if (failureHandlingValue instanceof FailureHandling) {
-                    changeKeywordFailureHandling((FailureHandling) failureHandlingValue);
-                }
-                break;
-            case TreeTableMenuItemConstants.COPY_MENU_ITEM_ID:
-                copyTestStep();
-                break;
-            case TreeTableMenuItemConstants.CUT_MENU_ITEM_ID:
-                cutTestStep();
-                break;
-            case TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID:
-                pasteTestStep();
-                break;
-            case TreeTableMenuItemConstants.CALL_TEST_CASE_MENU_ITEM_ID:
-                callTestCase(addType);
-                break;
-            case TreeTableMenuItemConstants.METHOD_MENU_ITEM_ID:
-                addNewMethod(addType);
-                break;
-            default:
-                if (TreeTableMenuItemConstants.isBuildInKeywordID(menuItem.getID())) {
-                    addNewBuiltInKeyword(menuItem.getID(), addType);
-                }
-                break;
+        case TreeTableMenuItemConstants.CUSTOM_KEYWORD_MENU_ITEM_ID:
+            addNewCustomKeyword(addType);
+            break;
+        case TreeTableMenuItemConstants.IF_STATEMENT_MENU_ITEM_ID:
+            addNewIfStatement(addType);
+            break;
+        case TreeTableMenuItemConstants.ELSE_STATEMENT_MENU_ITEM_ID:
+            addNewElseStatement();
+            break;
+        case TreeTableMenuItemConstants.ELSE_IF_STATEMENT_MENU_ITEM_ID:
+            addNewElseIfStatement(addType);
+            break;
+        case TreeTableMenuItemConstants.WHILE_STATEMENT_MENU_ITEM_ID:
+            addNewWhileStatement(addType);
+            break;
+        case TreeTableMenuItemConstants.FOR_STATEMENT_MENU_ITEM_ID:
+            addNewForStatement(addType);
+            break;
+        case TreeTableMenuItemConstants.BINARY_STATEMENT_MENU_ITEM_ID:
+            addNewBinaryStatement(addType);
+            break;
+        case TreeTableMenuItemConstants.ASSERT_STATEMENT_MENU_ITEM_ID:
+            addNewAssertStatement(addType);
+            break;
+        case TreeTableMenuItemConstants.CALL_METHOD_STATMENT_MENU_ITEM_ID:
+            addNewMethodCall(addType);
+            break;
+        case TreeTableMenuItemConstants.BREAK_STATMENT_MENU_ITEM_ID:
+            addNewBreakStatement(addType);
+            break;
+        case TreeTableMenuItemConstants.CONTINUE_STATMENT_MENU_ITEM_ID:
+            addNewContinueStatement(addType);
+            break;
+        case TreeTableMenuItemConstants.RETURN_STATMENT_MENU_ITEM_ID:
+            addNewReturnStatement(addType);
+            break;
+        case TreeTableMenuItemConstants.SWITCH_STATMENT_MENU_ITEM_ID:
+            addNewSwitchStatement(addType);
+            break;
+        case TreeTableMenuItemConstants.CASE_STATMENT_MENU_ITEM_ID:
+            addNewCaseStatement(addType);
+            break;
+        case TreeTableMenuItemConstants.DEFAULT_STATMENT_MENU_ITEM_ID:
+            addNewDefaultStatement(addType);
+            break;
+        case TreeTableMenuItemConstants.TRY_STATEMENT_MENU_ITEM_ID:
+            addNewTryStatement(addType);
+            break;
+        case TreeTableMenuItemConstants.CATCH_STATMENT_MENU_ITEM_ID:
+            addNewCatchStatement(addType);
+            break;
+        case TreeTableMenuItemConstants.FINALLY_STATMENT_MENU_ITEM_ID:
+            addNewFinallyStatement(addType);
+            break;
+        case TreeTableMenuItemConstants.REMOVE_MENU_ITEM_ID:
+            removeTestStep();
+            break;
+        case TreeTableMenuItemConstants.CHANGE_FAILURE_HANDLING_MENU_ITEM_ID:
+            Object failureHandlingValue = menuItem.getData(TreeTableMenuItemConstants.FAILURE_HANDLING_KEY);
+            if (failureHandlingValue instanceof FailureHandling) {
+                changeKeywordFailureHandling((FailureHandling) failureHandlingValue);
+            }
+            break;
+        case TreeTableMenuItemConstants.COPY_MENU_ITEM_ID:
+            copyTestStep();
+            break;
+        case TreeTableMenuItemConstants.CUT_MENU_ITEM_ID:
+            cutTestStep();
+            break;
+        case TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID:
+            pasteTestStep();
+            break;
+        case TreeTableMenuItemConstants.CALL_TEST_CASE_MENU_ITEM_ID:
+            callTestCase(addType);
+            break;
+        case TreeTableMenuItemConstants.METHOD_MENU_ITEM_ID:
+            addNewMethod(addType);
+            break;
+        default:
+            if (TreeTableMenuItemConstants.isBuildInKeywordID(menuItem.getID())) {
+                addNewBuiltInKeyword(menuItem.getID(), addType);
+            }
+            break;
         }
     }
 
@@ -1077,6 +1107,96 @@ public class TestCasePart implements EventHandler {
         }
     }
 
+    private void addNewBreakStatement(NodeAddType addType) {
+        try {
+            treeTableInput.addNewAstObject(new BreakStatement(), addType);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_BREAK_STATEMENT);
+        }
+    }
+
+    private void addNewContinueStatement(NodeAddType addType) {
+        try {
+            treeTableInput.addNewAstObject(new ContinueStatement(), addType);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_CONTINUE_STATEMENT);
+        }
+    }
+    
+    private void addNewReturnStatement(NodeAddType addType) {
+        try {
+            treeTableInput.addNewAstObject(AstTreeTableEntityUtil.getNewReturnStatement(), addType);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_RETURN_STATEMENT);
+        }
+    }
+
+    private void addNewSwitchStatement(NodeAddType addType) {
+        try {
+            treeTableInput.addNewAstObject(AstTreeTableEntityUtil.getNewSwitchStatement(), addType);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_SWITCH_STATEMENT);
+        }
+    }
+
+    private void addNewCaseStatement(NodeAddType addType) {
+        try {
+            treeTableInput.addCaseStatement(AstTreeTableEntityUtil.getNewCaseStatement(), addType);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_CASE_STATEMENT);
+        }
+    }
+
+    private void addNewDefaultStatement(NodeAddType addType) {
+        try {
+            treeTableInput.addDefaultStatement();
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_DEFAULT_STATEMENT);
+        }
+    }
+
+    private void addNewTryStatement(NodeAddType addType) {
+        try {
+            treeTableInput.addNewAstObject(AstTreeTableEntityUtil.getNewTryCatchStatement(), addType);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_TRY_STATEMENT);
+        }
+    }
+
+    private void addNewCatchStatement(NodeAddType addType) {
+        try {
+            treeTableInput.addCatchStatement(AstTreeTableEntityUtil.getNewCatchStatement(), addType);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_CATCH_STATEMENT);
+        }
+    }
+
+    private void addNewFinallyStatement(NodeAddType addType) {
+        try {
+            treeTableInput.addFinallyStatement();
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_FINALLY_STATEMENT);
+        }
+    }
+
     private void changeKeywordFailureHandling(FailureHandling failureHandling) {
         try {
             treeTableInput.changeFailureHandling(failureHandling);
@@ -1131,7 +1251,8 @@ public class TestCasePart implements EventHandler {
                 if (dialog.open() == Window.OK) {
                     Object[] selectedObjects = dialog.getResult();
                     for (Object object : selectedObjects) {
-                        if (!(object instanceof ITreeEntity)) continue;
+                        if (!(object instanceof ITreeEntity))
+                            continue;
 
                         ITreeEntity treeEntity = (ITreeEntity) object;
                         if (treeEntity.getObject() instanceof FolderEntity) {
@@ -1158,7 +1279,8 @@ public class TestCasePart implements EventHandler {
     }
 
     public boolean qualify(TestCaseEntity calledTestCase) {
-        if (calledTestCase == null) return false;
+        if (calledTestCase == null)
+            return false;
 
         if (getTestCase().getId().equals(calledTestCase.getId())) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
@@ -1272,5 +1394,9 @@ public class TestCasePart implements EventHandler {
 
     public void addVariables(VariableEntity[] variables) {
         parentTestCaseCompositePart.addVariables(variables);
+    }
+    
+    public VariableEntity[] getVariables() {
+        return parentTestCaseCompositePart.getVariables();
     }
 }

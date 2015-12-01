@@ -204,9 +204,9 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:qAutomate Object Spy Extension For IE"
+        "ProductName" = "8:Katalon Object Spy Extension For IE"
         "ProductCode" = "8:{2C86A5FD-239E-43C1-B81F-E40496856BFD}"
-        "PackageCode" = "8:{7C5CE072-A2A0-43EC-AB74-D9BB086EED53}"
+        "PackageCode" = "8:{64F8CBD8-2306-4D0F-8EAF-6A00C5DEBC47}"
         "UpgradeCode" = "8:{25A7969B-2331-4E97-947C-7E841BBE39AC}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -755,7 +755,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_7076F58604EE494D9E68B17DB30C62C1"
             {
-            "SourcePath" = "8:..\\ObjectSpyExtension\\obj\\Release\\ObjectSpyExtension.dll"
+            "SourcePath" = "8:..\\ObjectSpyExtension\\obj\\Debug\\ObjectSpyExtension.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_CE34C82D187D4C9FAD4728D75841849B"
@@ -783,7 +783,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_74D7AD9E26954D479A129D15DC5C99C5"
             {
-            "SourcePath" = "8:..\\ObjectSpyExtension\\obj\\Release\\ObjectSpyExtension.dll"
+            "SourcePath" = "8:..\\ObjectSpyExtension\\obj\\Debug\\ObjectSpyExtension.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_437356A97EAD427A9CD24A79DE64959E"

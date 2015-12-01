@@ -11,8 +11,10 @@ import org.codehaus.groovy.ast.expr.ClosureListExpression;
 import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.stmt.ForStatement;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 
@@ -28,9 +30,9 @@ import com.kms.katalon.core.groovy.GroovyParser;
 
 public class ForInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
     private final InputValueType[] defaultInputValueTypes = { InputValueType.Range, InputValueType.ClosureList,
-            InputValueType.String, InputValueType.Number, InputValueType.Boolean, InputValueType.Null,
-            InputValueType.Variable, InputValueType.GlobalVariable, InputValueType.TestDataValue,
-            InputValueType.Property };
+            InputValueType.List, InputValueType.Map, InputValueType.String, InputValueType.Number,
+            InputValueType.Boolean, InputValueType.Null, InputValueType.Variable, InputValueType.GlobalVariable,
+            InputValueType.TestDataValue, InputValueType.Property };
 
     private static final String DIALOG_TITLE = StringConstants.DIA_TITLE_FOR_INPUT;
 
@@ -107,12 +109,73 @@ public class ForInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
         tableViewerColumnValueType.getColumn().setWidth(100);
         tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider(scriptClass));
         tableViewerColumnValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer,
-                defaultInputValueTypes, ICustomInputValueType.TAG_FOR, this, scriptClass));
+                defaultInputValueTypes, ICustomInputValueType.TAG_FOR, this, scriptClass) {
+            @Override
+            protected boolean canEdit(Object element) {
+                if (element == collectionExpression) {
+                    return super.canEdit(element);
+                }
+                return false;
+            }
+        });
 
         TableViewerColumn tableViewerColumnValue = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnValue.getColumn().setText(StringConstants.DIA_COL_VALUE);
         tableViewerColumnValue.getColumn().setWidth(300);
-        tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider(scriptClass));
-        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this, scriptClass));
+        tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider(scriptClass) { 
+            @Override
+            public String getText(Object element) {
+                if (element == collectionExpression) {
+                    return super.getText(element);
+                } else if (element == variable && variable != ForStatement.FOR_LOOP_DUMMY) {
+                    return variable.getName();
+                }
+                return "";
+            }
+        });
+        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this, scriptClass) {
+            @Override
+            protected CellEditor getCellEditor(Object element) {
+                if (element == collectionExpression) {
+                    return super.getCellEditor(element);
+                } else if (element == variable) {
+                    return new TextCellEditor(tableViewer.getTable());
+                }
+                return null;
+            }
+
+            @Override
+            protected Object getValue(Object element) {
+                if (element == collectionExpression) {
+                    return super.getValue(element);
+                } else if (element == variable) {
+                    if (variable != ForStatement.FOR_LOOP_DUMMY) {
+                        return variable.getName();
+                    }
+                }
+                return "";
+            }
+
+            @Override
+            protected void setValue(Object element, Object value) {
+                if (element == collectionExpression) {
+                    super.setValue(element, value);
+                } else if (element == variable && value instanceof String) {
+                    Parameter newVariable = new Parameter(new ClassNode(Object.class), (String) value);
+                    parentDialog.changeObject(element, newVariable);
+                    getViewer().refresh();
+                }
+            }
+
+            @Override
+            protected boolean canEdit(Object element) {
+                if (element == collectionExpression) {
+                    return super.canEdit(element);
+                } else if (element == variable && !(collectionExpression instanceof ClosureListExpression)) {
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 }

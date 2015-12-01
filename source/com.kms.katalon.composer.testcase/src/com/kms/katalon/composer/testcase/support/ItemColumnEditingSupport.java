@@ -6,9 +6,9 @@ import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TreeViewer;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.testcase.ast.treetable.AstMethodTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
-import com.kms.katalon.composer.testcase.treetable.AstMethodTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstTreeTableNode;
 
 public class ItemColumnEditingSupport extends EditingSupport {
 	private TreeViewer treeViewer;

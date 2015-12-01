@@ -52,7 +52,9 @@ public class AstInputBuilderValueTypeColumnSupport extends EditingSupport {
     protected Object getValue(Object element) {
         if (element instanceof ASTNode) {
             IInputValueType valueType = AstTreeTableValueUtil.getTypeValue((ASTNode) element, scriptClass);
-            return inputValueTypeNames.indexOf(valueType.getName());
+            if (valueType != null) {
+                return inputValueTypeNames.indexOf(valueType.getName());
+            }
         }
         return 0;
     }

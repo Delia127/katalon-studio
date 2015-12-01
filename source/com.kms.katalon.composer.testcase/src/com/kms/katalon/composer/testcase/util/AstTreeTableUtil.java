@@ -14,8 +14,10 @@ import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.codehaus.groovy.ast.stmt.AssertStatement;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
+import org.codehaus.groovy.ast.stmt.BreakStatement;
 import org.codehaus.groovy.ast.stmt.CaseStatement;
 import org.codehaus.groovy.ast.stmt.CatchStatement;
+import org.codehaus.groovy.ast.stmt.ContinueStatement;
 import org.codehaus.groovy.ast.stmt.EmptyStatement;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.codehaus.groovy.ast.stmt.ForStatement;
@@ -26,30 +28,33 @@ import org.codehaus.groovy.ast.stmt.SwitchStatement;
 import org.codehaus.groovy.ast.stmt.TryCatchStatement;
 import org.codehaus.groovy.ast.stmt.WhileStatement;
 
-import com.kms.katalon.composer.testcase.treetable.AstAbstractKeywordTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstAssertStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstBinaryStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstBuiltInKeywordTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstCallTestCaseKeywordTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstCaseStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstCatchStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstClassTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstCommentStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstCustomKeywordTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstElseIfStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstElseStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstFieldTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstFinallyStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstForStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstIfStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstMethodCallStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstMethodTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstScriptMainBlockStatmentTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstSwitchStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstTryStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstWhileStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstAbstractKeywordTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstAssertStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstBinaryStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstBreakStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstBuiltInKeywordTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstCallTestCaseKeywordTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstCaseStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstCatchStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstClassTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstCommentStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstContinueStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstCustomKeywordTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstElseIfStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstElseStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstFieldTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstFinallyStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstForStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstIfStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstMethodCallStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstMethodTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstReturnStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstScriptMainBlockStatmentTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstSwitchStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstTryStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstWhileStatementTreeTableNode;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.custom.factory.BuiltInMethodNodeFactory;
 
@@ -123,9 +128,19 @@ public class AstTreeTableUtil {
             astTreeTableNodes.add(new AstCatchStatementTreeTableNode(catchStatement, parentNode, tryCatchStatement,
                     scriptClass));
         }
-        if (tryCatchStatement.getFinallyStatement() != null) {
-            astTreeTableNodes.add(new AstFinallyStatementTreeTableNode(tryCatchStatement.getFinallyStatement(),
-                    parentNode, tryCatchStatement, scriptClass));
+        if (tryCatchStatement.getFinallyStatement() != null
+                && !(tryCatchStatement.getFinallyStatement() instanceof EmptyStatement)) {
+            if (tryCatchStatement.getFinallyStatement() instanceof BlockStatement) {
+                BlockStatement blockStatement = (BlockStatement) tryCatchStatement.getFinallyStatement();
+                if (blockStatement.getStatements().size() == 1
+                        && blockStatement.getStatements().get(0) instanceof BlockStatement) {
+                    astTreeTableNodes.add(new AstFinallyStatementTreeTableNode(blockStatement.getStatements().get(0),
+                            parentNode, tryCatchStatement, scriptClass));
+                }
+            } else {
+                astTreeTableNodes.add(new AstFinallyStatementTreeTableNode(tryCatchStatement.getFinallyStatement(),
+                        parentNode, tryCatchStatement, scriptClass));
+            }
         }
         return astTreeTableNodes;
     }
@@ -214,6 +229,15 @@ public class AstTreeTableUtil {
                     parentObject, (IfStatement) statement, scriptClass));
         } else if (statement instanceof TryCatchStatement) {
             astTreeTableNodes.addAll(getChildren((TryCatchStatement) statement, parentNode, parentObject, scriptClass));
+        } else if (statement instanceof BreakStatement) {
+            astTreeTableNodes.add(parseAstObjectIntoTreeTableNode((BreakStatement) statement, parentNode, parentObject,
+                    scriptClass));
+        } else if (statement instanceof ContinueStatement) {
+            astTreeTableNodes.add(parseAstObjectIntoTreeTableNode((ContinueStatement) statement, parentNode,
+                    parentObject, scriptClass));
+        } else if (statement instanceof ReturnStatement) {
+            astTreeTableNodes.add(parseAstObjectIntoTreeTableNode((ReturnStatement) statement, parentNode,
+                    parentObject, scriptClass));
         } else if (!(statement instanceof EmptyStatement)
                 && !(statement instanceof ReturnStatement && ((ReturnStatement) statement).getExpression() == null)) {
             astTreeTableNodes.add(new AstStatementTreeTableNode(statement, parentNode, parentObject, scriptClass));
@@ -248,6 +272,21 @@ public class AstTreeTableUtil {
     private static AstTreeTableNode parseAstObjectIntoTreeTableNode(AssertStatement assertStatement,
             AstTreeTableNode parentNode, ASTNode parentObject, ClassNode scriptClass) {
         return new AstAssertStatementTreeTableNode(assertStatement, parentNode, parentObject, scriptClass);
+    }
+
+    private static AstTreeTableNode parseAstObjectIntoTreeTableNode(BreakStatement breakStatement,
+            AstTreeTableNode parentNode, ASTNode parentObject, ClassNode scriptClass) {
+        return new AstBreakStatementTreeTableNode(breakStatement, parentNode, parentObject, scriptClass);
+    }
+
+    private static AstTreeTableNode parseAstObjectIntoTreeTableNode(ContinueStatement continueStatement,
+            AstTreeTableNode parentNode, ASTNode parentObject, ClassNode scriptClass) {
+        return new AstContinueStatementTreeTableNode(continueStatement, parentNode, parentObject, scriptClass);
+    }
+
+    private static AstTreeTableNode parseAstObjectIntoTreeTableNode(ReturnStatement returnStatement,
+            AstTreeTableNode parentNode, ASTNode parentObject, ClassNode scriptClass) {
+        return new AstReturnStatementTreeTableNode(returnStatement, parentNode, parentObject, scriptClass);
     }
 
     private static AstTreeTableNode parseAstObjectIntoTreeTableNode(ExpressionStatement expressionStatement,

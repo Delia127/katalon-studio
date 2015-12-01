@@ -574,33 +574,20 @@ public class GroovyParser {
             parse((DoWhileStatement) statement);
         } else if (statement instanceof SynchronizedStatement) {
             parse((SynchronizedStatement) statement);
+        } else if (statement instanceof CaseStatement) {
+            parse((CaseStatement) statement);
+        } else if (statement instanceof CatchStatement) {
+            parse((CatchStatement) statement);
+        } else if (statement instanceof ContinueStatement) {
+            parse((ContinueStatement) statement);
         }
     }
 
     public void parse(BlockStatement blockStatement) {
         Iterator<Statement> iterator = blockStatement.getStatements().iterator();
-        Statement replaceReturnStatement = null;
         while (iterator.hasNext()) {
             Statement statement = iterator.next();
-            if (statement instanceof ReturnStatement) {
-                ReturnStatement returnStatement = (ReturnStatement) statement;
-                if (returnStatement.getExpression() instanceof ConstantExpression
-                        && ((ConstantExpression) returnStatement.getExpression()).getValue() == null) {
-                    iterator.remove();
-                } else if (returnStatement.getExpression() instanceof BinaryExpression
-                        || returnStatement.getExpression() instanceof MethodCallExpression) {
-                    replaceReturnStatement = new ExpressionStatement(returnStatement.getExpression());
-                    iterator.remove();
-                }
-            } else {
-                parse(statement);
-                printLineBreak();
-            }
-
-        }
-        if (replaceReturnStatement != null) {
-            blockStatement.addStatement(replaceReturnStatement);
-            parse(replaceReturnStatement);
+            parse(statement);
             printLineBreak();
         }
     }
@@ -628,6 +615,11 @@ public class GroovyParser {
 
     public void parse(BreakStatement breakStatement) {
         print("break");
+        printLineBreak();
+    }
+
+    public void parse(ContinueStatement continueStatement) {
+        print("continue");
         printLineBreak();
     }
 

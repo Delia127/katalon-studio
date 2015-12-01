@@ -6,8 +6,8 @@ import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.graphics.Image;
 
-import com.kms.katalon.composer.testcase.treetable.AstStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
 
 public class AstTreeLabelProvider extends StyledCellLabelProvider {
