@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.codehaus.groovy.ast.ClassNode;
+import org.codehaus.groovy.ast.FieldNode;
 import org.codehaus.groovy.ast.ImportNode;
 import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.groovy.ast.Parameter;
@@ -49,6 +50,7 @@ import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.components.impl.editors.StringComboBoxCellEditor;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.ast.editors.BinaryCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.BooleanCellEditor;
@@ -284,7 +286,11 @@ public class AstTreeTableInputUtil {
         if (type != null) {
             return new TypeInputCellEditor(parent, AstTreeTableTextValueUtil.getTextValue(variableExpression));
         }
-        return new TextCellEditor(parent);
+        List<String> variableStringList = new ArrayList<String>();
+        for (FieldNode field : scriptClass.getFields()) {
+            variableStringList.add(field.getName());
+        }
+        return new StringComboBoxCellEditor(parent, variableStringList.toArray(new String[variableStringList.size()]));
     }
 
     private static CellEditor getCellEditorForListExpression(Composite parent, ListExpression listExpression,

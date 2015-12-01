@@ -1,17 +1,22 @@
 package com.kms.katalon.composer.testcase.model;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;
+import org.codehaus.groovy.ast.FieldNode;
 import org.codehaus.groovy.ast.ImportNode;
 import org.codehaus.groovy.ast.MethodNode;
+import org.codehaus.groovy.ast.expr.ConstantExpression;
+import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.ast.stmt.CaseStatement;
 import org.codehaus.groovy.ast.stmt.CatchStatement;
 import org.codehaus.groovy.ast.stmt.EmptyStatement;
+import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.codehaus.groovy.ast.stmt.IfStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.ast.stmt.SwitchStatement;
@@ -25,6 +30,7 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TreeItem;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.ast.treetable.AstAbstractKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstCaseStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstCatchStatementTreeTableNode;
@@ -48,6 +54,7 @@ import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableUtil;
 import com.kms.katalon.core.groovy.GroovyParser;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.entity.variable.VariableEntity;
 
 public class TestCaseTreeTableInput {
     private static final String GROOVY_NEW_LINE_CHARACTER = "\n";
@@ -477,9 +484,9 @@ public class TestCaseTreeTableInput {
                 && selectedTreeTableNode.getASTObject() instanceof TryCatchStatement) {
             TryCatchStatement tryStatement = (TryCatchStatement) selectedTreeTableNode.getASTObject();
             tryStatement.addCatch(catchStatement);
-            refresh(selectedTreeTableNode);
-            setSelection(selectedTreeTableNode, catchStatement);
-            setEdit(selectedTreeTableNode, catchStatement);
+            refresh(selectedTreeTableNode.getParent());
+            setSelection(selectedTreeTableNode.getParent(), catchStatement);
+            setEdit(selectedTreeTableNode.getParent(), catchStatement);
             setDirty(true);
         } else if (selectedTreeTableNode instanceof AstCatchStatementTreeTableNode
                 && selectedTreeTableNode.getASTObject() instanceof CatchStatement
@@ -605,7 +612,7 @@ public class TestCaseTreeTableInput {
         return expandedElements;
     }
 
-    private void reloadTreeTableNode() throws Exception {
+    public void reloadTreeTableNode() throws Exception {
         astTreeTableNodes = new ArrayList<AstTreeTableNode>();
         for (ASTNode astNode : astNodes) {
             if (astNode instanceof ClassNode) {
@@ -616,6 +623,20 @@ public class TestCaseTreeTableInput {
                     astTreeTableNodes.add(new AstClassTreeTableNode((ClassNode) astNode, null));
                 }
             }
+        }
+        for (VariableEntity variable : parentPart.getVariables()) {
+            Expression defaultExpression = new ConstantExpression(null);
+            try {
+                ASTNode variableDefaultValue = GroovyParser
+                        .parseGroovyScriptAndGetFirstItem(variable.getDefaultValue());
+                if (variableDefaultValue instanceof ExpressionStatement) {
+                    defaultExpression = ((ExpressionStatement) variableDefaultValue).getExpression();
+                }
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+            mainClassNode.addField(new FieldNode(variable.getName(), Modifier.PUBLIC, new ClassNode(Object.class),
+                    mainClassNode, defaultExpression));
         }
         treeTableViewer.setInput(astTreeTableNodes);
     }
@@ -679,11 +700,11 @@ public class TestCaseTreeTableInput {
             TryCatchStatement tryCatchStatement = (TryCatchStatement) treeTableNode.getParentASTObject();
             if ((tryCatchStatement.getFinallyStatement() == null || tryCatchStatement.getFinallyStatement() instanceof EmptyStatement)
                     && tryCatchStatement.getCatchStatements().size() == 1) {
-                MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.WARN, StringConstants.WARN_TRY_STATEMENT_MUST_HAVE_CATCH_OR_FINALLY);
+                MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.WARN,
+                        StringConstants.WARN_TRY_STATEMENT_MUST_HAVE_CATCH_OR_FINALLY);
                 return;
             }
-            tryCatchStatement.getCatchStatements().remove(
-                    treeTableNode.getASTObject());
+            tryCatchStatement.getCatchStatements().remove(treeTableNode.getASTObject());
             refreshObjectWithoutReloading(treeTableNode.getParent());
             setDirty(true);
         } else if (treeTableNode instanceof AstSwitchDefaultStatementTreeTableNode
@@ -695,7 +716,8 @@ public class TestCaseTreeTableInput {
                 && treeTableNode.getParentASTObject() instanceof TryCatchStatement) {
             TryCatchStatement tryCatchStatement = (TryCatchStatement) treeTableNode.getParentASTObject();
             if (tryCatchStatement.getCatchStatements().isEmpty()) {
-                MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.WARN, StringConstants.WARN_TRY_STATEMENT_MUST_HAVE_CATCH_OR_FINALLY);
+                MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.WARN,
+                        StringConstants.WARN_TRY_STATEMENT_MUST_HAVE_CATCH_OR_FINALLY);
                 return;
             }
             ((TryCatchStatement) treeTableNode.getParentASTObject()).setFinallyStatement(new EmptyStatement());

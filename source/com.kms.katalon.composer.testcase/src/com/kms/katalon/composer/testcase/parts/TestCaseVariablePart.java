@@ -265,7 +265,7 @@ public class TestCaseVariablePart {
     public void addVariable(VariableEntity[] variablesArray) {
         for (VariableEntity addedVariable : variablesArray) {
             boolean exists = false;
-            for (VariableEntity currentVariable : getVariables()) {
+            for (VariableEntity currentVariable : variables) {
                 if (currentVariable.getName().equals(addedVariable.getName())) {
                     exists = true;
                     break;
@@ -343,8 +343,11 @@ public class TestCaseVariablePart {
         return this.mpart;
     }
 
-    public List<VariableEntity> getVariables() {
-        return variables;
+    public VariableEntity[] getVariables() {
+        if (variables == null) {
+            return new VariableEntity[0];
+        }
+        return variables.toArray(new VariableEntity[variables.size()]);
     }
 
     public boolean validateVariables() {
