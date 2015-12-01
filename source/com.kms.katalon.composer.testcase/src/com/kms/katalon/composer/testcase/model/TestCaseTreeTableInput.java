@@ -477,9 +477,9 @@ public class TestCaseTreeTableInput {
                 && selectedTreeTableNode.getASTObject() instanceof TryCatchStatement) {
             TryCatchStatement tryStatement = (TryCatchStatement) selectedTreeTableNode.getASTObject();
             tryStatement.addCatch(catchStatement);
-            refresh(selectedTreeTableNode);
-            setSelection(selectedTreeTableNode, catchStatement);
-            setEdit(selectedTreeTableNode, catchStatement);
+            refresh(selectedTreeTableNode.getParent());
+            setSelection(selectedTreeTableNode.getParent(), catchStatement);
+            setEdit(selectedTreeTableNode.getParent(), catchStatement);
             setDirty(true);
         } else if (selectedTreeTableNode instanceof AstCatchStatementTreeTableNode
                 && selectedTreeTableNode.getASTObject() instanceof CatchStatement

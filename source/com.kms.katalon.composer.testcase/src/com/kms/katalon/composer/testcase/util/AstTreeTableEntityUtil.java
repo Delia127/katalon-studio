@@ -107,7 +107,7 @@ public class AstTreeTableEntityUtil {
     }
 
     public static TryCatchStatement getNewTryCatchStatement() {
-        return new TryCatchStatement(new BlockStatement(), new BlockStatement());
+        return new TryCatchStatement(new BlockStatement(), getNewFinallyStatement());
     }
     
     public static Statement getNewFinallyStatement() {
