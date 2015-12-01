@@ -7,7 +7,7 @@
  * renaming/restructuring
  * 
  *******************************************************************************/
-package com.kms.katalon.composer.webservice.editors;
+package com.kms.katalon.composer.components.impl.editors;
 
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.swt.custom.CCombo;

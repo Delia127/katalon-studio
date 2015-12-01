@@ -202,6 +202,14 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
             }
             setScriptContentToManual();
             childTestCaseVariablesPart.loadVariables();
+            
+            // load test case variables into script
+            try {
+                childTestCasePart.getTreeTableInput().reloadTreeTableNode();
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+            
             childTestCaseIntegrationPart.loadInput();
             isInitialized = true;
         }
@@ -317,7 +325,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
             }
         };
     }
-    
+
     public TestCasePart getChildTestCasePart() {
         return childTestCasePart;
     }
@@ -353,6 +361,10 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
 
     public void addVariables(VariableEntity[] variables) {
         childTestCaseVariablesPart.addVariable(variables);
+    }
+
+    public VariableEntity[] getVariables() {
+        return childTestCaseVariablesPart.getVariables();
     }
 
     public void addStatements(List<Statement> statements) throws Exception {
@@ -401,7 +413,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                 // Part
                 // which refer to test case
                 eventBroker.send(EventConstants.TESTCASE_UPDATED, new Object[] { oldPk, originalTestCase });
-                
+
                 originalTestCase.setScriptContents(new byte[0]);
                 temp.setScriptContents(new byte[0]);
                 return true;
@@ -409,7 +421,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                 // revert
                 TestCaseEntityUtil.copyTestCaseProperties(temp, originalTestCase);
                 originalTestCase.setScriptContents(temp.getScriptContents());
-                
+
                 LoggerSingleton.logError(e);
                 MessageDialog.openWarning(Display.getCurrent().getActiveShell(), StringConstants.WARN_TITLE,
                         e.getMessage());

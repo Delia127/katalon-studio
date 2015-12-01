@@ -1395,4 +1395,8 @@ public class TestCasePart implements EventHandler {
     public void addVariables(VariableEntity[] variables) {
         parentTestCaseCompositePart.addVariables(variables);
     }
+    
+    public VariableEntity[] getVariables() {
+        return parentTestCaseCompositePart.getVariables();
+    }
 }
