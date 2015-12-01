@@ -510,6 +510,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                                 boolean isDirty = dirty.isDirty();
                                 changeOriginalTestCase(testCase);
                                 childTestCaseVariablesPart.loadVariables();
+                                childTestCasePart.getTreeTableInput().reloadTestCaseVariables();
                                 updatePart(testCase);
                                 childTestCaseIntegrationPart.loadInput();
                                 checkDirty();
@@ -589,6 +590,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         // refresh child parts
         childTestCasePart.updateInput();
         childTestCaseVariablesPart.loadVariables();
+        childTestCasePart.getTreeTableInput().reloadTestCaseVariables();
         childTestCaseIntegrationPart.loadInput();
 
         checkDirty();
