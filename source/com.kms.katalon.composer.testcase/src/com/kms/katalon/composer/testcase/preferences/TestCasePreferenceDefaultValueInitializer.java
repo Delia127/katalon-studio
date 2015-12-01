@@ -36,6 +36,7 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
         store.setDefault(PreferenceConstants.TestCasePreferenceConstants.TESTCASE_AUTO_EXPORT_VARIABLE, false);
 
         // Default Added Keyword
+        store.setDefault(PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE, "");
         store.setDefault(PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORDS, "");
 
         // Default Failure Handling
@@ -61,10 +62,6 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
         return "callTestCase";
     }
 
-    public static IKeywordContributor getDefaultKeywordContributor() {
-        return KeywordController.getInstance().getBuiltInKeywordContributors().get(0);
-    }
-
     public static Map<String, String> getDefaultKeywords() {
         IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
                 PreferenceConstants.TestCasePreferenceConstants.QUALIFIER);
@@ -81,6 +78,18 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
         }
 
         return defaultKeywords;
+    }
+
+    public static IKeywordContributor getDefaultKeywordType() throws Exception {
+        IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
+                PreferenceConstants.TestCasePreferenceConstants.QUALIFIER);
+        String keywordType = store
+                .getString(PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE);
+        IKeywordContributor contributor = KeywordController.getInstance().getBuiltInKeywordContributor(keywordType);
+        if (contributor == null) {
+            contributor = KeywordController.getInstance().getBuiltInKeywordContributors().get(0);
+        }
+        return contributor;
     }
 
     public static String getDefaultMethodName(IKeywordContributor contributor) {

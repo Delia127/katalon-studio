@@ -118,6 +118,7 @@ import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.core.groovy.GroovyParser;
+import com.kms.katalon.core.keyword.IKeywordContributor;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCaseFactory;
 import com.kms.katalon.core.testobject.ObjectRepository;
@@ -806,12 +807,16 @@ public class TestCasePart implements EventHandler {
     }
 
     private void openToolItemMenu(ToolItem toolItem, SelectionEvent selectionEvent) {
-        if (toolItem.getData() instanceof Menu) {
-            Rectangle rect = toolItem.getBounds();
-            Point pt = toolItem.getParent().toDisplay(new Point(rect.x, rect.y));
-            Menu menu = (Menu) toolItem.getData();
-            menu.setLocation(pt.x, pt.y + rect.height);
-            menu.setVisible(true);
+        if (selectionEvent.detail == SWT.ARROW) {
+            if (toolItem.getData() instanceof Menu) {
+                Rectangle rect = toolItem.getBounds();
+                Point pt = toolItem.getParent().toDisplay(new Point(rect.x, rect.y));
+                Menu menu = (Menu) toolItem.getData();
+                menu.setLocation(pt.x, pt.y + rect.height);
+                menu.setVisible(true);
+            }
+        } else {
+            addNewDefaultBuiltInKeyword(NodeAddType.Add);
         }
     }
 
@@ -961,23 +966,23 @@ public class TestCasePart implements EventHandler {
         }
     }
 
-    // private void addNewDefaultBuiltInKeyword(NodeAddType addType) {
-    // try {
-    // IKeywordContributor defaultBuiltinKeywordContributor = TestCasePreferenceDefaultValueInitializer
-    // .getDefaultKeywordContributor();
-    // Method defaultMethod = TestCasePreferenceDefaultValueInitializer.getDefaultKeyword();
-    // String keywordMethodName = defaultMethod.getName();
-    // treeTableInput.addImport(defaultBuiltinKeywordContributor.getKeywordClass());
-    // treeTableInput.addImport(ObjectRepository.class);
-    // treeTableInput.addImport(TestCaseFactory.class);
-    // treeTableInput.addImport(FailureHandling.class);
-    // treeTableInput.addNewAstObject(AstTreeTableInputUtil.createBuiltInKeywordMethodCall(
-    // defaultBuiltinKeywordContributor.getKeywordClass().getSimpleName(), keywordMethodName), addType);
-    // } catch (Exception e) {
-    // LoggerSingleton.logError(e);
-    // MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_CANNOT_ADD_KEYWORD);
-    // }
-    // }
+    private void addNewDefaultBuiltInKeyword(NodeAddType addType) {
+        try {
+            IKeywordContributor defaultBuiltinKeywordContributor = TestCasePreferenceDefaultValueInitializer
+                    .getDefaultKeywordType();
+            String defaultSettingKeywordName = TestCasePreferenceDefaultValueInitializer.getDefaultKeywords().get(
+                    defaultBuiltinKeywordContributor.getKeywordClass().getName());
+            treeTableInput.addImport(defaultBuiltinKeywordContributor.getKeywordClass());
+            treeTableInput.addImport(ObjectRepository.class);
+            treeTableInput.addImport(TestCaseFactory.class);
+            treeTableInput.addImport(FailureHandling.class);
+            treeTableInput.addNewAstObject(AstTreeTableInputUtil.createBuiltInKeywordMethodCall(
+                    defaultBuiltinKeywordContributor.getKeywordClass().getSimpleName(), defaultSettingKeywordName), addType);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_CANNOT_ADD_KEYWORD);
+        }
+    }
 
     private void addNewBuiltInKeyword(int id, NodeAddType addType) {
         try {
@@ -1126,7 +1131,7 @@ public class TestCasePart implements EventHandler {
                     StringConstants.PA_ERROR_MSG_CANNOT_ADD_CONTINUE_STATEMENT);
         }
     }
-    
+
     private void addNewReturnStatement(NodeAddType addType) {
         try {
             treeTableInput.addNewAstObject(AstTreeTableEntityUtil.getNewReturnStatement(), addType);
@@ -1395,7 +1400,7 @@ public class TestCasePart implements EventHandler {
     public void addVariables(VariableEntity[] variables) {
         parentTestCaseCompositePart.addVariables(variables);
     }
-    
+
     public VariableEntity[] getVariables() {
         return parentTestCaseCompositePart.getVariables();
     }
