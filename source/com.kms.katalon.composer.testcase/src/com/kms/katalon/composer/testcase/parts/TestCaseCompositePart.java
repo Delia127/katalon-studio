@@ -249,7 +249,6 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
 
     private void cloneTestCase() {
         testCase = originalTestCase.clone();
-        TestCaseEntityUtil.copyTestCaseProperties(originalTestCase, testCase);
         testCase.setTestCaseGuid(originalTestCase.getTestCaseGuid());
     }
 
