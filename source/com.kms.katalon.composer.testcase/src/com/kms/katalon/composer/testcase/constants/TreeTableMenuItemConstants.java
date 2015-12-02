@@ -22,7 +22,7 @@ public class TreeTableMenuItemConstants {
 	public static final int FOR_STATEMENT_MENU_ITEM_ID = 5;
 	public static final int BINARY_STATEMENT_MENU_ITEM_ID = 6;
 	public static final int ASSERT_STATEMENT_MENU_ITEM_ID = 7;
-	public static final int CALL_METHOD_STATMENT_MENU_ITEM_ID = 8;
+	public static final int CALL_METHOD_STATEMENT_MENU_ITEM_ID = 8;
 	public static final int BREAK_STATMENT_MENU_ITEM_ID = 9;
 	public static final int CONTINUE_STATMENT_MENU_ITEM_ID = 10;
 	public static final int RETURN_STATMENT_MENU_ITEM_ID = 11;

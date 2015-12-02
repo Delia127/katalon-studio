@@ -979,7 +979,7 @@ public class AstTreeTableInputUtil {
 
     public static ExpressionStatement generateCallTestCaseExpresionStatement(TestCaseEntity testCase) throws Exception {
         IKeywordContributor defaultBuiltinKeywordContributor = TestCasePreferenceDefaultValueInitializer
-                .getDefaultKeywordContributor();
+                .getDefaultKeywordType();
 
         List<Expression> expressionArguments = new ArrayList<Expression>();
         MethodCallExpression keywordMethodCallExpression = new MethodCallExpression(new VariableExpression(

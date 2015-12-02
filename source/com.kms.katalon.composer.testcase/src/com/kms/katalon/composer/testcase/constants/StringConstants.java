@@ -237,6 +237,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PREF_BTN_GEN_VAR_WITH_THE_SAME_NAME = "Generate variable with the same name as the exposed variable of the called test case";
     public static final String PREF_BTN_EXPOSE_VARS_AUTO = "Expose variables automatically after choosing the called test case";
     public static final String PREF_LBL_DEFAULT_FAILURE_HANDLING = "Default Failure Handling";
+    public static final String PREF_LBL_DEFAULT_KEYWORD_TYPE = "Default Keyword Type";
     public static final String PREF_GRP_DEFAULT_KEYWORD = "Default Keyword";
     public static final String PREF_LBL_KEYWORK_TYPE = "Keyword Type";
     public static final String PREF_LBL_KEYWORK_NAME = "Keyword Name";
@@ -308,6 +309,7 @@ public class StringConstants extends GlobalStringConstants {
     // KeywordBrowserPart
     public static final String KEYWORD_BROWSER_BUILTIN_KEYWORD_ROOT_TREE_ITEM_LABEL = "Built-in Keywords";
     public static final String KEYWORD_BROWSER_CUSTOM_KEYWORD_ROOT_TREE_ITEM_LABEL = "Custom Keywords";
+    public static final String KEYWORD_BROWSER_CONTROL_KEYWORD_ROOT_TREE_ITEM_LABEL = "Utils";
 
     // TestCaseReferencesDialog
     public static final String DIA_MSG_HEADER_TEST_CASE_REFERENCES = "Test case ''{0}'' has been referred by some test "
