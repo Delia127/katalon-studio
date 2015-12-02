@@ -18,7 +18,7 @@ import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.annotation.Keyword;
 
-public class CustomKeywordFolderBrowserTreeEntity extends KeywordFolderBrowserTreeEntity {
+public class CustomKeywordFolderBrowserTreeEntity extends KeywordBrowserFolderTreeEntity {
 	private static final String KEYWORD_OBJECT_ANNOTATION_METHOD = "keywordObject";
 	private static final long serialVersionUID = 1L;
 	private static final String simpleName = StringConstants.KEYWORD_BROWSER_CUSTOM_KEYWORD_ROOT_TREE_ITEM_LABEL;
@@ -70,7 +70,7 @@ public class CustomKeywordFolderBrowserTreeEntity extends KeywordFolderBrowserTr
 		Iterator<Entry<String, List<Method>>> it = methodActionMap.entrySet().iterator();
 		while (it.hasNext()) {
 			Entry<String, List<Method>> pair = (Entry<String, List<Method>>) it.next();
-			KeywordFolderBrowserTreeEntity keywordFolder = new KeywordFolderBrowserTreeEntity(pair.getKey(), this);
+			KeywordBrowserFolderTreeEntity keywordFolder = new KeywordBrowserFolderTreeEntity(pair.getKey(), this);
 			for (Method method : pair.getValue()) {
 				keywordFolder.children.add(new KeywordBrowserTreeEntity(simpleName, method.getDeclaringClass()
 						.getName() + "." + method.getName(), true, keywordFolder));

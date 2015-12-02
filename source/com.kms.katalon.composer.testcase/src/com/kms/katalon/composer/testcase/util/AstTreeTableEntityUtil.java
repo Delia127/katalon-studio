@@ -341,7 +341,7 @@ public class AstTreeTableEntityUtil {
 
         addNewMenuItem(addAction, selectionListener, actionMenu,
                 TreeTableMenuItemConstants.CALL_METHOD_STATEMENT_MENU_ITEM_LABEL,
-                TreeTableMenuItemConstants.CALL_METHOD_STATMENT_MENU_ITEM_ID, SWT.PUSH);
+                TreeTableMenuItemConstants.CALL_METHOD_STATEMENT_MENU_ITEM_ID, SWT.PUSH);
 
         addNewMenuItem(addAction, selectionListener, actionMenu, TreeTableMenuItemConstants.METHOD_MENU_ITEM_LABEL,
                 TreeTableMenuItemConstants.METHOD_MENU_ITEM_ID, SWT.PUSH);

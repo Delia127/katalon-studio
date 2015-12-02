@@ -31,12 +31,14 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
 import com.kms.katalon.composer.testcase.keywords.BuiltinKeywordFolderBrowserTreeEntity;
 import com.kms.katalon.composer.testcase.keywords.CustomKeywordFolderBrowserTreeEntity;
 import com.kms.katalon.composer.testcase.keywords.IKeywordBrowserTreeEntity;
+import com.kms.katalon.composer.testcase.keywords.KeywordBrowserControlTreeEntity;
 import com.kms.katalon.composer.testcase.keywords.KeywordBrowserTreeEntity;
 import com.kms.katalon.composer.testcase.keywords.KeywordBrowserTreeEntityTransfer;
-import com.kms.katalon.composer.testcase.keywords.KeywordFolderBrowserTreeEntity;
+import com.kms.katalon.composer.testcase.keywords.KeywordBrowserFolderTreeEntity;
 import com.kms.katalon.composer.testcase.providers.KeywordBrowserEntityViewerFilter;
 import com.kms.katalon.composer.testcase.providers.KeywordTreeContentProvider;
 import com.kms.katalon.composer.testcase.providers.KeywordTreeLabelProvider;
@@ -75,7 +77,7 @@ public class KeywordBrowserPart implements EventHandler {
         dragSource.setTransfer(new Transfer[] { new KeywordBrowserTreeEntityTransfer() });
         dragSource.addDragListener(new DragSourceListener() {
             public void dragStart(DragSourceEvent event) {
-                List<KeywordBrowserTreeEntity> treeEntities = getKeywordTreeEntityFromTree();
+                List<IKeywordBrowserTreeEntity> treeEntities = getKeywordTreeEntityFromTree();
                 if (treeEntities.size() > 0) {
                     event.doit = true;
                 } else {
@@ -84,23 +86,26 @@ public class KeywordBrowserPart implements EventHandler {
             }
 
             public void dragSetData(DragSourceEvent event) {
-                List<KeywordBrowserTreeEntity> treeEntities = getKeywordTreeEntityFromTree();
+                List<IKeywordBrowserTreeEntity> treeEntities = getKeywordTreeEntityFromTree();
                 if (treeEntities.size() > 0) {
-                    event.data = treeEntities.toArray(new KeywordBrowserTreeEntity[treeEntities.size()]);
+                    event.data = treeEntities.toArray(new IKeywordBrowserTreeEntity[treeEntities.size()]);
                 }
             }
 
             public void dragFinished(DragSourceEvent event) {
+                // do nothing
             }
         });
     }
 
-    private List<KeywordBrowserTreeEntity> getKeywordTreeEntityFromTree() {
+    private List<IKeywordBrowserTreeEntity> getKeywordTreeEntityFromTree() {
         TreeItem[] selection = treeViewer.getTree().getSelection();
-        List<KeywordBrowserTreeEntity> treeEntities = new ArrayList<KeywordBrowserTreeEntity>();
+        List<IKeywordBrowserTreeEntity> treeEntities = new ArrayList<IKeywordBrowserTreeEntity>();
         for (TreeItem item : selection) {
             if (item.getData() instanceof KeywordBrowserTreeEntity) {
                 treeEntities.add((KeywordBrowserTreeEntity) item.getData());
+            } else if (item.getData() instanceof KeywordBrowserControlTreeEntity) {
+                treeEntities.add((KeywordBrowserControlTreeEntity) item.getData());
             }
         }
         return treeEntities;
@@ -196,25 +201,142 @@ public class KeywordBrowserPart implements EventHandler {
     }
 
     protected void loadTreeData() {
+        KeywordBrowserFolderTreeEntity builtinKeywordRootFolder = loadBuiltinKeywordFolderTreeEntity();
+        CustomKeywordFolderBrowserTreeEntity customKeywordRootFolder = new CustomKeywordFolderBrowserTreeEntity(null);
+
+        List<IKeywordBrowserTreeEntity> keywordTreeEntities = new ArrayList<IKeywordBrowserTreeEntity>();
+        keywordTreeEntities.add(builtinKeywordRootFolder);
+        keywordTreeEntities.add(customKeywordRootFolder);
+        keywordTreeEntities.add(loadControlKeywordFolderTreeEntity());
+        treeViewer.setInput(keywordTreeEntities);
+        treeViewer.refresh();
+    }
+
+    private static KeywordBrowserFolderTreeEntity loadBuiltinKeywordFolderTreeEntity() {
         List<IKeywordContributor> builtInKeywordContributors = KeywordController.getInstance()
                 .getBuiltInKeywordContributors();
 
-        KeywordFolderBrowserTreeEntity builtinKeywordRootFolder = new KeywordFolderBrowserTreeEntity(
-                StringConstants.KEYWORD_BROWSER_BUILTIN_KEYWORD_ROOT_TREE_ITEM_LABEL, null);
         List<IKeywordBrowserTreeEntity> keywordTreeEntities = new ArrayList<IKeywordBrowserTreeEntity>();
+        KeywordBrowserFolderTreeEntity builtinKeywordRootFolder = new KeywordBrowserFolderTreeEntity(
+                StringConstants.KEYWORD_BROWSER_BUILTIN_KEYWORD_ROOT_TREE_ITEM_LABEL, null, keywordTreeEntities);
         for (IKeywordContributor builtInKeywordContributor : builtInKeywordContributors) {
             keywordTreeEntities.add(new BuiltinKeywordFolderBrowserTreeEntity(builtInKeywordContributor
                     .getKeywordClass().getName(), builtInKeywordContributor.getKeywordClass().getSimpleName(),
                     builtInKeywordContributor.getLabelName(), builtinKeywordRootFolder));
         }
-        builtinKeywordRootFolder.setChildren(keywordTreeEntities);
-        CustomKeywordFolderBrowserTreeEntity customKeywordRootFolder = new CustomKeywordFolderBrowserTreeEntity(null);
+        return builtinKeywordRootFolder;
+    }
 
-        keywordTreeEntities = new ArrayList<IKeywordBrowserTreeEntity>();
-        keywordTreeEntities.add(builtinKeywordRootFolder);
-        keywordTreeEntities.add(customKeywordRootFolder);
-        treeViewer.setInput(keywordTreeEntities);
-        treeViewer.refresh();
+    private static KeywordBrowserFolderTreeEntity loadControlKeywordFolderTreeEntity() {
+        List<IKeywordBrowserTreeEntity> controlKeywordFolders = new ArrayList<IKeywordBrowserTreeEntity>();
+        KeywordBrowserFolderTreeEntity controlKeywordFolderTreeEntity = new KeywordBrowserFolderTreeEntity(
+                StringConstants.KEYWORD_BROWSER_CONTROL_KEYWORD_ROOT_TREE_ITEM_LABEL, null, controlKeywordFolders);
+
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
+                TreeTableMenuItemConstants.CALL_TEST_CASE_MENU_ITEM_ID,
+                TreeTableMenuItemConstants.CALL_TEST_CASE_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
+
+        controlKeywordFolders.add(loadDecisionMakingControlKeywordFolderTreeEntity(controlKeywordFolderTreeEntity));
+        controlKeywordFolders.add(loadLoopingControlKeywordFolderTreeEntity(controlKeywordFolderTreeEntity));
+        controlKeywordFolders.add(loadBranchingControlKeywordFolderTreeEntity(controlKeywordFolderTreeEntity));
+        controlKeywordFolders.add(loadExceptionHandlingControlKeywordFolderTreeEntity(controlKeywordFolderTreeEntity));
+
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
+                TreeTableMenuItemConstants.BINARY_STATEMENT_MENU_ITEM_ID,
+                TreeTableMenuItemConstants.BINARY_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
+
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
+                TreeTableMenuItemConstants.ASSERT_STATEMENT_MENU_ITEM_ID,
+                TreeTableMenuItemConstants.ASSERT_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
+
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
+                TreeTableMenuItemConstants.CALL_METHOD_STATEMENT_MENU_ITEM_ID,
+                TreeTableMenuItemConstants.CALL_METHOD_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
+
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(TreeTableMenuItemConstants.METHOD_MENU_ITEM_ID,
+                TreeTableMenuItemConstants.METHOD_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
+
+        return controlKeywordFolderTreeEntity;
+    }
+
+    private static KeywordBrowserFolderTreeEntity loadDecisionMakingControlKeywordFolderTreeEntity(
+            KeywordBrowserFolderTreeEntity parentFolderTreeEntity) {
+        List<IKeywordBrowserTreeEntity> controlKeywordFolders = new ArrayList<IKeywordBrowserTreeEntity>();
+        KeywordBrowserFolderTreeEntity controlKeywordFolderTreeEntity = new KeywordBrowserFolderTreeEntity(
+                TreeTableMenuItemConstants.DECISION_MAKING_STATEMENT_MENU_ITEM_LABEL, parentFolderTreeEntity,
+                controlKeywordFolders);
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
+                TreeTableMenuItemConstants.IF_STATEMENT_MENU_ITEM_ID,
+                TreeTableMenuItemConstants.IF_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
+                TreeTableMenuItemConstants.ELSE_STATEMENT_MENU_ITEM_ID,
+                TreeTableMenuItemConstants.ELSE_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
+                TreeTableMenuItemConstants.ELSE_IF_STATEMENT_MENU_ITEM_ID,
+                TreeTableMenuItemConstants.ELSE_IF_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
+                TreeTableMenuItemConstants.SWITCH_STATMENT_MENU_ITEM_ID,
+                TreeTableMenuItemConstants.SWITCH_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
+                TreeTableMenuItemConstants.CASE_STATMENT_MENU_ITEM_ID,
+                TreeTableMenuItemConstants.CASE_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
+                TreeTableMenuItemConstants.DEFAULT_STATMENT_MENU_ITEM_ID,
+                TreeTableMenuItemConstants.DEFAULT_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
+        return controlKeywordFolderTreeEntity;
+    }
+
+    private static KeywordBrowserFolderTreeEntity loadLoopingControlKeywordFolderTreeEntity(
+            KeywordBrowserFolderTreeEntity parentFolderTreeEntity) {
+        List<IKeywordBrowserTreeEntity> controlKeywordFolders = new ArrayList<IKeywordBrowserTreeEntity>();
+        KeywordBrowserFolderTreeEntity controlKeywordFolderTreeEntity = new KeywordBrowserFolderTreeEntity(
+                TreeTableMenuItemConstants.LOOPING_STATEMENT_MENU_ITEM_LABEL, parentFolderTreeEntity,
+                controlKeywordFolders);
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
+                TreeTableMenuItemConstants.FOR_STATEMENT_MENU_ITEM_ID,
+                TreeTableMenuItemConstants.FOR_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
+                TreeTableMenuItemConstants.WHILE_STATEMENT_MENU_ITEM_ID,
+                TreeTableMenuItemConstants.WHILE_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
+        return controlKeywordFolderTreeEntity;
+    }
+
+    private static KeywordBrowserFolderTreeEntity loadBranchingControlKeywordFolderTreeEntity(
+            KeywordBrowserFolderTreeEntity parentFolderTreeEntity) {
+        List<IKeywordBrowserTreeEntity> controlKeywordFolders = new ArrayList<IKeywordBrowserTreeEntity>();
+        KeywordBrowserFolderTreeEntity controlKeywordFolderTreeEntity = new KeywordBrowserFolderTreeEntity(
+                TreeTableMenuItemConstants.BRANCHING_STATEMENT_MENU_ITEM_LABEL, parentFolderTreeEntity,
+                controlKeywordFolders);
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
+                TreeTableMenuItemConstants.BREAK_STATMENT_MENU_ITEM_ID,
+                TreeTableMenuItemConstants.BREAK_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
+                TreeTableMenuItemConstants.CONTINUE_STATMENT_MENU_ITEM_ID,
+                TreeTableMenuItemConstants.CONTINUE_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
+                TreeTableMenuItemConstants.RETURN_STATMENT_MENU_ITEM_ID,
+                TreeTableMenuItemConstants.RETURN_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
+
+        return controlKeywordFolderTreeEntity;
+    }
+
+    private static KeywordBrowserFolderTreeEntity loadExceptionHandlingControlKeywordFolderTreeEntity(
+            KeywordBrowserFolderTreeEntity parentFolderTreeEntity) {
+        List<IKeywordBrowserTreeEntity> controlKeywordFolders = new ArrayList<IKeywordBrowserTreeEntity>();
+        KeywordBrowserFolderTreeEntity controlKeywordFolderTreeEntity = new KeywordBrowserFolderTreeEntity(
+                TreeTableMenuItemConstants.EXCEPTION_HANDLING_STATEMENT_MENU_ITEM_LABEL, parentFolderTreeEntity,
+                controlKeywordFolders);
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
+                TreeTableMenuItemConstants.TRY_STATEMENT_MENU_ITEM_ID,
+                TreeTableMenuItemConstants.TRY_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
+                TreeTableMenuItemConstants.CATCH_STATMENT_MENU_ITEM_ID,
+                TreeTableMenuItemConstants.CATCH_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
+                TreeTableMenuItemConstants.FINALLY_STATMENT_MENU_ITEM_ID,
+                TreeTableMenuItemConstants.FINALLY_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
+
+        return controlKeywordFolderTreeEntity;
     }
 
     @Override

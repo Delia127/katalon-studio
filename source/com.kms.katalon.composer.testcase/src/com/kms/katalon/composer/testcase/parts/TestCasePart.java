@@ -8,14 +8,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
-import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.ASTNode;
-import org.codehaus.groovy.ast.expr.ArgumentListExpression;
-import org.codehaus.groovy.ast.expr.MethodCallExpression;
-import org.codehaus.groovy.ast.stmt.AssertStatement;
-import org.codehaus.groovy.ast.stmt.BreakStatement;
-import org.codehaus.groovy.ast.stmt.ContinueStatement;
-import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
@@ -38,7 +31,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.TreeViewerEditor;
 import org.eclipse.jface.viewers.TreeViewerFocusCellManager;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
@@ -74,18 +66,10 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.control.ImageButton;
-import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
-import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
-import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
-import com.kms.katalon.composer.explorer.providers.EntityProvider;
-import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.composer.testcase.adapters.TreeTableMouseAdapter;
-import com.kms.katalon.composer.testcase.ast.dialogs.MethodObjectBuilderDialog;
 import com.kms.katalon.composer.testcase.ast.treetable.AstStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.components.FocusCellOwnerDrawHighlighterForMultiSelection;
@@ -111,19 +95,13 @@ import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransfer;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransferData;
 import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
-import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.controller.FolderController;
-import com.kms.katalon.controller.KeywordController;
-import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.core.groovy.GroovyParser;
 import com.kms.katalon.core.keyword.IKeywordContributor;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCaseFactory;
 import com.kms.katalon.core.testobject.ObjectRepository;
-import com.kms.katalon.entity.folder.FolderEntity;
-import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 
@@ -838,63 +816,6 @@ public class TestCasePart implements EventHandler {
             }
         }
         switch (menuItem.getID()) {
-        case TreeTableMenuItemConstants.CUSTOM_KEYWORD_MENU_ITEM_ID:
-            addNewCustomKeyword(addType);
-            break;
-        case TreeTableMenuItemConstants.IF_STATEMENT_MENU_ITEM_ID:
-            addNewIfStatement(addType);
-            break;
-        case TreeTableMenuItemConstants.ELSE_STATEMENT_MENU_ITEM_ID:
-            addNewElseStatement();
-            break;
-        case TreeTableMenuItemConstants.ELSE_IF_STATEMENT_MENU_ITEM_ID:
-            addNewElseIfStatement(addType);
-            break;
-        case TreeTableMenuItemConstants.WHILE_STATEMENT_MENU_ITEM_ID:
-            addNewWhileStatement(addType);
-            break;
-        case TreeTableMenuItemConstants.FOR_STATEMENT_MENU_ITEM_ID:
-            addNewForStatement(addType);
-            break;
-        case TreeTableMenuItemConstants.BINARY_STATEMENT_MENU_ITEM_ID:
-            addNewBinaryStatement(addType);
-            break;
-        case TreeTableMenuItemConstants.ASSERT_STATEMENT_MENU_ITEM_ID:
-            addNewAssertStatement(addType);
-            break;
-        case TreeTableMenuItemConstants.CALL_METHOD_STATMENT_MENU_ITEM_ID:
-            addNewMethodCall(addType);
-            break;
-        case TreeTableMenuItemConstants.BREAK_STATMENT_MENU_ITEM_ID:
-            addNewBreakStatement(addType);
-            break;
-        case TreeTableMenuItemConstants.CONTINUE_STATMENT_MENU_ITEM_ID:
-            addNewContinueStatement(addType);
-            break;
-        case TreeTableMenuItemConstants.RETURN_STATMENT_MENU_ITEM_ID:
-            addNewReturnStatement(addType);
-            break;
-        case TreeTableMenuItemConstants.SWITCH_STATMENT_MENU_ITEM_ID:
-            addNewSwitchStatement(addType);
-            break;
-        case TreeTableMenuItemConstants.CASE_STATMENT_MENU_ITEM_ID:
-            addNewCaseStatement(addType);
-            break;
-        case TreeTableMenuItemConstants.DEFAULT_STATMENT_MENU_ITEM_ID:
-            addNewDefaultStatement(addType);
-            break;
-        case TreeTableMenuItemConstants.TRY_STATEMENT_MENU_ITEM_ID:
-            addNewTryStatement(addType);
-            break;
-        case TreeTableMenuItemConstants.CATCH_STATMENT_MENU_ITEM_ID:
-            addNewCatchStatement(addType);
-            break;
-        case TreeTableMenuItemConstants.FINALLY_STATMENT_MENU_ITEM_ID:
-            addNewFinallyStatement(addType);
-            break;
-        case TreeTableMenuItemConstants.REMOVE_MENU_ITEM_ID:
-            removeTestStep();
-            break;
         case TreeTableMenuItemConstants.CHANGE_FAILURE_HANDLING_MENU_ITEM_ID:
             Object failureHandlingValue = menuItem.getData(TreeTableMenuItemConstants.FAILURE_HANDLING_KEY);
             if (failureHandlingValue instanceof FailureHandling) {
@@ -910,39 +831,9 @@ public class TestCasePart implements EventHandler {
         case TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID:
             pasteTestStep();
             break;
-        case TreeTableMenuItemConstants.CALL_TEST_CASE_MENU_ITEM_ID:
-            callTestCase(addType);
-            break;
-        case TreeTableMenuItemConstants.METHOD_MENU_ITEM_ID:
-            addNewMethod(addType);
-            break;
         default:
-            if (TreeTableMenuItemConstants.isBuildInKeywordID(menuItem.getID())) {
-                addNewBuiltInKeyword(menuItem.getID(), addType);
-            }
+            treeTableInput.addNewAstObject(menuItem.getID(), addType);
             break;
-        }
-    }
-
-    public void performButtonSelected(Button button) {
-        if (button.equals(btnExpandGeneralInformation)) {
-            updateCompositeInfoLayOut();
-        } else if (button.equals(btnExpandVisualizer)) {
-            updateCompositeDetailsLayout();
-        }
-    }
-
-    public void addNewMethod(NodeAddType addType) {
-        try {
-            MethodObjectBuilderDialog dialog = new MethodObjectBuilderDialog(Display.getCurrent().getActiveShell(),
-                    null);
-            int result = dialog.open();
-            if (result == Window.OK && dialog.getReturnValue() != null) {
-                treeTableInput.addMethod(dialog.getReturnValue(), addType);
-            }
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_CANNOT_ADD_METHOD);
         }
     }
 
@@ -977,228 +868,19 @@ public class TestCasePart implements EventHandler {
             treeTableInput.addImport(TestCaseFactory.class);
             treeTableInput.addImport(FailureHandling.class);
             treeTableInput.addNewAstObject(AstTreeTableInputUtil.createBuiltInKeywordMethodCall(
-                    defaultBuiltinKeywordContributor.getKeywordClass().getSimpleName(), defaultSettingKeywordName), addType);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_CANNOT_ADD_KEYWORD);
-        }
-    }
-
-    private void addNewBuiltInKeyword(int id, NodeAddType addType) {
-        try {
-            String className = TreeTableMenuItemConstants.getContributingClassName(id);
-            Class<?> clazz = KeywordController.getInstance().getBuiltInKeywordClass(className);
-            treeTableInput.addImport(clazz);
-            treeTableInput.addImport(ObjectRepository.class);
-            treeTableInput.addImport(TestCaseFactory.class);
-            treeTableInput.addImport(FailureHandling.class);
-            String defaultSettingKeywordName = TestCasePreferenceDefaultValueInitializer.getDefaultKeywords().get(
-                    className);
-            ASTNode astNode = null;
-            if (!StringUtils.isBlank(defaultSettingKeywordName)
-                    && KeywordController.getInstance().getBuiltInKeywordByName(className, defaultSettingKeywordName) != null) {
-                astNode = AstTreeTableInputUtil.createBuiltInKeywordMethodCall(clazz.getSimpleName(),
-                        defaultSettingKeywordName);
-            } else {
-                astNode = AstTreeTableEntityUtil.getNewKeyword(false, clazz.getSimpleName());
-            }
-            treeTableInput.addNewAstObject(astNode, addType);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_CANNOT_ADD_KEYWORD);
-        }
-    }
-
-    private void addNewCustomKeyword(NodeAddType addType) {
-        // checkboxTableViewer.addNewStep(testCase);
-        try {
-            Statement statemt = AstTreeTableEntityUtil.getNewKeyword(true, null);
-            if (statemt != null) {
-                treeTableInput.addImport(ObjectRepository.class);
-                treeTableInput.addImport(TestCaseFactory.class);
-                treeTableInput.addImport(FailureHandling.class);
-
-                treeTableInput.addNewAstObject(statemt, addType);
-            } else {
-                MessageDialog.openWarning(null, StringConstants.WARN_TITLE,
-                        StringConstants.PA_ERROR_MSG_NO_CUSTOM_KEYWORD);
-            }
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_CANNOT_ADD_KEYWORD);
-        }
-    }
-
-    private void addNewIfStatement(NodeAddType addType) {
-        try {
-            treeTableInput.addNewAstObject(AstTreeTableEntityUtil.getNewIfStatement(), addType);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_IF_STATEMENT);
-        }
-    }
-
-    private void addNewElseStatement() {
-        try {
-            treeTableInput.addElseStatement();
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_ELSE_STATEMENT);
-        }
-    }
-
-    private void addNewElseIfStatement(NodeAddType addType) {
-        try {
-            treeTableInput.addElseIfStatement(addType);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_ELSE_IF_STATEMENT);
-        }
-    }
-
-    private void addNewWhileStatement(NodeAddType addType) {
-        try {
-            treeTableInput.addNewAstObject(AstTreeTableEntityUtil.getNewWhileStatement(), addType);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_WHILE_STATEMENT);
-        }
-    }
-
-    private void addNewForStatement(NodeAddType addType) {
-        try {
-            treeTableInput.addNewAstObject(AstTreeTableEntityUtil.getNewForStatement(), addType);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_FOR_STATEMENT);
-        }
-    }
-
-    private void addNewBinaryStatement(NodeAddType addType) {
-        try {
-            treeTableInput.addNewAstObject(new ExpressionStatement(AstTreeTableEntityUtil.getNewBinaryExpression()),
+                    defaultBuiltinKeywordContributor.getKeywordClass().getSimpleName(), defaultSettingKeywordName),
                     addType);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_BINARY_STATEMENT);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_CANNOT_ADD_KEYWORD);
         }
     }
 
-    private void addNewAssertStatement(NodeAddType addType) {
-        try {
-            treeTableInput.addNewAstObject(new AssertStatement(AstTreeTableEntityUtil.getNewBooleanExpression()),
-                    addType);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_ASSERT_STATEMENT);
-        }
-    }
-
-    private void addNewMethodCall(NodeAddType addType) {
-        try {
-            treeTableInput.addNewAstObject(
-                    new ExpressionStatement(AstTreeTableEntityUtil.getNewMethodCallExpression()), addType);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_ASSERT_STATEMENT);
-        }
-    }
-
-    private void addNewBreakStatement(NodeAddType addType) {
-        try {
-            treeTableInput.addNewAstObject(new BreakStatement(), addType);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_BREAK_STATEMENT);
-        }
-    }
-
-    private void addNewContinueStatement(NodeAddType addType) {
-        try {
-            treeTableInput.addNewAstObject(new ContinueStatement(), addType);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_CONTINUE_STATEMENT);
-        }
-    }
-
-    private void addNewReturnStatement(NodeAddType addType) {
-        try {
-            treeTableInput.addNewAstObject(AstTreeTableEntityUtil.getNewReturnStatement(), addType);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_RETURN_STATEMENT);
-        }
-    }
-
-    private void addNewSwitchStatement(NodeAddType addType) {
-        try {
-            treeTableInput.addNewAstObject(AstTreeTableEntityUtil.getNewSwitchStatement(), addType);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_SWITCH_STATEMENT);
-        }
-    }
-
-    private void addNewCaseStatement(NodeAddType addType) {
-        try {
-            treeTableInput.addCaseStatement(AstTreeTableEntityUtil.getNewCaseStatement(), addType);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_CASE_STATEMENT);
-        }
-    }
-
-    private void addNewDefaultStatement(NodeAddType addType) {
-        try {
-            treeTableInput.addDefaultStatement();
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_DEFAULT_STATEMENT);
-        }
-    }
-
-    private void addNewTryStatement(NodeAddType addType) {
-        try {
-            treeTableInput.addNewAstObject(AstTreeTableEntityUtil.getNewTryCatchStatement(), addType);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_TRY_STATEMENT);
-        }
-    }
-
-    private void addNewCatchStatement(NodeAddType addType) {
-        try {
-            treeTableInput.addCatchStatement(AstTreeTableEntityUtil.getNewCatchStatement(), addType);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_CATCH_STATEMENT);
-        }
-    }
-
-    private void addNewFinallyStatement(NodeAddType addType) {
-        try {
-            treeTableInput.addFinallyStatement();
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_FINALLY_STATEMENT);
+    public void performButtonSelected(Button button) {
+        if (button.equals(btnExpandGeneralInformation)) {
+            updateCompositeInfoLayOut();
+        } else if (button.equals(btnExpandVisualizer)) {
+            updateCompositeDetailsLayout();
         }
     }
 
@@ -1239,78 +921,6 @@ public class TestCasePart implements EventHandler {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
                     StringConstants.PA_ERROR_MSG_CANNOT_MOVE_STATEMENT_DOWN);
-        }
-    }
-
-    private void callTestCase(NodeAddType addType) {
-        try {
-            ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-            if (currentProject != null) {
-                TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(tltmAddStep.getParent().getShell(),
-                        new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(new EntityProvider()));
-
-                dialog.setAllowMultiple(false);
-                dialog.setTitle(StringConstants.EDI_TITLE_TEST_CASE_BROWSER);
-                dialog.setInput(TreeEntityUtil.getChildren(null,
-                        FolderController.getInstance().getTestCaseRoot(currentProject)));
-                if (dialog.open() == Window.OK) {
-                    Object[] selectedObjects = dialog.getResult();
-                    for (Object object : selectedObjects) {
-                        if (!(object instanceof ITreeEntity))
-                            continue;
-
-                        ITreeEntity treeEntity = (ITreeEntity) object;
-                        if (treeEntity.getObject() instanceof FolderEntity) {
-                            for (TestCaseEntity testCase : TestCaseEntityUtil
-                                    .getTestCasesFromFolderTree((FolderTreeEntity) treeEntity)) {
-                                if (qualify(testCase)) {
-                                    addCallTestCastTreeNodeToTable(testCase, addType);
-                                }
-                            }
-                        } else if (treeEntity.getObject() instanceof TestCaseEntity) {
-                            TestCaseEntity calledTestCase = (TestCaseEntity) treeEntity.getObject();
-                            if (qualify(calledTestCase)) {
-                                addCallTestCastTreeNodeToTable(calledTestCase, addType);
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_UNABLE_TO_CALL_TEST_CASE);
-            LoggerSingleton.logError(e);
-        }
-    }
-
-    public boolean qualify(TestCaseEntity calledTestCase) {
-        if (calledTestCase == null)
-            return false;
-
-        if (getTestCase().getId().equals(calledTestCase.getId())) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_TEST_CASE_CANNOT_CALL_ITSELF);
-            return false;
-        }
-
-        return true;
-    }
-
-    public void addCallTestCastTreeNodeToTable(TestCaseEntity testCase, NodeAddType addType) throws Exception {
-        ExpressionStatement statement = AstTreeTableInputUtil.generateCallTestCaseExpresionStatement(testCase);
-
-        MethodCallExpression methodCallExpression = (MethodCallExpression) statement.getExpression();
-        ArgumentListExpression argumentList = (ArgumentListExpression) methodCallExpression.getArguments();
-
-        List<VariableEntity> variableEntities = TestCaseEntityUtil.getCallTestCaseVariables(argumentList);
-        this.addVariables(variableEntities.toArray(new VariableEntity[0]));
-
-        try {
-            treeTableInput.addNewAstObject(statement, addType);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_CALL_TESTCASE);
         }
     }
 

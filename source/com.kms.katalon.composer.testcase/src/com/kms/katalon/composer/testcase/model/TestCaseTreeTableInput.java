@@ -5,16 +5,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.FieldNode;
 import org.codehaus.groovy.ast.ImportNode;
 import org.codehaus.groovy.ast.MethodNode;
+import org.codehaus.groovy.ast.expr.ArgumentListExpression;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.ast.expr.Expression;
+import org.codehaus.groovy.ast.expr.MethodCallExpression;
+import org.codehaus.groovy.ast.stmt.AssertStatement;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
+import org.codehaus.groovy.ast.stmt.BreakStatement;
 import org.codehaus.groovy.ast.stmt.CaseStatement;
 import org.codehaus.groovy.ast.stmt.CatchStatement;
+import org.codehaus.groovy.ast.stmt.ContinueStatement;
 import org.codehaus.groovy.ast.stmt.EmptyStatement;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.codehaus.groovy.ast.stmt.IfStatement;
@@ -25,12 +31,21 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TreeItem;
 
+import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
+import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.tree.ITreeEntity;
+import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
+import com.kms.katalon.composer.explorer.providers.EntityProvider;
+import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
+import com.kms.katalon.composer.testcase.ast.dialogs.MethodObjectBuilderDialog;
 import com.kms.katalon.composer.testcase.ast.treetable.AstAbstractKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstCaseStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstCatchStatementTreeTableNode;
@@ -47,13 +62,25 @@ import com.kms.katalon.composer.testcase.ast.treetable.AstSwitchStatementTreeTab
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTryStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
+import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransfer;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransferData;
 import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
+import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableUtil;
+import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
+import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.KeywordController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.groovy.GroovyParser;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.core.testcase.TestCaseFactory;
+import com.kms.katalon.core.testobject.ObjectRepository;
+import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 
 public class TestCaseTreeTableInput {
@@ -269,37 +296,28 @@ public class TestCaseTreeTableInput {
         setDirty(true);
     }
 
-    public void addElseStatement() throws Exception {
-        if (treeTableViewer.getSelection() instanceof ITreeSelection) {
-            ITreeSelection selection = (ITreeSelection) treeTableViewer.getSelection();
-            if (!selection.isEmpty()) {
-                Statement newElseStatement = null;
-                AstTreeTableNode parentNode = null;
-                if (selection.getFirstElement() instanceof AstIfStatementTreeTableNode) {
-                    AstIfStatementTreeTableNode ifStatementTreeTableNode = (AstIfStatementTreeTableNode) selection
-                            .getFirstElement();
-                    if (ifStatementTreeTableNode.getASTObject() instanceof IfStatement) {
-                        newElseStatement = addElseBlockForIfStatement((IfStatement) ifStatementTreeTableNode
-                                .getASTObject());
-                        parentNode = ifStatementTreeTableNode.getParent();
+    public void addElseStatement(AstTreeTableNode selectedNode) throws Exception {
+        Statement newElseStatement = null;
+        AstTreeTableNode parentNode = null;
+        if (selectedNode instanceof AstIfStatementTreeTableNode) {
+            AstIfStatementTreeTableNode ifStatementTreeTableNode = (AstIfStatementTreeTableNode) selectedNode;
+            if (ifStatementTreeTableNode.getASTObject() instanceof IfStatement) {
+                newElseStatement = addElseBlockForIfStatement((IfStatement) ifStatementTreeTableNode.getASTObject());
+                parentNode = ifStatementTreeTableNode.getParent();
 
-                    }
-                } else if (selection.getFirstElement() instanceof AstElseIfStatementTreeTableNode) {
-                    AstElseIfStatementTreeTableNode elseIfStatementTreeTableNode = (AstElseIfStatementTreeTableNode) selection
-                            .getFirstElement();
-                    if (elseIfStatementTreeTableNode.getASTObject() instanceof IfStatement) {
-                        newElseStatement = addElseBlockForIfStatement((IfStatement) elseIfStatementTreeTableNode
-                                .getASTObject());
-                        parentNode = elseIfStatementTreeTableNode.getParent();
-                    }
-                }
-                if (newElseStatement != null) {
-                    refresh(parentNode);
-                    setSelection(parentNode, newElseStatement);
-                    setEdit(parentNode, newElseStatement);
-                    setDirty(true);
-                }
             }
+        } else if (selectedNode instanceof AstElseIfStatementTreeTableNode) {
+            AstElseIfStatementTreeTableNode elseIfStatementTreeTableNode = (AstElseIfStatementTreeTableNode) selectedNode;
+            if (elseIfStatementTreeTableNode.getASTObject() instanceof IfStatement) {
+                newElseStatement = addElseBlockForIfStatement((IfStatement) elseIfStatementTreeTableNode.getASTObject());
+                parentNode = elseIfStatementTreeTableNode.getParent();
+            }
+        }
+        if (newElseStatement != null) {
+            refresh(parentNode);
+            setSelection(parentNode, newElseStatement);
+            setEdit(parentNode, newElseStatement);
+            setDirty(true);
         }
     }
 
@@ -314,15 +332,14 @@ public class TestCaseTreeTableInput {
         return null;
     }
 
-    public void addElseIfStatement(NodeAddType addType) throws Exception {
-        AstTreeTableNode selectedTreeTableNode = getSelectedNode();
-        if (selectedTreeTableNode != null) {
+    public void addElseIfStatement(AstTreeTableNode selectedNode, NodeAddType addType) throws Exception {
+        if (selectedNode != null) {
             if (addType == NodeAddType.Add) {
-                addElseIfStatement(selectedTreeTableNode);
+                addElseIfStatement(selectedNode);
             } else if (addType == NodeAddType.InserAfter) {
-                insertAfterElseIfStatement(selectedTreeTableNode);
+                insertAfterElseIfStatement(selectedNode);
             } else if (addType == NodeAddType.InserBefore) {
-                insertBeforeElseIfStatement(selectedTreeTableNode);
+                insertBeforeElseIfStatement(selectedNode);
             }
         }
     }
@@ -419,10 +436,14 @@ public class TestCaseTreeTableInput {
     }
 
     public void addCaseStatement(CaseStatement caseStatement, NodeAddType addType) throws Exception {
+        addCaseStatement(caseStatement, getSelectedNode(), addType);
+    }
+
+    public void addCaseStatement(CaseStatement caseStatement, AstTreeTableNode selectedTreeTableNode,
+            NodeAddType addType) throws Exception {
         if (caseStatement == null) {
             return;
         }
-        AstTreeTableNode selectedTreeTableNode = getSelectedNode();
         if (selectedTreeTableNode instanceof AstSwitchStatementTreeTableNode
                 && selectedTreeTableNode.getASTObject() instanceof SwitchStatement) {
             SwitchStatement swichStatement = (SwitchStatement) selectedTreeTableNode.getASTObject();
@@ -452,7 +473,10 @@ public class TestCaseTreeTableInput {
     }
 
     public void addDefaultStatement() throws Exception {
-        AstTreeTableNode selectedTreeTableNode = getSelectedNode();
+        addDefaultStatement(getSelectedNode());
+    }
+
+    public void addDefaultStatement(AstTreeTableNode selectedTreeTableNode) throws Exception {
         SwitchStatement swichStatement = null;
         AstTreeTableNode parentNode = null;
         if (selectedTreeTableNode instanceof AstSwitchStatementTreeTableNode
@@ -476,10 +500,14 @@ public class TestCaseTreeTableInput {
     }
 
     public void addCatchStatement(CatchStatement catchStatement, NodeAddType addType) throws Exception {
+        addCatchStatement(catchStatement, getSelectedNode(), addType);
+    }
+
+    public void addCatchStatement(CatchStatement catchStatement, AstTreeTableNode selectedTreeTableNode,
+            NodeAddType addType) throws Exception {
         if (catchStatement == null) {
             return;
         }
-        AstTreeTableNode selectedTreeTableNode = getSelectedNode();
         if (selectedTreeTableNode instanceof AstTryStatementTreeTableNode
                 && selectedTreeTableNode.getASTObject() instanceof TryCatchStatement) {
             TryCatchStatement tryStatement = (TryCatchStatement) selectedTreeTableNode.getASTObject();
@@ -509,7 +537,10 @@ public class TestCaseTreeTableInput {
     }
 
     public void addFinallyStatement() throws Exception {
-        AstTreeTableNode selectedTreeTableNode = getSelectedNode();
+        addFinallyStatement(getSelectedNode());
+    }
+
+    public void addFinallyStatement(AstTreeTableNode selectedTreeTableNode) throws Exception {
         TryCatchStatement tryStatement = null;
         AstTreeTableNode parentNode = null;
         if (selectedTreeTableNode instanceof AstTryStatementTreeTableNode
@@ -912,7 +943,7 @@ public class TestCaseTreeTableInput {
         return stringBuilder.toString();
     }
 
-    private void copy(List<AstTreeTableNode> copyNodes) {
+    public void copy(List<AstTreeTableNode> copyNodes) {
         StringBuilder scriptSnippets = new StringBuilder();
         for (AstTreeTableNode astTreeTableNode : copyNodes) {
             if (astTreeTableNode instanceof AstStatementTreeTableNode) {
@@ -938,7 +969,7 @@ public class TestCaseTreeTableInput {
         cut(getSelectedNodes());
     }
 
-    private void cut(List<AstTreeTableNode> cutNodes) throws Exception {
+    public void cut(List<AstTreeTableNode> cutNodes) throws Exception {
         copy(cutNodes);
         removeRows(cutNodes);
     }
@@ -974,4 +1005,389 @@ public class TestCaseTreeTableInput {
         this.isChanged = isChanged;
     }
 
+    public void addNewAstObject(int astObjectId, NodeAddType addType) {
+        addNewAstObject(astObjectId, getSelectedNode(), addType);
+    }
+
+    public void addNewAstObject(int astObjectId, AstTreeTableNode destinationNode, NodeAddType addType) {
+        switch (astObjectId) {
+        case TreeTableMenuItemConstants.CUSTOM_KEYWORD_MENU_ITEM_ID:
+            addNewCustomKeyword(destinationNode, addType);
+            break;
+        case TreeTableMenuItemConstants.IF_STATEMENT_MENU_ITEM_ID:
+            addNewIfStatement(destinationNode, addType);
+            break;
+        case TreeTableMenuItemConstants.ELSE_STATEMENT_MENU_ITEM_ID:
+            addNewElseStatement(destinationNode);
+            break;
+        case TreeTableMenuItemConstants.ELSE_IF_STATEMENT_MENU_ITEM_ID:
+            addNewElseIfStatement(destinationNode, addType);
+            break;
+        case TreeTableMenuItemConstants.WHILE_STATEMENT_MENU_ITEM_ID:
+            addNewWhileStatement(destinationNode, addType);
+            break;
+        case TreeTableMenuItemConstants.FOR_STATEMENT_MENU_ITEM_ID:
+            addNewForStatement(destinationNode, addType);
+            break;
+        case TreeTableMenuItemConstants.BINARY_STATEMENT_MENU_ITEM_ID:
+            addNewBinaryStatement(destinationNode, addType);
+            break;
+        case TreeTableMenuItemConstants.ASSERT_STATEMENT_MENU_ITEM_ID:
+            addNewAssertStatement(destinationNode, addType);
+            break;
+        case TreeTableMenuItemConstants.CALL_METHOD_STATEMENT_MENU_ITEM_ID:
+            addNewMethodCall(destinationNode, addType);
+            break;
+        case TreeTableMenuItemConstants.BREAK_STATMENT_MENU_ITEM_ID:
+            addNewBreakStatement(destinationNode, addType);
+            break;
+        case TreeTableMenuItemConstants.CONTINUE_STATMENT_MENU_ITEM_ID:
+            addNewContinueStatement(destinationNode, addType);
+            break;
+        case TreeTableMenuItemConstants.RETURN_STATMENT_MENU_ITEM_ID:
+            addNewReturnStatement(destinationNode, addType);
+            break;
+        case TreeTableMenuItemConstants.SWITCH_STATMENT_MENU_ITEM_ID:
+            addNewSwitchStatement(destinationNode, addType);
+            break;
+        case TreeTableMenuItemConstants.CASE_STATMENT_MENU_ITEM_ID:
+            addNewCaseStatement(destinationNode, addType);
+            break;
+        case TreeTableMenuItemConstants.DEFAULT_STATMENT_MENU_ITEM_ID:
+            addNewDefaultStatement(destinationNode, addType);
+            break;
+        case TreeTableMenuItemConstants.TRY_STATEMENT_MENU_ITEM_ID:
+            addNewTryStatement(destinationNode, addType);
+            break;
+        case TreeTableMenuItemConstants.CATCH_STATMENT_MENU_ITEM_ID:
+            addNewCatchStatement(destinationNode, addType);
+            break;
+        case TreeTableMenuItemConstants.FINALLY_STATMENT_MENU_ITEM_ID:
+            addNewFinallyStatement(destinationNode, addType);
+            break;
+        case TreeTableMenuItemConstants.METHOD_MENU_ITEM_ID:
+            addNewMethod(destinationNode, addType);
+            break;
+        case TreeTableMenuItemConstants.CALL_TEST_CASE_MENU_ITEM_ID:
+            callTestCase(destinationNode, addType);
+            break;
+        default:
+            if (TreeTableMenuItemConstants.isBuildInKeywordID(astObjectId)) {
+                addNewBuiltInKeyword(astObjectId, destinationNode, addType);
+            }
+            break;
+        }
+    }
+
+    public boolean qualify(TestCaseEntity calledTestCase) {
+        if (calledTestCase == null)
+            return false;
+
+        if (parentPart.getTestCase().getId().equals(calledTestCase.getId())) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_TEST_CASE_CANNOT_CALL_ITSELF);
+            return false;
+        }
+
+        return true;
+    }
+
+    public void callTestCase(AstTreeTableNode destinationNode, NodeAddType addType) {
+        try {
+            ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+            if (currentProject != null) {
+                TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(Display.getCurrent().getActiveShell(),
+                        new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(new EntityProvider()));
+
+                dialog.setAllowMultiple(false);
+                dialog.setTitle(StringConstants.EDI_TITLE_TEST_CASE_BROWSER);
+                dialog.setInput(TreeEntityUtil.getChildren(null,
+                        FolderController.getInstance().getTestCaseRoot(currentProject)));
+                if (dialog.open() == Window.OK) {
+                    Object[] selectedObjects = dialog.getResult();
+                    for (Object object : selectedObjects) {
+                        if (!(object instanceof ITreeEntity))
+                            continue;
+
+                        ITreeEntity treeEntity = (ITreeEntity) object;
+                        if (treeEntity.getObject() instanceof FolderEntity) {
+                            for (TestCaseEntity testCase : TestCaseEntityUtil
+                                    .getTestCasesFromFolderTree((FolderTreeEntity) treeEntity)) {
+                                if (qualify(testCase)) {
+                                    addCallTestCastTreeNodeToTable(testCase, destinationNode, addType);
+                                }
+                            }
+                        } else if (treeEntity.getObject() instanceof TestCaseEntity) {
+                            TestCaseEntity calledTestCase = (TestCaseEntity) treeEntity.getObject();
+                            if (qualify(calledTestCase)) {
+                                addCallTestCastTreeNodeToTable(calledTestCase, destinationNode, addType);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_UNABLE_TO_CALL_TEST_CASE);
+            LoggerSingleton.logError(e);
+        }
+    }
+
+    public void callTestCase(NodeAddType addType) {
+        callTestCase(getSelectedNode(), addType);
+    }
+
+    public void addNewMethod(AstTreeTableNode destinationNode, NodeAddType addType) {
+        try {
+            MethodObjectBuilderDialog dialog = new MethodObjectBuilderDialog(Display.getCurrent().getActiveShell(),
+                    null);
+            int result = dialog.open();
+            if (result == Window.OK && dialog.getReturnValue() != null) {
+                addMethod(dialog.getReturnValue(), addType);
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_CANNOT_ADD_METHOD);
+        }
+    }
+
+    public void addNewBuiltInKeyword(int id, AstTreeTableNode destinationNode, NodeAddType addType) {
+        try {
+            String className = TreeTableMenuItemConstants.getContributingClassName(id);
+            Class<?> clazz = KeywordController.getInstance().getBuiltInKeywordClass(className);
+            addImport(clazz);
+            addImport(ObjectRepository.class);
+            addImport(TestCaseFactory.class);
+            addImport(FailureHandling.class);
+            String defaultSettingKeywordName = TestCasePreferenceDefaultValueInitializer.getDefaultKeywords().get(
+                    className);
+            ASTNode astNode = null;
+            if (!StringUtils.isBlank(defaultSettingKeywordName)
+                    && KeywordController.getInstance().getBuiltInKeywordByName(className, defaultSettingKeywordName) != null) {
+                astNode = AstTreeTableInputUtil.createBuiltInKeywordMethodCall(clazz.getSimpleName(),
+                        defaultSettingKeywordName);
+            } else {
+                astNode = AstTreeTableEntityUtil.getNewKeyword(false, clazz.getSimpleName());
+            }
+            addNewAstObject(astNode, destinationNode, addType);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_CANNOT_ADD_KEYWORD);
+        }
+    }
+
+    public void addNewCustomKeyword(AstTreeTableNode destinationNode, NodeAddType addType) {
+        try {
+            Statement statemt = AstTreeTableEntityUtil.getNewKeyword(true, null);
+            if (statemt != null) {
+                addImport(ObjectRepository.class);
+                addImport(TestCaseFactory.class);
+                addImport(FailureHandling.class);
+
+                addNewAstObject(statemt, destinationNode, addType);
+            } else {
+                MessageDialog.openWarning(null, StringConstants.WARN_TITLE,
+                        StringConstants.PA_ERROR_MSG_NO_CUSTOM_KEYWORD);
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_CANNOT_ADD_KEYWORD);
+        }
+    }
+
+    public void addNewIfStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
+        try {
+            addNewAstObject(AstTreeTableEntityUtil.getNewIfStatement(), destinationNode, addType);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_IF_STATEMENT);
+        }
+    }
+
+    public void addNewElseStatement(AstTreeTableNode destinationNode) {
+        try {
+            addElseStatement(destinationNode);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_ELSE_STATEMENT);
+        }
+    }
+
+    public void addNewElseIfStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
+        try {
+            addElseIfStatement(destinationNode, addType);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_ELSE_IF_STATEMENT);
+        }
+    }
+
+    public void addNewWhileStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
+        try {
+            addNewAstObject(AstTreeTableEntityUtil.getNewWhileStatement(), destinationNode, addType);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_WHILE_STATEMENT);
+        }
+    }
+
+    public void addNewForStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
+        try {
+            addNewAstObject(AstTreeTableEntityUtil.getNewForStatement(), destinationNode, addType);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_FOR_STATEMENT);
+        }
+    }
+
+    public void addNewBinaryStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
+        try {
+            addNewAstObject(new ExpressionStatement(AstTreeTableEntityUtil.getNewBinaryExpression()), destinationNode,
+                    addType);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_BINARY_STATEMENT);
+        }
+    }
+
+    public void addNewAssertStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
+        try {
+            addNewAstObject(new AssertStatement(AstTreeTableEntityUtil.getNewBooleanExpression()), destinationNode,
+                    addType);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_ASSERT_STATEMENT);
+        }
+    }
+
+    public void addNewMethodCall(AstTreeTableNode destinationNode, NodeAddType addType) {
+        try {
+            addNewAstObject(new ExpressionStatement(AstTreeTableEntityUtil.getNewMethodCallExpression()),
+                    destinationNode, addType);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_ASSERT_STATEMENT);
+        }
+    }
+
+    public void addNewBreakStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
+        try {
+            addNewAstObject(new BreakStatement(), destinationNode, addType);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_BREAK_STATEMENT);
+        }
+    }
+
+    public void addNewContinueStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
+        try {
+            addNewAstObject(new ContinueStatement(), destinationNode, addType);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_CONTINUE_STATEMENT);
+        }
+    }
+
+    public void addNewReturnStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
+        try {
+            addNewAstObject(AstTreeTableEntityUtil.getNewReturnStatement(), destinationNode, addType);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_RETURN_STATEMENT);
+        }
+    }
+
+    public void addNewSwitchStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
+        try {
+            addNewAstObject(AstTreeTableEntityUtil.getNewSwitchStatement(), destinationNode, addType);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_SWITCH_STATEMENT);
+        }
+    }
+
+    public void addNewCaseStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
+        try {
+            addCaseStatement(AstTreeTableEntityUtil.getNewCaseStatement(), destinationNode, addType);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_CASE_STATEMENT);
+        }
+    }
+
+    public void addNewDefaultStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
+        try {
+            addDefaultStatement(destinationNode);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_DEFAULT_STATEMENT);
+        }
+    }
+
+    public void addNewTryStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
+        try {
+            addNewAstObject(AstTreeTableEntityUtil.getNewTryCatchStatement(), destinationNode, addType);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_TRY_STATEMENT);
+        }
+    }
+
+    public void addNewCatchStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
+        try {
+            addCatchStatement(AstTreeTableEntityUtil.getNewCatchStatement(), destinationNode, addType);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_CATCH_STATEMENT);
+        }
+    }
+
+    public void addNewFinallyStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
+        try {
+            addFinallyStatement(destinationNode);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_FINALLY_STATEMENT);
+        }
+    }
+
+    public void addCallTestCastTreeNodeToTable(TestCaseEntity testCase, NodeAddType addType) throws Exception {
+        addCallTestCastTreeNodeToTable(testCase, getSelectedNode(), addType);
+    }
+
+    public void addCallTestCastTreeNodeToTable(TestCaseEntity testCase, AstTreeTableNode destinationNode,
+            NodeAddType addType) throws Exception {
+        ExpressionStatement statement = AstTreeTableInputUtil.generateCallTestCaseExpresionStatement(testCase);
+
+        MethodCallExpression methodCallExpression = (MethodCallExpression) statement.getExpression();
+        ArgumentListExpression argumentList = (ArgumentListExpression) methodCallExpression.getArguments();
+
+        List<VariableEntity> variableEntities = TestCaseEntityUtil.getCallTestCaseVariables(argumentList);
+        parentPart.addVariables(variableEntities.toArray(new VariableEntity[0]));
+
+        try {
+            addNewAstObject(statement, destinationNode, addType);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_CALL_TESTCASE);
+        }
+    }
 }
