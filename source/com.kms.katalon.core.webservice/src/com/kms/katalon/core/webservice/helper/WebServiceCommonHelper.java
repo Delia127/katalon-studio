@@ -85,11 +85,17 @@ public class WebServiceCommonHelper {
 	}
 
 	public static Object parseAndExecuteExpressionForJson(String locator, String groovyFunction, String jsonText){
+		boolean needAppendRoot = true;
 		String[] tokens = locator.split("\\.");
 		String locatorExp = "";
 		for(int i=0; i<tokens.length; i++){
 			String token = tokens[i];
 			locatorExp += token;
+			if(i == 0){
+				if(token.matches("\\[\\d+\\]")){
+					needAppendRoot = false;	
+				}
+			}
 			if(i < tokens.length -1){
 				locatorExp += ".";
 			}
@@ -100,7 +106,12 @@ public class WebServiceCommonHelper {
 		StringBuilder groovyScript = new StringBuilder();
 		groovyScript.append("import groovy.json.JsonSlurper;");
 		groovyScript.append("def root = new JsonSlurper().parseText(jsonText);");
-		groovyScript.append("return root." + locatorExp +";");
+		if(needAppendRoot){
+			groovyScript.append("return root." + locatorExp +";");	
+		}
+		else{
+			groovyScript.append("return root" + locatorExp +";");
+		}
 
 		Binding binding = new Binding();
 		binding.setVariable("jsonText", jsonText);
@@ -109,11 +120,17 @@ public class WebServiceCommonHelper {
 	}
 
 	public static Object parseAndGetPropertyValueForJson(String locator, String jsonText){
+		boolean needAppendRoot = true;
 		String[] tokens = locator.split("\\.");
 		String locatorExp = "";
 		for(int i=0; i<tokens.length; i++){
 			String token = tokens[i];
 			locatorExp += token;
+			if(i == 0){
+				if(token.matches("\\[\\d+\\]")){
+					needAppendRoot = false;	
+				}
+			}
 			if(i < tokens.length -1){
 				locatorExp += ".";
 			}
@@ -121,12 +138,17 @@ public class WebServiceCommonHelper {
 		StringBuilder groovyScript = new StringBuilder();
 		groovyScript.append("import groovy.json.JsonSlurper;");
 		groovyScript.append("def root = new JsonSlurper().parseText(jsonText);");
-		groovyScript.append("return root." + locatorExp +";");
-
+		if(needAppendRoot){
+			groovyScript.append("return root." + locatorExp +";");	
+		}
+		else{
+			groovyScript.append("return root" + locatorExp +";");
+		}
+		
 		Binding binding = new Binding();
 		binding.setVariable("jsonText", jsonText);
 		GroovyShell shell = new GroovyShell(binding);
 		return shell.evaluate(groovyScript.toString());
 	}
 
-}
+	}

@@ -257,6 +257,9 @@ public class MobileInspectorController {
         if (htmlMobileElement.getAttributes().get(AndroidProperties.ANDROID_TEXT) != null) {
             guiName += " - " + htmlMobileElement.getAttributes().get(AndroidProperties.ANDROID_TEXT);
         }
+if(guiName != null && guiName.contains("\n")){
+        	guiName = guiName.replace("\n", "");
+}
         guiName += instance;
         htmlMobileElement.setName(guiName);
         return htmlMobileElement;
