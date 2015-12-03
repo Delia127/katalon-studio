@@ -12,6 +12,6 @@ public class StepFailedException extends RuntimeException {
     }
     
     public StepFailedException(Throwable t) {
-        super(ExceptionsUtil.getMessageForThrowable(t));
+        super(ExceptionsUtil.getMessageForThrowable(t), t);
     }
 }

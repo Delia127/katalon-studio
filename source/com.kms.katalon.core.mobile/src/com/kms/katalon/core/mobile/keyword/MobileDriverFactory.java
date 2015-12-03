@@ -30,35 +30,60 @@ import com.kms.katalon.core.mobile.util.MobileDriverPropertyUtil;
 public class MobileDriverFactory {
     private static final String APPIUM_SERVER_URL_SUFFIX = "/wd/hub";
     private static final String APPIUM_SERVER_URL_PREFIX = "http://127.0.0.1:";
-    private int appiumPort;
-    private Process appiumServer;
-    private Map<String, String> androidDevices;
-    private Map<String, String> iosDevices;
 
     public static final String EXECUTED_PLATFORM = StringConstants.CONF_EXECUTED_PLATFORM;
     public static final String EXECUTED_DEVICE_NAME = StringConstants.CONF_EXECUTED_DEVICE_NAME;
-
-    private static final ThreadLocal<MobileDriverFactory> localMobileDriverFactoryStorage = new ThreadLocal<MobileDriverFactory>() {
-        @Override
-        protected MobileDriverFactory initialValue() {
-            return new MobileDriverFactory();
-        }
-    };
 
     public enum OsType {
         IOS, ANDROID
     }
 
-    private MobileDriverFactory() {
-        androidDevices = new LinkedHashMap<>();
-        iosDevices = new LinkedHashMap<>();
-    }
+    private static final ThreadLocal<Integer> localStorageAppiumPort = new ThreadLocal<Integer>() {
+        @Override
+        protected Integer initialValue() {
+            return 0;
+        }
+    };
 
-    public static MobileDriverFactory getInstance() {
-        return localMobileDriverFactoryStorage.get();
-    }
+    private static final ThreadLocal<Process> localStorageAppiumServer = new ThreadLocal<Process>() {
+        @Override
+        protected Process initialValue() {
+            return null;
+        }
+    };
 
-    private void cleanup() throws InterruptedException, IOException {
+    private static final ThreadLocal<AppiumDriver<?>> localStorageAppiumDriver = new ThreadLocal<AppiumDriver<?>>() {
+        @Override
+        protected AppiumDriver<?> initialValue() {
+            return null;
+        }
+    };
+    
+    private static final ThreadLocal<Map<String, String>> localStorageIosDevices = new ThreadLocal<Map<String, String>>() {
+        @Override
+        protected Map<String, String> initialValue() {
+            try {
+                return getIosDevices();
+            } catch (Exception e) {
+                KeywordLogger.getInstance().logWarning(e.getMessage());
+            }
+            return null;
+        }
+    };
+    
+    private static final ThreadLocal<Map<String, String>> localStorageAndroidDevices = new ThreadLocal<Map<String, String>>() {
+        @Override
+        protected Map<String, String> initialValue() {
+            try {
+                return getAndroidDevices();
+            } catch (Exception e) {
+                KeywordLogger.getInstance().logWarning(e.getMessage());
+            }
+            return null;
+        }
+    };
+
+    private static void cleanup() throws InterruptedException, IOException {
         String os = System.getProperty("os.name");
         if (os.toLowerCase().contains("win")) {
             killProcessOnWin("adb.exe");
@@ -70,18 +95,18 @@ public class MobileDriverFactory {
             killProcessOnMac("deviceconsole");
         }
     }
-    
-    private void killProcessOnWin(String processName) throws InterruptedException, IOException {
+
+    private static void killProcessOnWin(String processName) throws InterruptedException, IOException {
         ProcessBuilder pb = new ProcessBuilder("taskkill", "/f", "/im", processName, "/t");
         pb.start().waitFor();
     }
 
-    private void killProcessOnMac(String processName) throws InterruptedException, IOException {
+    private static void killProcessOnMac(String processName) throws InterruptedException, IOException {
         ProcessBuilder pb = new ProcessBuilder("killall", processName);
         pb.start().waitFor();
     }
 
-    public AppiumDriver<?> getAndroidDriver(String deviceId, String appFile, boolean uninstallAfterCloseApp)
+    public static void startAndroidDriver(String deviceId, String appFile, boolean uninstallAfterCloseApp)
             throws Exception {
         if (!isServerStarted()) {
             startAppiumServer();
@@ -97,12 +122,12 @@ public class MobileDriverFactory {
         capabilities.setCapability("newCommandTimeout", 1800);
         int time = 0;
         long currentMilis = System.currentTimeMillis();
-        AppiumDriver<?> appiumDriver = null;
         while (time < RunConfiguration.getTimeOut()) {
             try {
-                appiumDriver = new SwipeableAndroidDriver(new URL(APPIUM_SERVER_URL_PREFIX + appiumPort
-                        + APPIUM_SERVER_URL_SUFFIX), capabilities);
-                return appiumDriver;
+                AppiumDriver<?> appiumDriver = new SwipeableAndroidDriver(new URL(APPIUM_SERVER_URL_PREFIX
+                        + localStorageAppiumPort.get() + APPIUM_SERVER_URL_SUFFIX), capabilities);
+                localStorageAppiumDriver.set(appiumDriver);
+                return;
             } catch (UnreachableBrowserException e) {
                 long newMilis = System.currentTimeMillis();
                 time += ((newMilis - currentMilis) / 1000);
@@ -115,8 +140,7 @@ public class MobileDriverFactory {
     }
 
     @SuppressWarnings("rawtypes")
-    public AppiumDriver<?> getIosDriver(String deviceId, String appFile, boolean uninstallAfterCloseApp)
-            throws Exception {
+    public static void startIosDriver(String deviceId, String appFile, boolean uninstallAfterCloseApp) throws Exception {
         cleanup();
         if (!isServerStarted()) {
             startAppiumServer();
@@ -136,9 +160,10 @@ public class MobileDriverFactory {
         AppiumDriver<?> appiumDriver = null;
         while (time < RunConfiguration.getTimeOut()) {
             try {
-                appiumDriver = new IOSDriver(new URL(APPIUM_SERVER_URL_PREFIX + appiumPort + APPIUM_SERVER_URL_SUFFIX),
-                        capabilities);
-                return appiumDriver;
+                appiumDriver = new IOSDriver(new URL(APPIUM_SERVER_URL_PREFIX + localStorageAppiumPort.get()
+                        + APPIUM_SERVER_URL_SUFFIX), capabilities);
+                localStorageAppiumDriver.set(appiumDriver);
+                return;
             } catch (UnreachableBrowserException e) {
                 long newMilis = System.currentTimeMillis();
                 time += ((newMilis - currentMilis) / 1000);
@@ -150,12 +175,12 @@ public class MobileDriverFactory {
                 + " seconds");
     }
 
-    private boolean isServerStarted() {
-        if (appiumServer == null) {
+    private static boolean isServerStarted() {
+        if (localStorageAppiumServer.get() == null) {
             return false;
         } else {
             try {
-                appiumServer.exitValue();
+                localStorageAppiumServer.get().exitValue();
                 return false;
             } catch (Exception e) {
                 // LOGGER.warn(e.getMessage(), e);
@@ -190,40 +215,38 @@ public class MobileDriverFactory {
         return -1;
     }
 
-    private void startAppiumServer() throws Exception {
+    private static void startAppiumServer() throws Exception {
         String appium = System.getenv("APPIUM_HOME") + "/bin/appium.js";
         String appiumTemp = System.getProperty("java.io.tmpdir") + File.separator + "Katalon" + File.separator
                 + "Appium" + File.separator + "Temp" + System.currentTimeMillis();
-        appiumPort = getFreePort();
+        localStorageAppiumPort.set(getFreePort());
         String[] cmd = { "node", appium, "--command-timeout", "3600", "--tmp", appiumTemp, "-p",
-                String.valueOf(appiumPort), "--chromedriver-port", String.valueOf(getFreePort()) };
+                String.valueOf(localStorageAppiumPort.get()), "--chromedriver-port", String.valueOf(getFreePort()) };
         ProcessBuilder pb = new ProcessBuilder(cmd);
         pb.redirectOutput(new File(new File(RunConfiguration.getLogFilePath()).getParent() + File.separator
                 + "appium.log"));
-        appiumServer = pb.start();
+        localStorageAppiumServer.set(pb.start());
         while (!isServerStarted()) {
         }
-        KeywordLogger.getInstance().logInfo("Appium server started on port " + appiumPort);
+        KeywordLogger.getInstance().logInfo("Appium server started on port " + localStorageAppiumPort.get());
     }
 
-    public void quitServer() {
-        if (appiumServer != null) {
-            appiumServer.destroy();
-            appiumServer = null;
+    public static void quitServer() {
+        if (localStorageAppiumServer.get() != null) {
+            localStorageAppiumServer.get().destroy();
+            localStorageAppiumServer.set(null);
         }
     }
 
-    public List<String> getDevices() throws Exception {
-        getAndroidDevices();
-        getIosDevices();
+    public static List<String> getDevices() throws Exception {
         List<String> devices = new ArrayList<>();
-        devices.addAll(androidDevices.values());
-        devices.addAll(iosDevices.values());
+        devices.addAll(localStorageAndroidDevices.get().values());
+        devices.addAll(localStorageIosDevices.get().values());
         return devices;
     }
 
-    private void getIosDevices() throws Exception {
-        iosDevices.clear();
+    private static Map<String, String> getIosDevices() throws Exception {
+        Map<String, String> iosDevices = new LinkedHashMap<String, String>();
         if (System.getProperty("os.name").toLowerCase().contains("mac")) {
             List<String> deviceIds = new ArrayList<>();
             String[] cmd = { "idevice_id", "-l" };
@@ -261,10 +284,12 @@ public class MobileDriverFactory {
                 iosDevices.put(deviceId, deviceInfo);
             }
         }
+        return iosDevices;
     }
 
-    private void getAndroidDevices() throws Exception {
-        androidDevices.clear();
+    private static Map<String, String> getAndroidDevices() throws Exception {
+        Map<String, String> androidDevices = new LinkedHashMap<String, String>();
+
         String adbPath = System.getenv("ANDROID_HOME");
         if (adbPath != null) {
             List<String> deviceIds = new ArrayList<>();
@@ -313,20 +338,17 @@ public class MobileDriverFactory {
                 androidDevices.put(id, deviceName);
             }
         }
+        return androidDevices;
     }
 
-    public String getDeviceId(String deviceName) {
-        if (((androidDevices == null) || androidDevices.isEmpty()) && ((iosDevices == null) || iosDevices.isEmpty())) {
-            return null;
-        }
-
-        for (Map.Entry<String, String> entry : androidDevices.entrySet()) {
+    public static String getDeviceId(String deviceName) throws Exception {
+        for (Map.Entry<String, String> entry : localStorageAndroidDevices.get().entrySet()) {
             if (entry.getValue().equalsIgnoreCase(deviceName) || entry.getKey().equalsIgnoreCase(deviceName)) {
                 return entry.getKey();
             }
         }
 
-        for (Map.Entry<String, String> entry : iosDevices.entrySet()) {
+        for (Map.Entry<String, String> entry : localStorageIosDevices.get().entrySet()) {
             if (entry.getValue().equalsIgnoreCase(deviceName) || entry.getKey().equalsIgnoreCase(deviceName)) {
                 return entry.getKey();
             }
@@ -335,10 +357,10 @@ public class MobileDriverFactory {
         return null;
     }
 
-    public OsType getDeviceOs(String deviceId) {
-        if (androidDevices.containsKey(deviceId)) {
+    public static OsType getDeviceOs(String deviceId) throws Exception {
+        if (localStorageAndroidDevices.get().containsKey(deviceId)) {
             return OsType.ANDROID;
-        } else if (iosDevices.containsKey(deviceId)) {
+        } else if (localStorageIosDevices.get().containsKey(deviceId)) {
             return OsType.IOS;
         } else {
             return null;
@@ -351,5 +373,16 @@ public class MobileDriverFactory {
 
     public static String getDeviceName() {
         return RunConfiguration.getStringProperty(EXECUTED_DEVICE_NAME);
+    }
+    
+    public static AppiumDriver<?> getDriver() throws StepFailedException {
+        verifyWebDriverIsOpen();
+        return localStorageAppiumDriver.get();
+    }
+    
+    private static void verifyWebDriverIsOpen() throws StepFailedException {
+        if (localStorageAppiumDriver.get() == null) {
+            throw new StepFailedException("No application is started yet.");
+        }
     }
 }
