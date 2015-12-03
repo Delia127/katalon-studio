@@ -667,10 +667,12 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
     
     private FolderEntity findSelectedFolderInExplorer() throws Exception {
 		Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-		ITreeEntity parentTreeEntity = getParentTreeEntity(selectedObjects);
-		if (parentTreeEntity != null && parentTreeEntity.getObject() instanceof FolderEntity) {
-			FolderEntity parentFolder = (FolderEntity) parentTreeEntity.getObject();
-			return parentFolder;
+		if(selectedObjects != null && selectedObjects.length > 0){
+			ITreeEntity parentTreeEntity = getParentTreeEntity(selectedObjects);
+			if (parentTreeEntity != null && parentTreeEntity.getObject() instanceof FolderEntity) {
+				FolderEntity parentFolder = (FolderEntity) parentTreeEntity.getObject();
+				return parentFolder;
+			}
 		}
 		return null;
 	}
