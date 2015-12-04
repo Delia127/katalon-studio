@@ -31,7 +31,17 @@ public class BuiltInMethodNodeFactory {
     }
     
     public List<IKeywordContributor> getKeywordContributors() {
-        return KeywordContributorCollection.getInstance().getKeywordContributors();
+        List<IKeywordContributor> keywordContributors = KeywordContributorCollection.getInstance().getKeywordContributors();
+        Collections.sort(keywordContributors, new Comparator<IKeywordContributor>() {
+            @Override
+            public int compare(IKeywordContributor o1, IKeywordContributor o2) {
+                if(o1 != null && o2 != null){
+                    return o1.getPreferredOrder() - o2.getPreferredOrder();
+                }
+                return 0;
+            }
+        });
+        return keywordContributors;
     }
 
     public static BuiltInMethodNodeFactory getInstance() {

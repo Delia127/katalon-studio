@@ -21,5 +21,10 @@ public class WebUiKeywordContributor implements IKeywordContributor {
 	public Class<? extends IDriverCleaner> getDriverCleaner() {
 		return WebUiDriverCleaner.class;
 	}
+
+    @Override
+    public int getPreferredOrder() {
+        return 1;
+    }
 }
 
