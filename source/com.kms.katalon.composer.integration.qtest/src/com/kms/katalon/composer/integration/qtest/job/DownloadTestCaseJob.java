@@ -33,7 +33,7 @@ import com.kms.katalon.composer.integration.qtest.dialog.model.TestCaseDownloade
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.TestCaseController;
-import com.kms.katalon.core.groovy.GroovyParser;
+import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.integration.IntegratedEntity;

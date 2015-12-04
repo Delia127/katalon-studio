@@ -1,4 +1,4 @@
-package com.kms.katalon.core.annotation;
+package com.kms.katalon.core.ast;
 
 import java.lang.annotation.ElementType
 import java.lang.annotation.Retention

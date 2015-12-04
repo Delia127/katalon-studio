@@ -31,7 +31,6 @@ import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.transform.ASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
 
-import com.kms.katalon.core.annotation.RequireAstTestStepTransformation
 import com.kms.katalon.core.constants.StringConstants
 import com.kms.katalon.core.keyword.BuiltinKeywords
 import com.kms.katalon.core.logging.KeywordLogger

@@ -13,6 +13,10 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.core.constants.StringConstants;
 
+/**
+ * Provide access to execution properties and settings
+ *
+ */
 public class RunConfiguration {
     public static final String LOG_FILE_PATH_PROPERTY = StringConstants.CONF_PROPERTY_LOG_FILE_PATH;
     public static final String TIMEOUT_PROPERTY = StringConstants.CONF_PROPERTY_TIMEOUT;

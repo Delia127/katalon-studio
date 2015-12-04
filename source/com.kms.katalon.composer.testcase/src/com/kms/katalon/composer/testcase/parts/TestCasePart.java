@@ -97,7 +97,7 @@ import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.TestCaseController;
-import com.kms.katalon.core.groovy.GroovyParser;
+import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.core.keyword.IKeywordContributor;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCaseFactory;

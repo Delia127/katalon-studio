@@ -35,8 +35,10 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     private static final KeywordLogger logger = KeywordLogger.getInstance();
 
     /**
-     * @deprecated
-     * This property is deprecated and will be removed in future releases.
+     * @deprecated<p>
+     * This property is deprecated and will be removed in future releases.<p>
+     * Use MobileDriverFactory.getDriver() instead
+     * @see com.kms.katalon.core.mobile.keyword.MobileDriverFactory#getDriver()
      */
     @Deprecated()
     private static AppiumDriver driver;

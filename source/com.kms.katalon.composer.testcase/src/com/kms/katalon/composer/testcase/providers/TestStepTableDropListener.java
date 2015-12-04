@@ -31,7 +31,7 @@ import com.kms.katalon.composer.testcase.parts.TestCasePart;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransferData;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
-import com.kms.katalon.core.groovy.GroovyParser;
+import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 

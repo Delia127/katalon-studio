@@ -59,7 +59,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.TestCaseController;
-import com.kms.katalon.core.groovy.GroovyParser;
+import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;

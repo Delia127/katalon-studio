@@ -74,7 +74,7 @@ import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.core.groovy.GroovyParser;
+import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCaseFactory;
 import com.kms.katalon.core.testobject.ObjectRepository;

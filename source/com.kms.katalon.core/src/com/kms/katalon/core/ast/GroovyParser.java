@@ -1,4 +1,4 @@
-package com.kms.katalon.core.groovy;
+package com.kms.katalon.core.ast;
 
 import groovy.lang.GroovyCodeSource;
 import groovy.lang.GroovyObject;
