@@ -37,11 +37,11 @@ public class TreeEntitySelectionDialog extends ElementTreeSelectionDialog {
 	private static final Image IMAGE_SEARCH_LOCATION = ImageConstants.IMG_16_SEARCH;
 	private static final Image IMAGE_CLOSE_SEARCH_LOCATION = ImageConstants.IMG_16_CLOSE_SEARCH;
 	
-	protected Text txtInput;
-	protected CLabel lblSearch;
-	protected IEntityLabelProvider labelProvider;
-	protected AbstractEntityViewerFilter entityViewerFilter;
-	protected boolean isSearched;
+	private Text txtInput;
+	private CLabel lblSearch;
+	private IEntityLabelProvider labelProvider;
+	private AbstractEntityViewerFilter entityViewerFilter;
+	private boolean isSearched;
 
 	public TreeEntitySelectionDialog(Shell parent, IEntityLabelProvider labelProvider,
 			ITreeContentProvider contentProvider, AbstractEntityViewerFilter entityViewerFilter) {
