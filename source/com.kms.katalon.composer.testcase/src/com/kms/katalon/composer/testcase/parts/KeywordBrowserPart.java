@@ -213,13 +213,11 @@ public class KeywordBrowserPart implements EventHandler {
     }
 
     private static KeywordBrowserFolderTreeEntity loadBuiltinKeywordFolderTreeEntity() {
-        List<IKeywordContributor> builtInKeywordContributors = KeywordController.getInstance()
-                .getBuiltInKeywordContributors();
-
         List<IKeywordBrowserTreeEntity> keywordTreeEntities = new ArrayList<IKeywordBrowserTreeEntity>();
         KeywordBrowserFolderTreeEntity builtinKeywordRootFolder = new KeywordBrowserFolderTreeEntity(
                 StringConstants.KEYWORD_BROWSER_BUILTIN_KEYWORD_ROOT_TREE_ITEM_LABEL, null, keywordTreeEntities);
-        for (IKeywordContributor builtInKeywordContributor : builtInKeywordContributors) {
+        for (IKeywordContributor builtInKeywordContributor : KeywordController.getInstance()
+                .getBuiltInKeywordContributors()) {
             keywordTreeEntities.add(new BuiltinKeywordFolderBrowserTreeEntity(builtInKeywordContributor
                     .getKeywordClass().getName(), builtInKeywordContributor.getKeywordClass().getSimpleName(),
                     builtInKeywordContributor.getLabelName(), builtinKeywordRootFolder));

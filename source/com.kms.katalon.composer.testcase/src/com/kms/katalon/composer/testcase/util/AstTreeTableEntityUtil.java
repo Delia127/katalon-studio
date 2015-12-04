@@ -377,8 +377,7 @@ public class AstTreeTableEntityUtil {
         // preBuild
         TreeTableMenuItemConstants.generateBuiltInKeywordMenuItemIDs(KeywordController.getInstance()
                 .getBuiltInKeywordClasses());
-        List<IKeywordContributor> contributors = KeywordController.getInstance().getBuiltInKeywordContributors();
-        for (IKeywordContributor contributor : contributors) {
+        for (IKeywordContributor contributor : KeywordController.getInstance().getBuiltInKeywordContributors()) {
             addNewMenuItem(addAction, selectionListener, actionMenu, contributor.getLabelName(),
                     TreeTableMenuItemConstants.getMenuItemID(contributor.getKeywordClass().getName()), SWT.PUSH);
         }

@@ -35,7 +35,7 @@ public class KeywordController extends EntityController {
         return BuiltInMethodNodeFactory.getInstance().getKeywordClasses();
     }
 
-    public List<IKeywordContributor> getBuiltInKeywordContributors() {
+    public IKeywordContributor[] getBuiltInKeywordContributors() {
         return BuiltInMethodNodeFactory.getInstance().getKeywordContributors();
     }
 

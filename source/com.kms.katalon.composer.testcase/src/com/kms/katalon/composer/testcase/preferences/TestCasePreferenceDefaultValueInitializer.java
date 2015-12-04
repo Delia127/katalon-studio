@@ -38,7 +38,7 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
 
         // Default Added Keyword
         store.setDefault(PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE,
-                KeywordController.getInstance().getBuiltInKeywordContributors().get(0).getKeywordClass().getName());
+                KeywordController.getInstance().getBuiltInKeywordContributors()[0].getKeywordClass().getName());
         Map<String, String> defaultKeywords = new HashMap<String, String>();
         for (IKeywordContributor keywordContributor : KeywordController.getInstance().getBuiltInKeywordContributors()) {
             try {
@@ -100,7 +100,7 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
                 .getString(PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE);
         IKeywordContributor contributor = KeywordController.getInstance().getBuiltInKeywordContributor(keywordType);
         if (contributor == null) {
-            contributor = KeywordController.getInstance().getBuiltInKeywordContributors().get(0);
+            contributor = KeywordController.getInstance().getBuiltInKeywordContributors()[0];
         }
         return contributor;
     }
