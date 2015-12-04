@@ -4,7 +4,6 @@ import com.kms.katalon.constants.GlobalStringConstants;
 
 public class StringConstants extends GlobalStringConstants {
 	// ObjectSpyDialog
-	public static final String DIA_BTN_CLOSE = "Close";
 	public static final String DIA_BTN_ADD = ADD;
 	public static final String DIA_BTN_START_BROWSER = "Start Browser";
 	public static final String DIA_TITLE_OBJ_SPY = "Object Spy";
