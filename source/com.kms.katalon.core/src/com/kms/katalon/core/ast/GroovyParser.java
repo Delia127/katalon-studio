@@ -1444,6 +1444,8 @@ public class GroovyParser {
             return cloneTernaryExpression((TernaryExpression) expression);
         } else if (expression instanceof TupleExpression) {
             return cloneTupleExpression((TupleExpression) expression);
+        } else if (expression instanceof ConstructorCallExpression) {
+            return cloneConstructorCallExpression((ConstructorCallExpression) expression);
         }
         return null;
     }

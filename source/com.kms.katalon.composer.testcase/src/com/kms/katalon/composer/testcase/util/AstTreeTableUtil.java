@@ -25,6 +25,7 @@ import org.codehaus.groovy.ast.stmt.IfStatement;
 import org.codehaus.groovy.ast.stmt.ReturnStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.ast.stmt.SwitchStatement;
+import org.codehaus.groovy.ast.stmt.ThrowStatement;
 import org.codehaus.groovy.ast.stmt.TryCatchStatement;
 import org.codehaus.groovy.ast.stmt.WhileStatement;
 
@@ -52,6 +53,7 @@ import com.kms.katalon.composer.testcase.ast.treetable.AstReturnStatementTreeTab
 import com.kms.katalon.composer.testcase.ast.treetable.AstScriptMainBlockStatmentTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstSwitchStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstThrowStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTryStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstWhileStatementTreeTableNode;
@@ -238,6 +240,9 @@ public class AstTreeTableUtil {
         } else if (statement instanceof ReturnStatement) {
             astTreeTableNodes.add(parseAstObjectIntoTreeTableNode((ReturnStatement) statement, parentNode,
                     parentObject, scriptClass));
+        } else if (statement instanceof ThrowStatement) {
+            astTreeTableNodes.add(parseAstObjectIntoTreeTableNode((ThrowStatement) statement, parentNode,
+                    parentObject, scriptClass));
         } else if (!(statement instanceof EmptyStatement)
                 && !(statement instanceof ReturnStatement && ((ReturnStatement) statement).getExpression() == null)) {
             astTreeTableNodes.add(new AstStatementTreeTableNode(statement, parentNode, parentObject, scriptClass));
@@ -287,6 +292,11 @@ public class AstTreeTableUtil {
     private static AstTreeTableNode parseAstObjectIntoTreeTableNode(ReturnStatement returnStatement,
             AstTreeTableNode parentNode, ASTNode parentObject, ClassNode scriptClass) {
         return new AstReturnStatementTreeTableNode(returnStatement, parentNode, parentObject, scriptClass);
+    }
+    
+    private static AstTreeTableNode parseAstObjectIntoTreeTableNode(ThrowStatement throwStatement,
+            AstTreeTableNode parentNode, ASTNode parentObject, ClassNode scriptClass) {
+        return new AstThrowStatementTreeTableNode(throwStatement, parentNode, parentObject, scriptClass);
     }
 
     private static AstTreeTableNode parseAstObjectIntoTreeTableNode(ExpressionStatement expressionStatement,

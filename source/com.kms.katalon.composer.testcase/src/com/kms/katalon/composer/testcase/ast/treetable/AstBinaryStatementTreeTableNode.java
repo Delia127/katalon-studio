@@ -7,7 +7,7 @@ import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
-import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
+import com.kms.katalon.core.ast.AstTextValueUtil;
 
 public class AstBinaryStatementTreeTableNode extends AstStatementTreeTableNode {
 	private ExpressionStatement expressionStatement;
@@ -25,7 +25,7 @@ public class AstBinaryStatementTreeTableNode extends AstStatementTreeTableNode {
 	
 	@Override
 	public String getInputText() {
-		return AstTreeTableTextValueUtil.getTextValue(expressionStatement.getExpression());
+		return AstTextValueUtil.getTextValue(expressionStatement.getExpression());
 	}
 
 	@Override

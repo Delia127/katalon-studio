@@ -14,6 +14,7 @@ import org.codehaus.groovy.ast.expr.BooleanExpression;
 import org.codehaus.groovy.ast.expr.ClassExpression;
 import org.codehaus.groovy.ast.expr.ClosureListExpression;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
+import org.codehaus.groovy.ast.expr.ConstructorCallExpression;
 import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.expr.ListExpression;
 import org.codehaus.groovy.ast.expr.MapEntryExpression;
@@ -33,6 +34,7 @@ import org.codehaus.groovy.ast.stmt.IfStatement;
 import org.codehaus.groovy.ast.stmt.ReturnStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.ast.stmt.SwitchStatement;
+import org.codehaus.groovy.ast.stmt.ThrowStatement;
 import org.codehaus.groovy.ast.stmt.TryCatchStatement;
 import org.codehaus.groovy.ast.stmt.WhileStatement;
 import org.codehaus.groovy.syntax.Token;
@@ -47,6 +49,7 @@ import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants.Ad
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.keyword.IKeywordContributor;
 import com.kms.katalon.core.testdata.TestDataFactory;
 
@@ -108,6 +111,14 @@ public class AstTreeTableEntityUtil {
 
     public static TryCatchStatement getNewTryCatchStatement() {
         return new TryCatchStatement(new BlockStatement(), getNewFinallyStatement());
+    }
+    
+    public static ThrowStatement getNewThrowStatement() {
+        return new ThrowStatement(getNewExceptionExpression());
+    }
+
+    public static ConstructorCallExpression getNewExceptionExpression() {
+        return new ConstructorCallExpression(new ClassNode(StepFailedException.class), new ConstantExpression(""));
     }
     
     public static Statement getNewFinallyStatement() {
@@ -330,6 +341,10 @@ public class AstTreeTableEntityUtil {
         addNewMenuItem(addAction, selectionListener, exceptionHandlingStatementsMenu,
                 TreeTableMenuItemConstants.FINALLY_STATEMENT_MENU_ITEM_LABEL,
                 TreeTableMenuItemConstants.FINALLY_STATMENT_MENU_ITEM_ID, SWT.PUSH);
+        
+        addNewMenuItem(addAction, selectionListener, exceptionHandlingStatementsMenu,
+                TreeTableMenuItemConstants.THROW_STATEMENT_MENU_ITEM_LABEL,
+                TreeTableMenuItemConstants.THROW_STATMENT_MENU_ITEM_ID, SWT.PUSH);
 
         addNewMenuItem(addAction, selectionListener, actionMenu,
                 TreeTableMenuItemConstants.BINARY_STATEMENT_MENU_ITEM_LABEL,

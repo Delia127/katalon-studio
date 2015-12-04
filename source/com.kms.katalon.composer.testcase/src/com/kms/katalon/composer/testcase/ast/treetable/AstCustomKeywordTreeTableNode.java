@@ -15,9 +15,9 @@ import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.model.InputParameter;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
-import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.ast.AstTextValueUtil;
 
 public class AstCustomKeywordTreeTableNode extends AstAbstractKeywordTreeTableNode {
 
@@ -133,7 +133,7 @@ public class AstCustomKeywordTreeTableNode extends AstAbstractKeywordTreeTableNo
 									displayString.append("; ");
 								}
 								Expression inputExpression = arguments.getExpression(i);
-								displayString.append(AstTreeTableTextValueUtil.getTextValue(inputExpression));
+								displayString.append(AstTextValueUtil.getTextValue(inputExpression));
 								count++;
 							}
 						}

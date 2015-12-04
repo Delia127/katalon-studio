@@ -335,6 +335,9 @@ public class KeywordBrowserPart implements EventHandler {
         controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
                 TreeTableMenuItemConstants.FINALLY_STATMENT_MENU_ITEM_ID,
                 TreeTableMenuItemConstants.FINALLY_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
+                TreeTableMenuItemConstants.THROW_STATMENT_MENU_ITEM_ID,
+                TreeTableMenuItemConstants.THROW_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
 
         return controlKeywordFolderTreeEntity;
     }
