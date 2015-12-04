@@ -70,6 +70,11 @@ public class DriverFactory {
         }
     };
 
+    /**
+     * Open a new web driver based on the execution configuration
+     * @return the created WebDriver
+     * @throws Exception
+     */
     @SuppressWarnings("rawtypes")
     public static WebDriver openWebDriver() throws Exception {
         try {
@@ -228,6 +233,13 @@ public class DriverFactory {
         localWebServerStorage.get().manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
     }
 
+    /**
+     * Get the current active web driver
+     * @return
+     *      the current active WebDriver
+     * @throws StepFailedException
+     * @throws WebDriverException
+     */
     public static WebDriver getWebDriver() throws StepFailedException, WebDriverException {
         verifyWebDriver();
         return localWebServerStorage.get();

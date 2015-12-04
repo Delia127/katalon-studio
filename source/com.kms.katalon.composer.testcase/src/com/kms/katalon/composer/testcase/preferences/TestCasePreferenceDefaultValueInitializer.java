@@ -13,6 +13,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.KeywordController;
@@ -36,7 +37,20 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
         store.setDefault(PreferenceConstants.TestCasePreferenceConstants.TESTCASE_AUTO_EXPORT_VARIABLE, false);
 
         // Default Added Keyword
-        store.setDefault(PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORDS, "");
+        store.setDefault(PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE,
+                KeywordController.getInstance().getBuiltInKeywordContributors().get(0).getKeywordClass().getName());
+        Map<String, String> defaultKeywords = new HashMap<String, String>();
+        for (IKeywordContributor keywordContributor : KeywordController.getInstance().getBuiltInKeywordContributors()) {
+            try {
+                defaultKeywords.put(keywordContributor.getKeywordClass().getName(), KeywordController.getInstance()
+                        .getBuiltInKeywords(keywordContributor.getKeywordClass().getName()).get(0).getName());
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+
+        store.setDefault(PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORDS,
+                convertKeywordMapToJsonArray(defaultKeywords).toString());
 
         // Default Failure Handling
         store.setDefault(PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_FAILURE_HANDLING,
@@ -61,10 +75,6 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
         return "callTestCase";
     }
 
-    public static IKeywordContributor getDefaultKeywordContributor() {
-        return KeywordController.getInstance().getBuiltInKeywordContributors().get(0);
-    }
-
     public static Map<String, String> getDefaultKeywords() {
         IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
                 PreferenceConstants.TestCasePreferenceConstants.QUALIFIER);
@@ -83,6 +93,18 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
         return defaultKeywords;
     }
 
+    public static IKeywordContributor getDefaultKeywordType() throws Exception {
+        IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
+                PreferenceConstants.TestCasePreferenceConstants.QUALIFIER);
+        String keywordType = store
+                .getString(PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE);
+        IKeywordContributor contributor = KeywordController.getInstance().getBuiltInKeywordContributor(keywordType);
+        if (contributor == null) {
+            contributor = KeywordController.getInstance().getBuiltInKeywordContributors().get(0);
+        }
+        return contributor;
+    }
+
     public static String getDefaultMethodName(IKeywordContributor contributor) {
         Map<String, String> defaultKeywords = getDefaultKeywords();
         String contributingClassName = contributor.getKeywordClass().getName();
@@ -93,6 +115,12 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
     public static void storeDefaultKeywords(Map<String, String> defaultKeywords) {
         IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
                 PreferenceConstants.TestCasePreferenceConstants.QUALIFIER);
+        JsonArray keywordArray = convertKeywordMapToJsonArray(defaultKeywords);
+        store.setValue(PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORDS,
+                keywordArray.toString());
+    }
+
+    private static JsonArray convertKeywordMapToJsonArray(Map<String, String> defaultKeywords) {
         JsonArray keywordArray = new JsonArray();
         for (Entry<String, String> entry : defaultKeywords.entrySet()) {
             JsonObject keywordJsonObject = new JsonObject();
@@ -101,9 +129,7 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
 
             keywordArray.add(keywordJsonObject);
         }
-
-        store.setValue(PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORDS,
-                keywordArray.toString());
+        return keywordArray;
     }
 
     public static FailureHandling getDefaultFailureHandling() {

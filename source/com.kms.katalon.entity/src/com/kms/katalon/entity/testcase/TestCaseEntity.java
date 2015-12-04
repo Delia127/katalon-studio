@@ -83,6 +83,7 @@ public class TestCaseEntity extends IntegratedFileEntity {
         for (IntegratedEntity integratedEntity : getIntegratedEntities()) {
             newTestCase.getIntegratedEntities().add(integratedEntity);
         }
+        newTestCase.setScriptContents(getScriptContents());
         newTestCase.setTestCaseGuid(Util.generateGuid());
         return newTestCase;
     }

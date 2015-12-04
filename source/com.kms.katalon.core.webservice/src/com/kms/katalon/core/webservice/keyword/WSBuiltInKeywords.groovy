@@ -69,7 +69,7 @@ public class WSBuiltInKeywords extends BuiltinKeywords {
 			Object retValue = response.isXmlContentType() ?
 					WebServiceCommonHelper.parseAndGetPropertyValueForXml(locator, response.getResponseBodyContent()) :
 					WebServiceCommonHelper.parseAndGetPropertyValueForJson(locator, response.getResponseBodyContent());
-			boolean isEqual = (value.equals(retValue));
+			boolean isEqual = (value.equals(String.valueOf(retValue)));
 			if (!isEqual) {
 				KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_PROP_VAL_NOT_EQUAL, value, retValue.toString()), flowControl, null, null);
 			} else {
@@ -91,7 +91,7 @@ public class WSBuiltInKeywords extends BuiltinKeywords {
 			Object retValue = response.isXmlContentType() ?
 					WebServiceCommonHelper.parseAndExecuteExpressionForXml(locator, "text()", response.getResponseBodyContent()) :
 					WebServiceCommonHelper.parseAndExecuteExpressionForJson(locator, "text()", response.getResponseBodyContent());
-			boolean isEqual = (text.equals(retValue));
+			boolean isEqual = (text.equals(String.valueOf(retValue)));
 			if (!isEqual) {
 				KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_ACTUAL_ELEMENT_TEXT_IS, text, retValue), flowControl, null, null);
 			} else {

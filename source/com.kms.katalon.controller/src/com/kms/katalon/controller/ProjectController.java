@@ -62,6 +62,7 @@ public class ProjectController extends EntityController {
                         new SubProgressMonitor(monitor, 2, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK));
                 KeywordController.getInstance().parseAllCustomKeywords(project,
                         new SubProgressMonitor(monitor, 4, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK));
+                DataProviderState.getInstance().setCurrentProject(project);
             }
             return project;
         } finally {
@@ -73,11 +74,11 @@ public class ProjectController extends EntityController {
 
     public ProjectEntity openProject(String projectPk) throws Exception {
         ProjectEntity project = dataProviderSetting.getProjectDataProvider().getProject(projectPk);
-
         if (project != null) {
             addRecentProject(project);
             KeywordController.getInstance().parseAllCustomKeywords(project, null);
             GlobalVariableController.getInstance().generateGlobalVariableLibFile(project, null);
+            DataProviderState.getInstance().setCurrentProject(project);
         }
         return project;
     }
@@ -131,7 +132,10 @@ public class ProjectController extends EntityController {
                     File projectFile = new File(recentProject.getLocation());
                     if (projectFolder.exists() && projectFolder.isDirectory() && projectFile.exists()
                             && projectFile.isFile()) {
-                        resultList.add(recentProject);
+                        ProjectEntity project = dataProviderSetting.getProjectDataProvider().getProject(projectFile.getAbsolutePath());
+                        if (project.getName().equals(recentProject.getName())) {
+                            resultList.add(recentProject);
+                        }
                     }
                 }
             }

@@ -16,7 +16,7 @@ import com.kms.katalon.composer.testcase.ast.editors.MethodObjectBuilderCellEdit
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableUtil;
-import com.kms.katalon.core.groovy.GroovyParser;
+import com.kms.katalon.core.ast.GroovyParser;
 
 public class AstMethodTreeTableNode extends AstAbstractTreeTableNode {
 	private MethodNode methodNode;

@@ -4,6 +4,7 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -13,6 +14,7 @@ import org.eclipse.swt.widgets.Shell;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.composer.project.views.NewProjectDialog;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 
@@ -23,6 +25,9 @@ public class UpdateProjectHandler {
 
     @Inject
     private MApplication application;
+    
+    @Inject
+    private IEventBroker eventBroker;
 
     @CanExecute
     public boolean canExecute() {
@@ -41,6 +46,7 @@ public class UpdateProjectHandler {
                 if (isChanged) {
                     ProjectController.getInstance().updateProject(dialog.getProjectName(),
                             dialog.getProjectDescription(), projectEntity.getLocation());
+                    eventBroker.post(EventConstants.PROJECT_UPDATED, projectEntity);
                     OpenProjectHandler.updateProjectTitle(projectEntity, modelService, application);
                 }
             }

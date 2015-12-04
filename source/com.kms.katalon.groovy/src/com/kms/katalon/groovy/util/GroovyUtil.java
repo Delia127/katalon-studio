@@ -51,7 +51,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.core.groovy.GroovyParser;
+import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.core.keyword.IKeywordContributor;
 import com.kms.katalon.custom.factory.BuiltInMethodNodeFactory;
 import com.kms.katalon.entity.folder.FolderEntity;

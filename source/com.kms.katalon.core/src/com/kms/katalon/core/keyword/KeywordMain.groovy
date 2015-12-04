@@ -2,11 +2,11 @@ package com.kms.katalon.core.keyword
 
 import groovy.transform.CompileStatic
 
-import com.kms.katalon.core.exception.ExceptionsUtil
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.logging.ErrorCollector;
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.model.FailureHandling
+import com.kms.katalon.core.util.ExceptionsUtil;
 
 
 public class KeywordMain {

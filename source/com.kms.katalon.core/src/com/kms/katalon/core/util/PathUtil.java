@@ -4,16 +4,16 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.regex.Pattern;
 
-public class PathUtils {
+public class PathUtil {
     private static final String relativeSeparator = "/";
     private static final String windowSeparator = "\\";
 
-    private PathUtils() {
+    private PathUtil() {
         // Disable default constructor
     }
 
     public static String absoluteToRelativePath(String absolutePath, String projectFolderPath) {
-        return PathUtils.getRelativePath(absolutePath, projectFolderPath);
+        return PathUtil.getRelativePath(absolutePath, projectFolderPath);
     }
 
     public static String relativeToAbsolutePath(String relativePath, String projectFolderPath) {

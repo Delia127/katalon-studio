@@ -81,7 +81,7 @@ import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
-import com.kms.katalon.core.groovy.GroovyParser;
+import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.core.keyword.IKeywordContributor;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCase;
@@ -979,7 +979,7 @@ public class AstTreeTableInputUtil {
 
     public static ExpressionStatement generateCallTestCaseExpresionStatement(TestCaseEntity testCase) throws Exception {
         IKeywordContributor defaultBuiltinKeywordContributor = TestCasePreferenceDefaultValueInitializer
-                .getDefaultKeywordContributor();
+                .getDefaultKeywordType();
 
         List<Expression> expressionArguments = new ArrayList<Expression>();
         MethodCallExpression keywordMethodCallExpression = new MethodCallExpression(new VariableExpression(

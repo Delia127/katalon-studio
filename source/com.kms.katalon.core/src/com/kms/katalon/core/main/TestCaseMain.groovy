@@ -20,17 +20,16 @@ import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer
 import org.codehaus.groovy.control.customizers.ImportCustomizer
 import org.codehaus.groovy.runtime.InvokerHelper
 
-import com.kms.katalon.core.annotation.RequireAstTestStepTransformation
 import com.kms.katalon.core.annotation.SetUp
 import com.kms.katalon.core.annotation.TearDown
 import com.kms.katalon.core.annotation.TearDownIfError
 import com.kms.katalon.core.annotation.TearDownIfFailed
 import com.kms.katalon.core.annotation.TearDownIfPassed
 import com.kms.katalon.core.ast.AstTextValueUtil;
+import com.kms.katalon.core.ast.GroovyParser;
+import com.kms.katalon.core.ast.RequireAstTestStepTransformation;
 import com.kms.katalon.core.constants.StringConstants
-import com.kms.katalon.core.exception.ExceptionsUtil
 import com.kms.katalon.core.exception.StepFailedException
-import com.kms.katalon.core.groovy.GroovyParser
 import com.kms.katalon.core.logging.ErrorCollector
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.logging.LogLevel
@@ -45,6 +44,7 @@ import com.kms.katalon.core.testcase.Variable
 import com.kms.katalon.core.testdata.TestDataColumn
 import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.core.testobject.ObjectRepository;
+import com.kms.katalon.core.util.ExceptionsUtil;
 
 @CompileStatic
 public class TestCaseMain {

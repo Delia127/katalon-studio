@@ -13,11 +13,11 @@ import org.dom4j.io.SAXReader;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
-import com.kms.katalon.core.exception.ExceptionsUtil;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.testdata.reader.CSVSeperator;
-import com.kms.katalon.core.util.PathUtils;
+import com.kms.katalon.core.util.ExceptionsUtil;
+import com.kms.katalon.core.util.PathUtil;
 
 public class TestDataFactory {
 	private static final String TEST_DATA_FILE_EXTENSION = ".dat";
@@ -106,7 +106,7 @@ public class TestDataFactory {
 			isRelativePath = Boolean.valueOf(testDataElement.elementText(IS_RELATIVE_PATH_NODE));
 		}
 		if (isRelativePath) {
-			sourceUrl = PathUtils.relativeToAbsolutePath(sourceUrl, projectDir);
+			sourceUrl = PathUtil.relativeToAbsolutePath(sourceUrl, projectDir);
 		}
 		logger.logInfo(MessageFormat.format(StringConstants.XML_LOG_TEST_DATA_READING_EXCEL_DATA_WITH_SOURCE_X_SHEET_Y,
 				sourceUrl, sheetName));
@@ -162,7 +162,7 @@ public class TestDataFactory {
 		}
 		
 		if (isRelativePath) {
-			sourceUrl = PathUtils.relativeToAbsolutePath(sourceUrl, projectDir);
+			sourceUrl = PathUtil.relativeToAbsolutePath(sourceUrl, projectDir);
 		}
 		
 		logger.logInfo(MessageFormat.format(

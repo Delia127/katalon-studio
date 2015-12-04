@@ -50,7 +50,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.core.testdata.ExcelData;
-import com.kms.katalon.core.util.PathUtils;
+import com.kms.katalon.core.util.PathUtil;
 import com.kms.katalon.entity.dal.exception.DuplicatedFileNameException;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity.DataFileDriverType;
@@ -224,7 +224,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
     private String getSourceUrlAbsolutePath() {
         String sourceUrl = txtFileName.getText();
         if (ckcbUseRelativePath.getSelection()) {
-            sourceUrl = PathUtils.relativeToAbsolutePath(sourceUrl, getProjectFolderLocation());
+            sourceUrl = PathUtil.relativeToAbsolutePath(sourceUrl, getProjectFolderLocation());
         }
         return sourceUrl;
     }
@@ -329,7 +329,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 fCurrentSheetName = "";
 
                 if (ckcbUseRelativePath.getSelection()) {
-                    txtFileName.setText(PathUtils.absoluteToRelativePath(fCurrentPath, getProjectFolderLocation()));
+                    txtFileName.setText(PathUtil.absoluteToRelativePath(fCurrentPath, getProjectFolderLocation()));
                 } else {
                     txtFileName.setText(fCurrentPath);
                 }
@@ -364,9 +364,9 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 if (txtFileName.getText() != null) {
                     String sourceUrl = txtFileName.getText();
                     if (ckcbUseRelativePath.getSelection()) {
-                        txtFileName.setText(PathUtils.absoluteToRelativePath(sourceUrl, getProjectFolderLocation()));
+                        txtFileName.setText(PathUtil.absoluteToRelativePath(sourceUrl, getProjectFolderLocation()));
                     } else {
-                        txtFileName.setText(PathUtils.relativeToAbsolutePath(sourceUrl, getProjectFolderLocation()));
+                        txtFileName.setText(PathUtil.relativeToAbsolutePath(sourceUrl, getProjectFolderLocation()));
                     }
                 }
                 dirtyable.setDirty(true);

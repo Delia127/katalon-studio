@@ -32,8 +32,6 @@ import org.codehaus.groovy.ast.stmt.WhileStatement;
 import org.codehaus.groovy.syntax.Token;
 import org.codehaus.groovy.syntax.Types;
 
-import com.kms.katalon.core.groovy.GroovyParser;
-
 public class AstTextValueUtil {
     public static String getTextValue(Object object) {
         if (object instanceof Statement) {

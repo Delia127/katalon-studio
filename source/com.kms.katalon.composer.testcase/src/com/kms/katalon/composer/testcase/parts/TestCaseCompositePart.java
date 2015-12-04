@@ -59,7 +59,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.TestCaseController;
-import com.kms.katalon.core.groovy.GroovyParser;
+import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
@@ -202,14 +202,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
             }
             setScriptContentToManual();
             childTestCaseVariablesPart.loadVariables();
-            
-            // load test case variables into script
-            try {
-                childTestCasePart.getTreeTableInput().reloadTreeTableNode();
-            } catch (Exception e) {
-                LoggerSingleton.logError(e);
-            }
-            
+            childTestCasePart.getTreeTableInput().reloadTestCaseVariables();
             childTestCaseIntegrationPart.loadInput();
             isInitialized = true;
         }
@@ -517,6 +510,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                                 boolean isDirty = dirty.isDirty();
                                 changeOriginalTestCase(testCase);
                                 childTestCaseVariablesPart.loadVariables();
+                                childTestCasePart.getTreeTableInput().reloadTestCaseVariables();
                                 updatePart(testCase);
                                 childTestCaseIntegrationPart.loadInput();
                                 checkDirty();
@@ -596,6 +590,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         // refresh child parts
         childTestCasePart.updateInput();
         childTestCaseVariablesPart.loadVariables();
+        childTestCasePart.getTreeTableInput().reloadTestCaseVariables();
         childTestCaseIntegrationPart.loadInput();
 
         checkDirty();

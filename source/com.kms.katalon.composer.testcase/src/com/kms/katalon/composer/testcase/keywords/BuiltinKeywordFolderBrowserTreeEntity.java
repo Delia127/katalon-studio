@@ -14,7 +14,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.core.annotation.Keyword;
 
-public class BuiltinKeywordFolderBrowserTreeEntity extends KeywordFolderBrowserTreeEntity {
+public class BuiltinKeywordFolderBrowserTreeEntity extends KeywordBrowserFolderTreeEntity {
 	private static final long serialVersionUID = 1L;
 	private String className;
 	private String simpleName;
@@ -68,7 +68,7 @@ public class BuiltinKeywordFolderBrowserTreeEntity extends KeywordFolderBrowserT
 		Iterator<Entry<String, List<Method>>> it = methodObjectMap.entrySet().iterator();
 		while (it.hasNext()) {
 			Entry<String, List<Method>> pair = (Entry<String, List<Method>>) it.next();
-			KeywordFolderBrowserTreeEntity keywordFolder = new KeywordFolderBrowserTreeEntity(pair.getKey(), this);
+			KeywordBrowserFolderTreeEntity keywordFolder = new KeywordBrowserFolderTreeEntity(pair.getKey(), this);
 			for (Method method : pair.getValue()) {
 				keywordFolder.children.add(new KeywordBrowserTreeEntity(simpleName, method.getName(), false,
 						keywordFolder));

@@ -41,7 +41,7 @@ import com.kms.katalon.composer.testcase.support.VariableDefaultValueTypeEditing
 import com.kms.katalon.composer.testcase.support.VariableNameEditingSupport;
 import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
-import com.kms.katalon.core.groovy.GroovyParser;
+import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.util.SyntaxUtil;
@@ -327,6 +327,7 @@ public class TestCaseVariablePart {
 
     public void setDirty(boolean isDirty) {
         mpart.setDirty(isDirty);
+        parentTestCaseCompositePart.getChildTestCasePart().getTreeTableInput().reloadTestCaseVariables();
         parentTestCaseCompositePart.checkDirty();
     }
 

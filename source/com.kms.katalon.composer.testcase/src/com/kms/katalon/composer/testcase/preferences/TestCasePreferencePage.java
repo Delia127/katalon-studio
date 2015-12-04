@@ -40,6 +40,7 @@ public class TestCasePreferencePage extends PreferencePage {
     private Group grpDefaultKeyword;
     private ListViewer listViewerKwType, listViewerKwName;
     private Combo comboDefaultFailureHandling;
+    private Combo comboKeywordType;
 
     private java.util.List<IKeywordContributor> contributors;
     private Composite fieldEditorParent;
@@ -104,6 +105,16 @@ public class TestCasePreferencePage extends PreferencePage {
 
         comboDefaultFailureHandling = new Combo(compositeDefaultFailureHandling, SWT.READ_ONLY);
         comboDefaultFailureHandling.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
+        
+        Composite compositeDefaultKeywordType = new Composite(fieldEditorParent, SWT.NONE);
+        compositeDefaultKeywordType.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+        compositeDefaultKeywordType.setLayout(new GridLayout(2, false));
+
+        Label lblDefaultKeywordType = new Label(compositeDefaultKeywordType, SWT.NONE);
+        lblDefaultKeywordType.setText(StringConstants.PREF_LBL_DEFAULT_KEYWORD_TYPE);
+
+        comboKeywordType = new Combo(compositeDefaultKeywordType, SWT.READ_ONLY);
+        comboKeywordType.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
 
         grpDefaultKeyword = new Group(fieldEditorParent, SWT.NONE);
         grpDefaultKeyword.setText(StringConstants.PREF_GRP_DEFAULT_KEYWORD);
@@ -245,7 +256,7 @@ public class TestCasePreferencePage extends PreferencePage {
                         .getSelection()).getFirstElement();
 
                 Method method = (Method) ((IStructuredSelection) event.getSelection()).getFirstElement();
-                
+
                 defaultKeywords.put(contributor.getKeywordClass().getName(), method.getName());
             }
         });
@@ -254,11 +265,34 @@ public class TestCasePreferencePage extends PreferencePage {
     private void initializeValue(boolean isDefault) {
         try {
             initTestCaseCallingValue(isDefault);
+            initDefaultKeywordType(isDefault);
             initDefaultKeywordValue(isDefault);
             initDefaultFailureHandlingValue(isDefault);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
+    }
+
+    private void initDefaultKeywordType(boolean isDefault) {
+        String defaultKeywordTypeString = null;
+        if (isDefault) {
+            defaultKeywordTypeString = getPreferenceStore().getDefaultString(
+                    PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE);
+        } else {
+            defaultKeywordTypeString = getPreferenceStore().getString(
+                    PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE);
+        }
+        int selectedIndex = 0;
+        String[] keywordTypeStringArray = new String[contributors.size()];
+        for (int i = 0; i < contributors.size(); i++) {
+            if (contributors.get(i).getKeywordClass().getName().equalsIgnoreCase(defaultKeywordTypeString)) {
+                selectedIndex = i;
+            }
+            keywordTypeStringArray[i] = contributors.get(i).getLabelName();
+        }
+
+        comboKeywordType.setItems(keywordTypeStringArray);
+        comboKeywordType.setText(keywordTypeStringArray[selectedIndex]);
     }
 
     private void initDefaultFailureHandlingValue(boolean isDefault) {
@@ -274,7 +308,8 @@ public class TestCasePreferencePage extends PreferencePage {
     }
 
     private void initDefaultKeywordValue(boolean isDefault) throws Exception {
-        if (contributors.size() <= 0) return;
+        if (contributors.size() <= 0)
+            return;
 
         listViewerKwType.setInput(contributors);
 
@@ -288,7 +323,7 @@ public class TestCasePreferencePage extends PreferencePage {
 
         updateListViewKwName();
     }
-    
+
     private void updateListViewKwName() throws Exception {
         IKeywordContributor contributor = (IKeywordContributor) ((IStructuredSelection) listViewerKwType.getSelection())
                 .getFirstElement();
@@ -324,12 +359,12 @@ public class TestCasePreferencePage extends PreferencePage {
 
         InputValueType valueType = InputValueType.valueOf(defaultVariableType);
         switch (valueType) {
-            case Variable:
-                btnDefaultVariableIsVariable.setSelection(true);
-                break;
-            default:
-                btnDefaultVariableIsConstant.setSelection(true);
-                break;
+        case Variable:
+            btnDefaultVariableIsVariable.setSelection(true);
+            break;
+        default:
+            btnDefaultVariableIsConstant.setSelection(true);
+            break;
         }
 
         boolean generateDefaultValue = getPreferenceStore().getBoolean(
@@ -402,6 +437,17 @@ public class TestCasePreferencePage extends PreferencePage {
 
         getPreferenceStore().setValue(PreferenceConstants.TestCasePreferenceConstants.TESTCASE_AUTO_EXPORT_VARIABLE,
                 btnExportVariable.getSelection());
+
+        // Default keyword type
+        String selectedKeywordType = comboKeywordType.getText();
+        for (int i = 0; i < contributors.size(); i++) {
+            if (contributors.get(i).getLabelName().equalsIgnoreCase(selectedKeywordType)) {
+                getPreferenceStore().setValue(
+                        PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE,
+                        contributors.get(i).getKeywordClass().getName());
+                break;
+            }
+        }
 
         // Default Keyword
         TestCasePreferenceDefaultValueInitializer.storeDefaultKeywords(defaultKeywords);
