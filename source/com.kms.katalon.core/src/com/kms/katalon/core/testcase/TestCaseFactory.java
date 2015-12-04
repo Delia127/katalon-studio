@@ -12,7 +12,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
-import com.kms.katalon.core.exception.ExceptionsUtil;
+import com.kms.katalon.core.util.ExceptionsUtil;
 
 public class TestCaseFactory {
 	private static final String TEST_CASE_META_ROOT_FOLDER_NAME = "Test Cases";

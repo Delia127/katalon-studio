@@ -1,9 +1,12 @@
-package com.kms.katalon.core.exception;
+package com.kms.katalon.core.util;
 
 import groovy.lang.MissingPropertyException;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+
+import com.kms.katalon.core.exception.StepErrorException;
+import com.kms.katalon.core.exception.StepFailedException;
 
 public class ExceptionsUtil {
     public static String getMessageForThrowable(Throwable t) {

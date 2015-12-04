@@ -25,7 +25,6 @@ import com.google.common.base.Function
 import com.kms.katalon.core.annotation.Keyword
 import com.kms.katalon.core.configuration.RunConfiguration
 import com.kms.katalon.core.driver.DriverType
-import com.kms.katalon.core.exception.ExceptionsUtil
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.keyword.BuiltinKeywords
 import com.kms.katalon.core.logging.KeywordLogger
@@ -33,6 +32,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.ConditionType
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.testobject.TestObjectProperty
+import com.kms.katalon.core.util.ExceptionsUtil;
 import com.kms.katalon.core.webui.common.ScreenUtil
 import com.kms.katalon.core.webui.common.WebUiCommonHelper
 import com.kms.katalon.core.webui.constants.StringConstants

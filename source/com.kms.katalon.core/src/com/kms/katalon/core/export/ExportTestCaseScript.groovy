@@ -9,7 +9,6 @@ import com.kms.katalon.core.annotation.TearDown
 import com.kms.katalon.core.annotation.TearDownIfError
 import com.kms.katalon.core.annotation.TearDownIfFailed
 import com.kms.katalon.core.annotation.TearDownIfPassed
-import com.kms.katalon.core.exception.ExceptionsUtil
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.logging.ErrorCollector
 import com.kms.katalon.core.logging.KeywordLogger
@@ -18,6 +17,7 @@ import com.kms.katalon.core.logging.KeywordLogger.KeywordStackElement
 import com.kms.katalon.core.logging.model.TestStatus
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue
 import com.kms.katalon.core.main.TestResult
+import com.kms.katalon.core.util.ExceptionsUtil;
 
 @CompileStatic
 public abstract class ExportTestCaseScript {

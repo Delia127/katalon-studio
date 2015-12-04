@@ -28,7 +28,7 @@ import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
-import com.kms.katalon.core.groovy.GroovyParser;
+import com.kms.katalon.core.ast.GroovyParser;
 
 public class PropertyInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
 	private static final String DIALOG_TITLE = StringConstants.DIA_TITLE_PROPERTY_INPUT;

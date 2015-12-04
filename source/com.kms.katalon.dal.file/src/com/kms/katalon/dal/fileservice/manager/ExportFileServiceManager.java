@@ -45,10 +45,10 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.kms.katalon.constants.PreferenceConstants;
-import com.kms.katalon.core.annotation.RequireAstTestStepTransformation;
+import com.kms.katalon.core.ast.GroovyParser;
+import com.kms.katalon.core.ast.RequireAstTestStepTransformation;
 import com.kms.katalon.core.export.ExportTestCaseHelper;
 import com.kms.katalon.core.export.ExportTestCaseScript;
-import com.kms.katalon.core.groovy.GroovyParser;
 import com.kms.katalon.dal.exception.TaskCancelledException;
 import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.entity.file.FileEntity;
