@@ -37,8 +37,8 @@ import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSuppo
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
 import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
-import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
+import com.kms.katalon.core.ast.AstTextValueUtil;
 import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.core.testdata.TestData;
 
@@ -336,7 +336,7 @@ public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDia
             @Override
             public String getText(Object element) {
                 if (element == methodCallExpression && methodCallExpression.getObjectExpression() != null) {
-                    return AstTreeTableTextValueUtil.getTextValue(methodCallExpression.getObjectExpression());
+                    return AstTextValueUtil.getTextValue(methodCallExpression.getObjectExpression());
                 }
                 return StringUtils.EMPTY;
             }
@@ -496,7 +496,7 @@ public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDia
             @Override
             public String getText(Object element) {
                 if (element == methodCallExpression) {
-                    return AstTreeTableTextValueUtil.getTextValue(methodCallExpression.getArguments());
+                    return AstTextValueUtil.getTextValue(methodCallExpression.getArguments());
                 }
                 return StringUtils.EMPTY;
             }
@@ -545,7 +545,7 @@ public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDia
             protected CellEditor getCellEditor(Object element) {
                 if (element == methodCallExpression
                         && methodCallExpression.getArguments() instanceof ArgumentListExpression) {
-                    return new InputCellEditor(tableViewer.getTable(), AstTreeTableTextValueUtil
+                    return new InputCellEditor(tableViewer.getTable(), AstTextValueUtil
                             .getTextValue(methodCallExpression.getArguments()), scriptClass);
                 }
                 return null;

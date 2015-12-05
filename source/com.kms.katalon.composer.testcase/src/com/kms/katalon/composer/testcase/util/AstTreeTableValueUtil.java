@@ -10,6 +10,7 @@ import org.codehaus.groovy.ast.expr.BooleanExpression;
 import org.codehaus.groovy.ast.expr.ClassExpression;
 import org.codehaus.groovy.ast.expr.ClosureListExpression;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
+import org.codehaus.groovy.ast.expr.ConstructorCallExpression;
 import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.expr.ListExpression;
 import org.codehaus.groovy.ast.expr.MapExpression;
@@ -26,6 +27,7 @@ import org.codehaus.groovy.ast.stmt.ForStatement;
 import org.codehaus.groovy.ast.stmt.IfStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.ast.stmt.SwitchStatement;
+import org.codehaus.groovy.ast.stmt.ThrowStatement;
 import org.codehaus.groovy.ast.stmt.WhileStatement;
 import org.codehaus.groovy.syntax.Numbers;
 import org.codehaus.groovy.syntax.Token;
@@ -151,7 +153,9 @@ public class AstTreeTableValueUtil {
             return statement;
         } else if (statement instanceof CatchStatement) {
             return statement;
-        } 
+        } else if (statement instanceof ThrowStatement) {
+            return statement;
+        }
         return null;
     }
 
@@ -404,11 +408,15 @@ public class AstTreeTableValueUtil {
             return true;
         } else if (statement instanceof SwitchStatement && value instanceof SwitchStatement
                 && !compareAstNode(statement, value)) {
-            ((SwitchStatement) statement).setExpression( ((SwitchStatement) value).getExpression());
+            ((SwitchStatement) statement).setExpression(((SwitchStatement) value).getExpression());
             return true;
         } else if (statement instanceof CaseStatement && value instanceof CaseStatement
                 && !compareAstNode(statement, value)) {
-            ((CaseStatement) statement).setExpression( ((CaseStatement) value).getExpression());
+            ((CaseStatement) statement).setExpression(((CaseStatement) value).getExpression());
+            return true;
+        } else if (statement instanceof ThrowStatement && value instanceof ThrowStatement
+                && !compareAstNode(statement, value)) {
+            ((ThrowStatement) statement).setExpression(((ThrowStatement) value).getExpression());
             return true;
         }
         return false;
@@ -492,6 +500,13 @@ public class AstTreeTableValueUtil {
             return InputValueType.Property;
         } else if (expression instanceof ClassExpression) {
             return InputValueType.Class;
+        } else if (expression instanceof ConstructorCallExpression) {
+            ConstructorCallExpression contructorCallExpression = (ConstructorCallExpression) expression;
+            Class<?> throwableClass = AstTreeTableInputUtil.loadType(contructorCallExpression.getType().getName(),
+                    scriptClass);
+            if (Throwable.class.isAssignableFrom(throwableClass)) {
+                return InputValueType.Throwable;
+            }
         }
         return InputValueType.Null;
     }

@@ -100,6 +100,9 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_TITLE_TEST_OBJ_INPUT = "Test Object Input";
     public static final String DIA_TAB_OTHER = "Other";
     public static final String DIA_LBL_OBJ_TYPE = DIA_COL_OBJ_TYPE;
+    
+    // ConstructorCallInputBuilderDialog
+    public static final String DIA_TITLE_THROWABLE_CALL_INPUT = "Throwable Input";
 
     // MethodObjectBuilderDialog
     public static final String DIA_TITLE_METHOD_BUILDER = "Method builder";
@@ -201,6 +204,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_ERROR_MSG_CANNOT_ADD_TRY_STATEMENT = "Cannot add TRY statement.";
     public static final String PA_ERROR_MSG_CANNOT_ADD_CATCH_STATEMENT = "Cannot add CATCH statement.";
     public static final String PA_ERROR_MSG_CANNOT_ADD_FINALLY_STATEMENT = "Cannot add FINALLY statement.";
+    public static final String PA_ERROR_MSG_CANNOT_ADD_THROW_STATEMENT = "Cannot add THROW statement.";
     public static final String PA_ERROR_MSG_CANNOT_ADD_METHOD_CALL_STATEMENT = "Cannot add METHOD CALL statement.";
     public static final String PA_ERROR_MSG_CANNOT_CHANGE_FAILURE_HANDLING = "Cannot change failure handling.";
     public static final String PA_ERROR_MSG_CANNOT_REMOVE_STATEMENT = "Cannot remove statement.";
@@ -305,6 +309,9 @@ public class StringConstants extends GlobalStringConstants {
     
     // AstReturnStatementTreeTableNode
     public static final String TREE_RETURN_STATEMENT = "Return Statement";
+    
+    // AstThrowStatementTreeTableNode
+    public static final String TREE_THROW_STATEMENT = "Throw Statement";
 
     // KeywordBrowserPart
     public static final String KEYWORD_BROWSER_BUILTIN_KEYWORD_ROOT_TREE_ITEM_LABEL = "Built-in Keywords";

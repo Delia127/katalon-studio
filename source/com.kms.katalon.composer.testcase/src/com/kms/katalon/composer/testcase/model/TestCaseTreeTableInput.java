@@ -1065,6 +1065,9 @@ public class TestCaseTreeTableInput {
         case TreeTableMenuItemConstants.FINALLY_STATMENT_MENU_ITEM_ID:
             addNewFinallyStatement(destinationNode, addType);
             break;
+        case TreeTableMenuItemConstants.THROW_STATMENT_MENU_ITEM_ID:
+            addNewThrowStatement(destinationNode, addType);
+            break;
         case TreeTableMenuItemConstants.METHOD_MENU_ITEM_ID:
             addNewMethod(destinationNode, addType);
             break;
@@ -1135,6 +1138,16 @@ public class TestCaseTreeTableInput {
 
     public void callTestCase(NodeAddType addType) {
         callTestCase(getSelectedNode(), addType);
+    }
+
+    private void addNewThrowStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
+        try {
+            addNewAstObject(AstTreeTableEntityUtil.getNewThrowStatement(), destinationNode, addType);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_THROW_STATEMENT);
+        }
     }
 
     public void addNewMethod(AstTreeTableNode destinationNode, NodeAddType addType) {

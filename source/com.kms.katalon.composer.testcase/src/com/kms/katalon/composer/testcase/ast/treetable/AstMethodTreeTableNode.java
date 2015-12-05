@@ -14,8 +14,8 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.testcase.ast.editors.MethodObjectBuilderCellEditor;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
-import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableUtil;
+import com.kms.katalon.core.ast.AstTextValueUtil;
 import com.kms.katalon.core.ast.GroovyParser;
 
 public class AstMethodTreeTableNode extends AstAbstractTreeTableNode {
@@ -108,7 +108,7 @@ public class AstMethodTreeTableNode extends AstAbstractTreeTableNode {
 
 	@Override
 	public CellEditor getCellEditorForItem(Composite parent) {
-		return new MethodObjectBuilderCellEditor(parent, AstTreeTableTextValueUtil.getTextValue(methodNode), parentClass);
+		return new MethodObjectBuilderCellEditor(parent, AstTextValueUtil.getTextValue(methodNode), parentClass);
 	}
 
 	@Override

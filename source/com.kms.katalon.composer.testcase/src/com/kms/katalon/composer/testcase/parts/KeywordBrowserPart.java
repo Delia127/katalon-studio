@@ -213,13 +213,11 @@ public class KeywordBrowserPart implements EventHandler {
     }
 
     private static KeywordBrowserFolderTreeEntity loadBuiltinKeywordFolderTreeEntity() {
-        List<IKeywordContributor> builtInKeywordContributors = KeywordController.getInstance()
-                .getBuiltInKeywordContributors();
-
         List<IKeywordBrowserTreeEntity> keywordTreeEntities = new ArrayList<IKeywordBrowserTreeEntity>();
         KeywordBrowserFolderTreeEntity builtinKeywordRootFolder = new KeywordBrowserFolderTreeEntity(
                 StringConstants.KEYWORD_BROWSER_BUILTIN_KEYWORD_ROOT_TREE_ITEM_LABEL, null, keywordTreeEntities);
-        for (IKeywordContributor builtInKeywordContributor : builtInKeywordContributors) {
+        for (IKeywordContributor builtInKeywordContributor : KeywordController.getInstance()
+                .getBuiltInKeywordContributors()) {
             keywordTreeEntities.add(new BuiltinKeywordFolderBrowserTreeEntity(builtInKeywordContributor
                     .getKeywordClass().getName(), builtInKeywordContributor.getKeywordClass().getSimpleName(),
                     builtInKeywordContributor.getLabelName(), builtinKeywordRootFolder));
@@ -335,6 +333,9 @@ public class KeywordBrowserPart implements EventHandler {
         controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
                 TreeTableMenuItemConstants.FINALLY_STATMENT_MENU_ITEM_ID,
                 TreeTableMenuItemConstants.FINALLY_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
+                TreeTableMenuItemConstants.THROW_STATMENT_MENU_ITEM_ID,
+                TreeTableMenuItemConstants.THROW_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
 
         return controlKeywordFolderTreeEntity;
     }

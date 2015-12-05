@@ -32,6 +32,7 @@ public class TreeTableMenuItemConstants {
 	public static final int TRY_STATEMENT_MENU_ITEM_ID = 15;
 	public static final int CATCH_STATMENT_MENU_ITEM_ID = 16;
 	public static final int FINALLY_STATMENT_MENU_ITEM_ID = 17;
+	public static final int THROW_STATMENT_MENU_ITEM_ID = 18;
 	
 	public static final int DECISION_MAKING_STATEMENT_MENU_ITEM_ID = 20;
     public static final int LOOPING_STATEMENT_MENU_ITEM_ID = 21;
@@ -70,6 +71,7 @@ public class TreeTableMenuItemConstants {
 	public static final String TRY_STATEMENT_MENU_ITEM_LABEL = StringConstants.TREE_TRY_STATEMENT;
 	public static final String CATCH_STATEMENT_MENU_ITEM_LABEL = StringConstants.TREE_CATCH_STATEMENT;
 	public static final String FINALLY_STATEMENT_MENU_ITEM_LABEL = StringConstants.TREE_FINALLY_STATEMENT;
+	public static final String THROW_STATEMENT_MENU_ITEM_LABEL = StringConstants.TREE_THROW_STATEMENT;
 	public static final String CALL_METHOD_STATEMENT_MENU_ITEM_LABEL = StringConstants.TREE_METHOD_CALL_STATEMENT;
 	public static final String DECISION_MAKING_STATEMENT_MENU_ITEM_LABEL = StringConstants.CONS_MENU_CONTEXT_DECISION_MAKING_STATEMENT;
     public static final String LOOPING_STATEMENT_MENU_ITEM_LABEL = StringConstants.CONS_MENU_CONTEXT_LOOPING_STATEMENT;

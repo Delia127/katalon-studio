@@ -27,7 +27,7 @@ import com.kms.katalon.composer.testcase.ast.editors.TypeInputCellEditor;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
-import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
+import com.kms.katalon.core.ast.AstTextValueUtil;
 import com.kms.katalon.core.ast.GroovyParser;
 
 public class PropertyInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
@@ -182,7 +182,7 @@ public class PropertyInputBuilderDialog extends AbstractAstBuilderWithTableDialo
 			@Override
 			public String getText(Object element) {
 				if (element == propertyExpression && propertyExpression.getObjectExpression() != null) {
-					return AstTreeTableTextValueUtil.getTextValue(propertyExpression.getObjectExpression());
+					return AstTextValueUtil.getTextValue(propertyExpression.getObjectExpression());
 				}
 				return StringUtils.EMPTY;
 			}
@@ -238,7 +238,7 @@ public class PropertyInputBuilderDialog extends AbstractAstBuilderWithTableDialo
 				if (element == propertyExpression) {
 					PropertyObjectType type = getObjectTypeFromExpression(propertyExpression);
 					if (type == PropertyObjectType.Class) {
-						return new TypeInputCellEditor(tableViewer.getTable(), AstTreeTableTextValueUtil
+						return new TypeInputCellEditor(tableViewer.getTable(), AstTextValueUtil
 								.getTextValue(propertyExpression.getObjectExpression()));
 					} else if (type == PropertyObjectType.Variable) {
 						return new TextCellEditor(tableViewer.getTable());

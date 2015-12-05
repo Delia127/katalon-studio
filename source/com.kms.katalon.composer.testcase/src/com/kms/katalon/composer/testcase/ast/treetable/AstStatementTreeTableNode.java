@@ -19,9 +19,9 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
-import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
+import com.kms.katalon.core.ast.AstTextValueUtil;
 import com.kms.katalon.core.ast.GroovyParser;
 
 public class AstStatementTreeTableNode extends AstAbstractTreeTableNode {
@@ -89,7 +89,7 @@ public class AstStatementTreeTableNode extends AstAbstractTreeTableNode {
 		if (input instanceof String) {
 			return String.valueOf(input);
 		} else if (input instanceof ASTNode) {
-			return AstTreeTableTextValueUtil.getTextValue(input);
+			return AstTextValueUtil.getTextValue(input);
 		}
 		return "";
 	}

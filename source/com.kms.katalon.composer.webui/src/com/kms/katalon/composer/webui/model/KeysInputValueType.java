@@ -9,9 +9,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.openqa.selenium.Keys;
 
 import com.kms.katalon.composer.testcase.model.ICustomInputValueType;
-import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
 import com.kms.katalon.composer.webui.component.KeysInputCellEditor;
+import com.kms.katalon.core.ast.AstTextValueUtil;
 
 public class KeysInputValueType implements ICustomInputValueType {
 
@@ -22,7 +22,7 @@ public class KeysInputValueType implements ICustomInputValueType {
 
     @Override
     public CellEditor getCellEditorForValue(Composite parent, Object astObject, ClassNode scriptClass) {
-        return new KeysInputCellEditor(parent, AstTreeTableTextValueUtil.getTextValue(astObject), scriptClass);
+        return new KeysInputCellEditor(parent, AstTextValueUtil.getTextValue(astObject), scriptClass);
     }
 
     @Override
@@ -67,9 +67,9 @@ public class KeysInputValueType implements ICustomInputValueType {
     @Override
     public String getDisplayValue(Object astObject) {
         if (astObject instanceof MethodCallExpression) {
-            return AstTreeTableTextValueUtil.getTextValue(((MethodCallExpression) astObject).getArguments());
+            return AstTextValueUtil.getTextValue(((MethodCallExpression) astObject).getArguments());
         }
-        return AstTreeTableTextValueUtil.getTextValue(astObject);
+        return AstTextValueUtil.getTextValue(astObject);
     }
 
 }

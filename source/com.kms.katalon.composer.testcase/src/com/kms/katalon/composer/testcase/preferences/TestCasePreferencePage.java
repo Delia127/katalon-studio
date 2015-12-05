@@ -42,7 +42,7 @@ public class TestCasePreferencePage extends PreferencePage {
     private Combo comboDefaultFailureHandling;
     private Combo comboKeywordType;
 
-    private java.util.List<IKeywordContributor> contributors;
+    private IKeywordContributor[] contributors;
     private Composite fieldEditorParent;
     private static final String[] DF_FAILURE_HANDLING_VALUES = FailureHandling.valueStrings();
 
@@ -283,12 +283,12 @@ public class TestCasePreferencePage extends PreferencePage {
                     PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE);
         }
         int selectedIndex = 0;
-        String[] keywordTypeStringArray = new String[contributors.size()];
-        for (int i = 0; i < contributors.size(); i++) {
-            if (contributors.get(i).getKeywordClass().getName().equalsIgnoreCase(defaultKeywordTypeString)) {
+        String[] keywordTypeStringArray = new String[contributors.length];
+        for (int i = 0; i < contributors.length; i++) {
+            if (contributors[i].getKeywordClass().getName().equalsIgnoreCase(defaultKeywordTypeString)) {
                 selectedIndex = i;
             }
-            keywordTypeStringArray[i] = contributors.get(i).getLabelName();
+            keywordTypeStringArray[i] = contributors[i].getLabelName();
         }
 
         comboKeywordType.setItems(keywordTypeStringArray);
@@ -308,7 +308,7 @@ public class TestCasePreferencePage extends PreferencePage {
     }
 
     private void initDefaultKeywordValue(boolean isDefault) throws Exception {
-        if (contributors.size() <= 0)
+        if (contributors.length <= 0)
             return;
 
         listViewerKwType.setInput(contributors);
@@ -440,11 +440,11 @@ public class TestCasePreferencePage extends PreferencePage {
 
         // Default keyword type
         String selectedKeywordType = comboKeywordType.getText();
-        for (int i = 0; i < contributors.size(); i++) {
-            if (contributors.get(i).getLabelName().equalsIgnoreCase(selectedKeywordType)) {
+        for (int i = 0; i < contributors.length; i++) {
+            if (contributors[i].getLabelName().equalsIgnoreCase(selectedKeywordType)) {
                 getPreferenceStore().setValue(
                         PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE,
-                        contributors.get(i).getKeywordClass().getName());
+                        contributors[i].getKeywordClass().getName());
                 break;
             }
         }

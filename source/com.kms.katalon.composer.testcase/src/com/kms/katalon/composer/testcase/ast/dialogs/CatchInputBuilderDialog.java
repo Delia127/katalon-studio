@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Shell;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
-import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
+import com.kms.katalon.core.ast.AstTextValueUtil;
 import com.kms.katalon.core.ast.GroovyParser;
 
 public class CatchInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
@@ -69,7 +69,7 @@ public class CatchInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
             @Override
             public String getText(Object element) {
                 if (element == catchStatement && catchStatement.getExceptionType() != null) {
-                    return AstTreeTableTextValueUtil.getTextValue(catchStatement.getExceptionType());
+                    return AstTextValueUtil.getTextValue(catchStatement.getExceptionType());
                 }
                 return StringUtils.EMPTY;
             }
@@ -107,7 +107,7 @@ public class CatchInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
             @Override
             public String getText(Object element) {
                 if (element == catchStatement && catchStatement.getExceptionType() != null) {
-                    return AstTreeTableTextValueUtil.getTextValue(catchStatement.getVariable());
+                    return AstTextValueUtil.getTextValue(catchStatement.getVariable());
                 }
                 return StringUtils.EMPTY;
             }
