@@ -21,7 +21,9 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -71,7 +73,9 @@ public class GlobalVariablePart implements EventHandler {
     private Composite composite;
 
     private ToolItem tltmClear;
+
     private ToolItem tltmEdit;
+
     private ToolItem tltmRefresh;
 
     @PostConstruct
@@ -105,6 +109,11 @@ public class GlobalVariablePart implements EventHandler {
         tltmAdd.setToolTipText(StringConstants.PA_BTN_TIP_ADD);
         tltmAdd.setImage(ImageConstants.IMG_16_ADD);
 
+        tltmEdit = new ToolItem(toolBar, SWT.NONE);
+        tltmEdit.setText(StringConstants.PA_BTN_TIP_EDIT);
+        tltmEdit.setToolTipText(StringConstants.PA_BTN_TIP_EDIT);
+        tltmEdit.setImage(ImageConstants.IMG_16_EDIT);
+
         tltmRemove = new ToolItem(toolBar, SWT.NONE);
         tltmRemove.setText(StringConstants.PA_BTN_TIP_REMOVE);
         tltmRemove.setToolTipText(StringConstants.PA_BTN_TIP_REMOVE);
@@ -114,11 +123,6 @@ public class GlobalVariablePart implements EventHandler {
         tltmClear.setText(StringConstants.PA_BTN_TIP_CLEAR);
         tltmClear.setToolTipText(StringConstants.PA_BTN_TIP_CLEAR);
         tltmClear.setImage(ImageConstants.IMG_16_CLEAR);
-
-        tltmEdit = new ToolItem(toolBar, SWT.NONE);
-        tltmEdit.setText(StringConstants.PA_BTN_TIP_EDIT);
-        tltmEdit.setToolTipText(StringConstants.PA_BTN_TIP_EDIT);
-        tltmEdit.setImage(ImageConstants.IMG_16_EDIT);
 
         tltmRefresh = new ToolItem(toolBar, SWT.NONE);
         tltmRefresh.setText(StringConstants.PA_BTN_TIP_REFRESH);
@@ -134,6 +138,13 @@ public class GlobalVariablePart implements EventHandler {
         compositeTable.setBounds(0, 0, 64, 64);
 
         tableViewer = new TableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+        tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                enableDisableBtns();
+            }
+        });
         table = tableViewer.getTable();
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
@@ -233,7 +244,7 @@ public class GlobalVariablePart implements EventHandler {
                         if (mpart.isDirty()) {
                             save(mpart);
                         }
-                        
+
                         if (needToUpdateReferences) {
                             GroovyRefreshUtil.updateScriptReferencesInTestCaseAndCustomScripts("GlobalVariable."
                                     + variableName, "GlobalVariable." + variable.getName(), ProjectController
@@ -307,6 +318,7 @@ public class GlobalVariablePart implements EventHandler {
                         .getAllGlobalVariables(project);
                 tableViewer.setInput(globalVariables);
                 tableViewer.refresh();
+                enableDisableBtns();
             } else {
                 composite.setVisible(false);
             }
@@ -388,5 +400,15 @@ public class GlobalVariablePart implements EventHandler {
 
     private boolean isValidName(String name) {
         return GroovyConstants.isValidVariableName(name);
+    }
+
+    /**
+     * Enable/Disable Edit and Delete button
+     */
+    private void enableDisableBtns() {
+        StructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
+        boolean isEnabled = !(selection == null || selection.getFirstElement() == null);
+        tltmEdit.setEnabled(isEnabled);
+        tltmRemove.setEnabled(isEnabled);
     }
 }
