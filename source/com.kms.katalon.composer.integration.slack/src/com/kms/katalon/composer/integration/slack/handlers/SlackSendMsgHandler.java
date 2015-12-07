@@ -49,7 +49,7 @@ public class SlackSendMsgHandler implements EventHandler {
     @Inject
     private Logger logger;
 
-    private SlackUtil slackUtil = SlackUtil.getInstance();
+    private SlackUtil slackUtil;
 
     private IPreferenceStore PREFERENCE;
 
@@ -124,8 +124,6 @@ public class SlackSendMsgHandler implements EventHandler {
 
         // Paste from cut (move entity)
         eventBroker.subscribe(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM, this);
-
-        getSlackPreferences();
     }
 
     /**
@@ -136,6 +134,8 @@ public class SlackSendMsgHandler implements EventHandler {
      */
     @Override
     public void handleEvent(Event event) {
+        getSlackPreferences();
+        slackUtil = new SlackUtil();
         try {
             Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
             Object[] names;
