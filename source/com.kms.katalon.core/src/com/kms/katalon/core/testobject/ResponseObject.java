@@ -2,6 +2,8 @@ package com.kms.katalon.core.testobject;
 
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -24,6 +26,8 @@ public class ResponseObject {
 	private String contentType = "text";
 	
 	private String responseText;
+	
+	private Map<String, List<String>> headerFields;
 	
 	public ResponseObject(){}
 	
@@ -91,5 +95,13 @@ public class ResponseObject {
 	
 	public boolean isTextContentType(){
 		return !isJsonContentType() && !isXmlContentType();
+	}
+	
+	public Map<String, List<String>> getHeaderFields() {
+		return headerFields;
+	}
+
+	public void setHeaderFields(Map<String, List<String>> headerFields) {
+		this.headerFields = headerFields;
 	}
 }
