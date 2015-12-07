@@ -48,8 +48,8 @@ import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.support.VariableDefaultValueEditingSupport;
 import com.kms.katalon.composer.testcase.support.VariableDefaultValueTypeEditingSupport;
 import com.kms.katalon.composer.testcase.support.VariableNameEditingSupport;
+import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
-import com.kms.katalon.core.ast.AstTextValueUtil;
 import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
@@ -265,7 +265,7 @@ public class TestCaseVariablePart {
                     try {
                         ASTNode astNode = GroovyParser.parseGroovyScriptAndGetFirstItem(((VariableEntity) element)
                                 .getDefaultValue());
-                        return AstTextValueUtil.getTextValue(astNode);
+                        return AstTreeTableTextValueUtil.getInstance().getTextValue(astNode);
                     } catch (Exception e) {
                         LoggerSingleton.logError(e);
                     }

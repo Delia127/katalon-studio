@@ -7,7 +7,7 @@ import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
-import com.kms.katalon.core.ast.AstTextValueUtil;
+import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 
 public class AstAssertStatementTreeTableNode extends AstStatementTreeTableNode {
 	private AssertStatement assertStatement;
@@ -26,7 +26,7 @@ public class AstAssertStatementTreeTableNode extends AstStatementTreeTableNode {
 	@Override
 	public String getInputText() {
 		if (assertStatement.getBooleanExpression() != null) {
-			return AstTextValueUtil.getTextValue(assertStatement.getBooleanExpression());
+			return AstTreeTableTextValueUtil.getInstance().getTextValue(assertStatement.getBooleanExpression());
 		}
 		return "";
 	}

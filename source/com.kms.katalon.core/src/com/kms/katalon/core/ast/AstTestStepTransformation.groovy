@@ -153,7 +153,7 @@ public class AstTestStepTransformation implements ASTTransformation {
         if (ifStatement.getElseBlock() instanceof IfStatement) {
             deferedStatements.push(
                     new ExpressionStatement(createNewStartKeywordMethodCall(KEYWORD_DEFAULT_NAME + " - Else " +
-                    AstTextValueUtil.getTextValue(ifStatement.getElseBlock()),
+                    AstTextValueUtil.getInstance().getTextValue(ifStatement.getElseBlock()),
                     ifStatement.getElseBlock(), indexMap, nestedLevel - 1)));
         } else {
             deferedStatements.push(
@@ -258,7 +258,7 @@ public class AstTestStepTransformation implements ASTTransformation {
         while (commentStatementsStack != null && !commentStatementsStack.isEmpty()) {
             Statement commentStatement = commentStatementsStack.pop();
             blockStatement.getStatements().add(index, new ExpressionStatement(createNewStartKeywordMethodCall(
-                    COMMENT_STATEMENT_KEYWORD_NAME + " - " + AstTextValueUtil.getTextValue(commentStatement), commentStatement, indexMap, nestedLevel)));
+                    COMMENT_STATEMENT_KEYWORD_NAME + " - " + AstTextValueUtil.getInstance().getTextValue(commentStatement), commentStatement, indexMap, nestedLevel)));
             commentNumber++;
         }
         return commentNumber;
@@ -275,7 +275,7 @@ public class AstTestStepTransformation implements ASTTransformation {
             if (customKeywordName != null) {
                 keywordName = customKeywordName;
             } else {
-                keywordName = KEYWORD_DEFAULT_NAME + " - " + AstTextValueUtil.getTextValue(statement);
+                keywordName = KEYWORD_DEFAULT_NAME + " - " + AstTextValueUtil.getInstance().getTextValue(statement);
             }
         }
         return keywordName;
