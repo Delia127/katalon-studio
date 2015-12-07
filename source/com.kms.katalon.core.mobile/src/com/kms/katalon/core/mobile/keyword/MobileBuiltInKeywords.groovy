@@ -46,6 +46,15 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     //Device name should be selected by user from a UI Form
     //private static String deviceName = "LGE Nexus 4 5.1.1";
 
+    /**
+     * Start up an application
+     * @param appFile
+     *      absolute path of the application install file
+     * @param uninstallAfterCloseApp
+     *      true if uninstalling the application automatically after run completed; otherwise, false
+     * @param flowControl
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_APPLICATION)
     public static void startApplication(String appFile, boolean uninstallAfterCloseApp, FailureHandling flowControl) throws StepFailedException {
@@ -57,6 +66,11 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, MessageFormat.format(StringConstants.KW_MSG_UNABLE_TO_START_APP_AT, appFile))
     }
 
+    /**
+     * Close the current running application
+     * @param flowControl
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_APPLICATION)
     public static void closeApplication(FailureHandling flowControl) throws StepFailedException {
@@ -67,6 +81,11 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, StringConstants.KW_MSG_UNABLE_TO_CLOSE_APPLICATION)
     }
 
+    /**
+     * Simulate pressing back button on a mobile device (Android only)
+     * @param flowControl
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
     public static void pressBack(FailureHandling flowControl) throws StepFailedException {
@@ -81,6 +100,19 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, StringConstants.KW_MSG_CANNOT_PRESS_BACK_BTN)
     }
 
+    /**
+     * Simulate swiping fingers on the mobile device
+     * @param startX
+     *      starting x position
+     * @param startY
+     *      starting y position
+     * @param endX
+     *      ending x position
+     * @param endY
+     *      ending y position
+     * @param flowControl
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
     public static void swipe(int startX, int startY, int endX, int endY, FailureHandling flowControl) throws StepFailedException {
@@ -90,6 +122,13 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, StringConstants.KW_MSG_CANNOT_SWIPE_ON_DEVICE)
     }
 
+    /**
+     * Taking screenshot of the mobile device screen
+     * @param fileName
+     *      the absolute path of the saved screenshot image file
+     * @param flowControl
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
     public static void takeScreenshot(String fileName, FailureHandling flowControl) throws StepFailedException {
@@ -109,6 +148,11 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, StringConstants.KW_MSG_UNABLE_TO_TAKE_SCREENSHOT)
     }
 
+    /**
+     * Simulate opening notification action on mobile devices
+     * @param flowControl
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_NOTIFICATION)
     public static void openNotifications(FailureHandling flowControl) throws StepFailedException {
@@ -129,6 +173,11 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, StringConstants.KW_MSG_CANNOT_OPEN_NOTIFICATIONS)
     }
 
+    /**
+     * Simulate pressing home button on mobile devices (Android only)
+     * @param flowControl
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
     public static void pressHome(FailureHandling flowControl) throws StepFailedException {
@@ -143,6 +192,13 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, StringConstants.KW_MSG_CANNOT_PRESS_HOME_BTN);
     }
 
+    /**
+     * Get the manufacturer of the current active mobile device
+     * @param flowControl
+     * @return
+     *      the manufacturer of the current active mobile device
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
     public static String getDeviceManufacturer(FailureHandling flowControl) throws StepFailedException {
@@ -172,6 +228,13 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, StringConstants.KW_MSG_CANNOT_GET_MANUFACTURER);
     }
 
+    /**
+     * Get the device os of the current active mobile device
+     * @param flowControl
+     * @return
+     *      the device os of the current active mobile device
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
     public static String getDeviceOS(FailureHandling flowControl) throws StepFailedException {
@@ -201,6 +264,13 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, StringConstants.KW_MSG_CANNOT_GET_OS_NAME);
     }
 
+    /**
+     * Get the device os version of the current active mobile device
+     * @param flowControl
+     * @return
+     *      the device os version of the current active mobile device
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
     public static String getDeviceOSVersion(FailureHandling flowControl) throws StepFailedException {
@@ -221,6 +291,11 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, StringConstants.KW_MSG_CANNOT_GET_DEVICE_MODEL);
     }
 
+    /**
+     * Simulate closing notification action on mobile devices
+     * @param flowControl
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_NOTIFICATION)
     public static void closeNotifications(FailureHandling flowControl) throws StepFailedException {
@@ -232,6 +307,13 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, StringConstants.KW_MSG_CANNOT_CLOSE_NOTIFICATIONS);
     }
 
+    /**
+     * Simulate toggling airplane mode on mobile devices
+     * @param mode
+     *          ["yes", "on", "true"] to turn on airplane mode; otherwise, airplane mode is turn off
+     * @param flowControl
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
     public static void toggleAirplaneMode(String mode, FailureHandling flowControl) throws StepFailedException {
@@ -271,6 +353,13 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, StringConstants.KW_MSG_CANNOT_TOGGLE_AIRPLANE_MODE);
     }
 
+    /**
+     * Running the active application in background
+     * @param seconds
+     *      amounts of time (in seconds) for the application to run in background
+     * @param flowControl
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_APPLICATION)
     public static void runIOSAppInBackgroundAndWait(int seconds, FailureHandling flowControl) throws StepFailedException {
@@ -289,7 +378,17 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, StringConstants.KW_MSG_CANNOT_RUN_IOS_APP_IN_BACKGROUND);
     }
 
-
+    /**
+     * Get text of a mobile element
+     * @param to
+     *      represent a mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return
+     *      the text of the mobile element
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
     public static String getText(TestObject to, Object timeout, FailureHandling flowControl) throws StepFailedException {
@@ -307,6 +406,17 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         : StringConstants.KW_MSG_FAILED_TO_GET_ELEMENT_TEXT);
     }
 
+    /**
+     * Set text to a mobile element
+     * @param to
+     *      represent a mobile element
+     * @param text
+     *      the text to set to the mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
     public static void setText(TestObject to, String text, int timeout, FailureHandling flowControl) throws StepFailedException {
@@ -323,6 +433,15 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         : StringConstants.KW_MSG_FAILED_TO_SET_ELEMENT_TEXT);
     }
 
+    /**
+     * Tap on an mobile element
+     * @param to
+     *      represent a mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
     public static void tap(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
@@ -338,6 +457,19 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         : StringConstants.KW_MSG_FAILED_TO_TAP_ON_ELEMENT);
     }
 
+    /**
+     * Get a specific attribute of a mobile element
+     * @param to
+     *      represent a mobile element
+     * @param name
+     *      name of the attribute to get
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return
+     *      value of the attribute
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ATTRIBUTE)
     public static String getAttribute(TestObject to, String name, int timeout, FailureHandling flowControl) throws StepFailedException {
@@ -370,6 +502,17 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         : StringConstants.KW_MSG_FAILED_TO_GET_ELEMENT_ATTR);
     }
 
+    /**
+     * Wait for a mobile element to present
+     * @param to
+     *      represent a mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return
+     *      true if the element is presented; otherwise, false
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
     public static boolean waitForElementPresent(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
@@ -387,6 +530,17 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         : StringConstants.KW_MSG_FAILED_TO_WAIT_FOR_ELEMENT_X_PRESENT);
     }
 
+    /**
+     * Verify if a mobile element is presented
+     * @param to
+     *      represent a mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return
+     *      true if the element is presented; otherwise, false
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
     public static boolean verifyElementExist(TestObject to, int timeOut, FailureHandling flowControl) throws StepFailedException {
@@ -404,6 +558,17 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         : StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_EXIST);
     }
 
+    /**
+     * Clear text of a mobile element
+     * @param to
+     *      represent a mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return
+     *      true if the element is presented; otherwise, false
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
     public static void clearText(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
@@ -419,6 +584,15 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         : StringConstants.KW_MSG_FAILED_TO_CLEAR_TEXT_OF_ELEMENT);
     }
 
+    /**
+     * Internal method to find a mobile element
+     * @param to
+     *      represent a mobile element
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @return
+     * @throws Exception
+     */
     @CompileStatic
     private static WebElement findElement(TestObject to, int timeOut) throws Exception {
         Date startTime = new Date();
