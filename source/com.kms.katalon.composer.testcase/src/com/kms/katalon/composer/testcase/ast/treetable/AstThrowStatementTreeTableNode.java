@@ -5,7 +5,7 @@ import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.stmt.ThrowStatement;
 
 import com.kms.katalon.composer.testcase.constants.StringConstants;
-import com.kms.katalon.core.ast.AstTextValueUtil;
+import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 
 public class AstThrowStatementTreeTableNode extends AstStatementTreeTableNode {
 
@@ -21,6 +21,6 @@ public class AstThrowStatementTreeTableNode extends AstStatementTreeTableNode {
     
     @Override
     public String getInputText() {
-        return AstTextValueUtil.getTextValue(((ThrowStatement) statement).getExpression());
+        return AstTreeTableTextValueUtil.getInstance().getTextValue(((ThrowStatement) statement).getExpression());
     }
 }

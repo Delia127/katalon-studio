@@ -8,8 +8,8 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
+import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
-import com.kms.katalon.core.ast.AstTextValueUtil;
 
 public enum InputValueType implements IInputValueType {
     String, Number, Boolean, Null, Variable, MethodCall, List, Map, ClosureList, Condition, Binary, Range, Property, GlobalVariable, TestDataValue, TestCase, TestObject, TestData, Class, This, Throwable;
@@ -93,6 +93,6 @@ public enum InputValueType implements IInputValueType {
 
     @Override
     public String getDisplayValue(Object astObject) {
-        return AstTextValueUtil.getTextValue(astObject);
+        return AstTreeTableTextValueUtil.getInstance().getTextValue(astObject);
     }
 }
