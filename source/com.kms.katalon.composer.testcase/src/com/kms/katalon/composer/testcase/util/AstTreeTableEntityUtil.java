@@ -20,6 +20,7 @@ import org.codehaus.groovy.ast.expr.ListExpression;
 import org.codehaus.groovy.ast.expr.MapEntryExpression;
 import org.codehaus.groovy.ast.expr.MapExpression;
 import org.codehaus.groovy.ast.expr.MethodCallExpression;
+import org.codehaus.groovy.ast.expr.NotExpression;
 import org.codehaus.groovy.ast.expr.PropertyExpression;
 import org.codehaus.groovy.ast.expr.RangeExpression;
 import org.codehaus.groovy.ast.expr.VariableExpression;
@@ -191,7 +192,7 @@ public class AstTreeTableEntityUtil {
     }
 
     public static BooleanExpression getNewBooleanExpression() {
-        return new BooleanExpression(new ConstantExpression(true));
+        return new NotExpression(new ConstantExpression(true));
     }
 
     public static MapExpression getNewMapExpression() {

@@ -47,6 +47,13 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 	private static final KeywordLogger logger = KeywordLogger.getInstance();
 	private static ScreenUtil screenUtil = new ScreenUtil();
 
+    /**
+     * Open browser and navigate to the specified url; if url is left empty then just open browser
+     * @param rawUrl
+     *      url of the web page to be opened, can be left empty or null
+     * @param flowControl
+     * @throws StepFailedException
+     */
 	@CompileStatic
 	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
 	public static void openBrowser(String rawUrl, FailureHandling flowControl) throws StepFailedException {
@@ -67,6 +74,11 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 	}
 
 
+    /**
+     * Close the browser. This action will close all windows of the browser.
+     * @param flowControl
+     * @throws StepFailedException
+     */
 	@CompileStatic
 	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
 	public static void closeBrowser(FailureHandling flowControl) throws StepFailedException {
@@ -78,7 +90,11 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 		, flowControl, true, StringConstants.KW_MSG_UNABLE_TO_CLOSE_BROWSER)
 	}
 
-
+    /**
+     * Simulate users clicking “back” button on their browser
+     * @param flowControl
+     * @throws StepFailedException
+     */
 	@CompileStatic
 	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
 	public static void back(FailureHandling flowControl) throws StepFailedException {
@@ -90,7 +106,11 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 		, flowControl, true, StringConstants.KW_MSG_CANNOT_BACK_TO_PREV_PAGE)
 	}
 
-
+    /**
+     * Simulate users clicking “forward” button on their browser
+     * @param flowControl
+     * @throws StepFailedException
+     */
 	@CompileStatic
 	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
 	public static void forward(FailureHandling flowControl) throws StepFailedException {
@@ -102,7 +122,11 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 		, flowControl, true, StringConstants.KW_MSG_CANNOT_FORWARD_TO_NEXT_PAGE)
 	}
 
-
+    /**
+     * Simulate users clicking “refresh” button on their browser
+     * @param flowControl
+     * @throws StepFailedException
+     */
 	@CompileStatic
 	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
 	public static void refresh(FailureHandling flowControl) throws StepFailedException {
@@ -114,7 +138,13 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 		, flowControl, true, StringConstants.KW_MSG_CANNOT_REFRESH_PAGE)
 	}
 
-
+    /**
+     * Navigate to the specified web page
+     * @param rawUrl
+     *          url of the web page to navigate to
+     * @param flowControl
+     * @throws StepFailedException
+     */
 	@CompileStatic
 	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
 	public static void navigateToUrl(String rawUrl, FailureHandling flowControl) throws StepFailedException {
@@ -136,7 +166,13 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 		, flowControl, true, MessageFormat.format(StringConstants.KW_MSG_CANNOT_NAVIGATE_TO, rawUrl))
 	}
 
-
+    /**
+     * Get title of the current window
+     * @param flowControl
+     * @return
+     *      title of the current window
+     * @throws StepFailedException
+     */
 	@CompileStatic
 	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
 	public static String getWindowTitle(FailureHandling flowControl) throws StepFailedException {
@@ -149,7 +185,13 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 		, flowControl, true, StringConstants.KW_MSG_CANNOT_GET_CURR_WINDOW_TITLE)
 	}
 
-
+    /**
+     * Get url of the current window
+     * @param flowControl
+     * @return
+     *      url of the current window
+     * @throws StepFailedException
+     */
 	@CompileStatic
 	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
 	public static String getUrl(FailureHandling flowControl) throws StepFailedException {
@@ -162,7 +204,11 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 		, flowControl, true, StringConstants.KW_MSG_CANNOT_GET_CURR_WINDOW_URL)
 	}
 
-
+    /**
+     * Resize current window to take up the entire screen
+     * @param flowControl
+     * @throws StepFailedException
+     */
 	@CompileStatic
 	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
 	public static void maximizeWindow(FailureHandling flowControl) throws StepFailedException {
@@ -174,7 +220,15 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 		, flowControl, true, StringConstants.KW_MSG_CANNOT_MAX_CURR_WINDOW)
 	}
 
-
+    /**
+     * Wait for the given element to NOT present (disappear) within the given time in second unit
+     * @param to 
+     *          represent a web element
+     * @param timeOut 
+     *          system will wait at most timeout (seconds) to return result
+     * @return
+     *      true if the element is NOT present, and false if the element is present
+     */
 	@CompileStatic
 	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
 	public static boolean waitForElementNotPresent(TestObject to, int timeOut, FailureHandling flowControl) throws StepFailedException {
@@ -225,7 +279,17 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 		: StringConstants.KW_MSG_CANNOT_WAIT_FOR_OBJ_TO_BE_NOT_PRESENT)
 	}
 
-
+    /**
+     * Wait for the given element to present (appear) within the given time in second unit
+     * @param to
+     *      represent a web element
+     * @param timeOut
+     *       system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return
+     *      true if the element is present, and false if the element is NOT present
+     * @throws StepFailedException
+     */
 	@CompileStatic
 	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
 	public static boolean waitForElementPresent(TestObject to, int timeOut, FailureHandling flowControl)
@@ -260,11 +324,12 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 	/***
 	 * Wait until the given web element is visible within timeout.
 	 * @param to 
-	 * 		a web element
+	 * 		represent a web element
 	 * @param timeOut
-	 * 		how many seconds to wait
+	 * 		how many seconds to wait (maximum)
 	 * @param flowControl
 	 * @return
+	 *     true if the element is visible; otherwise, false
 	 * @throws StepFailedException
 	 */
 	@CompileStatic
@@ -301,11 +366,12 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 	/***
 	 * Wait for the given element to be clickable within the given time in second
 	 * @param to
-	 * 		a web element
+	 *         represent a web element
 	 * @param timeOut
-	 * 		how many seconds to wait
+	 *         how many seconds to wait
 	 * @param flowControl
 	 * @return
+	 *         true if the element is visible; otherwise, false
 	 * @throws StepFailedException
 	 */
 	@CompileStatic
@@ -339,6 +405,13 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 		: StringConstants.KW_MSG_CANNOT_WAIT_FOR_OBJ_TO_BE_CLICKABLE)
 	}
 
+    /**
+     * Click on the given element
+     * @param to
+     *       represent a web element
+     * @param flowControl
+     * @throws StepFailedException
+     */
 	@CompileStatic
 	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
 	public static void click(TestObject to, FailureHandling flowControl) throws StepFailedException {
@@ -361,7 +434,14 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 		: StringConstants.KW_MSG_CANNOT_CLICK_ON_OBJ)
 	}
 
-
+    /**
+     * If this current element is a form, or an element within a form, then this will be submitted. 
+     * If this causes the current page to change, then this method will block until the new page is loaded.
+     * @param to
+     *      represent a web element
+     * @param flowControl
+     * @throws StepFailedException
+     */
 	@CompileStatic
 	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_FORM)
 	public static void submit(TestObject to, FailureHandling flowControl) throws StepFailedException {
@@ -384,7 +464,13 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 		: StringConstants.KW_MSG_CANNOT_SUBMIT_FORM_CONTAINING_OBJ)
 	}
 
-
+    /**
+     * Double click on the given web element
+     * @param to
+     *      represent a web element
+     * @param flowControl
+     * @throws StepFailedException
+     */
 	@CompileStatic
 	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
 	public static void doubleClick(TestObject to, FailureHandling flowControl) throws StepFailedException {
@@ -408,7 +494,13 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 		: StringConstants.KW_MSG_CANNOT_DOUBLE_CLICK_ON_OBJ)
 	}
 
-
+    /**
+     * Right click on the given web element
+     * @param to
+     *      represent a web element
+     * @param flowControl
+     * @throws StepFailedException
+     */
 	@CompileStatic
 	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
 	public static void rightClick(TestObject to, FailureHandling flowControl) throws StepFailedException {
@@ -432,7 +524,13 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 		: StringConstants.KW_MSG_CANNOT_RIGHT_CLICK_ON_OBJ)
 	}
 
-
+    /**
+     * Simulate users hovering a mouse over the given element
+     * @param to
+     *       represent a web element
+     * @param flowControl
+     * @throws StepFailedException
+     */
 	@CompileStatic
 	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
 	public static void mouseOver(TestObject to, FailureHandling flowControl) throws StepFailedException {
@@ -459,7 +557,15 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 		: StringConstants.KW_MSG_CANNOT_MOVE_MOUSE_OVER_OBJ)
 	}
 
-
+    /**
+     * Simulates keystroke events on the specified element, as though you typed the value key-by-key
+     * @param to
+     *      represent a web element
+     * @param strKeys
+     *      the combination of keys to type
+     * @param flowControl
+     * @throws StepFailedException
+     */
 	@CompileStatic
 	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_KEYBOARD)
 	public static void sendKeys(TestObject to, String strKeys, FailureHandling flowControl) throws StepFailedException {
@@ -484,7 +590,13 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 		: MessageFormat.format(StringConstants.KW_MSG_CANNOT_SED_KEYS_TO_OBJ, strKeys))
 	}
 
-
+    /**
+     * Move the focus to the specified element; for example, if the element is an input field, move the cursor to that field
+     * @param to
+     *      represent a web element
+     * @param flowControl
+     * @throws StepFailedException
+     */
 	@CompileStatic
 	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
 	public static void focus(TestObject to, FailureHandling flowControl) throws StepFailedException {
@@ -511,7 +623,15 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 		: StringConstants.KW_MSG_CANNOT_FOCUS_ON_OBJ)
 	}
 
-
+    /**
+     * Get the visible (i.e. not hidden by CSS) innerText of the web element, including sub-elements, without any leading or trailing whitespace.
+     * @param to
+     *      represent a web element
+     * @param flowControl
+     * @return
+     *       innerText of the web element
+     * @throws StepFailedException
+     */
 	@CompileStatic
 	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
 	public static String getText(TestObject to, FailureHandling flowControl) throws StepFailedException {
@@ -536,7 +656,17 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 		: StringConstants.KW_MSG_CANNOT_GET_OBJ_TXT)
 	}
 
-
+    /**
+     * Get attribute value of a web element
+     * @param to
+     *       represent a web element
+     * @param attribute
+     *      name of the attribute
+     * @param flowControl
+     * @return
+     *      value of the attribute
+     * @throws StepFailedException
+     */
 	@CompileStatic
 	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ATTRIBUTE)
 	public static String getAttribute(TestObject to, String attribute, FailureHandling flowControl) throws StepFailedException {
@@ -565,10 +695,18 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 		: StringConstants.KW_MSG_CANNOT_GET_OBJ_ATTR)
 	}
 
-
+    /**
+     * Set the value of an input field, as though you type it in. It also clears the previous value of the input field
+     * @param to
+     *      represent a web element
+     * @param text
+     *      the text to type
+     * @param flowControl
+     * @throws StepFailedException
+     */
 	@CompileStatic
 	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
-	public static setText(TestObject to, String text, FailureHandling flowControl) throws StepFailedException {
+	public static void setText(TestObject to, String text, FailureHandling flowControl) throws StepFailedException {
 		WebUIKeywordMain.runKeyword({
 			boolean isSwitchIntoFrame = false;
 			try {
@@ -592,10 +730,16 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 		: StringConstants.KW_MSG_CANNOT_SET_TXT)
 	}
 
-
+    /**
+     * Check a toggle-button (check-box/radio-button)
+     * @param to
+     *      represent a web element
+     * @param flowControl
+     * @throws StepFailedException
+     */
 	@CompileStatic
 	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_CHECKBOX)
-	public static check(TestObject to, FailureHandling flowControl) throws StepFailedException {
+	public static void check(TestObject to, FailureHandling flowControl) throws StepFailedException {
 		WebUIKeywordMain.runKeyword({
 			boolean isSwitchIntoFrame = false;
 			try {
@@ -615,7 +759,14 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 		} , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_CHECK_OBJ_X, to.getObjectId())
 		: StringConstants.KW_MSG_CANNOT_CHECK_OBJ)
 	}
-
+    
+    /**
+     * Uncheck a toggle-button (check-box/radio-button)
+     * @param to
+     *      represent a web element
+     * @param flowControl
+     * @throws StepFailedException
+     */
 	@CompileStatic
 	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_CHECKBOX)
 	public static void uncheck(TestObject to, FailureHandling flowControl) throws StepFailedException {
@@ -640,12 +791,16 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 	}
 
 	/**
-	 * Select the option at the given indexes.
+	 * Select the options at the given indices. Index starts from 0.
 	 *
 	 * @param to
-	 *            : @see {@link TestObject}
+	 *          represent a web element : @see {@link TestObject}
 	 * @param range
-	 *            : string format of an integer array. Example [1, 3, 4].
+	 *          index range of the options to select. Index starts from 0.
+                <p>Example: 
+                <p>2 - index 2
+                <p>"2,3" - index 2 and 3
+                <p>"2-5" - index 2 to 5 (2, 3, 4, 5)
 	 * @param flowControl
 	 *            : @see {@link FailureHandling}
 	 * @throws StepFailedException
@@ -681,9 +836,9 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 	 * Select all options that have a value matching the "value" argument.
 	 *
 	 * @param to
-	 *            : @see {@link TestObject}
+	 *            : represent a web element @see {@link TestObject}
 	 * @param value
-	 *            : value of option in a object
+	 *            : value of the options to select
 	 * @param isRegex
 	 *            : is value a regular expression or not?
 	 * @param flowControl
@@ -1107,7 +1262,8 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 	/**
 	 * Simulate users clicking on "OK" button of alert class (alert,
 	 * confirmation popup, prompt popup)
-	 *
+	 * 
+	 * @param flowControl
 	 * @throws StepFailedException
 	 */
 	@CompileStatic
@@ -1177,9 +1333,8 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 	 * Simulate users typing text into prompt popup.
 	 *
 	 * @param text
-	 *            the text to be set
+	 *            text to type into the prompt popup
 	 * @param flowControl
-	 * @return value - text to type into prompt popup
 	 * @throws StepFailedException
 	 */
 	@CompileStatic

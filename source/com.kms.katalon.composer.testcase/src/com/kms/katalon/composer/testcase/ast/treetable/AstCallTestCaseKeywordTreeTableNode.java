@@ -21,10 +21,10 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.editors.CallTestCaseCellEditor;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
+import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.TestCaseController;
-import com.kms.katalon.core.ast.AstTextValueUtil;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCase;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -100,7 +100,7 @@ public class AstCallTestCaseKeywordTreeTableNode extends AstBuiltInKeywordTreeTa
 									displayString.append("; ");
 								}
 								Expression inputExpression = arguments.getExpression(i);
-								displayString.append(AstTextValueUtil.getTextValue(inputExpression));
+								displayString.append(AstTreeTableTextValueUtil.getInstance().getTextValue(inputExpression));
 								count++;
 							}
 						}

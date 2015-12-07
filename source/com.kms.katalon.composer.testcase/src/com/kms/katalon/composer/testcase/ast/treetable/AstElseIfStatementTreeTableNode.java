@@ -9,8 +9,8 @@ import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableUtil;
-import com.kms.katalon.core.ast.AstTextValueUtil;
 
 public class AstElseIfStatementTreeTableNode extends AstStatementTreeTableNode {
 	private IfStatement ifStatement;
@@ -60,7 +60,7 @@ public class AstElseIfStatementTreeTableNode extends AstStatementTreeTableNode {
 	@Override
 	public String getInputText() {
 		if (ifStatement.getBooleanExpression() != null) {
-			return AstTextValueUtil.getTextValue(ifStatement.getBooleanExpression());
+			return AstTreeTableTextValueUtil.getInstance().getTextValue(ifStatement.getBooleanExpression());
 		}
 		return "";
 	}

@@ -21,10 +21,11 @@ import com.kms.katalon.core.annotation.Keyword;
 public class CustomKeywordFolderBrowserTreeEntity extends KeywordBrowserFolderTreeEntity {
 	private static final String KEYWORD_OBJECT_ANNOTATION_METHOD = "keywordObject";
 	private static final long serialVersionUID = 1L;
-	private static final String simpleName = StringConstants.KEYWORD_BROWSER_CUSTOM_KEYWORD_ROOT_TREE_ITEM_LABEL;
+	private static final String TREE_ITEM_LABEL = StringConstants.KEYWORD_BROWSER_CUSTOM_KEYWORD_ROOT_TREE_ITEM_LABEL;
+	private static final String CUSTOM_KEYWORD_CLASS_NAME = "CustomKeywords";
 
 	public CustomKeywordFolderBrowserTreeEntity(IKeywordBrowserTreeEntity parent) {
-		super("Custom Keywords", parent);
+		super(TREE_ITEM_LABEL, parent);
 	}
 
 	@Override
@@ -72,8 +73,8 @@ public class CustomKeywordFolderBrowserTreeEntity extends KeywordBrowserFolderTr
 			Entry<String, List<Method>> pair = (Entry<String, List<Method>>) it.next();
 			KeywordBrowserFolderTreeEntity keywordFolder = new KeywordBrowserFolderTreeEntity(pair.getKey(), this);
 			for (Method method : pair.getValue()) {
-				keywordFolder.children.add(new KeywordBrowserTreeEntity(simpleName, method.getDeclaringClass()
-						.getName() + "." + method.getName(), true, keywordFolder));
+				keywordFolder.children.add(new KeywordBrowserTreeEntity(CUSTOM_KEYWORD_CLASS_NAME, "'" + method.getDeclaringClass()
+						.getName() + "." + method.getName() + "'", true, keywordFolder));
 			}
 			
 			Collections.sort(keywordFolder.children, new Comparator<IKeywordBrowserTreeEntity>() {
