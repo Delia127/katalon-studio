@@ -31,7 +31,6 @@ import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.transform.ASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
 
-import com.kms.katalon.core.annotation.RequireAstTestStepTransformation
 import com.kms.katalon.core.constants.StringConstants
 import com.kms.katalon.core.keyword.BuiltinKeywords
 import com.kms.katalon.core.logging.KeywordLogger
@@ -363,6 +362,7 @@ public class AstTestStepTransformation implements ASTTransformation {
                 IfStatement ifStatement = (IfStatement) statement;
                 indexMap.put(ifStatement, index);
                 index++;
+                pendingDescriptionStatement = null;
                 while (ifStatement.getElseBlock() instanceof IfStatement) {
                     ifStatement = (IfStatement) ifStatement.getElseBlock();
                     indexMap.put(ifStatement, index);
@@ -373,11 +373,11 @@ public class AstTestStepTransformation implements ASTTransformation {
                 }
                 indexMap.put(ifStatement.getElseBlock(), index);
                 index++;
-                pendingDescriptionStatement = null;
             } else if (statement instanceof TryCatchStatement) {
                 TryCatchStatement tryCatchStatement = (TryCatchStatement) statement;
                 indexMap.put(tryCatchStatement, index);
                 index++;
+                pendingDescriptionStatement = null;
                 for (CatchStatement catchStatement : tryCatchStatement.getCatchStatements()) {
                     indexMap.put(catchStatement, index);
                     index++;
@@ -387,10 +387,10 @@ public class AstTestStepTransformation implements ASTTransformation {
                 }
                 indexMap.put(tryCatchStatement.getFinallyStatement(), index);
                 index++;
-                pendingDescriptionStatement = null;
             } else if (statement instanceof SwitchStatement) {
                 SwitchStatement switchStatement = (SwitchStatement) statement;
                 indexMap.put(switchStatement, index);
+                pendingDescriptionStatement = null;
                 String caseStringPrefix = index + ".";
                 index++;
                 int caseIndex = 1;
@@ -402,7 +402,6 @@ public class AstTestStepTransformation implements ASTTransformation {
                     continue;
                 }
                 indexMap.put(switchStatement.getDefaultStatement(), caseIndex);
-                pendingDescriptionStatement = null;
             } else if (statement instanceof ExpressionStatement
             && ((ExpressionStatement) statement).getExpression() instanceof ConstantExpression
             && ((ConstantExpression) ((ExpressionStatement) statement).getExpression()).getValue() instanceof String) {

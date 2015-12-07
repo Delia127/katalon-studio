@@ -10,5 +10,30 @@
 
 	<artifactId>com.kms.katalon.composer.webui.objectspy</artifactId>
 	<packaging>eclipse-plugin</packaging>
-
+	<build>
+		<plugins>
+			<!-- Copies resources to parent's resources directory -->
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>${maven-resources-plugin.version}</version>
+				<executions>
+					<execution>						
+						<id>copy-selenium-standalone-resources</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.parent.build.directory}/${resourcesDiretory}</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.basedir}/resources</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project> 

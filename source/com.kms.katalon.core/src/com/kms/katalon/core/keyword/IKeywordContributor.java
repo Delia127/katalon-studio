@@ -7,4 +7,5 @@ public interface IKeywordContributor {
     public Class<?> getKeywordClass();
     public String getLabelName();
     public Class<? extends IDriverCleaner> getDriverCleaner();
+    public int getPreferredOrder();
 }

@@ -66,13 +66,21 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
 	<properties>
 		<tycho.version>0.19.0</tycho.version>
+		<gmavenplus.version>1.5</gmavenplus.version>
+		<maven-resources-plugin.version>2.6</maven-resources-plugin.version>
+		
 		<eclipse_repo_url>http://download.eclipse.org/eclipse/updates/4.4/R-4.4.2-201502041700/</eclipse_repo_url>
 		<eclipse_orbit_repo_url>http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/</eclipse_orbit_repo_url>
 		<groovy_repo_url>http://dist.springsource.org/snapshot/GRECLIPSE/e4.4</groovy_repo_url>
+		
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		
         <sonar.language>java</sonar.language>
         <sonar.login>qautomate</sonar.login>
         <sonar.password>qautomate@2014</sonar.password>
+		
+		<resourcesDiretory>resources</resourcesDiretory>
+		<apidocDirectory>${resourcesDiretory}/apidocs</apidocDirectory>
 	</properties>
 	
 	<repositories>
@@ -96,7 +104,16 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	</repositories>
 
 	<build>
-		<plugins>
+		<pluginManagement>
+		  <plugins>
+			<plugin>
+			  <groupId>org.codehaus.gmavenplus</groupId>
+			  <artifactId>gmavenplus-plugin</artifactId>
+			  <version>1.5</version>
+			</plugin>
+		  </plugins>
+		</pluginManagement>
+		<plugins>			
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-maven-plugin</artifactId>
@@ -109,12 +126,13 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 				<artifactId>tycho-compiler-plugin</artifactId>
 				<version>${tycho.version}</version>
 				<configuration>
+					<maxmem>2048m</maxmem>
 					<excludeResources>
 						<excludeResource>**/*.groovy</excludeResource>
 					</excludeResources>
-				</configuration>
+				</configuration>				
 			</plugin>
-
+			
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>target-platform-configuration</artifactId>
@@ -182,10 +200,36 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 							<goal>testCompile</goal>
 						</goals>
 					</execution>
-				</executions>
+				</executions> 
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+					<configuration>
+						<fork>true</fork>
+						<meminitial>128m</meminitial>
+						<maxmem>1024m</maxmem>
+						<compilerArgs>
+						<arg>-XX:MaxPermSize=128m</arg>
+					</compilerArgs>
+				</configuration>
 			</plugin>
 		</plugins>
-
 	</build>
-
+	
+	<!--These dependencies used for generating groovy document -->
+	<dependencies>
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-all</artifactId>
+			<version>2.4.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.fusesource.jansi</groupId>
+			<artifactId>jansi</artifactId>
+			<version>1.11</version>
+		</dependency>
+	</dependencies>
 </project> 

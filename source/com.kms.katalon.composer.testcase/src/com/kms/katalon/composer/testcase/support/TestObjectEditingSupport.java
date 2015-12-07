@@ -6,9 +6,9 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TreeViewer;
 
+import com.kms.katalon.composer.testcase.ast.treetable.AstCallTestCaseKeywordTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
-import com.kms.katalon.composer.testcase.treetable.AstCallTestCaseKeywordTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstTreeTableNode;
 import com.kms.katalon.entity.variable.VariableEntity;
 
 public class TestObjectEditingSupport extends EditingSupport {

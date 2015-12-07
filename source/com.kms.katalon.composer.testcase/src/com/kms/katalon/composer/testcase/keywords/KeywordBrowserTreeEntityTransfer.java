@@ -16,7 +16,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 public class KeywordBrowserTreeEntityTransfer extends ByteArrayTransfer {
 
 	protected static final Class<?> getTypeClass() {
-		return KeywordBrowserTreeEntity.class;
+		return IKeywordBrowserTreeEntity.class;
 	}
 
 	protected static final String getTypeName() {
@@ -32,7 +32,7 @@ public class KeywordBrowserTreeEntityTransfer extends ByteArrayTransfer {
 		if (!checkType(object) || !isSupportedType(transferData)) {
 			DND.error(DND.ERROR_INVALID_DATA);
 		}
-		KeywordBrowserTreeEntity[] treeEntites = (KeywordBrowserTreeEntity[]) object;
+		IKeywordBrowserTreeEntity[] treeEntites = (IKeywordBrowserTreeEntity[]) object;
 		try {
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			DataOutputStream writeOut = new DataOutputStream(out);
@@ -55,7 +55,7 @@ public class KeywordBrowserTreeEntityTransfer extends ByteArrayTransfer {
 			byte[] buffer = (byte[]) super.nativeToJava(transferData);
 			if (buffer == null) return null;
 
-			KeywordBrowserTreeEntity[] myData = new KeywordBrowserTreeEntity[0];
+			IKeywordBrowserTreeEntity[] myData = new IKeywordBrowserTreeEntity[0];
 			try {
 				ByteArrayInputStream in = new ByteArrayInputStream(buffer);
 				DataInputStream readIn = new DataInputStream(in);
@@ -64,9 +64,9 @@ public class KeywordBrowserTreeEntityTransfer extends ByteArrayTransfer {
 					byte[] payload = new byte[size];
 					readIn.read(payload);
 					Object obj = bytesToObject(payload);
-					KeywordBrowserTreeEntity datum = (KeywordBrowserTreeEntity) obj;
+					IKeywordBrowserTreeEntity datum = (IKeywordBrowserTreeEntity) obj;
 
-					KeywordBrowserTreeEntity[] newMyData = new KeywordBrowserTreeEntity[myData.length + 1];
+					IKeywordBrowserTreeEntity[] newMyData = new IKeywordBrowserTreeEntity[myData.length + 1];
 					System.arraycopy(myData, 0, newMyData, 0, myData.length);
 					newMyData[myData.length] = datum;
 					myData = newMyData;
@@ -92,11 +92,11 @@ public class KeywordBrowserTreeEntityTransfer extends ByteArrayTransfer {
 	}
 
 	protected boolean checkType(Object object) {
-		if (object == null || !(object instanceof KeywordBrowserTreeEntity[])
-				|| ((KeywordBrowserTreeEntity[]) object).length == 0) {
+		if (object == null || !(object instanceof IKeywordBrowserTreeEntity[])
+				|| ((IKeywordBrowserTreeEntity[]) object).length == 0) {
 			return false;
 		}
-		KeywordBrowserTreeEntity[] elementArray = (KeywordBrowserTreeEntity[]) object;
+		IKeywordBrowserTreeEntity[] elementArray = (IKeywordBrowserTreeEntity[]) object;
 
 		for (int i = 0; i < elementArray.length; i++) {
 			if (elementArray[i] == null) {

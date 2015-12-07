@@ -4,8 +4,6 @@ import groovy.transform.CompileStatic
 
 import java.security.AccessController
 import java.text.MessageFormat
-import java.util.List;
-import java.util.Stack;
 import java.util.Map.Entry
 
 import org.apache.commons.io.FileUtils
@@ -19,18 +17,19 @@ import org.codehaus.groovy.ast.builder.AstBuilder
 import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer
+import org.codehaus.groovy.control.customizers.ImportCustomizer
 import org.codehaus.groovy.runtime.InvokerHelper
 
-import com.kms.katalon.core.annotation.RequireAstTestStepTransformation
 import com.kms.katalon.core.annotation.SetUp
 import com.kms.katalon.core.annotation.TearDown
 import com.kms.katalon.core.annotation.TearDownIfError
 import com.kms.katalon.core.annotation.TearDownIfFailed
 import com.kms.katalon.core.annotation.TearDownIfPassed
+import com.kms.katalon.core.ast.AstTextValueUtil;
+import com.kms.katalon.core.ast.GroovyParser;
+import com.kms.katalon.core.ast.RequireAstTestStepTransformation;
 import com.kms.katalon.core.constants.StringConstants
-import com.kms.katalon.core.exception.ExceptionsUtil
 import com.kms.katalon.core.exception.StepFailedException
-import com.kms.katalon.core.groovy.GroovyParser
 import com.kms.katalon.core.logging.ErrorCollector
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.logging.LogLevel
@@ -43,6 +42,9 @@ import com.kms.katalon.core.testcase.TestCaseBinding
 import com.kms.katalon.core.testcase.TestCaseFactory
 import com.kms.katalon.core.testcase.Variable
 import com.kms.katalon.core.testdata.TestDataColumn
+import com.kms.katalon.core.testdata.TestDataFactory;
+import com.kms.katalon.core.testobject.ObjectRepository;
+import com.kms.katalon.core.util.ExceptionsUtil;
 
 @CompileStatic
 public class TestCaseMain {
@@ -182,31 +184,41 @@ public class TestCaseMain {
         GroovyShell groovyShell = null;
         logger.startTest(testCaseId, testProperties, keywordStack, flowControl == FailureHandling.OPTIONAL);
         try {
-            Binding binding = new Binding();
+            def importCustomizer = new ImportCustomizer();
+            importCustomizer.addImport(TestDataFactory.class.getSimpleName(), TestDataFactory.class.getName());
+            importCustomizer.addImport(ObjectRepository.class.getSimpleName(), ObjectRepository.class.getName());
+            def configuration = new CompilerConfiguration()
+            configuration.addCompilationCustomizers(importCustomizer)
 
+            groovyShell = new GroovyShell(configuration);
+            logger.logInfo(StringConstants.MAIN_LOG_INFO_START_EVALUATE_VARIABLE);
+
+            Binding binding = new Binding();
             if (testCaseBinding.getBindedValues() != null) {
                 for (Entry<String, Object> entry : testCaseBinding.getBindedValues().entrySet()) {
                     if (!(entry.getValue() instanceof TestDataColumn)) {
+                        logger.logInfo(MessageFormat.format(StringConstants.MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y,
+                                String.valueOf(entry.getKey()), String.valueOf(entry.getValue())));
                         binding.setVariable(entry.getKey(), entry.getValue());
                     }
                 }
             }
-
-            groovyShell = new GroovyShell();
             for (Variable testCaseVariable : testCaseVariables) {
                 if (!binding.hasVariable(testCaseVariable.getName())) {
                     String defaultValue = testCaseVariable.getDefaultValue();
                     if (defaultValue.isEmpty())
                         defaultValue = "null";
                     try {
-                        binding.setVariable(testCaseVariable.getName(), groovyShell.evaluate(defaultValue));
+                        Object defaultValueObject = groovyShell.evaluate(defaultValue);
+                        logger.logInfo(MessageFormat.format(StringConstants.MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y_AS_DEFAULT,
+                                String.valueOf(testCaseVariable.getName()), String.valueOf(defaultValueObject)));
+                        binding.setVariable(testCaseVariable.getName(), defaultValueObject);
                     } catch (GroovyRuntimeException e) {
                         logger.logWarning(MessageFormat.format(StringConstants.MAIN_LOG_MSG_SET_TEST_VARIABLE_ERROR_BECAUSE_OF, testCaseVariable.getName(), e.getMessage()));
                     }
                 }
             }
 
-            groovyShell = getGroovyShell(new GroovyClassLoader(TestCaseMain.class.getClassLoader()), binding);
             List<ASTNode> astNodes = new AstBuilder().buildFromString(CompilePhase.CONVERSION, false,
                     FileUtils.readFileToString(new File(testCaseScriptFilePath)));
             ClassNode classNode = getMainClassNode(astNodes);
@@ -217,7 +229,9 @@ public class TestCaseMain {
             afterRunFailedMethods = collectMethodWithAnnotation(classNode.getMethods(), TearDownIfFailed.class);
             afterRunErrorMethods = collectMethodWithAnnotation(classNode.getMethods(), TearDownIfError.class);
 
+
             ErrorCollector.getCollector().clearErrors();
+            groovyShell = getGroovyShell(new GroovyClassLoader(TestCaseMain.class.getClassLoader()), binding);
             internallyRunMethods(groovyShell, beforeRunMethods, importString, StringConstants.MAIN_MSG_START_RUNNING_SETUP_METHODS_FOR_TC);
             groovyShell.evaluate(new File(testCaseScriptFilePath));
             if (ErrorCollector.getCollector().containsErrors()) {

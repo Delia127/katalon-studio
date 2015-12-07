@@ -1,6 +1,7 @@
 package com.kms.katalon.core.ast;
 
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.FieldNode;
 import org.codehaus.groovy.ast.Parameter;
 import org.codehaus.groovy.ast.expr.ArgumentListExpression;
@@ -32,8 +33,6 @@ import org.codehaus.groovy.ast.stmt.WhileStatement;
 import org.codehaus.groovy.syntax.Token;
 import org.codehaus.groovy.syntax.Types;
 
-import com.kms.katalon.core.groovy.GroovyParser;
-
 public class AstTextValueUtil {
     public static String getTextValue(Object object) {
         if (object instanceof Statement) {
@@ -47,6 +46,8 @@ public class AstTextValueUtil {
             if (parameter != ForStatement.FOR_LOOP_DUMMY) {
                 return parameter.getName();
             }
+        } else if (object instanceof ClassNode) {
+            return ((ClassNode) object).getNameWithoutPackage();
         }
         return StringUtils.EMPTY;
     }

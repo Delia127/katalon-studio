@@ -28,10 +28,10 @@ import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnS
 import com.kms.katalon.composer.webui.constants.StringConstants;
 import com.kms.katalon.composer.webui.model.KeyInputValueType;
 import com.kms.katalon.composer.webui.model.KeysInputValueType;
-import com.kms.katalon.core.groovy.GroovyParser;
+import com.kms.katalon.core.ast.GroovyParser;
 
 public class KeysInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
-    private final IInputValueType[] defaultInputValueTypes = { InputValueType.Constant, new KeyInputValueType() };
+    private final IInputValueType[] defaultInputValueTypes = { InputValueType.String, new KeyInputValueType() };
 
     private static final String DIALOG_TITLE = StringConstants.KEYS_BUILDER_DIALOG_TITLE;
     private static final String[] COLUMN_NAMES = new String[] { StringConstants.NO_, StringConstants.KEYS_BUILDER_TABLE_COLUMN_TYPE_LABEL, StringConstants.VALUE };

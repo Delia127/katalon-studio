@@ -17,115 +17,103 @@ import org.eclipse.swt.widgets.Shell;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.model.ICustomInputValueType;
 import com.kms.katalon.composer.testcase.model.InputValueType;
-import com.kms.katalon.composer.testcase.providers.AstInputConstantTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
-import com.kms.katalon.composer.testcase.support.AstInputBuilderConstantTypeColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
 import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
-import com.kms.katalon.core.groovy.GroovyParser;
+import com.kms.katalon.core.ast.GroovyParser;
 
 public class BinaryBuilderDialog extends AbstractAstBuilderWithTableDialog {
-    private static final InputValueType[] defaultValueTypes = { InputValueType.Constant, InputValueType.Variable,
-        InputValueType.MethodCall, InputValueType.Binary, InputValueType.GlobalVariable,
-        InputValueType.TestDataValue, InputValueType.Property };
-    
-	private static final String DIALOG_TITLE = StringConstants.DIA_TITLE_BINARY_INPUT;
-	private static final String[] COLUMN_NAMES = new String[] { StringConstants.DIA_COL_OBJ,
-			StringConstants.DIA_COL_VALUE_TYPE, StringConstants.DIA_COL_CONSTANT_TYPE, StringConstants.DIA_COL_VALUE };
+    private static final InputValueType[] defaultValueTypes = { InputValueType.String, InputValueType.Number,
+            InputValueType.Boolean, InputValueType.Null, InputValueType.Variable, InputValueType.MethodCall,
+            InputValueType.Binary, InputValueType.GlobalVariable, InputValueType.TestDataValue, InputValueType.Property };
 
-	private BinaryExpression binaryExpression;
-	private Expression leftExpression;
-	private Expression rightExpression;
-	private Token token;
+    private static final String DIALOG_TITLE = StringConstants.DIA_TITLE_BINARY_INPUT;
 
-	public BinaryBuilderDialog(Shell parentShell, BinaryExpression binaryExpression, ClassNode scriptClass) {
-		super(parentShell, scriptClass);
-		if (binaryExpression != null) {
-			this.binaryExpression = GroovyParser.cloneBinaryExpression(binaryExpression);
-		} else {
-			this.binaryExpression = AstTreeTableEntityUtil.getNewBinaryExpression();
-		}
-		leftExpression = binaryExpression.getLeftExpression();
-		rightExpression = binaryExpression.getRightExpression();
-		token = binaryExpression.getOperation();
-	}
+    private BinaryExpression binaryExpression;
+    private Expression leftExpression;
+    private Expression rightExpression;
+    private Token token;
 
-	@Override
-	public void refresh() {
-		List<Object> expressionList = new ArrayList<Object>();
-		expressionList.add(leftExpression);
-		expressionList.add(token);
-		expressionList.add(rightExpression);
-		binaryExpression = new BinaryExpression(leftExpression, token, rightExpression);
+    public BinaryBuilderDialog(Shell parentShell, BinaryExpression binaryExpression, ClassNode scriptClass) {
+        super(parentShell, scriptClass);
+        if (binaryExpression != null) {
+            this.binaryExpression = GroovyParser.cloneBinaryExpression(binaryExpression);
+        } else {
+            this.binaryExpression = AstTreeTableEntityUtil.getNewBinaryExpression();
+        }
+        leftExpression = binaryExpression.getLeftExpression();
+        rightExpression = binaryExpression.getRightExpression();
+        token = binaryExpression.getOperation();
+    }
 
-		tableViewer.setContentProvider(new ArrayContentProvider());
-		tableViewer.setInput(expressionList);
-	}
+    @Override
+    public void refresh() {
+        List<Object> expressionList = new ArrayList<Object>();
+        expressionList.add(leftExpression);
+        expressionList.add(token);
+        expressionList.add(rightExpression);
+        binaryExpression = new BinaryExpression(leftExpression, token, rightExpression);
 
-	@Override
-	public BinaryExpression getReturnValue() {
-		return binaryExpression;
-	}
+        tableViewer.setContentProvider(new ArrayContentProvider());
+        tableViewer.setInput(expressionList);
+    }
 
-	@Override
-	public void changeObject(Object orginalObject, Object newObject) {
-		if (orginalObject == leftExpression && newObject instanceof Expression) {
-			leftExpression = (Expression) newObject;
-			refresh();
-		} else if (orginalObject == rightExpression && newObject instanceof Expression) {
-			rightExpression = (Expression) newObject;
-			refresh();
-		} else if (orginalObject == token && newObject instanceof Token) {
-			token = (Token) newObject;
-			refresh();
-		}
-	}
+    @Override
+    public BinaryExpression getReturnValue() {
+        return binaryExpression;
+    }
 
-	@Override
-	protected void addTableColumns() {
-		TableViewerColumn tableViewerColumnObject = new TableViewerColumn(tableViewer, SWT.NONE);
-		tableViewerColumnObject.getColumn().setWidth(100);
-		tableViewerColumnObject.setLabelProvider(new ColumnLabelProvider() {
-			@Override
-			public String getText(Object element) {
-				if (element == leftExpression) {
-					return "Left Expression";
-				} else if (element == rightExpression) {
-					return "Right Expression";
-				} else if (element == token) {
-					return "Operator";
-				}
-				return StringUtils.EMPTY;
-			}
-		});
+    @Override
+    public void changeObject(Object orginalObject, Object newObject) {
+        if (orginalObject == leftExpression && newObject instanceof Expression) {
+            leftExpression = (Expression) newObject;
+            refresh();
+        } else if (orginalObject == rightExpression && newObject instanceof Expression) {
+            rightExpression = (Expression) newObject;
+            refresh();
+        } else if (orginalObject == token && newObject instanceof Token) {
+            token = (Token) newObject;
+            refresh();
+        }
+    }
 
-		TableViewerColumn tableViewerColumnValueType = new TableViewerColumn(tableViewer, SWT.NONE);
-		tableViewerColumnValueType.getColumn().setWidth(100);
-		tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider(scriptClass));
-		tableViewerColumnValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer, defaultValueTypes,
-				ICustomInputValueType.TAG_BINARY, this, scriptClass));
+    @Override
+    protected void addTableColumns() {
+        TableViewerColumn tableViewerColumnObject = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnObject.getColumn().setWidth(100);
+        tableViewerColumnObject.getColumn().setText(StringConstants.DIA_COL_OBJ);
+        tableViewerColumnObject.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                if (element == leftExpression) {
+                    return "Left Expression";
+                } else if (element == rightExpression) {
+                    return "Right Expression";
+                } else if (element == token) {
+                    return "Operator";
+                }
+                return StringUtils.EMPTY;
+            }
+        });
 
-		TableViewerColumn tableViewerColumnConstantType = new TableViewerColumn(tableViewer, SWT.NONE);
-		tableViewerColumnConstantType.getColumn().setWidth(100);
-		tableViewerColumnConstantType.setLabelProvider(new AstInputConstantTypeLabelProvider());
-		tableViewerColumnConstantType
-				.setEditingSupport(new AstInputBuilderConstantTypeColumnSupport(tableViewer, this));
+        TableViewerColumn tableViewerColumnValueType = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnValueType.getColumn().setWidth(100);
+        tableViewerColumnValueType.getColumn().setText(StringConstants.DIA_COL_VALUE_TYPE);
+        tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider(scriptClass));
+        tableViewerColumnValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer,
+                defaultValueTypes, ICustomInputValueType.TAG_BINARY, this, scriptClass));
+        
+        TableViewerColumn tableViewerColumnValue = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnValue.getColumn().setWidth(300);
+        tableViewerColumnValue.getColumn().setText(StringConstants.DIA_COL_VALUE);
+        tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider(scriptClass));
+        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this, scriptClass));
+    }
 
-		TableViewerColumn tableViewerColumnValue = new TableViewerColumn(tableViewer, SWT.NONE);
-		tableViewerColumnValue.getColumn().setWidth(300);
-		tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider(scriptClass));
-		tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this, scriptClass));
-
-		// set column's name
-		for (int i = 0; i < tableViewer.getTable().getColumnCount(); i++) {
-			tableViewer.getTable().getColumn(i).setText(COLUMN_NAMES[i]);
-		}
-	}
-
-	@Override
-	public String getDialogTitle() {
-		return DIALOG_TITLE;
-	}
+    @Override
+    public String getDialogTitle() {
+        return DIALOG_TITLE;
+    }
 }

@@ -314,7 +314,7 @@ public class WebElementFileServiceManager {
         GroovyRefreshUtil.updateStringScriptReferences(oldRelativeToId, newRelativeToId, project);
 
         // update ref_element
-        for (WebElementEntity referenceEntity : getWebElementPropertyByRefELement(oldRelativeToId, project, true)) {
+        for (WebElementEntity referenceEntity : getWebElementPropertyByRefElement(oldRelativeToId, project, true)) {
             for (WebElementPropertyEntity webElementProperty : referenceEntity.getWebElementProperties()) {
                 if (webElementProperty.getName().equalsIgnoreCase(WebElementEntity.ref_element)
                         && oldRelativeToId.equals(webElementProperty.getValue())) {
@@ -339,7 +339,7 @@ public class WebElementFileServiceManager {
         FolderFileServiceManager.refreshFolderScriptReferences(oldRelativeToLocation, webElementFolder);
 
         // update ref_element
-        for (WebElementEntity referenceEntity : getWebElementPropertyByRefELement(oldRelativeToId, project, false)) {
+        for (WebElementEntity referenceEntity : getWebElementPropertyByRefElement(oldRelativeToId, project, false)) {
             for (WebElementPropertyEntity webElementProperty : referenceEntity.getWebElementProperties()) {
                 if (webElementProperty.getName().equalsIgnoreCase(WebElementEntity.ref_element)
                         && webElementProperty.getValue() != null
@@ -436,7 +436,7 @@ public class WebElementFileServiceManager {
      *            : true if property value of qualified web element equals with the given refElement, false if starts
      *            with the given refElement.
      */
-    public static List<WebElementEntity> getWebElementPropertyByRefELement(String refElement, ProjectEntity project,
+    public static List<WebElementEntity> getWebElementPropertyByRefElement(String refElement, ProjectEntity project,
             boolean isExactly) throws Exception {
 
         List<WebElementEntity> returnList = new ArrayList<WebElementEntity>();
@@ -446,19 +446,19 @@ public class WebElementFileServiceManager {
             File webElementFolder = new File(FileServiceConstant.getObjectRepositoryRootFolderLocation(projectFolder
                     .getAbsolutePath()));
             if (webElementFolder.exists() && webElementFolder.isDirectory()) {
-                getWebElementPropertyByRefELement(returnList, webElementFolder.getAbsolutePath(), refElement, isExactly);
+                getWebElementPropertyByRefElement(returnList, webElementFolder.getAbsolutePath(), refElement, isExactly);
             }
         }
         return returnList;
     }
 
-    private static void getWebElementPropertyByRefELement(List<WebElementEntity> webElementList,
+    private static void getWebElementPropertyByRefElement(List<WebElementEntity> webElementList,
             String webElementFolder, String refElement, boolean isExactly) throws Exception {
         File folder = new File(webElementFolder);
         if (!folder.exists() || !folder.isDirectory()) return;
         for (File file : folder.listFiles(EntityFileServiceManager.fileFilter)) {
             if (file.isDirectory()) {
-                getWebElementPropertyByRefELement(webElementList, file.getAbsolutePath(), refElement, isExactly);
+                getWebElementPropertyByRefElement(webElementList, file.getAbsolutePath(), refElement, isExactly);
             } else if (file.isFile()
                     && file.getName().toLowerCase()
                             .endsWith(WebElementEntity.getWebElementFileExtension().toLowerCase())) {

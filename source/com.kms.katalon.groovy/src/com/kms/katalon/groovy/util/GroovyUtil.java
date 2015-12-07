@@ -30,6 +30,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.jdt.core.IClasspathAttribute;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
@@ -38,6 +39,7 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.internal.core.ClasspathAttribute;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.ui.refactoring.RenameSupport;
 import org.eclipse.osgi.util.ManifestElement;
@@ -49,7 +51,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.core.groovy.GroovyParser;
+import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.core.keyword.IKeywordContributor;
 import com.kms.katalon.custom.factory.BuiltInMethodNodeFactory;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -142,7 +144,7 @@ public class GroovyUtil {
             boolean isNew, IProgressMonitor monitor) throws Exception {
         IProject groovyProject = getGroovyProject(projectEntity);
         groovyProject.refreshLocal(IResource.DEPTH_ONE, monitor);
-        
+
         IFolder keywordSourceFolder = groovyProject.getFolder(KEYWORD_SOURCE_FOLDER_NAME);
         if (!keywordSourceFolder.exists()) {
             keywordSourceFolder.create(true, true, null);
@@ -264,35 +266,21 @@ public class GroovyUtil {
 
     private static void addClassPathOfCoreBundleToJavaProject(List<IClasspathEntry> entries, Bundle coreBundle)
             throws IOException, BundleException {
-        if (coreBundle == null)
-            return;
+        if (coreBundle == null) return;
 
         File customBundleFile = FileLocator.getBundleFile(coreBundle).getAbsoluteFile();
 
-        if (customBundleFile == null || !customBundleFile.exists())
-            return;
+        if (customBundleFile == null || !customBundleFile.exists()) return;
 
         if (customBundleFile.isDirectory()) { // built by IDE
             addSourceFolderToClassPath(customBundleFile, entries);
         } else {
-            addJarFileToClasspath(customBundleFile, entries);
+            addJarFileToClasspath(customBundleFile, entries, coreBundle);
 
-            // add all required bundles of katalon in configuration folder to
-            // class path
-            File eclipseDir = Platform.getLocation().toFile().getParentFile();
+            File libDir = getPlatformLibDir();
 
-            if (Platform.getOS().equals(Platform.OS_MACOSX)) {
-                // On MacOS, location of the current platform is <installed
-                // folder>/Katalon.app/Contents/MacOS/config.
-                // Therefore, we must move to <installed folder>.
-                eclipseDir = eclipseDir.getParentFile().getParentFile().getParentFile();
-            }
-
-            File resourceDir = new File(eclipseDir, "configuration" + File.separator + "resources" + File.separator
-                    + "lib");
-
-            if (resourceDir.isDirectory()) {
-                for (File jarFile : resourceDir.listFiles()) {
+            if (libDir.isDirectory()) {
+                for (File jarFile : libDir.listFiles()) {
                     addJarFileToClasspath(jarFile, entries);
                 }
             }
@@ -311,15 +299,55 @@ public class GroovyUtil {
                 File requiredBundleLocation = FileLocator.getBundleFile(requiredBundle).getAbsoluteFile();
                 if (requiredBundleLocation != null && requiredBundleLocation.exists()) {
                     if (requiredBundleLocation.isFile()) {
-                        addJarFileToClasspath(requiredBundleLocation, entries);
+                        addJarFileToClasspath(requiredBundleLocation, entries, requiredBundle);
                     }
                 }
             }
         }
     }
 
+    /**
+     * @return Returns resources folder of the current Katalon installed folder.
+     */
+    private static File getPlatformResourcesDir() {
+        File eclipseDir = Platform.getLocation().toFile().getParentFile();
+
+        if (Platform.getOS().equals(Platform.OS_MACOSX)) {
+            // On MacOS, location of the current platform is <installed
+            // folder>/Katalon.app/Contents/MacOS/config.
+            // Therefore, we must move to <installed folder>.
+            eclipseDir = eclipseDir.getParentFile().getParentFile().getParentFile();
+        }
+
+        return new File(eclipseDir, "configuration" + File.separator + "resources");
+    }
+
+    /**
+     * @return Returns API document folder of the current Katalon installed folder.
+     */
+    private static File getPlatformAPIDocDir() {
+        return new File(getPlatformResourcesDir(), "apidocs");
+    }
+    
+    /**
+     * @return Returns libraries folder of the current Katalon installed folder.
+     */
+    private static File getPlatformLibDir() {
+        return new File(getPlatformResourcesDir(), "lib");
+    }
+
+    /**
+     * Adds the given <code>customBundleFile</code> if it isn't in the given <code>entries</code>.
+     * Also attaches source folder for the given <code>customBundleFile</code>.
+     * 
+     * Note: For debug only.
+     * 
+     * @param customBundleFile
+     * @param entries
+     */
     protected static void addSourceFolderToClassPath(File customBundleFile, List<IClasspathEntry> entries) {
-        entries.add(JavaCore.newLibraryEntry(new Path(new File(customBundleFile, "bin").getAbsolutePath()), null, null));
+        entries.add(JavaCore.newLibraryEntry(new Path(new File(customBundleFile, "bin").getAbsolutePath()), new Path(
+                new File(customBundleFile, "src").getAbsolutePath()), null));
 
         File resourceFolder = new File(customBundleFile, "resources" + File.separator + "lib");
         if (resourceFolder.exists() && resourceFolder.isDirectory()) {
@@ -329,6 +357,11 @@ public class GroovyUtil {
         }
     }
 
+    /**
+     * Adds the given <code>jarFile</code> if it is valid and isn't in the given <code>entries</code>.
+     * @param jarFile
+     * @param entries
+     */
     private static void addJarFileToClasspath(File jarFile, List<IClasspathEntry> entries) {
         if (checkRequiredBundleLocation(jarFile, entries)) {
             IClasspathEntry entry = JavaCore.newLibraryEntry(new Path(jarFile.getAbsolutePath()), null, null);
@@ -338,22 +371,44 @@ public class GroovyUtil {
         }
     }
 
+    /**
+     * Adds the given <code>jarFile</code> if it is valid and isn't in the given <code>entries</code>.
+     * Also adds javadoc to the new {@link IClasspathEntry} if the given <code>jarFile</code> has groovydoc.
+     * @param jarFile
+     * @param entries
+     * @param bundle
+     * @throws IOException
+     */
+    private static void addJarFileToClasspath(File jarFile, List<IClasspathEntry> entries, Bundle bundle)
+            throws IOException {
+        if (checkRequiredBundleLocation(jarFile, entries)) {
+            File javaDocDir = new File(getPlatformAPIDocDir(), bundle.getSymbolicName());
+            String javadocLoc = javaDocDir.toURI().toString();
+            IClasspathAttribute[] attributes = null;
+
+            if (FileLocator.getBundleFile(bundle).isFile() && javaDocDir.isDirectory() && javaDocDir.exists()) {
+                attributes = new IClasspathAttribute[] { new ClasspathAttribute("javadoc_location", javadocLoc) };
+            }
+            IClasspathEntry entry = JavaCore.newLibraryEntry(new Path(jarFile.getAbsolutePath()), null, null, null,
+                    attributes, false);
+            if (entry != null && !entries.contains(entry)) {
+                entries.add(entry);
+            }
+        }
+    }
+
     private static boolean checkRequiredBundleLocation(File requiredBundleLocation, List<IClasspathEntry> entries) {
         String bundleName = FilenameUtils.getBaseName(requiredBundleLocation.getName());
 
-        if (bundleName == null || bundleName.isEmpty())
-            return false;
+        if (bundleName == null || bundleName.isEmpty()) return false;
 
         if (bundleName.contains("_")) {
             bundleName = bundleName.split("_")[0];
-            if (bundleName == null || bundleName.isEmpty())
-                return false;
+            if (bundleName == null || bundleName.isEmpty()) return false;
         }
 
-        if ("org.eclipse.core.runtime".equalsIgnoreCase(bundleName))
-            return false;
-        if ("com.kms.katalon.custom".equalsIgnoreCase(bundleName))
-            return false;
+        if ("org.eclipse.core.runtime".equalsIgnoreCase(bundleName)) return false;
+        if ("com.kms.katalon.custom".equalsIgnoreCase(bundleName)) return false;
 
         for (IClasspathEntry childEntry : entries) {
             if ((childEntry.getPath() != null) && (childEntry.getEntryKind() == IClasspathEntry.CPE_LIBRARY)
@@ -794,8 +849,8 @@ public class GroovyUtil {
     }
 
     /**
-     * Create test case source script folder if it does not exist. Clean all
-     * variant that equalsIgnoreCase with name of the the given test case.
+     * Create test case source script folder if it does not exist. Clean all variant that equalsIgnoreCase with name of
+     * the the given test case.
      * 
      * @param testCaseSourceFolder
      * @param parentSourceFolder

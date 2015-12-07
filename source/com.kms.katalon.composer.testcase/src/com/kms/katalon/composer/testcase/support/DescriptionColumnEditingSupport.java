@@ -10,15 +10,15 @@ import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.ast.editors.TestStepDescriptionBuilderCellEditor;
+import com.kms.katalon.composer.testcase.ast.treetable.AstCaseStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstCatchStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstElseIfStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstElseStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstFinallyStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
-import com.kms.katalon.composer.testcase.treetable.AstCaseStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstCatchStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstElseIfStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstElseStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstFinallyStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.treetable.AstStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
 
 public class DescriptionColumnEditingSupport extends EditingSupport {

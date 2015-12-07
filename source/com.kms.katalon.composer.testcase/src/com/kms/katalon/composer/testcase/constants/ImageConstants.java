@@ -30,7 +30,6 @@ public class ImageConstants {
 	public static final Image IMG_24_UP = ImageUtil.loadImage(currentBundle, "/icons/up_24.png");
 	public static final Image IMG_24_DOWN = ImageUtil.loadImage(currentBundle, "/icons/down_24.png");
 	public static final Image IMG_24_CLEAR = ImageUtil.loadImage(currentBundle, "/icons/clear_24.png");
-	public static final Image IMG_24_EDIT = ImageUtil.loadImage(currentBundle, "/icons/edit_24.png");
 	
 	// KeywordTreeLabelProvider
 	public static final Image IMG_16_FAILED_CONTINUE = ImageUtil.loadImage(currentBundle, "/icons/failed_continue_16.png");

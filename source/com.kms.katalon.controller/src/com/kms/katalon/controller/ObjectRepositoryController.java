@@ -104,7 +104,7 @@ public class ObjectRepositoryController extends EntityController {
 
     public List<WebElementEntity> getTestObjectReferences(WebElementEntity webElement, ProjectEntity projectEntity)
             throws Exception {
-        return dataProviderSetting.getWebElementDataProvider().getWebElementPropertyByRefELement(
+        return dataProviderSetting.getWebElementDataProvider().getWebElementPropertyByRefElement(
                 getIdForDisplay(webElement), projectEntity, true);
     }
     

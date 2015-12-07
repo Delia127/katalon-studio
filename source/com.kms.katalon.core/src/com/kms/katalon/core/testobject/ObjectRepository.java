@@ -13,8 +13,8 @@ import org.dom4j.io.SAXReader;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
-import com.kms.katalon.core.exception.ExceptionsUtil;
 import com.kms.katalon.core.logging.KeywordLogger;
+import com.kms.katalon.core.util.ExceptionsUtil;
 
 public class ObjectRepository {
 	private static final String WEB_SERVICES_TYPE_NAME = "WebServiceRequestEntity";

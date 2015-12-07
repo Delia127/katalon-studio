@@ -30,45 +30,45 @@
       <page
       		category="com.kms.katalon.composer.execution.settings.default"
             class="com.kms.katalon.composer.webui.setting.WebUiPerferencePage"
-            id="com.kms.katalon.composer.webui.mainPage"
+            id="com.kms.katalon.composer.execution.settings.default.1"
             name="Web UI">
       </page>
       <page
-            category="com.kms.katalon.composer.webui.mainPage"
-            class="com.kms.katalon.composer.webui.setting.FirefoxPerferencePage"
-            id="com.kms.katalon.composer.webui.page.firefox"
-            name="Firefox">
-      </page>
-      <page
-            category="com.kms.katalon.composer.webui.mainPage"
+            category="com.kms.katalon.composer.execution.settings.default.1"
             class="com.kms.katalon.composer.webui.setting.ChromePreferencePage"
-            id="com.kms.katalon.composer.webui.page.chrome"
+            id="com.kms.katalon.composer.execution.settings.default.1.1"
             name="Chrome">
       </page>
+      <page
+            category="com.kms.katalon.composer.execution.settings.default.1"
+            class="com.kms.katalon.composer.webui.setting.FirefoxPerferencePage"
+            id="com.kms.katalon.composer.execution.settings.default.1.2"
+            name="Firefox">
+      </page>
        <page
-            category="com.kms.katalon.composer.webui.mainPage"
+            category="com.kms.katalon.composer.execution.settings.default.1"
             class="com.kms.katalon.composer.webui.setting.IEPerferencePage"
-            id="com.kms.katalon.composer.webui.page.ie"
+            id="com.kms.katalon.composer.execution.settings.default.1.3"
             name="IE">
       </page>
-       <page
-            category="com.kms.katalon.composer.webui.mainPage"
-            class="com.kms.katalon.composer.webui.setting.RemoteWebPreferencePage"
-            id="com.kms.katalon.composer.webui.page.remoteweb"
-            name="Remote Web">
+      <page
+			 category="com.kms.katalon.composer.execution.settings.default.1"
+			 class="com.kms.katalon.composer.webui.setting.SafariPreferencePage"
+			 id="com.kms.katalon.composer.execution.settings.default.1.4"
+			 name="Safari">
       </page>
       <page
-            category="com.kms.katalon.composer.webui.mainPage"
+            category="com.kms.katalon.composer.execution.settings.default.1"
             class="com.kms.katalon.composer.webui.setting.EdgePreferencePage"
-            id="com.kms.katalon.composer.webui.page.edge"
+            id="com.kms.katalon.composer.execution.settings.default.1.5"
             name="Edge">
       </page>
        <page
-             category="com.kms.katalon.composer.webui.mainPage"
-             class="com.kms.katalon.composer.webui.setting.SafariPreferencePage"
-             id="com.kms.katalon.composer.webui.page.safari"
-             name="Safari">
-       </page>
+            category="com.kms.katalon.composer.execution.settings.default.1"
+            class="com.kms.katalon.composer.webui.setting.RemoteWebPreferencePage"
+            id="com.kms.katalon.composer.execution.settings.default.1.6"
+            name="Remote Web">
+      </page>
    </extension>
 	<extension
 	       point="com.kms.katalon.composer.execution.driverConnectorEditor">

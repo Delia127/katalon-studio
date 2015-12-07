@@ -17,22 +17,18 @@ import org.eclipse.swt.widgets.Shell;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.model.ICustomInputValueType;
 import com.kms.katalon.composer.testcase.model.InputValueType;
-import com.kms.katalon.composer.testcase.providers.AstInputConstantTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
-import com.kms.katalon.composer.testcase.support.AstInputBuilderConstantTypeColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
 import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
-import com.kms.katalon.core.groovy.GroovyParser;
+import com.kms.katalon.core.ast.GroovyParser;
 
 public class TestDataValueBuilderDialog extends AbstractAstBuilderWithTableDialog {
-    private final InputValueType[] defaultInputValueTypes = { InputValueType.Constant, InputValueType.Variable,
-            InputValueType.TestData };
+    private final InputValueType[] defaultInputValueTypes = { InputValueType.Variable, InputValueType.TestData,
+            InputValueType.String, InputValueType.Number, InputValueType.Boolean, InputValueType.Null };
     private static final String DIALOG_TITLE = StringConstants.DIA_TITLE_TEST_DATA_VALUE_INPUT;
-    private static final String[] COLUMN_NAMES = new String[] { StringConstants.DIA_COL_OBJ,
-            StringConstants.DIA_COL_VALUE_TYPE, StringConstants.DIA_COL_CONSTANT_TYPE, StringConstants.DIA_COL_VALUE };
 
     private MethodCallExpression methodCallExpression;
     private Expression testDataExpression;
@@ -95,6 +91,7 @@ public class TestDataValueBuilderDialog extends AbstractAstBuilderWithTableDialo
     @Override
     protected void addTableColumns() {
         TableViewerColumn tableViewerColumnObject = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnObject.getColumn().setText(StringConstants.DIA_COL_OBJ);
         tableViewerColumnObject.getColumn().setWidth(100);
         tableViewerColumnObject.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -111,26 +108,16 @@ public class TestDataValueBuilderDialog extends AbstractAstBuilderWithTableDialo
         });
 
         TableViewerColumn tableViewerColumnValueType = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnValueType.getColumn().setText(StringConstants.DIA_COL_VALUE_TYPE);
         tableViewerColumnValueType.getColumn().setWidth(100);
         tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider(scriptClass));
         tableViewerColumnValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer,
                 defaultInputValueTypes, ICustomInputValueType.TAG_TEST_DATA_VALUE, this, scriptClass));
 
-        TableViewerColumn tableViewerColumnConstantType = new TableViewerColumn(tableViewer, SWT.NONE);
-        tableViewerColumnConstantType.getColumn().setWidth(100);
-        tableViewerColumnConstantType.setLabelProvider(new AstInputConstantTypeLabelProvider());
-        tableViewerColumnConstantType
-                .setEditingSupport(new AstInputBuilderConstantTypeColumnSupport(tableViewer, this));
-
         TableViewerColumn tableViewerColumnValue = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnValue.getColumn().setText(StringConstants.DIA_COL_VALUE);
         tableViewerColumnValue.getColumn().setWidth(300);
         tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider(scriptClass));
-
         tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this, scriptClass));
-
-        // set column's name
-        for (int i = 0; i < tableViewer.getTable().getColumnCount(); i++) {
-            tableViewer.getTable().getColumn(i).setText(COLUMN_NAMES[i]);
-        }
     }
 }

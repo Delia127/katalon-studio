@@ -1,28 +1,23 @@
 package com.kms.katalon.composer.testsuite.listeners;
 
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.ToolItem;
 
-import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.constants.ToolItemConstants;
+import com.kms.katalon.composer.testsuite.dialogs.TestCaseSelectionDialog;
 import com.kms.katalon.composer.testsuite.providers.TestCaseTableViewer;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.entity.folder.FolderEntity;
-import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 public class TestCaseToolItemListener extends SelectionAdapter {
 
@@ -96,29 +91,12 @@ public class TestCaseToolItemListener extends SelectionAdapter {
             if (currentProject == null) {
                 return;
             }
-            
-            EntityProvider entityProvider = new EntityProvider();
-            TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(null,
-                    new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(entityProvider));
 
-            dialog.setAllowMultiple(true);
-            dialog.setTitle(StringConstants.PA_TITLE_TEST_CASE_BROWSER);
+            TestCaseSelectionDialog dialog = new TestCaseSelectionDialog(null, new EntityLabelProvider(),
+                    new EntityProvider(), new EntityViewerFilter(new EntityProvider()), tableViewer);
             dialog.setInput(TreeEntityUtil.getChildren(null,
                     FolderController.getInstance().getTestCaseRoot(currentProject)));
-            if (dialog.open() == Dialog.OK) {
-                Object[] selectedObjects = dialog.getResult();
-                for (Object object : selectedObjects) {
-                    if (!(object instanceof ITreeEntity)) {
-                        continue;
-                    }
-                    ITreeEntity treeEntity = (ITreeEntity) object;
-                    if (treeEntity.getObject() instanceof FolderEntity) {
-                        addTestCaseFolderToTable((FolderEntity) treeEntity.getObject());
-                    } else if (treeEntity.getObject() instanceof TestCaseEntity) {
-                        tableViewer.addTestCase((TestCaseEntity) treeEntity.getObject());
-                    }
-                }
-            }
+            dialog.open();
         } catch (Exception ex) {
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
                     StringConstants.PA_ERROR_MSG_UNABLE_TO_ADD_TEST_CASES);
@@ -126,16 +104,4 @@ public class TestCaseToolItemListener extends SelectionAdapter {
         }
     }
 
-    private void addTestCaseFolderToTable(FolderEntity folderEntity) throws Exception {
-        if (folderEntity.getFolderType() == FolderType.TESTCASE) {
-            FolderController folderController = FolderController.getInstance();
-            for (Object childObject : folderController.getChildren(folderEntity)) {
-                if (childObject instanceof TestCaseEntity) {
-                    tableViewer.addTestCase((TestCaseEntity) childObject);
-                } else if (childObject instanceof FolderEntity) {
-                    addTestCaseFolderToTable((FolderEntity) childObject);
-                }
-            }
-        }
-    }
 }

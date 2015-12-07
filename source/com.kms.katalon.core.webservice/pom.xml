@@ -10,4 +10,35 @@
 
 	<artifactId>com.kms.katalon.core.webservice</artifactId>
 	<packaging>eclipse-plugin</packaging>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.gmavenplus</groupId>
+				<artifactId>gmavenplus-plugin</artifactId>
+				<version>${gmavenplus.version}</version>		
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<goals>
+							<goal>groovydoc</goal>
+						</goals>					
+					</execution>
+				</executions>				
+				<configuration>
+					<scope>public</scope>
+					<skipTests>true</skipTests>
+					<invokeDynamic>true</invokeDynamic>	
+					<groovydocOutputDirectory>${project.parent.build.directory}/${apidocDirectory}/${project.artifactId}</groovydocOutputDirectory>
+					<sources>
+						<source>
+							<directory>${project.basedir}/src</directory>
+							<includes>
+								<include>**/*.groovy</include>
+							</includes>
+						</source>			
+					</sources>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project> 

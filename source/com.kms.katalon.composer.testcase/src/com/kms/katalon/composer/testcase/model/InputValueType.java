@@ -8,11 +8,11 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
-import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
+import com.kms.katalon.core.ast.AstTextValueUtil;
 
 public enum InputValueType implements IInputValueType {
-    Constant, Variable, MethodCall, List, Map, ClosureList, Boolean, Binary, Range, Property, GlobalVariable, TestDataValue, TestCase, TestObject, TestData, Class, This;
+    String, Number, Boolean, Null, Variable, MethodCall, List, Map, ClosureList, Condition, Binary, Range, Property, GlobalVariable, TestDataValue, TestCase, TestObject, TestData, Class, This, Throwable;
 
     @Override
     public String getName() {
@@ -32,23 +32,21 @@ public enum InputValueType implements IInputValueType {
     @Override
     public Object getNewValue(Object existingValue) {
         switch (this) {
-        case Constant:
-            if (existingValue instanceof ConstantExpression) {
-                ConstantExpression constantExpression = (ConstantExpression) existingValue;
-                if (constantExpression.getValue() instanceof Number) {
-                    return AstTreeTableEntityUtil.getNewNumberConstantExpression();
-                } else if (constantExpression.getValue() instanceof Boolean) {
-                    return AstTreeTableEntityUtil.getNewBooleanConstantExpression();
-                }
-            }
+        case String:
             return AstTreeTableEntityUtil.getNewStringConstantExpression();
+        case Number:
+            return AstTreeTableEntityUtil.getNewNumberConstantExpression();
+        case Boolean:
+            return AstTreeTableEntityUtil.getNewBooleanConstantExpression();
+        case Null:
+            return new ConstantExpression(null);
         case Binary:
             return AstTreeTableEntityUtil.getNewBinaryExpression();
         case Variable:
             return AstTreeTableEntityUtil.getNewVariableExpression();
         case MethodCall:
             return AstTreeTableEntityUtil.getNewMethodCallExpression();
-        case Boolean:
+        case Condition:
             return AstTreeTableEntityUtil.getNewBooleanExpression();
         case List:
             return AstTreeTableEntityUtil.getNewListExpression();
@@ -76,6 +74,8 @@ public enum InputValueType implements IInputValueType {
             return AstTreeTableEntityUtil.getNewTestCaseExpression();
         case This:
             return new VariableExpression("this");
+        case Throwable:
+            return AstTreeTableEntityUtil.getNewExceptionExpression();
         default:
             return new ConstantExpression(null);
         }
@@ -93,6 +93,6 @@ public enum InputValueType implements IInputValueType {
 
     @Override
     public String getDisplayValue(Object astObject) {
-        return AstTreeTableTextValueUtil.getTextValue(astObject);
+        return AstTextValueUtil.getTextValue(astObject);
     }
 }

@@ -23,15 +23,10 @@ public class StringConstants extends GlobalStringConstants {
     public static final String COMP_MSG_INVALID_INTERNAL_STRUCTURE = "Internal structure invalid. Item without associated row is not possible.";
 
     // TreeTableMenuItemConstants
-    public static final String CONS_MENU_CONTEXT_CONDITION_STATEMENT = "Control Statement";
-    public static final String CONS_MENU_CONTEXT_ASSERT_STATEMENT = "Assert Statement";
-    public static final String CONS_MENU_CONTEXT_BINARY_STATEMENT = "Binary Statement";
-    public static final String CONS_MENU_CONTEXT_FOR_STATEMENT = "For Statement";
-    public static final String CONS_MENU_CONTEXT_WHILE_STATEMENT = "While Statement";
-    public static final String CONS_MENU_CONTEXT_ELSE_IF_STATEMENT = "Else If Statement";
-    public static final String CONS_MENU_CONTEXT_ELSE_STATEMENT = "Else Statement";
-    public static final String CONS_MENU_CONTEXT_IF_STATEMENT = "If Statement";
-    public static final String CONS_MENU_CONTEXT_CALL_METHOD_STATEMENT = "Call Method Statement";
+    public static final String CONS_MENU_CONTEXT_DECISION_MAKING_STATEMENT = "Decision-making Statements";
+    public static final String CONS_MENU_CONTEXT_LOOPING_STATEMENT = "Looping Statements";
+    public static final String CONS_MENU_CONTEXT_BRANCHING_STATEMENT = "Branching Statements";
+    public static final String CONS_MENU_CONTEXT_EXCEPTION_HANDLING_STATEMENT = "Exception Handling Statements";
     public static final String CONS_MENU_CONTEXT_CUSTOM_KEYWORD = "Custom Keyword";
     public static final String CONS_MENU_CONTEXT_COMMENT_STATEMENT = "Comment";
     public static final String CONS_MENU_CONTEXT_CALL_TEST_CASE = "Call Test Case";
@@ -47,6 +42,17 @@ public class StringConstants extends GlobalStringConstants {
     // BooleanBuilderDialog
     public static final String DIA_BTN_REVERSE = "Reverse";
     public static final String DIA_TITLE_CONDITION_INPUT = "Condition Input";
+
+    // SwitchBuilderDialog
+    public static final String DIA_TITLE_SWITCH_INPUT = "Switch Statement Input";
+
+    // CaseBuilderDialog
+    public static final String DIA_TITLE_CASE_INPUT = "Case Statement Input";
+
+    // CatchInputBuilderDialog
+    public static final String DIA_TITLE_CATCH_INPUT = "Catch Statement Input";
+    public static final String DIA_COL_EXCEPTION_TYPE = "Exception Type";
+    public static final String DIA_COL_VARIABLE_NAME = "Variable Name";
 
     // ClosureListInputBuilderDialog
     public static final String DIA_TITLE_CLOSURE_LIST_INPUT = "Closure List Input";
@@ -94,6 +100,9 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_TITLE_TEST_OBJ_INPUT = "Test Object Input";
     public static final String DIA_TAB_OTHER = "Other";
     public static final String DIA_LBL_OBJ_TYPE = DIA_COL_OBJ_TYPE;
+    
+    // ConstructorCallInputBuilderDialog
+    public static final String DIA_TITLE_THROWABLE_CALL_INPUT = "Throwable Input";
 
     // MethodObjectBuilderDialog
     public static final String DIA_TITLE_METHOD_BUILDER = "Method builder";
@@ -122,6 +131,9 @@ public class StringConstants extends GlobalStringConstants {
 
     // DeleteTestCaseHandler
     public static final String HAND_ERROR_MSG_UNABLE_TO_DEL_TEST_CASE = "Unable to delete Test Case.";
+    public static final String HAND_TITLE_DELETE = DELETE;
+    public static final String HAND_MSG_REMOVE_ENTITY_REF = "Currently, this file is used in some Test Cases. Do you want to remove its references as well?";
+    public static final String HAND_MSG_REMOVE_FOLDER_REF = "Currently, this folder are used in some Test Cases. Do you want to remove all the references as well?";
 
     // NewTestCaseHandler
     public static final String HAND_NEW_TEST_CASE = "New Test Case";
@@ -163,7 +175,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_MENU_SUB_AFTER = "Insert after";
     public static final String PA_BTN_TIP_REMOVE = DELETE;
     public static final String PA_BTN_TIP_CLEAR = CLEAR;
-    public static final String PA_BTN_TIP_EDIT = EDIT;
     public static final String PA_BTN_TIP_MOVE_UP = "Move up";
     public static final String PA_BTN_TIP_MOVE_DOWN = "Move down";
     public static final String PA_COL_INDEX = "#";
@@ -184,6 +195,16 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_ERROR_MSG_CANNOT_ADD_FOR_STATEMENT = "Cannot add FOR statement.";
     public static final String PA_ERROR_MSG_CANNOT_ADD_BINARY_STATEMENT = "Cannot add BINARY statement.";
     public static final String PA_ERROR_MSG_CANNOT_ADD_ASSERT_STATEMENT = "Cannot add ASSERT statement.";
+    public static final String PA_ERROR_MSG_CANNOT_ADD_BREAK_STATEMENT = "Cannot add BREAK statement.";
+    public static final String PA_ERROR_MSG_CANNOT_ADD_CONTINUE_STATEMENT = "Cannot add CONTINUE statement.";
+    public static final String PA_ERROR_MSG_CANNOT_ADD_RETURN_STATEMENT = "Cannot add RETURN statement.";
+    public static final String PA_ERROR_MSG_CANNOT_ADD_SWITCH_STATEMENT = "Cannot add SWITCH statement.";
+    public static final String PA_ERROR_MSG_CANNOT_ADD_CASE_STATEMENT = "Cannot add CASE statement.";
+    public static final String PA_ERROR_MSG_CANNOT_ADD_DEFAULT_STATEMENT = "Cannot add DEFAULT statement.";
+    public static final String PA_ERROR_MSG_CANNOT_ADD_TRY_STATEMENT = "Cannot add TRY statement.";
+    public static final String PA_ERROR_MSG_CANNOT_ADD_CATCH_STATEMENT = "Cannot add CATCH statement.";
+    public static final String PA_ERROR_MSG_CANNOT_ADD_FINALLY_STATEMENT = "Cannot add FINALLY statement.";
+    public static final String PA_ERROR_MSG_CANNOT_ADD_THROW_STATEMENT = "Cannot add THROW statement.";
     public static final String PA_ERROR_MSG_CANNOT_ADD_METHOD_CALL_STATEMENT = "Cannot add METHOD CALL statement.";
     public static final String PA_ERROR_MSG_CANNOT_CHANGE_FAILURE_HANDLING = "Cannot change failure handling.";
     public static final String PA_ERROR_MSG_CANNOT_REMOVE_STATEMENT = "Cannot remove statement.";
@@ -203,6 +224,7 @@ public class StringConstants extends GlobalStringConstants {
     // TestCaseVariablePart
     public static final String PA_COL_NO = NO_;
     public static final String PA_COL_NAME = NAME;
+    public static final String PA_COL_DEFAULT_VALUE_TYPE = "Default value type";
     public static final String PA_COL_DEFAULT_VALUE = "Default value";
     public static final String PA_ERROR_MSG_VAR_AT_INDEX_CANNOT_BE_NULL_OR_EMPTY = "The variable at index: {0} cannot be null or empty.\n";
     public static final String PA_ERROR_MSG_INVALID_VAR = "Variable {0} is not valid qualifier.\n";
@@ -219,6 +241,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PREF_BTN_GEN_VAR_WITH_THE_SAME_NAME = "Generate variable with the same name as the exposed variable of the called test case";
     public static final String PREF_BTN_EXPOSE_VARS_AUTO = "Expose variables automatically after choosing the called test case";
     public static final String PREF_LBL_DEFAULT_FAILURE_HANDLING = "Default Failure Handling";
+    public static final String PREF_LBL_DEFAULT_KEYWORD_TYPE = "Default Keyword Type";
     public static final String PREF_GRP_DEFAULT_KEYWORD = "Default Keyword";
     public static final String PREF_LBL_KEYWORK_TYPE = "Keyword Type";
     public static final String PREF_LBL_KEYWORK_NAME = "Keyword Name";
@@ -228,6 +251,9 @@ public class StringConstants extends GlobalStringConstants {
 
     // AstBinaryStatementTreeTableNode
     public static final String TREE_BINARY_STATEMENT = "Binary Statement";
+
+    // AstBreakStatementTreeTableNode
+    public static final String TREE_BREAK_STATEMENT = "Break Statement";
 
     // AstCaseStatementTreeTableNode
     public static final String TREE_CASE_STATEMENT = "Case Statement";
@@ -240,6 +266,9 @@ public class StringConstants extends GlobalStringConstants {
 
     // AstCommentStatementTreeTableNode
     public static final String TREE_COMMENT = "Comment";
+
+    // AstBreakStatementTreeTableNode
+    public static final String TREE_CONTINUE_STATEMENT = "Continue Statement";
 
     // AstElseIfStatementTreeTableNode
     public static final String TREE_ELSE_IF_STATEMENT = "Else If Statement";
@@ -277,14 +306,24 @@ public class StringConstants extends GlobalStringConstants {
 
     // AstFinallyStatementTreeTableNode
     public static final String TREE_FINALLY_STATEMENT = "Finally Statement";
+    
+    // AstReturnStatementTreeTableNode
+    public static final String TREE_RETURN_STATEMENT = "Return Statement";
+    
+    // AstThrowStatementTreeTableNode
+    public static final String TREE_THROW_STATEMENT = "Throw Statement";
 
     // KeywordBrowserPart
     public static final String KEYWORD_BROWSER_BUILTIN_KEYWORD_ROOT_TREE_ITEM_LABEL = "Built-in Keywords";
     public static final String KEYWORD_BROWSER_CUSTOM_KEYWORD_ROOT_TREE_ITEM_LABEL = "Custom Keywords";
+    public static final String KEYWORD_BROWSER_CONTROL_KEYWORD_ROOT_TREE_ITEM_LABEL = "Utils";
 
     // TestCaseReferencesDialog
     public static final String DIA_MSG_HEADER_TEST_CASE_REFERENCES = "Test case ''{0}'' has been referred by some test "
             + "suites listed below.\nDo you want to delete all these references?";
     public static final String DIA_TITLE_TEST_CASE_REFERENCES = "Test Case's References Detected";
     public static final String DIA_FIELD_TEST_SUITE_ID = "Test Suite ID";
+    
+    // TestCaseTreeTableInput
+    public static final String WARN_TRY_STATEMENT_MUST_HAVE_CATCH_OR_FINALLY = "Try Statement must have as least 1 Catch or Finally Statement";
 }

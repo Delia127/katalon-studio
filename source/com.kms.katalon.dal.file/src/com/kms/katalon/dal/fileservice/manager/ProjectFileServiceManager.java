@@ -10,7 +10,6 @@ import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.dal.fileservice.FileServiceConstant;
 import com.kms.katalon.dal.fileservice.constants.StringConstants;
-import com.kms.katalon.dal.state.DataProviderState;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
@@ -67,7 +66,6 @@ public class ProjectFileServiceManager {
             ProjectEntity project = (ProjectEntity) EntityService.getInstance().getEntityByPath(projectFileLocation);
             project.setFolderLocation(projectFile.getParent());
             createSettingFolder(project);
-            DataProviderState.getInstance().setCurrentProject(project);
             FolderFileServiceManager.initRootEntityFolders(project);
             return project;
         }

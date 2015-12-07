@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -30,10 +31,12 @@ import com.kms.katalon.groovy.util.GroovyRefreshUtil;
 public class DeleteTestCaseHandler extends AbstractDeleteReferredEntityHandler implements IDeleteEntityHandler {
 
     @Inject
-    private UISynchronize sync;
+    protected UISynchronize sync;
 
     @Inject
-    private IEventBroker eventBroker;
+    protected IEventBroker eventBroker;
+
+    protected boolean isRemovingRef = false;
 
     @Override
     public Class<? extends ITreeEntity> entityType() {
@@ -48,9 +51,24 @@ public class DeleteTestCaseHandler extends AbstractDeleteReferredEntityHandler i
             }
 
             final TestCaseEntity testCase = (TestCaseEntity) entity.getObject();
-            monitor.subTask("Deleting '" + TestCaseController.getInstance().getIdForDisplay(testCase) + "'...");
-            
-            if (deleteTestCase(testCase, sync, eventBroker)) {
+            final String testCaseId = TestCaseController.getInstance().getIdForDisplay(testCase);
+            monitor.subTask("Deleting '" + testCaseId + "'...");
+
+            final boolean hasRef = GroovyRefreshUtil.hasReferencesInTestCaseScripts(testCaseId, testCase.getProject());
+            sync.syncExec(new Runnable() {
+
+                @Override
+                public void run() {
+                    // Give a confirmation message for current Test Object to remove its references
+                    if (hasRef) {
+                        // Depend on the user response, references will be removed or not
+                        isRemovingRef = MessageDialog.openQuestion(Display.getCurrent().getActiveShell(),
+                                StringConstants.HAND_TITLE_DELETE, StringConstants.HAND_MSG_REMOVE_ENTITY_REF);
+                    }
+                }
+            });
+
+            if (deleteTestCase(testCase, sync, eventBroker, isRemovingRef)) {
                 eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, TestCaseController.getInstance()
                         .getIdForDisplay(testCase));
                 return true;
@@ -72,7 +90,7 @@ public class DeleteTestCaseHandler extends AbstractDeleteReferredEntityHandler i
     }
 
     protected boolean deleteTestCase(final TestCaseEntity testCase, final UISynchronize sync,
-            final IEventBroker eventBroker) {
+            final IEventBroker eventBroker, boolean isRemovingRefInTestCaseScripts) {
         try {
             final List<TestSuiteEntity> testCaseReferences = TestCaseController.getInstance().getTestCaseReferences(
                     testCase);
@@ -102,9 +120,13 @@ public class DeleteTestCaseHandler extends AbstractDeleteReferredEntityHandler i
                 }
             }
 
-            // Remove test case references in other Test Cases
-            GroovyRefreshUtil.removeScriptReferencesInTestCaseScripts(
-                    TestCaseController.getInstance().getIdForDisplay(testCase), testCase.getProject());
+            if (isRemovingRefInTestCaseScripts) {
+                // Remove test case references in other Test Cases
+                List<IFile> affectedTestCaseScripts = GroovyRefreshUtil.findReferencesInTestCaseScripts(
+                        TestCaseController.getInstance().getIdForDisplay(testCase), testCase.getProject());
+                GroovyRefreshUtil.removeReferencesInTestCaseScripts(
+                        TestCaseController.getInstance().getIdForDisplay(testCase), affectedTestCaseScripts);
+            }
 
             // remove TestCase part from its partStack if it exists
             EntityPartUtil.closePart(testCase);

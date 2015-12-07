@@ -17,6 +17,11 @@ public class StringConstants extends GlobalStringConstants {
     // NewTestDataHandler
     public static final String MENU_CONTEXT_TEST_DATA = TEST_DATA;
     public static final String COMMAND_ID_NEW_TEST_DATA = "com.kms.katalon.composer.testdata.command.add";
+    
+    // DeleteTestDataHandler
+    public static final String HAND_TITLE_DELETE = DELETE;
+    public static final String HAND_MSG_REMOVE_ENTITY_REF = "Currently, this file is used in some Test Cases. Do you want to remove its references as well?";
+    public static final String HAND_MSG_REMOVE_FOLDER_REF = "Currently, this folder children are used in some Test Cases. Do you want to remove all the references as well?";
 
     //MainTestDataPart
     public static final String PA_TOOLTIP_WARNING_COLUMN_HEADER = "This column has empty header";

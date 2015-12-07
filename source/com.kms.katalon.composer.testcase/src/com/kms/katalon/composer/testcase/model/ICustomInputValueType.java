@@ -13,6 +13,9 @@ public interface ICustomInputValueType extends IInputValueType {
     public static final String TAG_RANGE = "range";
     public static final String TAG_TEST_DATA_VALUE = "testDataValue";
     public static final String TAG_TEST_OBJECT = "testObject";
+    public static final String TAG_SWITCH = "switch";
+    public static final String TAG_CASE = "case";
+    public static final String TAG_THROW = "throw";
     
     public String[] getTags();
 

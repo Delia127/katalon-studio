@@ -47,7 +47,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.core.testdata.reader.CSVReader;
 import com.kms.katalon.core.testdata.reader.CSVSeperator;
-import com.kms.katalon.core.util.PathUtils;
+import com.kms.katalon.core.util.PathUtil;
 import com.kms.katalon.entity.dal.exception.DuplicatedFileNameException;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity.DataFileDriverType;
@@ -257,7 +257,7 @@ public class CSVTestDataPart extends TestDataMainPart {
                 fCurrentFilePath = path;
 
                 if (chckIsRelativePath.getSelection()) {
-                    txtFileName.setText(PathUtils.absoluteToRelativePath(path, getProjectFolderLocation()));
+                    txtFileName.setText(PathUtil.absoluteToRelativePath(path, getProjectFolderLocation()));
                 } else {
                     txtFileName.setText(fCurrentFilePath);
                 }
@@ -291,9 +291,9 @@ public class CSVTestDataPart extends TestDataMainPart {
                     if (txtFileName.getText() != null) {
                         String sourceUrl = txtFileName.getText();
                         if (chckIsRelativePath.getSelection()) {
-                            txtFileName.setText(PathUtils.absoluteToRelativePath(sourceUrl, getProjectFolderLocation()));
+                            txtFileName.setText(PathUtil.absoluteToRelativePath(sourceUrl, getProjectFolderLocation()));
                         } else {
-                            txtFileName.setText(PathUtils.relativeToAbsolutePath(sourceUrl, getProjectFolderLocation()));
+                            txtFileName.setText(PathUtil.relativeToAbsolutePath(sourceUrl, getProjectFolderLocation()));
                         }
                     }
                     dirtyable.setDirty(true);
@@ -377,7 +377,7 @@ public class CSVTestDataPart extends TestDataMainPart {
     private String getSourceUrlAbsolutePath() throws Exception {
         String sourceUrl = txtFileName.getText();
         if (chckIsRelativePath.getSelection()) {
-            sourceUrl = PathUtils.relativeToAbsolutePath(sourceUrl, getProjectFolderLocation());
+            sourceUrl = PathUtil.relativeToAbsolutePath(sourceUrl, getProjectFolderLocation());
         }
         return sourceUrl;
     }

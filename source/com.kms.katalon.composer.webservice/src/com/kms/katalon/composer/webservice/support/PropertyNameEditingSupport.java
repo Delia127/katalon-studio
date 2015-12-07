@@ -6,7 +6,7 @@ import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
 
-import com.kms.katalon.composer.webservice.editors.StringComboBoxCellEditor;
+import com.kms.katalon.composer.components.impl.editors.StringComboBoxCellEditor;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 
 public class PropertyNameEditingSupport extends EditingSupport {

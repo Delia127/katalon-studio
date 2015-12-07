@@ -3,6 +3,7 @@ package com.kms.katalon.composer.project.menu;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.core.commands.Command;
@@ -10,6 +11,7 @@ import org.eclipse.core.commands.IParameter;
 import org.eclipse.core.commands.Parameterization;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.commands.ECommandService;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.AboutToShow;
 import org.eclipse.e4.ui.model.application.commands.MCommand;
 import org.eclipse.e4.ui.model.application.commands.MCommandsFactory;
@@ -17,25 +19,41 @@ import org.eclipse.e4.ui.model.application.ui.menu.MHandledMenuItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuFactory;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.helper.ConstantsHelper;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 
 @SuppressWarnings("restriction")
-public class RecentProjectsMenuContribution {
+public class RecentProjectsMenuContribution implements EventHandler {
     @Inject
     private ECommandService commandService;
 
     @Inject
     EModelService modelService;
+    
+    @Inject
+    private IEventBroker eventBroker;
+    
+    private static List<ProjectEntity> recentProjects = new ArrayList<ProjectEntity>();
 
+    @PostConstruct
+    public void init() {
+        eventBroker.subscribe(EventConstants.WORKSPACE_CREATED, this);
+        eventBroker.subscribe(EventConstants.PROJECT_CREATED, this);
+        eventBroker.subscribe(EventConstants.PROJECT_OPENED, this);
+        eventBroker.subscribe(EventConstants.PROJECT_UPDATED, this);
+    }
+    
     @AboutToShow
     public void aboutToShow(List<MMenuElement> menuItems) {
         try {
-            for (ProjectEntity project : ProjectController.getInstance().getRecentProjects()) {
+            for (ProjectEntity project : recentProjects) {
                 // Add temp command to avoid warning message
                 MCommand command = MCommandsFactory.INSTANCE.createCommand();
                 command.setCommandName("Temp");
@@ -73,4 +91,16 @@ public class RecentProjectsMenuContribution {
             return location;
         }
     }
+
+    @Override
+    public void handleEvent(Event event) {
+        try {
+            recentProjects.clear();
+            recentProjects.addAll(ProjectController.getInstance().getRecentProjects());
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
+    
+    
 }

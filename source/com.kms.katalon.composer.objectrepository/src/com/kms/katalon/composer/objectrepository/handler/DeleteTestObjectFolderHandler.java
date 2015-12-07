@@ -9,6 +9,8 @@ import javax.inject.Inject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UISynchronize;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -21,6 +23,7 @@ import com.kms.katalon.entity.IEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.groovy.util.GroovyRefreshUtil;
 
 public class DeleteTestObjectFolderHandler extends DeleteTestObjectHandler implements IDeleteFolderHandler {
     @Inject
@@ -48,6 +51,18 @@ public class DeleteTestObjectFolderHandler extends DeleteTestObjectHandler imple
                     descendant.size() + 1);
 
             List<IEntity> undeletedTestObjects = new ArrayList<IEntity>();
+            String folderId = FolderController.getInstance().getIdForDisplay(folder);
+            final boolean hasRef = GroovyRefreshUtil.hasReferencesInTestCaseScripts(folderId, folder.getProject());
+            sync.syncExec(new Runnable() {
+
+                @Override
+                public void run() {
+                    if (hasRef) {
+                        isRemovingRef = MessageDialog.openQuestion(Display.getCurrent().getActiveShell(),
+                                StringConstants.HAND_TITLE_DELETE, StringConstants.HAND_MSG_REMOVE_FOLDER_REF);
+                    }
+                }
+            });
 
             for (Object descendantObject : descendant) {
 
@@ -56,7 +71,8 @@ public class DeleteTestObjectFolderHandler extends DeleteTestObjectHandler imple
                 }
 
                 if (descendantObject instanceof WebElementEntity) {
-                    if (!internallyDeleteTestObject((WebElementEntity) descendantObject, monitor, descendant)) {
+                    if (!internallyDeleteTestObject((WebElementEntity) descendantObject, monitor, descendant,
+                            isRemovingRef)) {
                         undeletedTestObjects.add((WebElementEntity) descendantObject);
                     }
                 } else if (descendantObject instanceof FolderEntity) {
@@ -101,13 +117,12 @@ public class DeleteTestObjectFolderHandler extends DeleteTestObjectHandler imple
         }
     }
 
-    private boolean internallyDeleteTestObject(final WebElementEntity testCase, IProgressMonitor monitor,
-            final List<Object> descendant) {
+    private boolean internallyDeleteTestObject(final WebElementEntity testObject, IProgressMonitor monitor,
+            final List<Object> descendant, final boolean isRemovingRefInTestCase) {
         try {
-            String testObjectId = ObjectRepositoryController.getInstance().getIdForDisplay(testCase);
-            monitor.subTask(MessageFormat.format(StringConstants.HAND_DELETE_OBJECT_SUB_TASK_NAME, testObjectId,
-                    testObjectId));
-            return performDeleteTestObject(testCase, sync, eventBroker, descendant);
+            String testObjectId = ObjectRepositoryController.getInstance().getIdForDisplay(testObject);
+            monitor.subTask(MessageFormat.format(StringConstants.HAND_DELETE_OBJECT_SUB_TASK_NAME, testObjectId));
+            return performDeleteTestObject(testObject, sync, eventBroker, descendant, isRemovingRefInTestCase);
         } catch (Exception ex) {
             LoggerSingleton.logError(ex);
             return false;

@@ -298,4 +298,8 @@ public class TestCaseTableViewer extends TableViewer {
     public void updateDirty(boolean dirty) {
         parentView.setDirty(dirty);
     }
+
+    public List<String> getTestCasesPKs() {
+        return testCasesPKs;
+    }
 }

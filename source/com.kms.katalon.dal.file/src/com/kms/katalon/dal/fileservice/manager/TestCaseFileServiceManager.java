@@ -341,15 +341,10 @@ public class TestCaseFileServiceManager {
                 pastedTestCases.add(pastedTestCase);
             } else if (childObject instanceof FolderEntity) {
                 FolderEntity folderEntity = (FolderEntity) childObject;
-
                 FolderEntity newFolderEntity = folderEntity.clone();
-                String name = "Copy of " + folderEntity.getName();
-                newFolderEntity.setName(name);
                 newFolderEntity.setProject(destFolderEntity.getProject());
                 newFolderEntity.setParentFolder(destFolderEntity);
-
                 EntityService.getInstance().saveEntity(newFolderEntity);
-
                 copyTestCaseFolder(folderEntity, newFolderEntity, pastedTestCases);
             }
         }
@@ -358,10 +353,13 @@ public class TestCaseFileServiceManager {
     public static FolderEntity copyTestCaseFolder(FolderEntity folder, FolderEntity destinationFolder) throws Exception {
         if (folder != null && destinationFolder != null) {
             FolderEntity newFolder = folder.clone();
-
-            String name = EntityService.getInstance().getAvailableName(destinationFolder.getLocation(),
-                    folder.getName() + Util.STRING_COPY_OF_NAME, false);
-            newFolder.setName(name);
+            File fFolder = new File(destinationFolder.getLocation() + File.separator + folder.getName());
+            if (fFolder.exists()) {
+                // if folder existed, put a prefix "- Copy" into its name
+                String name = EntityService.getInstance().getAvailableName(destinationFolder.getLocation(),
+                        folder.getName() + Util.STRING_COPY_OF_NAME, false);
+                newFolder.setName(name);
+            }
             newFolder.setProject(destinationFolder.getProject());
             newFolder.setParentFolder(destinationFolder);
 

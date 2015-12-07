@@ -67,8 +67,6 @@ import com.kms.katalon.core.annotation.TearDownIfPassed;
 public class MethodObjectBuilderDialog extends Dialog implements AstBuilderDialog {
 	private static final String NEW_PARAM_DEFAULT_NAME = "param";
 	private static final String DIALOG_TITLE = StringConstants.DIA_TITLE_METHOD_BUILDER;
-	private static final String[] COLUMN_NAMES = new String[] { StringConstants.DIA_COL_PARAM_TYPE,
-			StringConstants.DIA_COL_PARAM_NAME };
 	private MethodObjectBuilderDialog _instance;
 	private Text returnTypeText, methodNameText;
 	private TableViewer tableViewer;
@@ -304,6 +302,7 @@ public class MethodObjectBuilderDialog extends Dialog implements AstBuilderDialo
 						| ColumnViewerEditor.KEYBOARD_ACTIVATION);
 
 		TableViewerColumn tableViewerColumnParamType = new TableViewerColumn(tableViewer, SWT.NONE);
+		tableViewerColumnParamType.getColumn().setText(StringConstants.DIA_COL_PARAM_TYPE);
 		tableViewerColumnParamType.getColumn().setWidth(335);
 		tableViewerColumnParamType.setLabelProvider(new ColumnLabelProvider() {
 			@Override
@@ -358,6 +357,7 @@ public class MethodObjectBuilderDialog extends Dialog implements AstBuilderDialo
 		});
 
 		TableViewerColumn tableViewerColumnParamName = new TableViewerColumn(tableViewer, SWT.NONE);
+		tableViewerColumnParamName.getColumn().setText(StringConstants.DIA_COL_PARAM_NAME);
 		tableViewerColumnParamName.getColumn().setWidth(335);
 		tableViewerColumnParamName.setLabelProvider(new ColumnLabelProvider() {
 			@Override
@@ -403,9 +403,6 @@ public class MethodObjectBuilderDialog extends Dialog implements AstBuilderDialo
 				return false;
 			}
 		});
-		for (int i = 0; i < table.getColumnCount(); i++) {
-			table.getColumn(i).setText(COLUMN_NAMES[i]);
-		}
 	}
 
 	public void refresh() {

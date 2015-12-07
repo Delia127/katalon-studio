@@ -13,7 +13,7 @@ public class TestObject {
     
     public TestObject(String objectId) {
         properties = new ArrayList<TestObjectProperty>();
-        setObjectId(objectId);
+        this.objectId = objectId;
     }
 
     public TestObject() {
@@ -86,10 +86,6 @@ public class TestObject {
     public String getObjectId() {
         return objectId;
     }
-
-    public void setObjectId(String objectId) {
-        this.objectId = objectId;
-    }
     
     public TestObject getParentObject() {
 		return parentObject;
@@ -113,5 +109,10 @@ public class TestObject {
 
 	public void setUseRelativeImagePath(boolean useRelativeImagePath) {
 		this.useRelativeImagePath = useRelativeImagePath;
+	}
+	
+	@Override
+	public String toString() {
+	    return "TestObject - " + getObjectId();
 	}
 }

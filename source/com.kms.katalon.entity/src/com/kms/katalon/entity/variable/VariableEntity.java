@@ -39,4 +39,12 @@ public class VariableEntity implements Serializable {
 	public void setId(String id) {
 		this.id = id;
 	}
+	
+	@Override
+	public VariableEntity clone() {
+	    VariableEntity newVariable = new VariableEntity();
+	    newVariable.setName(getName());
+	    newVariable.setDefaultValue(getDefaultValue());
+	    return newVariable;
+	}
 }

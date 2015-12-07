@@ -8,11 +8,11 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.groovy.ast.ASTNode;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MGenericTile;
 import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -34,15 +34,25 @@ import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
-import com.kms.katalon.composer.testcase.dialogs.TestCaseVariableBuilderDialog;
+import com.kms.katalon.composer.testcase.model.IInputValueType;
+import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.support.VariableDefaultValueEditingSupport;
+import com.kms.katalon.composer.testcase.support.VariableDefaultValueTypeEditingSupport;
 import com.kms.katalon.composer.testcase.support.VariableNameEditingSupport;
+import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
+import com.kms.katalon.core.ast.AstTextValueUtil;
+import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.util.SyntaxUtil;
 import com.kms.katalon.groovy.constant.GroovyConstants;
 
 public class TestCaseVariablePart {
+    private static final String DEFAULT_VARIABLE_NAME = "variable";
+    private static final InputValueType[] defaultInputValueTypes = { InputValueType.String, InputValueType.Number,
+            InputValueType.Boolean, InputValueType.Null, InputValueType.GlobalVariable, InputValueType.TestDataValue,
+            InputValueType.Binary, InputValueType.Condition, InputValueType.TestObject, InputValueType.Property,
+            InputValueType.List, InputValueType.Map };
     private Composite parent;
     private MPart mpart;
     private TableViewer tableViewer;
@@ -52,9 +62,7 @@ public class TestCaseVariablePart {
     @PostConstruct
     public void init(Composite parent, MPart mpart) {
         this.parent = parent;
-
         this.mpart = mpart;
-
         if (mpart.getParent().getParent() instanceof MGenericTile
                 && ((MGenericTile<?>) mpart.getParent().getParent()) instanceof MCompositePart) {
             MCompositePart compositePart = (MCompositePart) (MGenericTile<?>) mpart.getParent().getParent();
@@ -62,7 +70,6 @@ public class TestCaseVariablePart {
                 parentTestCaseCompositePart = ((TestCaseCompositePart) compositePart.getObject());
             }
         }
-
         createComponents();
     }
 
@@ -109,28 +116,6 @@ public class TestCaseVariablePart {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 clearVariables();
-            }
-        });
-
-        ToolItem tltmEdit = new ToolItem(toolBar, SWT.NONE);
-        tltmEdit.setText(StringConstants.PA_BTN_TIP_EDIT);
-        tltmEdit.setToolTipText(StringConstants.PA_BTN_TIP_EDIT);
-        tltmEdit.setImage(ImageConstants.IMG_24_EDIT);
-
-        tltmEdit.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                StructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
-                if (selection.getFirstElement() == null) return;
-                VariableEntity selectedVariable = (VariableEntity) selection.getFirstElement();
-
-                TestCaseVariableBuilderDialog dialog = new TestCaseVariableBuilderDialog(container.getShell(),
-                        selectedVariable);
-                if (dialog.open() == Dialog.OK) {
-                    VariableEntity variable = dialog.getParam();
-                    tableViewer.refresh(variable);
-                    setDirty(true);
-                }
             }
         });
 
@@ -193,8 +178,34 @@ public class TestCaseVariablePart {
             }
         });
         TableColumn tblclmnName = tableViewerColumnName.getColumn();
-        tblclmnName.setWidth(300);
+        tblclmnName.setWidth(200);
         tblclmnName.setText(StringConstants.PA_COL_NAME);
+
+        TableViewerColumn tableViewerColumnDefaultValueType = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnDefaultValueType.setEditingSupport(new VariableDefaultValueTypeEditingSupport(tableViewer,
+                this, defaultInputValueTypes));
+        TableColumn tblclmnDefaultValueType = tableViewerColumnDefaultValueType.getColumn();
+        tblclmnDefaultValueType.setWidth(200);
+        tblclmnDefaultValueType.setText(StringConstants.PA_COL_DEFAULT_VALUE_TYPE);
+        tableViewerColumnDefaultValueType.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                if (element != null && element instanceof VariableEntity) {
+                    if (element instanceof VariableEntity) {
+                        try {
+                            IInputValueType valueType = AstTreeTableValueUtil.getTypeValue(GroovyParser
+                                    .parseGroovyScriptAndGetFirstItem(((VariableEntity) element).getDefaultValue()),
+                                    parentTestCaseCompositePart.getChildTestCasePart().getTreeTableInput()
+                                            .getMainClassNode());
+                            return valueType.getName();
+                        } catch (Exception e) {
+                            LoggerSingleton.logError(e);
+                        }
+                    }
+                }
+                return StringUtils.EMPTY;
+            }
+        });
 
         TableViewerColumn tableViewerColumnDefaultValue = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnDefaultValue.setEditingSupport(new VariableDefaultValueEditingSupport(tableViewer, this));
@@ -205,7 +216,13 @@ public class TestCaseVariablePart {
             @Override
             public String getText(Object element) {
                 if (element != null && element instanceof VariableEntity) {
-                    return ((VariableEntity) element).getDefaultValue();
+                    try {
+                        ASTNode astNode = GroovyParser.parseGroovyScriptAndGetFirstItem(((VariableEntity) element)
+                                .getDefaultValue());
+                        return AstTextValueUtil.getTextValue(astNode);
+                    } catch (Exception e) {
+                        LoggerSingleton.logError(e);
+                    }
                 }
                 return StringUtils.EMPTY;
             }
@@ -215,19 +232,40 @@ public class TestCaseVariablePart {
     }
 
     private void addVariable() {
-        TestCaseVariableBuilderDialog dialog = new TestCaseVariableBuilderDialog(tableViewer.getTable().getDisplay()
-                .getActiveShell());
-        if (dialog.open() == Dialog.OK) {
-            variables.add(dialog.getParam());
-            tableViewer.refresh();
-            setDirty(true);
+        VariableEntity newVariable = new VariableEntity();
+        newVariable.setName(generateNewPropertyName());
+        newVariable.setDefaultValue("''");
+        variables.add(newVariable);
+        tableViewer.refresh();
+        setDirty(true);
+    }
+
+    private String generateNewPropertyName() {
+        String name = DEFAULT_VARIABLE_NAME;
+        int index = 0;
+        boolean isUnique = false;
+        String newName = name;
+        while (!isUnique) {
+            isUnique = true;
+            for (VariableEntity variable : variables) {
+                if (variable.getName().equals(newName)) {
+                    isUnique = false;
+                    break;
+                }
+            }
+            if (isUnique) {
+                return newName;
+            }
+            newName = name + "_" + index;
+            index++;
         }
+        return newName;
     }
 
     public void addVariable(VariableEntity[] variablesArray) {
         for (VariableEntity addedVariable : variablesArray) {
             boolean exists = false;
-            for (VariableEntity currentVariable : getVariables()) {
+            for (VariableEntity currentVariable : variables) {
                 if (currentVariable.getName().equals(addedVariable.getName())) {
                     exists = true;
                     break;
@@ -263,7 +301,8 @@ public class TestCaseVariablePart {
 
     private void upVariable() {
         StructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
-        if (selection == null || selection.getFirstElement() == null) return;
+        if (selection == null || selection.getFirstElement() == null)
+            return;
         VariableEntity variable = (VariableEntity) selection.getFirstElement();
         int index = variables.indexOf(variable);
         if (index > 0) {
@@ -275,7 +314,8 @@ public class TestCaseVariablePart {
 
     private void downVariable() {
         StructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
-        if (selection == null || selection.getFirstElement() == null) return;
+        if (selection == null || selection.getFirstElement() == null)
+            return;
         VariableEntity variable = (VariableEntity) selection.getFirstElement();
         int index = variables.indexOf(variable);
         if (index < variables.size() - 1) {
@@ -287,6 +327,7 @@ public class TestCaseVariablePart {
 
     public void setDirty(boolean isDirty) {
         mpart.setDirty(isDirty);
+        parentTestCaseCompositePart.getChildTestCasePart().getTreeTableInput().reloadTestCaseVariables();
         parentTestCaseCompositePart.checkDirty();
     }
 
@@ -303,8 +344,11 @@ public class TestCaseVariablePart {
         return this.mpart;
     }
 
-    public List<VariableEntity> getVariables() {
-        return variables;
+    public VariableEntity[] getVariables() {
+        if (variables == null) {
+            return new VariableEntity[0];
+        }
+        return variables.toArray(new VariableEntity[variables.size()]);
     }
 
     public boolean validateVariables() {
@@ -314,7 +358,8 @@ public class TestCaseVariablePart {
             int index = variables.indexOf(variable) + 1;
             String variableName = variable.getName();
             String variableDefaultValue = variable.getDefaultValue();
-            if (variableDefaultValue == null || variableDefaultValue.isEmpty()) variableDefaultValue = null;
+            if (variableDefaultValue == null || variableDefaultValue.isEmpty())
+                variableDefaultValue = null;
 
             if (variableName == null || variableName.isEmpty()) {
                 errorCollector.append(MessageFormat.format(
@@ -358,5 +403,9 @@ public class TestCaseVariablePart {
             LoggerSingleton.logError(e);
         }
         return false;
+    }
+
+    public TestCaseCompositePart getParentTestCaseCompositePart() {
+        return parentTestCaseCompositePart;
     }
 }

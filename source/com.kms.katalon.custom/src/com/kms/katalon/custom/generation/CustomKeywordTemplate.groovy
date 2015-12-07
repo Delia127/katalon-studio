@@ -92,11 +92,7 @@ def static "<%= it.getDeclaringClass().getName() %>.<%= it.getName() %>" (<% it.
 
 	@CompileStatic
 	private boolean canImportClassNode(ClassNode classNode) {
-		if (classNode.isReallyResolved()) {
-			return false
-		}
-
-		if (classNode.isPrimitive() || classNode.isPrimaryClassNode()) {
+		if (classNode.isResolved() || classNode.isPrimaryClassNode()) {
 			return false
 		}
 

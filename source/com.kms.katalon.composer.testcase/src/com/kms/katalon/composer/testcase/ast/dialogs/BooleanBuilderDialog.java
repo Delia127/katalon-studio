@@ -24,27 +24,22 @@ import org.eclipse.swt.widgets.Table;
 
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.model.ICustomInputValueType;
-import com.kms.katalon.composer.testcase.model.IInputValueType;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
 import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
-import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
-import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
-import com.kms.katalon.core.groovy.GroovyParser;
+import com.kms.katalon.core.ast.GroovyParser;
 
 public class BooleanBuilderDialog extends AbstractAstBuilderWithTableDialog {
-    private final InputValueType[] defaultInputValueTypes = { InputValueType.Constant, InputValueType.Variable,
+    private final InputValueType[] defaultInputValueTypes = { InputValueType.Boolean, InputValueType.Variable,
             InputValueType.GlobalVariable, InputValueType.TestDataValue, InputValueType.MethodCall,
-            InputValueType.Binary, InputValueType.Property };
+            InputValueType.Condition, InputValueType.Binary, InputValueType.Property };
 
     private static final String REVERSE_BUTTON_LABEL = StringConstants.DIA_BTN_REVERSE;
 
     private static final String DIALOG_TITLE = StringConstants.DIA_TITLE_CONDITION_INPUT;
-    private static final String[] COLUMN_NAMES = new String[] { StringConstants.DIA_COL_VALUE_TYPE,
-            StringConstants.DIA_COL_VALUE };
 
     private BooleanExpression booleanExpression;
     private Button btnReverse;
@@ -121,6 +116,7 @@ public class BooleanBuilderDialog extends AbstractAstBuilderWithTableDialog {
     @Override
     protected void addTableColumns() {
         TableViewerColumn tableViewerColumnValueType = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnValueType.getColumn().setText(StringConstants.DIA_COL_VALUE_TYPE);
         tableViewerColumnValueType.getColumn().setWidth(100);
         tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider(scriptClass) {
             @Override
@@ -137,21 +133,7 @@ public class BooleanBuilderDialog extends AbstractAstBuilderWithTableDialog {
             protected void setValue(Object element, Object value) {
                 if (element instanceof ASTNode && value instanceof Integer && (int) value > -1
                         && (int) value < inputValueTypeNames.size()) {
-                    String newValueTypeString = inputValueTypeNames.get((int) value);
-                    IInputValueType newValueType = AstTreeTableInputUtil
-                            .getInputValueTypeFromString(newValueTypeString);
-                    IInputValueType oldValueType = AstTreeTableValueUtil.getTypeValue(
-                            booleanExpression.getExpression(), scriptClass);
-                    if (newValueType != oldValueType) {
-                        ASTNode newValue = null;
-                        if (newValueType == InputValueType.Constant) {
-                            newValue = AstTreeTableEntityUtil.getNewBooleanConstantExpression();
-                        } else {
-                            newValue = (ASTNode) newValueType.getNewValue(element);
-                        }
-                        parentDialog.changeObject(booleanExpression.getExpression(), newValue);
-                        getViewer().refresh();
-                    }
+                    super.setValue(booleanExpression.getExpression(), value);
                 }
             }
 
@@ -165,6 +147,7 @@ public class BooleanBuilderDialog extends AbstractAstBuilderWithTableDialog {
         });
 
         TableViewerColumn tableViewerColumnValue = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnValue.getColumn().setText(StringConstants.DIA_COL_VALUE);
         tableViewerColumnValue.getColumn().setWidth(300);
         tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider(scriptClass) {
             @Override
@@ -199,10 +182,5 @@ public class BooleanBuilderDialog extends AbstractAstBuilderWithTableDialog {
                 return null;
             }
         });
-
-        // set column's name
-        for (int i = 0; i < tableViewer.getTable().getColumnCount(); i++) {
-            tableViewer.getTable().getColumn(i).setText(COLUMN_NAMES[i]);
-        }
     }
 }
