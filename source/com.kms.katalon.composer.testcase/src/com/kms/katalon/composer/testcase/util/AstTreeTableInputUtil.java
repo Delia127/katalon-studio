@@ -85,7 +85,6 @@ import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
-import com.kms.katalon.core.ast.AstTextValueUtil;
 import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.core.keyword.IKeywordContributor;
 import com.kms.katalon.core.model.FailureHandling;
@@ -114,7 +113,7 @@ public class AstTreeTableInputUtil {
         } else if (astObject instanceof Parameter) {
             return getCellEditorForParameter(parent, (Parameter) astObject);
         } else if (astObject instanceof ClassNode) {
-            return new TypeInputCellEditor(parent, AstTextValueUtil.getTextValue(astObject));
+            return new TypeInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(astObject));
         }
         return null;
     }
@@ -144,30 +143,30 @@ public class AstTreeTableInputUtil {
 
     public static CellEditor getCellEditorForStatement(Composite parent, Statement statement, ClassNode scriptClass) {
         if (statement instanceof AssertStatement) {
-            return new BooleanCellEditor(parent, AstTextValueUtil.getTextValue(((AssertStatement) statement)
+            return new BooleanCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(((AssertStatement) statement)
                     .getBooleanExpression()), scriptClass);
         } else if (statement instanceof ExpressionStatement) {
             return getCellEditorForExpression(parent, ((ExpressionStatement) statement).getExpression(), scriptClass);
         } else if (statement instanceof IfStatement) {
-            return new BooleanCellEditor(parent, AstTextValueUtil.getTextValue(((IfStatement) statement)
+            return new BooleanCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(((IfStatement) statement)
                     .getBooleanExpression()), scriptClass);
         } else if (statement instanceof ForStatement) {
             return new ForInputCellEditor(parent,
-                    AstTextValueUtil.getInputTextValue((ForStatement) statement), scriptClass);
+                    AstTreeTableTextValueUtil.getInstance().getInputTextValue((ForStatement) statement), scriptClass);
         } else if (statement instanceof WhileStatement) {
-            return new BooleanCellEditor(parent, AstTextValueUtil.getTextValue(((WhileStatement) statement)
+            return new BooleanCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(((WhileStatement) statement)
                     .getBooleanExpression()), scriptClass);
         } else if (statement instanceof SwitchStatement) {
-            return new SwitchCellEditor(parent, AstTextValueUtil.getTextValue(((SwitchStatement) statement)
+            return new SwitchCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(((SwitchStatement) statement)
                     .getExpression()), scriptClass);
         } else if (statement instanceof CaseStatement) {
-            return new CaseCellEditor(parent, AstTextValueUtil.getTextValue(((CaseStatement) statement)
+            return new CaseCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(((CaseStatement) statement)
                     .getExpression()), scriptClass);
         } else if (statement instanceof CatchStatement) {
-            return new CatchCellEditor(parent, AstTextValueUtil.getTextValue(((CatchStatement) statement)
+            return new CatchCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(((CatchStatement) statement)
                     .getVariable()), scriptClass);
         } else if (statement instanceof ThrowStatement) {
-            return new ThrowInputCellEditor(parent, AstTextValueUtil.getTextValue(((ThrowStatement) statement)
+            return new ThrowInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(((ThrowStatement) statement)
                     .getExpression()), scriptClass);
         }
         return null;
@@ -208,14 +207,14 @@ public class AstTreeTableInputUtil {
         Class<?> throwableClass = AstTreeTableInputUtil.loadType(contructorCallExpression.getType().getName(), scriptClass);
         if (Throwable.class.isAssignableFrom(throwableClass)) {
             return new ThrowableInputCellEditor(parent,
-                    AstTextValueUtil.getTextValue(contructorCallExpression), scriptClass);
+                    AstTreeTableTextValueUtil.getInstance().getTextValue(contructorCallExpression), scriptClass);
         }
         return null;
     }
 
     private static CellEditor getCellEditorForClassExpression(Composite parent, ClassExpression classExpression,
             ClassNode scriptClass) {
-        return new TypeInputCellEditor(parent, AstTextValueUtil.getTextValue(classExpression));
+        return new TypeInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(classExpression));
     }
 
     protected static CellEditor getCellEditorForPropertyExpression(Composite parent,
@@ -233,15 +232,15 @@ public class AstTreeTableInputUtil {
         }
         type = loadType(propertyExpression.getText(), scriptClass);
         if (type != null) {
-            return new TypeInputCellEditor(parent, AstTextValueUtil.getTextValue(propertyExpression));
+            return new TypeInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(propertyExpression));
         }
-        return new PropertyInputCellEditor(parent, AstTextValueUtil.getTextValue(propertyExpression),
+        return new PropertyInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(propertyExpression),
                 scriptClass);
     }
 
     private static CellEditor getCellEditorForBinaryExpression(Composite parent, BinaryExpression binaryExpression,
             ClassNode scriptClass) {
-        return new BinaryCellEditor(parent, AstTextValueUtil.getTextValue(binaryExpression), scriptClass);
+        return new BinaryCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(binaryExpression), scriptClass);
     }
 
     private static CellEditor getCellEditorForMethodCallExpression(Composite parent,
@@ -256,10 +255,10 @@ public class AstTreeTableInputUtil {
             return getCellEditorForTestData(parent, methodCallExpression);
         }
         if (isTestDataValueArgument(methodCallExpression)) {
-            return new TestDataValueCellEditor(parent, AstTextValueUtil.getTextValue(methodCallExpression),
+            return new TestDataValueCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(methodCallExpression),
                     scriptClass);
         }
-        return new MethodCallInputCellEditor(parent, AstTextValueUtil.getTextValue(methodCallExpression),
+        return new MethodCallInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(methodCallExpression),
                 scriptClass);
     }
 
@@ -267,24 +266,24 @@ public class AstTreeTableInputUtil {
         ArgumentListExpression argumentListExpression = (ArgumentListExpression) methodCallExpression.getArguments();
         if (!argumentListExpression.getExpressions().isEmpty()) {
             String pk = argumentListExpression.getExpressions().get(0).getText();
-            return new TestDataCellEditor(parent, AstTextValueUtil.getTextValue(methodCallExpression), pk);
+            return new TestDataCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(methodCallExpression), pk);
         }
         return null;
     }
 
     private static CellEditor getCellEditorForBooleanExpression(Composite parent, BooleanExpression booleanExpression,
             ClassNode scriptClass) {
-        return new BooleanCellEditor(parent, AstTextValueUtil.getTextValue(booleanExpression), scriptClass);
+        return new BooleanCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(booleanExpression), scriptClass);
     }
 
     private static CellEditor getCellEditorForRangeExpression(Composite parent, RangeExpression rangeExpression,
             ClassNode scriptClass) {
-        return new RangeInputCellEditor(parent, AstTextValueUtil.getTextValue(rangeExpression), scriptClass);
+        return new RangeInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(rangeExpression), scriptClass);
     }
 
     private static CellEditor getCellEditorForClosureListExpression(Composite parent,
             ClosureListExpression closureListExpression, ClassNode scriptClass) {
-        return new ClosureListInputCellEditor(parent, AstTextValueUtil.getTextValue(closureListExpression),
+        return new ClosureListInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(closureListExpression),
                 scriptClass);
     }
 
@@ -305,7 +304,7 @@ public class AstTreeTableInputUtil {
         }
         Type type = loadType(variableExpression.getText(), scriptClass);
         if (type != null) {
-            return new TypeInputCellEditor(parent, AstTextValueUtil.getTextValue(variableExpression));
+            return new TypeInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(variableExpression));
         }
         List<String> variableStringList = new ArrayList<String>();
         for (FieldNode field : scriptClass.getFields()) {
@@ -316,12 +315,12 @@ public class AstTreeTableInputUtil {
 
     private static CellEditor getCellEditorForListExpression(Composite parent, ListExpression listExpression,
             ClassNode scriptClass) {
-        return new ListInputCellEditor(parent, AstTextValueUtil.getTextValue(listExpression), scriptClass);
+        return new ListInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(listExpression), scriptClass);
     }
 
     private static CellEditor getCellEditorForMapExpression(Composite parent, MapExpression mapExpression,
             ClassNode scriptClass) {
-        return new MapInputCellEditor(parent, AstTextValueUtil.getTextValue(mapExpression), scriptClass);
+        return new MapInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(mapExpression), scriptClass);
     }
 
     private static CellEditor getCellEditorForCallTestCase(Composite parent, MethodCallExpression methodCallExpression) {
@@ -331,13 +330,13 @@ public class AstTreeTableInputUtil {
                 && ((ConstantExpression) callTestCaseValueExpression).getValue() instanceof String) {
             testCasePk = (String) ((ConstantExpression) callTestCaseValueExpression).getValue();
         }
-        return new CallTestCaseCellEditor(parent, AstTextValueUtil.getTextValue(methodCallExpression),
+        return new CallTestCaseCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(methodCallExpression),
                 testCasePk);
     }
 
     private static CellEditor getCellEditorForTestObject(Composite parent, MethodCallExpression methodCallExpression,
             ClassNode scriptClass) {
-        return new TestObjectCellEditor(parent, AstTextValueUtil.getTextValue(methodCallExpression),
+        return new TestObjectCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(methodCallExpression),
                 scriptClass, false);
     }
 

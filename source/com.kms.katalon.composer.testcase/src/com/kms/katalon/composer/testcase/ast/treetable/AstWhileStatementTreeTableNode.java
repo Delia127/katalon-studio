@@ -9,8 +9,8 @@ import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableUtil;
-import com.kms.katalon.core.ast.AstTextValueUtil;
 
 public class AstWhileStatementTreeTableNode extends AstStatementTreeTableNode {
 	private WhileStatement whileStatement;
@@ -55,7 +55,7 @@ public class AstWhileStatementTreeTableNode extends AstStatementTreeTableNode {
 	@Override
 	public String getInputText() {
 		if (whileStatement.getBooleanExpression() != null) {
-			return AstTextValueUtil.getTextValue(whileStatement.getBooleanExpression());
+			return AstTreeTableTextValueUtil.getInstance().getTextValue(whileStatement.getBooleanExpression());
 		}
 		return "";
 	}

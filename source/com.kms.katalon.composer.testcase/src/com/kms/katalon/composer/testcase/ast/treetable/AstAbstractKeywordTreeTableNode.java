@@ -33,9 +33,9 @@ import com.kms.katalon.composer.testcase.ast.editors.TestObjectCellEditor;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.editors.ComboBoxCellEditorWithContentProposal;
 import com.kms.katalon.composer.testcase.model.ContentProposalCheck;
+import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
 import com.kms.katalon.controller.KeywordController;
-import com.kms.katalon.core.ast.AstTextValueUtil;
 import com.kms.katalon.core.model.FailureHandling;
 
 public abstract class AstAbstractKeywordTreeTableNode extends AstStatementTreeTableNode {
@@ -191,7 +191,7 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstStatementTreeTa
 	public String getTestObjectText() {
 		try {
 			if (getObjectArgumentIndex() != -1) {
-				return AstTextValueUtil.getTextValue(getTestObjectExpression());
+				return AstTreeTableTextValueUtil.getInstance().getTextValue(getTestObjectExpression());
 			}
 		} catch (Exception e) {
 			LoggerSingleton.logError(e);

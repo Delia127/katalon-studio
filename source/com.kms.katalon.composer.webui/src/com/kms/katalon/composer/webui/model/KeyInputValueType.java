@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.openqa.selenium.Keys;
 
 import com.kms.katalon.composer.testcase.model.ICustomInputValueType;
-import com.kms.katalon.core.ast.AstTextValueUtil;
+import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 
 public class KeyInputValueType implements ICustomInputValueType {
 
@@ -98,6 +98,6 @@ public class KeyInputValueType implements ICustomInputValueType {
 
     @Override
     public String getDisplayValue(Object astObject) {
-        return AstTextValueUtil.getTextValue(astObject);
+        return AstTreeTableTextValueUtil.getInstance().getTextValue(astObject);
     }
 }

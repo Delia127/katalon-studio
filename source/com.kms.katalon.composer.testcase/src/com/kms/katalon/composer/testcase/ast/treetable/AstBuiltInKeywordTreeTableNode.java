@@ -18,9 +18,9 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.model.IInputValueType;
 import com.kms.katalon.composer.testcase.model.InputParameter;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
+import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
 import com.kms.katalon.controller.KeywordController;
-import com.kms.katalon.core.ast.AstTextValueUtil;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testobject.TestObject;
 
@@ -151,7 +151,7 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
 								if (typeValue != null) {
 								    displayString.append(typeValue.getDisplayValue(inputExpression));
 								} else {
-	                                displayString.append(AstTextValueUtil.getTextValue(inputExpression));
+	                                displayString.append(AstTreeTableTextValueUtil.getInstance().getTextValue(inputExpression));
 								}
 								count++;
 							}
