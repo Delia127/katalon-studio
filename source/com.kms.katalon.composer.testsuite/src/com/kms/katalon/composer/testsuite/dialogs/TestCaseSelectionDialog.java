@@ -1,28 +1,41 @@
 package com.kms.katalon.composer.testsuite.dialogs;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.dialogs.ContainerCheckedTreeViewer;
 
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
 import com.kms.katalon.composer.components.impl.providers.AbstractEntityViewerFilter;
 import com.kms.katalon.composer.components.impl.providers.IEntityLabelProvider;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.providers.TestCaseTableViewer;
 import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
+import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 /**
@@ -33,6 +46,10 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
  */
 public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
     private TestCaseTableViewer tableViewer;
+
+    private List<Object> tcTreeEntities;
+
+    private List<Object> checkedItems;
 
     /**
      * Test Case Selection Dialog for Test Suite
@@ -49,7 +66,8 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
         super(parent, labelProvider, contentProvider, entityViewerFilter);
         this.tableViewer = tableViewer;
         setTitle(StringConstants.DIA_TITLE_TEST_CASE_BROWSER);
-        setAllowMultiple(true);
+        setAllowMultiple(false);
+        updateTestCaseTreeEntities();
     }
 
     /*
@@ -108,13 +126,38 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.eclipse.ui.dialogs.ElementTreeSelectionDialog#computeResult()
+     */
+    @Override
+    protected void computeResult() {
+        ContainerCheckedTreeViewer treeViewer = (ContainerCheckedTreeViewer) getTreeViewer();
+        List<Object> grayedItems = Arrays.asList(treeViewer.getGrayedElements());
+        checkedItems.removeAll(grayedItems);
+        setResult(checkedItems);
+    }
+
     /**
      * Update test case table viewer
      * 
      * @throws Exception
      */
     public void updateTestCaseTableViewer() throws Exception {
-        Object[] selectedObjects = getResult();
+        List<Object> selectedObjects = new ArrayList<Object>(Arrays.asList(getResult()));
+        List<TestSuiteTestCaseLink> links = tableViewer.getInput();
+        if (links != null && !links.isEmpty()) {
+            List<TestSuiteTestCaseLink> removedTestCases = new ArrayList<TestSuiteTestCaseLink>();
+            // Remove unchecked items
+            for (int i = 0; i < tcTreeEntities.size(); i++) {
+                if (!selectedObjects.contains(tcTreeEntities.get(i))) {
+                    removedTestCases.add(links.get(i));
+                }
+            }
+            tableViewer.removeTestCases(removedTestCases);
+        }
+
+        // add new checked items
         for (Object object : selectedObjects) {
             if (!(object instanceof ITreeEntity)) {
                 continue;
@@ -126,7 +169,9 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
                 tableViewer.addTestCase((TestCaseEntity) treeEntity.getObject());
             }
         }
-        removeAddedTestCasesInTreeViewer(getTreeViewer().getTree().getItems(), tableViewer.getTestCasesPKs());
+
+        // finally, update test case tree entity list
+        updateTestCaseTreeEntities();
     }
 
     /**
@@ -148,70 +193,116 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
         }
     }
 
-    private void removeAddedTestCasesInTreeViewer(TreeItem[] treeItems, List<String> addedTestCaseIds) throws Exception {
-        if (addedTestCaseIds.isEmpty()) {
-            return;
-        }
-        for (TreeItem item : treeItems) {
-            Object obj = item.getData();
-            if (obj instanceof TestCaseTreeEntity) {
-                String tcId = ((TestCaseEntity) ((TestCaseTreeEntity) obj).getObject()).getId();
-                if (addedTestCaseIds.contains(tcId)) {
-                    // hide test case which already added
-                    item.dispose();
-                }
-            } else if (obj instanceof FolderTreeEntity) {
-                getTreeViewer().setExpandedState(obj, true);
-                removeAddedTestCasesInTreeViewer(item.getItems(), addedTestCaseIds);
-                if (item.getItems().length == 0) {
-                    // dispose FolderTreeEntity if it has no child
-                    item.dispose();
-                }
-            }
+    /**
+     * Keep track of Test Case list in table viewer
+     */
+    private void updateTestCaseTreeEntities() {
+        try {
+            tcTreeEntities = new ArrayList<Object>(Arrays.asList(getAddedTestCase(tableViewer.getTestCasesPKs())));
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
         }
     }
 
     @Override
     public TreeViewer createTreeViewer(Composite parent) {
-        TreeViewer treeViewer = super.createTreeViewer(parent);
-        try {
-            removeAddedTestCasesInTreeViewer(treeViewer.getTree().getItems(), tableViewer.getTestCasesPKs());
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-        }
-        return treeViewer;
-    }
-
-    @Override
-    protected void filterSearchedText() {
-        final String searchString = txtInput.getText();
-        Display.getDefault().timerExec(500, new Runnable() {
+        final ContainerCheckedTreeViewer treeViewer = (ContainerCheckedTreeViewer) super.createTreeViewer(parent);
+        treeViewer.getTree().addListener(SWT.Selection, new Listener() {
 
             @Override
-            public void run() {
-                try {
-                    if (txtInput.isDisposed()) return;
-                    if (searchString.equals(txtInput.getText()) && getTreeViewer().getInput() != null) {
-                        String broadcastMessage = getSearchMessage();
-                        labelProvider.setSearchString(broadcastMessage);
-                        entityViewerFilter.setSearchString(broadcastMessage);
-                        getTreeViewer().refresh();
-                        if (searchString != null && !searchString.isEmpty()) {
-                            isSearched = true;
-                            getTreeViewer().expandAll();
-                        } else {
-                            isSearched = false;
-                            getTreeViewer().collapseAll();
-                        }
-                        removeAddedTestCasesInTreeViewer(getTreeViewer().getTree().getItems(),
-                                tableViewer.getTestCasesPKs());
-                        updateStatusSearchLabel();
-                    }
-                } catch (Exception e) {
-                    LoggerSingleton.logError(e);
+            public void handleEvent(Event event) {
+                if (event.detail == SWT.CHECK) {
+                    TreeItem item = (TreeItem) event.item;
+                    treeViewer.getTree().setSelection(item);
+                    onStageChangedTreeItem(item, item.getChecked());
                 }
             }
         });
+        treeViewer.addDoubleClickListener(new IDoubleClickListener() {
+
+            @Override
+            public void doubleClick(DoubleClickEvent event) {
+                ISelection selection = event.getSelection();
+                if (selection instanceof IStructuredSelection) {
+                    Object item = ((IStructuredSelection) selection).getFirstElement();
+                    if (treeViewer.getExpandedState(item)) {
+                        treeViewer.collapseToLevel(item, 1);
+                    } else {
+                        treeViewer.expandToLevel(item, 1);
+                    }
+                    treeViewer.setChecked(item, true);
+                    TreeItem treeItem = treeViewer.getTree().getSelection()[0];
+                    onStageChangedTreeItem(treeItem, true);
+                }
+            }
+        });
+        Object[] addedTestCases = getAddedTestCase(tableViewer.getTestCasesPKs());
+        treeViewer.setCheckedElements(addedTestCases);
+        checkedItems = new ArrayList<Object>(Arrays.asList(addedTestCases));
+        return treeViewer;
+    }
+
+    /**
+     * Check/Uncheck TreeItem action
+     * 
+     * @param item TreeItem
+     * @param isChecked whether TreeItem is checked or not
+     */
+    private void onStageChangedTreeItem(TreeItem item, boolean isChecked) {
+        Object element = item.getData();
+        if (element instanceof TestCaseTreeEntity) {
+            // Only add/remove TestCaseTreeEntity
+            if (isChecked) {
+                checkedItems.add(element);
+            } else {
+                checkedItems.remove(element);
+            }
+        } else if (element instanceof FolderTreeEntity) {
+            // Check/Uncheck every child in folder
+            for (TreeItem child : item.getItems()) {
+                onStageChangedTreeItem(child, isChecked);
+            }
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.eclipse.ui.dialogs.ElementTreeSelectionDialog#doCreateTreeViewer(org.eclipse.swt.widgets.Composite, int)
+     */
+    @Override
+    protected TreeViewer doCreateTreeViewer(Composite parent, int style) {
+        return new ContainerCheckedTreeViewer(new Tree(parent, SWT.CHECK | style));
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog#filterSearchedText()
+     */
+    @Override
+    protected void filterSearchedText() {
+        super.filterSearchedText();
+        ContainerCheckedTreeViewer treeViewer = (ContainerCheckedTreeViewer) getTreeViewer();
+        treeViewer.setCheckedElements(checkedItems.toArray());
+    }
+
+    /**
+     * Get all added Test Case(s) in Test Suite
+     * 
+     * @param ids Entity ID list
+     * @return Added Test Case(s)
+     */
+    private Object[] getAddedTestCase(List<String> ids) {
+        List<TestCaseTreeEntity> testCaseList = new ArrayList<TestCaseTreeEntity>();
+        try {
+            TestCaseController c = TestCaseController.getInstance();
+            for (String id : ids) {
+                TestCaseEntity tc = c.getTestCase(id);
+                testCaseList.add(TreeEntityUtil.getTestCaseTreeEntity(tc, tc.getProject()));
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        return testCaseList.toArray();
     }
 
 }
