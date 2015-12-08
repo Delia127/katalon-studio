@@ -91,7 +91,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Simulate users clicking “back” button on their browser
+     * Simulate users clicking "back" button on their browser
      * @param flowControl
      * @throws StepFailedException
      */
@@ -107,7 +107,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Simulate users clicking “forward” button on their browser
+     * Simulate users clicking "forward" button on their browser
      * @param flowControl
      * @throws StepFailedException
      */
@@ -123,7 +123,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Simulate users clicking “refresh” button on their browser
+     * Simulate users clicking "refresh" button on their browser
      * @param flowControl
      * @throws StepFailedException
      */
