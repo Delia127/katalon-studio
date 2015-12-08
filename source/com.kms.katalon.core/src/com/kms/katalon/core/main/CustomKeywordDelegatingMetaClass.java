@@ -7,7 +7,11 @@ import java.util.List;
 
 import org.codehaus.groovy.runtime.InvokerHelper;
 
+import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.ErrorCollector;
+import com.kms.katalon.core.logging.KeywordLogger;
+import com.kms.katalon.core.logging.LogLevel;
+import com.kms.katalon.core.util.ExceptionsUtil;
 
 public class CustomKeywordDelegatingMetaClass extends DelegatingMetaClass {
 	CustomKeywordDelegatingMetaClass(final Class<?> aclass) {
@@ -28,7 +32,23 @@ public class CustomKeywordDelegatingMetaClass extends DelegatingMetaClass {
 			InvokerHelper.metaRegistry.setMetaClass(customKeywordClass, new KeywordClassDelegatingMetaClass(
 					customKeywordClass));
 			GroovyObject obj = (GroovyObject) customKeywordClass.newInstance();	
-	        return obj.invokeMethod(customKeywordMethodName, arguments);
+	        Object result = obj.invokeMethod(customKeywordMethodName, arguments);
+	           
+            if (ErrorCollector.getCollector().containsErrors()) {
+                Throwable throwable = ErrorCollector.getCollector().getFirstError();
+                if (throwable.getClass().getName().equals(StepFailedException.class.getName())
+                        || throwable instanceof AssertionError) {
+                    KeywordLogger.getInstance().logMessage(LogLevel.FAILED,
+                            ExceptionsUtil.getMessageForThrowable(throwable));
+                } else {
+                    KeywordLogger.getInstance()
+                            .logMessage(LogLevel.ERROR, ExceptionsUtil.getMessageForThrowable(throwable));
+                }
+            } else {
+                KeywordLogger.getInstance().logMessage(LogLevel.PASSED, methodName + " is PASSED");
+            }
+            
+	        return result;
 		} catch (Throwable throwable) {
 			ErrorCollector.getCollector().addError(throwable);		
 
@@ -37,10 +57,7 @@ public class CustomKeywordDelegatingMetaClass extends DelegatingMetaClass {
 				ErrorCollector.throwError(errorToThrow);
 			}
 			return null;
-		} finally {			
-//			ErrorCollector.checkErrorAfterRunningCustomKeywordMethod(methodName);
-			
-			
+		} finally {
 	        //return previous errors to error collector
 			ErrorCollector.getCollector().getErrors().addAll(0, oldErrors);
 		}
