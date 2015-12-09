@@ -30,7 +30,8 @@ Require-Bundle: com.kms.katalon.core;bundle-version="1.0.0",
  org.eclipse.jetty.server,
  org.eclipse.jetty.servlet,
  com.kms.katalon.selenium-standalone;bundle-version="1.0.0",
- com.kms.katalon.execution.webui
+ com.kms.katalon.execution.webui,
+ org.eclipse.e4.ui.di
 Export-Package: com.kms.katalon.objectspy.core,
  com.kms.katalon.objectspy.dialog,
  com.kms.katalon.objectspy.element,
