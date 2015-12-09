@@ -50,25 +50,20 @@ public class AstTreeLabelProvider extends StyledCellLabelProvider {
             case CLMN_OUTPUT_IDX:
                 return treeTableNode.getOutputText();
             case CLMN_DESCRIPTION_IDX:
-                return getDescriptionText(treeTableNode);
+                if (element instanceof AstStatementTreeTableNode
+                        && ((AstStatementTreeTableNode) element).hasDescription()) {
+                    AstStatementTreeTableNode statementNode = ((AstStatementTreeTableNode) element);
+                    Object descriptionValue = AstTreeTableValueUtil.getValue(statementNode.getDescription(),
+                            statementNode.getScriptClass());
+                    if (descriptionValue instanceof String) {
+                        String description = (String) descriptionValue;
+                        return StringEscapeUtils.escapeJava(description);
+                    }
+                }
+
             default:
                 return "";
         }
-    }
-
-    private String getDescriptionText(AstTreeTableNode treeTableNode) {
-        if (treeTableNode instanceof AstStatementTreeTableNode
-                && ((AstStatementTreeTableNode) treeTableNode).hasDescription()) {
-            AstStatementTreeTableNode statementNode = ((AstStatementTreeTableNode) treeTableNode);
-            Object descriptionValue = AstTreeTableValueUtil.getValue(statementNode.getDescription(),
-                    statementNode.getScriptClass());
-            if (descriptionValue instanceof String) {
-                String description = (String) descriptionValue;
-                return StringEscapeUtils.escapeJava(description);
-            }
-        }
-
-        return "";
     }
 
     @Override
@@ -82,24 +77,7 @@ public class AstTreeLabelProvider extends StyledCellLabelProvider {
     
     @Override
     public String getToolTipText(Object element) {
-        if (element == null || !(element instanceof AstTreeTableNode)) {
-            return "";
-        }
-        AstTreeTableNode treeTableNode = (AstTreeTableNode) element;
-        switch (columnIndex) {
-            case CLMN_ITEM_IDX:
-                return treeTableNode.getItemTooltipText();
-            case CLMN_OBJECT_IDX:
-                return treeTableNode.getTestObjectTooltipText();
-            case CLMN_INPUT_IDX:
-                return treeTableNode.getInputTooltipText();
-            case CLMN_OUTPUT_IDX:
-                return treeTableNode.getOutputTooltipText();
-            case CLMN_DESCRIPTION_IDX:
-                return getDescriptionText(treeTableNode);
-            default:
-                return "";
-        }
+        return getText(element);
     }
 
 }
