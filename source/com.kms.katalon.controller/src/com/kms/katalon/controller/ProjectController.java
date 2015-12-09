@@ -49,12 +49,14 @@ public class ProjectController extends EntityController {
 
     public ProjectEntity openProjectForUI(String projectPk, IProgressMonitor monitor) throws Exception {
         try {
-            if (monitor == null) monitor = new NullProgressMonitor();
+            if (monitor == null)
+                monitor = new NullProgressMonitor();
 
             ProjectEntity project = dataProviderSetting.getProjectDataProvider().getProjectWithoutClasspath(projectPk);
 
             if (project != null) {
                 monitor.beginTask("Initialzing project's working space...", 10);
+                DataProviderState.getInstance().setCurrentProject(project);
                 GroovyUtil.initGroovyProject(project, FolderController.getInstance().getTestCaseRoot(project),
                         new SubProgressMonitor(monitor, 4, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK));
                 addRecentProject(project);
@@ -73,8 +75,8 @@ public class ProjectController extends EntityController {
 
     public ProjectEntity openProject(String projectPk) throws Exception {
         ProjectEntity project = dataProviderSetting.getProjectDataProvider().getProject(projectPk);
-
         if (project != null) {
+            DataProviderState.getInstance().setCurrentProject(project);
             addRecentProject(project);
             KeywordController.getInstance().parseAllCustomKeywords(project, null);
             GlobalVariableController.getInstance().generateGlobalVariableLibFile(project, null);
@@ -131,7 +133,11 @@ public class ProjectController extends EntityController {
                     File projectFile = new File(recentProject.getLocation());
                     if (projectFolder.exists() && projectFolder.isDirectory() && projectFile.exists()
                             && projectFile.isFile()) {
-                        resultList.add(recentProject);
+                        ProjectEntity project = dataProviderSetting.getProjectDataProvider()
+                                .getProjectWithoutClasspath(projectFile.getAbsolutePath());
+                        if (project.getName().equals(recentProject.getName())) {
+                            resultList.add(recentProject);
+                        }
                     }
                 }
             }

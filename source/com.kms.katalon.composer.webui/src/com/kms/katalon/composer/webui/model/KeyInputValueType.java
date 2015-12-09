@@ -98,6 +98,6 @@ public class KeyInputValueType implements ICustomInputValueType {
 
     @Override
     public String getDisplayValue(Object astObject) {
-        return AstTreeTableTextValueUtil.getTextValue(astObject);
+        return AstTreeTableTextValueUtil.getInstance().getTextValue(astObject);
     }
 }

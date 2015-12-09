@@ -15,7 +15,7 @@ import com.kms.katalon.composer.testcase.model.IInputValueType;
 import com.kms.katalon.composer.testcase.parts.TestCaseVariablePart;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
-import com.kms.katalon.core.groovy.GroovyParser;
+import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.entity.variable.VariableEntity;
 
 public class VariableDefaultValueTypeEditingSupport extends EditingSupport {

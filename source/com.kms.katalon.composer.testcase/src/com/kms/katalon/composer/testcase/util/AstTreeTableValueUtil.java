@@ -10,6 +10,7 @@ import org.codehaus.groovy.ast.expr.BooleanExpression;
 import org.codehaus.groovy.ast.expr.ClassExpression;
 import org.codehaus.groovy.ast.expr.ClosureListExpression;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
+import org.codehaus.groovy.ast.expr.ConstructorCallExpression;
 import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.expr.ListExpression;
 import org.codehaus.groovy.ast.expr.MapExpression;
@@ -19,10 +20,14 @@ import org.codehaus.groovy.ast.expr.PropertyExpression;
 import org.codehaus.groovy.ast.expr.RangeExpression;
 import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.codehaus.groovy.ast.stmt.AssertStatement;
+import org.codehaus.groovy.ast.stmt.CaseStatement;
+import org.codehaus.groovy.ast.stmt.CatchStatement;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.codehaus.groovy.ast.stmt.ForStatement;
 import org.codehaus.groovy.ast.stmt.IfStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
+import org.codehaus.groovy.ast.stmt.SwitchStatement;
+import org.codehaus.groovy.ast.stmt.ThrowStatement;
 import org.codehaus.groovy.ast.stmt.WhileStatement;
 import org.codehaus.groovy.syntax.Numbers;
 import org.codehaus.groovy.syntax.Token;
@@ -40,7 +45,7 @@ import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestDataController;
-import com.kms.katalon.core.groovy.GroovyParser;
+import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -142,6 +147,14 @@ public class AstTreeTableValueUtil {
             return statement;
         } else if (statement instanceof WhileStatement) {
             return ((WhileStatement) statement).getBooleanExpression();
+        } else if (statement instanceof SwitchStatement) {
+            return statement;
+        } else if (statement instanceof CaseStatement) {
+            return statement;
+        } else if (statement instanceof CatchStatement) {
+            return statement;
+        } else if (statement instanceof ThrowStatement) {
+            return statement;
         }
         return null;
     }
@@ -167,6 +180,17 @@ public class AstTreeTableValueUtil {
             return setValue((Token) object, value);
         } else if (object instanceof Parameter) {
             return setValue((Parameter) object, value);
+        } else if (object instanceof ClassNode) {
+            return setValue((ClassNode) object, value, scriptClass);
+        }
+        return null;
+    }
+
+    private static Object setValue(ClassNode classNode, Object value, ClassNode scriptClass) {
+        if (value instanceof BinaryType) {
+            BinaryType binaryType = (BinaryType) value;
+            Class<?> valueClass = AstTreeTableInputUtil.loadType(binaryType.getFullyQualifiedName(), scriptClass);
+            return new ClassNode(valueClass);
         }
         return null;
     }
@@ -382,6 +406,18 @@ public class AstTreeTableValueUtil {
                 && !compareAstNode(((WhileStatement) statement).getBooleanExpression(), value)) {
             ((WhileStatement) statement).setBooleanExpression((BooleanExpression) value);
             return true;
+        } else if (statement instanceof SwitchStatement && value instanceof SwitchStatement
+                && !compareAstNode(statement, value)) {
+            ((SwitchStatement) statement).setExpression(((SwitchStatement) value).getExpression());
+            return true;
+        } else if (statement instanceof CaseStatement && value instanceof CaseStatement
+                && !compareAstNode(statement, value)) {
+            ((CaseStatement) statement).setExpression(((CaseStatement) value).getExpression());
+            return true;
+        } else if (statement instanceof ThrowStatement && value instanceof ThrowStatement
+                && !compareAstNode(statement, value)) {
+            ((ThrowStatement) statement).setExpression(((ThrowStatement) value).getExpression());
+            return true;
         }
         return false;
     }
@@ -397,6 +433,8 @@ public class AstTreeTableValueUtil {
             return getInputValueTypeForExpression(((ExpressionStatement) object).getExpression(), scriptClass);
         } else if (object instanceof Expression) {
             return getInputValueTypeForExpression((Expression) object, scriptClass);
+        } else if (object instanceof ClassNode) {
+            return InputValueType.Class;
         }
         return null;
     }
@@ -462,6 +500,13 @@ public class AstTreeTableValueUtil {
             return InputValueType.Property;
         } else if (expression instanceof ClassExpression) {
             return InputValueType.Class;
+        } else if (expression instanceof ConstructorCallExpression) {
+            ConstructorCallExpression contructorCallExpression = (ConstructorCallExpression) expression;
+            Class<?> throwableClass = AstTreeTableInputUtil.loadType(contructorCallExpression.getType().getName(),
+                    scriptClass);
+            if (Throwable.class.isAssignableFrom(throwableClass)) {
+                return InputValueType.Throwable;
+            }
         }
         return InputValueType.Null;
     }

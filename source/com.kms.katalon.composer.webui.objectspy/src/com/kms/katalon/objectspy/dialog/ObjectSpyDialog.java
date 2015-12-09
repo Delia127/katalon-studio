@@ -22,8 +22,8 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
@@ -44,6 +44,7 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.KeyEvent;
@@ -56,10 +57,10 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -80,18 +81,28 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
+import com.kms.katalon.composer.explorer.providers.EntityProvider;
+import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
+import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.ObjectRepositoryController;
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.webui.driver.WebUIDriverType;
+import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.objectspy.constants.ImageConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.core.HTMLElementCaptureServer;
 import com.kms.katalon.objectspy.core.InspectSession;
 import com.kms.katalon.objectspy.element.DomElementXpath;
 import com.kms.katalon.objectspy.element.HTMLElement;
+import com.kms.katalon.objectspy.element.HTMLElement.HTMLStatus;
 import com.kms.katalon.objectspy.element.HTMLFrameElement;
 import com.kms.katalon.objectspy.element.HTMLPageElement;
 import com.kms.katalon.objectspy.element.HTMLRawElement;
-import com.kms.katalon.objectspy.element.HTMLElement.HTMLStatus;
 import com.kms.katalon.objectspy.element.tree.CheckboxTreeSelectionHelper;
 import com.kms.katalon.objectspy.element.tree.HTMLElementLabelProvider;
 import com.kms.katalon.objectspy.element.tree.HTMLElementTreeContentProvider;
@@ -102,41 +113,48 @@ import com.kms.katalon.objectspy.exception.DOMException;
 import com.kms.katalon.objectspy.exception.IEAddonNotInstalledException;
 import com.kms.katalon.objectspy.util.DOMUtils;
 import com.kms.katalon.objectspy.util.HTMLElementUtil;
-import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.controller.ObjectRepositoryController;
-import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.core.webui.driver.WebUIDriverType;
-import com.kms.katalon.entity.folder.FolderEntity;
-import com.kms.katalon.entity.repository.WebElementEntity;
 
 @SuppressWarnings("restriction")
 public class ObjectSpyDialog extends Dialog implements EventHandler {
-    private static final String CANCEL_BUTTON_LABEL = StringConstants.DIA_BTN_CLOSE;
     private static final String START_BROWSER_BUTTON_LABEL = StringConstants.DIA_BTN_START_BROWSER;
+
     private static final String DIALOG_TITLE = StringConstants.DIA_TITLE_OBJ_SPY;
-    private static final int START_BROWSER_BUTTON_ID = IDialogConstants.CLIENT_ID + 1;
+
     private List<HTMLPageElement> elements;
 
     private Text elementNameText;
+
     private Text elementTypeText;
+
     private TableViewer attributesTableViewer;
+
     private CheckboxTreeViewer elementTreeViewer;
+
     private Logger logger;
+
     private HTMLElementCaptureServer server;
+
     private InspectSession session;
+
+    private ToolBar elementTreeToolbar;
+
     private ToolItem addPageElementToolItem, addFrameElementToolItem, addElementToolItem, removeElementToolItem,
             addElmtToObjRepoToolItem;
+
     private IEventBroker eventBroker;
+
     private HTMLElement selectedElement;
 
-    private Combo browserTypeCombo;
-    private FolderEntity parentFolder;
-
     private boolean isDisposed;
+
     private TreeViewer domTreeViewer;
+
     private HTMLRawElementLabelProvider domTreeViewerLabelProvider;
+
     private HTMLRawElementTreeViewerFilter domTreeViewerFilter;
+
     private Document currentHTMLDocument;
+
     private Text txtXpathInput;
 
     /**
@@ -179,13 +197,12 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         Composite explorerComposite = new Composite(mainForm, SWT.NONE);
         explorerComposite.setLayout(new GridLayout());
 
-        addElementTreeToolbar(explorerComposite);
-
         SashForm explorerSashForm = new SashForm(explorerComposite, SWT.NONE);
         explorerSashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         Composite treeComposite = new Composite(explorerSashForm, SWT.NONE);
         treeComposite.setLayout(new GridLayout());
 
+        addElementTreeToolbar(treeComposite, false);
         elementTreeViewer = new CheckboxTreeViewer(treeComposite, SWT.BORDER | SWT.MULTI);
         HTMLElementTreeContentProvider contentProvider = new HTMLElementTreeContentProvider();
         CheckboxTreeSelectionHelper.attach(elementTreeViewer, contentProvider);
@@ -210,6 +227,8 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         addContextMenuForElementTree();
         ColumnViewerToolTipSupport.enableFor(elementTreeViewer, ToolTip.NO_RECREATE);
         elementTreeViewer.setInput(elements);
+
+        addElementTreeToolbar(treeComposite, true);
 
         Composite contentComposite = new Composite(explorerSashForm, SWT.NONE);
         contentComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
@@ -300,7 +319,6 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
 
             @Override
             public void keyReleased(KeyEvent e) {
-                // TODO Auto-generated method stub
             }
 
             @Override
@@ -329,6 +347,11 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         mainForm.setWeights(new int[] { 3, 8 });
 
         return container;
+    }
+
+    @Override
+    protected Control createButtonBar(Composite parent) {
+        return parent;
     }
 
     protected void addContextMenuForElementTree() {
@@ -360,8 +383,6 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
 
                         @Override
                         public void widgetDefaultSelected(SelectionEvent e) {
-                            // TODO Auto-generated method stub
-
                         }
                     });
                     elementTreeViewer.getTree().setMenu(menu);
@@ -527,6 +548,10 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         elementTreeViewer.setExpandedState(object, true);
     }
 
+    private void setCheckedTreeItem(Object object) {
+        elementTreeViewer.setChecked(object, true);
+    }
+
     private HTMLFrameElement getParentElement(ITreeSelection selection) {
         HTMLElement element = (HTMLElement) selection.getFirstElement();
         HTMLFrameElement parentElement = null;
@@ -538,132 +563,215 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         return parentElement;
     }
 
-    private void addElementTreeToolbar(Composite explorerComposite) {
-        ToolBar elementTreeToolbar = new ToolBar(explorerComposite, SWT.FLAT | SWT.RIGHT);
+    private void addElementTreeToolbar(Composite explorerComposite, boolean isElementToolbar) {
+        if (isElementToolbar) {
+            elementTreeToolbar = new ToolBar(explorerComposite, SWT.FLAT | SWT.RIGHT);
+            // set alignment into right
+            GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(true, false).applyTo(elementTreeToolbar);
 
-        addPageElementToolItem = new ToolItem(elementTreeToolbar, SWT.NONE);
-        addPageElementToolItem.setImage(ImageConstants.IMG_24_NEW_PAGE_ELEMENT);
-        addPageElementToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_NEW_PAGE_ELEMENT);
-        addPageElementToolItem.addSelectionListener(new SelectionAdapter() {
+            addPageElementToolItem = new ToolItem(elementTreeToolbar, SWT.NONE);
+            addPageElementToolItem.setImage(ImageConstants.IMG_24_NEW_PAGE_ELEMENT);
+            addPageElementToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_NEW_PAGE_ELEMENT);
+            addPageElementToolItem.addSelectionListener(new SelectionAdapter() {
 
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                if (elementTreeViewer.getSelection() instanceof ITreeSelection) {
-                    HTMLPageElement newPageElement = HTMLElementUtil.generateNewPageElement();
-                    elements.add(newPageElement);
-                    refreshTree(elementTreeViewer, null);
-                    setSelectedTreeItem(newPageElement);
-                }
-            }
-        });
-
-        addFrameElementToolItem = new ToolItem(elementTreeToolbar, SWT.NONE);
-        addFrameElementToolItem.setImage(ImageConstants.IMG_24_NEW_FRAME_ELEMENT);
-        addFrameElementToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_NEW_FRAME_ELEMENT);
-        addFrameElementToolItem.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                if (elementTreeViewer.getSelection() instanceof ITreeSelection) {
-                    ITreeSelection selection = (ITreeSelection) elementTreeViewer.getSelection();
-                    if (selection.getFirstElement() instanceof HTMLElement) {
-                        HTMLFrameElement parentElement = getParentElement(selection);
-                        if (parentElement != null) {
-                            HTMLFrameElement newFrameElement = HTMLElementUtil.generateNewFrameElement(parentElement);
-                            refreshTree(elementTreeViewer, parentElement);
-                            setSelectedTreeItem(newFrameElement);
-                        }
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    if (elementTreeViewer.getSelection() instanceof ITreeSelection) {
+                        HTMLPageElement newPageElement = HTMLElementUtil.generateNewPageElement();
+                        elements.add(newPageElement);
+                        refreshTree(elementTreeViewer, null);
+                        setSelectedTreeItem(newPageElement);
                     }
                 }
-            }
-        });
+            });
 
-        addElementToolItem = new ToolItem(elementTreeToolbar, SWT.NONE);
-        addElementToolItem.setImage(ImageConstants.IMG_24_NEW_ELEMENT);
-        addElementToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_NEW_ELEMENT);
-        addElementToolItem.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                if (elementTreeViewer.getSelection() instanceof ITreeSelection) {
-                    ITreeSelection selection = (ITreeSelection) elementTreeViewer.getSelection();
-                    if (selection.getFirstElement() instanceof HTMLElement) {
-                        HTMLFrameElement parentElement = getParentElement(selection);
-                        if (parentElement != null) {
-                            HTMLElement newElement = HTMLElementUtil.generateNewElement(parentElement);
-                            refreshTree(elementTreeViewer, parentElement);
-                            setSelectedTreeItem(newElement);
-                        }
-                    }
-                }
-            }
-        });
-
-        new ToolItem(elementTreeToolbar, SWT.SEPARATOR);
-
-        removeElementToolItem = new ToolItem(elementTreeToolbar, SWT.NONE);
-        removeElementToolItem.setImage(ImageConstants.IMG_16_DELETE);
-        removeElementToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_REMOVE_ELEMENT);
-        removeElementToolItem.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                if (elementTreeViewer.getSelection() instanceof ITreeSelection) {
-                    ITreeSelection selection = (ITreeSelection) elementTreeViewer.getSelection();
-                    for (TreePath treePath : selection.getPaths()) {
-                        if (treePath.getLastSegment() instanceof HTMLElement) {
-                            HTMLElement element = (HTMLElement) treePath.getLastSegment();
-                            HTMLFrameElement frameElement = element.getParentElement();
-                            if (frameElement != null) {
-                                frameElement.getChildElements().remove(element);
-                                refreshTree(elementTreeViewer, frameElement);
-                            } else if (element instanceof HTMLPageElement) {
-                                elements.remove(element);
-                                refreshTree(elementTreeViewer, null);
-                            }
-
-                            if (selectedElement.equals(element)) {
-                                refreshAttributesTable(null);
+            addFrameElementToolItem = new ToolItem(elementTreeToolbar, SWT.NONE);
+            addFrameElementToolItem.setImage(ImageConstants.IMG_24_NEW_FRAME_ELEMENT);
+            addFrameElementToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_NEW_FRAME_ELEMENT);
+            addFrameElementToolItem.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    if (elementTreeViewer.getSelection() instanceof ITreeSelection) {
+                        ITreeSelection selection = (ITreeSelection) elementTreeViewer.getSelection();
+                        if (selection.getFirstElement() instanceof HTMLElement) {
+                            HTMLFrameElement parentElement = getParentElement(selection);
+                            if (parentElement != null) {
+                                HTMLFrameElement newFrameElement = HTMLElementUtil
+                                        .generateNewFrameElement(parentElement);
+                                refreshTree(elementTreeViewer, parentElement);
+                                setSelectedTreeItem(newFrameElement);
+                                if (elementTreeViewer.getChecked(parentElement)) {
+                                    setCheckedTreeItem(newFrameElement);
+                                }
                             }
                         }
                     }
                 }
-            }
-        });
-        
-        new ToolItem(elementTreeToolbar, SWT.SEPARATOR);
+            });
 
-        addElmtToObjRepoToolItem = new ToolItem(elementTreeToolbar, SWT.NONE);
-        addElmtToObjRepoToolItem.setImage(ImageConstants.IMG_24_ADD_TO_OBJECT_REPOSITORY);
-        addElmtToObjRepoToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_ADD_ELEMENT_TO_OBJECT_REPO);
-        addElmtToObjRepoToolItem.addSelectionListener(new SelectionAdapter() {
+            addElementToolItem = new ToolItem(elementTreeToolbar, SWT.NONE);
+            addElementToolItem.setImage(ImageConstants.IMG_24_NEW_ELEMENT);
+            addElementToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_NEW_ELEMENT);
+            addElementToolItem.addSelectionListener(new SelectionAdapter() {
 
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                try {
-                    eventBroker.send(EventConstants.OBJECT_SPY_RESET_SELECTED_TARGET, "");
-                    if (parentFolder != null) {
-                        for (HTMLPageElement pageElement : elements) {
-                            FolderEntity importedFolder = null;
-                            if (elementTreeViewer.getChecked(pageElement) || elementTreeViewer.getGrayed(pageElement)) {
-                                importedFolder = ObjectRepositoryController.getInstance().importWebElementFolder(
-                                        HTMLElementUtil.convertPageElementToFolderEntity(pageElement, parentFolder),
-                                        parentFolder);
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    if (elementTreeViewer.getSelection() instanceof ITreeSelection) {
+                        ITreeSelection selection = (ITreeSelection) elementTreeViewer.getSelection();
+                        if (selection.getFirstElement() instanceof HTMLElement) {
+                            HTMLFrameElement parentElement = getParentElement(selection);
+                            if (parentElement != null) {
+                                HTMLElement newElement = HTMLElementUtil.generateNewElement(parentElement);
+                                refreshTree(elementTreeViewer, parentElement);
+                                setSelectedTreeItem(newElement);
+                                if (elementTreeViewer.getChecked(parentElement)) {
+                                    setCheckedTreeItem(newElement);
+                                }
                             }
-                            for (HTMLElement childElement : pageElement.getChildElements()) {
-                                addCheckedElement(childElement, (importedFolder != null) ? importedFolder
-                                        : parentFolder, null);
-                            }
-                            eventBroker.post(EventConstants.OBJECT_SPY_REFRESH_SELECTED_TARGET, "");
                         }
-                    } else {
-                        MessageDialog.openWarning(getParentShell(), StringConstants.WARN, StringConstants.DIA_WARN_SELECT_PARENT_FOLDER_FOR_ELEMENT);
                     }
-                } catch (Exception exception) {
-                    logger.error(exception);
-                    MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, exception.getMessage());
                 }
+            });
+
+            new ToolItem(elementTreeToolbar, SWT.SEPARATOR);
+
+            removeElementToolItem = new ToolItem(elementTreeToolbar, SWT.NONE);
+            removeElementToolItem.setImage(ImageConstants.IMG_16_DELETE);
+            removeElementToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_REMOVE_ELEMENT);
+            removeElementToolItem.addSelectionListener(new SelectionAdapter() {
+
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    if (elementTreeViewer.getSelection() instanceof ITreeSelection) {
+                        ITreeSelection selection = (ITreeSelection) elementTreeViewer.getSelection();
+                        for (TreePath treePath : selection.getPaths()) {
+                            if (treePath.getLastSegment() instanceof HTMLElement) {
+                                HTMLElement element = (HTMLElement) treePath.getLastSegment();
+                                HTMLFrameElement frameElement = element.getParentElement();
+                                if (frameElement != null) {
+                                    frameElement.getChildElements().remove(element);
+                                    refreshTree(elementTreeViewer, frameElement);
+                                } else if (element instanceof HTMLPageElement) {
+                                    elements.remove(element);
+                                    refreshTree(elementTreeViewer, null);
+                                }
+
+                                if (selectedElement.equals(element)) {
+                                    refreshAttributesTable(null);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            new ToolItem(elementTreeToolbar, SWT.SEPARATOR);
+
+            addElmtToObjRepoToolItem = new ToolItem(elementTreeToolbar, SWT.NONE);
+            addElmtToObjRepoToolItem.setImage(ImageConstants.IMG_24_ADD_TO_OBJECT_REPOSITORY);
+            addElmtToObjRepoToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_ADD_ELEMENT_TO_OBJECT_REPO);
+            addElmtToObjRepoToolItem.addSelectionListener(new SelectionAdapter() {
+
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    try {
+                        addElementToObjectRepository();
+                    } catch (Exception exception) {
+                        logger.error(exception);
+                        MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, exception.getMessage());
+                    }
+                }
+
+            });
+
+            // Disable by default
+            for (ToolItem item : elementTreeToolbar.getItems()) {
+                item.setEnabled(false);
             }
-        });
+
+        } else {
+            ToolBar startBrowserToolbar = new ToolBar(explorerComposite, SWT.FLAT | SWT.RIGHT);
+            SelectionAdapter browserSelectionListener = new SelectionAdapter() {
+
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    try {
+                        if (session != null) {
+                            session.stop();
+                        }
+                        session = new InspectSession(server.getServerUrl(),
+                                WebUIDriverType.fromStringValue(((MenuItem) e.widget).getText()), ProjectController
+                                        .getInstance().getCurrentProject(), logger);
+                        new Thread(session).start();
+                        if (session.isRunning()) {
+                            for (ToolItem item : elementTreeToolbar.getItems()) {
+                                item.setEnabled(true);
+                            }
+                        }
+                    } catch (IEAddonNotInstalledException ex) {
+                        MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, ex.getMessage());
+                    } catch (Exception ex) {
+                        logger.error(ex);
+                        MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, ex.getMessage());
+                    }
+                }
+
+            };
+
+            final Menu menu = new Menu(getShell(), SWT.POP_UP);
+            MenuItem startChrome = new MenuItem(menu, SWT.PUSH);
+            startChrome.setImage(ImageConstants.IMG_16_BROWSER_CHROME);
+            startChrome.setText(WebUIDriverType.CHROME_DRIVER.toString());
+            startChrome.addSelectionListener(browserSelectionListener);
+
+            MenuItem startFirefox = new MenuItem(menu, SWT.PUSH);
+            startFirefox.setImage(ImageConstants.IMG_16_BROWSER_FIREFOX);
+            startFirefox.setText(WebUIDriverType.FIREFOX_DRIVER.toString());
+            startFirefox.addSelectionListener(browserSelectionListener);
+
+            if (Platform.getOS().equals(Platform.WS_WIN32)) {
+                MenuItem startIE = new MenuItem(menu, SWT.PUSH);
+                startIE.setImage(ImageConstants.IMG_16_BROWSER_IE);
+                startIE.setText(WebUIDriverType.IE_DRIVER.toString());
+                startIE.addSelectionListener(browserSelectionListener);
+            }
+
+            ToolItem startBrowser = new ToolItem(startBrowserToolbar, SWT.DROP_DOWN);
+            startBrowser.setText(START_BROWSER_BUTTON_LABEL);
+            startBrowser.setImage(ImageConstants.IMG_28_START);
+            startBrowser.addSelectionListener(new SelectionAdapter() {
+
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    ToolItem item = (ToolItem) e.widget;
+                    Rectangle bounds = item.getBounds();
+                    Point point = item.getParent().toDisplay(bounds.x, bounds.y + bounds.height);
+                    menu.setLocation(point);
+                    menu.setVisible(true);
+                }
+            });
+        }
+    }
+
+    private void addElementToObjectRepository() throws Exception {
+        AddToObjectRepositoryDialog addToObjectRepositoryDialog = new AddToObjectRepositoryDialog(getParentShell(),
+                new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(new EntityProvider()));
+        if (addToObjectRepositoryDialog.open() == Window.OK) {
+            Object object = addToObjectRepositoryDialog.getFirstResult();
+            if (object instanceof FolderTreeEntity) {
+                FolderEntity parentFolder = (FolderEntity) ((FolderTreeEntity) object).getObject();
+                for (HTMLPageElement pageElement : elements) {
+                    if (elementTreeViewer.getChecked(pageElement) || elementTreeViewer.getGrayed(pageElement)) {
+                        for (HTMLElement childElement : pageElement.getChildElements()) {
+                            addCheckedElement(childElement, parentFolder, null);
+                        }
+                    }
+                }
+                eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, object);
+                eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, object);
+                eventBroker.send(EventConstants.EXPLORER_EXPAND_TREE_ENTITY, object);
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -743,68 +851,10 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
 
     }
 
-    /**
-     * Create contents of the button bar.
-     * 
-     * @param parent
-     */
-    @Override
-    protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, IDialogConstants.CANCEL_ID, CANCEL_BUTTON_LABEL, false);
-
-        addBrowserTypeComboBox(parent);
-
-        createButton(parent, START_BROWSER_BUTTON_ID, START_BROWSER_BUTTON_LABEL, false);
-    }
-
-    private void addBrowserTypeComboBox(Composite parent) {
-        // increment the number of columns in the button bar
-        ((GridLayout) parent.getLayout()).numColumns++;
-        browserTypeCombo = new Combo(parent, SWT.DROP_DOWN);
-        browserTypeCombo.setItems(new String[] { WebUIDriverType.CHROME_DRIVER.toString(),
-                WebUIDriverType.FIREFOX_DRIVER.toString() });
-        if (Platform.getOS().equals(Platform.WS_WIN32)) {
-            browserTypeCombo.add(WebUIDriverType.IE_DRIVER.toString());
-        }
-        browserTypeCombo.select(0);
-        GridData data = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
-        int widthHint = convertHorizontalDLUsToPixels(IDialogConstants.BUTTON_WIDTH);
-        Point minSize = browserTypeCombo.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
-        data.widthHint = Math.max(widthHint, minSize.x);
-        browserTypeCombo.setLayoutData(data);
-    }
-
     @Override
     protected void handleShellCloseEvent() {
         super.handleShellCloseEvent();
         dispose();
-    }
-
-    @Override
-    protected void buttonPressed(int buttonId) {
-        switch (buttonId) {
-        case IDialogConstants.CANCEL_ID:
-            dispose();
-            close();
-            break;
-        case START_BROWSER_BUTTON_ID:
-            try {
-                if (session != null) {
-                    session.stop();
-                }
-                session = new InspectSession(server.getServerUrl(), WebUIDriverType.fromStringValue(browserTypeCombo
-                        .getItem(browserTypeCombo.getSelectionIndex())), ProjectController.getInstance()
-                        .getCurrentProject(), logger);
-                new Thread(session).start();
-            } catch (IEAddonNotInstalledException e) {
-                MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, e.getMessage());
-            } catch (Exception e) {
-                logger.error(e);
-                MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, e.getMessage());
-            }
-            break;
-
-        }
     }
 
     public void addCheckedElement(HTMLElement element, FolderEntity parentFolder, WebElementEntity refElement)
@@ -960,14 +1010,6 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
 
     public boolean isDisposed() {
         return isDisposed;
-    }
-
-    public FolderEntity getParentFolder() {
-        return parentFolder;
-    }
-
-    public void setParentFolder(FolderEntity parentFolder) {
-        this.parentFolder = parentFolder;
     }
 
 }

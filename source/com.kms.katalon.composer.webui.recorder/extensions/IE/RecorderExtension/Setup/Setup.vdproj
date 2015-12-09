@@ -204,7 +204,7 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:qAutomate Recorder Extension For IE"
+        "ProductName" = "8:Katalon Recorder Extension For IE"
         "ProductCode" = "8:{F031A489-E8E8-48B0-9A38-A5651560632C}"
         "PackageCode" = "8:{DCAFF44A-2464-4CFD-AD14-C39997A1855B}"
         "UpgradeCode" = "8:{2A29C11F-5689-4928-9A18-8410FA0D6559}"

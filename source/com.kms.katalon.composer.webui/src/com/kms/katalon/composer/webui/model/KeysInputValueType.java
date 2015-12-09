@@ -22,7 +22,7 @@ public class KeysInputValueType implements ICustomInputValueType {
 
     @Override
     public CellEditor getCellEditorForValue(Composite parent, Object astObject, ClassNode scriptClass) {
-        return new KeysInputCellEditor(parent, AstTreeTableTextValueUtil.getTextValue(astObject), scriptClass);
+        return new KeysInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(astObject), scriptClass);
     }
 
     @Override
@@ -67,9 +67,9 @@ public class KeysInputValueType implements ICustomInputValueType {
     @Override
     public String getDisplayValue(Object astObject) {
         if (astObject instanceof MethodCallExpression) {
-            return AstTreeTableTextValueUtil.getTextValue(((MethodCallExpression) astObject).getArguments());
+            return AstTreeTableTextValueUtil.getInstance().getTextValue(((MethodCallExpression) astObject).getArguments());
         }
-        return AstTreeTableTextValueUtil.getTextValue(astObject);
+        return AstTreeTableTextValueUtil.getInstance().getTextValue(astObject);
     }
 
 }

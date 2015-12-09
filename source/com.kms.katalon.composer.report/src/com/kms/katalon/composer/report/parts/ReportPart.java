@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.report.parts;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -19,6 +20,7 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.EditingSupport;
@@ -82,6 +84,7 @@ import com.kms.katalon.core.reporting.ReportUtil;
 import com.kms.katalon.core.util.DateUtil;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.util.ExecutionUtil;
 
 public class ReportPart implements EventHandler {
 
@@ -101,6 +104,7 @@ public class ReportPart implements EventHandler {
     private Button btnFilterTestCaseError;
 
     private TableViewer runDataTable;
+    private TableViewer executionSettingTable;
     private ReportPartTestLogView testLogView;
 
     private Map<String, AbstractReportTestCaseIntegrationView> integratingCompositeMap;
@@ -110,6 +114,84 @@ public class ReportPart implements EventHandler {
     boolean isSearching;
 
     private Combo comboTestCaseIntegration;
+
+    private final class MapDataKeyLabelProvider extends ColumnLabelProvider {
+        @Override
+        public String getText(Object element) {
+            if (element instanceof Entry) {
+                return String.valueOf(((Entry<?, ?>) element).getKey());
+            }
+            return "";
+        }
+    }
+
+    private final class MapDataKeyEditingSupport extends EditingSupport {
+        private MapDataKeyEditingSupport(ColumnViewer viewer) {
+            super(viewer);
+        }
+
+        @Override
+        protected void setValue(Object element, Object value) {
+            // do nothing
+        }
+
+        @Override
+        protected Object getValue(Object element) {
+            if (element instanceof Entry) {
+                return ((Entry<?, ?>) element).getKey();
+            }
+            return null;
+        }
+
+        @Override
+        protected CellEditor getCellEditor(Object element) {
+            return new TextCellEditor((Composite) getViewer().getControl());
+        }
+
+        @Override
+        protected boolean canEdit(Object element) {
+            return true;
+        }
+    }
+
+    private final class MapDataLabelValueProvider extends ColumnLabelProvider {
+        @Override
+        public String getText(Object element) {
+            if (element instanceof Entry) {
+                return String.valueOf(((Entry<?, ?>) element).getValue());
+            }
+            return "";
+        }
+    }
+
+    private final class MapDataValueEditingSupport extends EditingSupport {
+        private MapDataValueEditingSupport(ColumnViewer viewer) {
+            super(viewer);
+        }
+
+        @Override
+        protected void setValue(Object element, Object value) {
+            // do nothing
+        }
+
+        @Override
+        protected Object getValue(Object element) {
+            if (element instanceof Entry) {
+                return ((Entry<?, ?>) element).getValue();
+            }
+            return null;
+        }
+
+        @Override
+        protected CellEditor getCellEditor(Object element) {
+            return new TextCellEditor((Composite) getViewer().getControl());
+        }
+
+        @Override
+        protected boolean canEdit(Object element) {
+            return true;
+        }
+    }
 
     @PostConstruct
     public void init(Composite parent, ReportEntity report) {
@@ -357,6 +439,10 @@ public class ReportPart implements EventHandler {
             runDataTable.setInput(testSuiteLogRecord.getRunData() != null ? testSuiteLogRecord.getRunData().entrySet()
                     : null);
             runDataTable.refresh();
+            File executionSettingFile = ReportController.getInstance().getExecutionSettingFile(report.getLocation());
+            executionSettingTable.setInput(ExecutionUtil.readRunConfigSettingFromFile(executionSettingFile
+                    .getAbsolutePath()).entrySet());
+            executionSettingTable.refresh();
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
@@ -524,6 +610,14 @@ public class ReportPart implements EventHandler {
         tabFolder.setSelectionBackground(Display.getCurrent().getSystemColor(
                 SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
 
+        createSummaryTabControl(tabFolder);
+        createExecutionSettingTabControls(tabFolder);
+        createRunDataTabControls(tabFolder);
+
+        tabFolder.setSelection(0);
+    }
+
+    private void createSummaryTabControl(final CTabFolder tabFolder) {
         final CTabItem tbtmSummary = new CTabItem(tabFolder, SWT.NONE);
         tbtmSummary.setText(StringConstants.TITLE_SUMMARY);
 
@@ -550,7 +644,7 @@ public class ReportPart implements EventHandler {
         setLabelToBeBold(lblTestSuiteId);
 
         txtTestSuiteId = new StyledText(compositeSummaryDetails, SWT.NONE);
-        txtTestSuiteId.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
+        txtTestSuiteId.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
 
         Label lblHostName = new Label(compositeSummaryDetails, SWT.NONE);
         lblHostName.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
@@ -568,7 +662,7 @@ public class ReportPart implements EventHandler {
 
         txtOS = new StyledText(compositeSummaryDetails, SWT.READ_ONLY);
         txtOS.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        
+
         Label lblPlatform = new Label(compositeSummaryDetails, SWT.NONE);
         lblPlatform.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
         lblPlatform.setText("Platform");
@@ -652,10 +746,40 @@ public class ReportPart implements EventHandler {
         txtTCIncompleted = new StyledText(composite, SWT.READ_ONLY);
         txtTCIncompleted.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
         txtTCIncompleted.setForeground(ColorUtil.getWarningLogBackgroundColor());
+    }
 
-        createRunDataTabControls(tabFolder);
+    private void createExecutionSettingTabControls(CTabFolder tabFolder) {
+        final CTabItem tbtmExecutionSetting = new CTabItem(tabFolder, SWT.NONE);
+        tbtmExecutionSetting.setText(StringConstants.TITLE_EXECUTION_SETTINGS);
 
-        tabFolder.setSelection(0);
+        Composite compositeExecutionSetting = new Composite(tabFolder, SWT.BORDER);
+        tbtmExecutionSetting.setControl(compositeExecutionSetting);
+        compositeExecutionSetting.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false, 1, 1));
+
+        TableColumnLayout tableColumnLayout = new TableColumnLayout();
+        compositeExecutionSetting.setLayout(tableColumnLayout);
+
+        executionSettingTable = new TableViewer(compositeExecutionSetting, SWT.MULTI | SWT.FULL_SELECTION);
+        executionSettingTable.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        executionSettingTable.getTable().setLinesVisible(true);
+        executionSettingTable.getTable().setHeaderVisible(true);
+        executionSettingTable.setContentProvider(new ArrayContentProvider());
+
+        TableViewerColumn tableColumnRunDataKey = new TableViewerColumn(executionSettingTable, SWT.NONE);
+        tableColumnRunDataKey.getColumn().setText(StringConstants.COLUMN_LBL_RUN_DATA_KEY);
+        tableColumnRunDataKey.setLabelProvider(new MapDataKeyLabelProvider());
+        tableColumnRunDataKey.setEditingSupport(new MapDataKeyEditingSupport(executionSettingTable));
+
+        tableColumnLayout.setColumnData(tableColumnRunDataKey.getColumn(), new ColumnWeightData(50,
+                tableColumnRunDataKey.getColumn().getWidth()));
+
+        TableViewerColumn tableColumnRunDataValue = new TableViewerColumn(executionSettingTable, SWT.NONE);
+        tableColumnRunDataValue.getColumn().setText(StringConstants.COLUMN_LBL_RUN_DATA_VALUE);
+        tableColumnRunDataValue.setLabelProvider(new MapDataLabelValueProvider());
+        tableColumnRunDataValue.setEditingSupport(new MapDataValueEditingSupport(executionSettingTable));
+
+        tableColumnLayout.setColumnData(tableColumnRunDataValue.getColumn(), new ColumnWeightData(50,
+                tableColumnRunDataValue.getColumn().getWidth()));
     }
 
     private void createRunDataTabControls(final CTabFolder tabFolder) {
@@ -677,83 +801,17 @@ public class ReportPart implements EventHandler {
 
         TableViewerColumn tableColumnRunDataKey = new TableViewerColumn(runDataTable, SWT.NONE);
         tableColumnRunDataKey.getColumn().setText(StringConstants.COLUMN_LBL_RUN_DATA_KEY);
-        tableColumnRunDataKey.setLabelProvider(new ColumnLabelProvider() {
-            @Override
-            public String getText(Object element) {
-                if (element instanceof Entry) {
-                    return String.valueOf(((Entry<?, ?>) element).getKey());
-                }
-                return "";
-            }
-        });
-        tableColumnRunDataKey.setEditingSupport(new EditingSupport(runDataTable) {
-
-            @Override
-            protected void setValue(Object element, Object value) {
-                // do nothing
-            }
-
-            @Override
-            protected Object getValue(Object element) {
-                if (element instanceof Entry) {
-                    return ((Entry<?, ?>) element).getKey();
-                }
-                return null;
-            }
-
-            @Override
-            protected CellEditor getCellEditor(Object element) {
-                return new TextCellEditor(runDataTable.getTable());
-            }
-
-            @Override
-            protected boolean canEdit(Object element) {
-                return true;
-            }
-
-        });
+        tableColumnRunDataKey.setLabelProvider(new MapDataKeyLabelProvider());
+        tableColumnRunDataKey.setEditingSupport(new MapDataKeyEditingSupport(runDataTable));
 
         tableColumnLayout.setColumnData(tableColumnRunDataKey.getColumn(), new ColumnWeightData(50,
                 tableColumnRunDataKey.getColumn().getWidth()));
 
         TableViewerColumn tableColumnRunDataValue = new TableViewerColumn(runDataTable, SWT.NONE);
         tableColumnRunDataValue.getColumn().setText(StringConstants.COLUMN_LBL_RUN_DATA_VALUE);
-        tableColumnRunDataValue.setLabelProvider(new ColumnLabelProvider() {
-            @Override
-            public String getText(Object element) {
-                if (element instanceof Entry) {
-                    return String.valueOf(((Entry<?, ?>) element).getValue());
-                }
-                return "";
-            }
-        });
-        tableColumnRunDataValue.setEditingSupport(new EditingSupport(runDataTable) {
+        tableColumnRunDataValue.setLabelProvider(new MapDataLabelValueProvider());
+        tableColumnRunDataValue.setEditingSupport(new MapDataValueEditingSupport(runDataTable));
 
-            @Override
-            protected void setValue(Object element, Object value) {
-                // do nothing
-            }
-
-            @Override
-            protected Object getValue(Object element) {
-                if (element instanceof Entry) {
-                    return ((Entry<?, ?>) element).getValue();
-                }
-                return null;
-            }
-
-            @Override
-            protected CellEditor getCellEditor(Object element) {
-                return new TextCellEditor(runDataTable.getTable());
-            }
-
-            @Override
-            protected boolean canEdit(Object element) {
-                return true;
-            }
-
-        });
-        
         tableColumnLayout.setColumnData(tableColumnRunDataValue.getColumn(), new ColumnWeightData(50,
                 tableColumnRunDataValue.getColumn().getWidth()));
     }
@@ -766,13 +824,10 @@ public class ReportPart implements EventHandler {
         SashForm sashForm = new SashForm(composite, SWT.NONE);
         sashForm.setSashWidth(5);
         sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-
-        Composite sashFormSummary = new Composite(sashForm, SWT.NONE);
-        GridLayout gl_sashFormSummary = new GridLayout(1, false);
-        gl_sashFormSummary.marginWidth = 0;
-        gl_sashFormSummary.marginHeight = 0;
-        sashFormSummary.setLayout(gl_sashFormSummary);
-
+        
+        SashForm sashFormSummary = new SashForm(sashForm, SWT.VERTICAL);
+        sashFormSummary.setSashWidth(5);
+        
         createCompositeTestCaseTable(sashFormSummary);
         createCompositeSummary(sashFormSummary);
 
@@ -783,8 +838,10 @@ public class ReportPart implements EventHandler {
         testLogView.createCompositeSelectedTestLog(sashFormDetails);
 
         sashFormDetails.setWeights(new int[] { 6, 4 });
+        
+        sashFormSummary.setWeights(new int[] { 75, 25 });
 
-        sashForm.setWeights(new int[] { 43, 57 });
+        sashForm.setWeights(new int[] { 35, 65 });
     }
 
     public void setLabelToBeBold(Label label) {

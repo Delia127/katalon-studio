@@ -13,7 +13,7 @@ public class TestObject {
     
     public TestObject(String objectId) {
         properties = new ArrayList<TestObjectProperty>();
-        setObjectId(objectId);
+        this.objectId = objectId;
     }
 
     public TestObject() {
@@ -85,10 +85,6 @@ public class TestObject {
 
     public String getObjectId() {
         return objectId;
-    }
-
-    public void setObjectId(String objectId) {
-        this.objectId = objectId;
     }
     
     public TestObject getParentObject() {

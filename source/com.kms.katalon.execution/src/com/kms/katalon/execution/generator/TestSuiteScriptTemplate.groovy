@@ -94,7 +94,7 @@ KeywordLogger.getInstance().endSuite('<%= testSuite.getName() %>', null)
             "testSuite" : testSuite,
             "testCaseIds": testCaseIds,
             "testCaseBindings": testCaseBindings,
-            "configProperties" : ExecutionUtil.escapeGroovy(runConfig.getPropertyMap()),
+            "configProperties" : ExecutionUtil.escapeGroovy(runConfig.getExecutionSettingMap()),
             "executionConfigFilePath" : runConfig.getExecutionSettingFilePath(),
             "logFilePath" : runConfig.getLogFilePath(),
             "driverCleaners" : driverCleaners,

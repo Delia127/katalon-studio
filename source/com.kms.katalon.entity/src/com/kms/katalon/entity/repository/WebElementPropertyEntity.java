@@ -2,7 +2,6 @@ package com.kms.katalon.entity.repository;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 
 public class WebElementPropertyEntity implements Serializable {
@@ -88,7 +87,7 @@ public class WebElementPropertyEntity implements Serializable {
     }
 
     public WebElementPropertyEntity clone() {
-        return (WebElementPropertyEntity) SerializationUtils.clone(this);
+        return new WebElementPropertyEntity(name, type, value, matchCondition, isSelected);
     }
 
     @Override

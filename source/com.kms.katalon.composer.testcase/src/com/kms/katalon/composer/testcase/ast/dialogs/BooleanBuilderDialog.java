@@ -30,7 +30,7 @@ import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
 import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
-import com.kms.katalon.core.groovy.GroovyParser;
+import com.kms.katalon.core.ast.GroovyParser;
 
 public class BooleanBuilderDialog extends AbstractAstBuilderWithTableDialog {
     private final InputValueType[] defaultInputValueTypes = { InputValueType.Boolean, InputValueType.Variable,

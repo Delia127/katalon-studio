@@ -70,7 +70,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.core.util.PathUtils;
+import com.kms.katalon.core.util.PathUtil;
 import com.kms.katalon.entity.dal.exception.DuplicatedFileNameException;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -540,10 +540,10 @@ public class ObjectPropertyView implements EventHandler {
                         String projectFolder = ProjectController.getInstance().getCurrentProject().getFolderLocation();
                         String thePath = txtImage.getText();
                         if (chckUseRelative.getSelection()) {
-                            String relPath = PathUtils.absoluteToRelativePath(thePath, projectFolder);
+                            String relPath = PathUtil.absoluteToRelativePath(thePath, projectFolder);
                             txtImage.setText(relPath);
                         } else {
-                            txtImage.setText(PathUtils.relativeToAbsolutePath(thePath, projectFolder));
+                            txtImage.setText(PathUtil.relativeToAbsolutePath(thePath, projectFolder));
                         }
 
                         File file = new File(thePath);
@@ -626,7 +626,7 @@ public class ObjectPropertyView implements EventHandler {
                 if (absolutePath == null)
                     return;
                 if (chckUseRelative.getSelection()) {
-                    String relPath = PathUtils.absoluteToRelativePath(absolutePath, projectFolder);
+                    String relPath = PathUtil.absoluteToRelativePath(absolutePath, projectFolder);
                     txtImage.setText(relPath);
                 } else {
                     txtImage.setText(absolutePath);
@@ -753,7 +753,6 @@ public class ObjectPropertyView implements EventHandler {
     public void changeOriginalTestObject(WebElementEntity object) {
         originalTestObject = object;
         cloneTestObject = originalTestObject.clone();
-        copyObjectProperties(originalTestObject, cloneTestObject);
         loadTestObject();
         dirtyable.setDirty(!verifyObjectProperties());
     }

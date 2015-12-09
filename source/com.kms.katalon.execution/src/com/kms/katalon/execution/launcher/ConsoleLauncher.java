@@ -24,7 +24,7 @@ import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.core.logging.XmlLogRecordException;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.reporting.ReportUtil;
-import com.kms.katalon.core.util.PathUtils;
+import com.kms.katalon.core.util.PathUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -37,6 +37,7 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.logging.ConsoleLogFileWatcher;
 import com.kms.katalon.execution.logging.LogExceptionFilter;
+import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class ConsoleLauncher extends AbstractLauncher {
@@ -58,7 +59,7 @@ public class ConsoleLauncher extends AbstractLauncher {
 		if (testSuite != null) {
 			executedEntity = testSuite;
 			this.testSuiteExecutedEntity = testSuiteExecutedEntity;
-			writeRunConfigToFile();
+			ExecutionUtil.writeRunConfigToFile(getRunConfiguration());
 			scriptFile = generateTempTestSuiteScript(testSuite, runConfig, testSuiteExecutedEntity);
 			LauncherManager.getInstance().addLauncher(this);
 		}
@@ -242,7 +243,7 @@ public class ConsoleLauncher extends AbstractLauncher {
 		if (testSuiteExecutedEntity.getReportFolderPath() == null)
 			return null;
 		try {
-			File reportFolder = new File(PathUtils.relativeToAbsolutePath(
+			File reportFolder = new File(PathUtil.relativeToAbsolutePath(
 					testSuiteExecutedEntity.getReportFolderPath(), testSuite.getProject().getFolderLocation()));
 
 			if (reportFolder != null && !reportFolder.exists()) {

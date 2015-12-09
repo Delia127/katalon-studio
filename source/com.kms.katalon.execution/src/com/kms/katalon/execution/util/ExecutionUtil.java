@@ -1,21 +1,30 @@
 package com.kms.katalon.execution.util;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.testdata.TestData;
 import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
@@ -25,6 +34,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
+import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.entity.TestCaseExecutedEntity;
@@ -56,8 +66,8 @@ public class ExecutionUtil {
                 PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
         String selectedRunConfiguration = store
                 .getString(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_CONFIGURATION);
-        IRunConfigurationContributor[] allBuiltinRunConfigurationContributor = RunConfigurationCollector
-                .getInstance().getAllBuiltinRunConfigurationContributors();
+        IRunConfigurationContributor[] allBuiltinRunConfigurationContributor = RunConfigurationCollector.getInstance()
+                .getAllBuiltinRunConfigurationContributors();
         for (IRunConfigurationContributor runConfigurationContributor : allBuiltinRunConfigurationContributor) {
             if (runConfigurationContributor.getId().equals(selectedRunConfiguration)) {
                 return runConfigurationContributor;
@@ -88,9 +98,8 @@ public class ExecutionUtil {
     }
 
     /**
-     * Create a new TestSuiteExecutedEntity that's based on the given params.
-     * Store a map of test data used in the given test suite into the new
-     * created TestSuiteExecutedEntity
+     * Create a new TestSuiteExecutedEntity that's based on the given params. Store a map of test data used in the given
+     * test suite into the new created TestSuiteExecutedEntity
      * 
      * @param testSuite
      * @param project
@@ -197,8 +206,8 @@ public class ExecutionUtil {
     }
 
     /**
-     * Make sure all TestDataExecutedEntity in the given testCaseExecutedEntity
-     * has the same rows with the given numberTestCaseUsedOnce
+     * Make sure all TestDataExecutedEntity in the given testCaseExecutedEntity has the same rows with the given
+     * numberTestCaseUsedOnce
      * 
      * @param testCaseExecutedEntity
      * @see {@link TestCaseExecutedEntity}
@@ -284,7 +293,9 @@ public class ExecutionUtil {
 
             List<Integer> rowIndexArray = new ArrayList<Integer>();
             for (int index = 0; index < rowCount; index++) {
-                if (rowIndexesString[index].isEmpty()) { continue; }
+                if (rowIndexesString[index].isEmpty()) {
+                    continue;
+                }
                 if (rowIndexesString[index].contains("-")) {
                     int rowStart = Integer.valueOf(rowIndexesString[index].split("-")[0]);
                     int rowEnd = Integer.valueOf(rowIndexesString[index].split("-")[1]);
@@ -330,4 +341,36 @@ public class ExecutionUtil {
         }
     }
 
+    public static File writeRunConfigToFile(IRunConfiguration runConfig) throws IOException {
+        File executionFile = new File(runConfig.getExecutionSettingFilePath());
+        if (!executionFile.exists()) {
+            executionFile.createNewFile();
+        }
+        Gson gsonObj = new Gson();
+        String strJson = gsonObj.toJson(runConfig.getExecutionSettingMap());
+        FileUtils.writeStringToFile(executionFile, strJson);
+        return executionFile;
+    }
+
+    public static Map<?, ?> readRunConfigSettingFromFile(String executionConfigFilePath) throws IOException {
+        File executionConfigFile = new File(executionConfigFilePath);
+        if (!executionConfigFile.exists()) {
+            return null;
+        }
+        Gson gsonObj = new Gson();
+        try {
+            String executionConfigFileContent = FileUtils.readFileToString(executionConfigFile);
+            Type collectionType = new TypeToken<Map<String, Object>>() {
+            }.getType();
+            Map<String, Object> result = gsonObj.fromJson(executionConfigFileContent, collectionType);
+            if (result == null || !(result.get(RunConfiguration.EXECUTION_DRIVER_PROPERTY) instanceof Map<?, ?>)) {
+                return new LinkedHashMap<String, Object>();
+            }
+            return (Map<?, ?>) result.get(RunConfiguration.EXECUTION_DRIVER_PROPERTY);
+        } catch (IOException | JsonSyntaxException exception) {
+            // reading file failed or parsing json failed --> return empty map;
+        }
+        return null;
+
+    }
 }

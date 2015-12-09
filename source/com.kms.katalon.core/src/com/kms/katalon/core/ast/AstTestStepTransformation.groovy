@@ -31,7 +31,6 @@ import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.transform.ASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
 
-import com.kms.katalon.core.annotation.RequireAstTestStepTransformation
 import com.kms.katalon.core.constants.StringConstants
 import com.kms.katalon.core.keyword.BuiltinKeywords
 import com.kms.katalon.core.logging.KeywordLogger
@@ -154,7 +153,7 @@ public class AstTestStepTransformation implements ASTTransformation {
         if (ifStatement.getElseBlock() instanceof IfStatement) {
             deferedStatements.push(
                     new ExpressionStatement(createNewStartKeywordMethodCall(KEYWORD_DEFAULT_NAME + " - Else " +
-                    AstTextValueUtil.getTextValue(ifStatement.getElseBlock()),
+                    AstTextValueUtil.getInstance().getTextValue(ifStatement.getElseBlock()),
                     ifStatement.getElseBlock(), indexMap, nestedLevel - 1)));
         } else {
             deferedStatements.push(
@@ -259,7 +258,7 @@ public class AstTestStepTransformation implements ASTTransformation {
         while (commentStatementsStack != null && !commentStatementsStack.isEmpty()) {
             Statement commentStatement = commentStatementsStack.pop();
             blockStatement.getStatements().add(index, new ExpressionStatement(createNewStartKeywordMethodCall(
-                    COMMENT_STATEMENT_KEYWORD_NAME + " - " + AstTextValueUtil.getTextValue(commentStatement), commentStatement, indexMap, nestedLevel)));
+                    COMMENT_STATEMENT_KEYWORD_NAME + " - " + AstTextValueUtil.getInstance().getTextValue(commentStatement), commentStatement, indexMap, nestedLevel)));
             commentNumber++;
         }
         return commentNumber;
@@ -276,7 +275,7 @@ public class AstTestStepTransformation implements ASTTransformation {
             if (customKeywordName != null) {
                 keywordName = customKeywordName;
             } else {
-                keywordName = KEYWORD_DEFAULT_NAME + " - " + AstTextValueUtil.getTextValue(statement);
+                keywordName = KEYWORD_DEFAULT_NAME + " - " + AstTextValueUtil.getInstance().getTextValue(statement);
             }
         }
         return keywordName;
@@ -363,6 +362,7 @@ public class AstTestStepTransformation implements ASTTransformation {
                 IfStatement ifStatement = (IfStatement) statement;
                 indexMap.put(ifStatement, index);
                 index++;
+                pendingDescriptionStatement = null;
                 while (ifStatement.getElseBlock() instanceof IfStatement) {
                     ifStatement = (IfStatement) ifStatement.getElseBlock();
                     indexMap.put(ifStatement, index);
@@ -373,11 +373,11 @@ public class AstTestStepTransformation implements ASTTransformation {
                 }
                 indexMap.put(ifStatement.getElseBlock(), index);
                 index++;
-                pendingDescriptionStatement = null;
             } else if (statement instanceof TryCatchStatement) {
                 TryCatchStatement tryCatchStatement = (TryCatchStatement) statement;
                 indexMap.put(tryCatchStatement, index);
                 index++;
+                pendingDescriptionStatement = null;
                 for (CatchStatement catchStatement : tryCatchStatement.getCatchStatements()) {
                     indexMap.put(catchStatement, index);
                     index++;
@@ -387,10 +387,10 @@ public class AstTestStepTransformation implements ASTTransformation {
                 }
                 indexMap.put(tryCatchStatement.getFinallyStatement(), index);
                 index++;
-                pendingDescriptionStatement = null;
             } else if (statement instanceof SwitchStatement) {
                 SwitchStatement switchStatement = (SwitchStatement) statement;
                 indexMap.put(switchStatement, index);
+                pendingDescriptionStatement = null;
                 String caseStringPrefix = index + ".";
                 index++;
                 int caseIndex = 1;
@@ -402,7 +402,6 @@ public class AstTestStepTransformation implements ASTTransformation {
                     continue;
                 }
                 indexMap.put(switchStatement.getDefaultStatement(), caseIndex);
-                pendingDescriptionStatement = null;
             } else if (statement instanceof ExpressionStatement
             && ((ExpressionStatement) statement).getExpression() instanceof ConstantExpression
             && ((ConstantExpression) ((ExpressionStatement) statement).getExpression()).getValue() instanceof String) {

@@ -180,7 +180,17 @@ public class JobViewerPart implements EventHandler {
         lblProgressStatus.setBackground(compositeLauncher.getBackground());
         lblProgressStatus.setData(CONTROL_ID, LAUNCHER_PROGRESS_LABEL);
 
-        if (launcher.getStatus() != LauncherStatus.RUNNING) {
+        if (launcher.getStatus() == LauncherStatus.RUNNING || launcher.getStatus() == LauncherStatus.SENDING_EMAIL) {
+            final GifCLabel lblLauncherStatus = new GifCLabel(compositeLauncher, SWT.NONE);
+            lblLauncherStatus.setGifImage(this.getClass().getResourceAsStream(ImageConstants.PATH_16_LOADING));
+
+            GridData gd_lblLauncherStatus = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+            gd_lblLauncherStatus.widthHint = 30;
+            lblLauncherStatus.setLayoutData(gd_lblLauncherStatus);
+            lblLauncherStatus.setBackground(compositeLauncher.getBackground());
+
+            lblLauncherStatus.addMouseListener(mouseAdapter);
+        } else {
             Label lblLauncherStatus = new Label(compositeLauncher, SWT.NONE);
             GridData gd_lblLauncherStatus = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
             gd_lblLauncherStatus.widthHint = 30;
@@ -202,16 +212,6 @@ public class JobViewerPart implements EventHandler {
                     break;
             }
             lblLauncherStatus.setBackground(compositeLauncher.getBackground());
-            lblLauncherStatus.addMouseListener(mouseAdapter);
-        } else {
-            final GifCLabel lblLauncherStatus = new GifCLabel(compositeLauncher, SWT.NONE);
-            lblLauncherStatus.setGifImage(this.getClass().getResourceAsStream(ImageConstants.PATH_16_LOADING));
-
-            GridData gd_lblLauncherStatus = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-            gd_lblLauncherStatus.widthHint = 30;
-            lblLauncherStatus.setLayoutData(gd_lblLauncherStatus);
-            lblLauncherStatus.setBackground(compositeLauncher.getBackground());
-
             lblLauncherStatus.addMouseListener(mouseAdapter);
         }
 

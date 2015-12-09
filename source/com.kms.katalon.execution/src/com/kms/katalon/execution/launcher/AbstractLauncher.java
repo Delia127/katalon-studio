@@ -1,7 +1,6 @@
 package com.kms.katalon.execution.launcher;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayDeque;
@@ -12,7 +11,6 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -22,7 +20,6 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.jface.preference.IPreferenceStore;
 
-import com.google.gson.Gson;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestCaseController;
@@ -83,16 +80,6 @@ public abstract class AbstractLauncher {
                 TestSuiteController.getInstance().updateTestSuite(testSuite);
             }
         }
-    }
-    
-    protected void writeRunConfigToFile() throws IOException {
-        File executionFile = new File(runConfig.getExecutionSettingFilePath());
-        if (!executionFile.exists()) {
-            executionFile.createNewFile();
-        }
-        Gson gsonObj = new Gson();
-        String strJson = gsonObj.toJson(runConfig.getPropertyMap());
-        FileUtils.writeStringToFile(executionFile, strJson);
     }
 
     public static void sendReportEmail(TestSuiteEntity testSuite, File csvFile, File logFile,

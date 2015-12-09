@@ -2,6 +2,7 @@ package com.kms.katalon.composer.testcase.parts;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,6 +20,13 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSourceAdapter;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -27,6 +35,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
@@ -41,7 +50,7 @@ import com.kms.katalon.composer.testcase.support.VariableDefaultValueTypeEditing
 import com.kms.katalon.composer.testcase.support.VariableNameEditingSupport;
 import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
-import com.kms.katalon.core.groovy.GroovyParser;
+import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.util.SyntaxUtil;
@@ -49,14 +58,20 @@ import com.kms.katalon.groovy.constant.GroovyConstants;
 
 public class TestCaseVariablePart {
     private static final String DEFAULT_VARIABLE_NAME = "variable";
+
     private static final InputValueType[] defaultInputValueTypes = { InputValueType.String, InputValueType.Number,
             InputValueType.Boolean, InputValueType.Null, InputValueType.GlobalVariable, InputValueType.TestDataValue,
-            InputValueType.Binary, InputValueType.Condition, InputValueType.TestObject, InputValueType.Property,
+            InputValueType.Binary, InputValueType.Condition, InputValueType.TestObject, InputValueType.TestData, InputValueType.Property,
             InputValueType.List, InputValueType.Map };
+
     private Composite parent;
+
     private MPart mpart;
+
     private TableViewer tableViewer;
+
     private TestCaseCompositePart parentTestCaseCompositePart;
+
     private List<VariableEntity> variables;
 
     @PostConstruct
@@ -148,6 +163,37 @@ public class TestCaseVariablePart {
         compositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
         tableViewer = new TableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+        tableViewer.addDragSupport(DND.DROP_MOVE, new Transfer[] { TextTransfer.getInstance() },
+                new DragSourceAdapter() {
+
+                    @Override
+                    public void dragSetData(DragSourceEvent event) {
+                        StructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
+                        VariableEntity variable = (VariableEntity) selection.getFirstElement();
+                        event.data = String.valueOf(variables.indexOf(variable));
+                    }
+                });
+        tableViewer.addDropSupport(DND.DROP_MOVE, new Transfer[] { TextTransfer.getInstance() },
+                new DropTargetAdapter() {
+
+                    @Override
+                    public void drop(DropTargetEvent event) {
+                        TableItem item = (TableItem) event.item;
+                        int newIndex = Arrays.asList(tableViewer.getTable().getItems()).indexOf(item);
+                        String index = (String) event.data;
+                        if (index != null && newIndex >= 0) {
+                            int indexVal = Integer.parseInt(index);
+                            if (indexVal >= 0) {
+                                VariableEntity var = variables.get(indexVal);
+                                variables.remove(indexVal);
+                                variables.add(newIndex, var);
+                                tableViewer.refresh();
+                                setDirty(true);
+                            }
+                        }
+                    }
+
+                });
         Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
@@ -219,7 +265,7 @@ public class TestCaseVariablePart {
                     try {
                         ASTNode astNode = GroovyParser.parseGroovyScriptAndGetFirstItem(((VariableEntity) element)
                                 .getDefaultValue());
-                        return AstTreeTableTextValueUtil.getTextValue(astNode);
+                        return AstTreeTableTextValueUtil.getInstance().getTextValue(astNode);
                     } catch (Exception e) {
                         LoggerSingleton.logError(e);
                     }
@@ -265,7 +311,7 @@ public class TestCaseVariablePart {
     public void addVariable(VariableEntity[] variablesArray) {
         for (VariableEntity addedVariable : variablesArray) {
             boolean exists = false;
-            for (VariableEntity currentVariable : getVariables()) {
+            for (VariableEntity currentVariable : variables) {
                 if (currentVariable.getName().equals(addedVariable.getName())) {
                     exists = true;
                     break;
@@ -301,8 +347,7 @@ public class TestCaseVariablePart {
 
     private void upVariable() {
         StructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
-        if (selection == null || selection.getFirstElement() == null)
-            return;
+        if (selection == null || selection.getFirstElement() == null) return;
         VariableEntity variable = (VariableEntity) selection.getFirstElement();
         int index = variables.indexOf(variable);
         if (index > 0) {
@@ -314,8 +359,7 @@ public class TestCaseVariablePart {
 
     private void downVariable() {
         StructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
-        if (selection == null || selection.getFirstElement() == null)
-            return;
+        if (selection == null || selection.getFirstElement() == null) return;
         VariableEntity variable = (VariableEntity) selection.getFirstElement();
         int index = variables.indexOf(variable);
         if (index < variables.size() - 1) {
@@ -327,6 +371,7 @@ public class TestCaseVariablePart {
 
     public void setDirty(boolean isDirty) {
         mpart.setDirty(isDirty);
+        parentTestCaseCompositePart.getChildTestCasePart().getTreeTableInput().reloadTestCaseVariables();
         parentTestCaseCompositePart.checkDirty();
     }
 
@@ -343,8 +388,11 @@ public class TestCaseVariablePart {
         return this.mpart;
     }
 
-    public List<VariableEntity> getVariables() {
-        return variables;
+    public VariableEntity[] getVariables() {
+        if (variables == null) {
+            return new VariableEntity[0];
+        }
+        return variables.toArray(new VariableEntity[variables.size()]);
     }
 
     public boolean validateVariables() {
@@ -354,8 +402,7 @@ public class TestCaseVariablePart {
             int index = variables.indexOf(variable) + 1;
             String variableName = variable.getName();
             String variableDefaultValue = variable.getDefaultValue();
-            if (variableDefaultValue == null || variableDefaultValue.isEmpty())
-                variableDefaultValue = null;
+            if (variableDefaultValue == null || variableDefaultValue.isEmpty()) variableDefaultValue = null;
 
             if (variableName == null || variableName.isEmpty()) {
                 errorCollector.append(MessageFormat.format(

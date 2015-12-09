@@ -12,7 +12,7 @@ import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
 
 public enum InputValueType implements IInputValueType {
-    String, Number, Boolean, Null, Variable, MethodCall, List, Map, ClosureList, Condition, Binary, Range, Property, GlobalVariable, TestDataValue, TestCase, TestObject, TestData, Class, This;
+    String, Number, Boolean, Null, Variable, MethodCall, List, Map, ClosureList, Condition, Binary, Range, Property, GlobalVariable, TestDataValue, TestCase, TestObject, TestData, Class, This, Throwable;
 
     @Override
     public String getName() {
@@ -74,6 +74,8 @@ public enum InputValueType implements IInputValueType {
             return AstTreeTableEntityUtil.getNewTestCaseExpression();
         case This:
             return new VariableExpression("this");
+        case Throwable:
+            return AstTreeTableEntityUtil.getNewExceptionExpression();
         default:
             return new ConstantExpression(null);
         }
@@ -91,6 +93,6 @@ public enum InputValueType implements IInputValueType {
 
     @Override
     public String getDisplayValue(Object astObject) {
-        return AstTreeTableTextValueUtil.getTextValue(astObject);
+        return AstTreeTableTextValueUtil.getInstance().getTextValue(astObject);
     }
 }

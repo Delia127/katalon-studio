@@ -60,7 +60,7 @@ public class IDELauncher extends AbstractLauncher {
     public void launch(TestCaseEntity testCase) throws Exception {
         if (testCase != null) {
             executedEntity = testCase;
-            writeRunConfigToFile();
+            ExecutionUtil.writeRunConfigToFile(getRunConfiguration());
             scriptFile = generateTempTestCaseScript(testCase, runConfig);
             LauncherManager.getInstance().addLauncher(this);
             eventBroker.post(EventConstants.CONSOLE_LOG_RESET, this.getId());
@@ -74,7 +74,7 @@ public class IDELauncher extends AbstractLauncher {
         if (testSuite != null) {
             executedEntity = testSuite;
             this.testSuiteExecutedEntity = testSuiteExecutedEntity;
-            writeRunConfigToFile();
+            ExecutionUtil.writeRunConfigToFile(getRunConfiguration());
             scriptFile = generateTempTestSuiteScript(testSuite, runConfig);
             this.reRunTime = reRunTime;
             LauncherManager.getInstance().addLauncher(this);
@@ -157,6 +157,10 @@ public class IDELauncher extends AbstractLauncher {
                                     eventBroker.send(EventConstants.TEST_SUITE_UPDATED,
                                             new Object[] { testSuite.getId(), testSuite });
                                 }
+
+                                // Send email for report summary
+                                setStatus(LauncherStatus.SENDING_EMAIL);
+                                eventBroker.post(EventConstants.JOB_REFRESH, null);
                                 prepareReport(testSuite, logFile);
                             }
 
@@ -236,8 +240,8 @@ public class IDELauncher extends AbstractLauncher {
                     List<Object[]> suitesSummaryForEmail = collectSummaryData(csvReports);
 
                     sendReportEmail(testSuite, null, logFile, suitesSummaryForEmail);
+                    return true;
                 }
-                //eventBroker.send(EventConstants.REPORT_UPDATED, reportFolder.getAbsolutePath());
             }
         } catch (Exception ex) {
             systemLogger.error(ex);

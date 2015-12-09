@@ -59,7 +59,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.TestCaseController;
-import com.kms.katalon.core.groovy.GroovyParser;
+import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
@@ -202,6 +202,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
             }
             setScriptContentToManual();
             childTestCaseVariablesPart.loadVariables();
+            childTestCasePart.getTreeTableInput().reloadTestCaseVariables();
             childTestCaseIntegrationPart.loadInput();
             isInitialized = true;
         }
@@ -249,7 +250,6 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
 
     private void cloneTestCase() {
         testCase = originalTestCase.clone();
-        TestCaseEntityUtil.copyTestCaseProperties(originalTestCase, testCase);
         testCase.setTestCaseGuid(originalTestCase.getTestCaseGuid());
     }
 
@@ -318,7 +318,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
             }
         };
     }
-    
+
     public TestCasePart getChildTestCasePart() {
         return childTestCasePart;
     }
@@ -354,6 +354,10 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
 
     public void addVariables(VariableEntity[] variables) {
         childTestCaseVariablesPart.addVariable(variables);
+    }
+
+    public VariableEntity[] getVariables() {
+        return childTestCaseVariablesPart.getVariables();
     }
 
     public void addStatements(List<Statement> statements) throws Exception {
@@ -402,7 +406,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                 // Part
                 // which refer to test case
                 eventBroker.send(EventConstants.TESTCASE_UPDATED, new Object[] { oldPk, originalTestCase });
-                
+
                 originalTestCase.setScriptContents(new byte[0]);
                 temp.setScriptContents(new byte[0]);
                 return true;
@@ -410,7 +414,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                 // revert
                 TestCaseEntityUtil.copyTestCaseProperties(temp, originalTestCase);
                 originalTestCase.setScriptContents(temp.getScriptContents());
-                
+
                 LoggerSingleton.logError(e);
                 MessageDialog.openWarning(Display.getCurrent().getActiveShell(), StringConstants.WARN_TITLE,
                         e.getMessage());
@@ -506,6 +510,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                                 boolean isDirty = dirty.isDirty();
                                 changeOriginalTestCase(testCase);
                                 childTestCaseVariablesPart.loadVariables();
+                                childTestCasePart.getTreeTableInput().reloadTestCaseVariables();
                                 updatePart(testCase);
                                 childTestCaseIntegrationPart.loadInput();
                                 checkDirty();
@@ -585,6 +590,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         // refresh child parts
         childTestCasePart.updateInput();
         childTestCaseVariablesPart.loadVariables();
+        childTestCasePart.getTreeTableInput().reloadTestCaseVariables();
         childTestCaseIntegrationPart.loadInput();
 
         checkDirty();

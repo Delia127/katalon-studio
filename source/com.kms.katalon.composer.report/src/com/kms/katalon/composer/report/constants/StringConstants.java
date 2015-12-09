@@ -9,6 +9,7 @@ public class StringConstants extends GlobalStringConstants {
 	// ReportPart
 	public static final String TITLE_SUMMARY = "Summary";
 	public static final String TITLE_RUNDATA = "Run Data";
+	public static final String TITLE_EXECUTION_SETTINGS = "Execution Settings";
 	
 	public static final String LBL_EXECUTION_ENVIRONMENT = "Execution Infomation";
 	public static final String LBL_HOST_NAME = "Host name";

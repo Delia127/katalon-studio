@@ -24,4 +24,9 @@ public class MobileKeywordContributor implements IKeywordContributor {
 	public Class<? extends IDriverCleaner> getDriverCleaner() {
 		return null;
 	}
+
+    @Override
+    public int getPreferredOrder() {
+        return 2;
+    }
 }

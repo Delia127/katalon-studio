@@ -114,26 +114,12 @@ public class ReportUtil {
 		return sb;
 	}
 
-	private static void removeInfoLines(TestSuiteLogRecord testSuiteLogRecord){
-		for(ILogRecord testCaseLog : testSuiteLogRecord.getChildRecords()){
-			removeInfoLines(testCaseLog);
+	private static void collectInfoLines(ILogRecord logRecord, List<ILogRecord> rmvLogs){
+		if(logRecord instanceof MessageLogRecord && logRecord.getStatus().getStatusValue() == TestStatusValue.NOT_RUN){
+			rmvLogs.add(logRecord);
 		}
-	}
-	
-	private static void removeInfoLines(ILogRecord testCaseLog){
-		for(ILogRecord testStepLog : testCaseLog.getChildRecords()){
-			List<ILogRecord> rmvLogs = new ArrayList<>();
-			for(ILogRecord messageLogRecord : testStepLog.getChildRecords()){
-				if(messageLogRecord instanceof MessageLogRecord && messageLogRecord.getStatus().getStatusValue() == TestStatusValue.NOT_RUN){
-					rmvLogs.add(messageLogRecord);
-				}
-				if(messageLogRecord instanceof TestCaseLogRecord){
-					removeInfoLines(messageLogRecord);
-				}
-			}
-			for(ILogRecord rmLog : rmvLogs){
-				testStepLog.removeChildRecord(rmLog);
-			}
+		for(ILogRecord childLogRecord : logRecord.getChildRecords()){
+			collectInfoLines(childLogRecord, rmvLogs);
 		}
 	}
 	
@@ -162,8 +148,11 @@ public class ReportUtil {
 		// Write CSV file
 		CsvWriter.writeCsvReport(suiteLogEntity, new File(logFolder, logFolder.getName() + ".csv"));
 		
-		
-		removeInfoLines(suiteLogEntity);
+		List<ILogRecord> infoLogs = new ArrayList<ILogRecord>();
+		collectInfoLines(suiteLogEntity, infoLogs);
+		for(ILogRecord infoLog : infoLogs){
+			infoLog.getParentLogRecord().removeChildRecord(infoLog);
+		}
 		strings = new LinkedList<String>();
 		jsSuiteModel = new JsSuiteModel(suiteLogEntity, strings);
 		sbModel = jsSuiteModel.toArrayString();

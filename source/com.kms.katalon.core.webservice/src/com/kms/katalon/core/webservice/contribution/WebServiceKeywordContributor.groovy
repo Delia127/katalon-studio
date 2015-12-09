@@ -23,4 +23,9 @@ public class WebServiceKeywordContributor implements IKeywordContributor {
 	public Class<? extends IDriverCleaner> getDriverCleaner() {
 		return null;
 	}
+
+    @Override
+    public int getPreferredOrder() {
+        return 3;
+    }
 }

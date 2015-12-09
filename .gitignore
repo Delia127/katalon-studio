@@ -29,3 +29,11 @@ source/com.kms.katalon.composer.webui.recorder/resources/extensions/Chrome/Recor
 # Build Mapping Files
 source/com.kms.katalon/buildNumber.properties
 source/com.kms.katalon/about.mappings
+
+# Visual Studio Build Files
+source/com.kms.katalon.composer.webui.objectspy/extensions/IE/ObjectSpyExtension/ObjectSpyExtension/obj/*
+source/com.kms.katalon.composer.webui.objectspy/extensions/IE/ObjectSpyExtension/Setup/Debug/*
+source/com.kms.katalon.composer.webui.objectspy/extensions/IE/ObjectSpyExtension/Setup/Release/*
+source/com.kms.katalon.composer.webui.recorder/extensions/IE/RecorderExtension/RecorderExtension/obj/*
+source/com.kms.katalon.composer.webui.recorder/extensions/IE/RecorderExtension/RecorderExtension/Setup/Debug/*
+source/com.kms.katalon.composer.webui.recorder/extensions/IE/RecorderExtension/RecorderExtension/Setup/Release/*

@@ -1,6 +1,7 @@
 package com.kms.katalon.core.ast;
 
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.FieldNode;
 import org.codehaus.groovy.ast.Parameter;
 import org.codehaus.groovy.ast.expr.ArgumentListExpression;
@@ -32,10 +33,20 @@ import org.codehaus.groovy.ast.stmt.WhileStatement;
 import org.codehaus.groovy.syntax.Token;
 import org.codehaus.groovy.syntax.Types;
 
-import com.kms.katalon.core.groovy.GroovyParser;
-
 public class AstTextValueUtil {
-    public static String getTextValue(Object object) {
+    private static AstTextValueUtil _instance;
+    
+    protected AstTextValueUtil() {
+    }
+    
+    public static AstTextValueUtil getInstance() {
+        if (_instance == null) {
+            _instance = new AstTextValueUtil();
+        }
+        return _instance;
+    }
+    
+    public String getTextValue(Object object) {
         if (object instanceof Statement) {
             return getTextValue((Statement) object);
         } else if (object instanceof Expression) {
@@ -47,11 +58,13 @@ public class AstTextValueUtil {
             if (parameter != ForStatement.FOR_LOOP_DUMMY) {
                 return parameter.getName();
             }
+        } else if (object instanceof ClassNode) {
+            return ((ClassNode) object).getNameWithoutPackage();
         }
         return StringUtils.EMPTY;
     }
 
-    public static String getTextValue(Statement statement) {
+    public String getTextValue(Statement statement) {
         if (statement instanceof ExpressionStatement) {
             return getTextValue((ExpressionStatement) statement);
         } else if (statement instanceof IfStatement) {
@@ -78,15 +91,15 @@ public class AstTextValueUtil {
         return statement.getText();
     }
 
-    public static String getTextValue(IfStatement ifStatement) {
+    public String getTextValue(IfStatement ifStatement) {
         return "If " + "(" + getTextValue(ifStatement.getBooleanExpression()) + ")";
     }
 
-    public static String getTextValue(ExpressionStatement expressionStatement) {
+    public String getTextValue(ExpressionStatement expressionStatement) {
         return getTextValue(expressionStatement.getExpression());
     }
 
-    public static String getTextValue(AssertStatement assertStatement) {
+    public String getTextValue(AssertStatement assertStatement) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("assert ");
         stringBuilder.append(getTextValue(assertStatement.getBooleanExpression()));
@@ -98,7 +111,7 @@ public class AstTextValueUtil {
         return stringBuilder.toString();
     }
 
-    public static String getInputTextValue(ForStatement forStatement) {
+    public String getInputTextValue(ForStatement forStatement) {
         String value = "";
         if (!(forStatement.getCollectionExpression() instanceof ClosureListExpression)) {
             if (forStatement.getVariable() != ForStatement.FOR_LOOP_DUMMY) {
@@ -112,32 +125,32 @@ public class AstTextValueUtil {
         return value + getTextValue(forStatement.getCollectionExpression());
     }
 
-    public static String getTextValue(ForStatement forStatement) {
+    public String getTextValue(ForStatement forStatement) {
         return "For (" + getInputTextValue(forStatement) + ")";
     }
 
-    public static String getTextValue(WhileStatement whileStatement) {
+    public String getTextValue(WhileStatement whileStatement) {
         return "While " + "(" + getTextValue(whileStatement.getBooleanExpression()) + ")";
     }
 
-    public static String getTextValue(TryCatchStatement catchStatement) {
+    public String getTextValue(TryCatchStatement catchStatement) {
         return ("Try");
     }
 
-    public static String getTextValue(ThrowStatement throwStatement) {
+    public String getTextValue(ThrowStatement throwStatement) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Throw ");
         stringBuilder.append(getTextValue(throwStatement.getExpression()));
         return stringBuilder.toString();
     }
 
-    public static String getTextValue(CatchStatement catchStatement) {
+    public String getTextValue(CatchStatement catchStatement) {
         StringBuilder stringBuilder = new StringBuilder();
         new GroovyParser(stringBuilder).parse(new Parameter[] { catchStatement.getVariable() });
         return ("Catch (" + stringBuilder.toString() + ")");
     }
 
-    public static String getTextValue(SwitchStatement switchStatement) {
+    public String getTextValue(SwitchStatement switchStatement) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("switch (");
         stringBuilder.append(getTextValue(switchStatement.getExpression()));
@@ -145,7 +158,7 @@ public class AstTextValueUtil {
         return stringBuilder.toString();
     }
 
-    public static String getTextValue(CaseStatement caseStatement) {
+    public String getTextValue(CaseStatement caseStatement) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("case ");
         stringBuilder.append(getTextValue(caseStatement.getExpression()));
@@ -153,11 +166,11 @@ public class AstTextValueUtil {
         return stringBuilder.toString();
     }
 
-    public static String getTextValue(BreakStatement breakStatement) {
+    public String getTextValue(BreakStatement breakStatement) {
         return "Break";
     }
 
-    public static String getTextValue(Expression expression) {
+    public String getTextValue(Expression expression) {
         if (expression instanceof BinaryExpression) {
             return getTextValue((BinaryExpression) expression);
         } else if (expression instanceof ConstantExpression) {
@@ -185,7 +198,7 @@ public class AstTextValueUtil {
         }
     }
 
-    public static String getTextValue(ArgumentListExpression argumentListExpression) {
+    public String getTextValue(ArgumentListExpression argumentListExpression) {
         StringBuilder value = new StringBuilder();
         value.append("(");
         int count = argumentListExpression.getExpressions().size();
@@ -200,18 +213,18 @@ public class AstTextValueUtil {
         return value.toString();
     }
 
-    public static String getTextValue(CastExpression castExpression) {
+    public String getTextValue(CastExpression castExpression) {
         return getTextValue(castExpression.getExpression());
     }
 
-    public static String getTextValue(BooleanExpression booleanExpression) {
+    public String getTextValue(BooleanExpression booleanExpression) {
         if (booleanExpression instanceof NotExpression) {
             return "!(" + getTextValue(booleanExpression.getExpression()) + ")";
         }
         return getTextValue(booleanExpression.getExpression());
     }
 
-    public static String getTextValue(ConstantExpression constantExpression) {
+    public String getTextValue(ConstantExpression constantExpression) {
         if (constantExpression.getValue() instanceof String) {
             return "\"" + constantExpression.getText() + "\"";
         } else if (constantExpression.getValue() instanceof Character) {
@@ -220,7 +233,7 @@ public class AstTextValueUtil {
         return constantExpression.getText();
     }
 
-    public static String getTextValue(BinaryExpression binaryExpression) {
+    public String getTextValue(BinaryExpression binaryExpression) {
         if (binaryExpression.getOperation().getType() == Types.LEFT_SQUARE_BRACKET) {
             return getTextValue(binaryExpression.getLeftExpression()) + "["
                     + getTextValue(binaryExpression.getRightExpression()) + "]";
@@ -229,14 +242,14 @@ public class AstTextValueUtil {
                 + " " + getTextValue(binaryExpression.getRightExpression());
     }
 
-    public static String getTextValue(MethodCallExpression methodCallExpression) {
+    public String getTextValue(MethodCallExpression methodCallExpression) {
         String object = getTextValue(methodCallExpression.getObjectExpression());
         String meth = methodCallExpression.getMethod().getText();
         String args = getTextValue(methodCallExpression.getArguments());
         return (object.equals("this") ? "" : object + ".") + meth + args;
     }
 
-    public static String getTextValue(TupleExpression tupleExpression) {
+    public String getTextValue(TupleExpression tupleExpression) {
         StringBuilder buffer = new StringBuilder("(");
         boolean first = true;
         for (Expression expression : tupleExpression.getExpressions()) {
@@ -252,11 +265,11 @@ public class AstTextValueUtil {
         return buffer.toString();
     }
 
-    public static String getTextValue(PropertyExpression propertyExpression) {
+    public String getTextValue(PropertyExpression propertyExpression) {
         return propertyExpression.getProperty().getText();
     }
 
-    public static String getTextValue(ListExpression listExpression) {
+    public String getTextValue(ListExpression listExpression) {
         StringBuilder buffer = new StringBuilder("[");
         boolean first = true;
         for (Expression expression : listExpression.getExpressions()) {
@@ -272,7 +285,7 @@ public class AstTextValueUtil {
         return buffer.toString();
     }
 
-    public static String getTextValue(MapExpression mapExpression) {
+    public String getTextValue(MapExpression mapExpression) {
         StringBuilder sb = new StringBuilder(32);
         sb.append("[");
         int size = mapExpression.getMapEntryExpressions().size();
@@ -297,7 +310,7 @@ public class AstTextValueUtil {
         return sb.toString();
     }
 
-    public static String getTextValue(FieldNode fieldNode) {
+    public String getTextValue(FieldNode fieldNode) {
         if (fieldNode.getInitialExpression() != null) {
             return fieldNode.getName() + " = " + getTextValue(fieldNode.getInitialExpression());
         }
