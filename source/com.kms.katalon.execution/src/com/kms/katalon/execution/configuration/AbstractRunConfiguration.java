@@ -217,7 +217,7 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     }
 
     @Override
-    public Map<String, Object> getPropertyMap() {
+    public Map<String, Object> getExecutionSettingMap() {
         Map<String, Object> propertyMap = new HashMap<String, Object>();
         propertyMap.put(RunConfiguration.PROJECT_DIR_PROPERTY, getProjectFolderLocation());
         propertyMap.put(RunConfiguration.LOG_FILE_PATH_PROPERTY, getLogFilePath());

@@ -23,7 +23,7 @@ public interface IRunConfiguration {
 
 	public String getSourceDescription();
 
-	public Map<String, Object> getPropertyMap();
+	public Map<String, Object> getExecutionSettingMap();
 	
 	public String getName();
 	
