@@ -52,4 +52,9 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String UTIL_EXC_ATTR_NUMBER_DOES_NOT_MATCH = "Attributes number do not match";
 	public static final String UTIL_EXC_ELEM_ATTR_NOT_FOUND = "No attribute name ''{0}'' found on this element";
 	public static final String UTIL_EXC_ATTR_VAL_DOES_NOT_MATCH = "Attribute name ''{0}'' values do not match: ''{1}'' and ''{2}''";
+	
+	// AddToObjectRepositoryDialog
+	public static final String TITLE_ADD_TO_OBJECT_DIALOG = "Add Element to Object Repository";
+	public static final String DIA_BTN_ADD_NEW_FOLDER = "New Folder";
+	public static final String NEW_FOLDER_DEFAULT_NAME = "New Folder";
 }

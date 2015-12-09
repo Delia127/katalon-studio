@@ -26,6 +26,7 @@ public class EventConstants {
     public static final String EXPLORER_SHOW_ITEM = "EXPLORER/SHOW_ITEM";
     public static final String EXPLORER_REFRESH = "EXPLORER/REFRESH";
     public static final String EXPLORER_REFRESH_TREE_ENTITY = "EXPLORER/REFRESH_TREE_ENTITY";
+    public static final String EXPLORER_EXPAND_TREE_ENTITY = "EXPLORER/EXPAND_TREE_ENTITY";
     public static final String EXPLORER_OPEN_SELECTED_ITEM = "EXPLORER/OPEN_SELECTED_ITEM";
     public static final String EXPLORER_DELETE_SELECTED_ITEM = "EXPLORER/DELETE_SELECTED_ITEM";
     public static final String EXPLORER_DELETED_SELECTED_ITEM = "EXPLORER/DELETED_SELECTED_ITEM";

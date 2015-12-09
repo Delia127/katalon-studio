@@ -12,7 +12,6 @@ import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 
 import com.kms.katalon.objectspy.constants.StringConstants;
-import com.kms.katalon.objectspy.element.HTMLPageElement;
 
 /**
  * Adds "standard" selection behavior to CheckboxTreeSelectionHelper: 
@@ -64,13 +63,12 @@ public class CheckboxTreeSelectionHelper {
 			public void checkStateChanged(final CheckStateChangedEvent event) {
 
 				Object node = event.getElement();
-				if (viewer.getGrayed(node))
-					viewer.setGrayChecked(node, false);
+				if (viewer.getGrayed(node)) {
+				    viewer.setGrayChecked(node, false);
+				}
 				
 				List<Object> checkedElements = getCheckedElements();
-				if (!(node instanceof HTMLPageElement && !event.getChecked())) {
-					updateTree(node, checkedElements, event.getChecked());
-				}
+				updateTree(node, checkedElements, event.getChecked());
 			}
 		});
 
@@ -121,7 +119,7 @@ public class CheckboxTreeSelectionHelper {
 	 */
 	private void updateAncestors(Object child, Set<Object> checkedElements) {
 		Object parent = contentProvider.getParent(child);
-		if (parent == null || parent instanceof HTMLPageElement)
+		if (parent == null)
 			return;
 
 		boolean isGreyed = viewer.getChecked(child) && viewer.getGrayed(child);
