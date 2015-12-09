@@ -188,4 +188,9 @@ public class ProjectController extends EntityController {
         return dataProviderSetting.getProjectDataProvider().getSystemTempFolder();
     }
 
+    public String getNonremovableTempDir() {
+        return new File(dataProviderSetting.getProjectDataProvider().getSystemTempFolder(), "non-removable")
+                .getAbsolutePath();
+    }
+
 }

@@ -21,12 +21,16 @@ import com.kms.katalon.constants.helper.ConstantsHelper;
 public class ExportReportDynamicMenuContribution {
 
 	private static final String EXPORT_CSV_REPORT_COMMAND_ID = "com.kms.katalon.composer.report.command.export.csv";
-
+	private static final String EXPORT_HTML_REPORT_COMMAND_ID = "com.kms.katalon.composer.report.command.export.html";
+	private static final String EXPORT_PDF_REPORT_COMMAND_ID = "com.kms.katalon.composer.report.command.export.pdf";
+	
 	private static final String CSV_REPORT_POPUPMENUITEM_LABEL = "CSV";
 
 	private static final String HTML_REPORT_POPUPMENUITEM_LABEL = "HTML";
+	
+	private static final String PDF_REPORT_POPUPMENUITEM_LABEL = "PDF";
 
-	private static final String EXPORT_HTML_REPORT_COMMAND_ID = "com.kms.katalon.composer.report.command.export.html";
+	
 
 	private static final String EXPORT_POPUPMENU_LABEL = "Export as";
 
@@ -51,13 +55,20 @@ public class ExportReportDynamicMenuContribution {
 						newMenu.getChildren().add(exportHTML);
 					}
 
-					MHandledMenuItem exportExcelMenuItem = MenuFactory.createPopupMenuItem(
+					MHandledMenuItem exportCSVMenuItem = MenuFactory.createPopupMenuItem(
 							commandService.createCommand(EXPORT_CSV_REPORT_COMMAND_ID, null),
 							CSV_REPORT_POPUPMENUITEM_LABEL, ConstantsHelper.getApplicationURI());
-					if (exportExcelMenuItem != null) {
-						newMenu.getChildren().add(exportExcelMenuItem);
-					}
-					menuItems.add(newMenu);
+					if (exportCSVMenuItem != null) {
+						newMenu.getChildren().add(exportCSVMenuItem);
+					}					
+					
+					MHandledMenuItem exportPDFMenuItem = MenuFactory.createPopupMenuItem(
+                            commandService.createCommand(EXPORT_PDF_REPORT_COMMAND_ID, null),
+                            PDF_REPORT_POPUPMENUITEM_LABEL, ConstantsHelper.getApplicationURI());
+                    if (exportPDFMenuItem != null) {
+                        newMenu.getChildren().add(exportPDFMenuItem);
+                    }
+                    menuItems.add(newMenu);
 				}
 			}
 		} catch (Exception e) {

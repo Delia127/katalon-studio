@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.integration.qtest.job;
 
-import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +22,7 @@ import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.handler.QTestDisintegrateReportHandler;
 import com.kms.katalon.composer.integration.qtest.model.ReportTestCaseLogPair;
 import com.kms.katalon.composer.integration.qtest.model.ReportUploadedPreviewPair;
+import com.kms.katalon.composer.report.lookup.LogRecordLookup;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
@@ -161,7 +161,8 @@ public class UploadTestCaseResultJob extends QTestJob {
 
                 try {
                     QTestLog qTestCaseLog = QTestIntegrationReportManager.uploadTestLog(getProjectDir(), uploadedItem,
-                            QTestIntegrationUtil.getTempDirPath(), new File(reportEntity.getLocation()));
+                            QTestIntegrationUtil.getTempDirPath(),
+                            LogRecordLookup.getInstance().getTestSuiteLogRecord(reportEntity));
 
                     uploadedItem.setQTestLog(qTestCaseLog);
 
