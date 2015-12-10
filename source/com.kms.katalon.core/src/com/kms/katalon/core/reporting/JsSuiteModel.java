@@ -82,7 +82,7 @@ public class JsSuiteModel extends JsModel {
 				totalErr++;
 			}
 		}
-		String statValue = TestStatusValue.indexOf(suiteStat) + "";
+		String statValue = suiteStat.ordinal() + "";
 		status.props.add(new JsModelProperty("status", statValue, null));
 		status.props.add(new JsModelProperty("suiteStartTime", suiteStartTime + "", null));
 		status.props.add(new JsModelProperty("elapsedTime", elapsedTime + "", null));

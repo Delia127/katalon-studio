@@ -91,7 +91,7 @@ public class JsCallStepModel extends JsModel {
 		long startTime = calledTest.getStartTime();
 		long elapsedTime = calledTest.getEndTime() - startTime;
 		TestStatusValue theStatus = calledTest.getStatus().getStatusValue();
-		String statVal = TestStatusValue.indexOf(theStatus) + "";
+		String statVal = theStatus.ordinal() + "";
 		status.props.add(new JsModelProperty("status", statVal, null));
 		status.props.add(new JsModelProperty("startTime", String.valueOf(startTime), null));
 		status.props.add(new JsModelProperty("elapsedTime", String.valueOf(elapsedTime), null));
