@@ -61,13 +61,13 @@ public class EntityFileServiceManager {
         return null;
     }
 
-    private static FolderEntity loadFolder(File folderFile) throws Exception {
+    private static FileEntity loadFolder(File folderFile) throws Exception {
         if (folderFile == null || !folderFile.exists() || !folderFile.isDirectory()) return null;
 
         File folderMetaDataFile = new File(folderFile, FolderEntity.getMetaDataFileExtension());
-        FolderEntity folderEntity = null;
+        FileEntity folderEntity = null;
         if (folderMetaDataFile.exists()) {
-            folderEntity = (FolderEntity) EntityService.getInstance().getEntityByPath(
+            folderEntity = EntityService.getInstance().getEntityByPath(
                     folderMetaDataFile.getAbsolutePath());
         } else {
             folderEntity = new FolderEntity();
@@ -119,7 +119,7 @@ public class EntityFileServiceManager {
                     }
                     ((FolderEntity) entity).setProject(currentProject);
                 } else {
-                    parentFolder = loadFolder(localFile.getParentFile());
+                    parentFolder = (FolderEntity) loadFolder(localFile.getParentFile());
                     parentFolder.setProject(currentProject);
 
                     setParentFolder(parentFolder, localFile.getParentFile());

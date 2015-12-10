@@ -144,7 +144,7 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
     }
 
     /**
-     * If qTest integration and auto-submit result option are both enable, Uploads the given test log of the given test
+     * If qTest integration and auto-submit result option are both enable, uploads the given test log of the given test
      * suite to qTest server.
      */
     @Override

@@ -2,10 +2,12 @@ package com.kms.katalon.integration.qtest;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -19,9 +21,11 @@ import org.qas.api.internal.util.json.JsonArray;
 import org.qas.api.internal.util.json.JsonException;
 import org.qas.api.internal.util.json.JsonObject;
 
+import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
+import com.kms.katalon.core.reporting.ReportUtil;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.integration.IntegratedType;
 import com.kms.katalon.integration.qtest.constants.QTestMessageConstants;
@@ -138,10 +142,11 @@ public class QTestIntegrationReportManager {
      * @throws QTestException
      * @throws IOException
      * @throws JasperReportException
+     * @throws URISyntaxException 
      */
     public static QTestLog uploadTestLog(String projectDir, QTestLogUploadedPreview preparedTestCaseResult,
             String tempDir, TestSuiteLogRecord testSuiteLogRecord) throws QTestException, IOException,
-            JasperReportException {
+            JasperReportException, URISyntaxException {
 
         QTestProject qTestProject = preparedTestCaseResult.getQTestProject();
         QTestTestCase qTestCase = preparedTestCaseResult.getQTestCase();
@@ -201,14 +206,13 @@ public class QTestIntegrationReportManager {
                         QTestReportFormatType format = QTestReportFormatType.getTypeByExtension(FilenameUtils
                                 .getExtension(reportEntry.getAbsolutePath()));
                         if (format == QTestReportFormatType.LOG || format == QTestReportFormatType.CSV) {
-                            moveReportFile(reportEntry, new File(logTempFolder, reportEntry.getName()),
-                                    testCaseLogRecord, testSuiteLogRecord);
+                            moveReportFile(reportEntry, new File(logTempFolder, reportEntry.getName()));
                         }
                     }
                 } else {
                     File newReportFile = new File(logTempFolder, FilenameUtils.getBaseName(logFolder.getAbsolutePath())
                             + "." + formatType.getFileExtension());
-                    generateReportFile(formatType, newReportFile, testCaseLogRecord, logFolder);
+                    generateReportFile(formatType, newReportFile, testCaseLogRecord, testSuiteLogRecord);
                 }
             }
 
@@ -243,33 +247,20 @@ public class QTestIntegrationReportManager {
         }
     }
 
-    private static void moveReportFile(File sourceReportFile, File destReportFile, TestCaseLogRecord testCaseLogRecord,
-            TestSuiteLogRecord testSuiteLogRecord) throws IOException, JasperReportException {
-        QTestReportFormatType format = QTestReportFormatType.getTypeByExtension(FilenameUtils
-                .getExtension(sourceReportFile.getAbsolutePath()));
-        switch (format) {
-            case HTML:
-                break;
-            case PDF:
-                TestCasePdfGenerator generator = new TestCasePdfGenerator(testCaseLogRecord,
-                        testSuiteLogRecord.getLogFolder());
-                generator.exportToPDF(destReportFile.getAbsolutePath());
-                break;
-            default:
-                FileUtils.moveFile(sourceReportFile, destReportFile);
-                break;
-        }
-
+    private static void moveReportFile(File sourceReportFile, File destReportFile) throws IOException {
+        FileUtils.copyFile(sourceReportFile, destReportFile);
     }
 
     private static void generateReportFile(QTestReportFormatType format, File destReportFile,
-            TestCaseLogRecord testCaseLogRecord, File logFolder) throws IOException, JasperReportException {
+            TestCaseLogRecord testCaseLogRecord, TestSuiteLogRecord testSuiteLR) throws IOException,
+            JasperReportException, URISyntaxException {
         switch (format) {
             case HTML:
+                ReportUtil.writeLogRecordToHTMLFile(testSuiteLR, destReportFile,
+                        Arrays.asList(new ILogRecord[] { testCaseLogRecord }));
                 break;
             case PDF:
-                TestCasePdfGenerator generator = new TestCasePdfGenerator(testCaseLogRecord,
-                        logFolder.getAbsolutePath());
+                TestCasePdfGenerator generator = new TestCasePdfGenerator(testCaseLogRecord, testSuiteLR.getLogFolder());
                 generator.exportToPDF(destReportFile.getAbsolutePath());
                 break;
             default:

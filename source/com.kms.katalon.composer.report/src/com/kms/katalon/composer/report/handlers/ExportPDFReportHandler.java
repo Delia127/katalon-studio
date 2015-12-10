@@ -3,19 +3,19 @@ package com.kms.katalon.composer.report.handlers;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.inject.Inject;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
 
@@ -56,7 +56,7 @@ public class ExportPDFReportHandler {
                     if (selectedObject instanceof ReportTreeEntity
                             && ((ReportTreeEntity) selectedObject).getObject() instanceof ReportEntity) {
                         ReportEntity reportEntity = (ReportEntity) ((ReportTreeEntity) selectedObject).getObject();
-                        exportToPDF(reportEntity, exportDirectory);
+                        exportToPDF(reportEntity, exportDirectory, shell);
                     }
                 } catch (Exception e) {
                     LoggerSingleton.logError(e);
@@ -66,19 +66,21 @@ public class ExportPDFReportHandler {
         }
     }
 
-    private void exportToPDF(final ReportEntity reportEntity, final File exportDirectory) {
-        Job job = new Job("Exporting report to PDF") {
+    private void exportToPDF(final ReportEntity reportEntity, final File exportDirectory, Shell shell)
+            throws InvocationTargetException, InterruptedException {
+        ProgressMonitorDialog monitorDialog = new ProgressMonitorDialog(shell);
+        monitorDialog.run(true, false, new IRunnableWithProgress() {
+
             @Override
-            protected IStatus run(IProgressMonitor monitor) {
+            public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                 try {
-                    monitor.beginTask("Exporting report...", IProgressMonitor.UNKNOWN);
+                    monitor.beginTask("Exporting report to PDF...", IProgressMonitor.UNKNOWN);
                     TestSuiteLogRecord suiteLogRecord = LogRecordLookup.getInstance().getTestSuiteLogRecord(
                             reportEntity);
                     TestSuitePdfGenerator generator = new TestSuitePdfGenerator(suiteLogRecord);
                     File exportedFile = generator.exportToPDF(new File(exportDirectory, FilenameUtils
                             .getBaseName(reportEntity.getName()) + ".pdf").getAbsolutePath());
                     Desktop.getDesktop().open(exportedFile);
-                    return Status.OK_STATUS;
                 } catch (final JasperReportException | IOException e) {
                     sync.syncExec(new Runnable() {
                         @Override
@@ -87,15 +89,11 @@ public class ExportPDFReportHandler {
                                     + ")", e.getClass().getSimpleName());
                         }
                     });
-                    return Status.CANCEL_STATUS;
                 } finally {
                     monitor.done();
                 }
             }
-        };
-
-        job.setUser(true);
-        job.schedule();
+        });
 
     }
 }
