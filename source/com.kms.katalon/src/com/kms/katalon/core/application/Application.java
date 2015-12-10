@@ -39,11 +39,10 @@ public class Application implements IApplication {
 		}
 
 		Display display = PlatformUI.createDisplay();
-		display.getShells();
 		try {
 			int returnCode = PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
 			if (isConsoleMode) {
-				return (ConsoleMain.getReturnCode() == 0) ? IApplication.EXIT_OK : IApplication.EXIT_RELAUNCH;
+				return ConsoleMain.getReturnCode();
 			}
 			if (returnCode == PlatformUI.RETURN_RESTART)
 				return IApplication.EXIT_RESTART;

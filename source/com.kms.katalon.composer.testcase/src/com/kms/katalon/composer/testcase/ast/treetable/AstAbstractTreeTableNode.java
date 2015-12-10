@@ -162,4 +162,24 @@ public abstract class AstAbstractTreeTableNode implements AstTreeTableNode {
 		}
 		return "";
 	}
+	
+    @Override
+    public String getItemTooltipText() {
+        return getItemText();
+    }
+
+    @Override
+    public String getTestObjectTooltipText() {
+        return getTestObjectTooltipText();
+    }
+
+    @Override
+    public String getInputTooltipText() {
+        return getInputText();
+    }
+
+    @Override
+    public String getOutputTooltipText() {
+        return getOutputText();
+    }
 }
