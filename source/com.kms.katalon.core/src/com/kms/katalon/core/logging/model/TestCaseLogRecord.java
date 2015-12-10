@@ -12,6 +12,12 @@ public class TestCaseLogRecord extends AbstractLogRecord {
         super(name);
     }
 
+    /**
+     * Returns if the result of current test case is optional or not.
+     * <p>
+     * Used when the current test case is called by another test case.
+     * @return true if result of this is optional. Otherwise, false.
+     */
     public boolean isOptional() {
         return isOptional;
     }
