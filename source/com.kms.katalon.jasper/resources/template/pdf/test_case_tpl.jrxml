@@ -232,7 +232,7 @@
 					<font size="20" isBold="true"/>
 					<paragraph leftIndent="50" rightIndent="50"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{name}.substring($F{name}.lastIndexOf("/") + 1, $F{name}.length())]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement positionType="Float" x="0" y="33" width="515" height="1" isPrintWhenDetailOverflows="true" uuid="211a5492-2146-4b9c-b2ca-c6681d95fae9"/>
@@ -248,7 +248,7 @@
 			<componentElement>
 				<reportElement key="table" positionType="Float" mode="Opaque" x="0" y="52" width="515" height="0" uuid="ff677573-e66a-449f-9f1e-c4559d45f428"/>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="stepDataset" uuid="5964cb2d-3ad4-434a-b468-cc0cac537f10">
+					<datasetRun subDataset="stepDataset" uuid="b754d7cb-cd0f-4621-babb-62aae5c20167">
 						<datasetParameter name="LOG_FOLDER">
 							<datasetParameterExpression><![CDATA[$P{LOG_FOLDER}]]></datasetParameterExpression>
 						</datasetParameter>
