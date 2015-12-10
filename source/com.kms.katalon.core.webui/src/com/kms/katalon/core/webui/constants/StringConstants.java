@@ -125,6 +125,10 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String KW_MSG_CANNOT_WAIT_OBJ_X_TO_BE_VISIBLE = "Unable to wait for object ''{0}'' to be visible";
 	public static final String KW_LOG_PASSED_OBJ_X_IS_NOT_VISIBLE = "Object ''{0}'' is NOT visible";
 	public static final String KW_MSG_OBJ_IS_VISIBLE_AFTER_X_SEC = "Object ''{0}'' is visible after {1} second(s)";
+	public static final String KW_MSG_CANNOT_VERIFY_OBJ_X_TO_BE_VISIBLE = "Unable to verify object ''{0}'' is visible";
+	public static final String KW_MSG_CANNOT_VERIFY_OBJ_TO_BE_VISIBLE = "Unable to verify object is visible";
+	public static final String KW_MSG_CANNOT_VERIFY_OBJ_X_TO_BE_NOT_VISIBLE = "Unable to verify object ''{0}'' is NOT visible";
+    public static final String KW_MSG_CANNOT_VERIFY_OBJ_TO_BE_NOT_VISIBLE = "Unable to verify object is NOT visible";
 	public static final String KW_MSG_CANNOT_WAIT_OBJ_X_TO_BE_NOT_VISIBLE = "Unable to wait for object ''{0}'' to be NOT visible";
 	public static final String KW_MSG_CANNOT_WAIT_FOR_OBJ_TO_BE_NOT_VISIBLE = "Unable to wait for object to be NOT visible";
 	public static final String KW_LOG_PASSED_OBJ_X_IS_CLICKABLE = "Object ''{0}'' is clickable";

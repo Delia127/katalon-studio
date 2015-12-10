@@ -359,8 +359,50 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             }
         }
-        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_TO_BE_VISIBLE, to.getObjectId())
-        : StringConstants.KW_MSG_CANNOT_WAIT_FOR_OBJ_TO_BE_VISIBLE)
+        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_TO_BE_VISIBLE, to.getObjectId())
+        : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_TO_BE_VISIBLE)
+    }
+
+    /***
+     * Verify if given web element is NOT visible
+     * @param to
+     *      represent a web element
+     * @param flowControl
+     * @return
+     *     true if the element is present and NOT visible; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementNotVisible(TestObject to, FailureHandling flowControl) throws StepFailedException {
+        return WebUIKeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = false;
+            try {
+                WebUiCommonHelper.checkTestObjectParameter(to);
+                isSwitchIntoFrame = switchToFrame(to, RunConfiguration.getTimeOut());
+                try {
+                    WebElement foundElement = findWebElement(to, RunConfiguration.getTimeOut());
+                    if (!foundElement.isDisplayed()) {
+                        logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_IS_NOT_VISIBLE, to.getObjectId()));
+                        return true;
+                    } else {
+                        WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_IS_VISIBLE, to.getObjectId()),
+                                flowControl, null);
+                        return false;
+                    }
+                    return true;
+                } catch (WebElementNotFoundException e) {
+                    WebUIKeywordMain.stepFailed(e.getMessage(), flowControl, null);
+                    return false;
+                }
+            } finally {
+                if (isSwitchIntoFrame) {
+                    switchToDefaultContent();
+                }
+            }
+        }
+        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_TO_BE_NOT_VISIBLE, to.getObjectId())
+        : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_TO_BE_NOT_VISIBLE)
     }
 
     /***
