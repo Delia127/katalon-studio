@@ -62,7 +62,7 @@ public class JsTestModel extends JsModel {
 		status = new JsModel();
 		TestStatus testStatusEntity = testLog.getStatus();
 		TestStatusValue testStat = testStatusEntity.getStatusValue();
-		String statVal = TestStatusValue.indexOf(testStat) + "";
+		String statVal = testStat.ordinal() + "";
 		String errMsg = testLog.getMessage() == null ? "" : testLog.getMessage();
 		long startTime = testLog.getStartTime();
 		long elapsedTime = testLog.getEndTime() - startTime;
