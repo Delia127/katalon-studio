@@ -60,7 +60,8 @@ public class ExportPDFReportHandler {
                     }
                 } catch (Exception e) {
                     LoggerSingleton.logError(e);
-                    MessageDialog.openError(shell, "Error", "Unable to export pdf report (" + e.getMessage() + ")");
+                    MultiStatusErrorDialog.showErrorDialog(e, "Unable to export pdf report ("
+                            + e.getClass().getSimpleName() + ")", e.getMessage());
                 }
             }
         }
@@ -85,8 +86,9 @@ public class ExportPDFReportHandler {
                     sync.syncExec(new Runnable() {
                         @Override
                         public void run() {
-                            MultiStatusErrorDialog.showErrorDialog(e, "Unable to export pdf report (" + e.getMessage()
-                                    + ")", e.getClass().getSimpleName());
+                            MultiStatusErrorDialog.showErrorDialog(e, "Unable to export pdf report ("
+                                    + e.getClass().getSimpleName() + ")", e.getMessage());
+                            LoggerSingleton.logError(e);
                         }
                     });
                 } finally {

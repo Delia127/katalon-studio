@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="User Overview" pageWidth="595" pageHeight="842" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="50" uuid="b1198982-d169-4d1d-a5ed-34f58ab36656" isSummaryNewPage="true">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="User Overview" pageWidth="595" pageHeight="842" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="50" isSummaryNewPage="true" uuid="b1198982-d169-4d1d-a5ed-34f58ab36656">
 	<property name="ireport.zoom" value="1.6105100000000012"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="45"/>
+	<property name="ireport.y" value="44"/>
 	<style name="Sans_Bold" fontName="DejaVu Sans" fontSize="8" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Sans_Normal" isDefault="true" fontName="DejaVu Sans" fontSize="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Title" style="Sans_Bold" fontSize="12"/>
@@ -330,7 +330,7 @@
 					<textFieldExpression><![CDATA[com.kms.katalon.core.util.DateUtil.getElapsedTime($P{TEST_SUITE}.getStartTime(), $P{TEST_SUITE}.getEndTime())]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement positionType="Float" x="30" y="113" width="70" height="14" uuid="33b6b556-11a3-4944-ba18-3201e4649ba2"/>
+					<reportElement positionType="Float" x="30" y="113" width="485" height="14" uuid="33b6b556-11a3-4944-ba18-3201e4649ba2"/>
 					<textElement>
 						<font size="9"/>
 					</textElement>
@@ -380,8 +380,8 @@
 			<componentElement>
 				<reportElement key="table 4" positionType="Float" mode="Opaque" x="0" y="0" width="515" height="50" isPrintWhenDetailOverflows="true" uuid="579e3efc-e719-4189-bc36-fd5744783aea"/>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="New Dataset 1" uuid="5be1510d-14ad-4bbd-8662-c181c43b62f0">
-						<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource(Arrays.asList($P{TEST_SUITE}.getChildRecords()))]]></dataSourceExpression>
+					<datasetRun subDataset="New Dataset 1" uuid="a782267a-149d-4a07-9563-4d0f403ccdb0">
+						<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanArrayDataSource($P{TEST_SUITE}.getChildRecords())]]></dataSourceExpression>
 					</datasetRun>
 					<jr:column width="0" uuid="7c6ce1f9-2d5c-4ea0-801a-c90c7e299b06">
 						<jr:tableHeader height="30" rowSpan="1"/>
@@ -562,7 +562,7 @@
 				<subreportParameter name="LOG_FOLDER">
 					<subreportParameterExpression><![CDATA[$P{TEST_SUITE}.getLogFolder()]]></subreportParameterExpression>
 				</subreportParameter>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource(Arrays.asList($P{TEST_SUITE}.getChildRecords()))]]></dataSourceExpression>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanArrayDataSource($P{TEST_SUITE}.getChildRecords())]]></dataSourceExpression>
 				<subreportExpression><![CDATA[net.sf.jasperreports.engine.JasperCompileManager.compileReport(com.kms.katalon.internal.jasper.util.ResourceUtil.getResourceAsInputStream(com.kms.katalon.jasper.pdf.AbstractPdfReportGenerator.class, $P{TEST_CASE_TPL}))]]></subreportExpression>
 			</subreport>
 		</band>

@@ -63,7 +63,7 @@
 				<textFieldExpression><![CDATA[$P{testCaseRecord}.getName()]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement positionType="Float" x="40" y="50" width="70" height="20" uuid="64680904-b51a-44ea-933d-0f764ba2e4f6"/>
+				<reportElement positionType="Float" x="40" y="50" width="430" height="20" uuid="64680904-b51a-44ea-933d-0f764ba2e4f6"/>
 				<textElement>
 					<font fontName="DejaVu Sans" size="9"/>
 				</textElement>
