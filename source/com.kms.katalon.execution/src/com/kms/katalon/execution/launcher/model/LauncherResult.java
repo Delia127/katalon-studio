@@ -9,6 +9,7 @@ public class LauncherResult {
     public static final int RETURN_CODE_FAILED = 1;
     public static final int RETURN_CODE_ERROR = 2;
     public static final int RETURN_CODE_FAILED_AND_ERROR = 3;
+    public static final int RETURN_CODE_INVALID_ARGUMENT = 4;
     
 	private int totalTestCases;
 	private int numPasses;
