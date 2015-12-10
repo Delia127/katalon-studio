@@ -2,10 +2,12 @@ package com.kms.katalon.integration.qtest;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -13,13 +15,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.qas.api.internal.util.json.JsonArray;
 import org.qas.api.internal.util.json.JsonException;
 import org.qas.api.internal.util.json.JsonObject;
 
+import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
+import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
+import com.kms.katalon.core.reporting.ReportUtil;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.integration.IntegratedType;
 import com.kms.katalon.integration.qtest.constants.QTestMessageConstants;
@@ -45,6 +51,8 @@ import com.kms.katalon.integration.qtest.setting.QTestResultSendingType;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 import com.kms.katalon.integration.qtest.util.DateUtil;
 import com.kms.katalon.integration.qtest.util.ZipUtil;
+import com.kms.katalon.jasper.pdf.TestCasePdfGenerator;
+import com.kms.katalon.jasper.pdf.exception.JasperReportException;
 
 /**
  * Provides a set of utility methods that relate with {@link QTestReport}
@@ -133,15 +141,19 @@ public class QTestIntegrationReportManager {
      * @return
      * @throws QTestException
      * @throws IOException
+     * @throws JasperReportException
+     * @throws URISyntaxException 
      */
     public static QTestLog uploadTestLog(String projectDir, QTestLogUploadedPreview preparedTestCaseResult,
-            String tempDir, File logFolder) throws QTestException, IOException {
+            String tempDir, TestSuiteLogRecord testSuiteLogRecord) throws QTestException, IOException,
+            JasperReportException, URISyntaxException {
 
         QTestProject qTestProject = preparedTestCaseResult.getQTestProject();
         QTestTestCase qTestCase = preparedTestCaseResult.getQTestCase();
         QTestRun qTestRun = preparedTestCaseResult.getQTestRun();
         QTestLog qTestLog = preparedTestCaseResult.getQTestLog();
         TestCaseLogRecord testCaseLogRecord = preparedTestCaseResult.getTestCaseLogRecord();
+        File logFolder = new File(testSuiteLogRecord.getLogFolder());
 
         SimpleDateFormat sdf = new SimpleDateFormat(DateUtil.DATE_FORMAT);
         String startDate = sdf.format(testCaseLogRecord.getStartTime());
@@ -177,12 +189,41 @@ public class QTestIntegrationReportManager {
                 || (qTestLog == null && isAvailableForSendingAttachment(testCaseStatus, projectDir))) {
 
             List<JsonObject> jsonObjects = new ArrayList<JsonObject>();
-            for (File file : logFolder.listFiles()) {
-                if (!isValidFileToAttach(file, projectDir)) { continue; }
-                jsonObjects.add(getAttachmentJsonObject(file.getAbsolutePath())); 
+
+            File logTempFolder = new File(tempDir, FilenameUtils.getBaseName(logFolder.getName()));
+            if (logTempFolder.exists()) {
+                FileUtils.deleteDirectory(logTempFolder);
             }
+
+            logTempFolder.mkdirs();
+
+            for (QTestReportFormatType formatType : QTestSettingStore.getFormatReportTypes(projectDir)) {
+                if (formatType == QTestReportFormatType.LOG || formatType == QTestReportFormatType.CSV) {
+                    for (File reportEntry : logFolder.listFiles()) {
+                        if (!isValidFileToAttach(reportEntry, projectDir)) {
+                            continue;
+                        }
+                        QTestReportFormatType format = QTestReportFormatType.getTypeByExtension(FilenameUtils
+                                .getExtension(reportEntry.getAbsolutePath()));
+                        if (format == QTestReportFormatType.LOG || format == QTestReportFormatType.CSV) {
+                            moveReportFile(reportEntry, new File(logTempFolder, reportEntry.getName()));
+                        }
+                    }
+                } else {
+                    File newReportFile = new File(logTempFolder, FilenameUtils.getBaseName(logFolder.getAbsolutePath())
+                            + "." + formatType.getFileExtension());
+                    generateReportFile(formatType, newReportFile, testCaseLogRecord, testSuiteLogRecord);
+                }
+            }
+
+            for (File reportTempFile : logTempFolder.listFiles()) {
+                jsonObjects.add(getAttachmentJsonObject(reportTempFile.getAbsolutePath()));
+            }
+
             bodyProperties.put("attachments", new JsonArray(jsonObjects));
             attachmentIncluded = true;
+
+            FileUtils.cleanDirectory(logTempFolder);
         }
 
         // upload result of the given test run
@@ -206,15 +247,27 @@ public class QTestIntegrationReportManager {
         }
     }
 
-//    private static JsonObject getAttachmentJsonObject(String filePath, ZipFile zipFile) throws QTestException,
-//            IOException {
-//        Map<String, Object> attachmentMap = new LinkedHashMap<String, Object>();
-//        attachmentMap.put("name", FilenameUtils.getName(filePath));
-//        attachmentMap.put("content_type", "application/octet-stream");
-//        attachmentMap.put("data", ZipUtil.encodeFileContent(filePath));
-//
-//        return new JsonObject(attachmentMap);
-//    }
+    private static void moveReportFile(File sourceReportFile, File destReportFile) throws IOException {
+        FileUtils.copyFile(sourceReportFile, destReportFile);
+    }
+
+    private static void generateReportFile(QTestReportFormatType format, File destReportFile,
+            TestCaseLogRecord testCaseLogRecord, TestSuiteLogRecord testSuiteLR) throws IOException,
+            JasperReportException, URISyntaxException {
+        switch (format) {
+            case HTML:
+                ReportUtil.writeLogRecordToHTMLFile(testSuiteLR, destReportFile,
+                        Arrays.asList(new ILogRecord[] { testCaseLogRecord }));
+                break;
+            case PDF:
+                TestCasePdfGenerator generator = new TestCasePdfGenerator(testCaseLogRecord, testSuiteLR.getLogFolder());
+                generator.exportToPDF(destReportFile.getAbsolutePath());
+                break;
+            default:
+                break;
+        }
+
+    }
 
     private static boolean isValidFileToAttach(File file, String projectDir) {
         String fileExt = FilenameUtils.getExtension(file.getAbsolutePath());

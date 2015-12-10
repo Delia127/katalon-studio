@@ -13,11 +13,11 @@ import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.components.util.DateUtil;
 import com.kms.katalon.composer.report.constants.ImageConstants;
 import com.kms.katalon.composer.report.parts.ReportPart;
 import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
+import com.kms.katalon.core.util.DateUtil;
 
 public class ReportPartTestCaseLabelProvider extends StyledCellLabelProvider {
 	

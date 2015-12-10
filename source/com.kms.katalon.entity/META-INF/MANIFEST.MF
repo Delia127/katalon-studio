@@ -30,5 +30,4 @@ Require-Bundle: org.apache.commons.lang;bundle-version="2.6.0",
  net.lingala.zip4j;bundle-version="1.2.5",
  org.eclipse.persistence.eclipselink;bundle-version="2.5.0",
  org.eclipse.swt,
- com.kms.katalon.constant,
- com.kms.katalon.core
+ com.kms.katalon.constant
