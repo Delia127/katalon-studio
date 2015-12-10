@@ -36,7 +36,8 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  com.kms.katalon.composer.testsuite,
  com.kms.katalon.execution,
  com.kms.katalon.composer.folder;bundle-version="1.0.0",
- com.google.gson;bundle-version="2.3.1"
+ com.google.gson;bundle-version="2.3.1",
+ org.jsoup
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: com.kms.katalon.composer.testcase.ast.dialogs,
