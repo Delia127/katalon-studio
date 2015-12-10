@@ -72,7 +72,7 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
     // testSuite for working on children part;
     private TestSuiteEntity originalTestSuite, testSuite;
     private Composite parent;
-    
+
     @Inject
     private IEventBroker eventBroker;
 
@@ -261,9 +261,11 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
             }
 
             eventBroker.post(EventConstants.TEST_SUITE_UPDATED, new Object[] { testSuite.getId(), originalTestSuite });
-            
-            if (parent.isDisposed()) { return; }
-            
+
+            if (parent.isDisposed()) {
+                return;
+            }
+
             updateTestSuitePart(originalTestSuite);
 
             afterSaving();
@@ -277,8 +279,20 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
 
     private void updateTestSuitePart(TestSuiteEntity testSuite) {
         // update mpart
-        compositePart.setLabel(testSuite.getName());
-        compositePart.setElementId(EntityPartUtil.getTestSuiteCompositePartId(testSuite.getId()));
+        String newElementId = EntityPartUtil.getTestSuiteCompositePartId(testSuite.getId());
+        if (!newElementId.equals(compositePart.getElementId())) {
+            compositePart.setLabel(testSuite.getName());
+            compositePart.setElementId(newElementId);
+            if (compositePart.getChildren().size() == 1 && compositePart.getChildren().get(0) instanceof MPartStack) {
+                MPartStack partStack = (MPartStack) compositePart.getChildren().get(0);
+                partStack.setElementId(newElementId + IdConstants.TEST_SUITE_SUB_PART_STACK_ID_SUFFIX);
+
+                childTestSuiteMainPart.getMPart().setElementId(
+                        newElementId + IdConstants.TEST_SUITE_MAIN_PART_ID_SUFFIX);
+                childTestSuiteIntegrationPart.getMPart().setElementId(
+                        newElementId + IdConstants.TEST_SUITE_INTEGRATION_PART_ID_SUFFIX);
+            }
+        }
         changeOriginalTestSuite(testSuite);
         setDirty(false);
         loadTestSuite();
@@ -377,7 +391,7 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
             LoggerSingleton.logError(e);
         }
     }
-    
+
     public void openAddTestCaseDialog() {
         setSelectedPart(getChildMainPart());
         childTestSuiteMainPart.openAddTestCaseDialog();

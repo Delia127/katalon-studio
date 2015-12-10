@@ -24,6 +24,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<module>com.kms.katalon.selenium-standalone</module>
 		<module>com.kms.katalon.core.webui</module>
 		<module>com.kms.katalon.core.mobile</module>
+		<module>com.kms.katalon.jasper</module>
 		<module>com.kms.katalon.custom</module>
 		<module>com.kms.katalon.dal</module>
 		<module>com.kms.katalon.dal.file</module>

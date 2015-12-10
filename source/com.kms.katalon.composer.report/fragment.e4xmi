@@ -6,11 +6,13 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_pLRtADXHEeWwGcZVEIUXdw" featurename="commands" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Command" xmi:id="_pLRtATXHEeWwGcZVEIUXdw" elementId="com.kms.katalon.composer.report.command.export.html" commandName="Export HTML Report"/>
     <elements xsi:type="commands:Command" xmi:id="_pLRtAjXHEeWwGcZVEIUXdw" elementId="com.kms.katalon.composer.report.command.export.csv" commandName="Export CSV Report"/>
+    <elements xsi:type="commands:Command" xmi:id="_EqUEgJpvEeW8A_Dz0N0JOw" elementId="com.kms.katalon.composer.report.command.export.pdf" commandName="Export PDF Report"/>
     <elements xsi:type="commands:Command" xmi:id="_yq8vgDw1EeWh_4qGzXcOEA" elementId="com.kms.katalon.composer.report.command.empty" commandName="Empty"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_2o5IsDXHEeWwGcZVEIUXdw" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Handler" xmi:id="_2o5IsTXHEeWwGcZVEIUXdw" elementId="com.kms.katalon.composer.report.handler.export.html" contributionURI="bundleclass://com.kms.katalon.composer.report/com.kms.katalon.composer.report.handlers.ExportHTMLReportHandler" command="_pLRtATXHEeWwGcZVEIUXdw"/>
     <elements xsi:type="commands:Handler" xmi:id="_2o5IsjXHEeWwGcZVEIUXdw" elementId="com.kms.katalon.composer.report.handler.export.csv" contributionURI="bundleclass://com.kms.katalon.composer.report/com.kms.katalon.composer.report.handlers.ExportCSVReportHandler" command="_pLRtAjXHEeWwGcZVEIUXdw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_DlyFYJpvEeW8A_Dz0N0JOw" elementId="com.kms.katalon.composer.report.handler.export.pdf" contributionURI="bundleclass://com.kms.katalon.composer.report/com.kms.katalon.composer.report.handlers.ExportPDFReportHandler" command="_EqUEgJpvEeW8A_Dz0N0JOw"/>
     <elements xsi:type="commands:Handler" xmi:id="_3dYjwDw1EeWh_4qGzXcOEA" elementId="com.kms.katalon.composer.report.handler.empty" contributionURI="bundleclass://com.kms.katalon.composer.report/com.kms.katalon.composer.report.handlers.EmptyHandler" command="_yq8vgDw1EeWh_4qGzXcOEA"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_l07JwDytEeWh_4qGzXcOEA" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu.new" positionInList="first">

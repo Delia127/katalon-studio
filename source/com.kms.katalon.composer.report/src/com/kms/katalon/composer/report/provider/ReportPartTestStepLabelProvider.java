@@ -14,12 +14,12 @@ import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.components.util.DateUtil;
 import com.kms.katalon.composer.report.constants.ImageConstants;
 import com.kms.katalon.composer.report.parts.ReportPartTestLogView;
 import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.MessageLogRecord;
 import com.kms.katalon.core.logging.model.TestStepLogRecord;
+import com.kms.katalon.core.util.DateUtil;
 
 public class ReportPartTestStepLabelProvider extends StyledCellLabelProvider {
 

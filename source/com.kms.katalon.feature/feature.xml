@@ -402,13 +402,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.apache.commons.logging"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.equinox.simpleconfigurator"
          download-size="0"
          install-size="0"
@@ -1753,6 +1746,20 @@
          download-size="0"
          install-size="0"
          version="1.0.0.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.jasper"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.commons.logging"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
          unpack="false"/>
 
 </feature>
