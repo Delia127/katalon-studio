@@ -70,6 +70,12 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_MSG_UNABLE_SWITCH_LANDSCAPE = "Unable to switch the device to landscape mode";
     public static final String KW_LOG_PASSED_SWITCH_PORTRAIT = "Switching the device to portrait mode successfully";
     public static final String KW_MSG_UNABLE_SWITCH_PORTRAIT = "Unable to switch the device to portrait mode";
+    public static final String KW_LOG_PASSED_SWITCH_WEB_VIEW = "Switching the driver to WEBVIEW mode successfully";
+    public static final String KW_LOG_FAILED_SWITCH_WEB_VIEW = "Cannot find any WEBVIEW to switch to";
+    public static final String KW_MSG_UNABLE_SWITCH_WEB_VIEW = "Unable to switch the driver to WEBVIEW mode";
+    public static final String KW_LOG_PASSED_SWITCH_NATIVE = "Switching the driver to NATIVE mode successfully";
+    public static final String KW_LOG_FAILED_SWITCH_NATIVE = "Cannot find any NATIVE to switch to";
+    public static final String KW_MSG_UNABLE_SWITCH_NATIVE = "Unable to switch the driver to NATIVE mode";
 	public static final String KW_MSG_UNABLE_FIND_DRIVER = "No driver found";
 
 	public static final String KW_CATEGORIZE_APPLICATION = "Application";

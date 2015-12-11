@@ -150,6 +150,8 @@ public class RunConfiguration {
     }
 
     public static void storeDriver(Object driver) {
-        localDriverStorage.get().add(driver);
+        if (!localDriverStorage.get().contains(driver)) {
+            localDriverStorage.get().add(driver);
+        }
     }
 }

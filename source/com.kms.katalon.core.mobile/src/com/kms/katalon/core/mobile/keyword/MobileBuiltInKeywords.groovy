@@ -95,7 +95,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             AppiumDriver<?> driver = getAnyAppiumDriver();
             String context = driver.getContext();
             try {
-                switchToNativeContext(driver);
+                internalSwitchToNativeContext(driver);
                 if (driver instanceof AndroidDriver) {
                     ((AndroidDriver) driver).pressKeyCode(AndroidKeyCode.BACK);
                 } else {
@@ -144,7 +144,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             AppiumDriver<?> driver = getAnyAppiumDriver();
             String context = driver.getContext();
             try {
-                switchToNativeContext(driver);
+                internalSwitchToNativeContext(driver);
                 File tempFile = driver.getScreenshotAs(OutputType.FILE);
                 if (!tempFile.exists()) {
                     KeywordMain.stepFailed(StringConstants.KW_MSG_UNABLE_TO_TAKE_SCREENSHOT, flowControl, null);
@@ -175,7 +175,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             AppiumDriver<?> driver = getAnyAppiumDriver();
             String context = driver.getContext();
             try {
-                switchToNativeContext(driver);
+                internalSwitchToNativeContext(driver);
                 if (driver instanceof AndroidDriver) {
                     AndroidDriver androidDriver = (AndroidDriver) driver;
                     Object version = androidDriver.getCapabilities().getCapability("platformVersion");
@@ -207,7 +207,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             String context = driver.getContext();
             try {
                 if (driver instanceof AndroidDriver) {
-                    switchToNativeContext(driver);
+                    internalSwitchToNativeContext(driver);
                     ((AndroidDriver)driver).pressKeyCode(AndroidKeyCode.HOME);
                 } else {
                     KeywordMain.stepFailed(StringConstants.KW_MSG_UNSUPPORT_ACT_FOR_THIS_DEVICE, flowControl, null);
@@ -330,7 +330,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             AppiumDriver<?> driver = getAnyAppiumDriver();
             String context = driver.getContext();
             try {
-                switchToNativeContext(driver);
+                internalSwitchToNativeContext(driver);
                 int height = driver.manage().window().getSize().height;
                 MobileCommonHelper.swipe(driver, 50, height - 1, 50, 1);
                 logger.logPassed(StringConstants.KW_LOG_PASSED_NOTIFICATION_CLOSED);
@@ -355,7 +355,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             AppiumDriver<?> driver = getAnyAppiumDriver();
             String context = driver.getContext();
             try {
-                switchToNativeContext(driver);
+                internalSwitchToNativeContext(driver);
 
                 boolean isTurnOn = false;
                 if (StringUtils.equalsIgnoreCase("yes", mode)
@@ -638,7 +638,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             AppiumDriver driver = getAnyAppiumDriver();
             String context = driver.getContext();
             try {
-                switchToNativeContext(driver);
+                internalSwitchToNativeContext(driver);
                 if (driver.getOrientation() == ScreenOrientation.LANDSCAPE) {
                     logger.logPassed(StringConstants.KW_LOG_PASSED_VERIFY_LANDSCAPE);
                     return true;
@@ -666,7 +666,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             AppiumDriver driver = getAnyAppiumDriver();
             String context = driver.getContext();
             try {
-                switchToNativeContext(driver);
+                internalSwitchToNativeContext(driver);
                 if (driver.getOrientation() == ScreenOrientation.PORTRAIT) {
                     logger.logPassed(StringConstants.KW_LOG_PASSED_VERIFY_PORTRAIT);
                     return true;
@@ -679,7 +679,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             }
         }, flowControl, StringConstants.KW_MSG_UNABLE_VERIFY_PORTRAIT);
     }
-    
+
     /**
      * Switch the current device's mode to landscape mode
      * @param flowControl
@@ -692,7 +692,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             AppiumDriver driver = getAnyAppiumDriver();
             String context = driver.getContext();
             try {
-                switchToNativeContext(driver);
+                internalSwitchToNativeContext(driver);
                 driver.rotate(ScreenOrientation.LANDSCAPE);
                 logger.logPassed(StringConstants.KW_LOG_PASSED_SWITCH_LANDSCAPE);
             } finally {
@@ -700,7 +700,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             }
         }, flowControl, StringConstants.KW_MSG_UNABLE_SWITCH_LANDSCAPE);
     }
-    
+
     /**
      * Switch the current device's mode to portrait mode
      * @param flowControl
@@ -713,7 +713,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             AppiumDriver driver = getAnyAppiumDriver();
             String context = driver.getContext();
             try {
-                switchToNativeContext(driver);
+                internalSwitchToNativeContext(driver);
                 driver.rotate(ScreenOrientation.PORTRAIT);
                 logger.logPassed(StringConstants.KW_LOG_PASSED_SWITCH_PORTRAIT);
             } finally {
@@ -722,13 +722,65 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, StringConstants.KW_MSG_UNABLE_SWITCH_PORTRAIT);
     }
 
+    /**
+     * Switch the current device driver to web view context
+     * @param flowControl
+     * @throws StepFailedException
+     */
     @CompileStatic
-    private static boolean switchToNativeContext(AppiumDriver driver) {
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
+    public static void switchToWebView(FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            AppiumDriver driver = getAnyAppiumDriver();
+            boolean result = internalSwitchToWebViewContext(driver);
+            if (result) {
+                logger.logPassed(StringConstants.KW_LOG_PASSED_SWITCH_WEB_VIEW);
+                RunConfiguration.storeDriver(driver);
+            } else {
+                KeywordMain.stepFailed(StringConstants.KW_LOG_FAILED_SWITCH_WEB_VIEW, flowControl, null);
+            }
+        }, flowControl, StringConstants.KW_MSG_UNABLE_SWITCH_WEB_VIEW);
+    }
+    
+    /**
+     * Switch the current device driver to web view context
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
+    public static void switchToNative(FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            AppiumDriver driver = getAnyAppiumDriver();
+            boolean result = internalSwitchToNativeContext(driver);
+            if (result) {
+                logger.logPassed(StringConstants.KW_LOG_PASSED_SWITCH_NATIVE);
+            } else {
+                KeywordMain.stepFailed(StringConstants.KW_LOG_FAILED_SWITCH_NATIVE, flowControl, null);
+            }
+        }, flowControl, StringConstants.KW_MSG_UNABLE_SWITCH_NATIVE);
+    }
+
+    @CompileStatic
+    private static boolean internalSwitchToNativeContext(AppiumDriver driver) {
         for (String context : driver.getContextHandles()) {
             if (context.contains("NATIVE")) {
                 driver.context(context);
+                return true;
             }
         }
+        return false;
+    }
+
+    @CompileStatic
+    private static boolean internalSwitchToWebViewContext(AppiumDriver driver) {
+        for (String context : driver.getContextHandles()) {
+            if (context.contains("WEBVIEW")) {
+                driver.context(context);
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
