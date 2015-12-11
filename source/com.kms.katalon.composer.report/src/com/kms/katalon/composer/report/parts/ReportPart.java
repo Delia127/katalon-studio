@@ -36,6 +36,7 @@ import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.KeyEvent;
@@ -620,16 +621,27 @@ public class ReportPart implements EventHandler {
     private void createSummaryTabControl(final CTabFolder tabFolder) {
         final CTabItem tbtmSummary = new CTabItem(tabFolder, SWT.NONE);
         tbtmSummary.setText(StringConstants.TITLE_SUMMARY);
+        
+        final ScrolledComposite scrolledComposite = new ScrolledComposite(tabFolder, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+        scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false, 1, 1));
+        scrolledComposite.setExpandHorizontal(true);
+        scrolledComposite.setExpandVertical(true);
+        scrolledComposite.setMinSize(420, 200);
+        scrolledComposite.setBackground(ColorUtil.getWhiteBackgroundColor());
 
-        Composite compositeSummary = new Composite(tabFolder, SWT.BORDER);
-        tbtmSummary.setControl(compositeSummary);
+        Composite compositeSummary = new Composite(scrolledComposite, SWT.NONE);
         compositeSummary.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false, 1, 1));
         GridLayout gl_compositeSummary = new GridLayout(1, false);
         gl_compositeSummary.horizontalSpacing = 0;
         gl_compositeSummary.verticalSpacing = 0;
         gl_compositeSummary.marginHeight = 0;
         gl_compositeSummary.marginWidth = 0;
+        gl_compositeSummary.marginRight = 10;
         compositeSummary.setLayout(gl_compositeSummary);
+        compositeSummary.setBackground(ColorUtil.getWhiteBackgroundColor());
+
+        scrolledComposite.setContent(compositeSummary);
+        tbtmSummary.setControl(scrolledComposite);
 
         Composite compositeSummaryDetails = new Composite(compositeSummary, SWT.NONE);
         compositeSummaryDetails.setBackground(ColorUtil.getWhiteBackgroundColor());
@@ -642,6 +654,7 @@ public class ReportPart implements EventHandler {
         Label lblTestSuiteId = new Label(compositeSummaryDetails, SWT.NONE);
         lblTestSuiteId.setText("Test Suite ID");
         setLabelToBeBold(lblTestSuiteId);
+        lblTestSuiteId.setBackground(ColorUtil.getWhiteBackgroundColor());
 
         txtTestSuiteId = new StyledText(compositeSummaryDetails, SWT.NONE);
         txtTestSuiteId.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
@@ -650,6 +663,7 @@ public class ReportPart implements EventHandler {
         lblHostName.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
         lblHostName.setText(StringConstants.LBL_HOST_NAME);
         setLabelToBeBold(lblHostName);
+        lblHostName.setBackground(ColorUtil.getWhiteBackgroundColor());
 
         txtHostName = new StyledText(compositeSummaryDetails, SWT.READ_ONLY);
         txtHostName.setEditable(false);
@@ -659,6 +673,7 @@ public class ReportPart implements EventHandler {
         lblOS.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
         lblOS.setText(StringConstants.LBL_OS);
         setLabelToBeBold(lblOS);
+        lblOS.setBackground(ColorUtil.getWhiteBackgroundColor());
 
         txtOS = new StyledText(compositeSummaryDetails, SWT.READ_ONLY);
         txtOS.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -667,6 +682,7 @@ public class ReportPart implements EventHandler {
         lblPlatform.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
         lblPlatform.setText("Platform");
         setLabelToBeBold(lblPlatform);
+        lblPlatform.setBackground(ColorUtil.getWhiteBackgroundColor());
 
         txtPlatform = new StyledText(compositeSummaryDetails, SWT.READ_ONLY);
         txtPlatform.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -677,6 +693,7 @@ public class ReportPart implements EventHandler {
         lblStart.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
         lblStart.setText(StringConstants.REPORT_TABLE_START_TIME_COLUMN_HEADER);
         setLabelToBeBold(lblStart);
+        lblStart.setBackground(ColorUtil.getWhiteBackgroundColor());
 
         txtStartTime = new StyledText(compositeSummaryDetails, SWT.READ_ONLY);
         txtStartTime.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -685,6 +702,7 @@ public class ReportPart implements EventHandler {
         lblEnd.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
         lblEnd.setText(StringConstants.REPORT_TABLE_END_TIME_COLUMN_HEADER);
         setLabelToBeBold(lblEnd);
+        lblEnd.setBackground(ColorUtil.getWhiteBackgroundColor());
 
         txtEndTime = new StyledText(compositeSummaryDetails, SWT.READ_ONLY);
         txtEndTime.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -693,6 +711,7 @@ public class ReportPart implements EventHandler {
         lblRuntime.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
         lblRuntime.setText(StringConstants.REPORT_TABLE_ELAPSED_TIME_COLUMN_HEADER);
         setLabelToBeBold(lblRuntime);
+        lblRuntime.setBackground(ColorUtil.getWhiteBackgroundColor());
 
         txtRunTime = new StyledText(compositeSummaryDetails, SWT.READ_ONLY);
         txtRunTime.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -703,6 +722,7 @@ public class ReportPart implements EventHandler {
         lblTotalTC.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
         lblTotalTC.setText("Total TC");
         setLabelToBeBold(lblTotalTC);
+        lblTotalTC.setBackground(ColorUtil.getWhiteBackgroundColor());
 
         txtTotalTestCase = new StyledText(compositeSummaryDetails, SWT.READ_ONLY);
         txtTotalTestCase.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -716,12 +736,14 @@ public class ReportPart implements EventHandler {
         gl_composite.marginWidth = 0;
         gl_composite.marginHeight = 0;
         composite.setLayout(gl_composite);
+        composite.setBackground(ColorUtil.getWhiteBackgroundColor());
 
         Label lblPassed = new Label(composite, SWT.NONE);
         lblPassed.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
         lblPassed.setText("Passed");
         setLabelToBeBold(lblPassed);
         lblPassed.setForeground(ColorUtil.getPassedLogBackgroundColor());
+        lblPassed.setBackground(ColorUtil.getWhiteBackgroundColor());
 
         txtTCPasses = new StyledText(composite, SWT.READ_ONLY);
         txtTCPasses.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
@@ -732,6 +754,7 @@ public class ReportPart implements EventHandler {
         lblFailed.setText("Failed");
         setLabelToBeBold(lblFailed);
         lblFailed.setForeground(ColorUtil.getFailedLogBackgroundColor());
+        lblFailed.setBackground(ColorUtil.getWhiteBackgroundColor());
 
         txtTCFailures = new StyledText(composite, SWT.READ_ONLY);
         txtTCFailures.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
@@ -742,6 +765,7 @@ public class ReportPart implements EventHandler {
         lblIncompleted.setText("Error");
         setLabelToBeBold(lblIncompleted);
         lblIncompleted.setForeground(ColorUtil.getWarningLogBackgroundColor());
+        lblIncompleted.setBackground(ColorUtil.getWhiteBackgroundColor());
 
         txtTCIncompleted = new StyledText(composite, SWT.READ_ONLY);
         txtTCIncompleted.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
