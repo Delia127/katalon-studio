@@ -69,6 +69,7 @@ import com.kms.katalon.integration.qtest.credential.IQTestCredential;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.setting.QTestAttachmentSendingType;
+import com.kms.katalon.integration.qtest.setting.QTestReportFormatType;
 import com.kms.katalon.integration.qtest.setting.QTestResultSendingType;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
@@ -469,6 +470,8 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
             QTestSettingStore.saveAttachmentSendingType(
                     (List<QTestAttachmentSendingType>) sharedData.get(QTestSettingStore.SEND_ATTACHMENTS_PROPERTY),
                     projectDir);
+            QTestSettingStore.saveFormatReportTypes(
+                    (List<QTestReportFormatType>) sharedData.get(QTestSettingStore.REPORT_FORMAT), projectDir);
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
