@@ -60,7 +60,7 @@ public class IDELauncher extends AbstractLauncher {
     public void launch(TestCaseEntity testCase) throws Exception {
         if (testCase != null) {
             executedEntity = testCase;
-            writeRunConfigToFile();
+            ExecutionUtil.writeRunConfigToFile(getRunConfiguration());
             scriptFile = generateTempTestCaseScript(testCase, runConfig);
             LauncherManager.getInstance().addLauncher(this);
             eventBroker.post(EventConstants.CONSOLE_LOG_RESET, this.getId());
@@ -74,7 +74,7 @@ public class IDELauncher extends AbstractLauncher {
         if (testSuite != null) {
             executedEntity = testSuite;
             this.testSuiteExecutedEntity = testSuiteExecutedEntity;
-            writeRunConfigToFile();
+            ExecutionUtil.writeRunConfigToFile(getRunConfiguration());
             scriptFile = generateTempTestSuiteScript(testSuite, runConfig);
             this.reRunTime = reRunTime;
             LauncherManager.getInstance().addLauncher(this);

@@ -61,7 +61,7 @@ public class TestCaseVariablePart {
 
     private static final InputValueType[] defaultInputValueTypes = { InputValueType.String, InputValueType.Number,
             InputValueType.Boolean, InputValueType.Null, InputValueType.GlobalVariable, InputValueType.TestDataValue,
-            InputValueType.Binary, InputValueType.Condition, InputValueType.TestObject, InputValueType.Property,
+            InputValueType.Binary, InputValueType.Condition, InputValueType.TestObject, InputValueType.TestData, InputValueType.Property,
             InputValueType.List, InputValueType.Map };
 
     private Composite parent;

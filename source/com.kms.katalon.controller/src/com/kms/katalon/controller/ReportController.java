@@ -97,10 +97,10 @@ public class ReportController extends EntityController {
 
         return new File(testSuiteReportFolderAtRuntime, EXECUTION_SETTING_FILE_NAME);
     }
-
-    // public boolean copyReportToProject(TestSuiteEntity testSuite, String reportFolder) throws Exception{
-    // return dataProviderSetting.getReportDataProvider().copyReportToProject(testSuite, reportFolder);
-    // }
+    
+    public File getExecutionSettingFile(String logFolderPath) {
+        return new File(logFolderPath, EXECUTION_SETTING_FILE_NAME);
+    }
 
     public Date getDateFromReportFolderName(String reportFolderName) throws ParseException {
         return dateFormat.parse(reportFolderName);

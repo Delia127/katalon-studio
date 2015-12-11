@@ -45,6 +45,7 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.KeyEvent;
@@ -82,9 +83,13 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
+import com.kms.katalon.composer.explorer.providers.EntityProvider;
+import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
@@ -146,8 +151,6 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
 
     private HTMLElement selectedElement;
 
-    private FolderEntity parentFolder;
-
     private boolean isDisposed;
 
     private TreeViewer domTreeViewer;
@@ -166,7 +169,8 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
      * Create the dialog.
      * 
      * @param parentShell
-     * @param parentFolder
+     * @param logger
+     * @param eventBroker
      * @throws Exception
      */
     public ObjectSpyDialog(Shell parentShell, Logger logger, IEventBroker eventBroker) throws Exception {
@@ -359,6 +363,11 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         gd_txtXpathInput.grabExcessVerticalSpace = true;
         gd_txtXpathInput.verticalAlignment = SWT.CENTER;
         txtXpathInput.setLayoutData(gd_txtXpathInput);
+        new Label(searchComposite, SWT.NONE);
+        new Label(searchComposite, SWT.NONE);
+        new Label(searchComposite, SWT.NONE);
+        new Label(searchComposite, SWT.NONE);
+        new Label(searchComposite, SWT.NONE);
         txtXpathInput.addKeyListener(new KeyListener() {
 
             @Override
@@ -387,11 +396,10 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         domTreeViewer.setFilters(new ViewerFilter[] { domTreeViewerFilter });
 
         vSashForm.setOrientation(SWT.VERTICAL);
-
         vSashForm.setWeights(new int[] { 4, 5 });
         hSashForm.setWeights(new int[] { 3, 8 });
 
-        return bodyComposite;
+        return mainContainer;
     }
 
     @Override
@@ -593,6 +601,10 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         elementTreeViewer.setExpandedState(object, true);
     }
 
+    private void setCheckedTreeItem(Object object) {
+        elementTreeViewer.setChecked(object, true);
+    }
+
     private HTMLFrameElement getParentElement(ITreeSelection selection) {
         HTMLElement element = (HTMLElement) selection.getFirstElement();
         HTMLFrameElement parentElement = null;
@@ -606,6 +618,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
 
     private void addElementTreeToolbar(Composite explorerComposite) {
         mainToolbar = new ToolBar(explorerComposite, SWT.FLAT | SWT.RIGHT);
+        mainToolbar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
 
         addPageElementToolItem = new ToolItem(mainToolbar, SWT.NONE);
         addPageElementToolItem.setImage(ImageConstants.IMG_24_NEW_PAGE_ELEMENT);
@@ -639,6 +652,9 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                             HTMLFrameElement newFrameElement = HTMLElementUtil.generateNewFrameElement(parentElement);
                             refreshTree(elementTreeViewer, parentElement);
                             setSelectedTreeItem(newFrameElement);
+                            if (elementTreeViewer.getChecked(parentElement)) {
+                                setCheckedTreeItem(newFrameElement);
+                            }
                         }
                     }
                 }
@@ -661,6 +677,9 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                             HTMLElement newElement = HTMLElementUtil.generateNewElement(parentElement);
                             refreshTree(elementTreeViewer, parentElement);
                             setSelectedTreeItem(newElement);
+                            if (elementTreeViewer.getChecked(parentElement)) {
+                                setCheckedTreeItem(newElement);
+                            }
                         }
                     }
                 }
@@ -711,25 +730,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 try {
-                    eventBroker.send(EventConstants.OBJECT_SPY_RESET_SELECTED_TARGET, "");
-                    if (parentFolder != null) {
-                        for (HTMLPageElement pageElement : elements) {
-                            FolderEntity importedFolder = null;
-                            if (elementTreeViewer.getChecked(pageElement) || elementTreeViewer.getGrayed(pageElement)) {
-                                importedFolder = ObjectRepositoryController.getInstance().importWebElementFolder(
-                                        HTMLElementUtil.convertPageElementToFolderEntity(pageElement, parentFolder),
-                                        parentFolder);
-                            }
-                            for (HTMLElement childElement : pageElement.getChildElements()) {
-                                addCheckedElement(childElement, (importedFolder != null) ? importedFolder
-                                        : parentFolder, null);
-                            }
-                            eventBroker.post(EventConstants.OBJECT_SPY_REFRESH_SELECTED_TARGET, "");
-                        }
-                    } else {
-                        MessageDialog.openWarning(getParentShell(), StringConstants.WARN,
-                                StringConstants.DIA_WARN_SELECT_PARENT_FOLDER_FOR_ELEMENT);
-                    }
+                    addElementToObjectRepository();
                 } catch (Exception exception) {
                     logger.error(exception);
                     MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, exception.getMessage());
@@ -794,6 +795,27 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                 }
             }
         });
+    }
+
+    private void addElementToObjectRepository() throws Exception {
+        AddToObjectRepositoryDialog addToObjectRepositoryDialog = new AddToObjectRepositoryDialog(getParentShell(),
+                new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(new EntityProvider()));
+        if (addToObjectRepositoryDialog.open() == Window.OK) {
+            Object object = addToObjectRepositoryDialog.getFirstResult();
+            if (object instanceof FolderTreeEntity) {
+                FolderEntity parentFolder = (FolderEntity) ((FolderTreeEntity) object).getObject();
+                for (HTMLPageElement pageElement : elements) {
+                    if (elementTreeViewer.getChecked(pageElement) || elementTreeViewer.getGrayed(pageElement)) {
+                        for (HTMLElement childElement : pageElement.getChildElements()) {
+                            addCheckedElement(childElement, parentFolder, null);
+                        }
+                    }
+                }
+                eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, object);
+                eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, object);
+                eventBroker.send(EventConstants.EXPLORER_EXPAND_TREE_ENTITY, object);
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -919,6 +941,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
     @Override
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
+        shell.setMinimumSize(getInitialSize());
         shell.setText(StringConstants.DIA_TITLE_OBJ_SPY);
     }
 
@@ -1032,14 +1055,6 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
 
     public boolean isDisposed() {
         return isDisposed;
-    }
-
-    public FolderEntity getParentFolder() {
-        return parentFolder;
-    }
-
-    public void setParentFolder(FolderEntity parentFolder) {
-        this.parentFolder = parentFolder;
     }
 
     private Font getFontBold(Label label) {
