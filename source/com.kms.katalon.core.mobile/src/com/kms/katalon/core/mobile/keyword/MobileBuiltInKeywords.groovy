@@ -567,8 +567,6 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      * @param timeout
      *      system will wait at most timeout (seconds) to return result
      * @param flowControl
-     * @return
-     *      true if the element is presented; otherwise, false
      * @throws StepFailedException
      */
     @CompileStatic
@@ -587,10 +585,10 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     }
     
     /**
-     * Verify if current device's mode is landscape or not
+     * Verify if current device is in landscape mode
      * @param flowControl
      * @return
-     *      true if the element is presented; otherwise, false
+     *      true if the device is in landscape mode ; otherwise, false
      * @throws StepFailedException
      */
     @CompileStatic
