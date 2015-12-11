@@ -5,6 +5,11 @@ import java.text.MessageFormat;
 import com.kms.katalon.execution.constants.StringConstants;
 
 public class LauncherResult {
+    public static final int RETURN_CODE_PASSED = 0;
+    public static final int RETURN_CODE_FAILED = 1;
+    public static final int RETURN_CODE_ERROR = 2;
+    public static final int RETURN_CODE_FAILED_AND_ERROR = 3;
+    
 	private int totalTestCases;
 	private int numPasses;
 	private int numFailures;
@@ -67,6 +72,28 @@ public class LauncherResult {
 	
 	public boolean isNotPassed() {
 		return numErrors + numFailures > 0;
+	}
+	
+	public boolean hasErrors() {
+	    return numErrors > 0;
+	}
+	
+	public boolean hasFailures() {
+	    return numFailures > 0;
+	}
+	
+	public int getReturnCode() {
+	    if (!isNotPassed()) {
+	        return RETURN_CODE_PASSED;
+	    } else {
+	        if (hasErrors() && hasFailures()) {
+	            return RETURN_CODE_FAILED_AND_ERROR;
+	        } else if (hasErrors()) {
+	            return RETURN_CODE_ERROR;
+	        } else {
+	            return RETURN_CODE_FAILED;
+	        }
+	    }
 	}
 	
 	@Override

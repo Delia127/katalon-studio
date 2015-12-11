@@ -1,7 +1,10 @@
 package com.kms.katalon.core.logging.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 
@@ -76,18 +79,16 @@ public abstract class AbstractLogRecord implements ILogRecord {
         TestStatus testStatus = new TestStatus();
         testStatus.setStatusValue(TestStatusValue.PASSED);
         for (ILogRecord logRecord : getChildRecords()) {
-            if (!(logRecord instanceof TestCaseLogRecord && ((TestCaseLogRecord) logRecord).isOptional())
-                    && (logRecord.getStatus().getStatusValue() == TestStatusValue.ERROR || logRecord.getStatus()
-                            .getStatusValue() == TestStatusValue.FAILED)) {
-                if (logRecord.getStatus().getStatusValue() == TestStatusValue.ERROR) {
-                    testStatus.setStatusValue(TestStatusValue.ERROR);
-                } else if (logRecord.getStatus().getStatusValue() == TestStatusValue.FAILED) {
-                    testStatus.setStatusValue(TestStatusValue.FAILED);
-                }
-                setMessage(logRecord.getMessage());
-                break;
+            if (!(logRecord instanceof TestCaseLogRecord && ((TestCaseLogRecord) logRecord).isOptional())) {
+            	TestStatusValue logRecordStatusValue = logRecord.getStatus().getStatusValue();
+				if (logRecordStatusValue == TestStatusValue.ERROR || logRecordStatusValue == TestStatusValue.FAILED) {
+					testStatus.setStatusValue(logRecordStatusValue);
+	                setMessage(logRecord.getMessage());
+	                break;
+				}
             }
         }
+        
         return testStatus;
     }
 
@@ -117,10 +118,10 @@ public abstract class AbstractLogRecord implements ILogRecord {
         childRecord.setParentLogRecord(this);
     }
 
-    public void removeChildRecord(ILogRecord childRecord){
-    	childRecords.remove(childRecord);
+    public void removeChildRecord(ILogRecord childRecord) {
+        childRecords.remove(childRecord);
     }
-    
+
     public String getMessage() {
         return message;
     }
@@ -128,12 +129,40 @@ public abstract class AbstractLogRecord implements ILogRecord {
     public void setMessage(String message) {
         this.message = message;
     }
-    
+
     public ILogRecord getParentLogRecord() {
         return parentLogRecord;
     }
 
     public void setParentLogRecord(ILogRecord parentLogRecord) {
         this.parentLogRecord = parentLogRecord;
+    }
+
+    /**
+     * Returns an array of attachments of current record's all descendant.
+     * 
+     * @return An array of String that each element represents for the location of an attachment file.
+     */
+    public String[] getAttachments() {
+        List<String> attachments = new ArrayList<String>();
+
+        ILogRecord[] childRecords = getChildRecords();
+
+        if (childRecords != null) {
+            for (ILogRecord childRc : childRecords) {
+                attachments.addAll(Arrays.asList(((AbstractLogRecord) childRc).getAttachments()));
+            }
+        }
+
+        String attachment = null;
+        
+        if (this instanceof MessageLogRecord) {
+            attachment = ((MessageLogRecord) this).getAttachment();
+        }
+        if (!StringUtils.isBlank(attachment)) {
+            attachments.add(attachment);    
+        }
+
+        return attachments.toArray(new String[attachments.size()]);
     }
 }

@@ -17,7 +17,8 @@ Require-Bundle: com.kms.katalon.entity;bundle-version="1.0.0",
  net.lingala.zip4j,
  org.apache.commons.io,
  com.kms.katalon.constant,
- org.apache.commons.lang
+ org.apache.commons.lang,
+ com.kms.katalon.jasper;bundle-version="1.0.0"
 Export-Package: com.kms.katalon.integration.qtest,
  com.kms.katalon.integration.qtest.constants,
  com.kms.katalon.integration.qtest.credential,

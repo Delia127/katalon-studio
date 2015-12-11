@@ -1,15 +1,17 @@
 package com.kms.katalon.core.reporting;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
-import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
+import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 
 public class JsSuiteModel extends JsModel {
 
+    private List<ILogRecord> fFilteredTestCases;
 	private List<String> listStrings;
 	private TestSuiteLogRecord suiteLog;
 	private JsModel metaData;
@@ -23,6 +25,14 @@ public class JsSuiteModel extends JsModel {
 		super();
 		this.suiteLog = suiteLog;
 		this.listStrings = listStrings;
+        fFilteredTestCases = Arrays.asList(suiteLog.getChildRecords());
+    }
+
+    public JsSuiteModel(TestSuiteLogRecord suiteLog, List<String> listStrings, List<ILogRecord> filteredTestCases) {
+        super();
+        this.suiteLog = suiteLog;
+        this.listStrings = listStrings;
+        fFilteredTestCases = filteredTestCases;
 	}
 
 	private void init() {
@@ -43,7 +53,7 @@ public class JsSuiteModel extends JsModel {
 		// Child tests
 		tests = new ArrayList<JsTestModel>();
 		for (ILogRecord testLog : suiteLog.getChildRecords()) {
-			if (testLog instanceof TestCaseLogRecord) {
+            if (testLog instanceof TestCaseLogRecord && fFilteredTestCases.contains(testLog)) {
 				tests.add(new JsTestModel((TestCaseLogRecord) testLog, listStrings));
 			}
 		}
@@ -82,7 +92,7 @@ public class JsSuiteModel extends JsModel {
 				totalErr++;
 			}
 		}
-		String statValue = TestStatusValue.indexOf(suiteStat) + "";
+		String statValue = suiteStat.ordinal() + "";
 		status.props.add(new JsModelProperty("status", statValue, null));
 		status.props.add(new JsModelProperty("suiteStartTime", suiteStartTime + "", null));
 		status.props.add(new JsModelProperty("elapsedTime", elapsedTime + "", null));

@@ -55,7 +55,7 @@ public class TestCaseCellEditor extends DialogCellEditor {
 					new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(entityProvider));
 
 			dialog.setAllowMultiple(false);
-			dialog.setTitle(StringConstants.EDI_TITLE_TEST_DATA_BROWSER);
+			dialog.setTitle(StringConstants.DIA_TITLE_TEST_CASE_BROWSER);
 			ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
 			if (currentProject != null) {
 				FolderEntity rootFolder = FolderController.getInstance().getTestCaseRoot(currentProject);
