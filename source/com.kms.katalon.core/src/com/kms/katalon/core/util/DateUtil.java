@@ -13,13 +13,22 @@ public class DateUtil {
         long totalMinutes = totalSeconds / 60;
 
         int elapsedMillis = (int) (totalMillis % 1000);
-        int elapsedSeconds = (int) (totalSeconds % 60);
+        double elapsedSeconds = (double) (totalSeconds % 60) +  ((double) elapsedMillis / 1000);
         int elapsedMinutes = (int) (totalMinutes % 60);
         int elapsedHours = (int) (totalMinutes / 60);
 
-        return ((elapsedHours > 0) ? Integer.toString(elapsedHours) + "h - " : "")
-                + ((elapsedMinutes > 0) ? Integer.toString(elapsedMinutes) + "m - " : "")
-                + elapsedSeconds + "." + elapsedMillis+ "s";
+        StringBuilder elapsedTimeBuilder = new StringBuilder();
+        if (elapsedHours > 0) {
+            elapsedTimeBuilder.append(Integer.toString(elapsedHours)).append("h - ");
+        }
+        
+        if (elapsedMinutes > 0) {
+            elapsedTimeBuilder.append(Integer.toString(elapsedMinutes)).append("m - ");
+        }
+        
+        elapsedTimeBuilder.append(Double.toString(elapsedSeconds)).append("s");
+        
+        return elapsedTimeBuilder.toString();
     }
 
     public static String getDateTimeFormatted(long timeValue) {
