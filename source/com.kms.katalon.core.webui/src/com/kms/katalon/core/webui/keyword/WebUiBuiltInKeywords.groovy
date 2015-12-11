@@ -682,7 +682,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_VERIFY_OBJ_X_TO_BE_CLICKABLE, to.getObjectId())
         : StringConstants.KW_MSG_VERIFY_OBJ_TO_BE_CLICKABLE)
     }
-    
+
     /***
      * Verify if the given element is NOT clickable
      * @param to
@@ -3234,4 +3234,38 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_UPLOAD_FILE_X_TO_OBJ_Y, fileAbsolutePath, to.getObjectId())
         : MessageFormat.format(StringConstants.KW_MSG_CANNOT_UPLOAD_FILE_X, fileAbsolutePath))
     }
+
+    /**
+     * scrolls a element into the visible area of the browser window
+     * @param to
+     *    represent a web element
+     * @param fileAbsolutePath
+     *       absolute path of the file on local machine
+     * @param flowControl
+     *       flow control
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void scrollToElement(TestObject to, int timeOut, FailureHandling flowControl) throws StepFailedException {
+        WebUIKeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = false;
+            try {
+                WebUiCommonHelper.checkTestObjectParameter(to)
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
+                isSwitchIntoFrame = switchToFrame(to);
+                WebElement webElement = findWebElement(to);
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SCROLLING_TO_OBJ_X, to.getObjectId()));
+                ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript("arguments[0].scrollIntoView();", webElement);
+                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SCROLLING_TO_OBJ_X, to.getObjectId()));
+            } finally {
+                if (isSwitchIntoFrame) {
+                    switchToDefaultContent();
+                }
+            }
+        }
+        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_SCROLLING_TO_OBJ_X, to.getObjectId())
+        : StringConstants.KW_MSG_CANNOT_SCROLLING_TO_OBJ)
+    }
+
 }
