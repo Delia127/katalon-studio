@@ -1,9 +1,11 @@
 package com.kms.katalon.core.util;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class DateUtil {
+    public static final DecimalFormat SECOND_FORMAT = new DecimalFormat("#0.000");
     public static String getElapsedTime(long startTime, long endTime) {
         if (endTime < startTime) {
             return "";
@@ -13,7 +15,7 @@ public class DateUtil {
         long totalMinutes = totalSeconds / 60;
 
         int elapsedMillis = (int) (totalMillis % 1000);
-        double elapsedSeconds = (double) (totalSeconds % 60) +  ((double) elapsedMillis / 1000);
+        double elapsedSeconds = (int) (totalSeconds % 60) +  ((double) elapsedMillis / 1000);
         int elapsedMinutes = (int) (totalMinutes % 60);
         int elapsedHours = (int) (totalMinutes / 60);
 
@@ -25,8 +27,7 @@ public class DateUtil {
         if (elapsedMinutes > 0) {
             elapsedTimeBuilder.append(Integer.toString(elapsedMinutes)).append("m - ");
         }
-        
-        elapsedTimeBuilder.append(Double.toString(elapsedSeconds)).append("s");
+        elapsedTimeBuilder.append(SECOND_FORMAT.format(elapsedSeconds)).append("s");
         
         return elapsedTimeBuilder.toString();
     }
