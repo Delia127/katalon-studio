@@ -970,7 +970,15 @@ public class AstTreeTableInputUtil {
             return generateObjectMethodCall(null);
         }
         if (methodName.equals("delay") && paramName.equals("second")) {
-            return new ConstantExpression(0);
+            if (existingParam == null) {
+                return new ConstantExpression(0);
+            }
+            try {
+                Integer.parseInt(existingParam.getText());
+            } catch (NumberFormatException e) {
+                // if parse into number fail then return 0
+                return new ConstantExpression(0);
+            }
         }
         if (existingParam instanceof Expression) {
             return existingParam;

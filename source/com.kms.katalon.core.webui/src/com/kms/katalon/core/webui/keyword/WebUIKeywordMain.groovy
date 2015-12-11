@@ -23,7 +23,11 @@ public class WebUIKeywordMain extends KeywordMain {
 		try {
 			return closure.call();
 		} catch (Throwable e) {
-			stepFailed(errorMessage, flowControl, ExceptionsUtil.getMessageForThrowable(e), takeScreenShot);
+            if (!(e instanceof StepFailedException)) {
+                stepFailed(errorMessage, flowControl, ExceptionsUtil.getMessageForThrowable(e), takeScreenShot);
+            } else {
+                throw e;
+            }
 		}
 	}
 
