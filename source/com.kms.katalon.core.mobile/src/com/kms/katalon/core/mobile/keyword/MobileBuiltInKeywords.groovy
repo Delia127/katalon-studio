@@ -15,10 +15,12 @@ import org.apache.commons.lang.StringUtils
 import org.openqa.selenium.Dimension
 import org.openqa.selenium.OutputType
 import org.openqa.selenium.Point
+import org.openqa.selenium.ScreenOrientation
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.interactions.touch.TouchActions
 
 import com.kms.katalon.core.annotation.Keyword
+import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.helper.KeywordHelper
 import com.kms.katalon.core.keyword.BuiltinKeywords
@@ -582,6 +584,65 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ELEMENT_TEXT_IS_CLEARED, to.getObjectId()));
         }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CLEAR_TEXT_OF_ELEMENT, to.getObjectId())
         : StringConstants.KW_MSG_FAILED_TO_CLEAR_TEXT_OF_ELEMENT);
+    }
+    
+    /**
+     * Verify if current device's mode is landscape or not
+     * @param flowControl
+     * @return
+     *      true if the element is presented; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
+    public static void verifyIsLandscape(FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            AppiumDriver driver = getAnyAppiumDriver();
+            String context = driver.getContext();
+            try {
+                switchToNativeContext(driver);
+                if (driver.getOrientation() == ScreenOrientation.LANDSCAPE) {
+                    logger.logPassed(StringConstants.KW_LOG_PASSED_VERIFY_LANDSCAPE);
+                    return true;
+                } else {
+                    KeywordMain.stepFailed(StringConstants.KW_LOG_FAILED_VERIFY_LANDSCAPE, flowControl, null);
+                    return false;
+                }
+            } finally {
+                driver.context(context);
+            }
+        }, flowControl, StringConstants.KW_MSG_UNABLE_VERIFY_LANDSCAPE);
+    }
+    
+    @CompileStatic
+    private static boolean switchToNativeContext(AppiumDriver driver) {
+        for (String context : driver.getContextHandles()) {
+            if (context.contains("NATIVE")) {
+                driver.context(context);
+            }
+        }
+    }
+    
+    /**
+     * Internal method to get any appium driver from either mobile web or native app for general keywords
+     */
+    @CompileStatic
+    private static AppiumDriver getAnyAppiumDriver() {
+        AppiumDriver<?> driver = null;
+        try {
+            driver = MobileDriverFactory.getDriver();
+        } catch (StepFailedException e) {
+            // Native app not running, so get from driver store
+            for (Object driverObject : RunConfiguration.getStoredDrivers()) {
+                if (driverObject instanceof AppiumDriver<?>) {
+                    driver = (AppiumDriver) driverObject;
+                }
+            }
+        }
+        if (driver == null) {
+            throw new StepFailedException(StringConstants.KW_MSG_UNABLE_FIND_DRIVER);
+        }
+        return driver;
     }
 
     /**

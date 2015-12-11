@@ -163,6 +163,7 @@ public class DriverFactory {
                         driver.getName()));
             }
             localWebServerStorage.set(webDriver);
+            RunConfiguration.storeDriver(webDriver);
             setTimeout();
             logBrowserRunData(webDriver);
             return webDriver;

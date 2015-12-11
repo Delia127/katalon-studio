@@ -60,6 +60,10 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String KW_LOG_PASSED_ELEMENT_TEXT_IS_CLEARED = "Element {0} text is cleared";
 	public static final String KW_MSG_FAILED_TO_CLEAR_TEXT_OF_ELEMENT_X = "Failed clear text of element {0}";
 	public static final String KW_MSG_FAILED_TO_CLEAR_TEXT_OF_ELEMENT = "Failed clear text of element";
+	public static final String KW_LOG_PASSED_VERIFY_LANDSCAPE = "Device is in landspace mode";
+	public static final String KW_LOG_FAILED_VERIFY_LANDSCAPE = "Device is NOT in landspace mode";
+	public static final String KW_MSG_UNABLE_VERIFY_LANDSCAPE = "Unable to verify if device is in landspace mode";
+	public static final String KW_MSG_UNABLE_FIND_DRIVER = "No driver found";
 
 	public static final String KW_CATEGORIZE_APPLICATION = "Application";
 	public static final String KW_CATEGORIZE_ATTRIBUTE = "Attribute";
