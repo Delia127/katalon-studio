@@ -297,9 +297,23 @@ public class ReportUtil {
             ((ILogRecord) object).setEndTime(xmlLogRecord.getMillis());
         }
     }
+    
+    private static String getTestLogName(XmlLogRecord xmlLogRecord) {
+        String testLogName = xmlLogRecord.getMessage();
+        if (testLogName == null) {
+            return "";
+        }
+        
+        String startKeywordString = StringConstants.LOG_START_KEYWORD + " : ";
+        if (testLogName.startsWith(startKeywordString)) {
+            return testLogName.substring(startKeywordString.length(), testLogName.length());
+        } else {
+            return testLogName;
+        }
+    }
 
     private static void processStartKeywordLog(Deque<Object> stack, XmlLogRecord xmlLogRecord) {
-        TestStepLogRecord testStepLogRecord = new TestStepLogRecord(xmlLogRecord.getMessage().split(":")[1].trim());
+        TestStepLogRecord testStepLogRecord = new TestStepLogRecord(getTestLogName(xmlLogRecord));
         testStepLogRecord.setStartTime(xmlLogRecord.getMillis());
         testStepLogRecord.setDescription(xmlLogRecord.getProperties().containsKey(
                 StringConstants.XML_LOG_DESCRIPTION_PROPERTY) ? xmlLogRecord.getProperties().get(
@@ -322,7 +336,7 @@ public class ReportUtil {
     private static void processStartTestCaseLog(Deque<Object> stack, XmlLogRecord xmlLogRecord) {
         TestCaseLogRecord testCaseLogRecord = new TestCaseLogRecord(xmlLogRecord.getProperties().containsKey(
                 StringConstants.XML_LOG_NAME_PROPERTY) ? xmlLogRecord.getProperties().get(
-                StringConstants.XML_LOG_NAME_PROPERTY) : xmlLogRecord.getMessage().split(":")[1].trim());
+                StringConstants.XML_LOG_NAME_PROPERTY) : getTestLogName(xmlLogRecord));
         testCaseLogRecord.setStartTime(xmlLogRecord.getMillis());
         testCaseLogRecord
                 .setId(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_ID_PROPERTY) ? xmlLogRecord
@@ -346,8 +360,7 @@ public class ReportUtil {
         testSuiteLogRecord.setStartTime(xmlLogRecord.getMillis());
         testSuiteLogRecord
                 .setName(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_NAME_PROPERTY) ? xmlLogRecord
-                        .getProperties().get(StringConstants.XML_LOG_NAME_PROPERTY) : xmlLogRecord.getMessage().split(
-                        ":")[1].trim());
+                        .getProperties().get(StringConstants.XML_LOG_NAME_PROPERTY) : getTestLogName(xmlLogRecord));
         testSuiteLogRecord
                 .setId(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_ID_PROPERTY) ? xmlLogRecord
                         .getProperties().get(StringConstants.XML_LOG_ID_PROPERTY) : "");
