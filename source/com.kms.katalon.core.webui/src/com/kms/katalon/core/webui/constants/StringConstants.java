@@ -139,6 +139,8 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_MSG_OBJ_IS_CLICKABLE_AFTER_X_SEC = "Object ''{0}'' is not clickable after {1} second(s)";
     public static final String KW_MSG_CANNOT_WAIT_FOR_OBJ_TO_BE_NOT_CLICKABLE = "Unable to wait for object to be not clickable";
     public static final String KW_MSG_CANNOT_WAIT_OBJ_X_TO_BE__NOTCLICKABLE = "Unable to wait for object ''{0}'' to be not clickable";
+    public static final String KW_MSG_VERIFY_OBJ_TO_BE_CLICKABLE = "Unable to verify object to be clickable";
+    public static final String KW_MSG_VERIFY_OBJ_X_TO_BE_CLICKABLE = "Unable to verify object ''{0}'' to be clickable";
 	public static final String KW_LOG_INFO_CLICKING_ON_OBJ = "Clicking on object: ''{0}''";
 	public static final String KW_LOG_PASSED_OBJ_CLICKED = "Object: ''{0}'' is clicked on";
 	public static final String KW_MSG_CANNOT_CLICK_ON_OBJ_X = "Unable to click on object ''{0}''";
