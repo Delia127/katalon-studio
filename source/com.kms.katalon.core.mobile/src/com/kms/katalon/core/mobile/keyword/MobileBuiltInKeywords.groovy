@@ -44,7 +44,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      */
     @Deprecated()
     private static AppiumDriver driver;
-    
+
     //Device name should be selected by user from a UI Form
     //private static String deviceName = "LGE Nexus 4 5.1.1";
 
@@ -92,11 +92,17 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
     public static void pressBack(FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
-            AppiumDriver<?> driver = MobileDriverFactory.getDriver();
-            if (driver instanceof AndroidDriver) {
-                ((AndroidDriver) driver).pressKeyCode(AndroidKeyCode.BACK);
-            } else {
-                KeywordMain.stepFailed(StringConstants.KW_MSG_UNSUPPORT_ACT_FOR_THIS_DEVICE, flowControl, null);
+            AppiumDriver<?> driver = getAnyAppiumDriver();
+            String context = driver.getContext();
+            try {
+                switchToNativeContext(driver);
+                if (driver instanceof AndroidDriver) {
+                    ((AndroidDriver) driver).pressKeyCode(AndroidKeyCode.BACK);
+                } else {
+                    KeywordMain.stepFailed(StringConstants.KW_MSG_UNSUPPORT_ACT_FOR_THIS_DEVICE, flowControl, null);
+                }
+            } finally {
+                driver.context(context)
             }
             logger.logPassed(StringConstants.KW_LOG_PASSED_PRESS_BACK_BTN);
         }, flowControl, StringConstants.KW_MSG_CANNOT_PRESS_BACK_BTN)
@@ -135,18 +141,25 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
     public static void takeScreenshot(String fileName, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
-            File tempFile = MobileDriverFactory.getDriver().getScreenshotAs(OutputType.FILE);
-            if (!tempFile.exists()) {
-                KeywordMain.stepFailed(StringConstants.KW_MSG_UNABLE_TO_TAKE_SCREENSHOT, flowControl, null);
+            AppiumDriver<?> driver = getAnyAppiumDriver();
+            String context = driver.getContext();
+            try {
+                switchToNativeContext(driver);
+                File tempFile = driver.getScreenshotAs(OutputType.FILE);
+                if (!tempFile.exists()) {
+                    KeywordMain.stepFailed(StringConstants.KW_MSG_UNABLE_TO_TAKE_SCREENSHOT, flowControl, null);
+                }
+                try{
+                    FileUtils.copyFile(tempFile, new File(fileName));
+                    FileUtils.forceDelete(tempFile);
+                } catch (Exception e) {
+                    logger.logWarning(e.getMessage());
+                    // do nothing
+                }
+                logger.logPassed(StringConstants.KW_LOG_PASSED_SCREENSHOT_IS_TAKEN);
+            } finally {
+                driver.context(context)
             }
-            try{
-                FileUtils.copyFile(tempFile, new File(fileName));
-                FileUtils.forceDelete(tempFile);
-            } catch (Exception e) {
-                logger.logWarning(e.getMessage());
-                // do nothing
-            }
-            logger.logPassed(StringConstants.KW_LOG_PASSED_SCREENSHOT_IS_TAKEN);
         }, flowControl, StringConstants.KW_MSG_UNABLE_TO_TAKE_SCREENSHOT)
     }
 
@@ -159,19 +172,25 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_NOTIFICATION)
     public static void openNotifications(FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
-            AppiumDriver<?> driver = MobileDriverFactory.getDriver();
-            if (driver instanceof AndroidDriver) {
-                AndroidDriver androidDriver = (AndroidDriver) driver;
-                Object version = androidDriver.getCapabilities().getCapability("platformVersion");
-                if (version != null && String.valueOf(version).compareTo("4.3") >= 0) {
-                    ((AndroidDriver) driver).openNotifications();
-                } else {
-                    MobileCommonHelper.swipe(driver, 50, 1, 50, 300);
+            AppiumDriver<?> driver = getAnyAppiumDriver();
+            String context = driver.getContext();
+            try {
+                switchToNativeContext(driver);
+                if (driver instanceof AndroidDriver) {
+                    AndroidDriver androidDriver = (AndroidDriver) driver;
+                    Object version = androidDriver.getCapabilities().getCapability("platformVersion");
+                    if (version != null && String.valueOf(version).compareTo("4.3") >= 0) {
+                        ((AndroidDriver) driver).openNotifications();
+                    } else {
+                        MobileCommonHelper.swipe(driver, 50, 1, 50, 300);
+                    }
+                } else if (driver instanceof IOSDriver) {
+                    MobileCommonHelper.swipe(driver, 50, 0, 50, 300);
                 }
-            } else if (driver instanceof IOSDriver) {
-                MobileCommonHelper.swipe(driver, 50, 0, 50, 300);
+                logger.logPassed(StringConstants.KW_MSG_PASSED_OPEN_NOTIFICATIONS);
+            } finally {
+                driver.context(context)
             }
-            logger.logPassed(StringConstants.KW_MSG_PASSED_OPEN_NOTIFICATIONS);
         }, flowControl, StringConstants.KW_MSG_CANNOT_OPEN_NOTIFICATIONS)
     }
 
@@ -184,13 +203,19 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
     public static void pressHome(FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
-            AppiumDriver<?> driver = MobileDriverFactory.getDriver();
-            if (driver instanceof AndroidDriver) {
-                ((AndroidDriver)driver).pressKeyCode(AndroidKeyCode.HOME);
-            } else {
-                KeywordMain.stepFailed(StringConstants.KW_MSG_UNSUPPORT_ACT_FOR_THIS_DEVICE, flowControl, null);
+            AppiumDriver<?> driver = getAnyAppiumDriver();
+            String context = driver.getContext();
+            try {
+                if (driver instanceof AndroidDriver) {
+                    switchToNativeContext(driver);
+                    ((AndroidDriver)driver).pressKeyCode(AndroidKeyCode.HOME);
+                } else {
+                    KeywordMain.stepFailed(StringConstants.KW_MSG_UNSUPPORT_ACT_FOR_THIS_DEVICE, flowControl, null);
+                }
+                logger.logPassed(StringConstants.KW_LOG_PASSED_HOME_BTN_PRESSED);
+            } finally {
+                driver.context(context)
             }
-            logger.logPassed(StringConstants.KW_LOG_PASSED_HOME_BTN_PRESSED);
         }, flowControl, StringConstants.KW_MSG_CANNOT_PRESS_HOME_BTN);
     }
 
@@ -302,10 +327,17 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_NOTIFICATION)
     public static void closeNotifications(FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
-            AppiumDriver<?> driver = MobileDriverFactory.getDriver();
-            int height = driver.manage().window().getSize().height;
-            MobileCommonHelper.swipe(driver, 50, height - 1, 50, 1);
-            logger.logPassed(StringConstants.KW_LOG_PASSED_NOTIFICATION_CLOSED);
+            AppiumDriver<?> driver = getAnyAppiumDriver();
+            String context = driver.getContext();
+            try {
+                switchToNativeContext(driver);
+                int height = driver.manage().window().getSize().height;
+                MobileCommonHelper.swipe(driver, 50, height - 1, 50, 1);
+                logger.logPassed(StringConstants.KW_LOG_PASSED_NOTIFICATION_CLOSED);
+            } finally {
+                driver.context(context)
+            }
+
         }, flowControl, StringConstants.KW_MSG_CANNOT_CLOSE_NOTIFICATIONS);
     }
 
@@ -320,38 +352,46 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
     public static void toggleAirplaneMode(String mode, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
-            boolean isTurnOn = false;
-            if (StringUtils.equalsIgnoreCase("yes", mode)
-            || StringUtils.equalsIgnoreCase("on", mode)
-            || StringUtils.equalsIgnoreCase("true", mode)) {
-                isTurnOn = true;
-            }
-            AppiumDriver<?> driver = MobileDriverFactory.getDriver();
-            if (driver instanceof AndroidDriver) {
-                AndroidDriver androidDriver = (AndroidDriver) driver;
-                androidDriver.setNetworkConnection(new NetworkConnectionSetting(isTurnOn, !isTurnOn, !isTurnOn));
-            } else {
-                String deviceModel = MobileCommonHelper.getDeviceModel();
-                //ResourceBundle resourceBundle = ResourceBundle.getBundle("resource");
-                //String[] point = resourceBundle.getString(deviceModel).split(";");
-                if(MobileCommonHelper.deviceModels.get(deviceModel) == null){
-                    throw new StepFailedException("Device info not found. Please use ideviceinfo -u <udid> to read ProductType of iOS devices");
-                }
-                if(MobileCommonHelper.airPlaneButtonCoords.get(MobileCommonHelper.deviceModels.get(deviceModel)) == null 
-                    || MobileCommonHelper.airPlaneButtonCoords.get(MobileCommonHelper.deviceModels.get(deviceModel)).equals("")) {
-                    throw new StepFailedException("AirplaneMode button coordinator not found.");
-                }
+            AppiumDriver<?> driver = getAnyAppiumDriver();
+            String context = driver.getContext();
+            try {
+                switchToNativeContext(driver);
 
-                String[] point = MobileCommonHelper.airPlaneButtonCoords.get(MobileCommonHelper.deviceModels.get(deviceModel)).split(";");
-                int x = Integer.parseInt(point[0]);
-                int y = Integer.parseInt(point[1]);
-                Dimension size = driver.manage().window().getSize();
-                MobileCommonHelper.swipe(driver, 50, size.height, 50, size.height - 300);
-                Thread.sleep(500);
-                driver.tap(1, x, y, 500);
-                MobileCommonHelper.swipe(driver, 50, 1, 50, size.height);
+                boolean isTurnOn = false;
+                if (StringUtils.equalsIgnoreCase("yes", mode)
+                || StringUtils.equalsIgnoreCase("on", mode)
+                || StringUtils.equalsIgnoreCase("true", mode)) {
+                    isTurnOn = true;
+                }
+                if (driver instanceof AndroidDriver) {
+                    AndroidDriver androidDriver = (AndroidDriver) driver;
+                    androidDriver.setNetworkConnection(new NetworkConnectionSetting(isTurnOn, !isTurnOn, !isTurnOn));
+                } else {
+                    String deviceModel = MobileCommonHelper.getDeviceModel();
+                    //ResourceBundle resourceBundle = ResourceBundle.getBundle("resource");
+                    //String[] point = resourceBundle.getString(deviceModel).split(";");
+                    if(MobileCommonHelper.deviceModels.get(deviceModel) == null){
+                        throw new StepFailedException("Device info not found. Please use ideviceinfo -u <udid> to read ProductType of iOS devices");
+                    }
+                    if(MobileCommonHelper.airPlaneButtonCoords.get(MobileCommonHelper.deviceModels.get(deviceModel)) == null
+                    || MobileCommonHelper.airPlaneButtonCoords.get(MobileCommonHelper.deviceModels.get(deviceModel)).equals("")) {
+                        throw new StepFailedException("AirplaneMode button coordinator not found.");
+                    }
+
+                    String[] point = MobileCommonHelper.airPlaneButtonCoords.get(MobileCommonHelper.deviceModels.get(deviceModel)).split(";");
+                    int x = Integer.parseInt(point[0]);
+                    int y = Integer.parseInt(point[1]);
+                    Dimension size = driver.manage().window().getSize();
+                    MobileCommonHelper.swipe(driver, 50, size.height, 50, size.height - 300);
+                    Thread.sleep(500);
+                    driver.tap(1, x, y, 500);
+                    MobileCommonHelper.swipe(driver, 50, 1, 50, size.height);
+                }
+                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TOGGLE_AIRPLANE_MODE, mode));
+            } finally {
+                driver.context(context)
             }
-            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TOGGLE_AIRPLANE_MODE, mode));
+
         }, flowControl, StringConstants.KW_MSG_CANNOT_TOGGLE_AIRPLANE_MODE);
     }
 
@@ -583,7 +623,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CLEAR_TEXT_OF_ELEMENT, to.getObjectId())
         : StringConstants.KW_MSG_FAILED_TO_CLEAR_TEXT_OF_ELEMENT);
     }
-    
+
     /**
      * Verify if current device is in landscape mode
      * @param flowControl
@@ -611,7 +651,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             }
         }, flowControl, StringConstants.KW_MSG_UNABLE_VERIFY_LANDSCAPE);
     }
-    
+
     /**
      * Verify if current device is in portrait mode
      * @param flowControl
@@ -639,7 +679,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             }
         }, flowControl, StringConstants.KW_MSG_UNABLE_VERIFY_PORTRAIT);
     }
-    
+
     @CompileStatic
     private static boolean switchToNativeContext(AppiumDriver driver) {
         for (String context : driver.getContextHandles()) {
@@ -648,7 +688,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             }
         }
     }
-    
+
     /**
      * Internal method to get any appium driver from either mobile web or native app for general keywords
      */
