@@ -632,7 +632,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      * @throws StepFailedException
      */
     @CompileStatic
-    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
     public static void verifyIsLandscape(FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             AppiumDriver driver = getAnyAppiumDriver();
@@ -660,7 +660,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      * @throws StepFailedException
      */
     @CompileStatic
-    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
     public static void verifyIsPortrait(FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             AppiumDriver driver = getAnyAppiumDriver();
@@ -678,6 +678,26 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
                 driver.context(context);
             }
         }, flowControl, StringConstants.KW_MSG_UNABLE_VERIFY_PORTRAIT);
+    }
+    
+    /**
+     * Switch the current device's mode to landscape mode
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
+    public static boolean switchToLandscape(FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            AppiumDriver driver = getAnyAppiumDriver();
+            String context = driver.getContext();
+            try {
+                switchToNativeContext(driver);
+                driver.rotate(ScreenOrientation.LANDSCAPE);
+            } finally {
+                driver.context(context);
+            }
+        }, flowControl, StringConstants.KW_MSG_UNABLE_SWITCH_LANDSCAPE);
     }
 
     @CompileStatic
