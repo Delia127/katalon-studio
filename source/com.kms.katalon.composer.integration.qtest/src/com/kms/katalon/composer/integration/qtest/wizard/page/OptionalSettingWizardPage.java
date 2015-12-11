@@ -67,7 +67,7 @@ public class OptionalSettingWizardPage extends AbstractWizardPage {
         GridData gd_compositeOptions = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
         gd_compositeOptions.verticalIndent = -5;
         compositeOptions.setLayoutData(gd_compositeOptions);
-        GridLayout glComposite = new GridLayout(3, true);
+        GridLayout glComposite = new GridLayout(2, true);
         glComposite.marginLeft = 25;
         glComposite.marginWidth = 0;
         glComposite.marginHeight = 0;
@@ -99,7 +99,7 @@ public class OptionalSettingWizardPage extends AbstractWizardPage {
             btnSendingType.setData(sendingType);
         }
         
-        grpReportFormatOptions = new Group(compositeOptions, SWT.NONE);
+        grpReportFormatOptions = new Group(mainComposite, SWT.NONE);
         grpReportFormatOptions.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         grpReportFormatOptions.setText(StringConstants.DIA_TITLE_REPORT_FORMAT);
         grpReportFormatOptions.setLayout(new GridLayout(1, true));

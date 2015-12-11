@@ -198,14 +198,14 @@ public class QTestIntegrationReportManager {
             logTempFolder.mkdirs();
 
             for (QTestReportFormatType formatType : QTestSettingStore.getFormatReportTypes(projectDir)) {
-                if (formatType == QTestReportFormatType.LOG || formatType == QTestReportFormatType.CSV) {
+                if (formatType == QTestReportFormatType.LOG) {
                     for (File reportEntry : logFolder.listFiles()) {
                         if (!isValidFileToAttach(reportEntry, projectDir)) {
                             continue;
                         }
                         QTestReportFormatType format = QTestReportFormatType.getTypeByExtension(FilenameUtils
                                 .getExtension(reportEntry.getAbsolutePath()));
-                        if (format == QTestReportFormatType.LOG || format == QTestReportFormatType.CSV) {
+                        if (format == QTestReportFormatType.LOG) {
                             moveReportFile(reportEntry, new File(logTempFolder, reportEntry.getName()));
                         }
                     }
@@ -255,6 +255,10 @@ public class QTestIntegrationReportManager {
             TestCaseLogRecord testCaseLogRecord, TestSuiteLogRecord testSuiteLR) throws IOException,
             JasperReportException, URISyntaxException {
         switch (format) {
+            case CSV:
+                ReportUtil.writeLogRecordToCSVFile(testSuiteLR, destReportFile,
+                        Arrays.asList(new ILogRecord[] { testCaseLogRecord }));
+                break;
             case HTML:
                 ReportUtil.writeLogRecordToHTMLFile(testSuiteLR, destReportFile,
                         Arrays.asList(new ILogRecord[] { testCaseLogRecord }));
