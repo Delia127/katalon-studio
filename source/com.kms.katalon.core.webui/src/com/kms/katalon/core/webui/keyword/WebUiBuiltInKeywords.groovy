@@ -661,7 +661,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 try {
                     isSwitchIntoFrame = switchToFrame(to, RunConfiguration.getTimeOut());
                     WebElement foundElement = findWebElement(to, RunConfiguration.getTimeOut());
-                    if (foundElement.isEnabled() != null) {
+                    if (foundElement.isEnabled()) {
                         logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_IS_CLICKABLE, to.getObjectId()));
                         return true;
                     } else {
@@ -681,6 +681,47 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_VERIFY_OBJ_X_TO_BE_CLICKABLE, to.getObjectId())
         : StringConstants.KW_MSG_VERIFY_OBJ_TO_BE_CLICKABLE)
+    }
+    
+    /***
+     * Verify if the given element is NOT clickable
+     * @param to
+     *         represent a web element
+     * @param flowControl
+     * @return
+     *         true if the element is present and NOT clickable; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementNotClickable(TestObject to, FailureHandling flowControl) throws StepFailedException {
+        return WebUIKeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = false;
+            try {
+                WebUiCommonHelper.checkTestObjectParameter(to);
+                try {
+                    isSwitchIntoFrame = switchToFrame(to, RunConfiguration.getTimeOut());
+                    WebElement foundElement = findWebElement(to, RunConfiguration.getTimeOut());
+                    if (foundElement.isEnabled()) {
+                        WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_IS_CLICKABLE, to.getObjectId()),
+                                flowControl, null);
+                        return false;
+                    } else {
+                        logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_IS_NOT_CLICKABLE, to.getObjectId()));
+                        return true;
+                    }
+                } catch (WebElementNotFoundException e) {
+                    WebUIKeywordMain.stepFailed(e.getMessage(), flowControl, null);
+                    return false;
+                }
+            } finally {
+                if (isSwitchIntoFrame) {
+                    switchToDefaultContent();
+                }
+            }
+        }
+        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_VERIFY_OBJ_X_TO_BE_NOT_CLICKABLE, to.getObjectId())
+        : StringConstants.KW_MSG_VERIFY_OBJ_TO_BE_NOT_CLICKABLE)
     }
 
     /**
