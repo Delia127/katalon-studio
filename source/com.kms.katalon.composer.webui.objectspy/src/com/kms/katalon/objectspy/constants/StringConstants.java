@@ -14,7 +14,7 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String DIA_LBL_NAME = NAME;
 
-    public static final String DIA_LBL_TYPE = "Type";
+    public static final String DIA_LBL_TAG = "Tag";
 
     public static final String DIA_MENU_CONTEXT_VERIFY = "Verify";
 

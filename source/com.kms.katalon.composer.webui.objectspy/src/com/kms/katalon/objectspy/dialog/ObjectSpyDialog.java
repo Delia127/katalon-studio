@@ -295,7 +295,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         });
 
         Label typeLabel = new Label(objectPropertiesComposite, SWT.NONE);
-        typeLabel.setText(StringConstants.DIA_LBL_TYPE);
+        typeLabel.setText(StringConstants.DIA_LBL_TAG);
 
         elementTypeText = new Text(objectPropertiesComposite, SWT.BORDER);
         elementTypeText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -363,11 +363,6 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         gd_txtXpathInput.grabExcessVerticalSpace = true;
         gd_txtXpathInput.verticalAlignment = SWT.CENTER;
         txtXpathInput.setLayoutData(gd_txtXpathInput);
-        new Label(searchComposite, SWT.NONE);
-        new Label(searchComposite, SWT.NONE);
-        new Label(searchComposite, SWT.NONE);
-        new Label(searchComposite, SWT.NONE);
-        new Label(searchComposite, SWT.NONE);
         txtXpathInput.addKeyListener(new KeyListener() {
 
             @Override
@@ -738,9 +733,6 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
             }
         });
 
-        // Disable toolbar items in mainToolbar by default
-        setEnabledMainToolbarItems(false);
-
         final ToolBar startBrowserToolbar = new ToolBar(explorerComposite, SWT.FLAT | SWT.RIGHT);
         startBrowserToolbar.setLayout(new FillLayout(SWT.HORIZONTAL));
         GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(true, false).applyTo(startBrowserToolbar);
@@ -1070,9 +1062,6 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
             session = new InspectSession(server.getServerUrl(), defaultBrowser, ProjectController.getInstance()
                     .getCurrentProject(), logger);
             new Thread(session).start();
-
-            // Enable toolbar items
-            setEnabledMainToolbarItems(session.isRunning());
         } catch (IEAddonNotInstalledException ex) {
             MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, ex.getMessage());
         } catch (Exception ex) {
@@ -1095,12 +1084,6 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
 
         });
 
-    }
-
-    private void setEnabledMainToolbarItems(boolean isEnabled) {
-        for (ToolItem item : mainToolbar.getItems()) {
-            item.setEnabled(isEnabled);
-        }
     }
 
 }
