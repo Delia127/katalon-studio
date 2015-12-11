@@ -63,6 +63,9 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String KW_LOG_PASSED_VERIFY_LANDSCAPE = "Device is in landspace mode";
 	public static final String KW_LOG_FAILED_VERIFY_LANDSCAPE = "Device is NOT in landspace mode";
 	public static final String KW_MSG_UNABLE_VERIFY_LANDSCAPE = "Unable to verify if device is in landspace mode";
+	public static final String KW_LOG_PASSED_VERIFY_PORTRAIT = "Device is in portrait mode";
+    public static final String KW_LOG_FAILED_VERIFY_PORTRAIT = "Device is NOT in portrait mode";
+    public static final String KW_MSG_UNABLE_VERIFY_PORTRAIT = "Unable to verify if device is in portrait mode";
 	public static final String KW_MSG_UNABLE_FIND_DRIVER = "No driver found";
 
 	public static final String KW_CATEGORIZE_APPLICATION = "Application";

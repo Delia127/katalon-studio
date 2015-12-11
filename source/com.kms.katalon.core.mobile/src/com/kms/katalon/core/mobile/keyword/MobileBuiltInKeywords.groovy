@@ -612,6 +612,34 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, StringConstants.KW_MSG_UNABLE_VERIFY_LANDSCAPE);
     }
     
+    /**
+     * Verify if current device is in portrait mode
+     * @param flowControl
+     * @return
+     *      true if the device is in portrait mode ; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
+    public static void verifyIsPortrait(FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            AppiumDriver driver = getAnyAppiumDriver();
+            String context = driver.getContext();
+            try {
+                switchToNativeContext(driver);
+                if (driver.getOrientation() == ScreenOrientation.PORTRAIT) {
+                    logger.logPassed(StringConstants.KW_LOG_PASSED_VERIFY_PORTRAIT);
+                    return true;
+                } else {
+                    KeywordMain.stepFailed(StringConstants.KW_LOG_FAILED_VERIFY_PORTRAIT, flowControl, null);
+                    return false;
+                }
+            } finally {
+                driver.context(context);
+            }
+        }, flowControl, StringConstants.KW_MSG_UNABLE_VERIFY_PORTRAIT);
+    }
+    
     @CompileStatic
     private static boolean switchToNativeContext(AppiumDriver driver) {
         for (String context : driver.getContextHandles()) {
