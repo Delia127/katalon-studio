@@ -47,8 +47,8 @@ public class ReportUtil {
     private static StringBuilder generateVars(List<String> strings, TestSuiteLogRecord suiteLogEntity,
             StringBuilder model) throws IOException {
         StringBuilder sb = new StringBuilder();
-        List<String> lines = IOUtils.readLines(ResourceLoader.class
-                .getResourceAsStream(ResourceLoader.HTML_TEMPLATE_VARS));
+        List<String> lines =
+                IOUtils.readLines(ResourceLoader.class.getResourceAsStream(ResourceLoader.HTML_TEMPLATE_VARS));
         for (String line : lines) {
             if (line.equals(ResourceLoader.HTML_TEMPLATE_SUITE_MODEL_TOKEN)) {
                 sb.append(model);
@@ -130,6 +130,11 @@ public class ReportUtil {
         }
     }
 
+    public static void writeLogRecordToCSVFile(TestSuiteLogRecord suiteLogEntity, File destFile,
+            List<ILogRecord> filteredTestCases) throws IOException {
+        CsvWriter.writeCsvReport(suiteLogEntity, destFile, filteredTestCases);
+    }
+
     public static void writeLogRecordToFiles(TestSuiteLogRecord suiteLogEntity, File logFolder) throws Exception {
         List<String> strings = new LinkedList<String>();
 
@@ -145,7 +150,8 @@ public class ReportUtil {
         FileUtils.writeStringToFile(new File(logFolder, logFolder.getName() + ".html"), htmlSb.toString());
 
         // Write CSV file
-        CsvWriter.writeCsvReport(suiteLogEntity, new File(logFolder, logFolder.getName() + ".csv"));
+        CsvWriter.writeCsvReport(suiteLogEntity, new File(logFolder, logFolder.getName() + ".csv"),
+                Arrays.asList(suiteLogEntity.getChildRecords()));
 
         List<ILogRecord> infoLogs = new ArrayList<ILogRecord>();
         collectInfoLines(suiteLogEntity, infoLogs);
@@ -163,7 +169,7 @@ public class ReportUtil {
     }
 
     public static void writeLogRecordToHTMLFile(TestSuiteLogRecord suiteLogEntity, File destFile,
-            List<ILogRecord> filteredTestCases) throws IOException, URISyntaxException  {
+            List<ILogRecord> filteredTestCases) throws IOException, URISyntaxException {
 
         List<String> strings = new LinkedList<String>();
 
@@ -202,10 +208,10 @@ public class ReportUtil {
         Arrays.sort(files, new Comparator<File>() {
             @Override
             public int compare(File f1, File f2) {
-                int num1 = Integer.parseInt(FilenameUtils.getBaseName(f1.getName())
-                        .replace(EXECUTION_LOG_FILE_BASE, ""));
-                int num2 = Integer.parseInt(FilenameUtils.getBaseName(f2.getName())
-                        .replace(EXECUTION_LOG_FILE_BASE, ""));
+                int num1 =
+                        Integer.parseInt(FilenameUtils.getBaseName(f1.getName()).replace(EXECUTION_LOG_FILE_BASE, ""));
+                int num2 =
+                        Integer.parseInt(FilenameUtils.getBaseName(f2.getName()).replace(EXECUTION_LOG_FILE_BASE, ""));
                 return num2 - num1;
             }
         });
@@ -297,13 +303,13 @@ public class ReportUtil {
             ((ILogRecord) object).setEndTime(xmlLogRecord.getMillis());
         }
     }
-    
+
     private static String getTestLogName(XmlLogRecord xmlLogRecord) {
         String testLogName = xmlLogRecord.getMessage();
         if (testLogName == null) {
             return "";
         }
-        
+
         String startKeywordString = StringConstants.LOG_START_KEYWORD + " : ";
         if (testLogName.startsWith(startKeywordString)) {
             return testLogName.substring(startKeywordString.length(), testLogName.length());
@@ -334,16 +340,15 @@ public class ReportUtil {
     }
 
     private static void processStartTestCaseLog(Deque<Object> stack, XmlLogRecord xmlLogRecord) {
-        TestCaseLogRecord testCaseLogRecord = new TestCaseLogRecord(xmlLogRecord.getProperties().containsKey(
-                StringConstants.XML_LOG_NAME_PROPERTY) ? xmlLogRecord.getProperties().get(
-                StringConstants.XML_LOG_NAME_PROPERTY) : getTestLogName(xmlLogRecord));
+        TestCaseLogRecord testCaseLogRecord =
+                new TestCaseLogRecord(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_NAME_PROPERTY)
+                        ? xmlLogRecord.getProperties().get(StringConstants.XML_LOG_NAME_PROPERTY)
+                        : getTestLogName(xmlLogRecord));
         testCaseLogRecord.setStartTime(xmlLogRecord.getMillis());
-        testCaseLogRecord
-                .setId(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_ID_PROPERTY) ? xmlLogRecord
-                        .getProperties().get(StringConstants.XML_LOG_ID_PROPERTY) : "");
-        testCaseLogRecord
-                .setSource(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_SOURCE_PROPERTY) ? xmlLogRecord
-                        .getProperties().get(StringConstants.XML_LOG_SOURCE_PROPERTY) : "");
+        testCaseLogRecord.setId(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_ID_PROPERTY)
+                ? xmlLogRecord.getProperties().get(StringConstants.XML_LOG_ID_PROPERTY) : "");
+        testCaseLogRecord.setSource(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_SOURCE_PROPERTY)
+                ? xmlLogRecord.getProperties().get(StringConstants.XML_LOG_SOURCE_PROPERTY) : "");
         testCaseLogRecord.setDescription(xmlLogRecord.getProperties().containsKey(
                 StringConstants.XML_LOG_DESCRIPTION_PROPERTY) ? xmlLogRecord.getProperties().get(
                 StringConstants.XML_LOG_DESCRIPTION_PROPERTY) : "");
@@ -358,15 +363,13 @@ public class ReportUtil {
             XmlLogRecord xmlLogRecord) {
         TestSuiteLogRecord testSuiteLogRecord = new TestSuiteLogRecord("", logFolder);
         testSuiteLogRecord.setStartTime(xmlLogRecord.getMillis());
-        testSuiteLogRecord
-                .setName(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_NAME_PROPERTY) ? xmlLogRecord
-                        .getProperties().get(StringConstants.XML_LOG_NAME_PROPERTY) : getTestLogName(xmlLogRecord));
-        testSuiteLogRecord
-                .setId(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_ID_PROPERTY) ? xmlLogRecord
-                        .getProperties().get(StringConstants.XML_LOG_ID_PROPERTY) : "");
-        testSuiteLogRecord
-                .setSource(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_SOURCE_PROPERTY) ? xmlLogRecord
-                        .getProperties().get(StringConstants.XML_LOG_SOURCE_PROPERTY) : "");
+        testSuiteLogRecord.setName(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_NAME_PROPERTY)
+                ? xmlLogRecord.getProperties().get(StringConstants.XML_LOG_NAME_PROPERTY)
+                : getTestLogName(xmlLogRecord));
+        testSuiteLogRecord.setId(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_ID_PROPERTY)
+                ? xmlLogRecord.getProperties().get(StringConstants.XML_LOG_ID_PROPERTY) : "");
+        testSuiteLogRecord.setSource(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_SOURCE_PROPERTY)
+                ? xmlLogRecord.getProperties().get(StringConstants.XML_LOG_SOURCE_PROPERTY) : "");
         testSuiteLogRecord.setBrowser(xmlLogRecord.getProperties().containsKey(
                 StringConstants.XML_LOG_BROWSER_TYPE_PROPERTY) ? xmlLogRecord.getProperties().get(
                 StringConstants.XML_LOG_BROWSER_TYPE_PROPERTY) : "");
@@ -379,9 +382,8 @@ public class ReportUtil {
         testSuiteLogRecord.setDescription(xmlLogRecord.getProperties().containsKey(
                 StringConstants.XML_LOG_DESCRIPTION_PROPERTY) ? xmlLogRecord.getProperties().get(
                 StringConstants.XML_LOG_DESCRIPTION_PROPERTY) : "");
-        testSuiteLogRecord
-                .setOs(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_OS_PROPERTY) ? xmlLogRecord
-                        .getProperties().get(StringConstants.XML_LOG_OS_PROPERTY) : "");
+        testSuiteLogRecord.setOs(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_OS_PROPERTY)
+                ? xmlLogRecord.getProperties().get(StringConstants.XML_LOG_OS_PROPERTY) : "");
         testSuiteLogRecord.setHostName(xmlLogRecord.getProperties().containsKey(
                 StringConstants.XML_LOG_HOST_NAME_PROPERTY) ? xmlLogRecord.getProperties().get(
                 StringConstants.XML_LOG_HOST_NAME_PROPERTY) : "");
