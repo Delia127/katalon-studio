@@ -17,68 +17,72 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 
 public class CleanProjectHandler {
 
-	@SuppressWarnings("restriction")
-	@CanExecute
-	public boolean canExecute() {
-		try {
-			return !LauncherManager.getInstance().isAnyLauncherRunning();
-		} catch (CoreException e) {
-			LoggerSingleton.getInstance().getLogger().error(e);
-			return false;
-		}
-	}
+    @SuppressWarnings("restriction")
+    @CanExecute
+    public boolean canExecute() {
+        try {
+            return !LauncherManager.getInstance().isAnyLauncherRunning();
+        } catch (CoreException e) {
+            LoggerSingleton.getInstance().getLogger().error(e);
+            return false;
+        }
+    }
 
-	@Execute
-	public void execute() {
-		final File tempDir = new File(ProjectController.getInstance().getTempDir());
+    @Execute
+    public void execute() {
+        final File tempDir = new File(ProjectController.getInstance().getTempDir());
 
-		if (tempDir.exists()) {
-			Job job = new Job(StringConstants.HAND_TEMP_CLEANER) {
+        if (tempDir.exists()) {
+            Job job = new Job(StringConstants.HAND_TEMP_CLEANER) {
 
-				@Override
-				protected IStatus run(IProgressMonitor monitor) {
-					try {
-						monitor.beginTask(StringConstants.HAND_CLEANING_TEMP_FILES, getElementsCount(tempDir));
-						deleteFileRecursively(tempDir, monitor);
-						return Status.OK_STATUS;
-					} finally {
-						monitor.done();
-					}
-				}
-			};
+                @Override
+                protected IStatus run(IProgressMonitor monitor) {
+                    try {
+                        monitor.beginTask(StringConstants.HAND_CLEANING_TEMP_FILES, getElementsCount(tempDir));
+                        deleteFileRecursively(tempDir, monitor);
+                        return Status.OK_STATUS;
+                    } finally {
+                        monitor.done();
+                    }
+                }
+            };
 
-			job.setUser(true);
-			job.schedule();
-		}
-	}
+            job.setUser(true);
+            job.schedule();
+        }
+    }
 
-	private void deleteFileRecursively(File file, IProgressMonitor monitor) {
-		if (monitor.isCanceled()) {
-			return;
-		}
+    private void deleteFileRecursively(File file, IProgressMonitor monitor) {
+        if (file.getAbsolutePath().equalsIgnoreCase(ProjectController.getInstance().getNonremovableTempDir())) {
+            return;
+        }
+        
+        if (monitor.isCanceled()) {
+            return;
+        }
 
-		String fileName = file.getName();
-		if (fileName.length() > 60) {
-			fileName = fileName.substring(0, 60) + "...";
-		}
-		monitor.subTask(StringConstants.HAND_CLEANING_ITEM + fileName);
-		if (file.isDirectory()) {
-			for (File childFile : file.listFiles()) {
-				deleteFileRecursively(childFile, monitor);
-			}
-		}
+        String fileName = file.getName();
+        if (fileName.length() > 60) {
+            fileName = fileName.substring(0, 60) + "...";
+        }
+        monitor.subTask(StringConstants.HAND_CLEANING_ITEM + fileName);
+        if (file.isDirectory()) {
+            for (File childFile : file.listFiles()) {
+                deleteFileRecursively(childFile, monitor);
+            }
+        }
 
-		file.delete();
-		monitor.worked(1);
-	}
+        file.delete();
+        monitor.worked(1);
+    }
 
-	private int getElementsCount(File file) {
-		int total = 1;
-		if (file.isDirectory()) {
-			for (File childFile : file.listFiles()) {
-				total += getElementsCount(childFile);
-			}
-		}
-		return total;
-	}
+    private int getElementsCount(File file) {
+        int total = 1;
+        if (file.isDirectory()) {
+            for (File childFile : file.listFiles()) {
+                total += getElementsCount(childFile);
+            }
+        }
+        return total;
+    }
 }

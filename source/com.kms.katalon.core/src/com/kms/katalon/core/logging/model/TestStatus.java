@@ -6,17 +6,17 @@ public class TestStatus {
 	public enum TestStatusValue {
 		PASSED, FAILED, NOT_RUN, ERROR;	//Suite & Test status 
 		
-		public static int indexOf(TestStatusValue testStatusValue) {
-			if (testStatusValue != null) {
-				TestStatusValue[] allValues = TestStatusValue.values();
-				for (int i = 0; i < allValues.length ; i++) {
-					if (testStatusValue == allValues[i]) {
-						return i;
-					}
-				}
-			}
-			return -1;
-		}
+//		public static int indexOf(TestStatusValue testStatusValue) {
+//			if (testStatusValue != null) {
+//				TestStatusValue[] allValues = TestStatusValue.values();
+//				for (int i = 0; i < allValues.length ; i++) {
+//					if (testStatusValue == allValues[i]) {
+//						return i;
+//					}
+//				}
+//			}
+//			return -1;
+//		}
 	}
 	// Error Java stack Trace
 	protected String stackTrace = ""; 	

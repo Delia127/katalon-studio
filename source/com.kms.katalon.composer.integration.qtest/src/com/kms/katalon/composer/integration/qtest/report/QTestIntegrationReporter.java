@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.integration.qtest.report;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -94,7 +93,7 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
             uploadedPreview.setTestCaseLogRecord(testLogEntity);
 
             QTestLog qTestLog = QTestIntegrationReportManager.uploadTestLog(projectDir, uploadedPreview,
-                    QTestIntegrationUtil.getTempDirPath(), new File(suiteLog.getLogFolder()));
+                    QTestIntegrationUtil.getTempDirPath(), suiteLog);
             uploadedPreview.setQTestLog(qTestLog);
 
             ReportEntity reportEntity = ReportController.getInstance().getReportEntity(suiteLog.getLogFolder());
@@ -145,7 +144,7 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
     }
 
     /**
-     * If qTest integration and auto-submit result option are both enable, Uploads the given test log of the given test
+     * If qTest integration and auto-submit result option are both enable, uploads the given test log of the given test
      * suite to qTest server.
      */
     @Override

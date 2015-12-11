@@ -168,10 +168,6 @@ public class QTestPreferenceMainPage extends PreferencePage {
         grpFormatReportOptions.setText(StringConstants.DIA_TITLE_REPORT_FORMAT);
         grpFormatReportOptions.setLayout(new GridLayout(1, true));
         for (QTestReportFormatType formatType : QTestReportFormatType.values()) {
-            if (formatType == QTestReportFormatType.PDF) {
-                //PDF format is not supported now.
-                continue;
-            }
             Button btnFormmatingType = new Button(grpFormatReportOptions, SWT.CHECK);
             btnFormmatingType.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
             btnFormmatingType.setText(formatType.toString());
