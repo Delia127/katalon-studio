@@ -694,10 +694,32 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             try {
                 switchToNativeContext(driver);
                 driver.rotate(ScreenOrientation.LANDSCAPE);
+                logger.logPassed(StringConstants.KW_LOG_PASSED_SWITCH_LANDSCAPE);
             } finally {
                 driver.context(context);
             }
         }, flowControl, StringConstants.KW_MSG_UNABLE_SWITCH_LANDSCAPE);
+    }
+    
+    /**
+     * Switch the current device's mode to portrait mode
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
+    public static boolean switchToPortrait(FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            AppiumDriver driver = getAnyAppiumDriver();
+            String context = driver.getContext();
+            try {
+                switchToNativeContext(driver);
+                driver.rotate(ScreenOrientation.PORTRAIT);
+                logger.logPassed(StringConstants.KW_LOG_PASSED_SWITCH_PORTRAIT);
+            } finally {
+                driver.context(context);
+            }
+        }, flowControl, StringConstants.KW_MSG_UNABLE_SWITCH_PORTRAIT);
     }
 
     @CompileStatic
