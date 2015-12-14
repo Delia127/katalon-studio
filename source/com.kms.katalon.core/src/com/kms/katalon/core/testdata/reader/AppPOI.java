@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.text.MessageFormat;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -47,9 +48,7 @@ public class AppPOI {
                 throw new FileNotFoundException(fullFilePath);
             }
         } finally {
-            if (is != null) {
-                is.close();
-            }
+            IOUtils.closeQuietly(is);
         }
     }
 

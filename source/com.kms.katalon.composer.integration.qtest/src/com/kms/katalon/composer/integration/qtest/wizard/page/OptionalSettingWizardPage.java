@@ -21,6 +21,7 @@ import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.wizard.AbstractWizardPage;
 import com.kms.katalon.integration.qtest.setting.QTestAttachmentSendingType;
+import com.kms.katalon.integration.qtest.setting.QTestReportFormatType;
 import com.kms.katalon.integration.qtest.setting.QTestResultSendingType;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
@@ -30,6 +31,7 @@ public class OptionalSettingWizardPage extends AbstractWizardPage {
     private Composite compositeOptions;
     private Group grpResultOptions;
     private Group grpAttachmentOptions;
+    private Group grpReportFormatOptions;
 
     @Override
     public boolean canFlipToNextPage() {
@@ -62,10 +64,10 @@ public class OptionalSettingWizardPage extends AbstractWizardPage {
         chckAutoSubmitTestRun.setText(StringConstants.DIA_TITLE_AUTO_SUBMIT_TEST_RESULT);
 
         compositeOptions = new Composite(mainComposite, SWT.NONE);
-        GridData gd_compositeOptions = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+        GridData gd_compositeOptions = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
         gd_compositeOptions.verticalIndent = -5;
         compositeOptions.setLayoutData(gd_compositeOptions);
-        GridLayout glComposite = new GridLayout(1, false);
+        GridLayout glComposite = new GridLayout(2, true);
         glComposite.marginLeft = 25;
         glComposite.marginWidth = 0;
         glComposite.marginHeight = 0;
@@ -74,7 +76,7 @@ public class OptionalSettingWizardPage extends AbstractWizardPage {
         grpResultOptions = new Group(compositeOptions, SWT.NONE);
         grpResultOptions.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
         grpResultOptions.setText(StringConstants.DIA_TITLE_SEND_RESULT);
-        grpResultOptions.setLayout(new GridLayout(4, false));
+        grpResultOptions.setLayout(new GridLayout(1, false));
 
         for (QTestResultSendingType sendingType : QTestResultSendingType.values()) {
             Button btnSendingType = new Button(grpResultOptions, SWT.CHECK);
@@ -87,7 +89,7 @@ public class OptionalSettingWizardPage extends AbstractWizardPage {
         grpAttachmentOptions = new Group(compositeOptions, SWT.NONE);
         grpAttachmentOptions.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
         grpAttachmentOptions.setText(StringConstants.DIA_TITLE_SEND_ATTACHMENT);
-        grpAttachmentOptions.setLayout(new GridLayout(4, false));
+        grpAttachmentOptions.setLayout(new GridLayout(1, false));
 
         for (QTestAttachmentSendingType sendingType : QTestAttachmentSendingType.values()) {
             Button btnSendingType = new Button(grpAttachmentOptions, SWT.CHECK);
@@ -95,6 +97,17 @@ public class OptionalSettingWizardPage extends AbstractWizardPage {
 
             btnSendingType.setText(sendingType.toString());
             btnSendingType.setData(sendingType);
+        }
+        
+        grpReportFormatOptions = new Group(mainComposite, SWT.NONE);
+        grpReportFormatOptions.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        grpReportFormatOptions.setText(StringConstants.DIA_TITLE_REPORT_FORMAT);
+        grpReportFormatOptions.setLayout(new GridLayout(1, true));
+        for (QTestReportFormatType formatType : QTestReportFormatType.values()) {
+            Button btnFormmatingType = new Button(grpReportFormatOptions, SWT.CHECK);
+            btnFormmatingType.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+            btnFormmatingType.setText(formatType.toString());
+            btnFormmatingType.setData(formatType);
         }
 
     }
@@ -140,6 +153,22 @@ public class OptionalSettingWizardPage extends AbstractWizardPage {
                 }
             }
         }
+        
+        List<QTestReportFormatType> reportFormatType = (List<QTestReportFormatType>) sharedData
+                .get(QTestSettingStore.REPORT_FORMAT);
+        if (reportFormatType != null) {
+            for (Control chckButton : grpReportFormatOptions.getChildren()) {
+                if (!(chckButton instanceof Button)) {
+                    continue;
+                }
+
+                if (reportFormatType.contains(chckButton.getData())) {
+                    ((Button) chckButton).setSelection(true);
+                } else {
+                    ((Button) chckButton).setSelection(false);
+                }
+            }
+        }
         enableAttachmentsGroup();
     }
 
@@ -170,7 +199,7 @@ public class OptionalSettingWizardPage extends AbstractWizardPage {
 
         saveAttachmentSendingStatus(sharedData);
         saveResultSendingStatus(sharedData);
-
+        saveReportFormatSettings(sharedData);
         return sharedData;
     }
 
@@ -202,6 +231,21 @@ public class OptionalSettingWizardPage extends AbstractWizardPage {
             }
         }
         sharedData.put(QTestSettingStore.SEND_RESULT_PROPERTY, selectedResultSendingType);
+    }
+    
+    private void saveReportFormatSettings(Map<String, Object> sharedData) {
+        List<QTestReportFormatType> selectedResultSendingType = new ArrayList<QTestReportFormatType>();
+        for (Control radioButtonControl : grpReportFormatOptions.getChildren()) {
+            if (radioButtonControl instanceof Button) {
+                Button sendingTypeRadioButton = (Button) radioButtonControl;
+                if (sendingTypeRadioButton.getSelection()) {
+                    QTestReportFormatType resultSendingType = (QTestReportFormatType) sendingTypeRadioButton
+                            .getData();
+                    selectedResultSendingType.add(resultSendingType);
+                }
+            }
+        }
+        sharedData.put(QTestSettingStore.REPORT_FORMAT, selectedResultSendingType);
     }
 
     @Override

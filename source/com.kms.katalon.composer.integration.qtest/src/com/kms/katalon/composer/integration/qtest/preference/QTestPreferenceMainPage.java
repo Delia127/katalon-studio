@@ -131,7 +131,7 @@ public class QTestPreferenceMainPage extends PreferencePage {
         GridData gdCompositeOptions = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
         gdCompositeOptions.verticalIndent = -5;
         compositeOptions.setLayoutData(gdCompositeOptions);
-        GridLayout glComposite = new GridLayout(3, true);
+        GridLayout glComposite = new GridLayout(2, true);
         glComposite.marginLeft = 25;
         glComposite.marginWidth = 0;
         glComposite.marginHeight = 0;
@@ -163,8 +163,8 @@ public class QTestPreferenceMainPage extends PreferencePage {
             btnSendingType.setData(sendingType);
         }
 
-        grpFormatReportOptions = new Group(compositeOptions, SWT.NONE);
-        grpFormatReportOptions.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        grpFormatReportOptions = new Group(mainComposite, SWT.NONE);
+        grpFormatReportOptions.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         grpFormatReportOptions.setText(StringConstants.DIA_TITLE_REPORT_FORMAT);
         grpFormatReportOptions.setLayout(new GridLayout(1, true));
         for (QTestReportFormatType formatType : QTestReportFormatType.values()) {

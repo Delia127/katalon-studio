@@ -57,7 +57,7 @@ public class LogParentTreeNode extends LogChildTreeNode implements ILogParentTre
 			return "";
 		} else {
 			double elapsedSeconds = ((double) (recordEnd.getMillis() - recordStart.getMillis())) / 1000;
-			return Double.toString(elapsedSeconds) + " s";
+			return DateUtil.SECOND_FORMAT.format(elapsedSeconds) + "s";
 		}		
 	}
 
