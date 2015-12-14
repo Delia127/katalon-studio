@@ -60,6 +60,23 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String KW_LOG_PASSED_ELEMENT_TEXT_IS_CLEARED = "Element {0} text is cleared";
 	public static final String KW_MSG_FAILED_TO_CLEAR_TEXT_OF_ELEMENT_X = "Failed clear text of element {0}";
 	public static final String KW_MSG_FAILED_TO_CLEAR_TEXT_OF_ELEMENT = "Failed clear text of element";
+	public static final String KW_LOG_PASSED_VERIFY_LANDSCAPE = "Device is in landspace mode";
+	public static final String KW_LOG_FAILED_VERIFY_LANDSCAPE = "Device is NOT in landspace mode";
+	public static final String KW_MSG_UNABLE_VERIFY_LANDSCAPE = "Unable to verify if device is in landspace mode";
+	public static final String KW_LOG_PASSED_VERIFY_PORTRAIT = "Device is in portrait mode";
+    public static final String KW_LOG_FAILED_VERIFY_PORTRAIT = "Device is NOT in portrait mode";
+    public static final String KW_MSG_UNABLE_VERIFY_PORTRAIT = "Unable to verify if device is in portrait mode";
+    public static final String KW_LOG_PASSED_SWITCH_LANDSCAPE = "Switching the device to landscape mode successfully";
+    public static final String KW_MSG_UNABLE_SWITCH_LANDSCAPE = "Unable to switch the device to landscape mode";
+    public static final String KW_LOG_PASSED_SWITCH_PORTRAIT = "Switching the device to portrait mode successfully";
+    public static final String KW_MSG_UNABLE_SWITCH_PORTRAIT = "Unable to switch the device to portrait mode";
+    public static final String KW_LOG_PASSED_SWITCH_WEB_VIEW = "Switching the driver to WEBVIEW mode successfully";
+    public static final String KW_LOG_FAILED_SWITCH_WEB_VIEW = "Cannot find any WEBVIEW to switch to";
+    public static final String KW_MSG_UNABLE_SWITCH_WEB_VIEW = "Unable to switch the driver to WEBVIEW mode";
+    public static final String KW_LOG_PASSED_SWITCH_NATIVE = "Switching the driver to NATIVE mode successfully";
+    public static final String KW_LOG_FAILED_SWITCH_NATIVE = "Cannot find any NATIVE to switch to";
+    public static final String KW_MSG_UNABLE_SWITCH_NATIVE = "Unable to switch the driver to NATIVE mode";
+	public static final String KW_MSG_UNABLE_FIND_DRIVER = "No driver found";
 
 	public static final String KW_CATEGORIZE_APPLICATION = "Application";
 	public static final String KW_CATEGORIZE_ATTRIBUTE = "Attribute";

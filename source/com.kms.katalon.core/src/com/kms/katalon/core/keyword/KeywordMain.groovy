@@ -44,7 +44,11 @@ public class KeywordMain {
         try {
             return closure.call();
         } catch (Throwable e) {
-            stepFailed(errorMessage, flowControl, ExceptionsUtil.getMessageForThrowable(e));
+            if (!(e instanceof StepFailedException)) {
+                stepFailed(errorMessage, flowControl, ExceptionsUtil.getMessageForThrowable(e));
+            } else {
+                throw e;
+            }
         }
     }
 }

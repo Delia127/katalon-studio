@@ -3,7 +3,9 @@ package com.kms.katalon.core.configuration;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -41,6 +43,13 @@ public class RunConfiguration {
         @Override
         protected String initialValue() {
             return new String();
+        }
+    };
+    
+    private static final ThreadLocal<List<Object>> localDriverStorage = new ThreadLocal<List<Object>>() {
+        @Override
+        protected List<Object> initialValue() {
+            return new ArrayList<Object>();
         }
     };
 
@@ -135,5 +144,14 @@ public class RunConfiguration {
         }
         return null;
     }
+    
+    public static Object[] getStoredDrivers() {
+        return localDriverStorage.get().toArray();
+    }
 
+    public static void storeDriver(Object driver) {
+        if (!localDriverStorage.get().contains(driver)) {
+            localDriverStorage.get().add(driver);
+        }
+    }
 }
