@@ -52,7 +52,7 @@ KeywordLogger.getInstance().startSuite('<%= testSuite.getName() %>', suiteProper
     "<%= trigger %>"()
 }
 
-DriverCleanerCollector.getInstance().cleanDrivers()
+DriverCleanerCollector.getInstance().cleanDriversAfterRunningTestSuite()
 KeywordLogger.getInstance().endSuite('<%= testSuite.getName() %>', null)
 '''
     @CompileStatic
