@@ -139,6 +139,10 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_MSG_OBJ_IS_CLICKABLE_AFTER_X_SEC = "Object ''{0}'' is not clickable after {1} second(s)";
     public static final String KW_MSG_CANNOT_WAIT_FOR_OBJ_TO_BE_NOT_CLICKABLE = "Unable to wait for object to be not clickable";
     public static final String KW_MSG_CANNOT_WAIT_OBJ_X_TO_BE__NOTCLICKABLE = "Unable to wait for object ''{0}'' to be not clickable";
+    public static final String KW_MSG_VERIFY_OBJ_TO_BE_CLICKABLE = "Unable to verify object to be clickable";
+    public static final String KW_MSG_VERIFY_OBJ_X_TO_BE_CLICKABLE = "Unable to verify object ''{0}'' to be clickable";
+    public static final String KW_MSG_VERIFY_OBJ_TO_BE_NOT_CLICKABLE = "Unable to verify object to be NOT clickable";
+    public static final String KW_MSG_VERIFY_OBJ_X_TO_BE_NOT_CLICKABLE = "Unable to verify object ''{0}'' to be NOT clickable";
 	public static final String KW_LOG_INFO_CLICKING_ON_OBJ = "Clicking on object: ''{0}''";
 	public static final String KW_LOG_PASSED_OBJ_CLICKED = "Object: ''{0}'' is clicked on";
 	public static final String KW_MSG_CANNOT_CLICK_ON_OBJ_X = "Unable to click on object ''{0}''";
@@ -422,6 +426,10 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String KW_LOG_INFO_OBJ_X_HAS_PARENT_FRAME = "Object: ''{0}'' has parent frame";
 	public static final String KW_LOG_INFO_SWITCHING_TO_IFRAME_X = "Switching to iframe: ''{0}''";
 	public static final String KW_LOG_INFO_SWITCHED_TO_IFRAME_X = "Switched to iframe: ''{0}''";
+    public static final String KW_LOG_INFO_SCROLLING_TO_OBJ_X = "Scrolling to object ''{0}''";
+    public static final String KW_LOG_PASSED_SCROLLING_TO_OBJ_X = "Scroll to object ''{0}'' successfully";
+    public static final String KW_MSG_CANNOT_SCROLLING_TO_OBJ_X = "Unable to scroll to object ''{0}''";
+    public static final String KW_MSG_CANNOT_SCROLLING_TO_OBJ = "Unable to scroll to object";
 	
 	public static final String KW_CATEGORIZE_ALERT = "Alert";
 	public static final String KW_CATEGORIZE_ATTRIBUTE = "Attribute";
