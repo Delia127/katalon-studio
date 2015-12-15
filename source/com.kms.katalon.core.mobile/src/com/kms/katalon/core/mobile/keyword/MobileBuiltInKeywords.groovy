@@ -657,7 +657,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
-    public static void verifyIsLandscape(FailureHandling flowControl) throws StepFailedException {
+    public static boolean verifyIsLandscape(FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             AppiumDriver driver = getAnyAppiumDriver();
             String context = driver.getContext();
@@ -685,7 +685,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
-    public static void verifyIsPortrait(FailureHandling flowControl) throws StepFailedException {
+    public static boolean verifyIsPortrait(FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             AppiumDriver driver = getAnyAppiumDriver();
             String context = driver.getContext();
