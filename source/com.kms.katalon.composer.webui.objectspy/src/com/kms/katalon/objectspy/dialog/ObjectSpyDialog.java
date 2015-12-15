@@ -28,11 +28,13 @@ import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -88,8 +90,8 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
-import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
+import com.kms.katalon.composer.explorer.providers.FolderProvider;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
@@ -251,14 +253,27 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         elementTreeViewer.setLabelProvider(new HTMLElementLabelProvider());
 
         elementTreeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
+            @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 if (event.getSelection() instanceof TreeSelection) {
                     TreeSelection treeSelection = (TreeSelection) event.getSelection();
-                    if (treeSelection.getFirstElement() instanceof HTMLElement) {
-                        selectedElement = (HTMLElement) treeSelection.getFirstElement();
+                    Object o = treeSelection.getFirstElement();
+                    enableToolItem(removeElementToolItem, o instanceof HTMLElement);
+                    if (o instanceof HTMLElement) {
+                        selectedElement = (HTMLElement) o;
                         refreshAttributesTable(selectedElement);
                     }
                 }
+            }
+
+        });
+        elementTreeViewer.addCheckStateListener(new ICheckStateListener() {
+
+            @Override
+            public void checkStateChanged(CheckStateChangedEvent event) {
+                Object[] checkedElements = elementTreeViewer.getCheckedElements();
+                enableToolItem(addElmtToObjRepoToolItem, checkedElements != null && checkedElements.length > 0);
             }
 
         });
@@ -687,6 +702,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         removeElementToolItem.setImage(ImageConstants.IMG_16_DELETE);
         removeElementToolItem.setText(StringConstants.DIA_TOOLITEM_DELETE);
         removeElementToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_REMOVE_ELEMENT);
+        removeElementToolItem.setEnabled(false);
         removeElementToolItem.addSelectionListener(new SelectionAdapter() {
 
             @Override
@@ -710,6 +726,9 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                             }
                         }
                     }
+
+                    Object[] checkedElements = elementTreeViewer.getCheckedElements();
+                    enableToolItem(addElmtToObjRepoToolItem, checkedElements != null && checkedElements.length > 0);
                 }
             }
         });
@@ -720,6 +739,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         addElmtToObjRepoToolItem.setImage(ImageConstants.IMG_24_ADD_TO_OBJECT_REPOSITORY);
         addElmtToObjRepoToolItem.setText(StringConstants.DIA_TOOLITEM_TIP_ADD_ELEMENT_TO_OBJECT_REPO);
         addElmtToObjRepoToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_ADD_ELEMENT_TO_OBJECT_REPO);
+        addElmtToObjRepoToolItem.setEnabled(false);
         addElmtToObjRepoToolItem.addSelectionListener(new SelectionAdapter() {
 
             @Override
@@ -791,7 +811,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
 
     private void addElementToObjectRepository() throws Exception {
         AddToObjectRepositoryDialog addToObjectRepositoryDialog = new AddToObjectRepositoryDialog(getParentShell(),
-                new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(new EntityProvider()));
+                new EntityLabelProvider(), new FolderProvider(), new EntityViewerFilter(new FolderProvider()));
         if (addToObjectRepositoryDialog.open() == Window.OK) {
             Object object = addToObjectRepositoryDialog.getFirstResult();
             if (object instanceof FolderTreeEntity) {
@@ -803,7 +823,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                         }
                     }
                 }
-                eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, object);
+                eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, ((FolderTreeEntity) object).getParent());
                 eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, object);
                 eventBroker.send(EventConstants.EXPLORER_EXPAND_TREE_ENTITY, object);
             }
@@ -824,7 +844,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                         return entry.getKey().toString();
                     }
                 }
-                return "";
+                return StringConstants.EMPTY;
             }
         });
 
@@ -840,7 +860,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                         return entry.getValue().toString();
                     }
                 }
-                return "";
+                return StringConstants.EMPTY;
             }
         });
 
@@ -862,7 +882,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                         return entry.getValue().toString();
                     }
                 }
-                return "";
+                return StringConstants.EMPTY;
             }
 
             @Override
@@ -1035,9 +1055,8 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
             attributesTableViewer.setInput(new ArrayList<Entry<String, String>>(selectedElement.getAttributes()
                     .entrySet()));
         } else {
-            elementNameText.setText("");
-
-            elementTypeText.setText("");
+            elementNameText.setText(StringConstants.EMPTY);
+            elementTypeText.setText(StringConstants.EMPTY);
             elementNameText.setEditable(false);
             elementTypeText.setEditable(false);
             attributesTableViewer.setInput(Collections.emptyList());
@@ -1076,14 +1095,15 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
             @Override
             public void run() {
                 // Set browser name into toolbar item label
-                startBrowser.setText(MessageFormat.format(StringConstants.DIA_BTN_START,
-                        new Object[] { defaultBrowser.toString() }));
+                startBrowser.setText(defaultBrowser.toString());
                 // reload layout
                 startBrowser.getParent().getParent().layout(true, true);
             }
-
         });
+    }
 
+    private void enableToolItem(ToolItem toolItem, boolean isEnabled) {
+        toolItem.setEnabled(isEnabled);
     }
 
 }
