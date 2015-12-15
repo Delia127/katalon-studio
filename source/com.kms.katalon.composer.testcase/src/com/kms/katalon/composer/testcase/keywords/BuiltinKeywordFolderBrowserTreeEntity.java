@@ -70,7 +70,7 @@ public class BuiltinKeywordFolderBrowserTreeEntity extends KeywordBrowserFolderT
 			Entry<String, List<Method>> pair = (Entry<String, List<Method>>) it.next();
 			KeywordBrowserFolderTreeEntity keywordFolder = new KeywordBrowserFolderTreeEntity(pair.getKey(), this);
 			for (Method method : pair.getValue()) {
-				keywordFolder.children.add(new KeywordBrowserTreeEntity(simpleName, method.getName(), false,
+				keywordFolder.children.add(new KeywordBrowserTreeEntity(className, simpleName, method.getName(), false,
 						keywordFolder));
 			}
 			childTreeEntityList.add(keywordFolder);
