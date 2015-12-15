@@ -127,8 +127,15 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
     public static void swipe(int startX, int startY, int endX, int endY, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
-            MobileCommonHelper.swipe(MobileDriverFactory.getDriver(), startX, startY, endX, endY);
-            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SWIPED_FROM_STARTXY_TO_ENDXY, startX, startY, endX, endY));
+            AppiumDriver<?> driver = getAnyAppiumDriver();
+            String context = driver.getContext();
+            try {
+                internalSwitchToNativeContext(driver);
+                MobileCommonHelper.swipe(driver, startX, startY, endX, endY);
+                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SWIPED_FROM_STARTXY_TO_ENDXY, startX, startY, endX, endY));
+            } finally {
+                driver.context(context)
+            }
         }, flowControl, StringConstants.KW_MSG_CANNOT_SWIPE_ON_DEVICE)
     }
 
