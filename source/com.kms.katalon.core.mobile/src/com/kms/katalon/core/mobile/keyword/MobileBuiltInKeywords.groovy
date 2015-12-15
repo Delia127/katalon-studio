@@ -821,6 +821,32 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }
         return driver;
     }
+    
+    /**
+     * Scroll to an element which contains the given text.
+     * @param text : text of an element to scroll to
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void scrollToText(String text, FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_TEXT);
+            if (text == null) {
+                throw new IllegalArgumentException(StringConstants.COMM_EXC_TEXT_IS_NULL);
+            }
+            AppiumDriver driver = getAnyAppiumDriver();
+            String context = driver.getContext();
+            try {
+                internalSwitchToNativeContext(driver);
+                driver.scrollToExact(text);
+                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SCROLL_TO_TEXT_X, text));
+            } finally {
+                driver.context(context);
+            }
+        }, flowControl, MessageFormat.format(StringConstants.KW_MSG_UNABLE_SCROLL_TO_TEXT_X, text));
+    }
 
     /**
      * Internal method to find a mobile element

@@ -76,8 +76,12 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_LOG_PASSED_SWITCH_NATIVE = "Switching the driver to NATIVE mode successfully";
     public static final String KW_LOG_FAILED_SWITCH_NATIVE = "Cannot find any NATIVE to switch to";
     public static final String KW_MSG_UNABLE_SWITCH_NATIVE = "Unable to switch the driver to NATIVE mode";
+    public static final String KW_LOG_PASSED_SCROLL_TO_TEXT_X = "Scrolling to text ''{0}'' successfully";
+    public static final String KW_MSG_UNABLE_SCROLL_TO_TEXT_X = "Unable to scroll to text ''{0}''";
 	public static final String KW_MSG_UNABLE_FIND_DRIVER = "No driver found";
-
+	public static final String COMM_LOG_INFO_CHECKING_TEXT = "Checking text";
+	public static final String COMM_EXC_TEXT_IS_NULL = "Text is null";
+	
 	public static final String KW_CATEGORIZE_APPLICATION = "Application";
 	public static final String KW_CATEGORIZE_ATTRIBUTE = "Attribute";
 	public static final String KW_CATEGORIZE_DEVICE = "Device";
@@ -97,4 +101,6 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	// MobileDriverPropertySettingStore
     public static final String MOBILE_PROPERTY_FILE_NAME = "com.kms.katalon.core.mobile";
     public static final String KW_LOG_MOBILE_PROPERTY_SETTING = "User set preference: [''{0}'', ''{1}'']";
+    
+    
 }
