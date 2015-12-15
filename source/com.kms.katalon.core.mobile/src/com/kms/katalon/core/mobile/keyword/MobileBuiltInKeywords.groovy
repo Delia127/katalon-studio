@@ -9,6 +9,7 @@ import io.appium.java_client.android.AndroidKeyCode
 import io.appium.java_client.ios.IOSDriver
 
 import java.text.MessageFormat
+import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.io.FileUtils
 import org.apache.commons.lang.StringUtils
@@ -100,6 +101,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
                     ((AndroidDriver) driver).pressKeyCode(AndroidKeyCode.BACK);
                 } else {
                     KeywordMain.stepFailed(StringConstants.KW_MSG_UNSUPPORT_ACT_FOR_THIS_DEVICE, flowControl, null);
+                    return;
                 }
             } finally {
                 driver.context(context)
@@ -148,6 +150,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
                 File tempFile = driver.getScreenshotAs(OutputType.FILE);
                 if (!tempFile.exists()) {
                     KeywordMain.stepFailed(StringConstants.KW_MSG_UNABLE_TO_TAKE_SCREENSHOT, flowControl, null);
+                    return;
                 }
                 try{
                     FileUtils.copyFile(tempFile, new File(fileName));
@@ -211,6 +214,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
                     ((AndroidDriver)driver).pressKeyCode(AndroidKeyCode.HOME);
                 } else {
                     KeywordMain.stepFailed(StringConstants.KW_MSG_UNSUPPORT_ACT_FOR_THIS_DEVICE, flowControl, null);
+                    return;
                 }
                 logger.logPassed(StringConstants.KW_LOG_PASSED_HOME_BTN_PRESSED);
             } finally {
@@ -249,6 +253,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
                     break;
                 default:
                     KeywordMain.stepFailed(StringConstants.KW_MSG_UNSUPPORT_ACT_FOR_THIS_DEVICE, flowControl, null);
+                    return;
             }
             logger.logPassed(MessageFormat.format(StringConstants.KW_MSG_DEVICE_MANUFACTURER_IS, manufacturer));
             return manufacturer;
@@ -285,6 +290,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
                     break;
                 default:
                     KeywordMain.stepFailed(StringConstants.KW_MSG_UNSUPPORT_ACT_FOR_THIS_DEVICE, flowControl, null);
+                    return;
             }
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_DEVICE_OS_NAME, osName));
             return osName;
@@ -433,13 +439,14 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
-    public static String getText(TestObject to, Object timeout, FailureHandling flowControl) throws StepFailedException {
+    public static String getText(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
         return KeywordMain.runKeyword({
             KeywordHelper.checkTestObjectParameter(to);
-            int timeoutValue = Integer.parseInt(timeout.toString());
-            WebElement element = findElement(to, timeoutValue * 1000);
+            timeout = KeywordHelper.checkTimeout(timeout)
+            WebElement element = findElement(to, timeout * 1000);
             if(element == null){
                 KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_NOT_FOUND, to.getObjectId()), flowControl, null);
+                return;
             }
             String text = element.getText();
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ELEMENT_TEXT_IS, to.getObjectId(), text));
@@ -464,9 +471,11 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static void setText(TestObject to, String text, int timeout, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             KeywordHelper.checkTestObjectParameter(to);
+            timeout = KeywordHelper.checkTimeout(timeout)
             WebElement element = findElement(to, timeout * 1000);
             if (element == null) {
                 KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_NOT_FOUND, to.getObjectId()), flowControl, null);
+                return;
             }
             element.clear();
             element.sendKeys(text.toString());
@@ -489,9 +498,11 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static void tap(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             KeywordHelper.checkTestObjectParameter(to);
+            timeout = KeywordHelper.checkTimeout(timeout)
             WebElement element = findElement(to, timeout * 1000);
-            if(element == null){
+            if (element == null){
                 KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_NOT_FOUND, to.getObjectId()), flowControl, null);
+                return;
             }
             ((MobileElement) element).tap(1, 1);
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TAPPED_ON_ELEMENT, to.getObjectId()));
@@ -517,9 +528,11 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static String getAttribute(TestObject to, String name, int timeout, FailureHandling flowControl) throws StepFailedException {
         return KeywordMain.runKeyword({
             KeywordHelper.checkTestObjectParameter(to);
+            timeout = KeywordHelper.checkTimeout(timeout)
             WebElement element = findElement(to, timeout * 1000);
             if (element == null) {
                 KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_NOT_FOUND, to.getObjectId()), flowControl, null);
+                return null;
             }
             String val = "";
             switch (name.toString()) {
@@ -560,6 +573,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static boolean waitForElementPresent(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
         return KeywordMain.runKeyword({
             KeywordHelper.checkTestObjectParameter(to);
+            timeout = KeywordHelper.checkTimeout(timeout)
             WebElement element = findElement(to, timeout * 1000);
             if (element != null) {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ELEMENT_PRESENTED, to.getObjectId()));
@@ -585,10 +599,11 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
-    public static boolean verifyElementExist(TestObject to, int timeOut, FailureHandling flowControl) throws StepFailedException {
+    public static boolean verifyElementExist(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
         return KeywordMain.runKeyword({
             KeywordHelper.checkTestObjectParameter(to);
-            WebElement element = findElement(to, timeOut * 1000);
+            timeout = KeywordHelper.checkTimeout(timeout)
+            WebElement element = findElement(to, timeout * 1000);
             if (element != null) {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ELEMENT_EXISTED, to.getObjectId()));
                 return true;
@@ -614,9 +629,11 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static void clearText(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             KeywordHelper.checkTestObjectParameter(to);
+            timeout = KeywordHelper.checkTimeout(timeout)
             WebElement element = findElement(to, timeout * 1000);
             if (element == null) {
                 KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_ELEMENT_NOT_FOUND, to.getObjectId()), flowControl, null);
+                return;
             }
             element.clear();
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ELEMENT_TEXT_IS_CLEARED, to.getObjectId()));
@@ -803,6 +820,32 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             throw new StepFailedException(StringConstants.KW_MSG_UNABLE_FIND_DRIVER);
         }
         return driver;
+    }
+    
+    /**
+     * Scroll to an element which contains the given text.
+     * @param text : text of an element to scroll to
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void scrollToText(String text, FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_TEXT);
+            if (text == null) {
+                throw new IllegalArgumentException(StringConstants.COMM_EXC_TEXT_IS_NULL);
+            }
+            AppiumDriver driver = getAnyAppiumDriver();
+            String context = driver.getContext();
+            try {
+                internalSwitchToNativeContext(driver);
+                driver.scrollToExact(text);
+                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SCROLL_TO_TEXT_X, text));
+            } finally {
+                driver.context(context);
+            }
+        }, flowControl, MessageFormat.format(StringConstants.KW_MSG_UNABLE_SCROLL_TO_TEXT_X, text));
     }
 
     /**

@@ -35,6 +35,7 @@ try {
 } catch (Exception e) {
     TestCaseMain.logError('<%= testCaseId %>', e)
 }
+DriverCleanerCollector.getInstance().cleanDriversAfterRunningTestCase()
 '''
     @CompileStatic
     def static generateTestCaseScriptFile(File file, TestCaseEntity testCase, String testCaseBinding, IRunConfiguration config) {
