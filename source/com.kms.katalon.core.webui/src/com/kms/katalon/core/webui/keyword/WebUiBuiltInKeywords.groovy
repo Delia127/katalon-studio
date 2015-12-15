@@ -516,7 +516,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      *         how many seconds to wait
      * @param flowControl
      * @return
-     *         true if the element is visible; otherwise, false
+     *         true if the element is present and clickable; otherwise, false
      * @throws StepFailedException
      */
     @CompileStatic
@@ -583,7 +583,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      *         how many seconds to wait
      * @param flowControl
      * @return
-     *         true if the element is visible; otherwise, false
+     *         true if the element is present but is NOT clickable; otherwise, false
      * @throws StepFailedException
      */
     @CompileStatic
@@ -640,6 +640,88 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_TO_BE__NOTCLICKABLE, to.getObjectId())
         : StringConstants.KW_MSG_CANNOT_WAIT_FOR_OBJ_TO_BE_NOT_CLICKABLE)
+    }
+
+    /***
+     * Verify if the given element is clickable
+     * @param to
+     *         represent a web element
+     * @param flowControl
+     * @return
+     *         true if the element is present and clickable; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementClickable(TestObject to, FailureHandling flowControl) throws StepFailedException {
+        return WebUIKeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = false;
+            try {
+                WebUiCommonHelper.checkTestObjectParameter(to);
+                try {
+                    isSwitchIntoFrame = switchToFrame(to, RunConfiguration.getTimeOut());
+                    WebElement foundElement = findWebElement(to, RunConfiguration.getTimeOut());
+                    if (foundElement.isEnabled()) {
+                        logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_IS_CLICKABLE, to.getObjectId()));
+                        return true;
+                    } else {
+                        WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_IS_NOT_CLICKABLE, to.getObjectId()),
+                                flowControl, null);
+                        return false;
+                    }
+                } catch (WebElementNotFoundException e) {
+                    WebUIKeywordMain.stepFailed(e.getMessage(), flowControl, null);
+                    return false;
+                }
+            } finally {
+                if (isSwitchIntoFrame) {
+                    switchToDefaultContent();
+                }
+            }
+        }
+        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_VERIFY_OBJ_X_TO_BE_CLICKABLE, to.getObjectId())
+        : StringConstants.KW_MSG_VERIFY_OBJ_TO_BE_CLICKABLE)
+    }
+
+    /***
+     * Verify if the given element is NOT clickable
+     * @param to
+     *         represent a web element
+     * @param flowControl
+     * @return
+     *         true if the element is present and NOT clickable; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementNotClickable(TestObject to, FailureHandling flowControl) throws StepFailedException {
+        return WebUIKeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = false;
+            try {
+                WebUiCommonHelper.checkTestObjectParameter(to);
+                try {
+                    isSwitchIntoFrame = switchToFrame(to, RunConfiguration.getTimeOut());
+                    WebElement foundElement = findWebElement(to, RunConfiguration.getTimeOut());
+                    if (foundElement.isEnabled()) {
+                        WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_IS_CLICKABLE, to.getObjectId()),
+                                flowControl, null);
+                        return false;
+                    } else {
+                        logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_IS_NOT_CLICKABLE, to.getObjectId()));
+                        return true;
+                    }
+                } catch (WebElementNotFoundException e) {
+                    WebUIKeywordMain.stepFailed(e.getMessage(), flowControl, null);
+                    return false;
+                }
+            } finally {
+                if (isSwitchIntoFrame) {
+                    switchToDefaultContent();
+                }
+            }
+        }
+        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_VERIFY_OBJ_X_TO_BE_NOT_CLICKABLE, to.getObjectId())
+        : StringConstants.KW_MSG_VERIFY_OBJ_TO_BE_NOT_CLICKABLE)
     }
 
     /**
@@ -3152,4 +3234,38 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_UPLOAD_FILE_X_TO_OBJ_Y, fileAbsolutePath, to.getObjectId())
         : MessageFormat.format(StringConstants.KW_MSG_CANNOT_UPLOAD_FILE_X, fileAbsolutePath))
     }
+
+    /**
+     * scrolls a element into the visible area of the browser window
+     * @param to
+     *    represent a web element
+     * @param fileAbsolutePath
+     *       absolute path of the file on local machine
+     * @param flowControl
+     *       flow control
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void scrollToElement(TestObject to, int timeOut, FailureHandling flowControl) throws StepFailedException {
+        WebUIKeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = false;
+            try {
+                WebUiCommonHelper.checkTestObjectParameter(to)
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
+                isSwitchIntoFrame = switchToFrame(to);
+                WebElement webElement = findWebElement(to);
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SCROLLING_TO_OBJ_X, to.getObjectId()));
+                ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript("arguments[0].scrollIntoView();", webElement);
+                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SCROLLING_TO_OBJ_X, to.getObjectId()));
+            } finally {
+                if (isSwitchIntoFrame) {
+                    switchToDefaultContent();
+                }
+            }
+        }
+        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_SCROLLING_TO_OBJ_X, to.getObjectId())
+        : StringConstants.KW_MSG_CANNOT_SCROLLING_TO_OBJ)
+    }
+
 }

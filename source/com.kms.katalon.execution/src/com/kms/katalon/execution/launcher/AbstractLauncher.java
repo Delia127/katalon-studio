@@ -203,7 +203,7 @@ public abstract class AbstractLauncher {
         if (csvSummaryFile.exists()) {
             csvSummaryFile.delete();
         }
-        CsvWriter.writeArraysToCsv(newDatas, csvSummaryFile);
+        CsvWriter.writeArraysToCsv(CsvWriter.SUMMARY_HEADER, newDatas, csvSummaryFile);
         
         return suitesSummaryForEmail;
     }

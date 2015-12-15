@@ -170,7 +170,7 @@ public abstract class AstAbstractTreeTableNode implements AstTreeTableNode {
 
     @Override
     public String getTestObjectTooltipText() {
-        return getTestObjectTooltipText();
+        return getTestObjectText();
     }
 
     @Override

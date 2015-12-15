@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -16,6 +17,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -25,30 +27,39 @@ public class QTestHttpRequestHelper {
 
     public static String sendPostRequest(String serverUrl, String url, String username, String password,
             List<NameValuePair> postParams) throws QTestIOException {
-        HttpClient client = HttpClientBuilder.create().build();
+        CloseableHttpClient client = null;
+        try {
+            client = HttpClientBuilder.create().build();
 
-        Map<String, String> cookies = new HashMap<String, String>();
-        doLogin(client, serverUrl, cookies, username, password);
-        String result = doPost(client, serverUrl, url, postParams, cookies);
-
-        return result;
+            Map<String, String> cookies = new HashMap<String, String>();
+            doLogin(client, serverUrl, cookies, username, password);
+            String result = doPost(client, serverUrl, url, postParams, cookies);
+            
+            return result;
+        } finally {
+            IOUtils.closeQuietly(client);
+        }
     }
 
     public static String sendGetRequest(String serverUrl, String url, String username, String password)
             throws QTestIOException {
-        HttpClient client = HttpClientBuilder.create().build();
+        CloseableHttpClient client = null;
+        try {
+            client = HttpClientBuilder.create().build();
+            Map<String, String> cookies = new HashMap<String, String>();
+            doLogin(client, serverUrl, cookies, username, password);
 
-        Map<String, String> cookies = new HashMap<String, String>();
-        doLogin(client, serverUrl, cookies, username, password);
+            String result = doGet(client, serverUrl, url, cookies);
 
-        String result = doGet(client, serverUrl, url, cookies);
-
-        return result;
+            return result;
+        } finally {
+            IOUtils.closeQuietly(client);
+        }
     }
 
     /**
-     * Body of a request sent to qTest via HTTP connection must be JSON format.
-     * This function will transform a map of properties to JSON format.
+     * Body of a request sent to qTest via HTTP connection must be JSON format. This function will transform a map of
+     * properties to JSON format.
      * 
      * @param mapProperties
      * @return: JSON String.

@@ -35,7 +35,9 @@ public class LogChildTreeNode implements ILogTreeNode {
                 return "";
             }
         }
-        return (getParent() == null ? "" : (getParent().getIndexString().isEmpty() ? "" : getParent().getIndexString() + ".")) + String.valueOf(stepIndex);
+        return (getParent() == null ? "" : (getParent().getIndexString().isEmpty() ? "" : getParent().getIndexString()
+                + "."))
+                + String.valueOf(stepIndex);
     }
 
 }
