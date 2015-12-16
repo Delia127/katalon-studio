@@ -30,12 +30,7 @@ public class MobileCommonHelper {
 
     @CompileStatic
     public static void swipe(AppiumDriver driver, int startX, int startY, int endX, int endY){
-        if (driver instanceof AndroidDriver) {
-            TouchActions ta = new TouchActions((WebDriver) driver);
-            ta.down(startX, startY).move(endX, endY).up(endX, endY).perform();
-        } else if (driver instanceof IOSDriver) {
-            driver.swipe(startX, startY, endX, endY, 500);
-        }
+        driver.swipe(startX, startY, endX, endY, 500);
     }
 
     @CompileStatic

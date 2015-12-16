@@ -127,8 +127,15 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
     public static void swipe(int startX, int startY, int endX, int endY, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
-            MobileCommonHelper.swipe(MobileDriverFactory.getDriver(), startX, startY, endX, endY);
-            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SWIPED_FROM_STARTXY_TO_ENDXY, startX, startY, endX, endY));
+            AppiumDriver<?> driver = getAnyAppiumDriver();
+            String context = driver.getContext();
+            try {
+                internalSwitchToNativeContext(driver);
+                MobileCommonHelper.swipe(driver, startX, startY, endX, endY);
+                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SWIPED_FROM_STARTXY_TO_ENDXY, startX, startY, endX, endY));
+            } finally {
+                driver.context(context)
+            }
         }, flowControl, StringConstants.KW_MSG_CANNOT_SWIPE_ON_DEVICE)
     }
 
@@ -650,7 +657,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
-    public static void verifyIsLandscape(FailureHandling flowControl) throws StepFailedException {
+    public static boolean verifyIsLandscape(FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             AppiumDriver driver = getAnyAppiumDriver();
             String context = driver.getContext();
@@ -678,7 +685,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
-    public static void verifyIsPortrait(FailureHandling flowControl) throws StepFailedException {
+    public static boolean verifyIsPortrait(FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             AppiumDriver driver = getAnyAppiumDriver();
             String context = driver.getContext();
