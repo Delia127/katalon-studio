@@ -1,5 +1,6 @@
 package com.kms.katalon.core.webui.common;
 
+import java.awt.Rectangle;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,7 @@ public class WebUiCommonHelper extends KeywordHelper {
     private static final String WEB_ELEMENT_ATTRIBUTE_TEXT = "text";
     private static final String WEB_ELEMENT_XPATH = "xpath";
     private static KeywordLogger logger = KeywordLogger.getInstance();
-    
+
     private static final String XPATH_INTESECTION_FORMULA = "%s[count(. | %s) = count(%s)]";
 
     public static boolean isTextPresent(WebDriver webDriver, String text, boolean isRegex) throws WebDriverException,
@@ -520,20 +521,36 @@ public class WebUiCommonHelper extends KeywordHelper {
     }
 
     public static String getBrowserAndVersion(WebDriver webDriver) {
-        return (String) ((JavascriptExecutor) webDriver).executeScript(
-                "return navigator.sayswho= (function() {"
+        return (String) ((JavascriptExecutor) webDriver).executeScript("return navigator.sayswho= (function() {"
                 + " var ua= navigator.userAgent, tem,"
                 + " M= ua.match(/(opera|chrome|safari|firefox|msie|trident)\\/?\\s*(\\.?\\d+(\\.\\d+)*)/i) || [];"
-                + " if (/trident/i.test(M[1])) {" 
-                + "     tem=  /\\brv[ :]+(\\d+)/g.exec(ua) || [];"
-                + "     return 'IE '+(tem[1] || '');" 
-                + " }" 
-                + " if(M[1]=== 'Chrome') {"
+                + " if (/trident/i.test(M[1])) {" + "     tem=  /\\brv[ :]+(\\d+)/g.exec(ua) || [];"
+                + "     return 'IE '+(tem[1] || '');" + " }" + " if(M[1]=== 'Chrome') {"
                 + "     tem= ua.match(/\b(OPR|Edge)\\/(\\d+)/);"
-                + "     if(tem!= null) return tem.slice(1).join(' ').replace('OPR', 'Opera');" 
-                + " }"
+                + "     if(tem!= null) return tem.slice(1).join(' ').replace('OPR', 'Opera');" + " }"
                 + " M= M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];"
                 + " if((tem= ua.match(/version\\/(\\d+)/i))!= null) M.splice(1, 1, tem[1]);"
                 + " return M.join(' ').replace('MSIE', 'IE');" + "})();");
+    }
+
+    public static int getViewportWidth(WebDriver webDriver) {
+        Long longValue = (Long) (((JavascriptExecutor) DriverFactory.getWebDriver())
+                .executeScript("return Math.max(document.documentElement.clientWidth, window.innerWidth || 0);"));
+        return longValue.intValue();
+    }
+
+    public static int getViewportHeight(WebDriver webDriver) {
+        Long longValue = (Long) (((JavascriptExecutor) DriverFactory.getWebDriver())
+                .executeScript("return Math.max(document.documentElement.clientHeight, window.innerHeight || 0);"));
+        return longValue.intValue();
+    }
+    
+    public static Rectangle getElementRect(WebDriver webDriver, WebElement element) {
+        JavascriptExecutor javascriptExecutor = (JavascriptExecutor) webDriver;
+        Number left = (Number) (javascriptExecutor.executeScript("return arguments[0].getBoundingClientRect().left", element));
+        Number right = (Number) (javascriptExecutor.executeScript("return arguments[0].getBoundingClientRect().right", element));
+        Number top = (Number) (javascriptExecutor.executeScript("return arguments[0].getBoundingClientRect().top", element));
+        Number bottom = (Number) (javascriptExecutor.executeScript("return arguments[0].getBoundingClientRect().bottom", element));
+        return new Rectangle(left.intValue(), top.intValue(), right.intValue() - left.intValue(), bottom.intValue() - top.intValue());
     }
 }

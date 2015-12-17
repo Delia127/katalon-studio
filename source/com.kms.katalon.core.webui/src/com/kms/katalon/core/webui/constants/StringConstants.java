@@ -430,6 +430,13 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_LOG_PASSED_SCROLLING_TO_OBJ_X = "Scroll to object ''{0}'' successfully";
     public static final String KW_MSG_CANNOT_SCROLLING_TO_OBJ_X = "Unable to scroll to object ''{0}''";
     public static final String KW_MSG_CANNOT_SCROLLING_TO_OBJ = "Unable to scroll to object";
+    public static final String KW_LOG_PASSED_OBJ_X_VISIBLE_IN_VIEWPORT = "Object ''{0}'' is present and visible in viewport";
+    public static final String KW_LOG_FAILED_OBJ_X_VISIBLE_IN_VIEWPORT = "Object ''{0}'' is present but is not visible in viewport";
+    public static final String KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT = "Object ''{0}'' is not present";
+    public static final String KW_LOG_INFO_ELEMENT_RECT = "Element position in viewport: x = {0}, y = {1}, width = {2}, height = {3}";
+    public static final String KW_LOG_INFO_VIEWPORT_RECT = "Viewport infomation: width = {0}, height = {1}";
+    public static final String KW_MSG_CANNOT_VERIFY_OBJ_X_VISIBLE_IN_VIEWPORT = "Unable to verify if object ''{0}'' is visible in viewport";
+    public static final String KW_MSG_CANNOT_VERIFY_OBJ_VISIBLE_IN_VIEWPORT = "Unable to verify if object is visible in viewport";
 	
 	public static final String KW_CATEGORIZE_ALERT = "Alert";
 	public static final String KW_CATEGORIZE_ATTRIBUTE = "Attribute";
