@@ -599,19 +599,12 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     WebElement foundElement = findWebElement(to, timeOut);
                     WebDriverWait wait = new WebDriverWait(DriverFactory.getWebDriver(), timeOut);
                     foundElement = wait.until(new ExpectedCondition<WebElement>() {
-                                public ExpectedCondition<WebElement> visibilityOfElement =
-                                ExpectedConditions.visibilityOf(foundElement);
-
                                 @Override
                                 public WebElement apply(WebDriver driver) {
-                                    try {
-                                        if (foundElement.isEnabled()) {
-                                            return null;
-                                        } else {
-                                            return foundElement;
-                                        }
-                                    } catch (StaleElementReferenceException e) {
+                                    if (foundElement.isEnabled()) {
                                         return null;
+                                    } else {
+                                        return foundElement;
                                     }
                                 }
 
