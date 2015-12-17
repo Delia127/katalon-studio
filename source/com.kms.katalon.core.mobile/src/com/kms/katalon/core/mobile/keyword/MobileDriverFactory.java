@@ -18,6 +18,7 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
@@ -425,5 +426,14 @@ public class MobileDriverFactory {
         if (localStorageAppiumDriver.get() == null) {
             throw new StepFailedException("No application is started yet.");
         }
+    }
+    
+    public static void closeDriver() {
+        AppiumDriver<?> webDriver = localStorageAppiumDriver.get();
+        if (null != webDriver && null != ((RemoteWebDriver) webDriver).getSessionId()) {
+            webDriver.quit();
+        }
+        RunConfiguration.removeDriver(webDriver);
+        localStorageAppiumDriver.set(null);
     }
 }

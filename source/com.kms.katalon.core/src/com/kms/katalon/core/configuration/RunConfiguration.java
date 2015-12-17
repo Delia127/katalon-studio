@@ -154,4 +154,10 @@ public class RunConfiguration {
             localDriverStorage.get().add(driver);
         }
     }
+    
+    public static void removeDriver(Object driver) {
+        if (localDriverStorage.get().contains(driver)) {
+            localDriverStorage.get().remove(driver);
+        }
+    }
 }
