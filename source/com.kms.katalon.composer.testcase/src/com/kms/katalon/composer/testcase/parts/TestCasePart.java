@@ -910,6 +910,8 @@ public class TestCasePart implements EventHandler {
         case TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID:
             pasteTestStep();
             break;
+        case TreeTableMenuItemConstants.REMOVE_MENU_ITEM_ID:
+            removeTestStep();
         default:
             treeTableInput.addNewAstObject(menuItem.getID(), addType);
             break;
