@@ -3251,7 +3251,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      * @param timeOut
      *      system will wait at most timeout (seconds) to return result
      * @param flowControl
-     * @return true if element is present AND visible in viewport; otherwise, false
+     * @return true if element is present and visible in viewport; otherwise, false
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
@@ -3262,23 +3262,16 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 WebUiCommonHelper.checkTestObjectParameter(to);
                 WebDriver driver = DriverFactory.getWebDriver();
                 isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
-                WebElement foundElement = null;
-                foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
-                Rectangle elementRect = WebUiCommonHelper.getElementRect(driver, foundElement);
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_ELEMENT_RECT, elementRect.getX(), elementRect.getY(),
-                        elementRect.getWidth(), elementRect.getHeight()));
-                Rectangle documentRect = new Rectangle(0, 0, WebUiCommonHelper.getViewportWidth(driver), WebUiCommonHelper.getViewportHeight(driver));
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_VIEWPORT_RECT, documentRect.getWidth(), documentRect.getHeight()));
-                if (documentRect.intersects(elementRect)) {
+                WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
+                if (WebUiCommonHelper.isElementVisibleInViewport(driver, foundElement)) {
                     KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_VISIBLE_IN_VIEWPORT, to.getObjectId()));
                     return true;
-                } else {
+                }  else {
                     WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_VISIBLE_IN_VIEWPORT, to.getObjectId()), flowControl, null, true);
                     return false;
                 }
             } catch (WebElementNotFoundException ex) {
                 logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
-                return true;
             } finally {
                 if (isSwitchIntoFrame) {
                     WebUiBuiltInKeywords.switchToDefaultContent();
@@ -3288,6 +3281,45 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_VISIBLE_IN_VIEWPORT, to.getObjectId())
         : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_VISIBLE_IN_VIEWPORT)
+    }
+    
+    /**
+     * Verify if the web element is NOT visible in current view port
+     * @param to
+     *      represent a web element
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return true if element is present and NOT visible in viewport; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementNotVisibleInViewport(TestObject to, int timeOut, FailureHandling flowControl) {
+        WebUIKeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = false;
+            try {
+                WebUiCommonHelper.checkTestObjectParameter(to);
+                WebDriver driver = DriverFactory.getWebDriver();
+                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
+                WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
+                if (WebUiCommonHelper.isElementVisibleInViewport(driver, foundElement)) {
+                    WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_NOT_VISIBLE_IN_VIEWPORT, to.getObjectId()), flowControl, null, true);
+                    return false;
+                }  else {
+                    KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_NOT_VISIBLE_IN_VIEWPORT, to.getObjectId()));
+                    return true;
+                }
+            } catch (WebElementNotFoundException ex) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
+            } finally {
+                if (isSwitchIntoFrame) {
+                    WebUiBuiltInKeywords.switchToDefaultContent();
+                }
+            }
+            return false;
+        }
+        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_NOT_VISIBLE_IN_VIEWPORT, to.getObjectId())
+        : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_NOT_VISIBLE_IN_VIEWPORT)
     }
 
 }

@@ -553,4 +553,13 @@ public class WebUiCommonHelper extends KeywordHelper {
         Number bottom = (Number) (javascriptExecutor.executeScript("return arguments[0].getBoundingClientRect().bottom", element));
         return new Rectangle(left.intValue(), top.intValue(), right.intValue() - left.intValue(), bottom.intValue() - top.intValue());
     }
+    
+    public static boolean isElementVisibleInViewport(WebDriver driver, WebElement element) {
+        Rectangle elementRect = WebUiCommonHelper.getElementRect(driver, element);
+        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_ELEMENT_RECT, elementRect.getX(), elementRect.getY(),
+                elementRect.getWidth(), elementRect.getHeight()));
+        Rectangle documentRect = new Rectangle(0, 0, WebUiCommonHelper.getViewportWidth(driver), WebUiCommonHelper.getViewportHeight(driver));
+        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_VIEWPORT_RECT, documentRect.getWidth(), documentRect.getHeight()));
+        return documentRect.intersects(elementRect);
+    }
 }
