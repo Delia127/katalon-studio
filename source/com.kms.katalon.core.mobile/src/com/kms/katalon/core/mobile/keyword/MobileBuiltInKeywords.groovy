@@ -836,7 +836,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      * @throws StepFailedException
      */
     @CompileStatic
-    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
     public static void scrollToText(String text, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_TEXT);
