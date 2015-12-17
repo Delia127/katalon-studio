@@ -85,6 +85,10 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String KW_LOG_FAILED_ELEMENT_X_VISIBLE = "Element {0} is NOT visible";
     public static final String KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_VISIBLE = "Failed to check for element visible";
     public static final String KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_VISIBLE = "Failed to check for element {0} visible";
+    public static final String KW_LOG_PASSED_ELEMENT_X_NOT_VISIBLE = "Element {0} is NOT visible";
+    public static final String KW_LOG_FAILED_ELEMENT_X_NOT_VISIBLE = "Element {0} is visible";
+    public static final String KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_NOT_VISIBLE = "Failed to check if element is not visible";
+    public static final String KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_NOT_VISIBLE = "Failed to check if element {0} is not visible";
 	
 	public static final String KW_CATEGORIZE_APPLICATION = "Application";
 	public static final String KW_CATEGORIZE_ATTRIBUTE = "Attribute";
