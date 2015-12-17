@@ -56,7 +56,7 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String KW_MSG_ELEMENT_NOT_FOUND = "Element {0} not found";
 	public static final String KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_EXIST = "Failed to check for element {0} exist";
 	public static final String KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_EXIST = "Failed to check for element {0} exist";
-	public static final String KW_MSG_FAILED_TO_ASSERT_FOR_ELEMENT_EXIST = "Failed to assert for element {0} exist";
+	public static final String KW_MSG_FAILED_TO_ASSERT_FOR_ELEMENT_EXIST = "Failed to assert for element exist";
 	public static final String KW_LOG_PASSED_ELEMENT_TEXT_IS_CLEARED = "Element {0} text is cleared";
 	public static final String KW_MSG_FAILED_TO_CLEAR_TEXT_OF_ELEMENT_X = "Failed clear text of element {0}";
 	public static final String KW_MSG_FAILED_TO_CLEAR_TEXT_OF_ELEMENT = "Failed clear text of element";
@@ -81,6 +81,10 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String KW_MSG_UNABLE_FIND_DRIVER = "No driver found";
 	public static final String COMM_LOG_INFO_CHECKING_TEXT = "Checking text";
 	public static final String COMM_EXC_TEXT_IS_NULL = "Text is null";
+	public static final String KW_LOG_PASSED_ELEMENT_X_VISIBLE = "Element {0} is visible";
+	public static final String KW_LOG_FAILED_ELEMENT_X_VISIBLE = "Element {0} is NOT visible";
+    public static final String KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_VISIBLE = "Failed to check for element visible";
+    public static final String KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_VISIBLE = "Failed to check for element {0} visible";
 	
 	public static final String KW_CATEGORIZE_APPLICATION = "Application";
 	public static final String KW_CATEGORIZE_ATTRIBUTE = "Attribute";
