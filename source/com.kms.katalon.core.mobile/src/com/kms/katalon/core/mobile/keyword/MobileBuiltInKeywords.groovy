@@ -612,14 +612,43 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             timeout = KeywordHelper.checkTimeout(timeout)
             WebElement element = findElement(to, timeout * 1000);
             if (element != null) {
-                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ELEMENT_EXISTED, to.getObjectId()));
+                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ELEMENT_X_EXISTED, to.getObjectId()));
                 return true;
             } else {
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_ELEMENT_NOT_FOUND, to.getObjectId()), flowControl, null);
+                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_EXISTED, to.getObjectId()), flowControl, null);
                 return false;
             }
         }, flowControl, to != null ?  MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_EXIST, to.getObjectId())
         : StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_EXIST);
+    }
+
+    /**
+     * Verify if a mobile element is NOT presented
+     * @param to
+     *      represent a mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return
+     *      true if the element is NOT presented; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementNotExist(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
+        return KeywordMain.runKeyword({
+            KeywordHelper.checkTestObjectParameter(to);
+            timeout = KeywordHelper.checkTimeout(timeout)
+            WebElement element = findElement(to, timeout * 1000);
+            if (element != null) {
+                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_NOT_EXISTED, to.getObjectId()), flowControl, null);
+                return false;
+            } else {
+                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ELEMENT_X_NOT_EXISTED, to.getObjectId()));
+                return true;
+            }
+        }, flowControl, to != null ?  MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_NOT_EXIST, to.getObjectId())
+        : StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_NOT_EXIST);
     }
 
     /**
@@ -639,7 +668,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             timeout = KeywordHelper.checkTimeout(timeout)
             WebElement element = findElement(to, timeout * 1000);
             if (element == null) {
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_ELEMENT_NOT_FOUND, to.getObjectId()), flowControl, null);
+                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_EXISTED, to.getObjectId()), flowControl, null);
                 return;
             }
             element.clear();
@@ -882,13 +911,13 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
                     return false;
                 }
             } else {
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_ELEMENT_NOT_FOUND, to.getObjectId()), flowControl, null);
+                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_EXISTED, to.getObjectId()), flowControl, null);
                 return false;
             }
         }, flowControl, to != null ?  MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_VISIBLE, to.getObjectId())
         : StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_VISIBLE);
     }
-    
+
     /**
      * Verify if a mobile element is NOT visible
      * @param to
@@ -916,7 +945,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
                     return true;
                 }
             } else {
-                logger.logPassed(MessageFormat.format(StringConstants.KW_MSG_ELEMENT_NOT_FOUND, to.getObjectId()));
+                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_EXISTED, to.getObjectId()));
                 return true;
             }
         }, flowControl, to != null ?  MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_NOT_VISIBLE, to.getObjectId())

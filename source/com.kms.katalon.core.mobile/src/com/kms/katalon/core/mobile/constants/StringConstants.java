@@ -52,9 +52,9 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String KW_LOG_PASSED_ELEMENT_PRESENTED = "Element {0} is present";
 	public static final String KW_MSG_FAILED_TO_WAIT_FOR_ELEMENT_X_PRESENT = "Failed to wait for element {0} present";
 	public static final String KW_MSG_FAILED_TO_WAIT_FOR_ELEMENT_PRESENT = "Failed to wait for element present";
-	public static final String KW_LOG_PASSED_ELEMENT_EXISTED = "Element {0} is exist";
-	public static final String KW_MSG_ELEMENT_NOT_FOUND = "Element {0} not found";
-	public static final String KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_EXIST = "Failed to check for element {0} exist";
+	public static final String KW_LOG_PASSED_ELEMENT_X_EXISTED = "Element {0} is exist";
+	public static final String KW_LOG_FAILED_ELEMENT_X_EXISTED = "Element {0} not found";
+	public static final String KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_EXIST = "Failed to check for element exist";
 	public static final String KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_EXIST = "Failed to check for element {0} exist";
 	public static final String KW_MSG_FAILED_TO_ASSERT_FOR_ELEMENT_EXIST = "Failed to assert for element exist";
 	public static final String KW_LOG_PASSED_ELEMENT_TEXT_IS_CLEARED = "Element {0} text is cleared";
@@ -89,6 +89,10 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_LOG_FAILED_ELEMENT_X_NOT_VISIBLE = "Element {0} is visible";
     public static final String KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_NOT_VISIBLE = "Failed to check if element is not visible";
     public static final String KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_NOT_VISIBLE = "Failed to check if element {0} is not visible";
+    public static final String KW_LOG_PASSED_ELEMENT_X_NOT_EXISTED = KW_LOG_FAILED_ELEMENT_X_EXISTED;
+    public static final String KW_LOG_FAILED_ELEMENT_X_NOT_EXISTED = KW_LOG_PASSED_ELEMENT_X_EXISTED;
+    public static final String KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_NOT_EXIST = "Failed to check for element {0} not exist";
+    public static final String KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_NOT_EXIST = "Failed to check for element not exist";
 	
 	public static final String KW_CATEGORIZE_APPLICATION = "Application";
 	public static final String KW_CATEGORIZE_ATTRIBUTE = "Attribute";
