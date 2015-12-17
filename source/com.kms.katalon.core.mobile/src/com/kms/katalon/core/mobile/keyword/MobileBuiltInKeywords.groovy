@@ -78,7 +78,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_APPLICATION)
     public static void closeApplication(FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
-            MobileDriverFactory.getDriver().quit();
+            MobileDriverFactory.closeDriver();
             MobileDriverFactory.quitServer();
             logger.logPassed(StringConstants.KW_LOG_PASSED_CLOSE_APP);
         }, flowControl, StringConstants.KW_MSG_UNABLE_TO_CLOSE_APPLICATION)
@@ -836,7 +836,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      * @throws StepFailedException
      */
     @CompileStatic
-    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
     public static void scrollToText(String text, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_TEXT);

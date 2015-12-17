@@ -18,6 +18,7 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
@@ -33,6 +34,8 @@ public class MobileDriverFactory {
 
     public static final String EXECUTED_PLATFORM = StringConstants.CONF_EXECUTED_PLATFORM;
     public static final String EXECUTED_DEVICE_NAME = StringConstants.CONF_EXECUTED_DEVICE_NAME;
+    
+    private static Process webProxyServer;
 
     public enum OsType {
         IOS, ANDROID
@@ -93,6 +96,7 @@ public class MobileDriverFactory {
             killProcessOnMac("node");
             killProcessOnMac("instruments");
             killProcessOnMac("deviceconsole");
+            killProcessOnMac("ios_webkit_debug_proxy");
         }
     }
 
@@ -142,6 +146,14 @@ public class MobileDriverFactory {
     @SuppressWarnings("rawtypes")
     public static void startIosDriver(String deviceId, String appFile, boolean uninstallAfterCloseApp) throws Exception {
         cleanup();
+        try {
+            if (!isWebProxyServerStarted()) {
+                startWebProxyServer(deviceId);
+            }
+        } catch (IOException e) {
+            // running ios_webkit_debug_proxy is optional in native app mode
+            KeywordLogger.getInstance().logInfo("ios_webkit_debug_proxy command not found");
+        }
         if (!isServerStarted()) {
             startAppiumServer();
         }
@@ -197,6 +209,19 @@ public class MobileDriverFactory {
         }
         return false;
     }
+    
+    private static boolean isWebProxyServerStarted() {
+        if (webProxyServer == null) {
+            return false;
+        } else {
+            try {
+                webProxyServer.exitValue();
+                return false;
+            } catch (IllegalThreadStateException e) {
+                return true;
+            }
+        }
+    }
 
     private static synchronized int getFreePort() {
         ServerSocket s = null;
@@ -230,11 +255,28 @@ public class MobileDriverFactory {
         }
         KeywordLogger.getInstance().logInfo("Appium server started on port " + localStorageAppiumPort.get());
     }
+    
+    private static void startWebProxyServer(String deviceId) throws Exception {
+        String webProxyServerLocation = "ios_webkit_debug_proxy";
+        int webProxyPort = 27753;
+        String[] webProxyServerCmd = { webProxyServerLocation, "-c", deviceId + ":" + webProxyPort };
+        ProcessBuilder webProxyServerProcessBuilder = new ProcessBuilder(webProxyServerCmd);
+        webProxyServerProcessBuilder.redirectOutput(new File(new File(RunConfiguration.getLogFilePath()).getParent()
+                + File.separator + "appium-proxy-server.log"));
+        webProxyServer = webProxyServerProcessBuilder.start();
+        while (!isWebProxyServerStarted()) {
+        }
+        KeywordLogger.getInstance().logInfo("ios_webkit_debug_proxy server started on port " + webProxyPort);
+    }
 
     public static void quitServer() {
         if (localStorageAppiumServer.get() != null) {
             localStorageAppiumServer.get().destroy();
             localStorageAppiumServer.set(null);
+        }
+        if (webProxyServer != null) {
+            webProxyServer.destroy();
+            webProxyServer = null;
         }
     }
 
@@ -384,5 +426,14 @@ public class MobileDriverFactory {
         if (localStorageAppiumDriver.get() == null) {
             throw new StepFailedException("No application is started yet.");
         }
+    }
+    
+    public static void closeDriver() {
+        AppiumDriver<?> webDriver = localStorageAppiumDriver.get();
+        if (null != webDriver && null != ((RemoteWebDriver) webDriver).getSessionId()) {
+            webDriver.quit();
+        }
+        RunConfiguration.removeDriver(webDriver);
+        localStorageAppiumDriver.set(null);
     }
 }

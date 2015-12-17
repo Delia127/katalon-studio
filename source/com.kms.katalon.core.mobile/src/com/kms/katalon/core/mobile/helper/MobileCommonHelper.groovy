@@ -23,8 +23,10 @@ public class MobileCommonHelper {
         switch (deviceOs) {
             case OsType.IOS:
                 MobileDriverFactory.startIosDriver(deviceId, appFile, uninstallAfterCloseApp);
+                break;
             case OsType.ANDROID:
                 MobileDriverFactory.startAndroidDriver(deviceId, appFile, uninstallAfterCloseApp);
+                break;
         }
     }
 

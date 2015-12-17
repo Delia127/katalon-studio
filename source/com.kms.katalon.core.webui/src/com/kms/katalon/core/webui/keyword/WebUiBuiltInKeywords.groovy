@@ -532,25 +532,13 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     WebElement foundElement = findWebElement(to, timeOut);
                     WebDriverWait wait = new WebDriverWait(DriverFactory.getWebDriver(), timeOut);
                     foundElement = wait.until(new ExpectedCondition<WebElement>() {
-                                public ExpectedCondition<WebElement> visibilityOfElement =
-                                ExpectedConditions.visibilityOf(foundElement);
-
                                 @Override
                                 public WebElement apply(WebDriver driver) {
-                                    try {
-                                        if (foundElement.isEnabled()) {
-                                            return foundElement;
-                                        } else {
-                                            return null;
-                                        }
-                                    } catch (StaleElementReferenceException e) {
+                                    if (foundElement.isEnabled()) {
+                                        return foundElement;
+                                    } else {
                                         return null;
                                     }
-                                }
-
-                                @Override
-                                public String toString() {
-                                    return "element to be clickable: " + foundElement;
                                 }
                             });
                     if (foundElement != null) {
@@ -599,25 +587,13 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     WebElement foundElement = findWebElement(to, timeOut);
                     WebDriverWait wait = new WebDriverWait(DriverFactory.getWebDriver(), timeOut);
                     foundElement = wait.until(new ExpectedCondition<WebElement>() {
-                                public ExpectedCondition<WebElement> visibilityOfElement =
-                                ExpectedConditions.visibilityOf(foundElement);
-
                                 @Override
                                 public WebElement apply(WebDriver driver) {
-                                    try {
-                                        if (foundElement.isEnabled()) {
-                                            return null;
-                                        } else {
-                                            return foundElement;
-                                        }
-                                    } catch (StaleElementReferenceException e) {
+                                    if (foundElement.isEnabled()) {
                                         return null;
+                                    } else {
+                                        return foundElement;
                                     }
-                                }
-
-                                @Override
-                                public String toString() {
-                                    return "element to be clickable: " + foundElement;
                                 }
                             });
                     if (foundElement != null) {
