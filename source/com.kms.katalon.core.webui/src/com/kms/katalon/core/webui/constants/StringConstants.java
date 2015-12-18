@@ -403,8 +403,7 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String KW_EXC_USERNAME_IS_NULL = "Username is null";
 	public static final String KW_LOG_INFO_CHECKING_PASSWORD = "Checking password";
 	public static final String KW_EXC_PASSWORD_IS_NULL = "Password is null";
-	public static final String KW_LGO_INFO_NAVIGATING_TO_AUTHENTICATED_PAGE = "Navigating to authenticated page ''{0}'' with username ''{1}'' and password ''{2}''";
-	public static final String KW_LOG_PASSED_NAVIAGTED_TO_AUTHENTICATED_PAGE = "Navigate to authenticated page ''{0}'' with username ''{1}'' and password ''{2}'' successfully";
+	public static final String KW_LOG_PASSED_NAVIAGTED_TO_AUTHENTICATED_PAGE = "Authentication with username ''{1}'' and password ''{2}'' successfully";
 	public static final String KW_MSG_CANNOT_NAV_TO_AUTHENTICATED_PAGE = "Unable to navigate to authenticated page";
 	public static final String KW_EXC_NO_IMAGE_FILE_PROP_IN_OBJ = "This object don't have IMAGE_FILE property, please add it";
 	public static final String KW_LOG_INFO_CLICKING_ON_IMG_X = "Clicking on image: ''{0}''";
