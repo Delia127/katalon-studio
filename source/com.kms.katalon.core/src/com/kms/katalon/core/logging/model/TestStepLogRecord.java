@@ -3,6 +3,8 @@ package com.kms.katalon.core.logging.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.model.FailureHandling;
 
@@ -39,12 +41,23 @@ public class TestStepLogRecord extends AbstractLogRecord {
 	public TestStatus getStatus() {
 		TestStatus testStatus = new TestStatus();
 		testStatus.setStatusValue(TestStatusValue.PASSED);
+		 
+        if (childRecords == null || childRecords.size() == 0) { return testStatus; }
+        
+        setMessage(childRecords.get(childRecords.size() - 1).getMessage());        
+        
 		for (ILogRecord logRecord : getChildRecords()) {
+		    String childAttachment = null;
 			if (logRecord instanceof TestStepLogRecord) {
-				setAttachment(((TestStepLogRecord) logRecord).getAttachment());
+			    childAttachment = ((TestStepLogRecord) logRecord).getAttachment();
 			} else if (logRecord instanceof MessageLogRecord) {
-				setAttachment(((MessageLogRecord) logRecord).getAttachment());
+			    childAttachment = ((MessageLogRecord) logRecord).getAttachment();
 			}
+			
+			if (!StringUtils.isBlank(childAttachment)) {
+			    setAttachment(childAttachment);
+			}
+			
 			if (!(logRecord instanceof TestCaseLogRecord && ((TestCaseLogRecord) logRecord).isOptional())) {
 				TestStatusValue logRecordStatusValue = logRecord.getStatus().getStatusValue();
 				if (logRecordStatusValue == TestStatusValue.ERROR || logRecordStatusValue == TestStatusValue.FAILED) {

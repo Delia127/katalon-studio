@@ -27,6 +27,7 @@ public class ControlUtils {
             Composite comp = (Composite) ctrl;
             for (Control c : comp.getChildren()) {
                 recursiveSetEnabled(c, enabled);
+                c.setEnabled(enabled);
             }
         } else {
             ctrl.setEnabled(enabled);

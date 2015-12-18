@@ -18,10 +18,12 @@ Require-Bundle: com.kms.katalon.entity;bundle-version="1.0.0",
  org.apache.commons.io,
  com.kms.katalon.constant,
  org.apache.commons.lang,
- com.kms.katalon.jasper;bundle-version="1.0.0"
+ com.kms.katalon.jasper;bundle-version="1.0.0",
+ org.apache.httpcomponents.httpmime
 Export-Package: com.kms.katalon.integration.qtest,
  com.kms.katalon.integration.qtest.constants,
  com.kms.katalon.integration.qtest.credential,
+ com.kms.katalon.integration.qtest.credential.impl,
  com.kms.katalon.integration.qtest.entity,
  com.kms.katalon.integration.qtest.exception,
  com.kms.katalon.integration.qtest.setting

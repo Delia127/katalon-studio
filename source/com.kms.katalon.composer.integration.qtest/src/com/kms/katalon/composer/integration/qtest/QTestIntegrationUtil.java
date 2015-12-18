@@ -77,9 +77,10 @@ public class QTestIntegrationUtil {
     public static IntegratedEntity getIntegratedEntity(IntegratedFileEntity fileEntity) {
         return fileEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
     }
-    
+
     /**
      * Removes qTest {@link IntegratedEntity} from the given <code>fileEntity</code>
+     * 
      * @param fileEntity
      * @return the {@link IntegratedFileEntity} after removing qTest {@link IntegratedEntity}
      */
@@ -196,15 +197,17 @@ public class QTestIntegrationUtil {
      */
     public static TestSuiteRepo getTestSuiteRepo(IntegratedFileEntity entity, ProjectEntity projectEntity)
             throws Exception {
-        if (entity == null) return null;
+        if (entity == null)
+            return null;
         String entityId = entity.getRelativePathForUI().replace(File.separator,
                 GlobalStringConstants.ENTITY_ID_SEPERATOR);
 
         return getTestSuiteRepo(entityId, projectEntity);
     }
-    
+
     /**
-     *  Returns {@link TestSuiteRepo} that the given <code>entityId</code> belongs to.
+     * Returns {@link TestSuiteRepo} that the given <code>entityId</code> belongs to.
+     * 
      * @param entityId
      * @param projectEntity
      * @return
@@ -261,7 +264,7 @@ public class QTestIntegrationUtil {
                 if (testCaseRepo == null) {
                     return false;
                 }
-                
+
                 if (testCaseRepo.getFolderId().equals(FolderController.getInstance().getIdForDisplay(folderEntity))) {
                     isIntegrated = false;
                 }
@@ -270,7 +273,7 @@ public class QTestIntegrationUtil {
                 if (testSuiteRepo == null) {
                     return false;
                 }
-                
+
                 if (testSuiteRepo.getFolderId().equals(FolderController.getInstance().getIdForDisplay(folderEntity))) {
                     isIntegrated = false;
                 }
@@ -328,8 +331,8 @@ public class QTestIntegrationUtil {
             return false;
         } else if (entity instanceof TestCaseEntity) {
             if (isNotIntegrated && (getTestCaseRepo(entity, projectEntity) != null)) {
-                QTestModule module = QTestIntegrationFolderManager.getQTestModuleByFolderEntity(
-                        projectEntity.getFolderLocation(), entity.getParentFolder());
+                QTestModule module = QTestIntegrationFolderManager.getQTestModuleByFolderEntity(entity
+                        .getParentFolder());
 
                 // Cannot upload test case under root module.
                 if (module != null && module.getParentId() <= 0) {
@@ -518,20 +521,18 @@ public class QTestIntegrationUtil {
         if (qTestCase == null) {
             return QTestLogEvaluation.CANNOT_INTEGRATE;
         }
-        
-        if (!isSameQTestProject(testCaseLogRecord, LogRecordLookup.getInstance()
-                .getTestSuiteLogRecord(reportEntity))) {
+
+        if (!isSameQTestProject(testCaseLogRecord, LogRecordLookup.getInstance().getTestSuiteLogRecord(reportEntity))) {
             return QTestLogEvaluation.CANNOT_INTEGRATE;
         }
-        
+
         QTestRun qTestRun = QTestIntegrationTestSuiteManager.getTestRunByTestSuiteAndTestCaseId(qTestSuite,
                 qTestCase.getId());
         if (qTestRun != null) {
             IntegratedEntity reportIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(reportEntity);
             QTestReport qTestReport;
             try {
-                qTestReport = QTestIntegrationReportManager
-                        .getQTestReportByIntegratedEntity(reportIntegratedEntity);
+                qTestReport = QTestIntegrationReportManager.getQTestReportByIntegratedEntity(reportIntegratedEntity);
             } catch (Exception e) {
                 return QTestLogEvaluation.CANNOT_INTEGRATE;
             }
@@ -548,6 +549,7 @@ public class QTestIntegrationUtil {
 
     /**
      * Checks that the givens parameters has the same {@link QTestProject} or not.
+     * 
      * @param testCaseLogRecord
      * @param testSuiteLogRecord
      * @return true if same. Otherwise, false.
@@ -727,13 +729,14 @@ public class QTestIntegrationUtil {
             QTestProject qTestProject = QTestIntegrationUtil.getTestSuiteRepo(testSuiteEntity, projectEntity)
                     .getQTestProject();
             return QTestIntegrationTestSuiteManager.getTestRuns(selectedQTestSuite, qTestProject,
-                    new QTestSettingCredential(projectEntity.getFolderLocation()));
+                    QTestSettingCredential.getCredential(projectEntity.getFolderLocation()));
         }
         return null;
     }
-    
+
     /**
      * Checks the given report {@link FolderEntity} is in any {@link TestSuiteRepo} or not.
+     * 
      * @param folderEntity
      * @param projectEntity
      * @return true if it's in a {@link TestSuiteRepo}. Otherwise, false.

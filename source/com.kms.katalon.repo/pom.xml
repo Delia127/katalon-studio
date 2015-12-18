@@ -132,6 +132,9 @@
 								</artifact>
 								<artifact>
 									<id>org.apache.httpcomponents:httpcore:4.4.4</id>
+								</artifact>								
+								<artifact>
+									<id>org.apache.httpcomponents:httpmime:4.5.1</id>
 								</artifact>
 							</artifacts>
 						</configuration>

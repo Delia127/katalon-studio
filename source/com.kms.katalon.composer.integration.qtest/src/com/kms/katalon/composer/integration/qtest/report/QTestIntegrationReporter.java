@@ -72,7 +72,7 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
                 if (qTestRun == null) {
                     // If qTestRun isn't in the current list, upload new to qTest.
                     qTestRun = QTestIntegrationTestSuiteManager.uploadTestCaseInTestSuite(qTestCase,
-                            selectedQTestSuite, qTestProject, projectDir);
+                            selectedQTestSuite, qTestProject, QTestSettingCredential.getCredential(projectDir));
                 }
 
                 // Save test suite.
@@ -137,7 +137,7 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
             QTestProject qTestProject = QTestIntegrationUtil.getTestSuiteRepo(testSuiteEntity, projectEntity)
                     .getQTestProject();
             return QTestIntegrationTestSuiteManager.getTestRuns(selectedQTestSuite, qTestProject,
-                    new QTestSettingCredential(projectEntity.getFolderLocation()));
+                    QTestSettingCredential.getCredential(projectEntity.getFolderLocation()));
         }
         return null;
 
@@ -173,5 +173,4 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
             }
         }
     }
-
 };

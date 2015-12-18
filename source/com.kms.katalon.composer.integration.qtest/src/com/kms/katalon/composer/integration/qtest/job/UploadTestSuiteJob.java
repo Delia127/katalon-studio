@@ -15,6 +15,7 @@ import org.eclipse.swt.SWT;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.SynchronizedConfirmationDialog;
 import com.kms.katalon.composer.components.impl.dialogs.YesNoAllOptions;
+import com.kms.katalon.composer.components.impl.util.StatusUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
@@ -47,7 +48,7 @@ public class UploadTestSuiteJob extends QTestJob {
     @Override
     protected IStatus run(IProgressMonitor monitor) {
         try {
-            fCredentials = new QTestSettingCredential(getProjectDir());
+            fCredentials = QTestSettingCredential.getCredential(getProjectDir());
             fUploadedPairs = new ArrayList<TestSuiteQTestSuitePair>();
 
             int total = fUnuploadedPairs.size();
@@ -60,12 +61,14 @@ public class UploadTestSuiteJob extends QTestJob {
                         SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK), pair);
                 if (status == Status.CANCEL_STATUS) {
                     return canceled();
+                } else if (status.getSeverity() == Status.ERROR) {
+                    return status;
                 }
             }
             return Status.OK_STATUS;
         } catch (Exception e) {
             LoggerSingleton.logError(e);
-            return Status.CANCEL_STATUS;
+            return StatusUtil.getErrorStatus(getClass(), e);
         } finally {
             monitor.done();
         }
@@ -171,7 +174,7 @@ public class UploadTestSuiteJob extends QTestJob {
             return Status.CANCEL_STATUS;
         } catch (Exception ex) {
             LoggerSingleton.logError(ex);
-            return Status.CANCEL_STATUS;
+            return StatusUtil.getErrorStatus(getClass(), ex);
         } finally {
             if (uploadedQTestSuites.size() > 0) {
                 fUploadedPairs.add(new TestSuiteQTestSuitePair(testSuite, uploadedQTestSuites));

@@ -149,8 +149,8 @@ public class TestCaseRootSelectionDialog extends Dialog {
                 @Override
                 public void run() {
                     try {
-                        moduleRoot = QTestIntegrationFolderManager.updateModuleViaAPI(new QTestSettingCredential(
-                                projectDir), qTestProject.getId(), moduleRoot);
+                        moduleRoot = QTestIntegrationFolderManager.updateModuleViaAPI(
+                                QTestSettingCredential.getCredential(projectDir), qTestProject.getId(), moduleRoot);
 
                         treeViewer.setInput(Arrays.asList(moduleRoot));
                         treeViewer.expandAll();

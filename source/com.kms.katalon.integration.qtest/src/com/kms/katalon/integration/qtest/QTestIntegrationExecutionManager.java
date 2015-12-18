@@ -8,6 +8,7 @@ import org.qas.api.internal.util.json.JsonException;
 import org.qas.api.internal.util.json.JsonObject;
 
 import com.kms.katalon.integration.qtest.constants.QTestMessageConstants;
+import com.kms.katalon.integration.qtest.credential.IQTestCredential;
 import com.kms.katalon.integration.qtest.entity.QTestDefect;
 import com.kms.katalon.integration.qtest.entity.QTestDefectField;
 import com.kms.katalon.integration.qtest.entity.QTestLog;
@@ -38,10 +39,10 @@ public class QTestIntegrationExecutionManager {
         return String.format("{ \"field_id\": %s, \"field_value\": \"%s\" }", fieldId, fieldValue);
     }
 
-    public static QTestDefect submitDefect(String serverUrl, String token, long projectId, String postBody)
+    public static QTestDefect submitDefect(IQTestCredential credential, long projectId, String postBody)
             throws QTestException {
-        String url = String.format(serverUrl + "/api/v3/projects/%s/defects", projectId);
-        String res = QTestAPIRequestHelper.sendPostRequestViaAPI(url, token, postBody);
+        String url = String.format(credential.getServerUrl() + "/api/v3/projects/%s/defects", projectId);
+        String res = QTestAPIRequestHelper.sendPostRequestViaAPI(url, credential.getToken(), postBody);
 
         try {
             JsonObject jo = new JsonObject(res);
@@ -54,19 +55,19 @@ public class QTestIntegrationExecutionManager {
         }
     }
 
-    public static List<QTestRun> getTestRuns(String serverUrl, String token, long projectId, long testSuiteId)
+    public static List<QTestRun> getTestRuns(IQTestCredential credential, long projectId, long testSuiteId)
             throws QTestException {
-        if (!QTestIntegrationAuthenticationManager.validateToken(token)) {
+        if (!QTestIntegrationAuthenticationManager.validateToken(credential.getToken().getAccessToken())) {
             throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
         }
 
         List<QTestRun> list = new ArrayList<QTestRun>();
-        String json = QTestAPIRequestHelper.sendGetRequestViaAPI(serverUrl + "/api/v3/projects/" + projectId
-                + "/test-runs?testSuiteId=" + testSuiteId, token);
+        String json = QTestAPIRequestHelper.sendGetRequestViaAPI(credential.getServerUrl() + "/api/v3/projects/" + projectId
+                + "/test-runs?testSuiteId=" + testSuiteId, credential.getToken());
         try {
             List<String> testRunURLs = parseJsonToGetTestRunURLs(json);
             for (String url : testRunURLs) {
-                json = QTestAPIRequestHelper.sendGetRequestViaAPI(url, token);
+                json = QTestAPIRequestHelper.sendGetRequestViaAPI(url, credential.getToken());
                 JsonObject jo = new JsonObject(json);
 
                 long runId = jo.getLong("id");
@@ -129,11 +130,11 @@ public class QTestIntegrationExecutionManager {
         }
     }
 
-    public static List<QTestDefectField> getDefectFields(String serverUrl, String token, long projectId)
+    public static List<QTestDefectField> getDefectFields(IQTestCredential credential, long projectId)
             throws QTestException {
         List<QTestDefectField> list = new ArrayList<QTestDefectField>();
-        String url = serverUrl + "/api/v3/projects/" + projectId + "/defects/fields";
-        String json = QTestAPIRequestHelper.sendGetRequestViaAPI(url, token);
+        String url = credential.getServerUrl() + "/api/v3/projects/" + projectId + "/defects/fields";
+        String json = QTestAPIRequestHelper.sendGetRequestViaAPI(url, credential.getToken());
         try {
             JsonArray jArr = new JsonArray(json);
             for (int i = 0; i < jArr.length(); i++) {
@@ -170,12 +171,12 @@ public class QTestIntegrationExecutionManager {
     }
 
     // TODO: consider a case multi-user, the last run may be not correct
-    public static List<QTestStepLog> getStepLogs(String serverUrl, String authenToken, long qTestProjectId,
+    public static List<QTestStepLog> getStepLogs(IQTestCredential credential, long qTestProjectId,
             long qTestRunId) throws QTestException {
         List<QTestStepLog> stepLogs = new ArrayList<QTestStepLog>();
         String url = String.format("%s/api/v3/projects/%s/test-runs/%s/test-logs/last-run?expand=teststeplog.teststep",
-                serverUrl, qTestProjectId, qTestRunId);
-        String response = QTestAPIRequestHelper.sendGetRequestViaAPI(url, authenToken);
+                credential.getServerUrl(), qTestProjectId, qTestRunId);
+        String response = QTestAPIRequestHelper.sendGetRequestViaAPI(url, credential.getToken());
         try {
             JsonObject jo = new JsonObject(response);
 

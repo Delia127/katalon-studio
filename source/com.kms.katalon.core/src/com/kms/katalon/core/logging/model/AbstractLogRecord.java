@@ -78,14 +78,19 @@ public abstract class AbstractLogRecord implements ILogRecord {
     public TestStatus getStatus() {
         TestStatus testStatus = new TestStatus();
         testStatus.setStatusValue(TestStatusValue.PASSED);
+        
+        if (childRecords == null || childRecords.size() == 0) { return testStatus; }
+        
+        setMessage(childRecords.get(childRecords.size() - 1).getMessage());
+        
         for (ILogRecord logRecord : getChildRecords()) {
             if (!(logRecord instanceof TestCaseLogRecord && ((TestCaseLogRecord) logRecord).isOptional())) {
-            	TestStatusValue logRecordStatusValue = logRecord.getStatus().getStatusValue();
-				if (logRecordStatusValue == TestStatusValue.ERROR || logRecordStatusValue == TestStatusValue.FAILED) {
-					testStatus.setStatusValue(logRecordStatusValue);
-	                setMessage(logRecord.getMessage());
-	                break;
-				}
+                TestStatusValue logRecordStatusValue = logRecord.getStatus().getStatusValue();
+                if (logRecordStatusValue == TestStatusValue.ERROR || logRecordStatusValue == TestStatusValue.FAILED) {
+                    testStatus.setStatusValue(logRecordStatusValue);
+                    setMessage(logRecord.getMessage());
+                    break;
+                }
             }
         }
         

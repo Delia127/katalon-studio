@@ -10,9 +10,10 @@ import org.qas.qtest.api.services.design.model.ListTestStepRequest;
 import org.qas.qtest.api.services.design.model.TestStep;
 
 import com.kms.katalon.integration.qtest.constants.QTestMessageConstants;
+import com.kms.katalon.integration.qtest.credential.IQTestCredential;
 import com.kms.katalon.integration.qtest.entity.QTestTestStep;
+import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
-import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 /**
  * Provides a set of utility methods that relate with {@link QTestTestStep}
@@ -23,10 +24,10 @@ public class QTestIntegrationTestStepManager {
         //Disable default constructor
     }
     
-    public static QTestTestStep addTestStep(String projectDir, long projectId, long testCaseId, long testCaseVersionId,
-            String description) throws QTestUnauthorizedException {
-        String token = QTestSettingStore.getToken(projectDir);
-        String serverUrl = QTestSettingStore.getServerUrl(projectDir);
+    public static QTestTestStep addTestStep(IQTestCredential credential, long projectId, long testCaseId, long testCaseVersionId,
+            String description) throws QTestUnauthorizedException, QTestInvalidFormatException {
+        String token = credential.getToken().getAccessToken();
+        String serverUrl = credential.getServerUrl();
 
         if (!QTestIntegrationAuthenticationManager.validateToken(token)) {
             throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);

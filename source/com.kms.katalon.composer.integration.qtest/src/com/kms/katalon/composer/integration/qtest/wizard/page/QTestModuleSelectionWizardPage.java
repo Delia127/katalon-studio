@@ -193,11 +193,11 @@ public class QTestModuleSelectionWizardPage extends AbstractWizardPage {
                 connectingLabel.setGifImage(inputStream);
             } catch (IOException ex) {
             } finally {
-                closeQuietly(inputStream);
+                closeQuietlyWithLog(inputStream);
                 inputStream = null;
             }
         } else {
-            closeQuietly(inputStream);
+            closeQuietlyWithLog(inputStream);
             inputStream = null;
         }
         connectingComposite.setVisible(isConnectingCompositeVisible);
@@ -219,7 +219,7 @@ public class QTestModuleSelectionWizardPage extends AbstractWizardPage {
             
             @Override
             public void widgetDisposed(DisposeEvent e) {
-                closeQuietly(inputStream);
+                closeQuietlyWithLog(inputStream);
             }
         });
     }

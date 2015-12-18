@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.util.StatusUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
@@ -57,10 +58,10 @@ public class DisintegrateTestSuiteJob extends QTestJob {
                 } catch (QTestInvalidFormatException e) {
                     MessageDialog.openError(null, StringConstants.WARN,
                             MessageFormat.format(StringConstants.JOB_MSG_TEST_SUITE_INVALID_FORMAT, testSuiteId));
-                    return Status.CANCEL_STATUS;
+                    return StatusUtil.getErrorStatus(getClass(), e);
                 } catch (Exception e) {
                     LoggerSingleton.logError(e);
-                    return Status.CANCEL_STATUS;
+                    return StatusUtil.getErrorStatus(getClass(), e);
                 }
                
             }
