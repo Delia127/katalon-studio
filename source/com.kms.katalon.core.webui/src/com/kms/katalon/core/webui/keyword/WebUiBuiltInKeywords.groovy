@@ -2,6 +2,9 @@ package com.kms.katalon.core.webui.keyword;
 
 import groovy.transform.CompileStatic
 
+import java.io.File;
+import org.apache.commons.io.FileUtils;
+import java.awt.Rectangle
 import java.text.MessageFormat
 import java.util.concurrent.TimeUnit
 
@@ -10,7 +13,6 @@ import org.openqa.selenium.By
 import org.openqa.selenium.JavascriptExecutor
 import org.openqa.selenium.NoSuchElementException
 import org.openqa.selenium.NoSuchWindowException
-import org.openqa.selenium.StaleElementReferenceException
 import org.openqa.selenium.TimeoutException
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebDriverException
@@ -532,25 +534,13 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     WebElement foundElement = findWebElement(to, timeOut);
                     WebDriverWait wait = new WebDriverWait(DriverFactory.getWebDriver(), timeOut);
                     foundElement = wait.until(new ExpectedCondition<WebElement>() {
-                                public ExpectedCondition<WebElement> visibilityOfElement =
-                                ExpectedConditions.visibilityOf(foundElement);
-
                                 @Override
                                 public WebElement apply(WebDriver driver) {
-                                    try {
-                                        if (foundElement.isEnabled()) {
-                                            return foundElement;
-                                        } else {
-                                            return null;
-                                        }
-                                    } catch (StaleElementReferenceException e) {
+                                    if (foundElement.isEnabled()) {
+                                        return foundElement;
+                                    } else {
                                         return null;
                                     }
-                                }
-
-                                @Override
-                                public String toString() {
-                                    return "element to be clickable: " + foundElement;
                                 }
                             });
                     if (foundElement != null) {
@@ -599,25 +589,13 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     WebElement foundElement = findWebElement(to, timeOut);
                     WebDriverWait wait = new WebDriverWait(DriverFactory.getWebDriver(), timeOut);
                     foundElement = wait.until(new ExpectedCondition<WebElement>() {
-                                public ExpectedCondition<WebElement> visibilityOfElement =
-                                ExpectedConditions.visibilityOf(foundElement);
-
                                 @Override
                                 public WebElement apply(WebDriver driver) {
-                                    try {
-                                        if (foundElement.isEnabled()) {
-                                            return null;
-                                        } else {
-                                            return foundElement;
-                                        }
-                                    } catch (StaleElementReferenceException e) {
+                                    if (foundElement.isEnabled()) {
                                         return null;
+                                    } else {
+                                        return foundElement;
                                     }
-                                }
-
-                                @Override
-                                public String toString() {
-                                    return "element to be clickable: " + foundElement;
                                 }
                             });
                     if (foundElement != null) {
@@ -2891,42 +2869,89 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
-    public static void authenticate(final String url, String userName, String password, int timeout,
-            FailureHandling flowControl) {
+    //public static void authenticate(final String url, String userName, String password, int timeout,
+    //        FailureHandling flowControl) {
+	public static void authenticate(String userName, String password, FailureHandling flowControl) {
+		
         WebUIKeywordMain.runKeyword({
-            Thread navigateThread = null;
-            try {
-                timeout = WebUiCommonHelper.checkTimeout(timeout);
-                KeywordLogger.getInstance().logInfo(StringConstants.KW_LOG_INFO_CHECKING_USERNAME);
-                if (userName == null) {
-                    throw new IllegalArgumentException(StringConstants.KW_EXC_USERNAME_IS_NULL);
-                }
-                KeywordLogger.getInstance().logInfo(StringConstants.KW_LOG_INFO_CHECKING_PASSWORD);
-                if (password == null) {
-                    throw new IllegalArgumentException(StringConstants.KW_EXC_PASSWORD_IS_NULL);
-                }
-                WebDriver driver = DriverFactory.getWebDriver();
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LGO_INFO_NAVIGATING_TO_AUTHENTICATED_PAGE, url, userName, password));
-                navigateThread = new Thread() {
-                            public void run() {
-                                driver.get(url);
-                            }
-                        };
-                navigateThread.start();
-                Thread.sleep(timeout * 1000);
-                if (DriverFactory.getExecutedBrowser() == WebUIDriverType.IE_DRIVER) {
-                    DriverFactory.getWebDriver().get("javascript:{document.getElementById('overridelink').click();}");
-                    // ((JavascriptExecutor)DriverFactory.getWebDriver()).executeScript("document.getElementById('overridelink').click();");
-                    Thread.sleep(3000);
-                }
-                // send username and pasword to authentication popup
-                screenUtil.authenticate(userName, password);
-                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_NAVIAGTED_TO_AUTHENTICATED_PAGE, url, userName, password));
-            } finally {
-                if (navigateThread != null && navigateThread.isAlive()) {
-                    navigateThread.interrupt();
-                }
+	
+			if (System.getProperty("os.name") == null || !System.getProperty("os.name").toLowerCase().contains("win")) {
+				throw new Exception("Unsupported platform (only support Windows)");
+			}
+			
+			if(DriverFactory.getExecutedBrowser() != WebUIDriverType.IE_DRIVER &&
+				DriverFactory.getExecutedBrowser() != WebUIDriverType.FIREFOX_DRIVER && 
+				DriverFactory.getExecutedBrowser() != WebUIDriverType.CHROME_DRIVER){
+				throw new Exception("Unsupported browser (only support IE, FF, Chrome)");
+			}
+			
+            KeywordLogger.getInstance().logInfo(StringConstants.KW_LOG_INFO_CHECKING_USERNAME);
+            if (userName == null) {
+                throw new IllegalArgumentException(StringConstants.KW_EXC_USERNAME_IS_NULL);
             }
+            KeywordLogger.getInstance().logInfo(StringConstants.KW_LOG_INFO_CHECKING_PASSWORD);
+            if (password == null) {
+                throw new IllegalArgumentException(StringConstants.KW_EXC_PASSWORD_IS_NULL);
+            }
+			
+            WebDriver driver = DriverFactory.getWebDriver();
+            
+            // send username and pasword to authentication popup
+            //screenUtil.authenticate(userName, password);
+			File kmsIeFolder = FileUtil.getKmsIeDriverDirectory();
+			File authFolder = FileUtil.getAuthenticationDirectory();
+			File userNameParamFile = new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set user name" + File.separator + "paramter0");
+			File passwordParamFile = new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set password" + File.separator + "paramter0");
+			
+			//Set user name
+			FileUtils.writeStringToFile(userNameParamFile, userName, false);
+			String[] cmd = [kmsIeFolder.getAbsolutePath() + "/kmsie.exe", userNameParamFile.getParent()];
+			Process proc = Runtime.getRuntime().exec(cmd);
+			//The default timeout for this task is 10s (implemented inside KMS IE Driver)
+			proc.waitFor();
+			//Check result
+			String resStatus = FileUtils.readFileToString(
+				new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set user name" + File.separator + "result_status"), 
+				"UTF-8");
+			if(!"PASSED".equals(resStatus.trim())){
+				//Should consider to read result_message
+				String errMsg = FileUtils.readFileToString(
+				new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set user name" + File.separator + "result_message"), 
+				"UTF-8");
+				throw new Exception("Failed to set user name on Authentication dialog: " + errMsg);
+            }
+			
+			//Set password
+			FileUtils.writeStringToFile(passwordParamFile, password, false);
+			cmd = [kmsIeFolder.getAbsolutePath() + "/kmsie.exe", passwordParamFile.getParent()];
+			proc = Runtime.getRuntime().exec(cmd);
+			proc.waitFor();
+			resStatus = FileUtils.readFileToString(
+				new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set password" + File.separator + "result_status"),
+				"UTF-8");
+			if(!"PASSED".equals(resStatus.trim())){
+				String errMsg = FileUtils.readFileToString(
+				new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set password" + File.separator + "result_message"),
+				"UTF-8");
+				throw new Exception("Failed to set password on Authentication dialog: " + errMsg);
+			}
+			
+			//Click OK
+			cmd = [kmsIeFolder.getAbsolutePath() + "/kmsie.exe", new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "click ok").getAbsolutePath()];
+			proc = Runtime.getRuntime().exec(cmd);
+			proc.waitFor();
+			resStatus = FileUtils.readFileToString(
+				new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "click ok" + File.separator + "result_status"),
+				"UTF-8");
+			if(!"PASSED".equals(resStatus.trim())){
+				String errMsg = FileUtils.readFileToString(
+				new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "click ok" + File.separator + "result_message"),
+				"UTF-8");
+				throw new Exception("Failed to click OK button on Authentication dialog: " + errMsg);
+			}
+			
+            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_NAVIAGTED_TO_AUTHENTICATED_PAGE, userName, password));
+			
         } , flowControl, true, StringConstants.KW_MSG_CANNOT_NAV_TO_AUTHENTICATED_PAGE)
     }
 
@@ -3266,6 +3291,84 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_SCROLLING_TO_OBJ_X, to.getObjectId())
         : StringConstants.KW_MSG_CANNOT_SCROLLING_TO_OBJ)
+    }
+
+    /**
+     * Verify if the web element is visible in current view port
+     * @param to
+     *      represent a web element
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return true if element is present and visible in viewport; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementVisibleInViewport(TestObject to, int timeOut, FailureHandling flowControl) {
+        WebUIKeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = false;
+            try {
+                WebUiCommonHelper.checkTestObjectParameter(to);
+                WebDriver driver = DriverFactory.getWebDriver();
+                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
+                WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
+                if (WebUiCommonHelper.isElementVisibleInViewport(driver, foundElement)) {
+                    KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_VISIBLE_IN_VIEWPORT, to.getObjectId()));
+                    return true;
+                }  else {
+                    WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_VISIBLE_IN_VIEWPORT, to.getObjectId()), flowControl, null, true);
+                    return false;
+                }
+            } catch (WebElementNotFoundException ex) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
+            } finally {
+                if (isSwitchIntoFrame) {
+                    WebUiBuiltInKeywords.switchToDefaultContent();
+                }
+            }
+            return false;
+        }
+        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_VISIBLE_IN_VIEWPORT, to.getObjectId())
+        : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_VISIBLE_IN_VIEWPORT)
+    }
+    
+    /**
+     * Verify if the web element is NOT visible in current view port
+     * @param to
+     *      represent a web element
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return true if element is present and NOT visible in viewport; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementNotVisibleInViewport(TestObject to, int timeOut, FailureHandling flowControl) {
+        WebUIKeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = false;
+            try {
+                WebUiCommonHelper.checkTestObjectParameter(to);
+                WebDriver driver = DriverFactory.getWebDriver();
+                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
+                WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
+                if (WebUiCommonHelper.isElementVisibleInViewport(driver, foundElement)) {
+                    WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_NOT_VISIBLE_IN_VIEWPORT, to.getObjectId()), flowControl, null, true);
+                    return false;
+                }  else {
+                    KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_NOT_VISIBLE_IN_VIEWPORT, to.getObjectId()));
+                    return true;
+                }
+            } catch (WebElementNotFoundException ex) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
+            } finally {
+                if (isSwitchIntoFrame) {
+                    WebUiBuiltInKeywords.switchToDefaultContent();
+                }
+            }
+            return false;
+        }
+        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_NOT_VISIBLE_IN_VIEWPORT, to.getObjectId())
+        : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_NOT_VISIBLE_IN_VIEWPORT)
     }
 
 }

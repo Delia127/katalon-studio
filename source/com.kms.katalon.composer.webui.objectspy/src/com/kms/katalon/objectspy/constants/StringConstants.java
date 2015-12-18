@@ -6,15 +6,13 @@ public class StringConstants extends GlobalStringConstants {
     // ObjectSpyDialog
     public static final String DIA_BTN_ADD = ADD;
 
-    public static final String DIA_BTN_START = "Start {0}";
-
-    public static final String DIA_BTN_START_BROWSER = "Start Browser";
+    public static final String DIA_BTN_START_BROWSER = "Start";
 
     public static final String DIA_TITLE_OBJ_SPY = "Object Spy";
 
     public static final String DIA_LBL_NAME = NAME;
 
-    public static final String DIA_LBL_TYPE = "Type";
+    public static final String DIA_LBL_TAG = TAG;
 
     public static final String DIA_MENU_CONTEXT_VERIFY = "Verify";
 
@@ -102,4 +100,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_BTN_ADD_NEW_FOLDER = "New Folder";
 
     public static final String NEW_FOLDER_DEFAULT_NAME = "New Folder";
+
+    public static final String DIA_MSG_PLS_SELECT_A_FOLDER = "Please select a folder";
+
+    public static final String DIA_LBL_SELECT_A_DESTINATION_FOLDER = "Select a destination folder";
 }

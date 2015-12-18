@@ -1133,12 +1133,14 @@ public class AstTreeTableInputUtil {
                 }
             }
         }
-        for (ImportNode importNode : scriptClass.getModule().getImports()) {
-            if (importNode.getClassName().endsWith("." + typeName)) {
-                try {
-                    type = classLoader.loadClass(importNode.getClassName());
-                } catch (ClassNotFoundException ex) {
-                    continue;
+        if (scriptClass != null) {
+            for (ImportNode importNode : scriptClass.getModule().getImports()) {
+                if (importNode.getClassName().endsWith("." + typeName)) {
+                    try {
+                        type = classLoader.loadClass(importNode.getClassName());
+                    } catch (ClassNotFoundException ex) {
+                        continue;
+                    }
                 }
             }
         }

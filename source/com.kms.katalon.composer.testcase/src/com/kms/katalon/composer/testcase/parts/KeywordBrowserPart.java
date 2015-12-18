@@ -8,6 +8,7 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
@@ -164,6 +165,7 @@ public class KeywordBrowserPart implements EventHandler {
         treeViewer.setContentProvider(new KeywordTreeContentProvider());
         treeViewer.setLabelProvider(labelProvider = new KeywordTreeLabelProvider());
         treeViewer.addFilter(viewerFilter = new KeywordBrowserEntityViewerFilter());
+        ColumnViewerToolTipSupport.enableFor(treeViewer);
 
     }
 

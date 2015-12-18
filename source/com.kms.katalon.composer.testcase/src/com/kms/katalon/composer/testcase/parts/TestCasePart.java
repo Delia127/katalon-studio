@@ -69,7 +69,6 @@ import com.kms.katalon.composer.components.impl.control.ImageButton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
-import com.kms.katalon.composer.testcase.adapters.TreeTableMouseAdapter;
 import com.kms.katalon.composer.testcase.ast.treetable.AstStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.components.FocusCellOwnerDrawHighlighterForMultiSelection;
@@ -537,8 +536,88 @@ public class TestCasePart implements EventHandler {
         hookDropEvent();
     }
 
+    public void addFailureHandlingSubMenu(Menu menu) {
+        MenuItem failureHandlingMenuItem = new MenuItem(menu, SWT.CASCADE);
+        failureHandlingMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_CHANGE_FAILURE_HANDLING);
+        failureHandlingMenuItem.addSelectionListener(selectionListener);
+
+        Menu failureHandlingMenu = new Menu(menu);
+
+        MenuItem failureStopMenuItem = new MenuItem(failureHandlingMenu, SWT.NONE);
+        failureStopMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_STOP_ON_FAILURE);
+        failureStopMenuItem.addSelectionListener(selectionListener);
+        failureStopMenuItem.setID(TreeTableMenuItemConstants.CHANGE_FAILURE_HANDLING_MENU_ITEM_ID);
+        failureStopMenuItem.setData(TreeTableMenuItemConstants.FAILURE_HANDLING_KEY, FailureHandling.STOP_ON_FAILURE);
+
+        MenuItem failureContinueMenuItem = new MenuItem(failureHandlingMenu, SWT.NONE);
+        failureContinueMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_CONTINUE_ON_FAILURE);
+        failureContinueMenuItem.addSelectionListener(selectionListener);
+        failureContinueMenuItem.setID(TreeTableMenuItemConstants.CHANGE_FAILURE_HANDLING_MENU_ITEM_ID);
+        failureContinueMenuItem.setData(TreeTableMenuItemConstants.FAILURE_HANDLING_KEY,
+                FailureHandling.CONTINUE_ON_FAILURE);
+
+        MenuItem optionalMenuItem = new MenuItem(failureHandlingMenu, SWT.NONE);
+        optionalMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_OPTIONAL);
+        optionalMenuItem.addSelectionListener(selectionListener);
+        optionalMenuItem.setID(TreeTableMenuItemConstants.CHANGE_FAILURE_HANDLING_MENU_ITEM_ID);
+        optionalMenuItem.setData(TreeTableMenuItemConstants.FAILURE_HANDLING_KEY, FailureHandling.OPTIONAL);
+
+        failureHandlingMenuItem.setMenu(failureHandlingMenu);
+    }
+
     private void createContextMenu() {
-        treeTable.getTree().addMouseListener(new TreeTableMouseAdapter(treeTable, selectionListener));
+        treeTable.getTree().addListener(SWT.MenuDetect, new Listener() {
+            public void handleEvent(org.eclipse.swt.widgets.Event event) {
+                Menu menu = treeTable.getTree().getMenu();
+                if (menu != null) {
+                    menu.dispose();
+                }
+                menu = new Menu(treeTable.getTree());
+
+                if (treeTable.getTree().getSelectionCount() == 1) {
+                    // Add step add
+                    AstTreeTableEntityUtil.addActionSubMenu(menu, TreeTableMenuItemConstants.AddAction.Add,
+                            StringConstants.ADAP_MENU_CONTEXT_ADD, selectionListener);
+
+                    MenuItem insertMenuItem = new MenuItem(menu, SWT.CASCADE);
+                    insertMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_INSERT);
+
+                    Menu insertMenu = new Menu(menu);
+                    insertMenuItem.setMenu(insertMenu);
+
+                    // Add step before
+                    AstTreeTableEntityUtil.addActionSubMenu(insertMenu, TreeTableMenuItemConstants.AddAction.InsertBefore,
+                            StringConstants.ADAP_MENU_CONTEXT_INSERT_BEFORE, selectionListener);
+
+                    // Add step after
+                    AstTreeTableEntityUtil.addActionSubMenu(insertMenu, TreeTableMenuItemConstants.AddAction.InsertAfter,
+                            StringConstants.ADAP_MENU_CONTEXT_INSERT_AFTER, selectionListener);
+                }
+
+                MenuItem removeMenuItem = new MenuItem(menu, SWT.PUSH);
+                removeMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_REMOVE);
+                removeMenuItem.addSelectionListener(selectionListener);
+                removeMenuItem.setID(TreeTableMenuItemConstants.REMOVE_MENU_ITEM_ID);
+
+                MenuItem copyMenuItem = new MenuItem(menu, SWT.PUSH);
+                copyMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_COPY);
+                copyMenuItem.addSelectionListener(selectionListener);
+                copyMenuItem.setID(TreeTableMenuItemConstants.COPY_MENU_ITEM_ID);
+
+                MenuItem cutMenuItem = new MenuItem(menu, SWT.PUSH);
+                cutMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_CUT);
+                cutMenuItem.addSelectionListener(selectionListener);
+                cutMenuItem.setID(TreeTableMenuItemConstants.CUT_MENU_ITEM_ID);
+
+                MenuItem pasteMenuItem = new MenuItem(menu, SWT.PUSH);
+                pasteMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_PASTE);
+                pasteMenuItem.addSelectionListener(selectionListener);
+                pasteMenuItem.setID(TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID);
+
+                addFailureHandlingSubMenu(menu);
+                treeTable.getTree().setMenu(menu);
+            }
+        });
     }
 
     private void addTreeTableColumn(TreeViewer parent, TreeColumnLayout treeColumnLayout, String headerText, int width,
@@ -831,6 +910,8 @@ public class TestCasePart implements EventHandler {
         case TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID:
             pasteTestStep();
             break;
+        case TreeTableMenuItemConstants.REMOVE_MENU_ITEM_ID:
+            removeTestStep();
         default:
             treeTableInput.addNewAstObject(menuItem.getID(), addType);
             break;

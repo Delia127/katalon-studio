@@ -1,12 +1,12 @@
 package com.kms.katalon.core.mobile.contribution;
 
 
-import groovy.transform.CompileStatic;
+import groovy.transform.CompileStatic
 
-import com.kms.katalon.core.driver.IDriverCleaner;
-import com.kms.katalon.core.keyword.IKeywordContributor;
-import com.kms.katalon.core.mobile.constants.StringConstants;
-import com.kms.katalon.core.mobile.keyword.MobileBuiltInKeywords;
+import com.kms.katalon.core.driver.IDriverCleaner
+import com.kms.katalon.core.keyword.IKeywordContributor
+import com.kms.katalon.core.mobile.constants.StringConstants
+import com.kms.katalon.core.mobile.keyword.MobileBuiltInKeywords
 
 @CompileStatic
 public class MobileKeywordContributor implements IKeywordContributor {
@@ -22,7 +22,7 @@ public class MobileKeywordContributor implements IKeywordContributor {
 
 	@Override
 	public Class<? extends IDriverCleaner> getDriverCleaner() {
-		return null;
+		return MobileDriverCleaner.class;
 	}
 
     @Override
