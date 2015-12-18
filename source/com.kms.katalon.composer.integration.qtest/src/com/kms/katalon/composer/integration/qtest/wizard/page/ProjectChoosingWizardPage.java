@@ -30,7 +30,10 @@ import com.kms.katalon.composer.integration.qtest.constant.ImageConstants;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.wizard.AbstractWizardPage;
 import com.kms.katalon.integration.qtest.QTestIntegrationProjectManager;
+import com.kms.katalon.integration.qtest.credential.IQTestToken;
+import com.kms.katalon.integration.qtest.credential.impl.QTestCredentialImpl;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
+import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
@@ -42,7 +45,7 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage {
     // Field
     private List<QTestProject> qTestProjects;
     private String fServerUrl;
-    private String fToken;
+    private IQTestToken fToken;
     private QTestProject selectedQTestProject;
 
     private Composite connectingComposite;
@@ -55,7 +58,6 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage {
 
     public ProjectChoosingWizardPage() {
         fServerUrl = "";
-        fToken = "";
     }
 
     @Override
@@ -105,7 +107,7 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage {
         if (qTestProjects == null) {
             return;
         }
-        
+
         for (QTestProject qTestProject : qTestProjects) {
             Button radioButton = new Button(grpQtestProjects, SWT.RADIO);
             radioButton.setText(qTestProject.getName());
@@ -142,13 +144,13 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage {
             } catch (IOException ex) {
             } finally {
                 if (inputStream != null) {
-                    closeQuietly(inputStream);
+                    closeQuietlyWithLog(inputStream);
                     inputStream = null;
                 }
             }
         } else {
             if (inputStream != null) {
-                closeQuietly(inputStream);
+                closeQuietlyWithLog(inputStream);
                 inputStream = null;
             }
         }
@@ -160,10 +162,10 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage {
     @Override
     public void registerControlModifyListeners() {
         composite.addDisposeListener(new DisposeListener() {
-            
+
             @Override
             public void widgetDisposed(DisposeEvent e) {
-                closeQuietly(inputStream);
+                closeQuietlyWithLog(inputStream);
             }
         });
     }
@@ -178,7 +180,7 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage {
 
     @Override
     public void setInput(final Map<String, Object> sharedData) {
-        final String token = (String) sharedData.get(QTestSettingStore.TOKEN_PROPERTY);
+        final IQTestToken token = (IQTestToken) sharedData.get(QTestSettingStore.TOKEN_PROPERTY);
         final String serverUrl = (String) sharedData.get(QTestSettingStore.SERVER_URL_PROPERTY);
         setConnectingCompositeVisible(true);
 
@@ -193,13 +195,14 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage {
                         fToken = token;
 
                         try {
-                            qTestProjects = QTestIntegrationProjectManager.getAllProject(token, serverUrl);
-                        } catch (QTestUnauthorizedException e) {
+                            qTestProjects = QTestIntegrationProjectManager.getAllProject(new QTestCredentialImpl()
+                                    .setToken(fToken).setServerUrl(fServerUrl));
+                        } catch (QTestUnauthorizedException | QTestInvalidFormatException e) {
                             UISynchronizeService.getInstance().getSync().syncExec(new Runnable() {
                                 @Override
                                 public void run() {
                                     MessageDialog.openWarning(null, StringConstants.WARN,
-                                           StringConstants.WZ_P_PROJECT_MSG_GET_PROJECTS_FAILED);
+                                            StringConstants.WZ_P_PROJECT_MSG_GET_PROJECTS_FAILED);
                                 }
                             });
                         }
@@ -210,7 +213,7 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage {
                             try {
                                 updateProjectRadioButtons();
                             } catch (IllegalStateException | IllegalArgumentException | SWTException e) {
-                                //Display is disposed
+                                // Display is disposed
                             }
                         }
                     });
@@ -222,7 +225,7 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage {
                             try {
                                 setConnectingCompositeVisible(false);
                             } catch (IllegalStateException | IllegalArgumentException | SWTException e) {
-                                //Display is disposed
+                                // Display is disposed
                             }
                         }
                     });

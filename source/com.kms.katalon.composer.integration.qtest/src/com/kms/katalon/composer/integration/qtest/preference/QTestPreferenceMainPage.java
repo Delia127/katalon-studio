@@ -13,11 +13,14 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
@@ -37,10 +40,16 @@ import com.kms.katalon.composer.integration.qtest.dialog.GenerateNewTokenDialog;
 import com.kms.katalon.composer.integration.qtest.wizard.SetupWizardDialog;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.integration.IntegratedEntity;
+import com.kms.katalon.integration.qtest.credential.IQTestCredential;
+import com.kms.katalon.integration.qtest.credential.QTestTokenManager;
+import com.kms.katalon.integration.qtest.credential.impl.QTestCredentialImpl;
+import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 import com.kms.katalon.integration.qtest.setting.QTestAttachmentSendingType;
 import com.kms.katalon.integration.qtest.setting.QTestReportFormatType;
 import com.kms.katalon.integration.qtest.setting.QTestResultSendingType;
+import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
+import com.kms.katalon.integration.qtest.setting.QTestVersion;
 
 public class QTestPreferenceMainPage extends PreferencePage {
 
@@ -50,23 +59,19 @@ public class QTestPreferenceMainPage extends PreferencePage {
     @Inject
     private IEventBroker eventBroker;
 
+    // Controls
     private Text txtToken;
-    private Button chckAutoSubmitTestRun;
-    private Button chckEnableIntegration;
-    private String projectDir;
-
+    private Button chckAutoSubmitTestRun, chckEnableIntegration;
     private Button btnOpenGenerateTokenDialog;
-    private Composite container;
-    private Composite mainComposite;
-    private Composite projectComposite;
-    private Group grpAuthentication;
+    private Composite container, mainComposite, optionsComposite, enablerComposite;
     private GridData gdTxtToken;
-    private Group grpAttachmentOptions;
-    private Group grpResultOptions;
-    private Composite compositeOptions;
+    private Group grpAttachmentOptions, grpResultOptions, grpFormatReportOptions, grpAuthentication;
     private Link setupLink;
-    private Composite composite;
-    private Group grpFormatReportOptions;
+    private Combo cbbQTestVersion;
+
+    // Fields
+    private String projectDir;
+    private QTestCredentialImpl fCredential;
 
     public QTestPreferenceMainPage() {
         projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
@@ -78,14 +83,14 @@ public class QTestPreferenceMainPage extends PreferencePage {
         container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         container.setLayout(new GridLayout(1, false));
 
-        composite = new Composite(container, SWT.NONE);
-        composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        composite.setLayout(new GridLayout(2, false));
+        enablerComposite = new Composite(container, SWT.NONE);
+        enablerComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        enablerComposite.setLayout(new GridLayout(2, false));
 
-        chckEnableIntegration = new Button(composite, SWT.CHECK);
+        chckEnableIntegration = new Button(enablerComposite, SWT.CHECK);
         chckEnableIntegration.setText(StringConstants.DIA_TITLE_ENABLE_INTEGRATION);
 
-        setupLink = new Link(composite, SWT.NONE);
+        setupLink = new Link(enablerComposite, SWT.NONE);
         setupLink.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
         setupLink.setText(StringConstants.DIA_INFO_QUICK_SETUP);
 
@@ -100,6 +105,23 @@ public class QTestPreferenceMainPage extends PreferencePage {
         grpAuthentication.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         grpAuthentication.setLayout(new GridLayout(4, false));
         grpAuthentication.setText(StringConstants.CM_AUTHENTICATION);
+
+        Composite versioningComposite = new Composite(grpAuthentication, SWT.NONE);
+        versioningComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 4, 1));
+        GridLayout glVersioningComposite = new GridLayout(2, false);
+        glVersioningComposite.marginHeight = 0;
+        glVersioningComposite.marginWidth = 0;
+        versioningComposite.setLayout(glVersioningComposite);
+
+        Label lblQTestVersion = new Label(versioningComposite, SWT.NONE);
+        GridData gd_lblQTestVersion = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        gd_lblQTestVersion.widthHint = 100;
+        lblQTestVersion.setLayoutData(gd_lblQTestVersion);
+        lblQTestVersion.setText(StringConstants.DIA_TITLE_VERSION);
+
+        cbbQTestVersion = new Combo(versioningComposite, SWT.READ_ONLY | SWT.FLAT);
+        cbbQTestVersion.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+        cbbQTestVersion.setItems(QTestVersion.valuesAsStrings());
 
         Label lblToken = new Label(grpAuthentication, SWT.NONE);
         GridData gdLblToken = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
@@ -117,7 +139,7 @@ public class QTestPreferenceMainPage extends PreferencePage {
         btnOpenGenerateTokenDialog.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
         btnOpenGenerateTokenDialog.setText(StringConstants.DIA_TITLE_GENERATE);
 
-        projectComposite = new Composite(mainComposite, SWT.NONE);
+        Composite projectComposite = new Composite(mainComposite, SWT.NONE);
         projectComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         GridLayout glProjectComposite = new GridLayout(3, false);
         glProjectComposite.verticalSpacing = 10;
@@ -127,17 +149,17 @@ public class QTestPreferenceMainPage extends PreferencePage {
         chckAutoSubmitTestRun.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
         chckAutoSubmitTestRun.setText(StringConstants.DIA_TITLE_AUTO_SUBMIT_TEST_RESULT);
 
-        compositeOptions = new Composite(mainComposite, SWT.NONE);
+        optionsComposite = new Composite(mainComposite, SWT.NONE);
         GridData gdCompositeOptions = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
         gdCompositeOptions.verticalIndent = -5;
-        compositeOptions.setLayoutData(gdCompositeOptions);
+        optionsComposite.setLayoutData(gdCompositeOptions);
         GridLayout glComposite = new GridLayout(2, true);
         glComposite.marginLeft = 25;
         glComposite.marginWidth = 0;
         glComposite.marginHeight = 0;
-        compositeOptions.setLayout(glComposite);
+        optionsComposite.setLayout(glComposite);
 
-        grpResultOptions = new Group(compositeOptions, SWT.NONE);
+        grpResultOptions = new Group(optionsComposite, SWT.NONE);
         grpResultOptions.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         grpResultOptions.setText(StringConstants.DIA_TITLE_SEND_RESULT);
         grpResultOptions.setLayout(new GridLayout(1, true));
@@ -150,7 +172,7 @@ public class QTestPreferenceMainPage extends PreferencePage {
             btnSendingType.setData(sendingType);
         }
 
-        grpAttachmentOptions = new Group(compositeOptions, SWT.NONE);
+        grpAttachmentOptions = new Group(optionsComposite, SWT.NONE);
         grpAttachmentOptions.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         grpAttachmentOptions.setText(StringConstants.DIA_TITLE_SEND_ATTACHMENT);
         grpAttachmentOptions.setLayout(new GridLayout(1, true));
@@ -183,16 +205,13 @@ public class QTestPreferenceMainPage extends PreferencePage {
     private void addToolItemListeners() {
         btnOpenGenerateTokenDialog.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
-                try {
-                    GenerateNewTokenDialog dialog = new GenerateNewTokenDialog(btnOpenGenerateTokenDialog.getDisplay()
-                            .getActiveShell(), QTestSettingStore.getServerUrl(projectDir), QTestSettingStore
-                            .getUsername(projectDir), QTestSettingStore.getPassword(projectDir));
-                    if (dialog.open() == Dialog.OK) {
-                        txtToken.setText(dialog.getNewToken());
-                    }
-                } catch (Exception ex) {
-                    MultiStatusErrorDialog.showErrorDialog(ex, StringConstants.DIA_MSG_UNABLE_TO_UPDATE_PROJECT, ex
-                            .getClass().getSimpleName());
+                GenerateNewTokenDialog dialog = new GenerateNewTokenDialog(btnOpenGenerateTokenDialog.getDisplay()
+                        .getActiveShell(), fCredential);
+                if (dialog.open() == Dialog.OK) {
+                    fCredential = getNewCredential(dialog.getNewCredential());
+                    txtToken.setText(fCredential.getToken().getRawToken());
+                    MessageDialog.openInformation(shell, StringConstants.INFO,
+                            StringConstants.DIA_MSG_GENERATE_TOKEN_SUCESSFULLY);
                 }
             }
         });
@@ -244,6 +263,25 @@ public class QTestPreferenceMainPage extends PreferencePage {
                 performWizardSetup();
             }
         });
+
+        cbbQTestVersion.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                fCredential.setVersion(QTestVersion.valueOf(cbbQTestVersion.getSelectionIndex()));
+            }
+        });
+
+        txtToken.addModifyListener(new ModifyListener() {
+
+            @Override
+            public void modifyText(ModifyEvent e) {
+                try {
+                    fCredential.setToken(QTestTokenManager.getToken(txtToken.getText()));
+                } catch (QTestInvalidFormatException ex) {
+                }
+            }
+        });
     }
 
     private void performWizardSetup() {
@@ -256,11 +294,11 @@ public class QTestPreferenceMainPage extends PreferencePage {
 
     private void enableAttachmentsGroup() {
         if (chckEnableIntegration.getSelection() && chckAutoSubmitTestRun.getSelection()) {
-            ControlUtils.recursiveSetEnabled(compositeOptions, true);
-            compositeOptions.setEnabled(true);
+            ControlUtils.recursiveSetEnabled(optionsComposite, true);
+            optionsComposite.setEnabled(true);
         } else {
-            ControlUtils.recursiveSetEnabled(compositeOptions, false);
-            compositeOptions.setEnabled(false);
+            ControlUtils.recursiveSetEnabled(optionsComposite, false);
+            optionsComposite.setEnabled(false);
         }
     }
 
@@ -274,14 +312,24 @@ public class QTestPreferenceMainPage extends PreferencePage {
     }
 
     private void initialize() {
-        String token = QTestSettingStore.getToken(projectDir);
         boolean autoSubmitResult = QTestSettingStore.isAutoSubmitResultActive(projectDir);
         boolean isIntegrationActive = QTestSettingStore.isIntegrationActive(projectDir);
 
-        txtToken.setText(token != null ? token : "");
-
         chckAutoSubmitTestRun.setSelection(autoSubmitResult);
         chckEnableIntegration.setSelection(isIntegrationActive);
+
+        fCredential = getNewCredential(QTestSettingCredential.getCredential(projectDir));
+        QTestVersion version = QTestVersion.getLastest();
+        String token = "";
+        if (fCredential != null) {
+            if (fCredential.getToken() != null) {
+                token = fCredential.getToken().getRawToken();
+            }
+            version = fCredential.getVersion();
+        }
+        txtToken.setText(token != null ? token : "");
+        cbbQTestVersion.select(version.ordinal());
+
         // set input for grpResults
         List<QTestResultSendingType> selectedResultSendingTypes = QTestSettingStore.getResultSendingTypes(projectDir);
         for (Control chckButton : grpResultOptions.getChildren()) {
@@ -308,8 +356,7 @@ public class QTestPreferenceMainPage extends PreferencePage {
         }
 
         // set input for grpFormattedOptions
-        List<QTestReportFormatType> selectedFormattedReportTypes = QTestSettingStore
-                .getFormatReportTypes(projectDir);
+        List<QTestReportFormatType> selectedFormattedReportTypes = QTestSettingStore.getFormatReportTypes(projectDir);
         for (Control chckButton : grpFormatReportOptions.getChildren()) {
             if (chckButton instanceof Button) {
                 if (selectedFormattedReportTypes.contains(chckButton.getData())) {
@@ -327,12 +374,16 @@ public class QTestPreferenceMainPage extends PreferencePage {
 
     @Override
     public boolean performOk() {
-        if (container == null) return true;
+        if (container == null) {
+            return true;
+        }
+
         try {
-            QTestSettingStore.saveAutoSubmit(chckAutoSubmitTestRun.getSelection(), projectDir);
-            QTestSettingStore.saveToken(txtToken.getText(), projectDir);
             QTestSettingStore.saveEnableIntegration(chckEnableIntegration.getSelection(), projectDir);
 
+            QTestSettingStore.saveUserProfile(fCredential, projectDir);
+
+            QTestSettingStore.saveAutoSubmit(chckAutoSubmitTestRun.getSelection(), projectDir);
             // Save sending result options
             saveAttachmentSendingStatus();
             saveResultSendingStatus();
@@ -345,6 +396,15 @@ public class QTestPreferenceMainPage extends PreferencePage {
         }
     }
 
+    private QTestCredentialImpl getNewCredential(IQTestCredential credential) {
+        QTestCredentialImpl newCredential = new QTestCredentialImpl();
+        if (credential != null) {
+            newCredential.setServerUrl(credential.getServerUrl()).setUsername(credential.getUsername())
+                    .setPassword(credential.getPassword()).setToken(credential.getToken())
+                    .setVersion(credential.getVersion());
+        }
+        return newCredential;
+    }
     private void saveAttachmentSendingStatus() {
         List<QTestAttachmentSendingType> selectedAttachmentSendingType = new ArrayList<QTestAttachmentSendingType>();
         for (Control radioButtonControl : grpAttachmentOptions.getChildren()) {
@@ -381,8 +441,7 @@ public class QTestPreferenceMainPage extends PreferencePage {
             if (radioButtonControl instanceof Button) {
                 Button formateTypeRadioButton = (Button) radioButtonControl;
                 if (formateTypeRadioButton.getSelection()) {
-                    QTestReportFormatType resultSendingType = (QTestReportFormatType) formateTypeRadioButton
-                            .getData();
+                    QTestReportFormatType resultSendingType = (QTestReportFormatType) formateTypeRadioButton.getData();
                     selectedFormat.add(resultSendingType);
                 }
             }

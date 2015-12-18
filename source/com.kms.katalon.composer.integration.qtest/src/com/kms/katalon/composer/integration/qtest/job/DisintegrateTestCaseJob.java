@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.util.StatusUtil;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.model.TestCaseRepo;
@@ -120,7 +121,7 @@ public class DisintegrateTestCaseJob extends QTestJob {
                 monitor.worked(1);
             } catch (Exception e) {
                 monitor.setCanceled(true);
-                return Status.CANCEL_STATUS;
+                return StatusUtil.getErrorStatus(getClass(), e);
             }
 
         }

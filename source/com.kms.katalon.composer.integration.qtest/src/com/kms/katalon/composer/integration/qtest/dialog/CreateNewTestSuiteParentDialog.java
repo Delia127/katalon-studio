@@ -38,6 +38,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.entity.QTestSuiteParent;
+import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 
 public class CreateNewTestSuiteParentDialog extends Dialog {
 
@@ -163,7 +164,7 @@ public class CreateNewTestSuiteParentDialog extends Dialog {
                 try {
                     String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
                     QTestSuiteParent releaseRoot = QTestIntegrationTestSuiteManager.getTestSuiteIdRootOnQTest(
-                            projectDir, qTestProject);
+                            QTestSettingCredential.getCredential(projectDir), qTestProject);
                     lblStatus.dispose();
                     container.layout();
                     treeViewer.setInput(new QTestSuiteParent[] { releaseRoot });
@@ -194,7 +195,8 @@ public class CreateNewTestSuiteParentDialog extends Dialog {
 
     protected void okPressed() {
         StructuredSelection selection = (StructuredSelection) treeViewer.getSelection();
-        if (selection == null || selection.getFirstElement() == null) return;
+        if (selection == null || selection.getFirstElement() == null)
+            return;
         newTestSuiteParent = (QTestSuiteParent) selection.getFirstElement();
         saveCreationOptions();
 

@@ -32,7 +32,6 @@ import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
 import com.kms.katalon.integration.qtest.helper.QTestAPIRequestHelper;
 import com.kms.katalon.integration.qtest.helper.QTestHttpRequestHelper;
-import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 /**
  * Provides a set of utility methods that relate with {@link QTestModule}
@@ -51,8 +50,9 @@ public class QTestIntegrationFolderManager {
      * @param folderEntity
      * @return
      */
-    public static QTestModule getQTestModuleByFolderEntity(String projectDir, FolderEntity folderEntity) {
-        if (folderEntity == null) return null;
+    public static QTestModule getQTestModuleByFolderEntity(FolderEntity folderEntity) {
+        if (folderEntity == null)
+            return null;
 
         IntegratedEntity folderIntegratedEntity = folderEntity.getIntegratedEntity(QTestStringConstants.PRODUCT_NAME);
         QTestModule currentQTestTCFolder = null;
@@ -72,14 +72,15 @@ public class QTestIntegrationFolderManager {
      * @throws QTestException
      * @throws IOException
      */
-    public static void deleteModuleOnQTest(QTestModule qTestModule, QTestProject qTestProject, String projectDir)
-            throws QTestException, IOException {
+    public static void deleteModuleOnQTest(QTestModule qTestModule, QTestProject qTestProject,
+            IQTestCredential credential) throws QTestException, IOException {
         if (qTestProject == null) {
             throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_PROJECT_NOT_FOUND);
         }
 
         // cannot return root module of qTest
-        if (qTestModule.getParentId() == 0) return;
+        if (qTestModule.getParentId() == 0)
+            return;
 
         Map<String, Object> bodyProperties = new LinkedHashMap<String, Object>();
         int testCaseType = QTestModule.getType();
@@ -89,18 +90,13 @@ public class QTestIntegrationFolderManager {
         bodyProperties.put(QTestEntity.PARENT_ID_FIELD, qTestModule.getParentId());
         bodyProperties.put(QTestEntity.TYPE_FIELD, testCaseType);
 
-        String serverUrl = QTestSettingStore.getServerUrl(projectDir);
-
         String url = "/p/" + Long.toString(qTestProject.getId()) + "/portal/tree/delete";
 
-        String username = QTestSettingStore.getUsername(projectDir);
-        String password = QTestSettingStore.getPassword(projectDir);
-
-        QTestIntegrationAuthenticationManager.authenticate(username, password);
+        QTestIntegrationAuthenticationManager.authenticate(credential.getUsername(), credential.getPassword());
 
         List<NameValuePair> postParams = new ArrayList<NameValuePair>();
         postParams.add(new BasicNameValuePair("data", QTestHttpRequestHelper.createDataBody(bodyProperties, true)));
-        QTestHttpRequestHelper.sendPostRequest(serverUrl, url, username, password, postParams);
+        QTestHttpRequestHelper.sendPostRequest(credential, url, postParams);
     }
 
     /**
@@ -111,11 +107,13 @@ public class QTestIntegrationFolderManager {
      * @return
      */
     public static QTestModule getQTestModuleByIntegratedEntity(IntegratedEntity integratedEntity) {
-        if (integratedEntity.getType() != IntegratedType.FOLDER) return null;
+        if (integratedEntity.getType() != IntegratedType.FOLDER)
+            return null;
 
         Map<String, String> properties = integratedEntity.getProperties();
 
-        if (properties == null) return null;
+        if (properties == null)
+            return null;
 
         String id = properties.get(QTestEntity.ID_FIELD);
         String name = properties.get(QTestEntity.NAME_FIELD);
@@ -151,19 +149,18 @@ public class QTestIntegrationFolderManager {
      * @param name
      * @return
      * @throws QTestUnauthorizedException
+     * @throws QTestInvalidFormatException
      */
-    public static QTestModule createNewQTestTCFolder(String projectDir, long projectId, long parentId, String name)
-            throws QTestUnauthorizedException {
-        String token = QTestSettingStore.getToken(projectDir);
-        String serverUrl = QTestSettingStore.getServerUrl(projectDir);
-
-        if (!QTestIntegrationAuthenticationManager.validateToken(token)) {
+    public static QTestModule createNewQTestTCFolder(IQTestCredential credential, long projectId, long parentId,
+            String name) throws QTestUnauthorizedException, QTestInvalidFormatException {
+        String accessToken = credential.getToken().getAccessToken();
+        if (!QTestIntegrationAuthenticationManager.validateToken(accessToken)) {
             throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
         }
 
-        QTestCredentials credentials = new BasicQTestCredentials(token);
+        QTestCredentials credentials = new BasicQTestCredentials(accessToken);
         ProjectServiceClient projectServiceClient = new ProjectServiceClient(credentials);
-        projectServiceClient.setEndpoint(serverUrl);
+        projectServiceClient.setEndpoint(credential.getServerUrl());
 
         Module module = new Module().withName(name);
 
@@ -195,14 +192,11 @@ public class QTestIntegrationFolderManager {
      *             thrown if system cannot send request or the response message is not a JSON string
      * @throws IOException
      */
-    public static QTestModule getModuleRoot(IQTestCredential credential, long projectId) throws QTestException, IOException {
+    public static QTestModule getModuleRoot(IQTestCredential credential, long projectId) throws QTestException,
+            IOException {
         String url = "/p/" + Long.toString(projectId) + "/portal/project/testdesign/rootmodulelazy/get";
 
-        String serverUrl = credential.getServerUrl();
-        String username = credential.getUsername();
-        String password = credential.getPassword();
-
-        String response = QTestHttpRequestHelper.sendGetRequest(serverUrl, url, username, password);
+        String response = QTestHttpRequestHelper.sendGetRequest(credential, url);
 
         try {
             JsonObject reponseJsonObject = new JsonObject(response);
@@ -226,19 +220,18 @@ public class QTestIntegrationFolderManager {
      * @throws QTestException
      *             thrown if system cannot send request or the response message is not a JSON string
      */
-    public static QTestModule updateModuleViaAPI(IQTestCredential credential, long projectId, QTestModule qTestParentModule)
-            throws QTestException {
-        String token = credential.getToken();
+    public static QTestModule updateModuleViaAPI(IQTestCredential credential, long projectId,
+            QTestModule qTestParentModule) throws QTestException {
         String serverUrl = credential.getServerUrl();
 
-        if (!QTestIntegrationAuthenticationManager.validateToken(token)) {
+        if (!QTestIntegrationAuthenticationManager.validateToken(credential.getToken().getAccessToken())) {
             throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
         }
 
         String url = serverUrl + "/api/v3/projects/" + Long.toString(projectId) + "/modules?parentId="
                 + Long.toString(qTestParentModule.getId()) + "&expand=descendants";
 
-        String result = QTestAPIRequestHelper.sendGetRequestViaAPI(url, token);
+        String result = QTestAPIRequestHelper.sendGetRequestViaAPI(url, credential.getToken());
         try {
             if (result != null && !result.isEmpty()) {
                 updateChildrenForModule(new JsonArray(result), qTestParentModule);
@@ -279,18 +272,13 @@ public class QTestIntegrationFolderManager {
      * @param projectId
      * @param qTestParentModule
      */
-    public static QTestModule updateModule(String projectDir, long projectId, QTestModule qTestParentModule,
+    public static QTestModule updateModule(IQTestCredential credential, long projectId, QTestModule qTestParentModule,
             boolean updateChildren) throws QTestException, IOException {
 
         String url = "/p/" + Long.toString(projectId) + "/portal/project/testdesign/children/get/"
                 + Long.toString(qTestParentModule.getId()) + "/1";
 
-        String serverUrl = QTestSettingStore.getServerUrl(projectDir);
-
-        String username = QTestSettingStore.getUsername(projectDir);
-        String password = QTestSettingStore.getPassword(projectDir);
-
-        String response = QTestHttpRequestHelper.sendGetRequest(serverUrl, url, username, password);
+        String response = QTestHttpRequestHelper.sendGetRequest(credential, url);
 
         try {
             JsonArray childrenJsonArray = new JsonArray(response);
@@ -325,7 +313,7 @@ public class QTestIntegrationFolderManager {
             // is true
             if (updateChildren) {
                 for (QTestModule qTestChildModule : qTestParentModule.getChildModules()) {
-                    updateModule(projectDir, projectId, qTestChildModule, updateChildren);
+                    updateModule(credential, projectId, qTestChildModule, updateChildren);
                 }
             }
 

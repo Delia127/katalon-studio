@@ -21,8 +21,10 @@ import com.kms.katalon.entity.integration.IntegratedType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.constants.QTestMessageConstants;
+import com.kms.katalon.integration.qtest.credential.IQTestCredential;
 import com.kms.katalon.integration.qtest.entity.QTestEntity;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
+import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
 
 /**
@@ -35,12 +37,10 @@ public class QTestIntegrationProjectManager {
     }
 
     /**
-     * Returns an array of {@link QTestProject} by parsing the given
-     * <code>integratedEntity</code>
+     * Returns an array of {@link QTestProject} by parsing the given <code>integratedEntity</code>
      * 
      * @param integratedEntity
-     *            the qTest {@link IntegratedEntity} of the current
-     *            {@link ProjectEntity}
+     *            the qTest {@link IntegratedEntity} of the current {@link ProjectEntity}
      * @return a list of {@link QTestProject} that's sorted by order.
      */
     public static List<QTestProject> getQTestProjectsByIntegratedEntity(IntegratedEntity integratedEntity) {
@@ -112,18 +112,17 @@ public class QTestIntegrationProjectManager {
     /**
      * Returns a list of {@link QTestProject} by getting from qTest server
      * 
-     * @param token
-     *            qTest token
-     * @param serverUrl
-     *            qTest server URL
+     * @param credential
+     *            qTest credential
      * @return a list of {@link QTestProject}
      * @throws QTestUnauthorizedException
-     *             thrown if the given <code>token</code> is invalid or
-     *             <code>serverUrl</code> is not found.
+     *             thrown if the given <code>token</code> is invalid or <code>serverUrl</code> is not found.
+     * @throws QTestInvalidFormatException
      * @see {@link #getAll(String, String)}
      */
-    public static List<QTestProject> getAllProject(String token, String serverUrl) throws QTestUnauthorizedException {
-        List<Project> projects = getAll(token, serverUrl);
+    public static List<QTestProject> getAllProject(IQTestCredential credential) throws QTestUnauthorizedException,
+            QTestInvalidFormatException {
+        List<Project> projects = getAll(credential);
         if (projects != null && projects.size() > 0) {
             List<QTestProject> result = new ArrayList<QTestProject>();
             for (Project project : projects) {
@@ -135,25 +134,20 @@ public class QTestIntegrationProjectManager {
     }
 
     /**
-     * Returns a {@link QTestProject} that's name is equal with the given
-     * <code>name</code> by filtering from list of {@link QTestProject} from
-     * qTest server
+     * Returns a {@link QTestProject} that's name is equal with the given <code>name</code> by filtering from list of
+     * {@link QTestProject} from qTest server
      * 
      * @param name
      *            qTest project name
-     * @param token
-     *            qTest token
-     * @param serverUrl
-     *            qTest's server URL
-     * @return a {@link QTestProject} that's id is equal with the given
-     *         <code>name</code>
+     * @return a {@link QTestProject} that's id is equal with the given <code>name</code>
      * @throws QTestUnauthorizedException
      *             thrown if token is invalid or serverUrl not found.
+     * @throws QTestInvalidFormatException
      * @see {@link QTestProject#getName()}
      */
-    public static QTestProject getProjectByName(String name, String token, String serverUrl)
-            throws QTestUnauthorizedException {
-        List<Project> projects = getAll(token, serverUrl);
+    public static QTestProject getProjectByName(String name, IQTestCredential credential)
+            throws QTestUnauthorizedException, QTestInvalidFormatException {
+        List<Project> projects = getAll(credential);
         if (projects != null && projects.size() > 0) {
             for (Project project : projects) {
                 if (project.getName().equals(name)) {
@@ -165,25 +159,22 @@ public class QTestIntegrationProjectManager {
     }
 
     /**
-     * Returns a {@link QTestProject} that's id is equal with the given
-     * <code>id</code> by filtering from list of {@link QTestProject} from qTest
-     * server
+     * Returns a {@link QTestProject} that's id is equal with the given <code>id</code> by filtering from list of
+     * {@link QTestProject} from qTest server
      * 
      * @param id
      *            qTest project id
-     * @param token
-     *            qTest token
-     * @param serverUrl
-     *            qTest's server URL
-     * @return a {@link QTestProject} that's id is equal with the given
-     *         <code>id</code>
+     * @param credential
+     *            qTest credential
+     * @return a {@link QTestProject} that's id is equal with the given <code>id</code>
      * @throws QTestUnauthorizedException
      *             if token is invalid or serverUrl not found.
+     * @throws QTestInvalidFormatException
      * @see {@link QTestProject#getId()}
      */
-    public static QTestProject getProjectByID(long id, String token, String serverUrl)
-            throws QTestUnauthorizedException {
-        List<Project> projects = getAll(token, serverUrl);
+    public static QTestProject getProjectByID(long id, IQTestCredential credential) throws QTestUnauthorizedException,
+            QTestInvalidFormatException {
+        List<Project> projects = getAll(credential);
         if (projects != null && projects.size() > 0) {
             for (Project project : projects) {
                 if (project.getId() == id) {
@@ -197,22 +188,21 @@ public class QTestIntegrationProjectManager {
     /**
      * Returns a collection of {@link QTestProject} by getting from qTest server
      * 
-     * @param token
-     *            qTest token
-     * @param serverUrl
-     *            qTest server URL
      * @return a collection of {@link QTestProject}
      * @throws QTestUnauthorizedException
      *             if token is invalid or serverUrl not found.
+     * @throws QTestInvalidFormatException
      */
-    private static List<Project> getAll(String token, String serverUrl) throws QTestUnauthorizedException {
-        if (!QTestIntegrationAuthenticationManager.validateToken(token)) {
+    private static List<Project> getAll(IQTestCredential credential) throws QTestUnauthorizedException,
+            QTestInvalidFormatException {
+        String accessToken = credential.getToken().getAccessToken();
+        if (!QTestIntegrationAuthenticationManager.validateToken(accessToken)) {
             throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
         }
 
-        QTestCredentials credentials = new BasicQTestCredentials(token);
+        QTestCredentials credentials = new BasicQTestCredentials(accessToken);
         ProjectServiceClient projectService = new ProjectServiceClient(credentials);
-        projectService.setEndpoint(serverUrl);
+        projectService.setEndpoint(credential.getServerUrl());
 
         List<Project> projects = projectService.listProject(new ListProjectRequest());
         return projects;

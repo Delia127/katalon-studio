@@ -45,7 +45,6 @@ import com.kms.katalon.integration.qtest.QTestIntegrationProjectManager;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
-import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class TestCaseRepoDialog extends Dialog {
 
@@ -243,10 +242,9 @@ public class TestCaseRepoDialog extends Dialog {
 
     private void updateProjects() {
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
-        String serverUrl = QTestSettingStore.getServerUrl(projectDir);
-        String token = QTestSettingStore.getToken(projectDir);
         try {
-            List<QTestProject> updatedProjects = QTestIntegrationProjectManager.getAllProject(token, serverUrl);
+            List<QTestProject> updatedProjects = QTestIntegrationProjectManager.getAllProject(
+                    QTestSettingCredential.getCredential(projectDir));
             mergeProjects(updatedProjects);
             updateProjectComboboxItems();
         } catch (Exception e) {
@@ -276,7 +274,7 @@ public class TestCaseRepoDialog extends Dialog {
         try {
             String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
             QTestModule moduleRoot = QTestIntegrationFolderManager.getModuleRoot(
-                    new QTestSettingCredential(projectDir), qTestProject.getId());
+                    QTestSettingCredential.getCredential(projectDir), qTestProject.getId());
             // moduleRoot = QTestIntegrationFolderManager.updateModuleViaAPI(projectDir, qTestProject.getId(),
             // moduleRoot);
             TestCaseRootSelectionDialog testCaseRootSelectionDialog = new TestCaseRootSelectionDialog(Display

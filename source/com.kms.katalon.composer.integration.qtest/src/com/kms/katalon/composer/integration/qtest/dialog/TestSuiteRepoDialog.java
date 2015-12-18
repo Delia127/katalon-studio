@@ -41,7 +41,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationProjectManager;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
-import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
+import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 
 public class TestSuiteRepoDialog extends Dialog {
     private Composite container;
@@ -105,13 +105,15 @@ public class TestSuiteRepoDialog extends Dialog {
 
         cbProjects.setItems(projectNames.toArray(new String[projectNames.size()]));
 
-        if (cbProjects.getItemCount() <= 0) return;
+        if (cbProjects.getItemCount() <= 0)
+            return;
 
         if (selectedProjectName.isEmpty()) {
             cbProjects.select(0);
         } else {
             int index = projectNames.indexOf(selectedProjectName);
-            if (index >= 0) cbProjects.select(index);
+            if (index >= 0)
+                cbProjects.select(index);
         }
     }
 
@@ -152,10 +154,9 @@ public class TestSuiteRepoDialog extends Dialog {
 
     private void updateProjects() {
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
-        String serverUrl = QTestSettingStore.getServerUrl(projectDir);
-        String token = QTestSettingStore.getToken(projectDir);
         try {
-            List<QTestProject> updatedProjects = QTestIntegrationProjectManager.getAllProject(token, serverUrl);
+            List<QTestProject> updatedProjects = QTestIntegrationProjectManager.getAllProject(QTestSettingCredential
+                    .getCredential(projectDir));
             mergeProjects(updatedProjects);
             updateProjectComboboxItems();
         } catch (Exception e) {
@@ -241,7 +242,8 @@ public class TestSuiteRepoDialog extends Dialog {
             }
             if (dialog.open() == Dialog.OK) {
                 Object[] results = dialog.getResult();
-                if (results == null || results.length != 1) return;
+                if (results == null || results.length != 1)
+                    return;
                 FolderTreeEntity folderTreeEntity = (FolderTreeEntity) results[0];
                 selectedFolderId = FolderController.getInstance().getIdForDisplay(
                         (FolderEntity) folderTreeEntity.getObject());

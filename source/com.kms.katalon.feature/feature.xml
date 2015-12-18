@@ -1762,4 +1762,11 @@
          version="0.0.0"
          unpack="false"/>
 
+   <plugin
+         id="org.apache.httpcomponents.httpmime"
+         download-size="0"
+         install-size="0"
+         version="4.5.1"
+         unpack="false"/>
+
 </feature>

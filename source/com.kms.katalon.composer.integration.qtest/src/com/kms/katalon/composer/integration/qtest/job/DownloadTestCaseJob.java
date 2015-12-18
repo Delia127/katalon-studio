@@ -41,6 +41,7 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.integration.qtest.QTestIntegrationFolderManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestCaseManager;
+import com.kms.katalon.integration.qtest.credential.IQTestCredential;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.entity.QTestStep;
@@ -56,12 +57,15 @@ public class DownloadTestCaseJob extends QTestJob {
     private boolean isMergeFolderConfirmed;
     private boolean isMergeTestCaseConfimed;
 
+    private IQTestCredential credential;
+
     public DownloadTestCaseJob(UISynchronize sync) {
         super(StringConstants.JOB_TASK_DOWNLOAD_TEST_CASE);
         setUser(true);
         this.sync = sync;
         qTestSelectedModule = null;
         isMonitorCanceled = false;
+        credential = QTestSettingCredential.getCredential(getProjectDir());
     }
 
     @Override
@@ -83,16 +87,15 @@ public class DownloadTestCaseJob extends QTestJob {
                     .getQTestProject();
 
             if (folderIntegratedEntity != null) {
-                qTestSelectedModule = QTestIntegrationFolderManager.getQTestModuleByFolderEntity(projectDir,
-                        folderEntity);
+                qTestSelectedModule = QTestIntegrationFolderManager.getQTestModuleByFolderEntity(folderEntity);
 
-                QTestIntegrationFolderManager.updateModule(projectDir, qTestProject.getId(), qTestSelectedModule, true);
+                QTestIntegrationFolderManager.updateModule(credential, qTestProject.getId(), qTestSelectedModule, true);
             } else {
                 // users have not specified root folder of test case on qTest,
                 // let them choose one.
-                QTestModule moduleRoot = QTestIntegrationFolderManager.getModuleRoot(new QTestSettingCredential(
-                        projectDir), qTestProject.getId());
-                QTestIntegrationFolderManager.updateModule(projectDir, qTestProject.getId(), moduleRoot, true);
+                QTestModule moduleRoot = QTestIntegrationFolderManager.getModuleRoot(
+                        QTestSettingCredential.getCredential(projectDir), qTestProject.getId());
+                QTestIntegrationFolderManager.updateModule(credential, qTestProject.getId(), moduleRoot, true);
 
                 performTestCaseRootSelection(moduleRoot);
             }
@@ -121,7 +124,8 @@ public class DownloadTestCaseJob extends QTestJob {
                 monitor.beginTask(StringConstants.JOB_TASK_CREATE_TEST_CASE, selectedElements.length);
                 for (int index = 0; index < selectedElements.length; index++) {
                     try {
-                        if (monitor.isCanceled()) return Status.CANCEL_STATUS;
+                        if (monitor.isCanceled())
+                            return Status.CANCEL_STATUS;
 
                         doUpdateSelectedItem(qTestProject, selectedElements[index], monitor);
                     } catch (Exception e) {
@@ -252,8 +256,7 @@ public class DownloadTestCaseJob extends QTestJob {
 
         QTestTestCase qTestCase = testCaseTree.getTestCase();
         if (qTestCase.getVersionId() == 0) {
-            String projectDir = testCaseEntity.getProject().getFolderLocation();
-            qTestCase.setVersionId(QTestIntegrationTestCaseManager.getTestCaseVersionId(projectDir,
+            qTestCase.setVersionId(QTestIntegrationTestCaseManager.getTestCaseVersionId(credential,
                     qTestProject.getId(), qTestCase.getId()));
         }
         IntegratedEntity newIntegratedEntity = QTestIntegrationTestCaseManager
@@ -272,7 +275,8 @@ public class DownloadTestCaseJob extends QTestJob {
         isMergeFolderConfirmed = false;
         isMergeTestCaseConfimed = false;
 
-        if (!(selectedItem instanceof DownloadedPreviewTreeNode)) return;
+        if (!(selectedItem instanceof DownloadedPreviewTreeNode))
+            return;
 
         DownloadedPreviewTreeNode treeItem = (DownloadedPreviewTreeNode) selectedItem;
 
@@ -366,8 +370,8 @@ public class DownloadTestCaseJob extends QTestJob {
         if (statement instanceof BlockStatement) {
             BlockStatement blockStatement = (BlockStatement) statement;
             blockStatement.getStatements().clear();
-            List<QTestStep> qTestSteps = QTestIntegrationTestCaseManager.getListSteps(
-                    projectEntity.getFolderLocation(), qTestProject.getId(), qTestCase);
+            List<QTestStep> qTestSteps = QTestIntegrationTestCaseManager.getListSteps(credential, qTestProject.getId(),
+                    qTestCase);
 
             for (QTestStep qTestStep : qTestSteps) {
                 BlockStatement stepBlock = new BlockStatement();
