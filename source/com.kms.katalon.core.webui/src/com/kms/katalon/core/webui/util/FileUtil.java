@@ -21,8 +21,6 @@ import com.kms.katalon.core.webui.driver.DriverFactory;
 public class FileUtil {
 
 	private static final String SCREENSHOT_FOLDER = "resources/screen";
-	private static final String KMS_IE_DRIVER_FOLDER = "resources/drivers/kmsie";
-	private static final String AUTHENTICATION_FOLDER = "resources/authentication";
 
 	public static String takesScreenshot() throws IOException, WebDriverException, StepFailedException {
 		String fileName = System.currentTimeMillis() + ".png";
@@ -60,31 +58,4 @@ public class FileUtil {
 			return folder;
 		}
 	}
-	
-	public static File getKmsIeDriverDirectory() throws IOException {
-		String path = FileUtil.class.getProtectionDomain().getCodeSource().getLocation().getFile();
-		path = URLDecoder.decode(path, "utf-8");
-		File jarFile = new File(path);
-		if (jarFile.isFile()) {
-			String kmsIePath = jarFile.getParentFile().getParentFile().getAbsolutePath() + "/configuration/" + KMS_IE_DRIVER_FOLDER;
-			return new File(kmsIePath);
-		} else { // Run with IDE
-			File folder = new File(path + "../" + KMS_IE_DRIVER_FOLDER);
-			return folder;
-		}
-	}
-	
-	public static File getAuthenticationDirectory() throws IOException {
-		String path = FileUtil.class.getProtectionDomain().getCodeSource().getLocation().getFile();
-		path = URLDecoder.decode(path, "utf-8");
-		File jarFile = new File(path);
-		if (jarFile.isFile()) {
-			String kmsIePath = jarFile.getParentFile().getParentFile().getAbsolutePath() + "/configuration/" + AUTHENTICATION_FOLDER;
-			return new File(kmsIePath);
-		} else { // Run with IDE
-			File folder = new File(path + "../" + AUTHENTICATION_FOLDER);
-			return folder;
-		}
-	}
-		
 }
