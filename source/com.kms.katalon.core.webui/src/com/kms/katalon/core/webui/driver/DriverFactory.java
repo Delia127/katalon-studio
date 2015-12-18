@@ -489,5 +489,6 @@ public class DriverFactory {
             }
         }
         localWebServerStorage.set(null);
+        RunConfiguration.removeDriver(webDriver);
     }
 }
