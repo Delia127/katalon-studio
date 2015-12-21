@@ -154,6 +154,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_TITLE_ASK_USE_SETUP = "For quickly setting, we already provide a setup wizard. Would "
             + "you like to take a tour with us?";
     public static final String DIA_INFO_QUICK_SETUP = "<a>Quick Setup...</a>";
+    public static final String DIA_TITLE_VERSION = "qTest Version";
+    public static final String DIA_MSG_GENERATE_TOKEN_SUCESSFULLY = "Generate token sucessfully";
 
     // TestCaseRepoPreferencePage
     public static final String DIA_MSG_UNABLE_GET_PROJECT_INFO = "Unable to get qTest projects's information.";
@@ -162,7 +164,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_MSG_UNABLE_REMOVE_TEST_CASE_REPO = "Unable to remove Test Case Repository.";
     public static final String DIA_CONFIRM_DISINTEGRATE_TEST_CASE_FOLDER = "Are you sure you want to disintegrate all "
             + "test cases in this folder with qTest?";
-
+    
     // TestSuiteRepoPreferencePage
     public static final String DIA_TITLE_TEST_SUITE_FOLDER = "Katalon Test Suite's Folder";
 

@@ -1,7 +1,7 @@
 package com.kms.katalon.core.mobile.keyword;
 
 public class AndroidUIAutomator {
-
+    public static final String PROPERTY_NAME = "UIAutomator";
 	public static final String SELECTOR = "new UiSelector()";
 	public static final String BY_CLASS_NAME = ".className(\"%s\")";
 	public static final String BY_CLASS_NAME_MATCH = ".classNameMatches(\"%s\")";

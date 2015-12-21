@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.integration.qtest.job;
 
-import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +15,7 @@ import org.eclipse.swt.SWT;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.SynchronizedConfirmationDialog;
 import com.kms.katalon.composer.components.impl.dialogs.YesNoAllOptions;
+import com.kms.katalon.composer.components.impl.util.StatusUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
@@ -23,6 +23,7 @@ import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.handler.QTestDisintegrateReportHandler;
 import com.kms.katalon.composer.integration.qtest.model.ReportTestCaseLogPair;
 import com.kms.katalon.composer.integration.qtest.model.ReportUploadedPreviewPair;
+import com.kms.katalon.composer.report.lookup.LogRecordLookup;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
@@ -35,6 +36,7 @@ import com.kms.katalon.integration.qtest.entity.QTestLog;
 import com.kms.katalon.integration.qtest.entity.QTestLogUploadedPreview;
 import com.kms.katalon.integration.qtest.entity.QTestRun;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
+import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 
 public class UploadTestCaseResultJob extends QTestJob {
 
@@ -66,6 +68,8 @@ public class UploadTestCaseResultJob extends QTestJob {
                         SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK), pair);
                 if (childStatus == Status.CANCEL_STATUS) {
                     return canceled();
+                } else if (childStatus.getSeverity() == Status.ERROR) {
+                    return childStatus;
                 }
             }
             return Status.OK_STATUS;
@@ -141,14 +145,15 @@ public class UploadTestCaseResultJob extends QTestJob {
                         try {
                             qTestRun = QTestIntegrationTestSuiteManager.uploadTestCaseInTestSuite(
                                     uploadedItem.getQTestCase(), uploadedItem.getQTestSuite(),
-                                    uploadedItem.getQTestProject(), getProjectDir());
+                                    uploadedItem.getQTestProject(),
+                                    QTestSettingCredential.getCredential(getProjectDir()));
 
                             // update test run for the uploaded item
                             uploadedItem.setQTestRun(qTestRun);
                         } catch (Exception e) {
-                            LoggerSingleton.logError(e);
                             monitor.setCanceled(true);
-                            return Status.CANCEL_STATUS;
+                            LoggerSingleton.logError(e);
+                            return StatusUtil.getErrorStatus(getClass(), e);
                         }
                     } else {
                         qTestRun.setQTestCaseId(uploadedItem.getQTestCase().getId());
@@ -157,11 +162,14 @@ public class UploadTestCaseResultJob extends QTestJob {
                     // Save test suite.
                     QTestIntegrationUtil.addNewTestRunToTestSuite(testSuiteEntity, testSuiteIntegratedEntity,
                             uploadedItem.getQTestSuite(), qTestRun, qTestSuiteCollection);
+
+                    uploadedItem.setQTestRun(qTestRun);
                 }
 
                 try {
                     QTestLog qTestCaseLog = QTestIntegrationReportManager.uploadTestLog(getProjectDir(), uploadedItem,
-                            QTestIntegrationUtil.getTempDirPath(), new File(reportEntity.getLocation()));
+                            QTestIntegrationUtil.getTempDirPath(),
+                            LogRecordLookup.getInstance().getTestSuiteLogRecord(reportEntity));
 
                     uploadedItem.setQTestLog(qTestCaseLog);
 
@@ -169,7 +177,7 @@ public class UploadTestCaseResultJob extends QTestJob {
                     uploadedTestCaseLogs.add(uploadedItem.getTestCaseLogRecord());
                 } catch (Exception e) {
                     LoggerSingleton.logError(e);
-                    return Status.CANCEL_STATUS;
+                    return StatusUtil.getErrorStatus(getClass(), e);
                 }
                 monitor.worked(1);
             }
@@ -179,7 +187,7 @@ public class UploadTestCaseResultJob extends QTestJob {
         } catch (Exception ex) {
             monitor.setCanceled(true);
             LoggerSingleton.logError(ex);
-            return Status.CANCEL_STATUS;
+            return StatusUtil.getErrorStatus(getClass(), ex);
         } finally {
             ReportTestCaseLogPair uploadedPair = new ReportTestCaseLogPair(reportEntity, uploadedTestCaseLogs);
             fUploadedTestLogPairs.add(uploadedPair);

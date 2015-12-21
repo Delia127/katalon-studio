@@ -2,13 +2,18 @@ package com.kms.katalon.core.webui.contribution;
 
 import com.kms.katalon.core.driver.IDriverCleaner;
 import com.kms.katalon.core.webui.driver.DriverFactory;
+import com.kms.katalon.core.webui.driver.WebMobileDriverFactory;
 
-public class WebUiDriverCleaner implements IDriverCleaner{
+public class WebUiDriverCleaner implements IDriverCleaner {
 
-	@Override
-	public void cleanDriver() {
-		// TODO Auto-generated method stub
-		DriverFactory.closeWebDriver();
-	}
+    @Override
+    public void cleanDriverAfterRunningTestCase() {
+        WebMobileDriverFactory.getInstance().quitServer();
+    }
+
+    @Override
+    public void cleanDriverAfterRunningTestSuite() {
+        DriverFactory.closeWebDriver();
+    }
 
 }

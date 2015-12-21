@@ -2,6 +2,7 @@ package com.kms.katalon.core.mobile.keyword;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openqa.selenium.WebElement;
@@ -33,112 +34,123 @@ public class MobileSearchEngine {
         	xpath = xpathProp.getValue();
         }
         if (xpath == null) {
-            StringBuilder selector = new StringBuilder(AndroidUIAutomator.SELECTOR);
-            TestObjectProperty property = element.findProperty(AndroidProperties.ANDROID_CLASS);
-            if (property != null && property.isActive()) {
-                if (property.getCondition().equals(ConditionType.EXPRESSION)) {
-                    selector.append(String.format(AndroidUIAutomator.BY_CLASS_NAME_MATCH, property.getValue()));
+            TestObjectProperty uiAutomatorProp = element.findProperty(AndroidUIAutomator.PROPERTY_NAME);
+            if(uiAutomatorProp != null && uiAutomatorProp.isActive()){
+                WebElement foundElement = driver.findElementByAndroidUIAutomator(uiAutomatorProp.getValue());
+                if (foundElement != null) {
+                    List<WebElement> elementList = new ArrayList<WebElement>();
+                    elementList.add(foundElement);
+                    return elementList;
                 } else {
-                    selector.append(String.format(AndroidUIAutomator.BY_CLASS_NAME, property.getValue()));
+                    return null;
                 }
-            }
-
-            property = element.findProperty(AndroidProperties.ANDROID_CONTENT_DESC);
-            if (property != null && property.isActive()) {
-                if (property.getCondition().equals(ConditionType.CONTAINS)) {
-                    selector.append(String.format(AndroidUIAutomator.BY_CONTENT_DESC_CONTAIN, property.getValue()));
-                } else if (property.getCondition().equals(ConditionType.EXPRESSION)) {
-                    selector.append(String.format(AndroidUIAutomator.BY_CONTENT_DESC_MATCH, property.getValue()));
-                } else if (property.getCondition().equals(ConditionType.STARTS_WITH)) {
-                    selector.append(String.format(AndroidUIAutomator.BY_CONTENT_DESC_START_WITH, property.getValue()));
-                } else {
-                    selector.append(String.format(AndroidUIAutomator.BY_CONTENT_DESC, property.getValue()));
+            } else {
+                StringBuilder selector = new StringBuilder(AndroidUIAutomator.SELECTOR);
+                TestObjectProperty property = element.findProperty(AndroidProperties.ANDROID_CLASS);
+                if (property != null && property.isActive()) {
+                    if (property.getCondition().equals(ConditionType.EXPRESSION)) {
+                        selector.append(String.format(AndroidUIAutomator.BY_CLASS_NAME_MATCH, property.getValue()));
+                    } else {
+                        selector.append(String.format(AndroidUIAutomator.BY_CLASS_NAME, property.getValue()));
+                    }
                 }
-            }
 
-            property = element.findProperty(AndroidProperties.ANDROID_TEXT);
-            if (property != null && property.isActive()) {
-            	String propValText = property.getValue().replace("\\n", "\n");
-                if (property.getCondition().equals(ConditionType.CONTAINS)) {
-                    selector.append(String.format(AndroidUIAutomator.BY_TEXT_CONTAIN, propValText));
-                } else if (property.getCondition().equals(ConditionType.EXPRESSION)) {
-                    selector.append(String.format(AndroidUIAutomator.BY_TEXT_MATCH, propValText));
-                } else if (property.getCondition().equals(ConditionType.STARTS_WITH)) {
-                    selector.append(String.format(AndroidUIAutomator.BY_TEXT_START_WITH, propValText));
-                } else {
-                    selector.append(String.format(AndroidUIAutomator.BY_TEXT, propValText));
+                property = element.findProperty(AndroidProperties.ANDROID_CONTENT_DESC);
+                if (property != null && property.isActive()) {
+                    if (property.getCondition().equals(ConditionType.CONTAINS)) {
+                        selector.append(String.format(AndroidUIAutomator.BY_CONTENT_DESC_CONTAIN, property.getValue()));
+                    } else if (property.getCondition().equals(ConditionType.EXPRESSION)) {
+                        selector.append(String.format(AndroidUIAutomator.BY_CONTENT_DESC_MATCH, property.getValue()));
+                    } else if (property.getCondition().equals(ConditionType.STARTS_WITH)) {
+                        selector.append(String.format(AndroidUIAutomator.BY_CONTENT_DESC_START_WITH, property.getValue()));
+                    } else {
+                        selector.append(String.format(AndroidUIAutomator.BY_CONTENT_DESC, property.getValue()));
+                    }
                 }
-            }
 
-            property = element.findProperty(AndroidProperties.ANDROID_RESOURCE_ID);
-            if (property != null && property.isActive()) {
-                if (property.getCondition().equals(ConditionType.EXPRESSION)) {
-                    selector.append(String.format(AndroidUIAutomator.BY_RESOURCE_ID_MATCH, property.getValue()));
-                } else {
-                    selector.append(String.format(AndroidUIAutomator.BY_RESOURCE_ID, property.getValue()));
+                property = element.findProperty(AndroidProperties.ANDROID_TEXT);
+                if (property != null && property.isActive()) {
+                    String propValText = property.getValue().replace("\\n", "\n");
+                    if (property.getCondition().equals(ConditionType.CONTAINS)) {
+                        selector.append(String.format(AndroidUIAutomator.BY_TEXT_CONTAIN, propValText));
+                    } else if (property.getCondition().equals(ConditionType.EXPRESSION)) {
+                        selector.append(String.format(AndroidUIAutomator.BY_TEXT_MATCH, propValText));
+                    } else if (property.getCondition().equals(ConditionType.STARTS_WITH)) {
+                        selector.append(String.format(AndroidUIAutomator.BY_TEXT_START_WITH, propValText));
+                    } else {
+                        selector.append(String.format(AndroidUIAutomator.BY_TEXT, propValText));
+                    }
                 }
-            }
 
-            property = element.findProperty(AndroidProperties.ANDROID_PACKAGE);
-            if (property != null && property.isActive()) {
-                if (property.getCondition().equals(ConditionType.EXPRESSION)) {
-                    selector.append(String.format(AndroidUIAutomator.BY_PACKAGE_MATCH, property.getValue()));
-                } else {
-                    selector.append(String.format(AndroidUIAutomator.BY_PACKAGE, property.getValue()));
+                property = element.findProperty(AndroidProperties.ANDROID_RESOURCE_ID);
+                if (property != null && property.isActive()) {
+                    if (property.getCondition().equals(ConditionType.EXPRESSION)) {
+                        selector.append(String.format(AndroidUIAutomator.BY_RESOURCE_ID_MATCH, property.getValue()));
+                    } else {
+                        selector.append(String.format(AndroidUIAutomator.BY_RESOURCE_ID, property.getValue()));
+                    }
                 }
-            }
 
-            property = element.findProperty(AndroidProperties.ANDROID_ENABLED);
-            if (property != null && property.isActive()) {
-                selector.append(String.format(AndroidUIAutomator.BY_ENABLED, property.getValue()));
-            }
+                property = element.findProperty(AndroidProperties.ANDROID_PACKAGE);
+                if (property != null && property.isActive()) {
+                    if (property.getCondition().equals(ConditionType.EXPRESSION)) {
+                        selector.append(String.format(AndroidUIAutomator.BY_PACKAGE_MATCH, property.getValue()));
+                    } else {
+                        selector.append(String.format(AndroidUIAutomator.BY_PACKAGE, property.getValue()));
+                    }
+                }
 
-            property = element.findProperty(AndroidProperties.ANDROID_CLICKABLE);
-            if (property != null && property.isActive()) {
-                selector.append(String.format(AndroidUIAutomator.BY_CLICKABLE, property.getValue()));
-            }
+                property = element.findProperty(AndroidProperties.ANDROID_ENABLED);
+                if (property != null && property.isActive()) {
+                    selector.append(String.format(AndroidUIAutomator.BY_ENABLED, property.getValue()));
+                }
 
-            property = element.findProperty(AndroidProperties.ANDROID_LONG_CLICKABLE);
-            if (property != null && property.isActive()) {
-                selector.append(String.format(AndroidUIAutomator.BY_LONG_CLICKABLE, property.getValue()));
-            }
+                property = element.findProperty(AndroidProperties.ANDROID_CLICKABLE);
+                if (property != null && property.isActive()) {
+                    selector.append(String.format(AndroidUIAutomator.BY_CLICKABLE, property.getValue()));
+                }
 
-            property = element.findProperty(AndroidProperties.ANDROID_CHECKABLE);
-            if (property != null && property.isActive()) {
-                selector.append(String.format(AndroidUIAutomator.BY_CHECKABLE, property.getValue()));
-            }
+                property = element.findProperty(AndroidProperties.ANDROID_LONG_CLICKABLE);
+                if (property != null && property.isActive()) {
+                    selector.append(String.format(AndroidUIAutomator.BY_LONG_CLICKABLE, property.getValue()));
+                }
 
-            property = element.findProperty(AndroidProperties.ANDROID_CHECKED);
-            if (property != null && property.isActive()) {
-                selector.append(String.format(AndroidUIAutomator.BY_CHECKED, property.getValue()));
-            }
+                property = element.findProperty(AndroidProperties.ANDROID_CHECKABLE);
+                if (property != null && property.isActive()) {
+                    selector.append(String.format(AndroidUIAutomator.BY_CHECKABLE, property.getValue()));
+                }
 
-            property = element.findProperty(AndroidProperties.ANDROID_FOCUSABLE);
-            if (property != null && property.isActive()) {
-                selector.append(String.format(AndroidUIAutomator.BY_FOCUSABLE, property.getValue()));
-            }
+                property = element.findProperty(AndroidProperties.ANDROID_CHECKED);
+                if (property != null && property.isActive()) {
+                    selector.append(String.format(AndroidUIAutomator.BY_CHECKED, property.getValue()));
+                }
 
-            property = element.findProperty(AndroidProperties.ANDROID_FOCUSED);
-            if (property != null && property.isActive()) {
-                selector.append(String.format(AndroidUIAutomator.BY_FOCUSED, property.getValue()));
-            }
+                property = element.findProperty(AndroidProperties.ANDROID_FOCUSABLE);
+                if (property != null && property.isActive()) {
+                    selector.append(String.format(AndroidUIAutomator.BY_FOCUSABLE, property.getValue()));
+                }
 
-            property = element.findProperty(AndroidProperties.ANDROID_SCROLLABLE);
-            if (property != null && property.isActive()) {
-                selector.append(String.format(AndroidUIAutomator.BY_SCROLLABLE, property.getValue()));
-            }
+                property = element.findProperty(AndroidProperties.ANDROID_FOCUSED);
+                if (property != null && property.isActive()) {
+                    selector.append(String.format(AndroidUIAutomator.BY_FOCUSED, property.getValue()));
+                }
 
-            property = element.findProperty(AndroidProperties.ANDROID_SELECTED);
-            if (property != null && property.isActive()) {
-                selector.append(String.format(AndroidUIAutomator.SELECTOR, property.getValue()));
-            }
+                property = element.findProperty(AndroidProperties.ANDROID_SCROLLABLE);
+                if (property != null && property.isActive()) {
+                    selector.append(String.format(AndroidUIAutomator.BY_SCROLLABLE, property.getValue()));
+                }
 
-            property = element.findProperty(AndroidProperties.ANDROID_INSTANCE);
-            if (property != null && property.isActive()) {
-                selector.append(String.format(AndroidUIAutomator.BY_INSTANCE, property.getValue()));
+                property = element.findProperty(AndroidProperties.ANDROID_SELECTED);
+                if (property != null && property.isActive()) {
+                    selector.append(String.format(AndroidUIAutomator.SELECTOR, property.getValue()));
+                }
+
+                property = element.findProperty(AndroidProperties.ANDROID_INSTANCE);
+                if (property != null && property.isActive()) {
+                    selector.append(String.format(AndroidUIAutomator.BY_INSTANCE, property.getValue()));
+                }
+                return driver.findElementsByAndroidUIAutomator(selector.toString());
             }
-            
-            return driver.findElementsByAndroidUIAutomator(selector.toString());
         } else {
             List<TestObjectProperty> specialProperties = SelectorBuilderHelper.escapeSpecialProperties(element.getProperties());
             List<WebElement> elements = driver.findElementsByXPath(SelectorBuilderHelper.buildXpathFromProperties(element.getProperties()));

@@ -9,9 +9,11 @@ import org.codehaus.groovy.ast.expr.BinaryExpression;
 import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.syntax.Token;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.testcase.constants.StringConstants;
@@ -22,6 +24,9 @@ import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
 import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
+import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
+import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
+import com.kms.katalon.core.ast.AstTextValueUtil;
 import com.kms.katalon.core.ast.GroovyParser;
 
 public class BinaryBuilderDialog extends AbstractAstBuilderWithTableDialog {
@@ -104,12 +109,56 @@ public class BinaryBuilderDialog extends AbstractAstBuilderWithTableDialog {
         tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider(scriptClass));
         tableViewerColumnValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer,
                 defaultValueTypes, ICustomInputValueType.TAG_BINARY, this, scriptClass));
-        
+
         TableViewerColumn tableViewerColumnValue = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnValue.getColumn().setWidth(300);
         tableViewerColumnValue.getColumn().setText(StringConstants.DIA_COL_VALUE);
-        tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider(scriptClass));
-        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this, scriptClass));
+        tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider(scriptClass) {
+            @Override
+            public String getText(Object element) {
+                if (element == token) {
+                    return AstTextValueUtil.getInstance().getTextValue(token);
+                }
+                return super.getText(element);
+            }
+        });
+        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this, scriptClass) {
+            @Override
+            protected Object getValue(Object element) {
+                if (element == token) {
+                    return AstTreeTableValueUtil.getValue(token, scriptClass);
+                }
+                return super.getValue(element);
+            }
+
+            @Override
+            protected CellEditor getCellEditor(Object element) {
+                if (element == token) {
+                    return AstTreeTableInputUtil.getCellEditorForToken((Composite) getViewer().getControl(), token);
+                }
+                return super.getCellEditor(element);
+            }
+
+            @Override
+            protected void setValue(Object element, Object value) {
+                if (element == token) {
+                    Object object = AstTreeTableValueUtil.setValue(token, value, scriptClass);
+                    if (object != null) {
+                        parentDialog.changeObject(element, object);
+                        getViewer().refresh();
+                    }
+                }
+                super.setValue(element, value);
+            }
+
+            @Override
+            protected boolean canEdit(Object element) {
+                if (element == token) {
+                    return true;
+                }
+                return super.canEdit(element);
+            }
+        });
     }
 
     @Override

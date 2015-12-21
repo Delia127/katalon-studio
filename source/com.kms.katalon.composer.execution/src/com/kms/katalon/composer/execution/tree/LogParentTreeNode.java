@@ -3,8 +3,8 @@ package com.kms.katalon.composer.execution.tree;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kms.katalon.composer.components.util.DateUtil;
 import com.kms.katalon.core.logging.XmlLogRecord;
+import com.kms.katalon.core.util.DateUtil;
 
 public class LogParentTreeNode extends LogChildTreeNode implements ILogParentTreeNode {
 	
@@ -57,7 +57,7 @@ public class LogParentTreeNode extends LogChildTreeNode implements ILogParentTre
 			return "";
 		} else {
 			double elapsedSeconds = ((double) (recordEnd.getMillis() - recordStart.getMillis())) / 1000;
-			return Double.toString(elapsedSeconds) + " s";
+			return DateUtil.SECOND_FORMAT.format(elapsedSeconds) + "s";
 		}		
 	}
 

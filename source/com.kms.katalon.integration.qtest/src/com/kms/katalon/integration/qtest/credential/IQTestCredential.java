@@ -1,6 +1,9 @@
 package com.kms.katalon.integration.qtest.credential;
 
-public interface IQTestCredential {
+import com.kms.katalon.integration.qtest.setting.QTestVersion;
+
+public interface IQTestCredential {    
+    public QTestVersion getVersion();
 
     public String getServerUrl();
 
@@ -8,5 +11,5 @@ public interface IQTestCredential {
 
     public String getPassword();
 
-    public String getToken();
+    public IQTestToken getToken();
 }

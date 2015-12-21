@@ -37,6 +37,7 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.logging.ConsoleLogFileWatcher;
 import com.kms.katalon.execution.logging.LogExceptionFilter;
+import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class ConsoleLauncher extends AbstractLauncher {
@@ -58,7 +59,7 @@ public class ConsoleLauncher extends AbstractLauncher {
 		if (testSuite != null) {
 			executedEntity = testSuite;
 			this.testSuiteExecutedEntity = testSuiteExecutedEntity;
-			writeRunConfigToFile();
+			ExecutionUtil.writeRunConfigToFile(getRunConfiguration());
 			scriptFile = generateTempTestSuiteScript(testSuite, runConfig, testSuiteExecutedEntity);
 			LauncherManager.getInstance().addLauncher(this);
 		}

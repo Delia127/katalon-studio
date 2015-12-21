@@ -1,13 +1,21 @@
 package com.kms.katalon.integration.qtest.setting;
 
 import com.kms.katalon.integration.qtest.credential.IQTestCredential;
+import com.kms.katalon.integration.qtest.credential.IQTestToken;
+import com.kms.katalon.integration.qtest.credential.QTestTokenManager;
+import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 
 public class QTestSettingCredential implements IQTestCredential {
-
+    
     private String fProjectDir;
+    private QTestVersion fVersion;
 
-    public QTestSettingCredential(String projectDir) {
+    private QTestSettingCredential(String projectDir) {
         setProjectDir(projectDir);
+    }
+    
+    public static QTestSettingCredential getCredential(String projectDir) {
+        return new QTestSettingCredential(projectDir);
     }
 
     @Override
@@ -26,8 +34,12 @@ public class QTestSettingCredential implements IQTestCredential {
     }
 
     @Override
-    public String getToken() {
-        return QTestSettingStore.getToken(getProjectDir());
+    public IQTestToken getToken() {
+        try {
+            return QTestTokenManager.getToken(QTestSettingStore.getRawToken(getProjectDir()));
+        } catch (QTestInvalidFormatException e) {
+            return null;
+        }
     }
 
     public String getProjectDir() {
@@ -38,4 +50,15 @@ public class QTestSettingCredential implements IQTestCredential {
         this.fProjectDir = fProjectDir;
     }
 
+    @Override
+    public QTestVersion getVersion() {
+        if (fVersion == null) {
+            fVersion = QTestSettingStore.getQTestVersion(getProjectDir());
+        }
+        return fVersion;
+    }
+    
+    public void setVersion(QTestVersion version) {
+        fVersion = version;
+    }
 }

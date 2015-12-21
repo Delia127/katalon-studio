@@ -20,233 +20,250 @@ import com.kms.katalon.composer.testcase.model.InputParameter;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
+import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testobject.TestObject;
 
 public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableNode {
 
-	public AstBuiltInKeywordTreeTableNode(ExpressionStatement methodCallStatement, AstTreeTableNode parentNode,
-			ASTNode parentObject, ClassNode scriptClass) {
-		super(methodCallStatement, parentNode, parentObject, scriptClass);
-	}
+    public AstBuiltInKeywordTreeTableNode(ExpressionStatement methodCallStatement, AstTreeTableNode parentNode,
+            ASTNode parentObject, ClassNode scriptClass) {
+        super(methodCallStatement, parentNode, parentObject, scriptClass);
+    }
 
-	protected String getBuiltInKWClassSimpleName() throws Exception {
-		Expression expression = parentStatement.getExpression();
-		if (expression instanceof MethodCallExpression) {
-			return ((MethodCallExpression) parentStatement.getExpression()).getObjectExpression().getText();
-		} else if (expression instanceof BinaryExpression) {
-			MethodCallExpression methodCallExpresion = (MethodCallExpression) ((BinaryExpression) parentStatement
-					.getExpression()).getRightExpression();
-			return methodCallExpresion.getObjectExpression().getText();
-		} else {
-			return StringUtils.EMPTY;
-		}
-	}
+    protected String getBuiltInKWClassSimpleName() throws Exception {
+        Expression expression = parentStatement.getExpression();
+        if (expression instanceof MethodCallExpression) {
+            return ((MethodCallExpression) parentStatement.getExpression()).getObjectExpression().getText();
+        } else if (expression instanceof BinaryExpression) {
+            MethodCallExpression methodCallExpresion = (MethodCallExpression) ((BinaryExpression) parentStatement
+                    .getExpression()).getRightExpression();
+            return methodCallExpresion.getObjectExpression().getText();
+        } else {
+            return StringUtils.EMPTY;
+        }
+    }
 
-	@Override
-	public Object getItem() {
-		try {
-			String className = getBuiltInKWClassSimpleName();
-			List<Method> builtInKeywordMethods = KeywordController.getInstance().getBuiltInKeywords(className);
-			for (Method keywordMethod : builtInKeywordMethods) {
-				if (keywordMethod.getName().equals(getKeyword())) {
-					return builtInKeywordMethods.indexOf(keywordMethod);
-				}
-			}
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-		return -1;
-	};
+    @Override
+    public Object getItem() {
+        try {
+            String className = getBuiltInKWClassSimpleName();
+            List<Method> builtInKeywordMethods = KeywordController.getInstance().getBuiltInKeywords(className);
+            for (Method keywordMethod : builtInKeywordMethods) {
+                if (keywordMethod.getName().equals(getKeyword())) {
+                    return builtInKeywordMethods.indexOf(keywordMethod);
+                }
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        return -1;
+    };
 
-	@Override
-	public boolean setItem(Object item) {
-		if (item instanceof Integer) {
-			try {
-				int keywordIndex = (int) item;
-				String className = getBuiltInKWClassSimpleName();
-				List<Method> builtInKeywordMethods = KeywordController.getInstance().getBuiltInKeywords(className);
-				if (keywordIndex >= 0 && keywordIndex < builtInKeywordMethods.size()) {
-					if (!getKeyword().equals(builtInKeywordMethods.get(keywordIndex).getName())) {
-						setKeyword(builtInKeywordMethods.get(keywordIndex).getName());
-						return true;
-					}
-				}
-			} catch (Exception e) {
-				LoggerSingleton.logError(e);
-			}
-		}
-		return false;
-	}
+    @Override
+    public String getItemTooltipText() {
+        try {
+            String keywordJavaDoc = TestCaseEntityUtil.getKeywordJavaDocText(getBuiltInKWClassSimpleName(),
+                    getKeyword(), scriptClass);
+            if (!keywordJavaDoc.isEmpty()) {
+                return keywordJavaDoc;
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        return super.getItemTooltipText();
+    }
 
-	@Override
-	protected List<String> getKeywordNames() {
-		List<String> keywordNames = new ArrayList<String>();
-		try {
-			List<Method> builtInKeywordMethods = KeywordController.getInstance().getBuiltInKeywords(
-					getBuiltInKWClassSimpleName());
-			for (Method keywordMethod : builtInKeywordMethods) {
-				keywordNames.add(keywordMethod.getName());
-			}
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-		return keywordNames;
-	}
+    @Override
+    public boolean setItem(Object item) {
+        if (item instanceof Integer) {
+            try {
+                int keywordIndex = (int) item;
+                String className = getBuiltInKWClassSimpleName();
+                List<Method> builtInKeywordMethods = KeywordController.getInstance().getBuiltInKeywords(className);
+                if (keywordIndex >= 0 && keywordIndex < builtInKeywordMethods.size()) {
+                    if (!getKeyword().equals(builtInKeywordMethods.get(keywordIndex).getName())) {
+                        setKeyword(builtInKeywordMethods.get(keywordIndex).getName());
+                        return true;
+                    }
+                }
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+        return false;
+    }
 
-	@Override
-	public void generateArguments() {
-		try {
-			AstTreeTableInputUtil.generateBuiltInKeywordArguments(methodCall);
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-	}
+    @Override
+    protected List<String> getKeywordNames() {
+        List<String> keywordNames = new ArrayList<String>();
+        try {
+            List<Method> builtInKeywordMethods = KeywordController.getInstance().getBuiltInKeywords(
+                    getBuiltInKWClassSimpleName());
+            for (Method keywordMethod : builtInKeywordMethods) {
+                keywordNames.add(keywordMethod.getName());
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        return keywordNames;
+    }
 
-	@Override
-	public boolean isInputEditable() {
-		try {
-			Method keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
-					getBuiltInKWClassSimpleName(), getKeyword());
-			if (keywordMethod != null) {
-				int count = 0;
-				List<Class<?>> paramClasses = AstTreeTableInputUtil.getParamClasses(keywordMethod);
-				for (int i = 0; i < paramClasses.size(); i++) {
-					// if (paramClasses.get(i) != TestObject.class) {
-					if (!TestObject.class.isAssignableFrom(paramClasses.get(i))) {
-						count++;
-					}
-				}
-				return count > 0;
-			}
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-		return false;
-	}
+    @Override
+    public void generateArguments() {
+        try {
+            AstTreeTableInputUtil.generateBuiltInKeywordArguments(methodCall);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
 
-	@Override
-	public String getInputText() {
-		ArgumentListExpression arguments = (ArgumentListExpression) methodCall.getArguments();
-		if (arguments != null && arguments.getExpressions().size() > 0) {
-			try {
-				StringBuilder displayString = new StringBuilder();
-				Method keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
-						getBuiltInKWClassSimpleName(), getKeyword());
-				if (keywordMethod != null) {
-					int count = 0;
-					List<Class<?>> paramClasses = AstTreeTableInputUtil.getParamClasses(keywordMethod);
-					for (int i = 0; i < paramClasses.size(); i++) {
-						// if (paramClasses.get(i) != TestObject.class &&
-						// paramClasses.get(i) != FailureHandling.class) {
-						if (!TestObject.class.isAssignableFrom(paramClasses.get(i))
-								&& paramClasses.get(i) != FailureHandling.class) {
-							if (i < arguments.getExpressions().size()) {
-								if (count > 0) {
-									displayString.append("; ");
-								}
-								Expression inputExpression = arguments.getExpression(i);
-								IInputValueType typeValue = AstTreeTableValueUtil.getTypeValue(inputExpression, scriptClass);
-								if (typeValue != null) {
-								    displayString.append(typeValue.getDisplayValue(inputExpression));
-								} else {
-	                                displayString.append(AstTreeTableTextValueUtil.getInstance().getTextValue(inputExpression));
-								}
-								count++;
-							}
-						}
-					}
-				}
+    @Override
+    public boolean isInputEditable() {
+        try {
+            Method keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
+                    getBuiltInKWClassSimpleName(), getKeyword());
+            if (keywordMethod != null) {
+                int count = 0;
+                List<Class<?>> paramClasses = AstTreeTableInputUtil.getParamClasses(keywordMethod);
+                for (int i = 0; i < paramClasses.size(); i++) {
+                    // if (paramClasses.get(i) != TestObject.class) {
+                    if (!TestObject.class.isAssignableFrom(paramClasses.get(i))) {
+                        count++;
+                    }
+                }
+                return count > 0;
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        return false;
+    }
 
-				return displayString.toString();
-			} catch (Exception e) {
-				LoggerSingleton.logError(e);
-			}
-		}
-		return "";
-	}
+    @Override
+    public String getInputText() {
+        ArgumentListExpression arguments = (ArgumentListExpression) methodCall.getArguments();
+        if (arguments != null && arguments.getExpressions().size() > 0) {
+            try {
+                StringBuilder displayString = new StringBuilder();
+                Method keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
+                        getBuiltInKWClassSimpleName(), getKeyword());
+                if (keywordMethod != null) {
+                    int count = 0;
+                    List<Class<?>> paramClasses = AstTreeTableInputUtil.getParamClasses(keywordMethod);
+                    for (int i = 0; i < paramClasses.size(); i++) {
+                        // if (paramClasses.get(i) != TestObject.class &&
+                        // paramClasses.get(i) != FailureHandling.class) {
+                        if (!TestObject.class.isAssignableFrom(paramClasses.get(i))
+                                && paramClasses.get(i) != FailureHandling.class) {
+                            if (i < arguments.getExpressions().size()) {
+                                if (count > 0) {
+                                    displayString.append("; ");
+                                }
+                                Expression inputExpression = arguments.getExpression(i);
+                                IInputValueType typeValue = AstTreeTableValueUtil.getTypeValue(inputExpression,
+                                        scriptClass);
+                                if (typeValue != null) {
+                                    displayString.append(typeValue.getDisplayValue(inputExpression));
+                                } else {
+                                    displayString.append(AstTreeTableTextValueUtil.getInstance().getTextValue(
+                                            inputExpression));
+                                }
+                                count++;
+                            }
+                        }
+                    }
+                }
 
-	@Override
-	public Object getInput() {
-		ArgumentListExpression argumentList = (ArgumentListExpression) methodCall.getArguments();
-		if (argumentList != null) {
-			try {
-				return AstTreeTableInputUtil.getBuiltInKeywordInputParameters(getBuiltInKWClassSimpleName(),
-						getKeyword(), argumentList);
-			} catch (Exception e) {
-				LoggerSingleton.logError(e);
-			}
-		}
-		return null;
-	}
+                return displayString.toString();
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+        return "";
+    }
 
-	@Override
-	public boolean setInput(Object input) {
-		if (input instanceof List<?>) {
-			try {
-				List<?> inputParameters = (List<?>) input;
-				Method keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
-						getBuiltInKWClassSimpleName(), getKeyword());
-				if (keywordMethod != null) {
-					List<Class<?>> paramClasses = AstTreeTableInputUtil.getParamClasses(keywordMethod);
-					ArgumentListExpression argumentListExpression = new ArgumentListExpression();
-					for (int i = 0; i < paramClasses.size(); i++) {
-						argumentListExpression.addExpression(AstTreeTableInputUtil
-								.getArgumentExpression((InputParameter) inputParameters.get(i)));
+    @Override
+    public Object getInput() {
+        ArgumentListExpression argumentList = (ArgumentListExpression) methodCall.getArguments();
+        if (argumentList != null) {
+            try {
+                return AstTreeTableInputUtil.getBuiltInKeywordInputParameters(getBuiltInKWClassSimpleName(),
+                        getKeyword(), argumentList);
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+        return null;
+    }
 
-					}
-					if (!AstTreeTableValueUtil.compareAstNode(argumentListExpression, methodCall.getArguments())) {
-						methodCall.setArguments(argumentListExpression);
-						return true;
-					}
-				}
-			} catch (Exception e) {
-				LoggerSingleton.logError(e);
-			}
-		}
-		return false;
-	}
+    @Override
+    public boolean setInput(Object input) {
+        if (input instanceof List<?>) {
+            try {
+                List<?> inputParameters = (List<?>) input;
+                Method keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
+                        getBuiltInKWClassSimpleName(), getKeyword());
+                if (keywordMethod != null) {
+                    List<Class<?>> paramClasses = AstTreeTableInputUtil.getParamClasses(keywordMethod);
+                    ArgumentListExpression argumentListExpression = new ArgumentListExpression();
+                    for (int i = 0; i < paramClasses.size(); i++) {
+                        argumentListExpression.addExpression(AstTreeTableInputUtil
+                                .getArgumentExpression((InputParameter) inputParameters.get(i)));
 
-	@Override
-	protected int getObjectArgumentIndex() throws Exception {
-		Method keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(getBuiltInKWClassSimpleName(),
-				getKeyword());
-		if (keywordMethod != null) {
-			List<Class<?>> paramClasses = AstTreeTableInputUtil.getParamClasses(keywordMethod);
-			for (int i = 0; i < paramClasses.size(); i++) {
-				if (TestObject.class.isAssignableFrom(paramClasses.get(i))) {
-					return i;
-				}
-			}
-		}
-		return -1;
-	}
+                    }
+                    if (!AstTreeTableValueUtil.compareAstNode(argumentListExpression, methodCall.getArguments())) {
+                        methodCall.setArguments(argumentListExpression);
+                        return true;
+                    }
+                }
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+        return false;
+    }
 
-	@Override
-	public boolean isOutputEditatble() {
-		try {
-			Method keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
-					getBuiltInKWClassSimpleName(), getKeyword());
-			if (keywordMethod != null && keywordMethod.getReturnType() != Void.class
-					&& keywordMethod.getReturnType() != Void.TYPE) {
-				return true;
-			}
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
+    @Override
+    protected int getObjectArgumentIndex() throws Exception {
+        Method keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(getBuiltInKWClassSimpleName(),
+                getKeyword());
+        if (keywordMethod != null) {
+            List<Class<?>> paramClasses = AstTreeTableInputUtil.getParamClasses(keywordMethod);
+            for (int i = 0; i < paramClasses.size(); i++) {
+                if (TestObject.class.isAssignableFrom(paramClasses.get(i))) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
 
-		return false;
-	}
+    @Override
+    public boolean isOutputEditatble() {
+        try {
+            Method keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
+                    getBuiltInKWClassSimpleName(), getKeyword());
+            if (keywordMethod != null && keywordMethod.getReturnType() != Void.class
+                    && keywordMethod.getReturnType() != Void.TYPE) {
+                return true;
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
 
-	@Override
-	protected VariableExpression createNewOutput(String output) throws Exception {
-		Method keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(getBuiltInKWClassSimpleName(),
-				getKeyword());
-		if (keywordMethod != null && keywordMethod.getReturnType() != Void.class
-				&& keywordMethod.getReturnType() != Void.TYPE) {
-			return new VariableExpression(output, new ClassNode(keywordMethod.getReturnType()));
-		}
-		return null;
-	}
+        return false;
+    }
+
+    @Override
+    protected VariableExpression createNewOutput(String output) throws Exception {
+        Method keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(getBuiltInKWClassSimpleName(),
+                getKeyword());
+        if (keywordMethod != null && keywordMethod.getReturnType() != Void.class
+                && keywordMethod.getReturnType() != Void.TYPE) {
+            return new VariableExpression(output, new ClassNode(keywordMethod.getReturnType()));
+        }
+        return null;
+    }
 }

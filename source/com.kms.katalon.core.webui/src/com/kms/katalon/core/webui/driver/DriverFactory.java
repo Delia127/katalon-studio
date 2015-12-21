@@ -163,6 +163,7 @@ public class DriverFactory {
                         driver.getName()));
             }
             localWebServerStorage.set(webDriver);
+            RunConfiguration.storeDriver(webDriver);
             setTimeout();
             logBrowserRunData(webDriver);
             return webDriver;
@@ -241,7 +242,16 @@ public class DriverFactory {
      * @throws WebDriverException
      */
     public static WebDriver getWebDriver() throws StepFailedException, WebDriverException {
-        verifyWebDriver();
+        try {
+            verifyWebDriver();
+        } catch (BrowserNotOpenedException e) {
+            for (Object driverObject : RunConfiguration.getStoredDrivers()) {
+                if (driverObject instanceof RemoteWebDriver) {
+                    return (RemoteWebDriver) driverObject;
+                }
+            }
+            throw e;
+        }
         return localWebServerStorage.get();
     }
 
@@ -479,5 +489,6 @@ public class DriverFactory {
             }
         }
         localWebServerStorage.set(null);
+        RunConfiguration.removeDriver(webDriver);
     }
 }

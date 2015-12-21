@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.io.IOUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -36,16 +36,21 @@ import com.kms.katalon.composer.integration.qtest.constant.ImageConstants;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.wizard.AbstractWizardPage;
 import com.kms.katalon.integration.qtest.QTestIntegrationAuthenticationManager;
+import com.kms.katalon.integration.qtest.credential.IQTestToken;
+import com.kms.katalon.integration.qtest.credential.impl.QTestCredentialImpl;
 import com.kms.katalon.integration.qtest.exception.QTestException;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
+import com.kms.katalon.integration.qtest.setting.QTestVersion;
+import org.eclipse.swt.widgets.Combo;
 
 public class AuthenticationWizardPage extends AbstractWizardPage {
 
     // Field
-    private String fToken;
+    private IQTestToken fToken;
     private String fServerUrl;
     private String fUsername;
     private String fPassword;
+    private QTestVersion fVersion;
 
     private Text txtServerURL;
     private Text txtUsername;
@@ -63,10 +68,10 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
         isDirty = false;
         isPasswordShowed = false;
         lblStatusText = "";
-        fToken = "";
         fUsername = "";
         fPassword = "";
         fServerUrl = "https://";
+        fVersion = QTestVersion.getLastest();
     }
 
     private ModifyListener modifyTextListener = new ModifyListener() {
@@ -80,6 +85,7 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
             firePageChanged();
         }
     };
+    
     private GifCLabel connectingLabel;
     private Composite connectingComposite;
     private Label lblConnecting;
@@ -87,6 +93,8 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
     private Composite headerComposite;
     private Label lblHeader;
     private Composite stepAreaComposite;
+    private Label lblVersion;
+    private Combo cbbQTestVersion;
 
     @Override
     public String getTitle() {
@@ -114,6 +122,14 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
         glAuthenticationComposite.horizontalSpacing = 15;
         authenticationComposite.setLayout(glAuthenticationComposite);
         authenticationComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        
+        lblVersion = new Label(authenticationComposite, SWT.NONE);
+        lblVersion.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+        lblVersion.setText(StringConstants.DIA_TITLE_VERSION);
+        
+        cbbQTestVersion = new Combo(authenticationComposite, SWT.READ_ONLY);
+        cbbQTestVersion.setItems(QTestVersion.valuesAsStrings());
+        new Label(authenticationComposite, SWT.NONE);
 
         Label lblServerURL = new Label(authenticationComposite, SWT.NONE);
         lblServerURL.setText(StringConstants.CM_SERVER_URL);
@@ -172,6 +188,7 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
         txtServerURL.setText(fServerUrl);
         txtUsername.setText(fUsername);
         txtPassword.setText(fPassword);
+        cbbQTestVersion.select(fVersion.ordinal());
 
         setConnectedStatus(lblStatusText, canFlipToNextPage());
 
@@ -192,12 +209,13 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
         txtServerURL.addModifyListener(modifyTextListener);
         txtUsername.addModifyListener(modifyTextListener);
         txtPassword.addModifyListener(modifyTextListener);
+        cbbQTestVersion.addModifyListener(modifyTextListener);
 
         stepAreaComposite.addDisposeListener(new DisposeListener() {
 
             @Override
             public void widgetDisposed(DisposeEvent e) {
-                closeQuietly(inputStream);
+                IOUtils.closeQuietly(inputStream);
             }
         });
 
@@ -235,6 +253,7 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
                 final String newServerUrl = txtServerURL.getText();
                 final String newUsername = txtUsername.getText();
                 final String newPassword = txtPassword.getText();
+                final QTestVersion newVersion = QTestVersion.valueOf(cbbQTestVersion.getSelectionIndex());
 
                 setConnectingCompositeVisible(true);
 
@@ -242,13 +261,17 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
                     @Override
                     protected IStatus run(IProgressMonitor monitor) {
                         try {
-                            fToken = QTestIntegrationAuthenticationManager.getToken(newServerUrl, newUsername,
-                                    newPassword);
+                            fToken = QTestIntegrationAuthenticationManager.getToken(new QTestCredentialImpl()
+                                    .setServerUrl(newServerUrl)
+                                    .setUsername(newUsername)
+                                    .setPassword(newPassword)
+                                    .setVersion(newVersion));
                             setConnectedStatus(StringConstants.WZ_P_AUTHENTICATION_MGS_CONNECT_SUCCESSFUL, true);
 
                             fServerUrl = newServerUrl;
                             fUsername = newUsername;
                             fPassword = newPassword;
+                            fVersion = newVersion;
                             isDirty = false;
 
                             UISynchronizeService.getInstance().getSync().syncExec(new Runnable() {
@@ -269,7 +292,7 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
                                     try {
                                         setConnectingCompositeVisible(false);
                                     } catch (IllegalStateException | IllegalArgumentException | SWTException e) {
-                                        //Display is disposed
+                                        // Display is disposed
                                     }
                                 }
                             });
@@ -303,13 +326,13 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
             } catch (IOException ex) {
             } finally {
                 if (inputStream != null) {
-                    closeQuietly(inputStream);
+                    closeQuietlyWithLog(inputStream);
                     inputStream = null;
                 }
             }
         } else {
             if (inputStream != null) {
-                closeQuietly(inputStream);
+                closeQuietlyWithLog(inputStream);
                 inputStream = null;
             }
         }
@@ -329,7 +352,7 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
 
     @Override
     public boolean canFlipToNextPage() {
-        return !StringUtils.isBlank(fToken) && !isDirty;
+        return (fToken != null) && (!isDirty);
     }
 
     @Override
@@ -339,6 +362,7 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
         sharedData.put(QTestSettingStore.USERNAME_PROPERTY, fUsername);
         sharedData.put(QTestSettingStore.PASSWORD_PROPERTY, fPassword);
         sharedData.put(QTestSettingStore.TOKEN_PROPERTY, fToken);
+        sharedData.put(QTestSettingStore.QTEST_VERSION_PROPERTY, fVersion);
 
         lblStatusText = lblConnectedStatus.getText();
         isPasswordShowed = btnShowPassword.getSelection();

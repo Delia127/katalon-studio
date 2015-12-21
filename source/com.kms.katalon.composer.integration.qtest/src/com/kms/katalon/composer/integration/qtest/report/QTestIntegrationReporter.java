@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.integration.qtest.report;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -73,7 +72,7 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
                 if (qTestRun == null) {
                     // If qTestRun isn't in the current list, upload new to qTest.
                     qTestRun = QTestIntegrationTestSuiteManager.uploadTestCaseInTestSuite(qTestCase,
-                            selectedQTestSuite, qTestProject, projectDir);
+                            selectedQTestSuite, qTestProject, QTestSettingCredential.getCredential(projectDir));
                 }
 
                 // Save test suite.
@@ -94,7 +93,7 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
             uploadedPreview.setTestCaseLogRecord(testLogEntity);
 
             QTestLog qTestLog = QTestIntegrationReportManager.uploadTestLog(projectDir, uploadedPreview,
-                    QTestIntegrationUtil.getTempDirPath(), new File(suiteLog.getLogFolder()));
+                    QTestIntegrationUtil.getTempDirPath(), suiteLog);
             uploadedPreview.setQTestLog(qTestLog);
 
             ReportEntity reportEntity = ReportController.getInstance().getReportEntity(suiteLog.getLogFolder());
@@ -138,7 +137,7 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
             QTestProject qTestProject = QTestIntegrationUtil.getTestSuiteRepo(testSuiteEntity, projectEntity)
                     .getQTestProject();
             return QTestIntegrationTestSuiteManager.getTestRuns(selectedQTestSuite, qTestProject,
-                    new QTestSettingCredential(projectEntity.getFolderLocation()));
+                    QTestSettingCredential.getCredential(projectEntity.getFolderLocation()));
         }
         return null;
 
@@ -174,5 +173,4 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
             }
         }
     }
-
 };

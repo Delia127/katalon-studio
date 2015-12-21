@@ -1,8 +1,5 @@
 package com.kms.katalon.composer.integration.qtest.dialog;
 
-import java.net.MalformedURLException;
-import java.net.UnknownHostException;
-
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -20,26 +17,19 @@ import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.integration.qtest.QTestIntegrationAuthenticationManager;
 import com.kms.katalon.integration.qtest.credential.IQTestCredential;
-import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
-import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.integration.qtest.credential.impl.QTestCredentialImpl;
+import com.kms.katalon.integration.qtest.exception.QTestException;
 
 public class GenerateNewTokenDialog extends Dialog {
     private Text txtServerUrl;
     private Text txtUsername;
     private Text txtPassword;
 
-    private String serverUrl;
-    private String username;
-    private String password;
+    private IQTestCredential fCredential;
 
-    private String token;
-
-    public GenerateNewTokenDialog(Shell parentShell, String serverUrl, String username, String password) {
+    public GenerateNewTokenDialog(Shell parentShell, IQTestCredential credential) {
         super(parentShell);
-
-        this.serverUrl = serverUrl;
-        this.username = username;
-        this.password = password;
+        fCredential = credential;
     }
 
     protected Control createDialogArea(Composite parent) {
@@ -82,78 +72,61 @@ public class GenerateNewTokenDialog extends Dialog {
     }
 
     private boolean generateNewToken() {
-        if (txtServerUrl.getText().isEmpty()) {
+        String newServerUrl = txtServerUrl.getText();
+        String newUsername = txtUsername.getText();
+        String newPassword = txtPassword.getText();
+
+        if (newServerUrl.isEmpty()) {
             MessageDialog.openInformation(null, StringConstants.INFORMATION, StringConstants.DIA_MSG_ENTER_SERVER_URL);
             return false;
         }
 
-        if (txtUsername.getText().isEmpty()) {
+        if (newUsername.isEmpty()) {
             MessageDialog.openInformation(null, StringConstants.INFORMATION, StringConstants.DIA_MSG_ENTER_USERNAME);
             return false;
         }
 
-        if (txtPassword.getText().isEmpty()) {
+        if (newPassword.isEmpty()) {
             MessageDialog.openInformation(null, StringConstants.INFORMATION, StringConstants.DIA_MSG_ENTER_PASSWORD);
             return false;
         }
 
         try {
-            final String newServerUrl = txtServerUrl.getText();
-            final String newUsername = txtUsername.getText();
-            final String newPassword = txtPassword.getText();
-
-            token = QTestIntegrationAuthenticationManager.getToken(newServerUrl, newUsername, newPassword);
-            QTestSettingStore.saveUserProfile(new IQTestCredential() {
-
-                @Override
-                public String getUsername() {
-                    return newUsername;
-                }
-
-                @Override
-                public String getToken() {
-                    return token;
-                }
-
-                @Override
-                public String getServerUrl() {
-                    return newServerUrl;
-                }
-
-                @Override
-                public String getPassword() {
-                    return newPassword;
-                }
-            }, ProjectController.getInstance().getCurrentProject().getFolderLocation());
+            QTestCredentialImpl credentials = new QTestCredentialImpl()
+                    .setServerUrl(newServerUrl)
+                    .setUsername(newUsername)
+                    .setPassword(newPassword)
+                    .setVersion(fCredential.getVersion());
+            
+            credentials.setToken(QTestIntegrationAuthenticationManager.getToken(credentials));
+            fCredential = credentials;
             return true;
-        } catch (MalformedURLException | UnknownHostException e) {
-            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_UNABLE_TO_GET_TOKEN,
-                    StringConstants.CM_MSG_SERVER_NOT_FOUND);
-        } catch (Exception e) {
+        } catch (QTestException e) {
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_UNABLE_TO_GET_TOKEN, e.getClass()
                     .getSimpleName());
         }
 
         return false;
     }
-
-    public String getNewToken() {
-        return token;
+    
+    public IQTestCredential getNewCredential() {
+        return fCredential;
     }
 
     private void initialize() {
-        if (serverUrl != null) {
-            txtServerUrl.setText(serverUrl);
+        if (fCredential == null) {
+            fCredential = new QTestCredentialImpl();
         }
 
-        if (username != null) {
-            txtUsername.setText(username);
-        }
-
-        if (password != null) {
-            txtPassword.setText(password);
-        }
+        setText(txtServerUrl, fCredential.getServerUrl());
+        setText(txtUsername, fCredential.getUsername());
+        setText(txtPassword, fCredential.getPassword());
     }
+    
+    private void setText(Text text, String value) {
+        text.setText(value != null ? value : "");
+    }
+    
 
     @Override
     protected Point getInitialSize() {

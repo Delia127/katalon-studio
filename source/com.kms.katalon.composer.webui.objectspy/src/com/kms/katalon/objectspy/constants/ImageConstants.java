@@ -23,7 +23,7 @@ public class ImageConstants {
     public static final Image IMG_24_ADD_TO_OBJECT_REPOSITORY = ImageUtil.loadImage(currentBundle,
             "/icons/add_to_object_repository_24.png");
 
-    public static final Image IMG_28_START = ImageUtil.loadImage(currentBundle, "/icons/play_28.png");
+    public static final Image IMG_24_OBJECT_SPY = ImageUtil.loadImage(currentBundle, "/icons/object_spy_24.png");
 
     public static final Image IMG_16_BROWSER_CHROME = ImageUtil.loadImage(currentBundle, "/icons/chrome_16.png");
 

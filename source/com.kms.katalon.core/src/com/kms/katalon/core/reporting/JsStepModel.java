@@ -132,9 +132,9 @@ public class JsStepModel extends JsModel {
 	private void initStatus() {
 		String statVal = "";
 		if (stepLogEntity.getStatus() == null) {
-			statVal = TestStatusValue.indexOf(TestStatusValue.NOT_RUN) + "";
+			statVal = TestStatusValue.NOT_RUN.ordinal() + "";
 		} else {
-			statVal = TestStatusValue.indexOf(stepLogEntity.getStatus().getStatusValue()) + "";
+			statVal = stepLogEntity.getStatus().getStatusValue().ordinal() + "";
 		}
 		long startTime = stepLogEntity.getStartTime();
 		long elapsedTime = stepLogEntity.getEndTime() - startTime;
@@ -148,7 +148,7 @@ public class JsStepModel extends JsModel {
 			if (logRecord instanceof MessageLogRecord) {
 				MessageLogRecord messageLog = (MessageLogRecord) logRecord;
 				long logStartTime = messageLog.getStartTime();
-				String logStatVal = TestStatusValue.indexOf(messageLog.getStatus().getStatusValue()) + "";
+				String logStatVal = messageLog.getStatus().getStatusValue().ordinal() + "";
 				String logStatMsg = messageLog.getMessage();
 				JsModel jsLogRecModel = new JsModel();
 				jsLogRecModel.props.add(new JsModelProperty("startTime", logStartTime + "", null));

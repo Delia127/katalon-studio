@@ -66,11 +66,14 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationFolderManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationProjectManager;
 import com.kms.katalon.integration.qtest.credential.IQTestCredential;
+import com.kms.katalon.integration.qtest.credential.IQTestToken;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.setting.QTestAttachmentSendingType;
+import com.kms.katalon.integration.qtest.setting.QTestReportFormatType;
 import com.kms.katalon.integration.qtest.setting.QTestResultSendingType;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
+import com.kms.katalon.integration.qtest.setting.QTestVersion;
 
 public class SetupWizardDialog extends Dialog implements IWizardPageChangedListerner {
 
@@ -469,6 +472,8 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
             QTestSettingStore.saveAttachmentSendingType(
                     (List<QTestAttachmentSendingType>) sharedData.get(QTestSettingStore.SEND_ATTACHMENTS_PROPERTY),
                     projectDir);
+            QTestSettingStore.saveFormatReportTypes(
+                    (List<QTestReportFormatType>) sharedData.get(QTestSettingStore.REPORT_FORMAT), projectDir);
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
@@ -650,8 +655,13 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
             }
 
             @Override
-            public String getToken() {
-                return (String) sharedData.get(QTestSettingStore.TOKEN_PROPERTY);
+            public IQTestToken getToken() {
+                return (IQTestToken) sharedData.get(QTestSettingStore.TOKEN_PROPERTY);
+            }
+
+            @Override
+            public QTestVersion getVersion() {
+                return (QTestVersion) sharedData.get(QTestSettingStore.QTEST_VERSION_PROPERTY);
             }
         };
     }

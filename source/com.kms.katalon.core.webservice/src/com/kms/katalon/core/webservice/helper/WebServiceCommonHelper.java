@@ -100,7 +100,10 @@ public class WebServiceCommonHelper {
 				locatorExp += ".";
 			}
 			else if(i == tokens.length -1){
-				locatorExp += "." + groovyFunction;
+				if(!locatorExp.equals("")){
+					locatorExp += ".";
+				}
+				locatorExp += groovyFunction;
 			}
 		}
 		StringBuilder groovyScript = new StringBuilder();

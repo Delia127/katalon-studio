@@ -38,7 +38,6 @@ import com.kms.katalon.integration.qtest.QTestIntegrationTestCaseManager;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
-import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationView {
 
@@ -181,14 +180,6 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
             return;
         }
 
-        String projectDir = projectEntity.getFolderLocation();
-        String token = QTestSettingStore.getToken(projectDir);
-
-        if (token == null || token.isEmpty()) {
-            MessageDialog.openWarning(null, StringConstants.WARN, StringConstants.VIEW_MSG_TOKEN_REQUIRED);
-            return;
-        }
-
         try {
             TestCaseRepo testCaseRepo = QTestIntegrationUtil.getTestCaseRepo(testCaseEntity, projectEntity);
             if (testCaseRepo == null) {
@@ -196,8 +187,7 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
                 return;
             }
 
-            QTestModule module = QTestIntegrationFolderManager.getQTestModuleByFolderEntity(projectDir,
-                    testCaseEntity.getParentFolder());
+            QTestModule module = QTestIntegrationFolderManager.getQTestModuleByFolderEntity(testCaseEntity.getParentFolder());
 
             // If the parent module is qTest's root module, open a warning message that system cannot upload this test
             // case.

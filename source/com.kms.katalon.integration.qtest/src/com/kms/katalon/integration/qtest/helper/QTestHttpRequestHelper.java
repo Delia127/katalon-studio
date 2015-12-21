@@ -9,46 +9,103 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 
+import com.kms.katalon.integration.qtest.credential.IQTestCredential;
 import com.kms.katalon.integration.qtest.exception.QTestIOException;
 
 public class QTestHttpRequestHelper {
 
-    public static String sendPostRequest(String serverUrl, String url, String username, String password,
-            List<NameValuePair> postParams) throws QTestIOException {
-        HttpClient client = HttpClientBuilder.create().build();
+    public static String getToken(IQTestCredential credential, String url) throws QTestIOException {
+        CloseableHttpClient client = null;
+        try {
+            client = HttpClientBuilder.create().build();
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            builder.addTextBody("grant_type", "password", ContentType.TEXT_PLAIN);
+            builder.addTextBody("username", credential.getUsername(), ContentType.TEXT_PLAIN);
+            builder.addTextBody("password", credential.getPassword(), ContentType.TEXT_PLAIN);
+            builder.setBoundary(Long.toHexString(System.currentTimeMillis()));
 
-        Map<String, String> cookies = new HashMap<String, String>();
-        doLogin(client, serverUrl, cookies, username, password);
-        String result = doPost(client, serverUrl, url, postParams, cookies);
+            HttpEntity entity = builder.build();
+            HttpPost post = new HttpPost(credential.getServerUrl() + url);
 
-        return result;
+            String authEncoded = new Base64().encodeAsString((credential.getUsername() + ":").getBytes());
+            post.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + authEncoded);
+            post.setHeader("Content-Disposition", "form-data;");
+
+            CloseableHttpResponse response = null;
+            try {
+                post.setEntity(entity);
+
+                response = client.execute(post);
+
+                BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+
+                StringBuffer result = new StringBuffer();
+                String line = "";
+                while ((line = rd.readLine()) != null) {
+                    result.append(line);
+                }
+                return result.toString();
+            } catch (IOException ex) {
+                throw new QTestIOException(ex);
+            } finally {
+                IOUtils.closeQuietly(response);
+            }
+        } finally {
+            IOUtils.closeQuietly(client);
+        }
     }
 
-    public static String sendGetRequest(String serverUrl, String url, String username, String password)
+    public static String sendPostRequest(IQTestCredential credential, String url, List<NameValuePair> postParams)
             throws QTestIOException {
-        HttpClient client = HttpClientBuilder.create().build();
+        CloseableHttpClient client = null;
+        try {
+            client = HttpClientBuilder.create().build();
 
-        Map<String, String> cookies = new HashMap<String, String>();
-        doLogin(client, serverUrl, cookies, username, password);
+            Map<String, String> cookies = new HashMap<String, String>();
+            doLogin(credential, client, cookies);
+            String result = doPost(client, credential.getServerUrl(), url, postParams, cookies);
 
-        String result = doGet(client, serverUrl, url, cookies);
+            return result;
+        } finally {
+            IOUtils.closeQuietly(client);
+        }
+    }
 
-        return result;
+    public static String sendGetRequest(IQTestCredential credential, String url) throws QTestIOException {
+        CloseableHttpClient client = null;
+        try {
+            client = HttpClientBuilder.create().build();
+            Map<String, String> cookies = new HashMap<String, String>();
+            doLogin(credential, client, cookies);
+
+            String result = doGet(client, credential.getServerUrl(), url, cookies);
+
+            return result;
+        } finally {
+            IOUtils.closeQuietly(client);
+        }
     }
 
     /**
-     * Body of a request sent to qTest via HTTP connection must be JSON format.
-     * This function will transform a map of properties to JSON format.
+     * Body of a request sent to qTest via HTTP connection must be JSON format. This function will transform a map of
+     * properties to JSON format.
      * 
      * @param mapProperties
      * @return: JSON String.
@@ -58,10 +115,12 @@ public class QTestHttpRequestHelper {
         StringBuilder builder = new StringBuilder("[{");
         int index = 0;
         for (Entry<String, Object> entry : mapProperties.entrySet()) {
-            if (index > 0) builder.append(",");
+            if (index > 0)
+                builder.append(",");
             builder.append("\"").append(entry.getKey()).append("\"").append(":");
 
-            if (useBrackets) builder.append("[");
+            if (useBrackets)
+                builder.append("[");
             String value = String.valueOf(entry.getValue());
             if (entry.getValue() instanceof String) {
                 value = "\"" + value + "\"";
@@ -70,7 +129,8 @@ public class QTestHttpRequestHelper {
             }
             builder.append(value);
 
-            if (useBrackets) builder.append("]");
+            if (useBrackets)
+                builder.append("]");
 
             index++;
         }
@@ -78,19 +138,19 @@ public class QTestHttpRequestHelper {
         return builder.toString();
     }
 
-    public static void doLogin(HttpClient client, String serverUrl, Map<String, String> cookies, String username,
-            String password) throws QTestIOException {
-        doGet(client, serverUrl, "/portal/loginform", cookies);
+    public static void doLogin(IQTestCredential credential, CloseableHttpClient client, Map<String, String> cookies)
+            throws QTestIOException {
+        doGet(client, credential.getServerUrl(), "/portal/loginform", cookies);
         List<NameValuePair> postParams = new ArrayList<NameValuePair>();
-        postParams.add(new BasicNameValuePair("j_username", username));
-        postParams.add(new BasicNameValuePair("j_password", password));
+        postParams.add(new BasicNameValuePair("j_username", credential.getUsername()));
+        postParams.add(new BasicNameValuePair("j_password", credential.getPassword()));
 
-        doPost(client, serverUrl, "/login?redirect=%2Fportal%2Fproject", postParams, cookies);
-        doGet(client, serverUrl, "/portal/project", cookies);
+        doPost(client, credential.getServerUrl(), "/login?redirect=%2Fportal%2Fproject", postParams, cookies);
+        doGet(client, credential.getServerUrl(), "/portal/project", cookies);
     }
 
-    private static String doPost(HttpClient client, String serverUrl, String url, List<NameValuePair> postParams,
-            Map<String, String> cookies) throws QTestIOException {
+    private static String doPost(CloseableHttpClient client, String serverUrl, String url,
+            List<NameValuePair> postParams, Map<String, String> cookies) throws QTestIOException {
 
         HttpPost post = new HttpPost(serverUrl + url);
 
@@ -104,7 +164,7 @@ public class QTestHttpRequestHelper {
         post.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
         post.setHeader("X-CSRF-Token", "0.0");
 
-        HttpResponse response = null;
+        CloseableHttpResponse response = null;
         try {
             post.setEntity(new UrlEncodedFormEntity(postParams));
 
@@ -125,13 +185,11 @@ public class QTestHttpRequestHelper {
         } catch (IOException ex) {
             throw new QTestIOException(ex);
         } finally {
-            if (response != null) {
-                closeQuietly(response);
-            }
+            IOUtils.closeQuietly(response);
         }
     }
 
-    public static String doGet(HttpClient client, String serverUrl, String url, Map<String, String> cookies)
+    private static String doGet(CloseableHttpClient client, String serverUrl, String url, Map<String, String> cookies)
             throws QTestIOException {
         HttpGet request = new HttpGet(serverUrl + url);
 
@@ -141,7 +199,7 @@ public class QTestHttpRequestHelper {
         request.setHeader("Cookie", cookiesString(cookies));
         request.setHeader("X-CSRF-Token", "0.0");
 
-        HttpResponse response = null;
+        CloseableHttpResponse response = null;
         try {
             response = client.execute(request);
             BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
@@ -159,9 +217,7 @@ public class QTestHttpRequestHelper {
         } catch (IOException ex) {
             throw new QTestIOException(ex);
         } finally {
-            if (response != null) {
-                closeQuietly(response);
-            }
+            IOUtils.closeQuietly(response);
         }
     }
 
@@ -180,14 +236,6 @@ public class QTestHttpRequestHelper {
             String name = composedValue.substring(0, seperatingIndex);
             String value = composedValue.substring(seperatingIndex + 1);
             cookies.put(name, value);
-        }
-    }
-
-    private static void closeQuietly(HttpResponse response) {
-        try {
-            response.getEntity().getContent().close();
-        } catch (IOException e) {
-            // Ignore it
         }
     }
 }

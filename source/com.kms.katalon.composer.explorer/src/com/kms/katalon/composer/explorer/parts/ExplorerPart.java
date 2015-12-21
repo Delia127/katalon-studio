@@ -507,6 +507,15 @@ public class ExplorerPart {
     private void refreshTreeEntity(@UIEventTopic(EventConstants.EXPLORER_REFRESH_TREE_ENTITY) Object object) {
         refresh(object);
     }
+    
+    @Inject
+    @Optional
+    private void expandTreeEntity(@UIEventTopic(EventConstants.EXPLORER_EXPAND_TREE_ENTITY) Object object) {
+        if (object == null) {
+            return;
+        }
+        viewer.expandToLevel(object, 1);
+    }
 
     private void refresh(Object object) {
         viewer.getControl().setRedraw(false);

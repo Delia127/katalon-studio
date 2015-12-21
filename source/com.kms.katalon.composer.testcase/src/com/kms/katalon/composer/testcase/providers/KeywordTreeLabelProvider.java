@@ -51,6 +51,14 @@ public class KeywordTreeLabelProvider extends StyledCellLabelProvider implements
         }
         return "";
     }
+    
+    @Override
+    public String getToolTipText(Object element) {
+        if (element instanceof IKeywordBrowserTreeEntity) {
+            return ((IKeywordBrowserTreeEntity) element).getToolTip();
+        }
+        return "";
+    }
 
     @Override
     public Image getImage(Object element) {

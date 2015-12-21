@@ -7,8 +7,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.integration.qtest.credential.IQTestCredential;
+import com.kms.katalon.integration.qtest.credential.IQTestToken;
 
 public class QTestSettingStore {
     private static final String FILE_NAME = "com.kms.katalon.integration.qtest";
@@ -22,6 +25,7 @@ public class QTestSettingStore {
     public static final String SEND_RESULT_PROPERTY = "sendResult";
     public static final String FIRST_TIME_USING = "firstTimeUsing";
     public static final String REPORT_FORMAT = "reportFormat";
+    public static final String QTEST_VERSION_PROPERTY = "version";
 
     public static File getPropertyFile(String projectDir) throws IOException {
         File configFile = new File(projectDir + File.separator
@@ -33,7 +37,7 @@ public class QTestSettingStore {
         return configFile;
     }
 
-    public static String getToken(String projectDir) {
+    /* package */static String getRawToken(String projectDir) {
         try {
             return PropertySettingStoreUtil.getPropertyValue(TOKEN_PROPERTY, getPropertyFile(projectDir));
         } catch (IOException e) {
@@ -41,8 +45,9 @@ public class QTestSettingStore {
         }
     }
 
-    public static void saveToken(String token, String projectDir) throws IOException {
-        PropertySettingStoreUtil.addNewProperty(TOKEN_PROPERTY, token, getPropertyFile(projectDir));
+    public static void saveToken(IQTestToken token, String projectDir) throws IOException {
+        String rawToken = token.getRawToken() != null ? token.getRawToken() : "";
+        PropertySettingStoreUtil.addNewProperty(TOKEN_PROPERTY, rawToken, getPropertyFile(projectDir));
     }
 
     public static String getUsername(String projectDir) {
@@ -69,12 +74,32 @@ public class QTestSettingStore {
         }
     }
 
+    public static QTestVersion getQTestVersion(String projectDir) {
+        try {
+            String versionName = PropertySettingStoreUtil.getPropertyValue(QTEST_VERSION_PROPERTY,
+                    getPropertyFile(projectDir));
+            if (StringUtils.isBlank(versionName)) {
+                if (!StringUtils.isBlank(getRawToken(projectDir))) {
+                    return QTestVersion.V6;
+                } else {
+                    return QTestVersion.getLastest();
+                }
+            } else {
+                return QTestVersion.valueOf(versionName);
+            }
+        } catch (IOException e) {
+            return QTestVersion.getLastest();
+        }
+    }
+
     public static void saveUserProfile(IQTestCredential credential, String projectDir) throws IOException {
-        PropertySettingStoreUtil.addNewProperty(TOKEN_PROPERTY, credential.getToken(),
-                getPropertyFile(projectDir));
+        saveToken(credential.getToken(), projectDir);
+        
         PropertySettingStoreUtil.addNewProperty(USERNAME_PROPERTY, credential.getUsername(),
                 getPropertyFile(projectDir));
         PropertySettingStoreUtil.addNewProperty(PASSWORD_PROPERTY, credential.getPassword(),
+                getPropertyFile(projectDir));
+        PropertySettingStoreUtil.addNewProperty(QTEST_VERSION_PROPERTY, credential.getVersion().name(),
                 getPropertyFile(projectDir));
 
         String savedServerUrl = credential.getServerUrl();
@@ -122,7 +147,7 @@ public class QTestSettingStore {
             if (sendingTypePropertyString == null) {
                 return Arrays.asList(QTestAttachmentSendingType.values());
             }
-            
+
             if (sendingTypePropertyString.isEmpty()) {
                 return attachmentSendingTypes;
             }
@@ -175,11 +200,11 @@ public class QTestSettingStore {
             String sendingTypePropertyString = PropertySettingStoreUtil.getPropertyValue(SEND_RESULT_PROPERTY,
                     getPropertyFile(projectDir));
 
-            //By default, select them all.
+            // By default, select them all.
             if (sendingTypePropertyString == null) {
                 return Arrays.asList(QTestResultSendingType.values());
             }
-            
+
             if (sendingTypePropertyString.isEmpty()) {
                 return resultSendingTypes;
             }
@@ -225,11 +250,11 @@ public class QTestSettingStore {
             String formatPropertyString = PropertySettingStoreUtil.getPropertyValue(REPORT_FORMAT,
                     getPropertyFile(projectDir));
 
-            //By default, select them all.
+            // By default, select them all.
             if (formatPropertyString == null) {
                 return Arrays.asList(QTestReportFormatType.HTML, QTestReportFormatType.LOG);
             }
-            
+
             if (formatPropertyString.isEmpty()) {
                 return reportFormatTypes;
             }

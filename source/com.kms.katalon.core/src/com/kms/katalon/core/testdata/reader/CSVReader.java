@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.supercsv.io.CsvListReader;
 import org.supercsv.io.ICsvListReader;
@@ -17,7 +18,7 @@ public class CSVReader {
     private String[] columnNames;
     private boolean containsHeader;
 
-    public CSVReader(String sourceUrl, CSVSeperator seperator, boolean containHeader) throws Exception {
+    public CSVReader(String sourceUrl, CSVSeperator seperator, boolean containHeader) throws IOException  {
         try {
             this.containsHeader = containHeader;
             FileReader reader = new FileReader(new File(sourceUrl));
@@ -49,9 +50,7 @@ public class CSVReader {
                 }
             }
         } finally {
-            if (listReader != null) {
-                listReader.close();
-            }
+            IOUtils.closeQuietly(listReader);
         }
     }
     

@@ -16,6 +16,7 @@ import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.SynchronizedConfirmationDialog;
 import com.kms.katalon.composer.components.impl.dialogs.YesNoAllOptions;
+import com.kms.katalon.composer.components.impl.util.StatusUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
@@ -28,20 +29,25 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationFolderManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestCaseManager;
+import com.kms.katalon.integration.qtest.credential.IQTestCredential;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
+import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
+import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 
 public class UploadTestCaseJob extends QTestJob {
 
     private UISynchronize sync;
     private List<IntegratedFileEntity> uploadedEntities;
+    private IQTestCredential credential;
 
     public UploadTestCaseJob(String name, UISynchronize sync) {
         super(name);
         setUser(true);
         this.sync = sync;
+        credential = QTestSettingCredential.getCredential(getProjectDir());
     }
 
     @Override
@@ -49,7 +55,6 @@ public class UploadTestCaseJob extends QTestJob {
         uploadedEntities = new ArrayList<IntegratedFileEntity>();
 
         monitor.beginTask(StringConstants.JOB_TASK_UPLOAD_TEST_CASE, getFileEntities().size());
-        String projectDir = projectEntity.getFolderLocation();
 
         for (FileEntity fileEntity : getFileEntities()) {
             try {
@@ -59,10 +64,10 @@ public class UploadTestCaseJob extends QTestJob {
 
                 if (fileEntity instanceof TestCaseEntity) {
                     TestCaseEntity testCaseEntity = (TestCaseEntity) fileEntity;
-                    uploadTestCase(testCaseEntity, monitor, projectDir);
+                    uploadTestCase(testCaseEntity, monitor);
                 } else if (fileEntity instanceof FolderEntity) {
                     FolderEntity folderEntity = (FolderEntity) fileEntity;
-                    uploadFolder(folderEntity, monitor, projectDir);
+                    uploadFolder(folderEntity, monitor);
                 }
                 monitor.worked(1);
             } catch (OperationCanceledException e) {
@@ -71,7 +76,7 @@ public class UploadTestCaseJob extends QTestJob {
                 performErrorNotification(e);
                 monitor.setCanceled(true);
                 LoggerSingleton.logError(e);
-                return Status.CANCEL_STATUS;
+                return StatusUtil.getErrorStatus(getClass(), e);
             }
         }
         return Status.OK_STATUS;
@@ -107,18 +112,18 @@ public class UploadTestCaseJob extends QTestJob {
         return Status.CANCEL_STATUS;
     }
 
-    private void uploadFolder(FolderEntity folderEntity, IProgressMonitor monitor, String projectDir) throws Exception {
+    private void uploadFolder(FolderEntity folderEntity, IProgressMonitor monitor) throws Exception {
         String folderId = FolderController.getInstance().getIdForDisplay(folderEntity);
         monitor.subTask(MessageFormat.format(StringConstants.JOB_SUB_TASK_UPLOAD_TEST_CASE, folderId));
 
         QTestProject qTestProject = QTestIntegrationUtil.getTestCaseRepo(folderEntity, projectEntity).getQTestProject();
 
-        QTestModule qTestParentModule = QTestIntegrationFolderManager.getQTestModuleByFolderEntity(projectDir,
-                folderEntity.getParentFolder());
+        QTestModule qTestParentModule = QTestIntegrationFolderManager.getQTestModuleByFolderEntity(folderEntity
+                .getParentFolder());
 
         QTestModule qTestModule = null;
 
-        QTestIntegrationFolderManager.updateModule(projectDir, qTestProject.getId(), qTestParentModule, false);
+        QTestIntegrationFolderManager.updateModule(credential, qTestProject.getId(), qTestParentModule, false);
 
         for (QTestModule siblingQTestModule : qTestParentModule.getChildModules()) {
             if (!folderEntity.getName().equalsIgnoreCase(siblingQTestModule.getName())) {
@@ -139,7 +144,7 @@ public class UploadTestCaseJob extends QTestJob {
         }
 
         if (qTestModule == null) {
-            qTestModule = createNewQTestModule(qTestProject, qTestParentModule, projectDir, folderEntity);
+            qTestModule = createNewQTestModule(qTestProject, qTestParentModule, folderEntity);
         }
 
         folderEntity.getIntegratedEntities().add(
@@ -149,15 +154,15 @@ public class UploadTestCaseJob extends QTestJob {
         uploadedEntities.add(folderEntity);
     }
 
-    private void uploadTestCase(TestCaseEntity testCaseEntity, IProgressMonitor monitor, String projectDir)
+    private void uploadTestCase(TestCaseEntity testCaseEntity, IProgressMonitor monitor)
             throws Exception {
         QTestProject qTestProject = QTestIntegrationUtil.getTestCaseRepo(testCaseEntity, projectEntity)
                 .getQTestProject();
         String testCaseId = TestCaseController.getInstance().getIdForDisplay(testCaseEntity);
         monitor.subTask(MessageFormat.format(StringConstants.JOB_SUB_TASK_UPLOAD_TEST_CASE, testCaseId));
 
-        QTestModule qTestParentModule = QTestIntegrationFolderManager.getQTestModuleByFolderEntity(projectDir,
-                testCaseEntity.getParentFolder());
+        QTestModule qTestParentModule = QTestIntegrationFolderManager.getQTestModuleByFolderEntity(testCaseEntity
+                .getParentFolder());
 
         // Returns if this test case under qTest root module.
         if (qTestParentModule == null || qTestParentModule.getParentId() <= 0) {
@@ -166,10 +171,11 @@ public class UploadTestCaseJob extends QTestJob {
 
         QTestTestCase qTestTestCase = null;
 
-        QTestIntegrationFolderManager.updateModule(projectDir, qTestProject.getId(), qTestParentModule, false);
+        QTestIntegrationFolderManager.updateModule(credential, qTestProject.getId(), qTestParentModule, false);
 
         for (QTestTestCase siblingQTestCase : qTestParentModule.getChildTestCases()) {
-            if (!testCaseEntity.getName().equalsIgnoreCase(siblingQTestCase.getName())) continue;
+            if (!testCaseEntity.getName().equalsIgnoreCase(siblingQTestCase.getName()))
+                continue;
 
             if (monitor.isCanceled()) {
                 throw new OperationCanceledException();
@@ -185,11 +191,11 @@ public class UploadTestCaseJob extends QTestJob {
         }
 
         if (qTestTestCase == null) {
-            qTestTestCase = createNewQTestCase(qTestProject, qTestParentModule, projectDir, testCaseEntity);
+            qTestTestCase = createNewQTestCase(qTestProject, qTestParentModule, testCaseEntity);
         }
 
         if (qTestTestCase.getVersionId() == 0) {
-            qTestTestCase.setVersionId(QTestIntegrationTestCaseManager.getTestCaseVersionId(projectDir,
+            qTestTestCase.setVersionId(QTestIntegrationTestCaseManager.getTestCaseVersionId(credential,
                     qTestProject.getId(), qTestTestCase.getId()));
         }
 
@@ -204,14 +210,14 @@ public class UploadTestCaseJob extends QTestJob {
     }
 
     private QTestTestCase createNewQTestCase(QTestProject qTestProject, QTestModule qTestParentModule,
-            String projectDir, TestCaseEntity testCaseEntity) throws Exception {
+            TestCaseEntity testCaseEntity) throws Exception {
         return QTestIntegrationTestCaseManager.addTestCase(qTestProject, qTestParentModule.getId(),
-                testCaseEntity.getName(), testCaseEntity.getDescription(), projectDir);
+                testCaseEntity.getName(), testCaseEntity.getDescription(), credential);
     }
 
     private QTestModule createNewQTestModule(QTestProject qTestProject, QTestModule qTestParentModule,
-            String projectDir, FolderEntity folderEntity) throws QTestUnauthorizedException {
-        return QTestIntegrationFolderManager.createNewQTestTCFolder(projectDir, qTestProject.getId(),
+            FolderEntity folderEntity) throws QTestUnauthorizedException, QTestInvalidFormatException {
+        return QTestIntegrationFolderManager.createNewQTestTCFolder(credential, qTestProject.getId(),
                 qTestParentModule.getId(), folderEntity.getName());
     }
 

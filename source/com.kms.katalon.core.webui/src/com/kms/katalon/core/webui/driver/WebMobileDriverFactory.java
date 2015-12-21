@@ -18,7 +18,7 @@ import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 
-class WebMobileDriverFactory {
+public class WebMobileDriverFactory {
     private static final String APPIUM_SERVER_URL_SUFFIX = "/wd/hub";
     private static final String APPIUM_SERVER_URL_PREFIX = "http://127.0.0.1:";
     private int appiumPort;
@@ -35,7 +35,7 @@ class WebMobileDriverFactory {
     private WebMobileDriverFactory() {
     }
 
-    static WebMobileDriverFactory getInstance() {
+    public static WebMobileDriverFactory getInstance() {
         return localWebMobileDriverFactoryStorage.get();
     }
 
@@ -213,7 +213,7 @@ class WebMobileDriverFactory {
         KeywordLogger.getInstance().logInfo("ios_webkit_debug_proxy server started on port " + webProxyPort);
     }
 
-    void quitServer() {
+    public void quitServer() {
         if (appiumServer != null) {
             appiumServer.destroy();
             appiumServer = null;
