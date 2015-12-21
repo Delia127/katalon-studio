@@ -33,8 +33,7 @@ import com.kms.katalon.integration.qtest.QTestIntegrationProjectManager;
 import com.kms.katalon.integration.qtest.credential.IQTestToken;
 import com.kms.katalon.integration.qtest.credential.impl.QTestCredentialImpl;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
-import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
-import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
+import com.kms.katalon.integration.qtest.exception.QTestException;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class ProjectChoosingWizardPage extends AbstractWizardPage {
@@ -197,7 +196,7 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage {
                         try {
                             qTestProjects = QTestIntegrationProjectManager.getAllProject(new QTestCredentialImpl()
                                     .setToken(fToken).setServerUrl(fServerUrl));
-                        } catch (QTestUnauthorizedException | QTestInvalidFormatException e) {
+                        } catch (QTestException e) {
                             UISynchronizeService.getInstance().getSync().syncExec(new Runnable() {
                                 @Override
                                 public void run() {
