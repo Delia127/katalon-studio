@@ -71,15 +71,22 @@ public class TestSuiteScriptGenerator {
 
         List<TestSuiteTestCaseLink> lstTestCaseRun = TestSuiteController.getInstance().getTestSuiteTestCaseRun(
                 testSuite);
-        for (int index = 0; index < lstTestCaseRun.size(); index++) {
-            TestSuiteTestCaseLink testCaseLink = lstTestCaseRun.get(index);
-            TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByDisplayId(
-                    testCaseLink.getTestCaseId());
-            if (testCase != null && testCaseLink.getIsRun()) {
-                TestCaseExecutedEntity testCaseExecuted = testSuiteExecuted.getTestCaseExecutedEntities().get(index);
-                List<String> testCaseBinding = getTestCaseBindingString(testCaseLink, syntaxErrorCollector,
-                        testCaseExecuted);
-                testCaseBindings.addAll(testCaseBinding);
+        for (TestCaseExecutedEntity testCaseExecuted : testSuiteExecuted.getTestCaseExecutedEntities()) {
+            TestSuiteTestCaseLink testCaseLink = null;
+            for (TestSuiteTestCaseLink testSuiteTestCaseLink : lstTestCaseRun) {
+                if (testSuiteTestCaseLink.getTestCaseId().equals(testCaseExecuted.getTestCaseId())) {
+                    testCaseLink = testSuiteTestCaseLink;
+                    break;
+                }
+            }
+            if (testCaseLink != null) {
+                TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByDisplayId(
+                        testCaseLink.getTestCaseId());
+                if (testCase != null && testCaseLink.getIsRun()) {
+                    List<String> testCaseBinding = getTestCaseBindingString(testCaseLink, syntaxErrorCollector,
+                            testCaseExecuted);
+                    testCaseBindings.addAll(testCaseBinding);
+                }
             }
         }
 

@@ -251,7 +251,7 @@ public class ConsoleMain {
 
             ConsoleLauncher launcher = new ConsoleLauncher(runConfig);
             TestSuiteExecutedEntity testSuiteExecutedEntity = ExecutionUtil
-                    .loadTestDataForTestSuite(testSuite, project);
+                    .loadTestDataForTestSuite(testSuite, project, null);
             testSuiteExecutedEntity.setReportFolderPath(executionEntity.getReportFolderPath());
             launcher.setTotalTestCase(testSuiteExecutedEntity.getTotalTestCases());
             launcher.launch(testSuite, testSuiteExecutedEntity);

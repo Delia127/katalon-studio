@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.execution.handlers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -40,7 +41,6 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.Entity;
-import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
@@ -169,7 +169,7 @@ public abstract class AbstractExecutionHandler {
             if (runConfiguration == null) {
                 return;
             }
-            executeTestSuite(testSuite, launchMode, runConfiguration, 0);
+            executeTestSuite(testSuite, launchMode, runConfiguration, 0, new ArrayList<String>());
         }
     }
 
@@ -230,7 +230,7 @@ public abstract class AbstractExecutionHandler {
     // final int pageLoadTimeout, final LaunchMode launchMode) throws Exception
     // {
     public static void executeTestSuite(final TestSuiteEntity testSuite, final LaunchMode launchMode,
-            final IRunConfiguration runConfig, final int reRunTime) throws Exception {
+            final IRunConfiguration runConfig, final int reRunTime, final List<String> passedTestCaseIds) throws Exception {
         if (testSuite == null) {
             return;
         }
@@ -241,9 +241,10 @@ public abstract class AbstractExecutionHandler {
                 try {
                     monitor.beginTask("Launching test suite...", 4);
                     monitor.subTask("Validating test suite...");
-                    ProjectEntity project = testSuite.getProject();
+                    // back-up
+                    
                     final TestSuiteExecutedEntity testSuiteExecutedEntity = ExecutionUtil.loadTestDataForTestSuite(
-                            testSuite, project);
+                            testSuite, testSuite.getProject(), passedTestCaseIds);
                     final int totalTestCases = testSuiteExecutedEntity.getTotalTestCases();
                     if (totalTestCases > 0) {
                         monitor.subTask("Activating viewers...");
@@ -262,7 +263,7 @@ public abstract class AbstractExecutionHandler {
                             @Override
                             public void run() {
                                 try {
-                                    launcher.launch(testSuite, testSuiteExecutedEntity, reRunTime);
+                                    launcher.launch(testSuite, testSuiteExecutedEntity, reRunTime, passedTestCaseIds);
                                 } catch (Exception e) {
                                     monitor.setCanceled(true);
                                     MultiStatusErrorDialog.showErrorDialog(e,

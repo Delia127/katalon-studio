@@ -28,9 +28,9 @@ public class TestSuiteEntity extends IntegratedFileEntity {
 
 	private String mailRecipient;
 
-	private String browserString;
-
 	private boolean isPageLoadTimeoutDefault;
+	
+	private boolean rerunFailedTestCasesOnly;
 
 
 	public TestSuiteEntity() {
@@ -114,14 +114,6 @@ public class TestSuiteEntity extends IntegratedFileEntity {
 		this.mailRecipient = mailRecipient;
 	}
 
-	public String getBrowserString() {
-		return browserString;
-	}
-
-	public void setBrowserString(String browserString) {
-		this.browserString = browserString;
-	}
-
 	public boolean isPageLoadTimeoutDefault() {
 		return isPageLoadTimeoutDefault;
 	}
@@ -130,6 +122,14 @@ public class TestSuiteEntity extends IntegratedFileEntity {
 		this.isPageLoadTimeoutDefault = isPageLoadTimeoutDefault;
 	}
 
+    public boolean isRerunFailedTestCasesOnly() {
+        return rerunFailedTestCasesOnly;
+    }
+
+    public void setRerunFailedTestCasesOnly(boolean rerunFailedTestCasesOnly) {
+        this.rerunFailedTestCasesOnly = rerunFailedTestCasesOnly;
+    }
+    
     @Override
     public boolean equals(Object that) {
         boolean isEquals = super.equals(that);

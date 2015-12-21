@@ -68,7 +68,7 @@ public class IDELauncher extends AbstractLauncher {
         }
     }
 
-    public void launch(TestSuiteEntity testSuite, TestSuiteExecutedEntity testSuiteExecutedEntity, int reRunTime)
+    public void launch(TestSuiteEntity testSuite, TestSuiteExecutedEntity testSuiteExecutedEntity, int reRunTime, List<String> passedTestCaseIds)
             throws Exception {
 
         if (testSuite != null) {
@@ -77,6 +77,7 @@ public class IDELauncher extends AbstractLauncher {
             ExecutionUtil.writeRunConfigToFile(getRunConfiguration());
             scriptFile = generateTempTestSuiteScript(testSuite, runConfig);
             this.reRunTime = reRunTime;
+            this.passedTestCaseIds = passedTestCaseIds;
             LauncherManager.getInstance().addLauncher(this);
             eventBroker.post(EventConstants.CONSOLE_LOG_RESET, this.getId());
             eventBroker.post(EventConstants.JOB_REFRESH, null);
@@ -181,7 +182,7 @@ public class IDELauncher extends AbstractLauncher {
                             eventBroker.post(EventConstants.JOB_REFRESH, null);
                             if (testSuite != null) {
                                 eventBroker.post(EventConstants.JOB_COMPLETED, new Object[] { testSuite, launchMode,
-                                        runConfig, reRunTime, logFile });
+                                        runConfig, reRunTime, logFile, passedTestCaseIds });
                             }
                         } catch (Exception e) {
                             systemLogger.error(e);
