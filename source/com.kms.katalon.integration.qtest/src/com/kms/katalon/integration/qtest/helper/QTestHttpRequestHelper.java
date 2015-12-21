@@ -12,7 +12,6 @@ import java.util.Map.Entry;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -21,7 +20,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
@@ -35,22 +33,20 @@ public class QTestHttpRequestHelper {
         CloseableHttpClient client = null;
         try {
             client = HttpClientBuilder.create().build();
-            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-            builder.addTextBody("grant_type", "password", ContentType.TEXT_PLAIN);
-            builder.addTextBody("username", credential.getUsername(), ContentType.TEXT_PLAIN);
-            builder.addTextBody("password", credential.getPassword(), ContentType.TEXT_PLAIN);
-            builder.setBoundary(Long.toHexString(System.currentTimeMillis()));
+            List<NameValuePair> postParams = new ArrayList<NameValuePair>();
+            postParams.add(new BasicNameValuePair("grant_type", "password"));
+            postParams.add(new BasicNameValuePair("username", credential.getUsername()));
+            postParams.add(new BasicNameValuePair("password", credential.getPassword()));
 
-            HttpEntity entity = builder.build();
             HttpPost post = new HttpPost(credential.getServerUrl() + url);
 
-            String authEncoded = new Base64().encodeAsString((credential.getUsername() + ":").getBytes());
+            String authEncoded = new Base64().encodeAsString(("katalon-user :").getBytes());
             post.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + authEncoded);
-            post.setHeader("Content-Disposition", "form-data;");
+            post.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_FORM_URLENCODED.toString());
 
             CloseableHttpResponse response = null;
             try {
-                post.setEntity(entity);
+                post.setEntity(new UrlEncodedFormEntity(postParams));
 
                 response = client.execute(post);
 

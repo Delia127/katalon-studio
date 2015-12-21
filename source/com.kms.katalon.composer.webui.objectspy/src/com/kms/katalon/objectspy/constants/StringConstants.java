@@ -36,7 +36,7 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String DIA_TOOLITEM_NEW_OBJECT = "New object";
 
-    public static final String DIA_TOOLITEM_TIP_NEW_ELEMENT = "New element";
+    public static final String DIA_TOOLITEM_TIP_NEW_ELEMENT = "New object element";
 
     public static final String DIA_TOOLITEM_DELETE = DELETE;
 

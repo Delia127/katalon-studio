@@ -142,13 +142,13 @@ public abstract class AbstractLauncher {
         // PASSED, FAILED, ERROR, NOT_RUN
         List<Object[]> suitesSummaryForEmail = new ArrayList<Object[]>();
         for (int suiteIndex = 0; suiteIndex < csvReports.size(); suiteIndex++) {
-            String line = csvReports.get(suiteIndex);
-            File csvReportFile = new File(line);
+            String file = csvReports.get(suiteIndex);
+            File csvReportFile = new File(file);
             if (!csvReportFile.isFile()) {
                 continue;
             }
             // Collect result and send mail here
-            CSVReader csvReader = new CSVReader(line, CSVSeperator.COMMA, true);
+            CSVReader csvReader = new CSVReader(file, CSVSeperator.COMMA, true);
             Deque<String[]> datas = new ArrayDeque<String[]>();
             datas.addAll(csvReader.getData());
             String[] suiteRow = datas.pollFirst();
@@ -185,8 +185,8 @@ public abstract class AbstractLauncher {
                     String testName = testIndex + "." + testRow[0];
                     newDatas.add(ArrayUtils.addAll(new String[] { suiteName, testName, browser },
                             Arrays.copyOfRange(testRow, 2, testRow.length)));
-
-                    String testStatus = testRow[5];
+                    //String testStatus = testRow[5];
+                    String testStatus = testRow[6];
                     if (TestStatusValue.PASSED.toString().equals(testStatus)) {
                         arrSuitesSummaryForEmail[1] = (Integer) arrSuitesSummaryForEmail[1] + 1;
                     } else if (TestStatusValue.FAILED.toString().equals(testStatus)) {

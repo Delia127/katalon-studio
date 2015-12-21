@@ -238,9 +238,9 @@ public class ObjectPropertyView implements EventHandler {
         lblId.setText(StringConstants.VIEW_LBL_ID);
 
         txtId = new Text(compositeInfoNameAndId, SWT.BORDER | SWT.READ_ONLY);
-        GridData gdTxt = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-        gdTxt.heightHint = ControlUtils.DF_CONTROL_HEIGHT;
-        txtId.setLayoutData(gdTxt);
+        GridData gdTxtID = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        gdTxtID.heightHint = ControlUtils.DF_CONTROL_HEIGHT;
+        txtId.setLayoutData(gdTxtID);
 
         Label lblName = new Label(compositeInfoNameAndId, SWT.NONE);
         lblName.setText(StringConstants.VIEW_LBL_NAME);
@@ -252,13 +252,26 @@ public class ObjectPropertyView implements EventHandler {
 
         Label lblImage = new Label(compositeInfoNameAndId, SWT.NONE);
         lblImage.setText(StringConstants.VIEW_LBL_IMAGE);
-
-        txtImage = new Text(compositeInfoNameAndId, SWT.BORDER | SWT.READ_ONLY);
+        
+        Composite imgComposite = new Composite(compositeInfoNameAndId, SWT.NONE);
+        imgComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        GridLayout imgCompositeLayout = new GridLayout(2, false);
+        imgCompositeLayout.marginHeight = 0;
+        imgCompositeLayout.marginWidth = 0;
+        imgComposite.setLayout(imgCompositeLayout);
+        
+        txtImage = new Text(imgComposite, SWT.BORDER | SWT.READ_ONLY);
         GridData gdTxtImage = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         gdTxtImage.heightHint = ControlUtils.DF_CONTROL_HEIGHT;
+        
         txtImage.setLayoutData(gdTxtImage);
         txtImage.setEditable(false);
 
+        btnBrowseImage = new Button(imgComposite, SWT.FLAT);
+        btnBrowseImage.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false, 1, 1));
+        btnBrowseImage.setText(StringConstants.VIEW_BTN_BROWSE);
+        btnBrowseImage.setToolTipText(StringConstants.VIEW_BTN_TIP_BROWSE);
+        
         Composite imageUtilComp = new Composite(compositeInfoNameAndId, SWT.NONE);
         imageUtilComp.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 2, 1));
         GridLayout glImageUtilComp = new GridLayout(2, false);
@@ -268,13 +281,8 @@ public class ObjectPropertyView implements EventHandler {
 
         chckUseRelative = new Button(imageUtilComp, SWT.CHECK);
         chckUseRelative.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, true, false, 1, 1));
-        chckUseRelative.setText(StringConstants.VIEW_CHKBOX_LBL_USE_RELATIVE_PATH);
-
-        btnBrowseImage = new Button(imageUtilComp, SWT.FLAT);
-        btnBrowseImage.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, true, false, 1, 1));
-        btnBrowseImage.setText(StringConstants.VIEW_BTN_BROWSE);
-        btnBrowseImage.setToolTipText(StringConstants.VIEW_BTN_TIP_BROWSE);
-
+        chckUseRelative.setText(StringConstants.VIEW_CHKBOX_LBL_USE_RELATIVE_PATH);        
+        
         Composite compositeInfoDescriptions = new Composite(compositeInfoDetails, SWT.NONE);
         compositeInfoDescriptions.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         GridLayout glCompositeInfoDescriptions = new GridLayout(2, false);
