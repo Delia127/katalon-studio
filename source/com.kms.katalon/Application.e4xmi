@@ -60,7 +60,7 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.file.quit" label="Quit" iconURI="platform:/plugin/com.kms.katalon/icons/quit_16.png" command="_hQQH3BYMEeSUMbyEN2kbFQ"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_wT2ksBYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.edit" label="Edit"/>
-      <children xsi:type="menu:Menu" xmi:id="_0IJ8wBYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.importexport" label="Import/Export"/>
+      <children xsi:type="menu:Menu" xmi:id="_0IJ8wBYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.importexport" toBeRendered="false" visible="false" label="Import/Export"/>
       <children xsi:type="menu:Menu" xmi:id="_2end0BYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.report" label="Report"/>
       <children xsi:type="menu:Menu" xmi:id="_2zN00BYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.settings" label="Settings"/>
       <children xsi:type="menu:Menu" xmi:id="_ljWeAAOIEeWmYfckKw0_5w" elementId="com.kms.katalon.menu.search" label="Search">
