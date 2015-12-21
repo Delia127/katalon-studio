@@ -796,7 +796,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Switch the current device driver to web view context
+     * Switch the current device driver to native context
      * @param flowControl
      * @throws StepFailedException
      */
