@@ -7,6 +7,7 @@
 				<xml-element java-attribute="id"/>
 				<xml-element java-attribute="name"/>
 				<xml-element java-attribute="defaultValue"/>
+				<xml-element java-attribute="description"/>
 			</java-attributes>
 		</java-type>
 	</java-types>

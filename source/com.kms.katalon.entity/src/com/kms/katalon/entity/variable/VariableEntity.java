@@ -9,11 +9,13 @@ public class VariableEntity implements Serializable {
 	protected String defaultValue; // raw string of default value of the variable
 	protected String name;
 	protected String id;
+	protected String description;
 
 	public VariableEntity() {
 		id = Util.generateGuid();
 		name = "";
 		defaultValue = "";
+		description = "";
 	}
 
 	public String getName() {
@@ -45,6 +47,16 @@ public class VariableEntity implements Serializable {
 	    VariableEntity newVariable = new VariableEntity();
 	    newVariable.setName(getName());
 	    newVariable.setDefaultValue(getDefaultValue());
+	    newVariable.setDescription(getDescription());
 	    return newVariable;
 	}
+	
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 }
