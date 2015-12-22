@@ -1001,6 +1001,30 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Get device's physical height
+     * @param flowControl
+     * @return device's physical height
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
+    public static int getDeviceHeight(FailureHandling flowControl) throws StepFailedException {
+        return (int) KeywordMain.runKeyword({
+            AppiumDriver<?> driver = getAnyAppiumDriver();
+            String context = driver.getContext();
+            try {
+                internalSwitchToNativeContext(driver)
+                int viewportHeight = driver.manage().window().getSize().getHeight();
+                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_DEVICE_HEIGHT_X, viewportHeight));
+                return viewportHeight;
+            } finally {
+                driver.context(context);
+            }
+        }
+        , flowControl, StringConstants.KW_MSG_UNABLE_GET_DEVICE_HEIGHT)
+    }
+    
+    /**
      * Internal method to find a mobile element
      * @param to
      *      represent a mobile element

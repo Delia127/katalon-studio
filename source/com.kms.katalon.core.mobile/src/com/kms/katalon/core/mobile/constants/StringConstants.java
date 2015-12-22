@@ -97,6 +97,8 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_MSG_UNABLE_GET_ORIENTATION = "Unable to get the screen orientation of the device";
     public static final String KW_LOG_PASSED_GET_DEVICE_WIDTH_X = "Current device's physical width is {0}";
     public static final String KW_MSG_UNABLE_GET_DEVICE_WIDTH = "Unable to get the physical width value of the device";
+    public static final String KW_LOG_PASSED_GET_DEVICE_HEIGHT_X = "Current device's physical height is {0}";
+    public static final String KW_MSG_UNABLE_GET_DEVICE_HEIGHT = "Unable to get the physical height value of the device";
 	
 	public static final String KW_CATEGORIZE_APPLICATION = "Application";
 	public static final String KW_CATEGORIZE_ATTRIBUTE = "Attribute";
