@@ -47,6 +47,7 @@ import com.kms.katalon.composer.testcase.model.IInputValueType;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.support.VariableDefaultValueEditingSupport;
 import com.kms.katalon.composer.testcase.support.VariableDefaultValueTypeEditingSupport;
+import com.kms.katalon.composer.testcase.support.VariableDescriptionEditingSupport;
 import com.kms.katalon.composer.testcase.support.VariableNameEditingSupport;
 import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
@@ -274,6 +275,21 @@ public class TestCaseVariablePart {
             }
         });
 
+        TableViewerColumn tableViewerColumnDescription = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnDescription.setEditingSupport(new VariableDescriptionEditingSupport(tableViewer, this));
+        tableViewerColumnDescription.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                if (element != null && element instanceof VariableEntity) {
+                    return ((VariableEntity) element).getDescription();
+                }
+                return StringUtils.EMPTY;
+            }
+        });
+        TableColumn tblColumnDescription = tableViewerColumnDescription.getColumn();
+        tblColumnDescription.setWidth(500);
+        tblColumnDescription.setText(StringConstants.PA_COL_DESCRIPTION);
+        
         tableViewer.setContentProvider(new ArrayContentProvider());
     }
 
