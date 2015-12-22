@@ -3,7 +3,9 @@ package com.kms.katalon.core.webui.keyword;
 import groovy.transform.CompileStatic
 
 import java.io.File;
+
 import org.apache.commons.io.FileUtils;
+
 import java.awt.Rectangle
 import java.text.MessageFormat
 import java.util.concurrent.TimeUnit
@@ -3387,8 +3389,8 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, false, StringConstants.KW_MSG_CANNOT_GET_VIEWPORT_WIDTH)
     }
-    
-    /**
+
+    /** 
      * Get current viewport's height value
      * @param flowControl
      * @return current viewport's height
@@ -3405,4 +3407,46 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         , flowControl, false, StringConstants.KW_MSG_CANNOT_GET_VIEWPORT_HEIGHT)
     }
 
+    /**
+     * Verify if the web element has an specific attribute or not
+     * @param to
+     *      represent a web element
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return true if element is present and visible in viewport; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementHasAttribute(TestObject to, String attributeName, int timeOut, FailureHandling flowControl) {
+        WebUIKeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = false;
+            try {
+                WebUiCommonHelper.checkTestObjectParameter(to);
+                KeywordLogger.getInstance().logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME);
+                if (attributeName == null) {
+                    throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
+                }
+                WebDriver driver = DriverFactory.getWebDriver();
+                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
+                WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
+                if (foundElement.getAttribute(attributeName) != null) {
+                    KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
+                    return true;
+                }  else {
+                    WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName), flowControl, null, true);
+                    return false;
+                }
+            } catch (WebElementNotFoundException ex) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
+            } finally {
+                if (isSwitchIntoFrame) {
+                    WebUiBuiltInKeywords.switchToDefaultContent();
+                }
+            }
+            return false;
+        }
+        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId())
+        : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_HAS_ATTRIBUTE)
+    }
 }

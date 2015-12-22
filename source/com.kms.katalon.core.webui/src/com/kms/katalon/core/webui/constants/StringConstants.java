@@ -444,7 +444,13 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_LOG_PASSED_GET_VIEWPORT_WIDTH_X = "Viewport width is {0}";
     public static final String KW_MSG_CANNOT_GET_VIEWPORT_HEIGHT = "Unable to get viewport height";
     public static final String KW_LOG_PASSED_GET_VIEWPORT_HEIGHT_X = "Viewport height is {0}";
-	
+    public static final String KW_LOG_PASSED_OBJ_X_HAS_ATTRIBUTE_Y = "Object ''{0}'' has attribute ''{1}''";
+    public static final String KW_LOG_FAILED_OBJ_X_HAS_ATTRIBUTE_Y = "Object ''{0}'' does not have attribute ''{1}''";
+    public static final String KW_MSG_CANNOT_VERIFY_OBJ_X_HAS_ATTRIBUTE_Y = "Unable to verify if object ''{0}'' has attribute ''{1}''";
+    public static final String KW_MSG_CANNOT_VERIFY_OBJ_HAS_ATTRIBUTE = "Unable to verify if object has attribute";
+    public static final String COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME = "Checking attribute name";
+    public static final String COMM_EXC_ATTRIBUTE_NAME_IS_NULL = "Attribute name is null";
+    
 	public static final String KW_CATEGORIZE_ALERT = "Alert";
 	public static final String KW_CATEGORIZE_ATTRIBUTE = "Attribute";
 	public static final String KW_CATEGORIZE_BROWSER = "Browser";
