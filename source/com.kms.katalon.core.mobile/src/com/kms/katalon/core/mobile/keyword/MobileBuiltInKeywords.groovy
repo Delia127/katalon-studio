@@ -776,6 +776,30 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Get current screen orientation of the device
+     * @param flowControl
+     * @return current screen orientation (portrait, landscape)
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
+    public static String getCurrentOrientation(FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            AppiumDriver driver = getAnyAppiumDriver();
+            String context = driver.getContext();
+            try {
+                internalSwitchToNativeContext(driver);
+                String orientation = driver.getOrientation().value();
+                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_ORIENTATION_X, orientation));
+                return orientation;
+            } finally {
+                driver.context(context);
+            }
+            return null;
+        }, flowControl, StringConstants.KW_MSG_UNABLE_GET_ORIENTATION);
+    }
+
+    /**
      * Switch the current device driver to web view context
      * @param flowControl
      * @throws StepFailedException
