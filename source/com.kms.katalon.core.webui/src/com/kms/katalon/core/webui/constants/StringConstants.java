@@ -442,6 +442,8 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_MSG_CANNOT_VERIFY_OBJ_NOT_VISIBLE_IN_VIEWPORT = "Unable to verify if object is not visible in viewport";
     public static final String KW_MSG_CANNOT_GET_VIEWPORT_WIDTH = "Unable to get viewport width";
     public static final String KW_LOG_PASSED_GET_VIEWPORT_WIDTH_X = "Viewport width is {0}";
+    public static final String KW_MSG_CANNOT_GET_VIEWPORT_HEIGHT = "Unable to get viewport height";
+    public static final String KW_LOG_PASSED_GET_VIEWPORT_HEIGHT_X = "Viewport height is {0}";
 	
 	public static final String KW_CATEGORIZE_ALERT = "Alert";
 	public static final String KW_CATEGORIZE_ATTRIBUTE = "Attribute";
