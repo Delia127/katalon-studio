@@ -3408,13 +3408,15 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Verify if the web element has an specific attribute or not
+     * Verify if the web element has an attribute with the specific name
      * @param to
      *      represent a web element
+     * @param attributeName
+     *      the name of the attribute to verify
      * @param timeOut
      *      system will wait at most timeout (seconds) to return result
      * @param flowControl
-     * @return true if element is present and visible in viewport; otherwise, false
+     * @return true if element has the attribute with the specific name; otherwise, false
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
