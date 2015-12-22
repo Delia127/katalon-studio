@@ -61,6 +61,7 @@ public abstract class AbstractLauncher {
     protected int logDepth = 0;
     protected TestSuiteExecutedEntity testSuiteExecutedEntity;
     protected LauncherResult launcherResult;
+    protected List<String> passedTestCaseIds;
 
     public AbstractLauncher(IRunConfiguration runConfig) {
         this.runConfig = runConfig;

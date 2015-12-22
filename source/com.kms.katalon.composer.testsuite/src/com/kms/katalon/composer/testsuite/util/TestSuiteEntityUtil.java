@@ -8,11 +8,11 @@ public class TestSuiteEntityUtil {
     public static void copyTestSuiteProperties(TestSuiteEntity src, TestSuiteEntity des) {
         des.setName(src.getName());
         des.setDescription(src.getDescription());
-        des.setBrowserString(src.getBrowserString());
         des.setPageLoadTimeout(src.getPageLoadTimeout());
         des.setMailRecipient(src.getMailRecipient());
         des.setPageLoadTimeoutDefault(src.isPageLoadTimeoutDefault());
         des.setNumberOfRerun(src.getNumberOfRerun());
+        des.setRerunFailedTestCasesOnly(src.isRerunFailedTestCasesOnly());
 
         des.getTestSuiteTestCaseLinks().clear();
 

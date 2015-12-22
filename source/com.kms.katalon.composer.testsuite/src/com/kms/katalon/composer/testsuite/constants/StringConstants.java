@@ -136,6 +136,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_LBL_LAST_RUN = "Last run";
 
     public static final String PA_LBL_RETRY = "Retry";
+    
+    public static final String PA_LBL_TEST_CASE_ONLY = "Only Retry Failed Test Cases";
 
     public static final String PA_LBL_TIP_LAST_RUN = "Navigate to the report page of the last run";
 
@@ -205,7 +207,9 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PA_IMAGE_TIP_CLOSE_SEARCH = CLEAR;
 
-    public static final String PA_LBL_TOOLTIP_RETRY = "Please define the maximum number of retries that a failed test case would be re-executed until it is successfully passed.";
+    public static final String PA_LBL_TOOLTIP_RETRY = "Please define the maximum number of retries that a failed execution would be re-executed until it is successfully passed.";
+    
+    public static final String PA_LBL_TOOLTIP_TEST_CASE_ONLY = "Only re-run failed test cases.";
 
     // VariableValueEditingSupport
     public static final String SUP_WARN_MSG_TEST_DATA_NOT_FOUND = "Test data: {0} not found.";
