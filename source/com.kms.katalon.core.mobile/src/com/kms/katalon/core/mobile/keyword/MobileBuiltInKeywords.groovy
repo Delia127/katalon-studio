@@ -9,10 +9,10 @@ import io.appium.java_client.android.AndroidKeyCode
 import io.appium.java_client.ios.IOSDriver
 
 import java.text.MessageFormat
-import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.io.FileUtils
 import org.apache.commons.lang.StringUtils
+import org.codehaus.groovy.transform.tailrec.VariableReplacedListener.*
 import org.openqa.selenium.Dimension
 import org.openqa.selenium.OutputType
 import org.openqa.selenium.Point
@@ -21,7 +21,7 @@ import org.openqa.selenium.WebElement
 import org.openqa.selenium.interactions.touch.TouchActions
 
 import com.kms.katalon.core.annotation.Keyword
-import com.kms.katalon.core.configuration.RunConfiguration;
+import com.kms.katalon.core.configuration.RunConfiguration
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.helper.KeywordHelper
 import com.kms.katalon.core.keyword.BuiltinKeywords
@@ -776,6 +776,30 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Get current screen orientation of the device
+     * @param flowControl
+     * @return current screen orientation (portrait, landscape)
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
+    public static String getCurrentOrientation(FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            AppiumDriver driver = getAnyAppiumDriver();
+            String context = driver.getContext();
+            try {
+                internalSwitchToNativeContext(driver);
+                String orientation = driver.getOrientation().value();
+                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_ORIENTATION_X, orientation));
+                return orientation;
+            } finally {
+                driver.context(context);
+            }
+            return null;
+        }, flowControl, StringConstants.KW_MSG_UNABLE_GET_ORIENTATION);
+    }
+
+    /**
      * Switch the current device driver to web view context
      * @param flowControl
      * @throws StepFailedException
@@ -796,7 +820,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Switch the current device driver to web view context
+     * Switch the current device driver to native context
      * @param flowControl
      * @throws StepFailedException
      */
@@ -951,7 +975,55 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, to != null ?  MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_NOT_VISIBLE, to.getObjectId())
         : StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_NOT_VISIBLE);
     }
+    
+    /**
+     * Get device's physical width
+     * @param flowControl
+     * @return device's physical width
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
+    public static int getDeviceWidth(FailureHandling flowControl) throws StepFailedException {
+        return (int) KeywordMain.runKeyword({
+            AppiumDriver<?> driver = getAnyAppiumDriver();
+            String context = driver.getContext();
+            try {
+                internalSwitchToNativeContext(driver)
+                int viewportWidth = driver.manage().window().getSize().getWidth();
+                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_DEVICE_WIDTH_X, viewportWidth));
+                return viewportWidth;
+            } finally {
+                driver.context(context);
+            }
+        }
+        , flowControl, StringConstants.KW_MSG_UNABLE_GET_DEVICE_WIDTH)
+    }
 
+    /**
+     * Get device's physical height
+     * @param flowControl
+     * @return device's physical height
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
+    public static int getDeviceHeight(FailureHandling flowControl) throws StepFailedException {
+        return (int) KeywordMain.runKeyword({
+            AppiumDriver<?> driver = getAnyAppiumDriver();
+            String context = driver.getContext();
+            try {
+                internalSwitchToNativeContext(driver)
+                int viewportHeight = driver.manage().window().getSize().getHeight();
+                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_DEVICE_HEIGHT_X, viewportHeight));
+                return viewportHeight;
+            } finally {
+                driver.context(context);
+            }
+        }
+        , flowControl, StringConstants.KW_MSG_UNABLE_GET_DEVICE_HEIGHT)
+    }
+    
     /**
      * Internal method to find a mobile element
      * @param to

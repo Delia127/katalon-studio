@@ -105,8 +105,8 @@ public class ExecutionUtil {
      * @param project
      * @return
      */
-    public static TestSuiteExecutedEntity loadTestDataForTestSuite(TestSuiteEntity testSuite, ProjectEntity project)
-            throws Exception {
+    public static TestSuiteExecutedEntity loadTestDataForTestSuite(TestSuiteEntity testSuite, ProjectEntity project,
+            List<String> passedTestCaseIds) throws Exception {
         TestSuiteExecutedEntity testSuiteExecutedEntity = new TestSuiteExecutedEntity();
         testSuiteExecutedEntity.setTestSuiteId(TestSuiteController.getInstance().getIdForDisplay(testSuite));
         String projectDir = project.getFolderLocation();
@@ -121,6 +121,10 @@ public class ExecutionUtil {
             if (testCase == null) {
                 throw new IllegalArgumentException(MessageFormat.format(StringConstants.UTIL_EXC_TEST_CASE_X_NOT_FOUND,
                         testCaseLink.getTestCaseId()));
+            }
+            if (passedTestCaseIds != null && testSuite.isRerunFailedTestCasesOnly()
+                    && passedTestCaseIds.contains(TestCaseController.getInstance().getIdForDisplay(testCase))) {
+                continue;
             }
 
             TestCaseExecutedEntity testCaseExecutedEntity = new TestCaseExecutedEntity(testCaseLink.getTestCaseId());

@@ -93,6 +93,12 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_LOG_FAILED_ELEMENT_X_NOT_EXISTED = KW_LOG_PASSED_ELEMENT_X_EXISTED;
     public static final String KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_NOT_EXIST = "Failed to check for element {0} not exist";
     public static final String KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_NOT_EXIST = "Failed to check for element not exist";
+    public static final String KW_LOG_PASSED_GET_ORIENTATION_X = "Current screen orientation of the device is ''{0}''";
+    public static final String KW_MSG_UNABLE_GET_ORIENTATION = "Unable to get the screen orientation of the device";
+    public static final String KW_LOG_PASSED_GET_DEVICE_WIDTH_X = "Current device's physical width is {0}";
+    public static final String KW_MSG_UNABLE_GET_DEVICE_WIDTH = "Unable to get the physical width value of the device";
+    public static final String KW_LOG_PASSED_GET_DEVICE_HEIGHT_X = "Current device's physical height is {0}";
+    public static final String KW_MSG_UNABLE_GET_DEVICE_HEIGHT = "Unable to get the physical height value of the device";
 	
 	public static final String KW_CATEGORIZE_APPLICATION = "Application";
 	public static final String KW_CATEGORIZE_ATTRIBUTE = "Attribute";

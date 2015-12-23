@@ -51,7 +51,7 @@ public class CustomExecutionHandler {
                 } else if (entity instanceof TestSuiteEntity) {
                     TestSuiteEntity testSuite = (TestSuiteEntity) entity;
                     AbstractExecutionHandler.executeTestSuite(testSuite, LaunchMode.RUN,
-                            customRunConfigurationContributor.getRunConfiguration(testSuite, null), 0);
+                            customRunConfigurationContributor.getRunConfiguration(testSuite, null), 0, null);
                 }
             } catch (ExecutionException e) {
                 MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR, e.getMessage());

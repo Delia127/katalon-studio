@@ -96,7 +96,7 @@ public class ObjectPropertyView implements EventHandler {
 
     private Text txtName, txtId, txtImage, txtDescriptions, txtParentObject;
 
-    private Button btnBrowseImage, chckUseRelative;
+    private Button btnBrowseImage, chkUseRelative;
 
     private IEventBroker eventBroker;
 
@@ -110,7 +110,7 @@ public class ObjectPropertyView implements EventHandler {
     private Label lblGeneralInformation, lblParentObjectHeader;
     private Composite compositeTable;
 
-    private Button btnBrowseParentObj, chckUseParentObject;
+    private Button btnBrowseParentObj, chkUseParentObject;
 
     private Composite compositeParentObjectArea, compositeParentObjectHeader, compositeParentObjectDetails,
             compositeParentObject;
@@ -238,9 +238,9 @@ public class ObjectPropertyView implements EventHandler {
         lblId.setText(StringConstants.VIEW_LBL_ID);
 
         txtId = new Text(compositeInfoNameAndId, SWT.BORDER | SWT.READ_ONLY);
-        GridData gdTxt = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-        gdTxt.heightHint = ControlUtils.DF_CONTROL_HEIGHT;
-        txtId.setLayoutData(gdTxt);
+        GridData gdTxtID = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        gdTxtID.heightHint = ControlUtils.DF_CONTROL_HEIGHT;
+        txtId.setLayoutData(gdTxtID);
 
         Label lblName = new Label(compositeInfoNameAndId, SWT.NONE);
         lblName.setText(StringConstants.VIEW_LBL_NAME);
@@ -252,13 +252,26 @@ public class ObjectPropertyView implements EventHandler {
 
         Label lblImage = new Label(compositeInfoNameAndId, SWT.NONE);
         lblImage.setText(StringConstants.VIEW_LBL_IMAGE);
-
-        txtImage = new Text(compositeInfoNameAndId, SWT.BORDER | SWT.READ_ONLY);
+        
+        Composite imgComposite = new Composite(compositeInfoNameAndId, SWT.NONE);
+        imgComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        GridLayout imgCompositeLayout = new GridLayout(2, false);
+        imgCompositeLayout.marginHeight = 0;
+        imgCompositeLayout.marginWidth = 0;
+        imgComposite.setLayout(imgCompositeLayout);
+        
+        txtImage = new Text(imgComposite, SWT.BORDER | SWT.READ_ONLY);
         GridData gdTxtImage = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         gdTxtImage.heightHint = ControlUtils.DF_CONTROL_HEIGHT;
+        
         txtImage.setLayoutData(gdTxtImage);
         txtImage.setEditable(false);
 
+        btnBrowseImage = new Button(imgComposite, SWT.FLAT);
+        btnBrowseImage.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false, 1, 1));
+        btnBrowseImage.setText(StringConstants.VIEW_BTN_BROWSE);
+        btnBrowseImage.setToolTipText(StringConstants.VIEW_BTN_TIP_BROWSE);
+        
         Composite imageUtilComp = new Composite(compositeInfoNameAndId, SWT.NONE);
         imageUtilComp.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 2, 1));
         GridLayout glImageUtilComp = new GridLayout(2, false);
@@ -266,15 +279,10 @@ public class ObjectPropertyView implements EventHandler {
         glImageUtilComp.marginWidth = 0;
         imageUtilComp.setLayout(glImageUtilComp);
 
-        chckUseRelative = new Button(imageUtilComp, SWT.CHECK);
-        chckUseRelative.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, true, false, 1, 1));
-        chckUseRelative.setText(StringConstants.VIEW_CHKBOX_LBL_USE_RELATIVE_PATH);
-
-        btnBrowseImage = new Button(imageUtilComp, SWT.FLAT);
-        btnBrowseImage.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, true, false, 1, 1));
-        btnBrowseImage.setText(StringConstants.VIEW_BTN_BROWSE);
-        btnBrowseImage.setToolTipText(StringConstants.VIEW_BTN_TIP_BROWSE);
-
+        chkUseRelative = new Button(imageUtilComp, SWT.CHECK);
+        chkUseRelative.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, true, false, 1, 1));
+        chkUseRelative.setText(StringConstants.VIEW_CHKBOX_LBL_USE_RELATIVE_PATH);        
+        
         Composite compositeInfoDescriptions = new Composite(compositeInfoDetails, SWT.NONE);
         compositeInfoDescriptions.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         GridLayout glCompositeInfoDescriptions = new GridLayout(2, false);
@@ -454,9 +462,9 @@ public class ObjectPropertyView implements EventHandler {
         glCompositeParentObjectDetails.horizontalSpacing = 40;
         compositeParentObjectDetails.setLayout(glCompositeParentObjectDetails);
 
-        chckUseParentObject = new Button(compositeParentObjectDetails, SWT.CHECK);
-        chckUseParentObject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        chckUseParentObject.setText(StringConstants.VIEW_LBL_USE_IFRAME);
+        chkUseParentObject = new Button(compositeParentObjectDetails, SWT.CHECK);
+        chkUseParentObject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        chkUseParentObject.setText(StringConstants.VIEW_LBL_USE_IFRAME);
 
         compositeParentObjectArea = new Composite(compositeParentObjectDetails, SWT.NONE);
         compositeParentObjectArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
@@ -530,23 +538,23 @@ public class ObjectPropertyView implements EventHandler {
             }
         });
 
-        chckUseRelative.addSelectionListener(new SelectionAdapter() {
+        chkUseRelative.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
                 try {
                     if (txtImage.getText() != null && !txtImage.getText().trim().equals("")) {
-                        cloneTestObject.setUseRalativeImagePath(chckUseRelative.getSelection());
+                        cloneTestObject.setUseRalativeImagePath(chkUseRelative.getSelection());
                         String projectFolder = ProjectController.getInstance().getCurrentProject().getFolderLocation();
                         String thePath = txtImage.getText();
-                        if (chckUseRelative.getSelection()) {
+                        if (chkUseRelative.getSelection()) {
                             String relPath = PathUtil.absoluteToRelativePath(thePath, projectFolder);
                             txtImage.setText(relPath);
                         } else {
                             txtImage.setText(PathUtil.relativeToAbsolutePath(thePath, projectFolder));
                         }
 
-                        File file = new File(thePath);
+                        File file = new File(chkUseRelative.getSelection() ? (projectFolder + File.separator + txtImage.getText()) : txtImage.getText());
                         if (!file.exists() || !file.isFile()) {
                             MessageDialog.openWarning(null, StringConstants.WARN_TITLE,
                                     StringConstants.VIEW_WARN_FILE_NOT_FOUND);
@@ -625,7 +633,7 @@ public class ObjectPropertyView implements EventHandler {
                 String absolutePath = dialog.open();
                 if (absolutePath == null)
                     return;
-                if (chckUseRelative.getSelection()) {
+                if (chkUseRelative.getSelection()) {
                     String relPath = PathUtil.absoluteToRelativePath(absolutePath, projectFolder);
                     txtImage.setText(relPath);
                 } else {
@@ -642,11 +650,11 @@ public class ObjectPropertyView implements EventHandler {
             }
         });
 
-        chckUseParentObject.addSelectionListener(new SelectionAdapter() {
+        chkUseParentObject.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                enableParentObjectComposite(chckUseParentObject.getSelection());
+                enableParentObjectComposite(chkUseParentObject.getSelection());
                 dirtyable.setDirty(true);
             }
         });
@@ -772,7 +780,7 @@ public class ObjectPropertyView implements EventHandler {
                 txtImage.setText(cloneTestObject.getImagePath());
             }
 
-            chckUseRelative.setSelection(cloneTestObject.getUseRalativeImagePath());
+            chkUseRelative.setSelection(cloneTestObject.getUseRalativeImagePath());
 
             List<WebElementPropertyEntity> webElementProperties = new ArrayList<WebElementPropertyEntity>();
 
@@ -786,13 +794,13 @@ public class ObjectPropertyView implements EventHandler {
             }
 
             if (parentObjectProperty != null) {
-                chckUseParentObject.setSelection(parentObjectProperty.getIsSelected());
+                chkUseParentObject.setSelection(parentObjectProperty.getIsSelected());
                 txtParentObject.setText(parentObjectProperty.getValue());
             } else {
-                chckUseParentObject.setSelection(false);
+                chkUseParentObject.setSelection(false);
                 txtParentObject.setText("");
             }
-            enableParentObjectComposite(chckUseParentObject.getSelection());
+            enableParentObjectComposite(chkUseParentObject.getSelection());
 
             tableViewer.setInput(webElementProperties);
             tableViewer.refresh();
@@ -840,11 +848,11 @@ public class ObjectPropertyView implements EventHandler {
         cloneTestObject.getWebElementProperties().clear();
         cloneTestObject.getWebElementProperties().addAll(tableViewer.getInput());
 
-        if (chckUseParentObject.getSelection() || !StringUtils.isBlank(txtParentObject.getText())) {
+        if (chkUseParentObject.getSelection() || !StringUtils.isBlank(txtParentObject.getText())) {
             WebElementPropertyEntity parentObjectProperty = new WebElementPropertyEntity();
             parentObjectProperty.setName(WebElementEntity.ref_element);
             parentObjectProperty.setValue(txtParentObject.getText());
-            parentObjectProperty.setIsSelected(chckUseParentObject.getSelection());
+            parentObjectProperty.setIsSelected(chkUseParentObject.getSelection());
             cloneTestObject.getWebElementProperties().add(parentObjectProperty);
         }
 
