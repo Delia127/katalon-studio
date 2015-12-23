@@ -271,7 +271,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_WEB_ELEMT_W_ID_IS_NOT_PRESENT_AFTER, to.getObjectId(), locator.toString(), timeOut));
                     return true;
                 } else {
-                    WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_WEB_ELEMT_W_ID_IS_NOT_PRESENT_AFTER, to.getObjectId(), locator.toString(), timeOut), flowControl, null, true);
+                    logger.logWarning(MessageFormat.format(StringConstants.KW_MSG_WEB_ELEMT_W_ID_IS_NOT_PRESENT_AFTER, to.getObjectId(), locator.toString(), timeOut));
                     return false;
                 }
             } finally {
@@ -312,8 +312,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     }
                     return true;
                 } catch (WebElementNotFoundException e) {
-                    WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_NOT_PRESENT_AFTER_X_SEC, to.getObjectId(), timeOut),
-                            flowControl, null);
+                    logger.logWarning(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_NOT_PRESENT_AFTER_X_SEC, to.getObjectId(), timeOut));
                     return false;
                 }
             } finally {
@@ -439,11 +438,10 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     }
                     return true;
                 } catch (WebElementNotFoundException e) {
-                    WebUIKeywordMain.stepFailed(e.getMessage(), flowControl, null);
+                    logger.logWarning(e.getMessage());
                     return false;
                 } catch (TimeoutException e) {
-                    WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_NOT_VISIBLE_AFTER_X_SEC, to.getObjectId(), timeOut),
-                            flowControl, null);
+                    logger.logWarning(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_NOT_VISIBLE_AFTER_X_SEC, to.getObjectId(), timeOut));
                     return false;
                 }
             } finally {
@@ -495,11 +493,10 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     }
                     return true;
                 } catch (WebElementNotFoundException e) {
-                    WebUIKeywordMain.stepFailed(e.getMessage(), flowControl, null);
+                    logger.logWarning(e.getMessage());
                     return false;
                 } catch (TimeoutException e) {
-                    WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_VISIBLE_AFTER_X_SEC, to.getObjectId(), timeOut),
-                            flowControl, null);
+                    logger.logWarning(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_VISIBLE_AFTER_X_SEC, to.getObjectId(), timeOut));
                     return false;
                 }
             } finally {
@@ -550,11 +547,10 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     }
                     return true;
                 } catch (WebElementNotFoundException e) {
-                    WebUIKeywordMain.stepFailed(e.getMessage(), flowControl, null);
+                    logger.logWarning(e.getMessage());
                     return false;
                 } catch (TimeoutException e) {
-                    WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_NOT_CLICKABLE_AFTER_X_SEC, to.getObjectId(), timeOut),
-                            flowControl, null);
+                    logger.logWarning(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_NOT_CLICKABLE_AFTER_X_SEC, to.getObjectId(), timeOut));
                     return false;
                 }
             } finally {
@@ -605,11 +601,10 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     }
                     return true;
                 } catch (WebElementNotFoundException e) {
-                    WebUIKeywordMain.stepFailed(e.getMessage(), flowControl, null);
+                    logger.logWarning(e.getMessage());
                     return false;
                 } catch (TimeoutException e) {
-                    WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_CLICKABLE_AFTER_X_SEC, to.getObjectId(), timeOut),
-                            flowControl, null);
+                    logger.logWarning(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_CLICKABLE_AFTER_X_SEC, to.getObjectId(), timeOut));
                     return false;
                 }
             } finally {
@@ -1670,7 +1665,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ALERT_IS_PRESENT_AFTER_X_SEC, timeOut));
                 return true;
             } else {
-                WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_NO_ALERT_FOUND_AFTER_X_SEC, timeOut), flowControl, null, true);
+                logger.logWarning(MessageFormat.format(StringConstants.KW_MSG_NO_ALERT_FOUND_AFTER_X_SEC, timeOut));
                 return false;
             }
         } , flowControl, true, StringConstants.KW_MSG_CANNOT_WAIT_FOR_ALERT)
@@ -3087,7 +3082,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             if (present) {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_IMG_X_IS_PRESENT, imagePath));
             } else {
-                WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_PASSED_IMG_X_IS_NOT_PRESENT, imagePath), flowControl, null, true)
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_PASSED_IMG_X_IS_NOT_PRESENT, imagePath))
             }
         } , flowControl, true, (imagePath != null) ?
         MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_FOR_IMG_X_TOBE_PRESENT, imagePath) :
