@@ -541,23 +541,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
                 KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_NOT_FOUND, to.getObjectId()), flowControl, null);
                 return null;
             }
-            String val = "";
-            switch (name.toString()) {
-                case GUIObject.HEIGHT:
-                    val = String.valueOf(element.getSize().height);
-
-                case GUIObject.WIDTH:
-                    val = String.valueOf(element.getSize().width);
-
-                case GUIObject.X:
-                    val = String.valueOf(element.getLocation().x);
-
-                case GUIObject.Y:
-                    val = String.valueOf(element.getLocation().y);
-
-                default:
-                    val = element.getAttribute(name);
-            }
+            String val = MobileCommonHelper.getAttributeValue(element, name);
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ELEMENT_HAS_ATTR, to.getObjectId(), name, val));
             return val;
         }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_GET_ELEMENT_X_ATTR_Y, to.getObjectId(), name)
@@ -1022,6 +1006,47 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             }
         }
         , flowControl, StringConstants.KW_MSG_UNABLE_GET_DEVICE_HEIGHT)
+    }
+    
+    /**
+     * Verify if the element has an attribute with the specific name
+     * @param to
+     *      represent a mobile element
+     * @param attributeName
+     *      the name of the attribute to verify
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return true if element has the attribute with the specific name; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementHasAttribute(TestObject to, String attributeName, int timeout, FailureHandling flowControl) {
+        KeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = false;
+            KeywordHelper.checkTestObjectParameter(to);
+            logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME);
+            if (attributeName == null) {
+                throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
+            }
+            timeout = KeywordHelper.checkTimeout(timeout);
+            AppiumDriver<?> driver = MobileDriverFactory.getDriver();
+            WebElement foundElement = findElement(to, timeout);
+            if (foundElement == null) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_EXISTED, to.getObjectId()));
+                return false;
+            }
+            String attribute = MobileCommonHelper.getAttributeValue(foundElement, attributeName);
+            if (attribute != null) {
+                KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
+                return true;
+            }  else {
+                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName), flowControl, null);
+                return false;
+            }
+        }
+        , flowControl, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
+        : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_HAS_ATTRIBUTE)
     }
     
     /**
