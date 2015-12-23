@@ -926,7 +926,7 @@ public class AstTreeTableInputUtil {
             if (existingParamClassName.equals(Boolean.class.getName())
                     || existingParamClassName.equals(Boolean.TYPE.getName())) {
                 return existingParam;
-            } else if (existingParamClassName.isEmpty()) {
+            } else {
                 return new ConstantExpression(Boolean.FALSE);
             }
         } else if (paramClassName.equals(Character.class.getName()) || paramClassName.equals(String.class.getName())
