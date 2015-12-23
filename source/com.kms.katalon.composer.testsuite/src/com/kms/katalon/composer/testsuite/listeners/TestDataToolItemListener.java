@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.testsuite.listeners;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -70,7 +71,8 @@ public class TestDataToolItemListener extends SelectionAdapter {
             return;
         }
 
-        if (e.getSource() == null) return;
+        if (e.getSource() == null)
+            return;
 
         if (e.getSource() instanceof ToolItem) {
             toolItemSelected(e);
@@ -82,48 +84,50 @@ public class TestDataToolItemListener extends SelectionAdapter {
     private void toolItemSelected(SelectionEvent e) {
         ToolItem toolItem = (ToolItem) e.getSource();
 
-        if (toolItem.getText() == null) return;
+        if (toolItem.getText() == null)
+            return;
 
         switch (toolItem.getToolTipText()) {
-            case ToolItemConstants.ADD:
-                if (e.detail == SWT.ARROW) {
-                    createDropdownMenuAddItem(toolItem);
-                } else {
-                    performAddTestDataLink(ToolItemConstants.ADD_AFTER);
-                }
-                return;
-            case ToolItemConstants.REMOVE:
-                removeTestDataLink();
-                return;
-            case ToolItemConstants.UP:
-                upTestDataLink();
-                return;
-            case ToolItemConstants.DOWN:
-                downTestDataLink();
-                return;
-            case ToolItemConstants.MAP:
-                mapTestDataLink();
-                return;
-            case ToolItemConstants.MAPALL:
-                mapAllTestDataLink();
-                return;
-            default:
-                return;
+        case ToolItemConstants.ADD:
+            if (e.detail == SWT.ARROW) {
+                createDropdownMenuAddItem(toolItem);
+            } else {
+                performAddTestDataLink(ToolItemConstants.ADD_AFTER);
+            }
+            return;
+        case ToolItemConstants.REMOVE:
+            removeTestDataLink();
+            return;
+        case ToolItemConstants.UP:
+            upTestDataLink();
+            return;
+        case ToolItemConstants.DOWN:
+            downTestDataLink();
+            return;
+        case ToolItemConstants.MAP:
+            mapTestDataLink();
+            return;
+        case ToolItemConstants.MAPALL:
+            mapAllTestDataLink();
+            return;
+        default:
+            return;
         }
     }
 
     private void menuItemSelected(SelectionEvent e) {
         MenuItem menuItem = (MenuItem) e.getSource();
-        if (menuItem.getText() == null) return;
+        if (menuItem.getText() == null)
+            return;
         switch (menuItem.getText()) {
-            case ToolItemConstants.ADD_AFTER:
-                performAddTestDataLink(ToolItemConstants.ADD_AFTER);
-                return;
-            case ToolItemConstants.ADD_BEFORE:
-                performAddTestDataLink(ToolItemConstants.ADD_BEFORE);
-                return;
-            default:
-                return;
+        case ToolItemConstants.ADD_AFTER:
+            performAddTestDataLink(ToolItemConstants.ADD_AFTER);
+            return;
+        case ToolItemConstants.ADD_BEFORE:
+            performAddTestDataLink(ToolItemConstants.ADD_BEFORE);
+            return;
+        default:
+            return;
         }
     }
 
@@ -148,12 +152,12 @@ public class TestDataToolItemListener extends SelectionAdapter {
     private void performAddTestDataLink(String offset) {
         try {
             ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-            if (currentProject == null) return;
+            if (currentProject == null)
+                return;
 
             EntityProvider entityProvider = new EntityProvider();
-            TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(tableViewer.getTable()
-                    .getShell(), new EntityLabelProvider(), new EntityProvider(),
-                    new EntityViewerFilter(entityProvider));
+            TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(tableViewer.getTable().getShell(),
+                    new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(entityProvider));
 
             dialog.setAllowMultiple(true);
             dialog.setTitle(StringConstants.LIS_TITLE_TEST_DATA_BROWSER);
@@ -166,7 +170,8 @@ public class TestDataToolItemListener extends SelectionAdapter {
                 for (Object childResult : dialog.getResult()) {
                     if (childResult instanceof TestDataTreeEntity) {
                         DataFileEntity testData = (DataFileEntity) ((TestDataTreeEntity) childResult).getObject();
-                        if (testData == null) continue;
+                        if (testData == null)
+                            continue;
                         dataFileEntities.add(testData);
                     } else if (childResult instanceof FolderTreeEntity) {
                         dataFileEntities.addAll(getTestDatasFromFolderTree((FolderTreeEntity) childResult));
@@ -204,27 +209,27 @@ public class TestDataToolItemListener extends SelectionAdapter {
 
             TestCaseTestDataLink newTestDataLink = createTestDataLink(testData);
             switch (offset) {
-                case ToolItemConstants.ADD_AFTER: {
-                    if (selectedIndex < 0) {
-                        int itemCount = tableViewer.getTable().getItemCount();
-                        getTableItems().add(itemCount, newTestDataLink);
-                        selectedIndex = itemCount;
-                    } else {
-                        getTableItems().add(selectedIndex + 1, newTestDataLink);
-                        selectedIndex++;
-                    }
-                    break;
+            case ToolItemConstants.ADD_AFTER: {
+                if (selectedIndex < 0) {
+                    int itemCount = tableViewer.getTable().getItemCount();
+                    getTableItems().add(itemCount, newTestDataLink);
+                    selectedIndex = itemCount;
+                } else {
+                    getTableItems().add(selectedIndex + 1, newTestDataLink);
+                    selectedIndex++;
                 }
-                case ToolItemConstants.ADD_BEFORE: {
-                    if (selectedIndex <= 0) {
-                        getTableItems().add(0, newTestDataLink);
-                        selectedIndex = 1;
-                    } else {
-                        getTableItems().add(selectedIndex, newTestDataLink);
-                        selectedIndex++;
-                    }
-                    break;
+                break;
+            }
+            case ToolItemConstants.ADD_BEFORE: {
+                if (selectedIndex <= 0) {
+                    getTableItems().add(0, newTestDataLink);
+                    selectedIndex = 1;
+                } else {
+                    getTableItems().add(selectedIndex, newTestDataLink);
+                    selectedIndex++;
                 }
+                break;
+            }
             }
             addedTestDataLinkTreeNodes.add(newTestDataLink);
         }
@@ -240,7 +245,8 @@ public class TestDataToolItemListener extends SelectionAdapter {
 
     private void removeTestDataLink() {
         StructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
-        if (selection == null || selection.size() == 0) return;
+        if (selection == null || selection.size() == 0)
+            return;
         @SuppressWarnings("unchecked")
         Iterator<TestCaseTestDataLink> iterator = selection.toList().iterator();
 
@@ -379,36 +385,40 @@ public class TestDataToolItemListener extends SelectionAdapter {
             TestCaseEntity testCaseEntity = TestCaseController.getInstance().getTestCaseByDisplayId(
                     testCaseLink.getTestCaseId());
 
+            int matches = 0;
             for (VariableLink variableLink : view.getSelectedTestCaseLink().getVariableLinks()) {
 
                 VariableEntity variable = TestCaseController.getInstance().getVariable(testCaseEntity,
                         variableLink.getVariableId());
-                if (variable != null) {
-                    for (Entry<String, String[]> entry : columnNameHashmap.entrySet()) {
-                        boolean isFound = false;
+                if (variable == null) {
+                    continue;
+                }
 
-                        for (String columnName : entry.getValue()) {
-                            if (variable.getName().equals(columnName)) {
-                                TestCaseTestDataLink dataLink = dataLinkHashMap.get(entry.getKey());
+                for (Entry<String, String[]> entry : columnNameHashmap.entrySet()) {
+                    boolean isFound = false;
 
-                                variableLink.setType(VariableType.DATA_COLUMN);
-                                variableLink.setTestDataLinkId(dataLink.getId());
-                                variableLink.setValue(variable.getName());
+                    for (String columnName : entry.getValue()) {
+                        if (variable.getName().equalsIgnoreCase(columnName)) {
+                            TestCaseTestDataLink dataLink = dataLinkHashMap.get(entry.getKey());
 
-                                isFound = true;
-                            }
+                            variableLink.setType(VariableType.DATA_COLUMN);
+                            variableLink.setTestDataLinkId(dataLink.getId());
+                            variableLink.setValue(columnName);
+                            matches++;
+                            isFound = true;
                         }
+                    }
 
-                        if (isFound) {
-                            break;
-                        }
+                    if (isFound) {
+                        break;
                     }
                 }
             }
             view.refreshVariableTable();
             view.setDirty(true);
 
-            MessageDialog.openInformation(null, "", StringConstants.LIS_INFO_MSG_DONE);
+            MessageDialog.openInformation(null, StringConstants.INFO,
+                    MessageFormat.format(StringConstants.LIS_INFO_MSG_MAP_DONE, Integer.toString(matches)));
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
