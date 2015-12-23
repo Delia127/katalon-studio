@@ -426,7 +426,7 @@ public class QTestIntegrationUtil {
     /**
      * Called by uploadTestCaseResult. Add testRun to qTestSuite and save the given qTestSuite into testSuiteEntity.
      */
-    public static void addNewTestRunToTestSuite(TestSuiteEntity testSuiteEntity,
+    public static TestSuiteEntity addNewTestRunToTestSuite(TestSuiteEntity testSuiteEntity,
             IntegratedEntity testSuiteIntegratedEntity, QTestSuite qTestSuite, QTestRun testRun,
             List<QTestSuite> qTestSuiteCollection) throws Exception {
         qTestSuite.getTestRuns().add(testRun);
@@ -436,11 +436,10 @@ public class QTestIntegrationUtil {
                 QTestIntegrationTestSuiteManager.addQTestSuiteToIntegratedEntity(qTestSuite, testSuiteIntegratedEntity,
                         index);
 
-                TestSuiteController.getInstance().updateTestSuite(testSuiteEntity);
-                return;
+                return TestSuiteController.getInstance().updateTestSuite(testSuiteEntity);
             }
         }
-
+        return null;
     }
 
     /**

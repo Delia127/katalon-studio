@@ -8,8 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Pattern;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -62,6 +62,25 @@ public class QTestIntegrationTestSuiteManager {
         // Disable default constructor
     }
 
+    public static QTestSuite getQTestSuite(long id, List<QTestSuite> qTestSuites) {
+        for (QTestSuite qTestSuite : qTestSuites) {
+            if (qTestSuite.getId() == id) {
+                return qTestSuite;
+            }
+        }
+        return null;
+    }
+
+    public static void setSelectedQTestSuite(QTestSuite selectedQTestSuite, List<QTestSuite> qTestSuites) {
+        if (!qTestSuites.contains(selectedQTestSuite)) {
+            qTestSuites.add(selectedQTestSuite);
+        }
+        for (QTestSuite siblingQTestSuite : qTestSuites) {
+            siblingQTestSuite.setSelected(false);
+        }
+        selectedQTestSuite.setSelected(true);
+    }
+
     /**
      * Finds the selected item in the given <code>qTestSuites</code> The returned will be used for uploading.
      * 
@@ -110,10 +129,11 @@ public class QTestIntegrationTestSuiteManager {
      * @param testSuiteIntegratedEntity
      * @param order
      */
-    public static void addQTestSuiteToIntegratedEntity(QTestSuite qTestSuite,
+    public static IntegratedEntity addQTestSuiteToIntegratedEntity(QTestSuite qTestSuite,
             IntegratedEntity testSuiteIntegratedEntity, int order) {
         testSuiteIntegratedEntity.getProperties().put(Integer.toString(order),
                 getQTestSuitePropertiesString(qTestSuite));
+        return testSuiteIntegratedEntity;
     }
 
     /**
@@ -294,14 +314,14 @@ public class QTestIntegrationTestSuiteManager {
     @SuppressWarnings("unused")
     private static String getTestSuiteData(QTestSuite testSuite, QTestProject project, IQTestCredential credential)
             throws QTestException {
-        String url = credential.getServerUrl() + "/api/v3/projects/" + Long.toString(project.getId()) + "/test-suites/"
+        String url = QTestIntegrationProjectManager.getProjectAPIPrefix(credential, project) + "/test-suites/"
                 + Long.toString(testSuite.getId());
         return QTestAPIRequestHelper.sendGetRequestViaAPI(url, credential.getToken());
     }
 
     @SuppressWarnings("unused")
     private static String getTestSuiteFields(QTestProject project, IQTestCredential credential) throws QTestException {
-        String url = credential.getServerUrl() + "/api/v3/projects/" + Long.toString(project.getId())
+        String url = QTestIntegrationProjectManager.getProjectAPIPrefix(credential, project)
                 + "/settings/test-suites/fields";
         return QTestAPIRequestHelper.sendGetRequestViaAPI(url, credential.getToken());
     }
@@ -346,8 +366,8 @@ public class QTestIntegrationTestSuiteManager {
      */
     public static QTestRun uploadTestCaseInTestSuite(QTestTestCase testCase, QTestSuite testSuite,
             QTestProject project, IQTestCredential credential) throws QTestException {
-        String url = credential.getServerUrl() + "/api/v3/projects/" + Long.toString(project.getId())
-                + "/test-runs?parentId=" + Long.toString(testSuite.getId()) + "&parentType=test-suite";
+        String url = QTestIntegrationProjectManager.getProjectAPIPrefix(credential, project) + "/test-runs?parentId="
+                + Long.toString(testSuite.getId()) + "&parentType=test-suite";
         Map<String, Object> bodyMap = new HashMap<String, Object>();
         JsonObject testCaseInfoJsonArray = new JsonObject();
         try {
@@ -409,7 +429,7 @@ public class QTestIntegrationTestSuiteManager {
 
         List<FieldValue> fieldValues = new ArrayList<FieldValue>();
 
-        JsonArray reponseJsonArray = getTestSuiteFieldJsonArray(qTestProject.getId(), credentials);
+        JsonArray reponseJsonArray = getTestSuiteFieldJsonArray(qTestProject, credentials);
 
         for (int index = 0; index < reponseJsonArray.length(); index++) {
             try {
@@ -541,7 +561,7 @@ public class QTestIntegrationTestSuiteManager {
         }
 
         String url = "/p/" + Long.toString(qTestProject.getId()) + "/portal/project/testdesign/rootmodulelazy/get";
-        
+
         QTestIntegrationAuthenticationManager.authenticate(credential.getUsername(), credential.getPassword());
 
         String result = QTestHttpRequestHelper.sendGetRequest(credential, url);
@@ -577,8 +597,7 @@ public class QTestIntegrationTestSuiteManager {
             throws QTestException {
         List<QTestSuiteParent> qTestReleases = new ArrayList<QTestSuiteParent>();
 
-        String serverUrl = credential.getServerUrl();
-        String url = serverUrl + "/api/v3/projects/" + Long.toString(qTestProject.getId()) + "/releases";
+        String url = QTestIntegrationProjectManager.getProjectAPIPrefix(credential, qTestProject) + "/releases";
         String result = QTestAPIRequestHelper.sendGetRequestViaAPI(url, credential.getToken());
         try {
             JsonArray resultJsonArray = new JsonArray(result);
@@ -607,12 +626,12 @@ public class QTestIntegrationTestSuiteManager {
      * @return
      * @throws QTestException
      */
-    public static List<QTestSuiteParent> getCycles(QTestProject qTestProject, QTestRelease release, IQTestCredential credential)
-            throws QTestException {
+    public static List<QTestSuiteParent> getCycles(QTestProject qTestProject, QTestRelease release,
+            IQTestCredential credential) throws QTestException {
         List<QTestSuiteParent> qTestCycles = new ArrayList<QTestSuiteParent>();
 
-        String url = credential.getServerUrl() + "/api/v3/projects/" + Long.toString(qTestProject.getId()) + "/test-cycles?parentId="
-                + Long.toString(release.getId()) + "&parentType=release";
+        String url = QTestIntegrationProjectManager.getProjectAPIPrefix(credential, qTestProject)
+                + "/test-cycles?parentId=" + Long.toString(release.getId()) + "&parentType=release";
         String result = QTestAPIRequestHelper.sendGetRequestViaAPI(url, credential.getToken());
         try {
             JsonArray resultJsonArray = new JsonArray(result);
@@ -676,19 +695,18 @@ public class QTestIntegrationTestSuiteManager {
     /**
      * Gets qTest fields of {@link QTestSuite} via qTest API
      * 
-     * @param projectId
      * @param projectDir
      * @return
      * @throws QTestException
      *             thrown if system cannot send request or the response is invalid JSON format.
      */
-    private static JsonArray getTestSuiteFieldJsonArray(long projectId, IQTestCredential credentials)
+    private static JsonArray getTestSuiteFieldJsonArray(QTestProject qTestProject, IQTestCredential credential)
             throws QTestException {
 
-        String url = credentials.getServerUrl() + "/api/v3/projects/" + Long.toString(projectId)
+        String url = QTestIntegrationProjectManager.getProjectAPIPrefix(credential, qTestProject)
                 + "/settings/test-suites/fields";
 
-        String response = QTestAPIRequestHelper.sendGetRequestViaAPI(url, credentials.getToken());
+        String response = QTestAPIRequestHelper.sendGetRequestViaAPI(url, credential.getToken());
         try {
             if (response == null || response.isEmpty())
                 return null;
@@ -697,6 +715,126 @@ public class QTestIntegrationTestSuiteManager {
             return responseJsonArray;
         } catch (JsonException ex) {
             throw QTestInvalidFormatException.createInvalidJsonFormatException(response);
+        }
+    }
+
+    /**
+     * Gets test suite and its parent's information from qTest
+     * 
+     * @param id
+     *            id of test suite
+     * @param qTestProject
+     * @param credential
+     * @return an instance of {@link QTestSuite}
+     * @throws QTestException
+     */
+    public static QTestSuite getQTestSuite(long id, QTestProject qTestProject, IQTestCredential credential)
+            throws QTestException {
+        String serverUrl = credential.getServerUrl();
+        String url = serverUrl + "/api/v3/projects/" + Long.toString(qTestProject.getId()) + "/test-suites/"
+                + Long.toString(id);
+        String serverJsResult = QTestAPIRequestHelper.sendGetRequestViaAPI(url, credential.getToken());
+        try {
+            JsonObject jsResultObj = new JsonObject(serverJsResult);
+            QTestSuite qTestSuite = new QTestSuite();
+            qTestSuite.setId(jsResultObj.getLong(QTestEntity.ID_FIELD));
+            qTestSuite.setName(jsResultObj.getString(QTestEntity.NAME_FIELD));
+            qTestSuite.setPid(jsResultObj.getString(QTestEntity.PID_FIELD));
+
+            JsonArray relLinkJsArrs = jsResultObj.getJsonArray("links");
+            for (int relIdx = 0; relIdx < relLinkJsArrs.length(); relIdx++) {
+                JsonObject relJsObj = relLinkJsArrs.getJsonObject(relIdx);
+                String relName = relJsObj.getString("rel");
+
+                String parentRelPrefix = "parent-";
+                if (!relName.startsWith(parentRelPrefix)) {
+                    continue;
+                }
+                String parentTypeName = relName.substring(parentRelPrefix.length(), relName.length());
+                String hrefName = relJsObj.getString("href");
+                String hrefPrefix = QTestIntegrationProjectManager.getProjectAPIPrefix(credential, qTestProject) + "/"
+                        + parentTypeName + "s" + "/";
+                long parentId = Long.parseLong(hrefName.substring(hrefPrefix.length(), hrefName.length()));
+                int parentType = getTestSuiteParentType(parentTypeName);
+                QTestSuiteParent tsParent = getQTestSuiteParent(parentId, parentType, qTestProject, credential);
+                qTestSuite.setParent(tsParent);
+            }
+
+            return qTestSuite;
+        } catch (JsonException ex) {
+            throw QTestInvalidFormatException.createInvalidJsonFormatException(ex.getMessage());
+        }
+    }
+
+    /**
+     * Updates a parent test suite's information from qTest.
+     * 
+     * @param id
+     *            id of the parent test suite
+     * @param type
+     *            parent type
+     * @param qTestProject
+     * @param credential
+     * @return a instance of {@link QTestSuiteParent}
+     * @throws QTestException
+     */
+    public static QTestSuiteParent getQTestSuiteParent(long id, int type, QTestProject qTestProject,
+            IQTestCredential credential) throws QTestException {
+        if (type == QTestSuiteParent.RELEASE_ROOT_TYPE) {
+            return QTestSuiteParent.getTestSuiteParent(id, type, qTestProject.getName());
+        }
+
+        String parentPrefixName = "";
+        if (type == QTestSuiteParent.CYCLE_TYPE) {
+            parentPrefixName = "test-cycles";
+        } else if (type == QTestSuiteParent.RELEASE_TYPE) {
+            parentPrefixName = "releases";
+        } else {
+            throw new IllegalArgumentException(Integer.toString(type) + " isn't a valid parent test suite's type");
+        }
+
+        String url = QTestIntegrationProjectManager.getProjectAPIPrefix(credential, qTestProject) + "/"
+                + parentPrefixName + "/" + Long.toString(id);
+        String serverResult = QTestAPIRequestHelper.sendGetRequestViaAPI(url, credential.getToken());
+        try {
+            JsonObject parentJsResult = new JsonObject(serverResult);
+            return QTestSuiteParent.getTestSuiteParent(id, type, parentJsResult.getString(QTestEntity.NAME_FIELD));
+        } catch (JsonException e) {
+            throw QTestInvalidFormatException.createInvalidJsonFormatException(e.getMessage());
+        }
+    }
+
+    /**
+     * Returns parent type of test suite by its artifact name
+     * 
+     * @param name
+     *            <ul>
+     *            <li>test-cycle</li>
+     *            <li>release</li>
+     *            <li>root</li>
+     *            </ul>
+     * @return  If the given parameter meets as above, returns: <ul>
+     *         <li>{@link QTestSuiteParent#CYCLE_TYPE}</li>
+     *         <li>{@link QTestSuiteParent#RELEASE_TYPE}</li>
+     *         <li>{@link QTestSuiteParent#RELEASE_ROOT_TYPE}</li>
+     *         </ul>
+     *         Otherwise, throws an {@link IllegalArgumentException}
+     * @see {@link QTestSuiteParent}
+     */
+    public static int getTestSuiteParentType(String name) {
+        switch (name) {
+        case "test-cycle": {
+            return QTestSuiteParent.CYCLE_TYPE;
+        }
+        case "release": {
+            return QTestSuiteParent.RELEASE_TYPE;
+        }
+        case "root": {
+            return QTestSuiteParent.RELEASE_ROOT_TYPE;
+        }
+        default: {
+            throw new IllegalArgumentException(name + " is not a valid name.");
+        }
         }
     }
 }

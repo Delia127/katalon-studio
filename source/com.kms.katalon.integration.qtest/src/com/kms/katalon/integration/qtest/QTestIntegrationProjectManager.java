@@ -86,7 +86,7 @@ public class QTestIntegrationProjectManager {
         return qTestProjects;
     }
 
-/**
+    /**
      * Returns qTest {@link IntegratedEntity} of the current
      * {@link ProjectEntity} that is combined from the given
      * <code>qTestProjects</code>
@@ -199,5 +199,16 @@ public class QTestIntegrationProjectManager {
             }
         }
         return null;
+    }
+
+    /**
+     * Returns the prefix of an qTest API for a specified project. Almost APIs start with this.
+     * </p>
+     * Format: https://<code>project url</code>/api/v3/projects/<code>project id</code>
+     * @param credential
+     * @param qTestProject
+     */
+    public static String getProjectAPIPrefix(IQTestCredential credential, QTestProject qTestProject) {
+        return credential.getServerUrl() + "/api/v3/projects/" + Long.toString(qTestProject.getId());
     }
 }

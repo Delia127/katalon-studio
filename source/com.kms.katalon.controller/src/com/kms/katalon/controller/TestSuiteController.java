@@ -62,8 +62,8 @@ public class TestSuiteController extends EntityController {
         dataProviderSetting.getTestSuiteDataProvider().deleteTestSuite(testSuite);
     }
 
-    public void updateTestSuite(TestSuiteEntity testSuite) throws Exception {
-        dataProviderSetting.getTestSuiteDataProvider().updateTestSuite(testSuite);
+    public TestSuiteEntity updateTestSuite(TestSuiteEntity testSuite) throws Exception {
+        return dataProviderSetting.getTestSuiteDataProvider().updateTestSuite(testSuite);
     }
 
     public TestSuiteEntity copyTestSuite(TestSuiteEntity testSuite, FolderEntity targetFolder) throws Exception {

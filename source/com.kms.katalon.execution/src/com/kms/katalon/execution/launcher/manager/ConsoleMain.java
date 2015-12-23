@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
@@ -21,6 +23,9 @@ import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.entity.ExecutionEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
+import com.kms.katalon.execution.exception.KatalonArgumentNotValidException;
+import com.kms.katalon.execution.integration.IntegrationCommand;
+import com.kms.katalon.execution.integration.ReportIntegrationFactory;
 import com.kms.katalon.execution.launcher.AbstractLauncher;
 import com.kms.katalon.execution.launcher.ConsoleLauncher;
 import com.kms.katalon.execution.launcher.model.LauncherResult;
@@ -49,6 +54,11 @@ public class ConsoleMain {
     private static int returnCode = 0;
 
     public void launch(String[] arguments) throws Exception {
+        if (arguments == null) {
+            System.out.println("Arguments cannot be null or empty");
+            closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
+        }
+
         List<ExecutionEntity> executionEntities = new ArrayList<ExecutionEntity>();
         ProjectEntity projectEntity = null;
         int offset = 0;
@@ -57,7 +67,14 @@ public class ConsoleMain {
         String argBrowserType = null;
         String testSuiteReportFolder = null;
         boolean foundExecutionArgument = false;
-        if (arguments != null) {
+
+        List<IntegrationCommand> integrationCmds = ReportIntegrationFactory.getInstance().getIntegrationCommands();
+        Options opts = new Options();
+        for (IntegrationCommand integrationCmd : integrationCmds) {
+            opts.addOption(integrationCmd.getOption());
+        }
+
+        try {
             while (offset < arguments.length) {
                 if (arguments[offset].startsWith(PROJECT_PK_ARGUMENT)) {
                     String projectPk = arguments[offset].substring(PROJECT_PK_ARGUMENT.length());
@@ -88,12 +105,11 @@ public class ConsoleMain {
                     if (offset + 2 < arguments.length && arguments[offset + 2].startsWith(BROWSER_TYPE_ARGUMENT)) {
                         argBrowserType = arguments[offset + 2].substring(BROWSER_TYPE_ARGUMENT.length());
                     }
+                    offset += 3;
                     testSuiteReportFolder = null;
                     if ((arguments.length > offset + 3) && arguments[offset + 3].startsWith(REPORT_FOLDER_ARGUMENT)) {
                         testSuiteReportFolder = arguments[offset + 3].substring(REPORT_FOLDER_ARGUMENT.length());
-                        offset += 3;
-                    } else {
-                        offset += 2;
+                        offset++;
                     }
                 } else if (arguments[offset].startsWith(SHOW_STATUS_DELAY_ARGUMENT)) {
                     showProgressDelay = Integer.valueOf(arguments[offset]
@@ -113,23 +129,34 @@ public class ConsoleMain {
                     }
                     offset++;
                 } else {
-                    String otherArgument = arguments[offset];
-                    if (otherArgument.startsWith(ARGUMENT_PREFIX)) {
-                        otherArgument = otherArgument.substring(1);
+                    int intIndx = processIntegrationArgs(opts, integrationCmds, arguments, offset);
+                    if (intIndx == offset) {
+                        String otherArgument = arguments[offset];
+                        if (otherArgument.startsWith(ARGUMENT_PREFIX)) {
+                            otherArgument = otherArgument.substring(1);
+                        }
+                        String[] argumentValues = otherArgument.split(ARGUMENT_SPLITTER);
+                        if (argumentValues.length == 2) {
+                            runInput.put(argumentValues[0], argumentValues[1]);
+                        }
+                        offset++;
+                    } else {
+                        offset = intIndx;
                     }
-                    String[] argumentValues = otherArgument.split(ARGUMENT_SPLITTER);
-                    if (argumentValues.length == 2) {
-                        runInput.put(argumentValues[0], argumentValues[1]);
-                    }
-                    offset++;
                 }
             }
+        } catch (KatalonArgumentNotValidException ex) {
+            System.out.println(ex.getMessage());
+            closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
+            return;
         }
+
         if (!foundExecutionArgument) {
             System.out.println(StringConstants.MNG_PRT_MISSING_EXECUTION_ARG);
             closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
             return;
         }
+
         ExecutionEntity executionEntity = addExecutionEntities(testSuiteID, argBrowserType, projectEntity,
                 testSuiteReportFolder, runInput);
         if (executionEntity == null) {
@@ -137,6 +164,54 @@ public class ConsoleMain {
         }
         executionEntities.add(executionEntity);
         execute(executionEntities.get(0), projectEntity, 0);
+    }
+
+    private int processIntegrationArgs(Options opts, List<IntegrationCommand> integrationCmds, String[] arguments,
+            int currentOffset) throws KatalonArgumentNotValidException {
+        Option currentOpt = null;
+        List<String> tokens = new ArrayList<String>();
+        while (currentOffset < arguments.length) {
+            if (arguments[currentOffset].startsWith(ARGUMENT_PREFIX)) {
+                if (currentOpt != null) {
+                    break;
+                }
+                String optNameAndValue = arguments[currentOffset].substring(ARGUMENT_PREFIX.length(),
+                        arguments[currentOffset].length());
+
+                if (opts.hasOption(optNameAndValue)) {
+                    currentOpt = opts.getOption(optNameAndValue);
+                } else {
+                    if (optNameAndValue.indexOf(ARGUMENT_SPLITTER) != -1
+                            && opts.hasOption(optNameAndValue.substring(0, optNameAndValue.indexOf(ARGUMENT_SPLITTER)))) {
+                        currentOpt = opts.getOption(optNameAndValue.substring(0,
+                                optNameAndValue.indexOf(ARGUMENT_SPLITTER)));
+                        tokens.add(optNameAndValue.substring(optNameAndValue.indexOf(ARGUMENT_SPLITTER),
+                                optNameAndValue.length()));
+                    } else {
+                        return currentOffset;
+                    }
+                }
+                currentOffset++;
+            } else {
+                if (currentOpt != null) {
+                    if (tokens.size() < currentOpt.getArgs()) {
+                        tokens.add(arguments[currentOffset]);
+                        currentOffset++;
+                    }
+                } else {
+                    return currentOffset;
+                }
+            }
+        }
+
+        if (currentOpt != null) {
+            for (IntegrationCommand integrationCmd : integrationCmds) {
+                if (currentOpt.equals(integrationCmd.getOption())) {
+                    integrationCmd.setValues(tokens.toArray(new String[tokens.size()]));
+                }
+            }
+        }
+        return currentOffset;
     }
 
     private void execute(final ExecutionEntity executionEntity, final ProjectEntity projectEntity, final int reRunTime)

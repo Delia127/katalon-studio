@@ -51,4 +51,5 @@ Require-Bundle: org.eclipse.e4.core.contexts,
  javax.mail,
  org.eclipse.osgi.services,
  com.google.gson,
- com.kms.katalon.jasper;bundle-version="1.0.0"
+ com.kms.katalon.jasper;bundle-version="1.0.0",
+ org.apache.commons.cli
