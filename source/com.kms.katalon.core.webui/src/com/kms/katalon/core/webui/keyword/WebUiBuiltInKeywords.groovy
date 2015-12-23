@@ -3427,7 +3427,6 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                WebDriver driver = DriverFactory.getWebDriver();
                 isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
                 if (foundElement.getAttribute(attributeName) != null) {
@@ -3473,7 +3472,6 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                WebDriver driver = DriverFactory.getWebDriver();
                 isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
                 if (foundElement.getAttribute(attributeName) == null) {
@@ -3521,7 +3519,6 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                WebDriver driver = DriverFactory.getWebDriver();
                 isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
                 if (foundElement.getAttribute(attributeName) != null) {
@@ -3575,7 +3572,6 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                WebDriver driver = DriverFactory.getWebDriver();
                 isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
                 Boolean hasAttribute = new FluentWait<WebElement>(foundElement)
@@ -3628,7 +3624,6 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                WebDriver driver = DriverFactory.getWebDriver();
                 isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
                 Boolean notHasAttribute = new FluentWait<WebElement>(foundElement)
@@ -3684,7 +3679,6 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                WebDriver driver = DriverFactory.getWebDriver();
                 isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
                 Boolean hasAttributeValue = new FluentWait<WebElement>(foundElement)
