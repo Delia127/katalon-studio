@@ -3608,7 +3608,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      * @param timeOut
      *      system will wait at most timeout (seconds) to return result
      * @param flowControl
-     * @return true if element has the attribute with the specific name; otherwise, false
+     * @return true if element doesn't have the attribute with the specific name; otherwise, false
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
