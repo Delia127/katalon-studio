@@ -1050,6 +1050,47 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     }
     
     /**
+     * Verify if the element doesn't have an attribute with the specific name
+     * @param to
+     *      represent a mobile element
+     * @param attributeName
+     *      the name of the attribute to verify
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return true if element has the attribute with the specific name; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementNotHasAttribute(TestObject to, String attributeName, int timeout, FailureHandling flowControl) {
+        KeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = false;
+            KeywordHelper.checkTestObjectParameter(to);
+            logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME);
+            if (attributeName == null) {
+                throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
+            }
+            timeout = KeywordHelper.checkTimeout(timeout);
+            AppiumDriver<?> driver = MobileDriverFactory.getDriver();
+            WebElement foundElement = findElement(to, timeout);
+            if (foundElement == null) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_EXISTED, to.getObjectId()));
+                return false;
+            }
+            String attribute = MobileCommonHelper.getAttributeValue(foundElement, attributeName);
+            if (attribute == null) {
+                KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_NOT_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
+                return true;
+            }  else {
+                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_NOT_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName), flowControl, null);
+                return false;
+            }
+        }
+        , flowControl, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_NOT_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
+        : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_NOT_HAS_ATTRIBUTE)
+    }
+    
+    /**
      * Internal method to find a mobile element
      * @param to
      *      represent a mobile element
