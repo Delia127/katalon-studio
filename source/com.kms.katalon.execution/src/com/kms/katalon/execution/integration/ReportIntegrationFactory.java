@@ -1,6 +1,8 @@
 package com.kms.katalon.execution.integration;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ReportIntegrationFactory {
@@ -26,4 +28,14 @@ public class ReportIntegrationFactory {
 	public void addNewReportIntegration(String productName, ReportIntegrationContribution contributor) {
 		reportIntegrationMap.put(productName, contributor);
 	}
+	
+	public List<IntegrationCommand> getIntegrationCommands() {
+	    List<IntegrationCommand> integrationCommands = new ArrayList<IntegrationCommand>();
+	    for (ReportIntegrationContribution contribution : reportIntegrationMap.values()) {
+	        if (contribution.getIntegrationCommand() != null) {
+	            integrationCommands.add(contribution.getIntegrationCommand());
+	        }
+	    }
+	    return integrationCommands;
+    }
 }
