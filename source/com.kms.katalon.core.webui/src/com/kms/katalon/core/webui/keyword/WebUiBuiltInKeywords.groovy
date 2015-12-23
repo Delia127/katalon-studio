@@ -271,7 +271,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_WEB_ELEMT_W_ID_IS_NOT_PRESENT_AFTER, to.getObjectId(), locator.toString(), timeOut));
                     return true;
                 } else {
-                    WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_WEB_ELEMT_W_ID_IS_NOT_PRESENT_AFTER, to.getObjectId(), locator.toString(), timeOut), flowControl, null, true);
+                    logger.logWarning(MessageFormat.format(StringConstants.KW_MSG_WEB_ELEMT_W_ID_IS_NOT_PRESENT_AFTER, to.getObjectId(), locator.toString(), timeOut));
                     return false;
                 }
             } finally {
@@ -312,8 +312,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     }
                     return true;
                 } catch (WebElementNotFoundException e) {
-                    WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_NOT_PRESENT_AFTER_X_SEC, to.getObjectId(), timeOut),
-                            flowControl, null);
+                    logger.logWarning(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_NOT_PRESENT_AFTER_X_SEC, to.getObjectId(), timeOut));
                     return false;
                 }
             } finally {
@@ -439,11 +438,10 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     }
                     return true;
                 } catch (WebElementNotFoundException e) {
-                    WebUIKeywordMain.stepFailed(e.getMessage(), flowControl, null);
+                    logger.logWarning(e.getMessage());
                     return false;
                 } catch (TimeoutException e) {
-                    WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_NOT_VISIBLE_AFTER_X_SEC, to.getObjectId(), timeOut),
-                            flowControl, null);
+                    logger.logWarning(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_NOT_VISIBLE_AFTER_X_SEC, to.getObjectId(), timeOut));
                     return false;
                 }
             } finally {
@@ -495,11 +493,10 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     }
                     return true;
                 } catch (WebElementNotFoundException e) {
-                    WebUIKeywordMain.stepFailed(e.getMessage(), flowControl, null);
+                    logger.logWarning(e.getMessage());
                     return false;
                 } catch (TimeoutException e) {
-                    WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_VISIBLE_AFTER_X_SEC, to.getObjectId(), timeOut),
-                            flowControl, null);
+                    logger.logWarning(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_VISIBLE_AFTER_X_SEC, to.getObjectId(), timeOut));
                     return false;
                 }
             } finally {
@@ -550,11 +547,10 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     }
                     return true;
                 } catch (WebElementNotFoundException e) {
-                    WebUIKeywordMain.stepFailed(e.getMessage(), flowControl, null);
+                    logger.logWarning(e.getMessage());
                     return false;
                 } catch (TimeoutException e) {
-                    WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_NOT_CLICKABLE_AFTER_X_SEC, to.getObjectId(), timeOut),
-                            flowControl, null);
+                    logger.logWarning(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_NOT_CLICKABLE_AFTER_X_SEC, to.getObjectId(), timeOut));
                     return false;
                 }
             } finally {
@@ -605,11 +601,10 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     }
                     return true;
                 } catch (WebElementNotFoundException e) {
-                    WebUIKeywordMain.stepFailed(e.getMessage(), flowControl, null);
+                    logger.logWarning(e.getMessage());
                     return false;
                 } catch (TimeoutException e) {
-                    WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_CLICKABLE_AFTER_X_SEC, to.getObjectId(), timeOut),
-                            flowControl, null);
+                    logger.logWarning(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_CLICKABLE_AFTER_X_SEC, to.getObjectId(), timeOut));
                     return false;
                 }
             } finally {
@@ -1670,7 +1665,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ALERT_IS_PRESENT_AFTER_X_SEC, timeOut));
                 return true;
             } else {
-                WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_NO_ALERT_FOUND_AFTER_X_SEC, timeOut), flowControl, null, true);
+                logger.logWarning(MessageFormat.format(StringConstants.KW_MSG_NO_ALERT_FOUND_AFTER_X_SEC, timeOut));
                 return false;
             }
         } , flowControl, true, StringConstants.KW_MSG_CANNOT_WAIT_FOR_ALERT)
@@ -3087,7 +3082,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             if (present) {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_IMG_X_IS_PRESENT, imagePath));
             } else {
-                WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_PASSED_IMG_X_IS_NOT_PRESENT, imagePath), flowControl, null, true)
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_PASSED_IMG_X_IS_NOT_PRESENT, imagePath))
             }
         } , flowControl, true, (imagePath != null) ?
         MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_FOR_IMG_X_TOBE_PRESENT, imagePath) :
@@ -3311,6 +3306,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
                 WebDriver driver = DriverFactory.getWebDriver();
                 isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
@@ -3350,6 +3346,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
                 WebDriver driver = DriverFactory.getWebDriver();
                 isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
@@ -3429,7 +3426,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (attributeName == null) {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
-                WebDriver driver = DriverFactory.getWebDriver();
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
                 isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
                 if (foundElement.getAttribute(attributeName) != null) {
@@ -3448,7 +3445,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             }
             return false;
         }
-        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId())
+        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
         : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_HAS_ATTRIBUTE)
     }
 
@@ -3474,7 +3471,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (attributeName == null) {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
-                WebDriver driver = DriverFactory.getWebDriver();
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
                 isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
                 if (foundElement.getAttribute(attributeName) == null) {
@@ -3493,7 +3490,221 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             }
             return false;
         }
-        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_NOT_HAS_ATTRIBUTE_Y, to.getObjectId())
+        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_NOT_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
         : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_NOT_HAS_ATTRIBUTE)
+    }
+
+    /**
+     * Verify if the web element has an attribute with the specific name and value
+     * @param to
+     *      represent a web element
+     * @param attributeName
+     *      the name of the attribute to verify
+     * @param attributeName
+     *      the value of the attribute to verify
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return true if element has the attribute with the specific name and value; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementAttributeValue(TestObject to, String attributeName, String attributeValue, int timeOut, FailureHandling flowControl) {
+        WebUIKeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = false;
+            try {
+                WebUiCommonHelper.checkTestObjectParameter(to);
+                KeywordLogger.getInstance().logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME);
+                if (attributeName == null) {
+                    throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
+                }
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
+                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
+                WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
+                if (foundElement.getAttribute(attributeName) != null) {
+                    if (foundElement.getAttribute(attributeName).equals(attributeValue)) {
+                        KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue));
+                        return true;
+                    } else {
+                        WebUIKeywordMain.stepFailed(
+                                MessageFormat.format(
+                                StringConstants.KW_LOG_FAILED_OBJ_X_ATTRIBUTE_Y_ACTUAL_VALUE_Z_EXPECTED_VALUE_W,
+                                to.getObjectId(), attributeName, foundElement.getAttribute(attributeName), attributeValue), flowControl, null, true);
+                        return false;
+                    }
+                }  else {
+                    WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName), flowControl, null, true);
+                    return false;
+                }
+            } catch (WebElementNotFoundException ex) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
+            } finally {
+                if (isSwitchIntoFrame) {
+                    WebUiBuiltInKeywords.switchToDefaultContent();
+                }
+            }
+            return false;
+        }
+        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue)
+        : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_ATTRIBUTE_VALUE)
+    }
+
+    /**
+     * Wait until the given web element has an attribute with the specific name
+     * @param to
+     *      represent a web element
+     * @param attributeName
+     *      the name of the attribute to wait for
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return true if element has the attribute with the specific name; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean waitForElementHasAttribute(TestObject to, String attributeName, int timeOut, FailureHandling flowControl) {
+        WebUIKeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = false;
+            try {
+                WebUiCommonHelper.checkTestObjectParameter(to);
+                KeywordLogger.getInstance().logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME);
+                if (attributeName == null) {
+                    throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
+                }
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
+                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
+                WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
+                Boolean hasAttribute = new FluentWait<WebElement>(foundElement)
+                        .pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeOut, TimeUnit.SECONDS)
+                        .until(new Function<WebElement, Boolean>() {
+                            @Override
+                            public Boolean apply(WebElement element) {
+                                return foundElement.getAttribute(attributeName) != null;
+                            }
+                        });
+                if (hasAttribute) {
+                    logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
+                    return true;
+                }
+            } catch (WebElementNotFoundException ex) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
+            } catch (TimeoutException e) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
+            } finally {
+                if (isSwitchIntoFrame) {
+                    WebUiBuiltInKeywords.switchToDefaultContent();
+                }
+            }
+            return false;
+        }
+        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
+        : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_HAS_ATTRIBUTE)
+    }
+
+    /**
+     * Wait until the given web element doesn't have an attribute with the specific name
+     * @param to
+     *      represent a web element
+     * @param attributeName
+     *      the name of the attribute to wait for
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return true if element doesn't have the attribute with the specific name; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean waitForElementNotHasAttribute(TestObject to, String attributeName, int timeOut, FailureHandling flowControl) {
+        WebUIKeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = false;
+            try {
+                WebUiCommonHelper.checkTestObjectParameter(to);
+                KeywordLogger.getInstance().logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME);
+                if (attributeName == null) {
+                    throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
+                }
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
+                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
+                WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
+                Boolean notHasAttribute = new FluentWait<WebElement>(foundElement)
+                        .pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeOut, TimeUnit.SECONDS)
+                        .until(new Function<WebElement, Boolean>() {
+                            @Override
+                            public Boolean apply(WebElement element) {
+                                return foundElement.getAttribute(attributeName) == null;
+                            }
+                        });
+                if (notHasAttribute) {
+                    logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
+                    return false;
+                }
+            } catch (WebElementNotFoundException ex) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
+            } catch (TimeoutException e) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
+                return true;
+            } finally {
+                if (isSwitchIntoFrame) {
+                    WebUiBuiltInKeywords.switchToDefaultContent();
+                }
+            }
+            return false;
+        }
+        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_NOT_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
+        : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_NOT_HAS_ATTRIBUTE)
+    }
+
+    /**
+     * Wait until the given web element has an attribute with the specific name and value
+     * @param to
+     *      represent a web element
+     * @param attributeName
+     *      the name of the attribute to wait for
+     * @param attributeValue
+     *      the value of the attribute to wait for
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return true if element has the attribute with the specific name and value; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean waitForElementAttributeValue(TestObject to, String attributeName, String attributeValue, int timeOut, FailureHandling flowControl) {
+        WebUIKeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = false;
+            try {
+                WebUiCommonHelper.checkTestObjectParameter(to);
+                KeywordLogger.getInstance().logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME);
+                if (attributeName == null) {
+                    throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
+                }
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
+                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
+                WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
+                Boolean hasAttributeValue = new FluentWait<WebElement>(foundElement)
+                        .pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeOut, TimeUnit.SECONDS)
+                        .until(new Function<WebElement, Boolean>() {
+                            @Override
+                            public Boolean apply(WebElement element) {
+                                return foundElement.getAttribute(attributeName) == attributeValue;
+                            }
+                        });
+                if (hasAttributeValue) {
+                    logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue));
+                    return true;
+                }
+            } catch (WebElementNotFoundException ex) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
+            } catch (TimeoutException e) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_FAILED_WAIT_FOR_OBJ_X_HAS_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue));
+            } finally {
+                if (isSwitchIntoFrame) {
+                    WebUiBuiltInKeywords.switchToDefaultContent();
+                }
+            }
+            return false;
+        }
+        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue)
+        : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_ATTRIBUTE_VALUE)
     }
 }

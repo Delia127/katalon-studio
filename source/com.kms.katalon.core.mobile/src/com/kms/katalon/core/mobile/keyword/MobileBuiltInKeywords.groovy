@@ -9,6 +9,7 @@ import io.appium.java_client.android.AndroidKeyCode
 import io.appium.java_client.ios.IOSDriver
 
 import java.text.MessageFormat
+import java.util.concurrent.TimeUnit
 
 import org.apache.commons.io.FileUtils
 import org.apache.commons.lang.StringUtils
@@ -17,9 +18,14 @@ import org.openqa.selenium.Dimension
 import org.openqa.selenium.OutputType
 import org.openqa.selenium.Point
 import org.openqa.selenium.ScreenOrientation
+import org.openqa.selenium.TimeoutException
+import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.interactions.touch.TouchActions
+import org.openqa.selenium.remote.server.DriverFactory
+import org.openqa.selenium.support.ui.FluentWait
 
+import com.google.common.base.Function
 import com.kms.katalon.core.annotation.Keyword
 import com.kms.katalon.core.configuration.RunConfiguration
 import com.kms.katalon.core.exception.StepFailedException
@@ -541,23 +547,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
                 KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_NOT_FOUND, to.getObjectId()), flowControl, null);
                 return null;
             }
-            String val = "";
-            switch (name.toString()) {
-                case GUIObject.HEIGHT:
-                    val = String.valueOf(element.getSize().height);
-
-                case GUIObject.WIDTH:
-                    val = String.valueOf(element.getSize().width);
-
-                case GUIObject.X:
-                    val = String.valueOf(element.getLocation().x);
-
-                case GUIObject.Y:
-                    val = String.valueOf(element.getLocation().y);
-
-                default:
-                    val = element.getAttribute(name);
-            }
+            String val = MobileCommonHelper.getAttributeValue(element, name);
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ELEMENT_HAS_ATTR, to.getObjectId(), name, val));
             return val;
         }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_GET_ELEMENT_X_ATTR_Y, to.getObjectId(), name)
@@ -586,7 +576,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ELEMENT_PRESENTED, to.getObjectId()));
                 return true;
             } else {
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_NOT_FOUND, to.getObjectId()), flowControl, null);
+                logger.logWarning(MessageFormat.format(StringConstants.KW_MSG_OBJ_NOT_FOUND, to.getObjectId()));
                 return false;
             }
         }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_WAIT_FOR_ELEMENT_PRESENT, to.getObjectId())
@@ -975,7 +965,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, to != null ?  MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_NOT_VISIBLE, to.getObjectId())
         : StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_NOT_VISIBLE);
     }
-    
+
     /**
      * Get device's physical width
      * @param flowControl
@@ -1023,7 +1013,282 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, StringConstants.KW_MSG_UNABLE_GET_DEVICE_HEIGHT)
     }
+
+    /**
+     * Verify if the element has an attribute with the specific name
+     * @param to
+     *      represent a mobile element
+     * @param attributeName
+     *      the name of the attribute to verify
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return true if element has the attribute with the specific name; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementHasAttribute(TestObject to, String attributeName, int timeout, FailureHandling flowControl) {
+        KeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = false;
+            KeywordHelper.checkTestObjectParameter(to);
+            logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME);
+            if (attributeName == null) {
+                throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
+            }
+            timeout = KeywordHelper.checkTimeout(timeout);
+            WebElement foundElement = findElement(to, timeout);
+            if (foundElement == null) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_EXISTED, to.getObjectId()));
+                return false;
+            }
+            String attribute = MobileCommonHelper.getAttributeValue(foundElement, attributeName);
+            if (attribute != null) {
+                KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
+                return true;
+            }  else {
+                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName), flowControl, null);
+                return false;
+            }
+        }
+        , flowControl, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
+        : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_HAS_ATTRIBUTE)
+    }
+
+    /**
+     * Verify if the element doesn't have an attribute with the specific name
+     * @param to
+     *      represent a mobile element
+     * @param attributeName
+     *      the name of the attribute to verify
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return true if element has the attribute with the specific name; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementNotHasAttribute(TestObject to, String attributeName, int timeout, FailureHandling flowControl) {
+        KeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = false;
+            KeywordHelper.checkTestObjectParameter(to);
+            logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME);
+            if (attributeName == null) {
+                throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
+            }
+            timeout = KeywordHelper.checkTimeout(timeout);
+            WebElement foundElement = findElement(to, timeout);
+            if (foundElement == null) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_EXISTED, to.getObjectId()));
+                return false;
+            }
+            String attribute = MobileCommonHelper.getAttributeValue(foundElement, attributeName);
+            if (attribute == null) {
+                KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_NOT_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
+                return true;
+            }  else {
+                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_NOT_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName), flowControl, null);
+                return false;
+            }
+        }
+        , flowControl, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_NOT_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
+        : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_NOT_HAS_ATTRIBUTE)
+    }
+
+    /**
+     * Verify if the element has an attribute with the specific name and value
+     * @param to
+     *      represent a mobile element
+     * @param attributeName
+     *      the name of the attribute to verify
+     * @param attributeValue
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return true if element has the attribute with the specific name and value; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementAttributeValue(TestObject to, String attributeName, String attributeValue, int timeout, FailureHandling flowControl) {
+        KeywordMain.runKeyword({
+            KeywordHelper.checkTestObjectParameter(to);
+            logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME);
+            if (attributeName == null) {
+                throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
+            }
+            timeout = KeywordHelper.checkTimeout(timeout);
+            WebElement foundElement = findElement(to, timeout);
+            if (foundElement == null) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_EXISTED, to.getObjectId()));
+                return false;
+            }
+            String actualAttributeValue = MobileCommonHelper.getAttributeValue(foundElement, attributeName);
+            if (actualAttributeValue != null) {
+                if (actualAttributeValue.equals(attributeValue)) {
+                    KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_ATTRIBUTE_Y_VALUE_Z,
+                            to.getObjectId(), attributeName, attributeValue));
+                    return true;
+                } else {
+                    KeywordMain.stepFailed(
+                            MessageFormat.format(
+                            StringConstants.KW_LOG_FAILED_OBJ_X_ATTRIBUTE_Y_ACTUAL_VALUE_Z_EXPECTED_VALUE_W,
+                            to.getObjectId(), attributeName, actualAttributeValue, attributeValue), flowControl, null);
+                    return false;
+                }
+            }  else {
+                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName), flowControl, null);
+                return false;
+            }
+        }
+        , flowControl, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue)
+        : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_ATTRIBUTE_VALUE)
+    }
     
+    /**
+     * Wait until the given web element has an attribute with the specific name
+     * @param to
+     *      represent a mobile element
+     * @param attributeName
+     *      the name of the attribute to wait for
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return true if element has the attribute with the specific name; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean waitForElementHasAttribute(TestObject to, String attributeName, int timeout, FailureHandling flowControl) {
+       KeywordMain.runKeyword({
+            try {
+                KeywordHelper.checkTestObjectParameter(to);
+                KeywordLogger.getInstance().logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME);
+                if (attributeName == null) {
+                    throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
+                }
+                timeout = KeywordHelper.checkTimeout(timeout);
+                WebElement foundElement = findElement(to, timeout);
+                if (foundElement == null) {
+                    logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_EXISTED, to.getObjectId()));
+                    return false;
+                }
+                Boolean hasAttribute = new FluentWait<WebElement>(foundElement)
+                        .pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeout, TimeUnit.SECONDS)
+                        .until(new Function<WebElement, Boolean>() {
+                            @Override
+                            public Boolean apply(WebElement element) {
+                                return MobileCommonHelper.getAttributeValue(foundElement, attributeName) != null;
+                            }
+                        });
+                if (hasAttribute) {
+                    logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
+                    return true;
+                }
+            } catch (TimeoutException e) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
+            }
+            return false;
+        }
+        , flowControl, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
+        : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_HAS_ATTRIBUTE)
+    }
+    
+    /**
+     * Wait until the given web element doesn't have an attribute with the specific name
+     * @param to
+     *      represent a web element
+     * @param attributeName
+     *      the name of the attribute to wait for
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return true if element doesn't have the attribute with the specific name; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean waitForElementNotHasAttribute(TestObject to, String attributeName, int timeout, FailureHandling flowControl) {
+       KeywordMain.runKeyword({
+            try {
+                KeywordHelper.checkTestObjectParameter(to);
+                KeywordLogger.getInstance().logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME);
+                if (attributeName == null) {
+                    throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
+                }
+                timeout = KeywordHelper.checkTimeout(timeout);
+                WebElement foundElement = findElement(to, timeout);
+                if (foundElement == null) {
+                    logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_EXISTED, to.getObjectId()));
+                    return false;
+                }
+                Boolean notHasAttribute = new FluentWait<WebElement>(foundElement)
+                        .pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeout, TimeUnit.SECONDS)
+                        .until(new Function<WebElement, Boolean>() {
+                            @Override
+                            public Boolean apply(WebElement element) {
+                                return MobileCommonHelper.getAttributeValue(foundElement, attributeName) == null;
+                            }
+                        });
+                if (notHasAttribute) {
+                    logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
+                    return true;
+                }
+            } catch (TimeoutException e) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
+            }
+            return false;
+        }
+        , flowControl, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_NOT_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
+        : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_NOT_HAS_ATTRIBUTE)
+    }
+    
+    /**
+     * Wait until the given web element has an attribute with the specific name and value
+     * @param to
+     *      represent a mobile element
+     * @param attributeName
+     *      the name of the attribute to wait for
+     * @param attributeValue
+     *      the value of the attribute to wait for
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return true if element has the attribute with the specific name and value; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean waitForElementAttributeValue(TestObject to, String attributeName, String attributeValue, int timeout, FailureHandling flowControl) {
+       KeywordMain.runKeyword({
+            try {
+                KeywordHelper.checkTestObjectParameter(to);
+                KeywordLogger.getInstance().logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME);
+                if (attributeName == null) {
+                    throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
+                }
+                timeout = KeywordHelper.checkTimeout(timeout);
+                WebElement foundElement = findElement(to, timeout);
+                if (foundElement == null) {
+                    logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_EXISTED, to.getObjectId()));
+                    return false;
+                }
+                Boolean hasAttributeValue = new FluentWait<WebElement>(foundElement)
+                        .pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeout, TimeUnit.SECONDS)
+                        .until(new Function<WebElement, Boolean>() {
+                            @Override
+                            public Boolean apply(WebElement element) {
+                                return MobileCommonHelper.getAttributeValue(foundElement, attributeName) == attributeValue;
+                            }
+                        });
+                if (hasAttributeValue) {
+                    logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue));
+                    return true;
+                }
+            } catch (TimeoutException e) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_FAILED_WAIT_FOR_OBJ_X_HAS_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue));
+            }
+            return false;
+        }
+        , flowControl, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue)
+        : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_ATTRIBUTE_VALUE)
+    }
+
     /**
      * Internal method to find a mobile element
      * @param to
