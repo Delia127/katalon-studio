@@ -460,6 +460,8 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_MSG_CANNOT_VERIFY_OBJ_ATTRIBUTE_VALUE = "Unable to verify element attribute value";
     public static final String KW_MSG_CANNOT_WAIT_OBJ_X_HAS_ATTRIBUTE_Y = "Unable to wait for object ''{0}'' to have attribute ''{1}''";
     public static final String KW_MSG_CANNOT_WAIT_OBJ_HAS_ATTRIBUTE = "Unable to verify wait for object to have attribute";
+    public static final String KW_MSG_CANNOT_WAIT_OBJ_X_NOT_HAS_ATTRIBUTE_Y = "Unable to wait for object ''{0}'' to not have attribute ''{1}''";
+    public static final String KW_MSG_CANNOT_WAIT_OBJ_NOT_HAS_ATTRIBUTE = "Unable to verify wait for object to not have attribute";
     
 	public static final String KW_CATEGORIZE_ALERT = "Alert";
 	public static final String KW_CATEGORIZE_ATTRIBUTE = "Attribute";
