@@ -9,6 +9,7 @@ import io.appium.java_client.android.AndroidKeyCode
 import io.appium.java_client.ios.IOSDriver
 
 import java.text.MessageFormat
+import java.util.concurrent.TimeUnit
 
 import org.apache.commons.io.FileUtils
 import org.apache.commons.lang.StringUtils
@@ -17,9 +18,14 @@ import org.openqa.selenium.Dimension
 import org.openqa.selenium.OutputType
 import org.openqa.selenium.Point
 import org.openqa.selenium.ScreenOrientation
+import org.openqa.selenium.TimeoutException
+import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.interactions.touch.TouchActions
+import org.openqa.selenium.remote.server.DriverFactory
+import org.openqa.selenium.support.ui.FluentWait
 
+import com.google.common.base.Function
 import com.kms.katalon.core.annotation.Keyword
 import com.kms.katalon.core.configuration.RunConfiguration
 import com.kms.katalon.core.exception.StepFailedException
@@ -1030,7 +1036,6 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
                 throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
             }
             timeout = KeywordHelper.checkTimeout(timeout);
-            AppiumDriver<?> driver = MobileDriverFactory.getDriver();
             WebElement foundElement = findElement(to, timeout);
             if (foundElement == null) {
                 logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_EXISTED, to.getObjectId()));
@@ -1071,7 +1076,6 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
                 throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
             }
             timeout = KeywordHelper.checkTimeout(timeout);
-            AppiumDriver<?> driver = MobileDriverFactory.getDriver();
             WebElement foundElement = findElement(to, timeout);
             if (foundElement == null) {
                 logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_EXISTED, to.getObjectId()));
@@ -1106,14 +1110,12 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
     public static boolean verifyElementAttributeValue(TestObject to, String attributeName, String attributeValue, int timeout, FailureHandling flowControl) {
         KeywordMain.runKeyword({
-            boolean isSwitchIntoFrame = false;
             KeywordHelper.checkTestObjectParameter(to);
             logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME);
             if (attributeName == null) {
                 throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
             }
             timeout = KeywordHelper.checkTimeout(timeout);
-            AppiumDriver<?> driver = MobileDriverFactory.getDriver();
             WebElement foundElement = findElement(to, timeout);
             if (foundElement == null) {
                 logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_EXISTED, to.getObjectId()));
@@ -1139,6 +1141,50 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue)
         : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_ATTRIBUTE_VALUE)
+    }
+    
+    /**
+     * Wait until the given web element has an attribute with the specific name
+     * @param to
+     *      represent a web element
+     * @param attributeName
+     *      the name of the attribute to wait for
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return true if element has the attribute with the specific name; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean waitForElementHasAttribute(TestObject to, String attributeName, int timeout, FailureHandling flowControl) {
+       KeywordMain.runKeyword({
+            try {
+                KeywordHelper.checkTestObjectParameter(to);
+                KeywordLogger.getInstance().logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME);
+                if (attributeName == null) {
+                    throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
+                }
+                timeout = KeywordHelper.checkTimeout(timeout);
+                WebElement foundElement = findElement(to, timeout);
+                Boolean hasAttribute = new FluentWait<WebElement>(foundElement)
+                        .pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeout, TimeUnit.SECONDS)
+                        .until(new Function<WebElement, Boolean>() {
+                            @Override
+                            public Boolean apply(WebElement element) {
+                                return MobileCommonHelper.getAttributeValue(foundElement, attributeName) != null;
+                            }
+                        });
+                if (hasAttribute) {
+                    logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
+                    return true;
+                }
+            } catch (TimeoutException e) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
+            }
+            return false;
+        }
+        , flowControl, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
+        : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_HAS_ATTRIBUTE)
     }
 
     /**
