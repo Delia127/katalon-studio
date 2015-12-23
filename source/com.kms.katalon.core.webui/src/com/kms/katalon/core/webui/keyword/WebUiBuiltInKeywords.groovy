@@ -3306,6 +3306,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
                 WebDriver driver = DriverFactory.getWebDriver();
                 isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
@@ -3345,6 +3346,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
                 WebDriver driver = DriverFactory.getWebDriver();
                 isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
@@ -3424,6 +3426,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (attributeName == null) {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
                 WebDriver driver = DriverFactory.getWebDriver();
                 isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
@@ -3469,6 +3472,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (attributeName == null) {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
                 WebDriver driver = DriverFactory.getWebDriver();
                 isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
@@ -3516,6 +3520,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (attributeName == null) {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
                 WebDriver driver = DriverFactory.getWebDriver();
                 isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
@@ -3569,6 +3574,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (attributeName == null) {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
                 WebDriver driver = DriverFactory.getWebDriver();
                 isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
@@ -3598,7 +3604,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
         : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_HAS_ATTRIBUTE)
     }
-    
+
     /**
      * Wait until the given web element doesn't have an attribute with the specific name
      * @param to
@@ -3621,6 +3627,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (attributeName == null) {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
                 WebDriver driver = DriverFactory.getWebDriver();
                 isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
@@ -3650,5 +3657,60 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_NOT_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
         : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_NOT_HAS_ATTRIBUTE)
+    }
+
+    /**
+     * Wait until the given web element has an attribute with the specific name and value
+     * @param to
+     *      represent a web element
+     * @param attributeName
+     *      the name of the attribute to wait for
+     * @param attributeValue
+     *      the value of the attribute to wait for
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return true if element has the attribute with the specific name and value; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean waitForElementAttributeValue(TestObject to, String attributeName, String attributeValue, int timeOut, FailureHandling flowControl) {
+        WebUIKeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = false;
+            try {
+                WebUiCommonHelper.checkTestObjectParameter(to);
+                KeywordLogger.getInstance().logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME);
+                if (attributeName == null) {
+                    throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
+                }
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
+                WebDriver driver = DriverFactory.getWebDriver();
+                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
+                WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
+                Boolean hasAttributeValue = new FluentWait<WebElement>(foundElement)
+                        .pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeOut, TimeUnit.SECONDS)
+                        .until(new Function<WebElement, Boolean>() {
+                            @Override
+                            public Boolean apply(WebElement element) {
+                                return foundElement.getAttribute(attributeName) == attributeValue;
+                            }
+                        });
+                if (hasAttributeValue) {
+                    logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue));
+                    return true;
+                }
+            } catch (WebElementNotFoundException ex) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
+            } catch (TimeoutException e) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_FAILED_WAIT_FOR_OBJ_X_HAS_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue));
+            } finally {
+                if (isSwitchIntoFrame) {
+                    WebUiBuiltInKeywords.switchToDefaultContent();
+                }
+            }
+            return false;
+        }
+        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue)
+        : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_ATTRIBUTE_VALUE)
     }
 }
