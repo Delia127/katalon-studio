@@ -959,7 +959,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, to != null ?  MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_NOT_VISIBLE, to.getObjectId())
         : StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_NOT_VISIBLE);
     }
-    
+
     /**
      * Get device's physical width
      * @param flowControl
@@ -1007,7 +1007,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, StringConstants.KW_MSG_UNABLE_GET_DEVICE_HEIGHT)
     }
-    
+
     /**
      * Verify if the element has an attribute with the specific name
      * @param to
@@ -1048,7 +1048,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         , flowControl, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
         : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_HAS_ATTRIBUTE)
     }
-    
+
     /**
      * Verify if the element doesn't have an attribute with the specific name
      * @param to
@@ -1089,7 +1089,58 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         , flowControl, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_NOT_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
         : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_NOT_HAS_ATTRIBUTE)
     }
-    
+
+    /**
+     * Verify if the element has an attribute with the specific name and value
+     * @param to
+     *      represent a mobile element
+     * @param attributeName
+     *      the name of the attribute to verify
+     * @param attributeValue
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return true if element has the attribute with the specific name and value; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementAttributeValue(TestObject to, String attributeName, String attributeValue, int timeout, FailureHandling flowControl) {
+        KeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = false;
+            KeywordHelper.checkTestObjectParameter(to);
+            logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME);
+            if (attributeName == null) {
+                throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
+            }
+            timeout = KeywordHelper.checkTimeout(timeout);
+            AppiumDriver<?> driver = MobileDriverFactory.getDriver();
+            WebElement foundElement = findElement(to, timeout);
+            if (foundElement == null) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_EXISTED, to.getObjectId()));
+                return false;
+            }
+            String actualAttributeValue = MobileCommonHelper.getAttributeValue(foundElement, attributeName);
+            if (actualAttributeValue != null) {
+                if (actualAttributeValue.equals(attributeValue)) {
+                    KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_ATTRIBUTE_Y_VALUE_Z,
+                            to.getObjectId(), attributeName, attributeValue));
+                    return true;
+                } else {
+                    KeywordMain.stepFailed(
+                            MessageFormat.format(
+                            StringConstants.KW_LOG_FAILED_OBJ_X_ATTRIBUTE_Y_ACTUAL_VALUE_Z_EXPECTED_VALUE_W,
+                            to.getObjectId(), attributeName, actualAttributeValue, attributeValue), flowControl, null);
+                    return false;
+                }
+            }  else {
+                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName), flowControl, null);
+                return false;
+            }
+        }
+        , flowControl, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue)
+        : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_ATTRIBUTE_VALUE)
+    }
+
     /**
      * Internal method to find a mobile element
      * @param to

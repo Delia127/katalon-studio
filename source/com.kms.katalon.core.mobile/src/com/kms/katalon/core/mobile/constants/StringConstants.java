@@ -109,6 +109,10 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_LOG_FAILED_OBJ_X_NOT_HAS_ATTRIBUTE_Y = KW_LOG_PASSED_OBJ_X_HAS_ATTRIBUTE_Y;
     public static final String KW_MSG_CANNOT_VERIFY_OBJ_X_NOT_HAS_ATTRIBUTE_Y = "Unable to verify if object ''{0}'' doesn't have attribute ''{1}''";
     public static final String KW_MSG_CANNOT_VERIFY_OBJ_NOT_HAS_ATTRIBUTE = "Unable to verify if object doesn't attribute";
+    public static final String KW_LOG_PASSED_OBJ_X_ATTRIBUTE_Y_VALUE_Z = "Object ''{0}'' has attribute ''{1}'' with value ''{2}''";
+    public static final String KW_LOG_FAILED_OBJ_X_ATTRIBUTE_Y_ACTUAL_VALUE_Z_EXPECTED_VALUE_W = "Object ''{0}'' has attribute ''{1}'' with actual value ''{2}'' instead of expected value ''{3}''";
+    public static final String KW_MSG_CANNOT_VERIFY_OBJ_X_ATTRIBUTE_Y_VALUE_Z = "Unable to verify if object ''{0}'' has attribute ''{1}'' with value ''{2}''";
+    public static final String KW_MSG_CANNOT_VERIFY_OBJ_ATTRIBUTE_VALUE = "Unable to verify element attribute value";
     
 	public static final String KW_CATEGORIZE_APPLICATION = "Application";
 	public static final String KW_CATEGORIZE_ATTRIBUTE = "Attribute";
