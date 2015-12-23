@@ -96,7 +96,7 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String LIS_ERROR_MSG_UNABLE_TO_ADD_TEST_DATA = "Unable to add Test Data.";
 
-    public static final String LIS_INFO_MSG_DONE = DONE;
+    public static final String LIS_INFO_MSG_MAP_DONE = "Found {0} match(es)";
 
     public static final String LIS_INFO_SELECT_A_TEST_CASE = "Please select a test case.";
 
