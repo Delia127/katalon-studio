@@ -3549,6 +3549,6 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             return false;
         }
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue)
-        : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_ATTRIBUTE)
+        : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_ATTRIBUTE_VALUE)
     }
 }
