@@ -760,6 +760,11 @@ public class QTestIntegrationTestSuiteManager {
                 qTestSuite.setParent(tsParent);
             }
 
+            if (qTestSuite.getParent() == null) {
+                QTestSuiteParent root = getTestSuiteIdRootOnQTest(credential, qTestProject);
+                qTestSuite.setParent(root);
+            }
+            
             return qTestSuite;
         } catch (JsonException ex) {
             throw QTestInvalidFormatException.createInvalidJsonFormatException(ex.getMessage());

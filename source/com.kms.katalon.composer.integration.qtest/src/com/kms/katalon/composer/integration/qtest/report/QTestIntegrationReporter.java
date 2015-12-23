@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.integration.qtest.report;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -53,13 +54,12 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
         String projectDir = projectEntity.getFolderLocation();
         TestCaseEntity testCaseEntity = TestCaseController.getInstance().getTestCaseByDisplayId(testLogEntity.getId());
-        IntegratedEntity testSuiteIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(testSuiteEntity);
         IntegratedEntity testCaseIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(testCaseEntity);
 
-        if (testSuiteIntegratedEntity != null && testCaseIntegratedEntity != null
-                && isSameQTestProject(testCaseEntity, testSuiteEntity, projectEntity)) {
-            QTestSuite selectedQTestSuite = getSelectedTestSuite(testSuiteIntegratedEntity, testSuiteEntity);
+        if (testCaseIntegratedEntity != null && isSameQTestProject(testCaseEntity, testSuiteEntity, projectEntity)) {
+            QTestSuite selectedQTestSuite = getSelectedTestSuite(testSuiteEntity);
 
+            IntegratedEntity testSuiteIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(testSuiteEntity);
             List<QTestSuite> qTestSuiteCollection = QTestIntegrationTestSuiteManager
                     .getQTestSuiteListByIntegratedEntity(testSuiteIntegratedEntity);
             if (selectedQTestSuite == null) {
@@ -113,10 +113,13 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
         }
     }
 
-    private QTestSuite getSelectedTestSuite(IntegratedEntity testSuiteIntegratedEntity, TestSuiteEntity testSuite)
-            throws Exception {
-        List<QTestSuite> qTestSuiteCollection = QTestIntegrationTestSuiteManager
-                .getQTestSuiteListByIntegratedEntity(testSuiteIntegratedEntity);
+    private QTestSuite getSelectedTestSuite(TestSuiteEntity testSuite) throws Exception {
+        IntegratedEntity testSuiteIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(testSuite);
+        List<QTestSuite> qTestSuiteCollection = new ArrayList<QTestSuite>();
+        if (testSuiteIntegratedEntity != null) {
+            QTestIntegrationTestSuiteManager.getQTestSuiteListByIntegratedEntity(testSuiteIntegratedEntity);
+        }
+
         QTestProject qTestProject = QTestIntegrationUtil.getTestSuiteRepo(testSuite,
                 ProjectController.getInstance().getCurrentProject()).getQTestProject();
         if (cmd == null || cmd.isUploadByDefault()) {
