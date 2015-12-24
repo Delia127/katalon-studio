@@ -3501,7 +3501,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      *      represent a web element
      * @param attributeName
      *      the name of the attribute to verify
-     * @param attributeName
+     * @param attributeValue
      *      the value of the attribute to verify
      * @param timeOut
      *      system will wait at most timeout (seconds) to return result

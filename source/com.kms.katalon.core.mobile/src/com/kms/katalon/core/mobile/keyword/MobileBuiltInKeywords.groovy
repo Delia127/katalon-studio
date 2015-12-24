@@ -1101,6 +1101,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      * @param attributeName
      *      the name of the attribute to verify
      * @param attributeValue
+     *       the value of the attribute to verify
      * @param timeOut
      *      system will wait at most timeout (seconds) to return result
      * @param flowControl
