@@ -981,7 +981,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             try {
                 internalSwitchToNativeContext(driver)
                 int viewportWidth = driver.manage().window().getSize().getWidth();
-                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_DEVICE_WIDTH_X, viewportWidth));
+                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_DEVICE_WIDTH_X, viewportWidth.toString()));
                 return viewportWidth;
             } finally {
                 driver.context(context);
@@ -1005,7 +1005,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             try {
                 internalSwitchToNativeContext(driver)
                 int viewportHeight = driver.manage().window().getSize().getHeight();
-                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_DEVICE_HEIGHT_X, viewportHeight));
+                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_DEVICE_HEIGHT_X, viewportHeight.toString()));
                 return viewportHeight;
             } finally {
                 driver.context(context);
