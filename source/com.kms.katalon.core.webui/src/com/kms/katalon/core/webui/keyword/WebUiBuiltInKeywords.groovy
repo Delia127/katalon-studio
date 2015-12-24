@@ -3803,4 +3803,21 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, true, StringConstants.KW_MSG_CANNOT_GET_PAGE_HEIGHT)
     }
+    
+    /**
+     * Get current view port left (x) position
+     * @param flowControl
+     * @return current view port left (x) position
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static int getViewportLeftPosition(FailureHandling flowControl) {
+        return (int) WebUIKeywordMain.runKeyword({
+            Number leftPosition = (Number) ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript('return window.pageXOffset || document.documentElement.scrollLeft;');
+            int leftPositionIntValue = leftPosition.intValue();
+            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_VIEWPORT_LEFT_POSITION_X, leftPositionIntValue.toString()));
+            return leftPositionIntValue;
+        }
+        , flowControl, true, StringConstants.KW_MSG_CANNOT_GET_VIEWPORT_LEFT_POSITION)
+    }
 }
