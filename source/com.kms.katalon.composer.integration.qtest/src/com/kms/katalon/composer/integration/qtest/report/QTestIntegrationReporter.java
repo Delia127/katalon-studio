@@ -117,7 +117,7 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
         IntegratedEntity testSuiteIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(testSuite);
         List<QTestSuite> qTestSuiteCollection = new ArrayList<QTestSuite>();
         if (testSuiteIntegratedEntity != null) {
-            QTestIntegrationTestSuiteManager.getQTestSuiteListByIntegratedEntity(testSuiteIntegratedEntity);
+            qTestSuiteCollection = QTestIntegrationTestSuiteManager.getQTestSuiteListByIntegratedEntity(testSuiteIntegratedEntity);
         }
 
         QTestProject qTestProject = QTestIntegrationUtil.getTestSuiteRepo(testSuite,
