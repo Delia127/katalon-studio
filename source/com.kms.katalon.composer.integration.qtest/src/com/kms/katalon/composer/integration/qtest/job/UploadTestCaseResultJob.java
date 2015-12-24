@@ -160,7 +160,7 @@ public class UploadTestCaseResultJob extends QTestJob {
                     }
 
                     // Save test suite.
-                    QTestIntegrationUtil.addNewTestRunToTestSuite(testSuiteEntity, testSuiteIntegratedEntity,
+                    testSuiteEntity = QTestIntegrationUtil.addNewTestRunToTestSuite(testSuiteEntity, testSuiteIntegratedEntity,
                             uploadedItem.getQTestSuite(), qTestRun, qTestSuiteCollection);
 
                     uploadedItem.setQTestRun(qTestRun);

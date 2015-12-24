@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.integration.qtest.report;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import com.kms.katalon.composer.integration.qtest.model.TestSuiteRepo;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestCaseController;
+import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
@@ -17,20 +19,30 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.integration.IntegrationCommand;
 import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.integration.qtest.QTestIntegrationReportManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestCaseManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager;
+import com.kms.katalon.integration.qtest.credential.IQTestCredential;
 import com.kms.katalon.integration.qtest.entity.QTestLog;
 import com.kms.katalon.integration.qtest.entity.QTestLogUploadedPreview;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.entity.QTestRun;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
+import com.kms.katalon.integration.qtest.entity.QTestSuiteParent;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
 import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class QTestIntegrationReporter implements ReportIntegrationContribution {
+
+    private QTestIntegrationCommandImpl cmd;
+
+    private IQTestCredential getCredential() {
+        String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+        return QTestSettingCredential.getCredential(projectDir);
+    }
 
     /**
      * Uploads result of test runs of test suite to qTest. A test run matches with a test case link in test suite.
@@ -42,15 +54,14 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
         String projectDir = projectEntity.getFolderLocation();
         TestCaseEntity testCaseEntity = TestCaseController.getInstance().getTestCaseByDisplayId(testLogEntity.getId());
-        IntegratedEntity testSuiteIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(testSuiteEntity);
         IntegratedEntity testCaseIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(testCaseEntity);
 
-        if (testSuiteIntegratedEntity != null && testCaseIntegratedEntity != null
-                && isSameQTestProject(testCaseEntity, testSuiteEntity, projectEntity)) {
+        if (testCaseIntegratedEntity != null && isSameQTestProject(testCaseEntity, testSuiteEntity, projectEntity)) {
+            QTestSuite selectedQTestSuite = getSelectedTestSuite(testSuiteEntity);
+
+            IntegratedEntity testSuiteIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(testSuiteEntity);
             List<QTestSuite> qTestSuiteCollection = QTestIntegrationTestSuiteManager
                     .getQTestSuiteListByIntegratedEntity(testSuiteIntegratedEntity);
-            QTestSuite selectedQTestSuite = QTestIntegrationTestSuiteManager
-                    .getSelectedQTestSuiteByIntegratedEntity(qTestSuiteCollection);
             if (selectedQTestSuite == null) {
                 return;
             }
@@ -72,7 +83,7 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
                 if (qTestRun == null) {
                     // If qTestRun isn't in the current list, upload new to qTest.
                     qTestRun = QTestIntegrationTestSuiteManager.uploadTestCaseInTestSuite(qTestCase,
-                            selectedQTestSuite, qTestProject, QTestSettingCredential.getCredential(projectDir));
+                            selectedQTestSuite, qTestProject, getCredential());
                 }
 
                 // Save test suite.
@@ -100,6 +111,105 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
 
             QTestIntegrationUtil.saveReportEntity(reportEntity, uploadedPreview);
         }
+    }
+
+    private QTestSuite getSelectedTestSuite(TestSuiteEntity testSuite) throws Exception {
+        IntegratedEntity testSuiteIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(testSuite);
+        List<QTestSuite> qTestSuiteCollection = new ArrayList<QTestSuite>();
+        if (testSuiteIntegratedEntity != null) {
+            qTestSuiteCollection = QTestIntegrationTestSuiteManager.getQTestSuiteListByIntegratedEntity(testSuiteIntegratedEntity);
+        }
+
+        QTestProject qTestProject = QTestIntegrationUtil.getTestSuiteRepo(testSuite,
+                ProjectController.getInstance().getCurrentProject()).getQTestProject();
+        if (cmd == null || cmd.isUploadByDefault()) {
+            return QTestIntegrationTestSuiteManager.getSelectedQTestSuiteByIntegratedEntity(qTestSuiteCollection);
+        } else {
+            QTestSuite selectedQTestSuite = null;
+            long desId = cmd.getDestinationId();
+            String desType = cmd.getDestinationType();
+
+            // Search in list of qTestSuite of the given testSuite first
+            if ("test-suite".equals(desType)) {
+                selectedQTestSuite = QTestIntegrationTestSuiteManager.getQTestSuite(desId, qTestSuiteCollection);
+                if (selectedQTestSuite != null) {
+                    return updateTestSuite(selectedQTestSuite, qTestSuiteCollection, testSuite, qTestProject);
+                }
+
+                selectedQTestSuite = QTestIntegrationTestSuiteManager.getQTestSuite(desId, qTestProject,
+                        getCredential());
+                return updateTestSuite(selectedQTestSuite, qTestSuiteCollection, testSuite, qTestProject);
+            } else {
+                selectedQTestSuite = getQTestSuiteByParentId(desId, qTestSuiteCollection);
+
+                if (selectedQTestSuite != null) {
+                    return updateTestSuite(selectedQTestSuite, qTestSuiteCollection, testSuite, qTestProject);
+                }
+
+                // Update the uploaded destination's information
+                QTestSuiteParent testSuiteParent = null;
+                int parentType = QTestIntegrationTestSuiteManager.getTestSuiteParentType(desType);
+                testSuiteParent = QTestIntegrationTestSuiteManager.getQTestSuiteParent(desId, parentType, qTestProject,
+                        getCredential());
+
+                // Create new QTestSuite that has not been uploaded
+                selectedQTestSuite = new QTestSuite();
+                selectedQTestSuite.setParent(testSuiteParent);
+
+                // Update test suite with new selectedQTestSuite
+                return updateTestSuite(selectedQTestSuite, qTestSuiteCollection, testSuite, qTestProject);
+            }
+        }
+    }
+
+    /**
+     * Adds the given <code>selectedQTs</code> into <code>qTsCollection</code> if it doesn't contain. Beside that, sets
+     * <code>selectedQTs</code> is selected and others are not. Finally, saves the given <code>tsEntity</code>.
+     * 
+     * @param selectedQTs
+     * @param qTsCollection
+     * @param tsEntity
+     * @return
+     * @throws Exception
+     */
+    private QTestSuite updateTestSuite(QTestSuite selectedQTs, List<QTestSuite> qTsCollection,
+            TestSuiteEntity testSuite, QTestProject qTestProject) throws Exception {
+        // Make sure the selectedQTestSuite is uploaded
+        if (selectedQTs.getId() <= 0L) {
+            QTestSuite siblingQTestSuite = QTestIntegrationTestSuiteManager.getDuplicatedTestSuiteOnQTest(
+                    getCredential(), testSuite.getName(), selectedQTs.getParent(), qTestProject);
+
+            if (siblingQTestSuite != null) {
+                selectedQTs = siblingQTestSuite;
+            } else {
+                selectedQTs = QTestIntegrationTestSuiteManager.uploadTestSuite(getCredential(), testSuite.getName(),
+                        testSuite.getDescription(), selectedQTs.getParent(), qTestProject);
+            }
+        }
+
+        // Set selectedQTs to be default
+        QTestIntegrationTestSuiteManager.setSelectedQTestSuite(selectedQTs, qTsCollection);
+
+        // Update test suite
+        IntegratedEntity tsIntegratedEntity = QTestIntegrationTestSuiteManager
+                .getIntegratedEntityByTestSuiteList(qTsCollection);
+
+        QTestIntegrationUtil.updateFileIntegratedEntity(testSuite, tsIntegratedEntity);
+
+        TestSuiteController.getInstance().updateTestSuite(testSuite);
+        return selectedQTs;
+
+    }
+
+    private QTestSuite getQTestSuiteByParentId(long id, List<QTestSuite> qTestSuiteCollection) {
+        for (QTestSuite qTestSuite : qTestSuiteCollection) {
+            QTestSuiteParent parent = qTestSuite.getParent();
+
+            if (parent != null && id == parent.getId()) {
+                return qTestSuite;
+            }
+        }
+        return null;
     }
 
     /**
@@ -131,11 +241,13 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
         if (testSuiteIntegratedEntity != null) {
             List<QTestSuite> qTestSuiteCollection = QTestIntegrationTestSuiteManager
                     .getQTestSuiteListByIntegratedEntity(testSuiteIntegratedEntity);
+
             QTestSuite selectedQTestSuite = QTestIntegrationTestSuiteManager
                     .getSelectedQTestSuiteByIntegratedEntity(qTestSuiteCollection);
 
             QTestProject qTestProject = QTestIntegrationUtil.getTestSuiteRepo(testSuiteEntity, projectEntity)
                     .getQTestProject();
+
             return QTestIntegrationTestSuiteManager.getTestRuns(selectedQTestSuite, qTestProject,
                     QTestSettingCredential.getCredential(projectEntity.getFolderLocation()));
         }
@@ -172,5 +284,13 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
                 uploadTestCaseResult(testSuite, projectIntegratedEntity, testCaseLogRecord, suiteLog);
             }
         }
+    }
+
+    @Override
+    public IntegrationCommand getIntegrationCommand() {
+        if (cmd == null) {
+            cmd = new QTestIntegrationCommandImpl();
+        }
+        return cmd;
     }
 };
