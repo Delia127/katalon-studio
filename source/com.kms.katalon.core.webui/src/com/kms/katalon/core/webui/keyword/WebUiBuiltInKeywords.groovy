@@ -3708,7 +3708,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue)
         : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_ATTRIBUTE_VALUE)
     }
-    
+
     /**
      * Set the size of the current window. This will change the outer window dimension and the viewport, synonymous to window.resizeTo() in JS.
      * @param width
@@ -3733,5 +3733,30 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SET_VIEWPORT_WIDTH_X_HEIGHT_Y, width, height));
         }
         , flowControl, true, StringConstants.KW_MSG_CANNOT_SET_VIEWPORT)
+    }
+
+    /**
+     * 
+     * @param x
+     * @param y
+     * @param flowControl
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static void scrollToPosition(int x, int y, FailureHandling flowControl) {
+        WebUIKeywordMain.runKeyword({
+            logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_X);
+            if (x < 0) {
+                throw new IllegalArgumentException(StringConstants.COMM_EXC_X_MUST_BE_ABOVE_ZERO);
+            }
+            logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_Y);
+            if (y < 0) {
+                throw new IllegalArgumentException(StringConstants.COMM_EXC_Y_MUST_BE_ABOVE_ZERO);
+            }
+            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SCROLLING_TO_POSITION_X_Y, x, y));
+            ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript("window.scrollTo(" + x.toString() + ", " + y.toString() + ");");
+            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SCROLL_TO_POSITION_X_Y, x, y));
+        }
+        , flowControl, true, MessageFormat.format(StringConstants.KW_MSG_CANNOT_SCROLL_TO_POSITION_X_Y, x, y))
     }
 }
