@@ -3730,7 +3730,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 throw new IllegalArgumentException(StringConstants.COMM_EXC_HEIGHT_MUST_BE_ABOVE_ZERO);
             }
             DriverFactory.getWebDriver().manage().window().setSize(new Dimension(width, height));
-            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SET_VIEWPORT_WIDTH_X_HEIGHT_Y, width, height));
+            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SET_VIEWPORT_WIDTH_X_HEIGHT_Y, width.toString(), height.toString()));
         }
         , flowControl, true, StringConstants.KW_MSG_CANNOT_SET_VIEWPORT)
     }
@@ -3755,10 +3755,31 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             if (y < 0) {
                 throw new IllegalArgumentException(StringConstants.COMM_EXC_Y_MUST_BE_ABOVE_ZERO);
             }
-            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SCROLLING_TO_POSITION_X_Y, x, y));
+            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SCROLLING_TO_POSITION_X_Y, x.toString(), y.toString()));
             ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript("window.scrollTo(" + x.toString() + ", " + y.toString() + ");");
-            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SCROLL_TO_POSITION_X_Y, x, y));
+            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SCROLL_TO_POSITION_X_Y, x.toString(), y.toString()));
         }
-        , flowControl, true, MessageFormat.format(StringConstants.KW_MSG_CANNOT_SCROLL_TO_POSITION_X_Y, x, y))
+        , flowControl, true, MessageFormat.format(StringConstants.KW_MSG_CANNOT_SCROLL_TO_POSITION_X_Y, x.toString(), y.toString()))
+    }
+
+    /**
+     * Get current web page's width
+     * @param flowControl
+     * @return current web page's width
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static int getPageWidth(FailureHandling flowControl) {
+        return (int) WebUIKeywordMain.runKeyword({
+            int pageWidth = (int) ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript('''return Math.max(
+                document.documentElement["clientWidth"], 
+                document.body["scrollWidth"], 
+                document.documentElement["scrollWidth"], 
+                document.body["offsetWidth"], 
+                document.documentElement["offsetWidth"]);''');
+            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_PAGE_WIDTH_X, pageWidth.toString()));
+            return pageWidth;
+        }
+        , flowControl, true, StringConstants.KW_MSG_CANNOT_GET_PAGE_WIDTH)
     }
 }

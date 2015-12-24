@@ -478,6 +478,8 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_LOG_PASSED_SCROLL_TO_POSITION_X_Y = "Browser is scrolled to position x = {0}, y = {1}";
     public static final String KW_MSG_CANNOT_SCROLL_TO_POSITION_X_Y = "Unable to scroll to position x = {0}, y = {1}";
     public static final String KW_LOG_INFO_SCROLLING_TO_POSITION_X_Y = "Scrolling to position x = {0}, y = {1}";
+    public static final String KW_LOG_PASSED_GET_PAGE_WIDTH_X = "Current page''s width is {0}";
+    public static final String KW_MSG_CANNOT_GET_PAGE_WIDTH = "Unable to get current page's width";
     
 	public static final String KW_CATEGORIZE_ALERT = "Alert";
 	public static final String KW_CATEGORIZE_ATTRIBUTE = "Attribute";
