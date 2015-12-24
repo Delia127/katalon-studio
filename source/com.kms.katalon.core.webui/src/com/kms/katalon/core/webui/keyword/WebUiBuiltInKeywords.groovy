@@ -3805,7 +3805,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
     
     /**
-     * Get current view port left (x) position
+     * Get current view port left (x) position relatively to the web page
      * @param flowControl
      * @return current view port left (x) position
      */
@@ -3819,5 +3819,22 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             return leftPositionIntValue;
         }
         , flowControl, true, StringConstants.KW_MSG_CANNOT_GET_VIEWPORT_LEFT_POSITION)
+    }
+    
+    /**
+     * Get current view port top (y) position relatively to the web page
+     * @param flowControl
+     * @return current view port top (y) position
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static int getViewportTopPosition(FailureHandling flowControl) {
+        return (int) WebUIKeywordMain.runKeyword({
+            Number topPosition = (Number) ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript('return window.pageYOffset || document.documentElement.scrollTop;');
+            int topPositionIntValue = topPosition.intValue();
+            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_VIEWPORT_TOP_POSITION_X, topPositionIntValue.toString()));
+            return topPositionIntValue;
+        }
+        , flowControl, true, StringConstants.KW_MSG_CANNOT_GET_VIEWPORT_TOP_POSITION)
     }
 }

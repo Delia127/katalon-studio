@@ -484,6 +484,8 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_MSG_CANNOT_GET_PAGE_HEIGHT = "Unable to get current page''s height";
     public static final String KW_LOG_PASSED_GET_VIEWPORT_LEFT_POSITION_X = "Current viewport''s left (x) position is {0}";
     public static final String KW_MSG_CANNOT_GET_VIEWPORT_LEFT_POSITION = "Unable to get viewport''s left (x) position";
+    public static final String KW_LOG_PASSED_GET_VIEWPORT_TOP_POSITION_X = "Current viewport''s left (x) position is {0}";
+    public static final String KW_MSG_CANNOT_GET_VIEWPORT_TOP_POSITION = "Unable to get viewport''s left (x) position";
     
 	public static final String KW_CATEGORIZE_ALERT = "Alert";
 	public static final String KW_CATEGORIZE_ATTRIBUTE = "Attribute";
