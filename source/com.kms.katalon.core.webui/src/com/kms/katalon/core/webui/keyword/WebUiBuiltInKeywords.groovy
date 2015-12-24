@@ -3782,4 +3782,25 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, true, StringConstants.KW_MSG_CANNOT_GET_PAGE_WIDTH)
     }
+    
+    /**
+     * Get current web page's height
+     * @param flowControl
+     * @return current web page's height
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static int getPageHeight(FailureHandling flowControl) {
+        return (int) WebUIKeywordMain.runKeyword({
+            int pageHeight = (int) ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript('''return Math.max(
+                document.documentElement["clientHeight"], 
+                document.body["scrollHeight"], 
+                document.documentElement["scrollHeight"], 
+                document.body["offsetHeight"], 
+                document.documentElement["offsetHeight"]);''');
+            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_PAGE_HEIGHT_X, pageHeight.toString()));
+            return pageHeight;
+        }
+        , flowControl, true, StringConstants.KW_MSG_CANNOT_GET_PAGE_HEIGHT)
+    }
 }
