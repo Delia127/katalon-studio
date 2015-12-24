@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit
 
 import org.openqa.selenium.Alert
 import org.openqa.selenium.By
+import org.openqa.selenium.Dimension
 import org.openqa.selenium.JavascriptExecutor
 import org.openqa.selenium.NoSuchElementException
 import org.openqa.selenium.NoSuchWindowException
@@ -3706,5 +3707,31 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue)
         : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_ATTRIBUTE_VALUE)
+    }
+    
+    /**
+     * Set the size of the current window. This will change the outer window dimension and the viewport, synonymous to window.resizeTo() in JS.
+     * @param width
+     *      the target viewport width
+     * @param height
+     *      the target viewport height
+     * @param flowControl
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static void setViewPort(int width, int height, FailureHandling flowControl) {
+        WebUIKeywordMain.runKeyword({
+            logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_WIDTH);
+            if (width <= 0) {
+                throw new IllegalArgumentException(StringConstants.COMM_EXC_WIDTH_MUST_BE_ABOVE_ZERO);
+            }
+            logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_HEIGHT);
+            if (height <= 0) {
+                throw new IllegalArgumentException(StringConstants.COMM_EXC_HEIGHT_MUST_BE_ABOVE_ZERO);
+            }
+            DriverFactory.getWebDriver().manage().window().setSize(new Dimension(width, height));
+            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SET_VIEWPORT_WIDTH_X_HEIGHT_Y, width, height));
+        }
+        , flowControl, true, StringConstants.KW_MSG_CANNOT_SET_VIEWPORT)
     }
 }
