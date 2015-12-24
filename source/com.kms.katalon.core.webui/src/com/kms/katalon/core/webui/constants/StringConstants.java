@@ -465,8 +465,8 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_LOG_FAILED_WAIT_FOR_OBJ_X_HAS_ATTRIBUTE_Y_VALUE_Z = "Object ''{0}'' does not have attribute ''{1}'' with value ''{2}''";
     public static final String KW_MSG_CANNOT_WAIT_OBJ_X_ATTRIBUTE_Y_VALUE_Z = "Unable to wait for object ''{0}'' to have attribute ''{1}'' with value ''{2}''";
     public static final String KW_MSG_CANNOT_WAIT_OBJ_ATTRIBUTE_VALUE = "Unable to wait for element to have attribute with value";
-    public static final String KW_LOG_PASSED_SET_VIEWPORT_WIDTH_X_HEIGHT_Y = "Browser is set to new viewport with width = '{0}' and height = '{1}'";
-    public static final String KW_MSG_CANNOT_SET_VIEWPORT = "Unable to set viewport for browser";
+    public static final String KW_LOG_PASSED_SET_VIEWPORT_WIDTH_X_HEIGHT_Y = "Viewport is set to new size with width = '{0}' and height = '{1}'";
+    public static final String KW_MSG_CANNOT_SET_VIEWPORT = "Unable to set viewport size for browser";
     public static final String COMM_LOG_INFO_CHECKING_WIDTH = "Checking width";
     public static final String COMM_LOG_INFO_CHECKING_HEIGHT = "Checking height";
     public static final String COMM_EXC_WIDTH_MUST_BE_ABOVE_ZERO = "Width must be > 0";

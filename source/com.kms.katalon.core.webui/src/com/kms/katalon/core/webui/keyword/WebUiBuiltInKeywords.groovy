@@ -3719,7 +3719,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
-    public static void setViewPort(int width, int height, FailureHandling flowControl) {
+    public static void setViewPortSize(int width, int height, FailureHandling flowControl) {
         WebUIKeywordMain.runKeyword({
             logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_WIDTH);
             if (width <= 0) {
