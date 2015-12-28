@@ -11,9 +11,10 @@ import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.widgets.Shell;
 
-import com.kms.katalon.preferences.internal.PreferencesRegistry;
+import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
+import com.kms.katalon.preferences.internal.PreferencesRegistry;
 
 public class QTestSettingsHandler {
 
@@ -40,8 +41,8 @@ public class QTestSettingsHandler {
         dialog.create();
         dialog.getTreeViewer().setComparator(new ViewerComparator());
         dialog.getTreeViewer().expandToLevel(3);
-        dialog.getShell().setText("Project Settings");
-        dialog.getShell().setSize(800, 500);
+        dialog.getShell().setText(StringConstants.HDL_TITLE_PROJECT_SETTINGS);
+        dialog.getShell().setMinimumSize(800, 500);
         dialog.open();
     }
 }
