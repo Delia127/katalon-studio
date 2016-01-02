@@ -534,9 +534,5 @@ public class ConsoleMain {
 			}
     	}
     	return params;
-    }
-    
-    public static void main(String[] args) throws Exception {
-		new ConsoleMain().launch(new String[]{CONF_FILE_NAME_ARGUMENT + "C:/Users/hieuphan/Desktop/xml.xml"});
-	}
+    }    
 }
