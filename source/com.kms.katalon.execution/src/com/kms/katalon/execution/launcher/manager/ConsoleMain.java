@@ -9,6 +9,9 @@ import java.util.Map;
 
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
@@ -45,6 +48,7 @@ public class ConsoleMain {
     private final static String SHOW_STATUS_DELAY_ARGUMENT = "-statusDelay=";
     private final static String REPORT_FOLDER_ARGUMENT = "-reportFolder=";
     private final static String REPORT_FILE_NAME_ARGUMENT = "-reportFileName=";
+    private final static String CONF_FILE_NAME_ARGUMENT = "-confFile=";
 
     public static boolean startSummaryReport = false;
     public static boolean endSummaryReport = false;
@@ -54,11 +58,29 @@ public class ConsoleMain {
     private static int returnCode = 0;
 
     public void launch(String[] arguments) throws Exception {
+    	    	
         if (arguments == null) {
             System.out.println("Arguments cannot be null or empty");
             closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
         }
-
+        
+        //Process XML file which contains parameters (if user provide that file for simplifying the command line)
+        for(String arg : arguments){
+        	if(arg.startsWith(CONF_FILE_NAME_ARGUMENT)){
+            	String confFileName = arg.substring(CONF_FILE_NAME_ARGUMENT.length());
+                //Parse XML file and get parameters
+            	List<String> params = parseXmlConfFile(confFileName);
+            	if(params.size() > 0){
+                	arguments = params.toArray(new String[params.size()]);
+                	break;
+                }
+            	else {
+                    System.out.println(StringConstants.MNG_INVALID_CONF_FILE_NAME_ARG);
+                    closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
+                }
+            }        	
+        }
+        
         List<ExecutionEntity> executionEntities = new ArrayList<ExecutionEntity>();
         ProjectEntity projectEntity = null;
         int offset = 0;
@@ -97,7 +119,8 @@ public class ConsoleMain {
                 } else if (arguments[offset].startsWith(SUMMARY_REPORT_ARGUMENT)) {
                     summaryReport = true;
                     offset++;
-                } else if (arguments[offset].startsWith(EXECUTE_ARGUMENT)) {
+                } 
+                /* else if (arguments[offset].startsWith(EXECUTE_ARGUMENT)) {
                     foundExecutionArgument = true;
                     if (offset + 1 < arguments.length && arguments[offset + 1].startsWith(TESTSUITE_ID_ARGUMENT)) {
                         testSuiteID = arguments[offset + 1].substring(TESTSUITE_ID_ARGUMENT.length());
@@ -111,7 +134,25 @@ public class ConsoleMain {
                         testSuiteReportFolder = arguments[offset + 3].substring(REPORT_FOLDER_ARGUMENT.length());
                         offset++;
                     }
-                } else if (arguments[offset].startsWith(SHOW_STATUS_DELAY_ARGUMENT)) {
+                } 
+                */
+                else if (arguments[offset].startsWith(EXECUTE_ARGUMENT)) {
+                	foundExecutionArgument = true;
+                	offset++;
+                }
+                else if (arguments[offset].startsWith(TESTSUITE_ID_ARGUMENT)) {
+                	testSuiteID = arguments[offset].substring(TESTSUITE_ID_ARGUMENT.length());
+                	offset++;
+                }
+				else if (arguments[offset].startsWith(BROWSER_TYPE_ARGUMENT)) {
+					argBrowserType = arguments[offset].substring(BROWSER_TYPE_ARGUMENT.length());
+					offset++;
+				}
+				else if (arguments[offset].startsWith(REPORT_FOLDER_ARGUMENT)) {
+					testSuiteReportFolder = arguments[offset].substring(REPORT_FOLDER_ARGUMENT.length());
+					offset++;
+				}
+                else if (arguments[offset].startsWith(SHOW_STATUS_DELAY_ARGUMENT)) {
                     showProgressDelay = Integer.valueOf(arguments[offset]
                             .substring(SHOW_STATUS_DELAY_ARGUMENT.length()).trim());
                     if (showProgressDelay < 0) {
@@ -128,7 +169,8 @@ public class ConsoleMain {
                         closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
                     }
                     offset++;
-                } else {
+                } 
+                else {
                     int intIndx = processIntegrationArgs(opts, integrationCmds, arguments, offset);
                     if (intIndx == offset) {
                         String otherArgument = arguments[offset];
@@ -456,4 +498,45 @@ public class ConsoleMain {
     private static void setReportFileName(String reportFileName) {
         ConsoleMain.reportFileName = reportFileName;
     }
+    
+    private List<String> parseXmlConfFile(String filePath) throws Exception {
+    	List<String> params = new ArrayList<String>();
+    	File confFile = new File(filePath);
+    	if(filePath == null || filePath.isEmpty() || !confFile.isFile()){
+    		System.out.println(StringConstants.MNG_INVALID_CONF_FILE_NAME_ARG);
+            closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);	
+    	}
+    	else{
+			SAXReader reader = new SAXReader();
+			Document document = reader.read(confFile);
+			//Root element should be "parameters" with children nodes "parameter"
+			Element rootElement = document.getRootElement();
+			for (Object objElement : rootElement.elements("parameter")) {
+				Element pElement = (Element)objElement;
+				Element pElementName = pElement.element("name");
+				Element pElementValue = pElement.element("value");
+				if(pElementName == null){
+					System.out.println(StringConstants.MNG_INVALID_CONF_FILE_NAME_ARG);
+		            closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);	
+				}
+				else{ 
+					if(pElementValue == null || pElementValue.getText().equalsIgnoreCase("true")){
+						params.add(ARGUMENT_PREFIX + pElementName.getText());
+					}
+					else if(pElementValue.getText().equalsIgnoreCase("false")){
+						//Ignore this parameter
+						continue;
+					}
+					else{
+						params.add(ARGUMENT_PREFIX + pElementName.getText() + ARGUMENT_SPLITTER + pElementValue.getText());
+					}
+				}
+			}
+    	}
+    	return params;
+    }
+    
+    public static void main(String[] args) throws Exception {
+		new ConsoleMain().launch(new String[]{CONF_FILE_NAME_ARGUMENT + "C:/Users/hieuphan/Desktop/xml.xml"});
+	}
 }
