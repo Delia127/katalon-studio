@@ -2,14 +2,10 @@ package com.kms.katalon.core.webui.keyword;
 
 import groovy.transform.CompileStatic
 
-import java.io.File;
-
-import org.apache.commons.io.FileUtils;
-
-import java.awt.Rectangle
 import java.text.MessageFormat
 import java.util.concurrent.TimeUnit
 
+import org.apache.commons.io.FileUtils
 import org.openqa.selenium.Alert
 import org.openqa.selenium.By
 import org.openqa.selenium.Dimension
@@ -39,6 +35,7 @@ import com.kms.katalon.core.testobject.ConditionType
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.testobject.TestObjectProperty
 import com.kms.katalon.core.util.ExceptionsUtil
+import com.kms.katalon.core.util.PathUtil
 import com.kms.katalon.core.webui.common.ScreenUtil
 import com.kms.katalon.core.webui.common.WebUiCommonHelper
 import com.kms.katalon.core.webui.constants.StringConstants
@@ -56,7 +53,15 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     /**
      * Open browser and navigate to the specified url; if url is left empty then just open browser
      * @param rawUrl
-     *      url of the web page to be opened, can be left empty or null
+     *         url of the web page to be opened, can be left empty or null. If rawUrl doesn't contain protocol prefix, 
+     *         then the protocol will be <code>http://</code>.
+     *      </p>Example:
+     *      <ul>
+     *          <li>http://katalon.kms-technology.com/</li>
+     *          <li>https://www.google.com</li>
+     *          <li>file:///D:/Development/index.html</li>
+     *          <li>kms-technology.com => http://kms-technology.com</li>
+     *      </ul>
      * @param flowControl
      * @throws StepFailedException
      */
@@ -67,11 +72,8 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             logger.logInfo(StringConstants.KW_LOG_INFO_OPENING_BROWSER);
             DriverFactory.openWebDriver();
             if (rawUrl != null && !rawUrl.isEmpty()) {
-                StringBuilder url = new StringBuilder(rawUrl);
-                if (!rawUrl.startsWith("http://") && !rawUrl.startsWith("https://")) {
-                    url.insert(0, "http://");
-                }
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_NAVIGATING_BROWSER_TO, url));
+                URL url = PathUtil.getUrl(rawUrl, "http");
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_NAVIGATING_BROWSER_TO, url.toString()));
                 DriverFactory.getWebDriver().get(url.toString());
             }
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_BROWSER_IS_OPENED_W_URL, rawUrl));
@@ -147,7 +149,14 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     /**
      * Navigate to the specified web page
      * @param rawUrl
-     *          url of the web page to navigate to
+     *          url of the web page to navigate to. If rawUrl doesn't contain protocol prefix, then the protocol will be <code>http://</code>.
+     *      </p>Example:
+     *      <ul>
+     *          <li>http://katalon.kms-technology.com/</li>
+     *          <li>https://www.google.com</li>
+     *          <li>file:///D:/Development/index.html</li>
+     *          <li>kms-technology.com => http://kms-technology.com</li>
+     *      </ul>
      * @param flowControl
      * @throws StepFailedException
      */
@@ -160,14 +169,11 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 throw new IllegalArgumentException(StringConstants.KW_EXC_URL_CANNOT_BE_NULL_OR_EMPTY);
             }
 
-            StringBuilder url = new StringBuilder(rawUrl);
-            if (!rawUrl.startsWith("http://") && !rawUrl.startsWith("https://")) {
-                url.insert(0, "http://");
-            }
-            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_NAVIGATING_TO, url));
+            URL url = PathUtil.getUrl(rawUrl, "http");
+            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_NAVIGATING_TO, url.toString()));
             WebDriver webDriver = DriverFactory.getWebDriver();
             webDriver.navigate().to(url.toString());
-            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_NAVIGATE_TO, url));
+            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_NAVIGATE_TO, url.toString()));
         }
         , flowControl, true, MessageFormat.format(StringConstants.KW_MSG_CANNOT_NAVIGATE_TO, rawUrl))
     }
