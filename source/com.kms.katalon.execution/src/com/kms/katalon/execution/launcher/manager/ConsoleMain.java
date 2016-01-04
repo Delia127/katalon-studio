@@ -522,6 +522,26 @@ public class ConsoleMain {
 				else{ 
 					if(pElementValue == null || pElementValue.getText().equalsIgnoreCase("true")){
 						params.add(ARGUMENT_PREFIX + pElementName.getText());
+						@SuppressWarnings("unchecked")
+						List<Object> subParams = pElement.elements("sub-parameter");
+						if(subParams.size() > 0){
+							for(Object subParam : subParams){
+								Element subParamName = ((Element)subParam).element("name");
+								Element subParamValue = ((Element)subParam).element("value");
+								if(subParamName == null){
+									System.out.println(StringConstants.MNG_INVALID_CONF_FILE_NAME_ARG);
+						            closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);	
+								}
+								else{
+									if(subParamValue == null || subParamValue.getText().equalsIgnoreCase("true")){
+										params.add(subParamName.getText());
+									}
+									else{
+										params.add(subParamName.getText() + ARGUMENT_SPLITTER + subParamValue.getText());
+									}
+								}
+							}
+						}
 					}
 					else if(pElementValue.getText().equalsIgnoreCase("false")){
 						//Ignore this parameter
