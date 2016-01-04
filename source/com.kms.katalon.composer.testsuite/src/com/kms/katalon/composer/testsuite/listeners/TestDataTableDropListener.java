@@ -13,11 +13,14 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableItem;
 
+import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.testsuite.parts.TestSuitePartDataBindingView;
 import com.kms.katalon.controller.TestDataController;
+import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 
@@ -71,6 +74,9 @@ public class TestDataTableDropListener extends TableDropTargetEffect {
                             testDataLink.getId();
                             addedTestDataLinkTreeNodes.add(testDataLink);
             			}
+            			else if(iTreeEntity instanceof FolderTreeEntity && ((FolderEntity)((FolderTreeEntity)iTreeEntity).getObject()).getFolderType() == FolderType.DATAFILE){
+            				collectTestCaseTestDataLinksRecursively(iTreeEntity, addedTestDataLinkTreeNodes);
+            			}
             		}
             		for(int i=0; i < addedTestDataLinkTreeNodes.size(); i++){
                     	inputs.add(destIndex+i, addedTestDataLinkTreeNodes.get(i));	
@@ -87,5 +93,20 @@ public class TestDataTableDropListener extends TableDropTargetEffect {
             	}
             }	
         }
+    }
+    
+    private void collectTestCaseTestDataLinksRecursively(ITreeEntity iTreeEntity, List<TestCaseTestDataLink> list) throws Exception{
+    	if(iTreeEntity instanceof TestDataTreeEntity){
+    		DataFileEntity testData = (DataFileEntity)((TestDataTreeEntity)iTreeEntity).getObject();
+        	TestCaseTestDataLink testDataLink = new TestCaseTestDataLink();
+            testDataLink.setTestDataId(TestDataController.getInstance().getIdForDisplay(testData));
+            testDataLink.getId();
+            list.add(testDataLink);
+    	}
+    	else if(iTreeEntity instanceof FolderTreeEntity && ((FolderEntity)((FolderTreeEntity)iTreeEntity).getObject()).getFolderType() == FolderType.DATAFILE){
+    		for(Object obj : ((FolderTreeEntity)iTreeEntity).getChildren()){
+    			collectTestCaseTestDataLinksRecursively((ITreeEntity)obj, list);
+    		}
+    	}
     }
 }
