@@ -200,9 +200,11 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                     }
                 });
             }
-            setScriptContentToManual();
+            boolean isSetScriptToManualSuccessfully = setScriptContentToManual();
             childTestCaseVariablesPart.loadVariables();
-            childTestCasePart.getTreeTableInput().reloadTestCaseVariables();
+            if (isSetScriptToManualSuccessfully) {
+                childTestCasePart.getTreeTableInput().reloadTestCaseVariables();
+            }
             childTestCaseIntegrationPart.loadInput();
             isInitialized = true;
         }
@@ -590,6 +592,9 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         // refresh child parts
         childTestCasePart.updateInput();
         childTestCaseVariablesPart.loadVariables();
+        if (childTestCasePart.getTreeTableInput() == null) {
+            setScriptContentToManual();
+        }
         childTestCasePart.getTreeTableInput().reloadTestCaseVariables();
         childTestCaseIntegrationPart.loadInput();
 
