@@ -8,34 +8,39 @@ import org.eclipse.swt.widgets.TableItem;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
 
 public class TestDataTableDragListener implements DragSourceListener {
-    private TableViewer testCaseTableViewer;
+    
+	private TableViewer testDataTableViewer;
 
-    public TestDataTableDragListener(TableViewer testCaseTableViewer) {
-        this.testCaseTableViewer = testCaseTableViewer;
+    public TestDataTableDragListener(TableViewer testDataTableViewer) {
+        this.testDataTableViewer = testDataTableViewer;
     }
 
     public void dragStart(DragSourceEvent event) {
-        TableItem[] selection = testCaseTableViewer.getTable().getSelection();
+    	TableItem[] selection = testDataTableViewer.getTable().getSelection();
         if (selection.length == 1) {
             event.doit = true;
         } else {
             event.doit = false;
         }
-    };
+    }
 
     public void dragSetData(DragSourceEvent event) {
-        TestCaseTestDataLink[] linkTransfers = new TestCaseTestDataLink[1];
-        TableItem[] selection = testCaseTableViewer.getTable().getSelection();
+    	StringBuilder sb = new StringBuilder();
+        TableItem[] selection = testDataTableViewer.getTable().getSelection();
         for (TableItem item : selection) {
             if (item.getData() instanceof TestCaseTestDataLink) {
-                linkTransfers[0] = (TestCaseTestDataLink) item.getData();
+            	if(sb.length() > 0){
+            		sb.append("\n");
+            	}
+            	sb.append(((TestCaseTestDataLink)item.getData()).getTestDataId());
             }
         }
-        event.data = linkTransfers;
+        event.data = sb.toString();
     }
 
     public void dragFinished(DragSourceEvent event) {
-        testCaseTableViewer.refresh();
+    	testDataTableViewer.refresh();
     }
 
 }
+

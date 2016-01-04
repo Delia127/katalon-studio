@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit
 import org.apache.commons.io.FileUtils
 import org.openqa.selenium.Alert
 import org.openqa.selenium.By
+import org.openqa.selenium.Dimension
 import org.openqa.selenium.JavascriptExecutor
 import org.openqa.selenium.NoSuchElementException
 import org.openqa.selenium.NoSuchWindowException
@@ -277,7 +278,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_WEB_ELEMT_W_ID_IS_NOT_PRESENT_AFTER, to.getObjectId(), locator.toString(), timeOut));
                     return true;
                 } else {
-                    WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_WEB_ELEMT_W_ID_IS_NOT_PRESENT_AFTER, to.getObjectId(), locator.toString(), timeOut), flowControl, null, true);
+                    logger.logWarning(MessageFormat.format(StringConstants.KW_MSG_WEB_ELEMT_W_ID_IS_NOT_PRESENT_AFTER, to.getObjectId(), locator.toString(), timeOut));
                     return false;
                 }
             } finally {
@@ -318,8 +319,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     }
                     return true;
                 } catch (WebElementNotFoundException e) {
-                    WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_NOT_PRESENT_AFTER_X_SEC, to.getObjectId(), timeOut),
-                            flowControl, null);
+                    logger.logWarning(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_NOT_PRESENT_AFTER_X_SEC, to.getObjectId(), timeOut));
                     return false;
                 }
             } finally {
@@ -445,11 +445,10 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     }
                     return true;
                 } catch (WebElementNotFoundException e) {
-                    WebUIKeywordMain.stepFailed(e.getMessage(), flowControl, null);
+                    logger.logWarning(e.getMessage());
                     return false;
                 } catch (TimeoutException e) {
-                    WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_NOT_VISIBLE_AFTER_X_SEC, to.getObjectId(), timeOut),
-                            flowControl, null);
+                    logger.logWarning(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_NOT_VISIBLE_AFTER_X_SEC, to.getObjectId(), timeOut));
                     return false;
                 }
             } finally {
@@ -501,11 +500,10 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     }
                     return true;
                 } catch (WebElementNotFoundException e) {
-                    WebUIKeywordMain.stepFailed(e.getMessage(), flowControl, null);
+                    logger.logWarning(e.getMessage());
                     return false;
                 } catch (TimeoutException e) {
-                    WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_VISIBLE_AFTER_X_SEC, to.getObjectId(), timeOut),
-                            flowControl, null);
+                    logger.logWarning(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_VISIBLE_AFTER_X_SEC, to.getObjectId(), timeOut));
                     return false;
                 }
             } finally {
@@ -556,11 +554,10 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     }
                     return true;
                 } catch (WebElementNotFoundException e) {
-                    WebUIKeywordMain.stepFailed(e.getMessage(), flowControl, null);
+                    logger.logWarning(e.getMessage());
                     return false;
                 } catch (TimeoutException e) {
-                    WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_NOT_CLICKABLE_AFTER_X_SEC, to.getObjectId(), timeOut),
-                            flowControl, null);
+                    logger.logWarning(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_NOT_CLICKABLE_AFTER_X_SEC, to.getObjectId(), timeOut));
                     return false;
                 }
             } finally {
@@ -611,11 +608,10 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     }
                     return true;
                 } catch (WebElementNotFoundException e) {
-                    WebUIKeywordMain.stepFailed(e.getMessage(), flowControl, null);
+                    logger.logWarning(e.getMessage());
                     return false;
                 } catch (TimeoutException e) {
-                    WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_CLICKABLE_AFTER_X_SEC, to.getObjectId(), timeOut),
-                            flowControl, null);
+                    logger.logWarning(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_CLICKABLE_AFTER_X_SEC, to.getObjectId(), timeOut));
                     return false;
                 }
             } finally {
@@ -1676,7 +1672,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ALERT_IS_PRESENT_AFTER_X_SEC, timeOut));
                 return true;
             } else {
-                WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_NO_ALERT_FOUND_AFTER_X_SEC, timeOut), flowControl, null, true);
+                logger.logWarning(MessageFormat.format(StringConstants.KW_MSG_NO_ALERT_FOUND_AFTER_X_SEC, timeOut));
                 return false;
             }
         } , flowControl, true, StringConstants.KW_MSG_CANNOT_WAIT_FOR_ALERT)
@@ -3093,7 +3089,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             if (present) {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_IMG_X_IS_PRESENT, imagePath));
             } else {
-                WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_PASSED_IMG_X_IS_NOT_PRESENT, imagePath), flowControl, null, true)
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_PASSED_IMG_X_IS_NOT_PRESENT, imagePath))
             }
         } , flowControl, true, (imagePath != null) ?
         MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_FOR_IMG_X_TOBE_PRESENT, imagePath) :
@@ -3317,6 +3313,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
                 WebDriver driver = DriverFactory.getWebDriver();
                 isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
@@ -3356,6 +3353,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
                 WebDriver driver = DriverFactory.getWebDriver();
                 isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
@@ -3390,7 +3388,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static int getViewportWidth(FailureHandling flowControl) throws StepFailedException {
         return (int) WebUIKeywordMain.runKeyword({
             int viewportWidth = WebUiCommonHelper.getViewportWidth(DriverFactory.getWebDriver());
-            KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_VIEWPORT_WIDTH_X, viewportWidth));
+            KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_VIEWPORT_WIDTH_X, viewportWidth.toString()));
             return viewportWidth;
         }
         , flowControl, false, StringConstants.KW_MSG_CANNOT_GET_VIEWPORT_WIDTH)
@@ -3407,7 +3405,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static int getViewportHeight(FailureHandling flowControl) throws StepFailedException {
         return (int) WebUIKeywordMain.runKeyword({
             int viewportHeight = WebUiCommonHelper.getViewportHeight(DriverFactory.getWebDriver());
-            KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_VIEWPORT_HEIGHT_X, viewportHeight));
+            KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_VIEWPORT_HEIGHT_X, viewportHeight.toString()));
             return viewportHeight;
         }
         , flowControl, false, StringConstants.KW_MSG_CANNOT_GET_VIEWPORT_HEIGHT)
@@ -3435,7 +3433,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (attributeName == null) {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
-                WebDriver driver = DriverFactory.getWebDriver();
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
                 isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
                 if (foundElement.getAttribute(attributeName) != null) {
@@ -3454,7 +3452,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             }
             return false;
         }
-        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId())
+        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
         : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_HAS_ATTRIBUTE)
     }
 
@@ -3480,7 +3478,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (attributeName == null) {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
-                WebDriver driver = DriverFactory.getWebDriver();
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
                 isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
                 if (foundElement.getAttribute(attributeName) == null) {
@@ -3499,7 +3497,350 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             }
             return false;
         }
-        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_NOT_HAS_ATTRIBUTE_Y, to.getObjectId())
+        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_NOT_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
         : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_NOT_HAS_ATTRIBUTE)
+    }
+
+    /**
+     * Verify if the web element has an attribute with the specific name and value
+     * @param to
+     *      represent a web element
+     * @param attributeName
+     *      the name of the attribute to verify
+     * @param attributeValue
+     *      the value of the attribute to verify
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return true if element has the attribute with the specific name and value; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementAttributeValue(TestObject to, String attributeName, String attributeValue, int timeOut, FailureHandling flowControl) {
+        WebUIKeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = false;
+            try {
+                WebUiCommonHelper.checkTestObjectParameter(to);
+                KeywordLogger.getInstance().logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME);
+                if (attributeName == null) {
+                    throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
+                }
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
+                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
+                WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
+                if (foundElement.getAttribute(attributeName) != null) {
+                    if (foundElement.getAttribute(attributeName).equals(attributeValue)) {
+                        KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue));
+                        return true;
+                    } else {
+                        WebUIKeywordMain.stepFailed(
+                                MessageFormat.format(
+                                StringConstants.KW_LOG_FAILED_OBJ_X_ATTRIBUTE_Y_ACTUAL_VALUE_Z_EXPECTED_VALUE_W,
+                                to.getObjectId(), attributeName, foundElement.getAttribute(attributeName), attributeValue), flowControl, null, true);
+                        return false;
+                    }
+                }  else {
+                    WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName), flowControl, null, true);
+                    return false;
+                }
+            } catch (WebElementNotFoundException ex) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
+            } finally {
+                if (isSwitchIntoFrame) {
+                    WebUiBuiltInKeywords.switchToDefaultContent();
+                }
+            }
+            return false;
+        }
+        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue)
+        : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_ATTRIBUTE_VALUE)
+    }
+
+    /**
+     * Wait until the given web element has an attribute with the specific name
+     * @param to
+     *      represent a web element
+     * @param attributeName
+     *      the name of the attribute to wait for
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return true if element has the attribute with the specific name; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean waitForElementHasAttribute(TestObject to, String attributeName, int timeOut, FailureHandling flowControl) {
+        WebUIKeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = false;
+            try {
+                WebUiCommonHelper.checkTestObjectParameter(to);
+                KeywordLogger.getInstance().logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME);
+                if (attributeName == null) {
+                    throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
+                }
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
+                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
+                WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
+                Boolean hasAttribute = new FluentWait<WebElement>(foundElement)
+                        .pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeOut, TimeUnit.SECONDS)
+                        .until(new Function<WebElement, Boolean>() {
+                            @Override
+                            public Boolean apply(WebElement element) {
+                                return foundElement.getAttribute(attributeName) != null;
+                            }
+                        });
+                if (hasAttribute) {
+                    logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
+                    return true;
+                }
+            } catch (WebElementNotFoundException ex) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
+            } catch (TimeoutException e) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
+            } finally {
+                if (isSwitchIntoFrame) {
+                    WebUiBuiltInKeywords.switchToDefaultContent();
+                }
+            }
+            return false;
+        }
+        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
+        : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_HAS_ATTRIBUTE)
+    }
+
+    /**
+     * Wait until the given web element doesn't have an attribute with the specific name
+     * @param to
+     *      represent a web element
+     * @param attributeName
+     *      the name of the attribute to wait for
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return true if element doesn't have the attribute with the specific name; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean waitForElementNotHasAttribute(TestObject to, String attributeName, int timeOut, FailureHandling flowControl) {
+        WebUIKeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = false;
+            try {
+                WebUiCommonHelper.checkTestObjectParameter(to);
+                KeywordLogger.getInstance().logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME);
+                if (attributeName == null) {
+                    throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
+                }
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
+                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
+                WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
+                Boolean notHasAttribute = new FluentWait<WebElement>(foundElement)
+                        .pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeOut, TimeUnit.SECONDS)
+                        .until(new Function<WebElement, Boolean>() {
+                            @Override
+                            public Boolean apply(WebElement element) {
+                                return foundElement.getAttribute(attributeName) == null;
+                            }
+                        });
+                if (notHasAttribute) {
+                    logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
+                    return false;
+                }
+            } catch (WebElementNotFoundException ex) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
+            } catch (TimeoutException e) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
+                return true;
+            } finally {
+                if (isSwitchIntoFrame) {
+                    WebUiBuiltInKeywords.switchToDefaultContent();
+                }
+            }
+            return false;
+        }
+        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_NOT_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
+        : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_NOT_HAS_ATTRIBUTE)
+    }
+
+    /**
+     * Wait until the given web element has an attribute with the specific name and value
+     * @param to
+     *      represent a web element
+     * @param attributeName
+     *      the name of the attribute to wait for
+     * @param attributeValue
+     *      the value of the attribute to wait for
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return true if element has the attribute with the specific name and value; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean waitForElementAttributeValue(TestObject to, String attributeName, String attributeValue, int timeOut, FailureHandling flowControl) {
+        WebUIKeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = false;
+            try {
+                WebUiCommonHelper.checkTestObjectParameter(to);
+                KeywordLogger.getInstance().logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME);
+                if (attributeName == null) {
+                    throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
+                }
+                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
+                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
+                WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
+                Boolean hasAttributeValue = new FluentWait<WebElement>(foundElement)
+                        .pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeOut, TimeUnit.SECONDS)
+                        .until(new Function<WebElement, Boolean>() {
+                            @Override
+                            public Boolean apply(WebElement element) {
+                                return foundElement.getAttribute(attributeName) == attributeValue;
+                            }
+                        });
+                if (hasAttributeValue) {
+                    logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue));
+                    return true;
+                }
+            } catch (WebElementNotFoundException ex) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
+            } catch (TimeoutException e) {
+                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_FAILED_WAIT_FOR_OBJ_X_HAS_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue));
+            } finally {
+                if (isSwitchIntoFrame) {
+                    WebUiBuiltInKeywords.switchToDefaultContent();
+                }
+            }
+            return false;
+        }
+        , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue)
+        : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_ATTRIBUTE_VALUE)
+    }
+
+    /**
+     * Set the size of the current window. This will change the outer window dimension and the viewport, synonymous to window.resizeTo() in JS.
+     * @param width
+     *      the target viewport width
+     * @param height
+     *      the target viewport height
+     * @param flowControl
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static void setViewPortSize(int width, int height, FailureHandling flowControl) {
+        WebUIKeywordMain.runKeyword({
+            logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_WIDTH);
+            if (width <= 0) {
+                throw new IllegalArgumentException(StringConstants.COMM_EXC_WIDTH_MUST_BE_ABOVE_ZERO);
+            }
+            logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_HEIGHT);
+            if (height <= 0) {
+                throw new IllegalArgumentException(StringConstants.COMM_EXC_HEIGHT_MUST_BE_ABOVE_ZERO);
+            }
+            DriverFactory.getWebDriver().manage().window().setSize(new Dimension(width, height));
+            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SET_VIEWPORT_WIDTH_X_HEIGHT_Y, width.toString(), height.toString()));
+        }
+        , flowControl, true, StringConstants.KW_MSG_CANNOT_SET_VIEWPORT)
+    }
+
+    /**
+     * Scroll the viewport to a specific position
+     * @param x
+     *      x position
+     * @param y
+     *      y position
+     * @param flowControl
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static void scrollToPosition(int x, int y, FailureHandling flowControl) {
+        WebUIKeywordMain.runKeyword({
+            logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_X);
+            if (x < 0) {
+                throw new IllegalArgumentException(StringConstants.COMM_EXC_X_MUST_BE_ABOVE_ZERO);
+            }
+            logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_Y);
+            if (y < 0) {
+                throw new IllegalArgumentException(StringConstants.COMM_EXC_Y_MUST_BE_ABOVE_ZERO);
+            }
+            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SCROLLING_TO_POSITION_X_Y, x.toString(), y.toString()));
+            ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript("window.scrollTo(" + x.toString() + ", " + y.toString() + ");");
+            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SCROLL_TO_POSITION_X_Y, x.toString(), y.toString()));
+        }
+        , flowControl, true, MessageFormat.format(StringConstants.KW_MSG_CANNOT_SCROLL_TO_POSITION_X_Y, x.toString(), y.toString()))
+    }
+
+    /**
+     * Get current web page's width
+     * @param flowControl
+     * @return current web page's width
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static int getPageWidth(FailureHandling flowControl) {
+        return (int) WebUIKeywordMain.runKeyword({
+            int pageWidth = (int) ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript('''return Math.max(
+                document.documentElement["clientWidth"], 
+                document.body["scrollWidth"], 
+                document.documentElement["scrollWidth"], 
+                document.body["offsetWidth"], 
+                document.documentElement["offsetWidth"]);''');
+            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_PAGE_WIDTH_X, pageWidth.toString()));
+            return pageWidth;
+        }
+        , flowControl, true, StringConstants.KW_MSG_CANNOT_GET_PAGE_WIDTH)
+    }
+    
+    /**
+     * Get current web page's height
+     * @param flowControl
+     * @return current web page's height
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static int getPageHeight(FailureHandling flowControl) {
+        return (int) WebUIKeywordMain.runKeyword({
+            int pageHeight = (int) ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript('''return Math.max(
+                document.documentElement["clientHeight"], 
+                document.body["scrollHeight"], 
+                document.documentElement["scrollHeight"], 
+                document.body["offsetHeight"], 
+                document.documentElement["offsetHeight"]);''');
+            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_PAGE_HEIGHT_X, pageHeight.toString()));
+            return pageHeight;
+        }
+        , flowControl, true, StringConstants.KW_MSG_CANNOT_GET_PAGE_HEIGHT)
+    }
+    
+    /**
+     * Get current view port left (x) position relatively to the web page
+     * @param flowControl
+     * @return current view port left (x) position
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static int getViewportLeftPosition(FailureHandling flowControl) {
+        return (int) WebUIKeywordMain.runKeyword({
+            Number leftPosition = (Number) ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript('return window.pageXOffset || document.documentElement.scrollLeft;');
+            int leftPositionIntValue = leftPosition.intValue();
+            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_VIEWPORT_LEFT_POSITION_X, leftPositionIntValue.toString()));
+            return leftPositionIntValue;
+        }
+        , flowControl, true, StringConstants.KW_MSG_CANNOT_GET_VIEWPORT_LEFT_POSITION)
+    }
+    
+    /**
+     * Get current view port top (y) position relatively to the web page
+     * @param flowControl
+     * @return current view port top (y) position
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static int getViewportTopPosition(FailureHandling flowControl) {
+        return (int) WebUIKeywordMain.runKeyword({
+            Number topPosition = (Number) ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript('return window.pageYOffset || document.documentElement.scrollTop;');
+            int topPositionIntValue = topPosition.intValue();
+            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_VIEWPORT_TOP_POSITION_X, topPositionIntValue.toString()));
+            return topPositionIntValue;
+        }
+        , flowControl, true, StringConstants.KW_MSG_CANNOT_GET_VIEWPORT_TOP_POSITION)
     }
 }

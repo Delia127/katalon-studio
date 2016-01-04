@@ -52,4 +52,5 @@ Require-Bundle: org.eclipse.e4.core.contexts,
  org.eclipse.osgi.services,
  com.google.gson,
  com.kms.katalon.jasper;bundle-version="1.0.0",
- org.apache.commons.cli
+ org.apache.commons.cli,
+ org.dom4j

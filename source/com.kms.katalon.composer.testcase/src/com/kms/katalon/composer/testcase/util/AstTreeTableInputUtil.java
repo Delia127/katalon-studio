@@ -926,7 +926,7 @@ public class AstTreeTableInputUtil {
             if (existingParamClassName.equals(Boolean.class.getName())
                     || existingParamClassName.equals(Boolean.TYPE.getName())) {
                 return existingParam;
-            } else {
+            } else if (existingParam instanceof ConstantExpression) {
                 return new ConstantExpression(Boolean.FALSE);
             }
         } else if (paramClassName.equals(Character.class.getName()) || paramClassName.equals(String.class.getName())
@@ -935,7 +935,7 @@ public class AstTreeTableInputUtil {
                     || existingParamClassName.equals(String.class.getName())
                     || existingParamClassName.equals(Character.TYPE.getName())) {
                 return existingParam;
-            } else if (existingParamClassName.isEmpty()) {
+            } else if (existingParam instanceof ConstantExpression) {
                 return new ConstantExpression("");
             }
         } else if (paramClassName.equals(Byte.class.getName()) || paramClassName.equals(Byte.TYPE.getName())
@@ -961,7 +961,7 @@ public class AstTreeTableInputUtil {
                     || existingParamClassName.equals(BigInteger.class.getName())
                     || existingParamClassName.equals(BigDecimal.class.getName())) {
                 return existingParam;
-            } else {
+            } else if (existingParam instanceof ConstantExpression) {
                 return new ConstantExpression(0);
             }
         }

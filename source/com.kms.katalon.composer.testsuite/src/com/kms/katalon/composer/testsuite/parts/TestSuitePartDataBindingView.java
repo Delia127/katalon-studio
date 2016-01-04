@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.testsuite.parts;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -17,6 +16,7 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.impl.control.ImageButton;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.constants.ToolItemConstants;
@@ -45,7 +46,6 @@ import com.kms.katalon.composer.testsuite.support.TestDataIterationColumnEditing
 import com.kms.katalon.composer.testsuite.support.VariableTestDataLinkColumnEditingSupport;
 import com.kms.katalon.composer.testsuite.support.VariableTypeEditingSupport;
 import com.kms.katalon.composer.testsuite.support.VariableValueEditingSupport;
-import com.kms.katalon.composer.testsuite.transfer.TestCaseTestDataLinkTransfer;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
@@ -305,22 +305,21 @@ public class TestSuitePartDataBindingView {
     }
 
     private void hookDropTestDataEvent() {
-        DropTarget dt = new DropTarget(testDataTableViewer.getTable(), DND.DROP_MOVE);
-        List<Transfer> treeEntityTransfers = new ArrayList<Transfer>();
-        treeEntityTransfers.add(new TestCaseTestDataLinkTransfer());
+        DropTarget dt = new DropTarget(testDataTableViewer.getTable(), DND.DROP_MOVE | DND.DROP_COPY);
+        //List<Transfer> treeEntityTransfers = new ArrayList<Transfer>();
+        List<Transfer> treeEntityTransfers = TransferTypeCollection.getInstance().getTreeEntityTransfer();
+        treeEntityTransfers.add(TextTransfer.getInstance());
         dt.setTransfer(treeEntityTransfers.toArray(new Transfer[treeEntityTransfers.size()]));
         dt.addDropListener(new TestDataTableDropListener(testDataTableViewer, this));
     }
     
     private void hookDragTestDataEvent() {
         int operations = DND.DROP_MOVE | DND.DROP_COPY;
-
         DragSource dragSource = new DragSource(testDataTableViewer.getTable(), operations);
-        dragSource.setTransfer(new Transfer[] { new TestCaseTestDataLinkTransfer() });        
+        dragSource.setTransfer(new Transfer[] { TextTransfer.getInstance() });        
         dragSource.addDragListener(new TestDataTableDragListener(testDataTableViewer));
     }
-
-
+    
     private void createCompositeTestData() {
         compositeTestData = new Composite(sashFormBindingView, SWT.NONE);
         compositeTestData.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));

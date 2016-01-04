@@ -2,17 +2,16 @@ package com.kms.katalon.core.mobile.helper;
 
 import groovy.transform.CompileStatic
 import io.appium.java_client.AppiumDriver
-import io.appium.java_client.android.AndroidDriver
-import io.appium.java_client.ios.IOSDriver
 
-import org.openqa.selenium.WebDriver
-import org.openqa.selenium.interactions.touch.TouchActions
+import org.openqa.selenium.WebElement
 
 import com.kms.katalon.core.configuration.RunConfiguration
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.mobile.constants.StringConstants
+import com.kms.katalon.core.mobile.keyword.GUIObject
 import com.kms.katalon.core.mobile.keyword.MobileDriverFactory
 import com.kms.katalon.core.mobile.keyword.MobileDriverFactory.OsType
+import org.openqa.selenium.NoSuchElementException;
 
 public class MobileCommonHelper {
 
@@ -70,7 +69,8 @@ public class MobileCommonHelper {
         }
         return model;
     }
-
+    
+    @CompileStatic
     public static String getDeviceOSVersion() throws StepFailedException, IOException, InterruptedException {
         String deviceId = MobileDriverFactory.getDeviceId(RunConfiguration.getStringProperty(MobileDriverFactory.EXECUTED_DEVICE_NAME));
         OsType deviceOs = MobileDriverFactory.getDeviceOs(deviceId);
@@ -173,6 +173,27 @@ public class MobileCommonHelper {
         airPlaneButtonCoords.put("iPad mini", "265;905");
         airPlaneButtonCoords.put("iPad mini 2", "265;905");
         airPlaneButtonCoords.put("iPad mini 3", "265;905");
+    }
+    
+    @CompileStatic
+    public static String getAttributeValue(WebElement element, String attributeName) {
+        switch (attributeName.toString()) {
+            case GUIObject.HEIGHT:
+                return String.valueOf(element.getSize().height);
+            case GUIObject.WIDTH:
+                return String.valueOf(element.getSize().width);
+            case GUIObject.X:
+                return String.valueOf(element.getLocation().x);
+            case GUIObject.Y:
+                return String.valueOf(element.getLocation().y);
+            default:
+                try {
+                    return element.getAttribute(attributeName);
+                } catch (NoSuchElementException e) {
+                    // attribute not found, return null
+                    return null
+                }
+        }
     }
 
     /*public static void loadConfigs() throws Exception {

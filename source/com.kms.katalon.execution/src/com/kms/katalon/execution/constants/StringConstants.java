@@ -45,4 +45,6 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_START_AT_ROW_IDX = "Test data: ''{0}'' has only {1} row(s) but test case : ''{2}'' starts at row index: {3}";
 	public static final String UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_ENDS_AT_ROW_IDX = "Test data: ''{0}'' has only {1} row(s) but test case : ''{2}'' ends at row index: {3}";
 	public static final String UTIL_EXC_IDX_X_INVALID_TC_Y_TD_Z = "Row index: {0} is not valid - Test case: {1} - Test data: {2}";
+	
+	public static final String MNG_INVALID_CONF_FILE_NAME_ARG = "Invalid configuration file name or syntax.";
 }
