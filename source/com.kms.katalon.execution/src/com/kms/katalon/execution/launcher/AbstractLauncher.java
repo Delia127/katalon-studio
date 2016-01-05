@@ -36,6 +36,8 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
+import com.kms.katalon.execution.generator.TestCaseScriptGenerator;
+import com.kms.katalon.execution.generator.TestSuiteScriptGenerator;
 import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.execution.integration.ReportIntegrationFactory;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
@@ -45,6 +47,7 @@ import com.kms.katalon.execution.launcher.model.LauncherStatus;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.execution.util.MailUtil.EmailConfig;
 import com.kms.katalon.execution.util.MailUtil.MailSecurityProtocolType;
+import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public abstract class AbstractLauncher {
@@ -62,6 +65,7 @@ public abstract class AbstractLauncher {
     protected TestSuiteExecutedEntity testSuiteExecutedEntity;
     protected LauncherResult launcherResult;
     protected List<String> passedTestCaseIds;
+    protected int reRunTime;
 
     public AbstractLauncher(IRunConfiguration runConfig) {
         this.runConfig = runConfig;
@@ -353,5 +357,24 @@ public abstract class AbstractLauncher {
             }
         }
         return recipientList.toArray(new String[recipientList.size()]);
+    }
+    
+    protected static IFile generateTempTestSuiteScript(TestSuiteEntity testSuite, IRunConfiguration config,
+            TestSuiteExecutedEntity testSuiteExecutedEntity) throws Exception {
+        if (testSuite != null) {
+            File tempTestSuiteFile = new TestSuiteScriptGenerator(testSuite, config, testSuiteExecutedEntity)
+                    .generateScriptFile();
+            return GroovyUtil.getTempScriptIFile(tempTestSuiteFile, testSuite.getProject());
+        }
+        return null;
+    }
+    
+    protected static IFile generateTempTestCaseScript(TestCaseEntity testCase, IRunConfiguration runConfig)
+            throws Exception {
+        if (testCase != null) {
+            File testSuiteScriptFile = new TestCaseScriptGenerator(testCase, runConfig).generateScriptFile();
+            return GroovyUtil.getTempScriptIFile(testSuiteScriptFile, testCase.getProject());
+        }
+        return null;
     }
 }

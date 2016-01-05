@@ -17,8 +17,8 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 public class ReportController extends EntityController {
     private static EntityController _instance;
 
-    private static String LOG_FILE_NAME = "execution0.log";
-    private static String EXECUTION_SETTING_FILE_NAME = "execution.properties";
+    public static String LOG_FILE_NAME = "execution0.log";
+    public static String EXECUTION_SETTING_FILE_NAME = "execution.properties";
     private static DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
 
     private ReportController() {
