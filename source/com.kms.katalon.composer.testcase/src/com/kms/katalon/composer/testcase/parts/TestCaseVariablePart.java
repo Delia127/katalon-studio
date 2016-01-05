@@ -62,8 +62,8 @@ public class TestCaseVariablePart {
 
     private static final InputValueType[] defaultInputValueTypes = { InputValueType.String, InputValueType.Number,
             InputValueType.Boolean, InputValueType.Null, InputValueType.GlobalVariable, InputValueType.TestDataValue,
-            InputValueType.Binary, InputValueType.Condition, InputValueType.TestObject, InputValueType.TestData, InputValueType.Property,
-            InputValueType.List, InputValueType.Map };
+            InputValueType.TestObject, InputValueType.TestData, InputValueType.Property, InputValueType.List,
+            InputValueType.Map };
 
     private Composite parent;
 
@@ -289,7 +289,7 @@ public class TestCaseVariablePart {
         TableColumn tblColumnDescription = tableViewerColumnDescription.getColumn();
         tblColumnDescription.setWidth(500);
         tblColumnDescription.setText(StringConstants.PA_COL_DESCRIPTION);
-        
+
         tableViewer.setContentProvider(new ArrayContentProvider());
     }
 
@@ -363,7 +363,8 @@ public class TestCaseVariablePart {
 
     private void upVariable() {
         StructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
-        if (selection == null || selection.getFirstElement() == null) return;
+        if (selection == null || selection.getFirstElement() == null)
+            return;
         VariableEntity variable = (VariableEntity) selection.getFirstElement();
         int index = variables.indexOf(variable);
         if (index > 0) {
@@ -375,7 +376,8 @@ public class TestCaseVariablePart {
 
     private void downVariable() {
         StructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
-        if (selection == null || selection.getFirstElement() == null) return;
+        if (selection == null || selection.getFirstElement() == null)
+            return;
         VariableEntity variable = (VariableEntity) selection.getFirstElement();
         int index = variables.indexOf(variable);
         if (index < variables.size() - 1) {
@@ -418,7 +420,8 @@ public class TestCaseVariablePart {
             int index = variables.indexOf(variable) + 1;
             String variableName = variable.getName();
             String variableDefaultValue = variable.getDefaultValue();
-            if (variableDefaultValue == null || variableDefaultValue.isEmpty()) variableDefaultValue = null;
+            if (variableDefaultValue == null || variableDefaultValue.isEmpty())
+                variableDefaultValue = null;
 
             if (variableName == null || variableName.isEmpty()) {
                 errorCollector.append(MessageFormat.format(
