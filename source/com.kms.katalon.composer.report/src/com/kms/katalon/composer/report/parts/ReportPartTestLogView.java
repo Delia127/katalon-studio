@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -41,6 +42,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
@@ -54,6 +56,7 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.components.util.ImageUtil;
 import com.kms.katalon.composer.report.constants.ImageConstants;
 import com.kms.katalon.composer.report.constants.StringConstants;
+import com.kms.katalon.composer.report.dialog.AdvancedSearchTestLogDialog;
 import com.kms.katalon.composer.report.parts.integration.AbstractReportTestCaseIntegrationView;
 import com.kms.katalon.composer.report.provider.ReportPartTestStepLabelProvider;
 import com.kms.katalon.composer.report.provider.ReportTestStepTableViewerFilter;
@@ -73,7 +76,7 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 public class ReportPartTestLogView {
     private Button btnFilterTestStepInfo, btnFilterTestStepPassed, btnFilterTestStepFailed, btnFilterTestStepError;
     private Text txtTestLogSearch;
-    private CLabel lblTestLogSearch;
+    private CLabel lblTestLogSearch, lblTestLogAdvancedSearch;
     private ReportTestStepTreeViewer treeViewerTestSteps;
     private StyledText txtSTestCaseId, txtSTestCaseStartTime, txtSTestCaseEndTime, txtSTestCaseElapsedTime,
             txtSTestCaseDescription, txtSTestCaseMessage;
@@ -230,6 +233,22 @@ public class ReportPartTestLogView {
             }
         });
 
+        lblTestLogAdvancedSearch.addListener(SWT.MouseUp, new Listener() {
+
+            @Override
+            public void handleEvent(Event event) {
+                Shell shell = new Shell(lblTestLogAdvancedSearch.getShell().getDisplay());
+                Point pt = lblTestLogAdvancedSearch.toDisplay(1, 1);
+                shell.setSize(0, 0);
+                AdvancedSearchTestLogDialog dialog = new AdvancedSearchTestLogDialog(shell);
+                shell.setLocation(pt.x - shell.getBounds().width - 52, pt.y + shell.getBounds().height + 52);
+                
+                if (dialog.open() == Dialog.OK && isSearching) {
+                    treeViewerTestSteps.refresh(false);
+                }
+            }
+        });
+
         tabFolder.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -244,7 +263,8 @@ public class ReportPartTestLogView {
 
     private ILogRecord getSelectedTestStep() {
         StructuredSelection selection = (StructuredSelection) treeViewerTestSteps.getSelection();
-        if (selection == null || selection.size() != 1) return null;
+        if (selection == null || selection.size() != 1)
+            return null;
         return (ILogRecord) selection.getFirstElement();
     }
 
@@ -279,6 +299,8 @@ public class ReportPartTestLogView {
         compositeTestLogSearch.setBackground(ColorUtil.getWhiteBackgroundColor());
         compositeTestLogSearch.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         GridLayout glCompositeTestLogSearch = new GridLayout(2, false);
+        glCompositeTestLogSearch.verticalSpacing = 0;
+        glCompositeTestLogSearch.horizontalSpacing = 0;
         glCompositeTestLogSearch.marginWidth = 0;
         glCompositeTestLogSearch.marginHeight = 0;
         compositeTestLogSearch.setLayout(glCompositeTestLogSearch);
@@ -290,11 +312,27 @@ public class ReportPartTestLogView {
         gd_txtTestCaseSearch.verticalAlignment = SWT.CENTER;
         txtTestLogSearch.setLayoutData(gd_txtTestCaseSearch);
 
-        Canvas canvasTestLogSearch = new Canvas(compositeTestLogSearch, SWT.NONE);
-        canvasTestLogSearch.setLayout(new FillLayout(SWT.HORIZONTAL));
+        Canvas cvsTestLogSearch = new Canvas(compositeTestLogSearch, SWT.NONE);
+        GridLayout glCvsTestLogSearch = new GridLayout(3, false);
+        glCvsTestLogSearch.horizontalSpacing = 0;
+        glCvsTestLogSearch.marginWidth = 0;
+        glCvsTestLogSearch.marginHeight = 0;
+        cvsTestLogSearch.setLayout(glCvsTestLogSearch);
+        cvsTestLogSearch.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 
-        lblTestLogSearch = new CLabel(canvasTestLogSearch, SWT.NONE);
+        lblTestLogSearch = new CLabel(cvsTestLogSearch, SWT.NONE);
         lblTestLogSearch.setCursor(new Cursor(Display.getCurrent(), SWT.CURSOR_HAND));
+
+        Label lblSeparator = new Label(cvsTestLogSearch, SWT.SEPARATOR);
+        GridData gdLblSeparator = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        gdLblSeparator.heightHint = 18;
+        lblSeparator.setLayoutData(gdLblSeparator);
+
+        lblTestLogAdvancedSearch = new CLabel(cvsTestLogSearch, SWT.NONE);
+        lblTestLogAdvancedSearch.setCursor(new Cursor(Display.getCurrent(), SWT.CURSOR_HAND));
+        lblTestLogAdvancedSearch
+                .setImage(com.kms.katalon.composer.components.impl.constants.ImageConstants.IMG_16_ADVANCED_SEARCH);
+
         updateStatusSearchLabel();
     }
 
@@ -487,7 +525,7 @@ public class ReportPartTestLogView {
         txtSTestCaseDescription = new StyledText(compositeTestCaseInformation, SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
         txtSTestCaseDescription.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 5, 1));
         txtSTestCaseDescription.setMarginColor(ColorUtil.getTextPlaceholderColor());
-        enebleMargin(txtSTestCaseDescription, false);
+        enableMargin(txtSTestCaseDescription, false);
 
         Label lblSTCMessage = new Label(compositeTestCaseInformation, SWT.NONE);
         lblSTCMessage.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
@@ -497,7 +535,7 @@ public class ReportPartTestLogView {
         txtSTestCaseMessage = new StyledText(compositeTestCaseInformation, SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
         txtSTestCaseMessage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 5, 1));
         txtSTestCaseMessage.setMarginColor(ColorUtil.getTextPlaceholderColor());
-        enebleMargin(txtSTestCaseMessage, false);
+        enableMargin(txtSTestCaseMessage, false);
     }
 
     private void createTestCaseIntegrationTabItem(CTabFolder tabFolder) {
@@ -584,7 +622,7 @@ public class ReportPartTestLogView {
         txtSTLDescription = new StyledText(compositeSTLInformation, SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
         txtSTLDescription.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 5, 1));
         txtSTLDescription.setMarginColor(ColorUtil.getTextPlaceholderColor());
-        enebleMargin(txtSTLDescription, false);
+        enableMargin(txtSTLDescription, false);
 
         Label lblSTLMessage = new Label(compositeSTLInformation, SWT.NONE);
         lblSTLMessage.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
@@ -594,7 +632,7 @@ public class ReportPartTestLogView {
         txtSTLMessage = new StyledText(compositeSTLInformation, SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
         txtSTLMessage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 5, 1));
         txtSTLMessage.setMarginColor(ColorUtil.getTextPlaceholderColor());
-        enebleMargin(txtSTLMessage, false);
+        enableMargin(txtSTLMessage, false);
 
         tabFolder.setSelection(0);
     }
@@ -729,18 +767,18 @@ public class ReportPartTestLogView {
         if (selectedLogRecord != null && selectedLogRecord.getDescription() != null
                 && !selectedLogRecord.getDescription().isEmpty()) {
             txtSTestCaseDescription.setText(selectedLogRecord.getDescription());
-            enebleMargin(txtSTestCaseDescription, true);
+            enableMargin(txtSTestCaseDescription, true);
         } else {
             txtSTestCaseDescription.setText("");
-            enebleMargin(txtSTestCaseDescription, false);
+            enableMargin(txtSTestCaseDescription, false);
         }
 
         if (selectedLogRecord != null && selectedLogRecord.getMessage() != null) {
             txtSTestCaseMessage.setText(selectedLogRecord.getMessage());
-            enebleMargin(txtSTestCaseMessage, true);
+            enableMargin(txtSTestCaseMessage, true);
         } else {
             txtSTestCaseMessage.setText("");
-            enebleMargin(txtSTestCaseMessage, false);
+            enableMargin(txtSTestCaseMessage, false);
         }
 
         compositeTestCaseInformation.layout();
@@ -827,18 +865,18 @@ public class ReportPartTestLogView {
 
         if (selectedLogRecord != null && StringUtils.isNotEmpty(selectedLogRecord.getDescription())) {
             txtSTLDescription.setText(selectedLogRecord.getDescription());
-            enebleMargin(txtSTLDescription, true);
+            enableMargin(txtSTLDescription, true);
         } else {
             txtSTLDescription.setText("");
-            enebleMargin(txtSTLDescription, false);
+            enableMargin(txtSTLDescription, false);
         }
 
         if (selectedLogRecord != null && StringUtils.isNotEmpty(selectedLogRecord.getMessage())) {
             txtSTLMessage.setText(selectedLogRecord.getMessage());
-            enebleMargin(txtSTLMessage, true);
+            enableMargin(txtSTLMessage, true);
         } else {
             txtSTLMessage.setText("");
-            enebleMargin(txtSTLMessage, false);
+            enableMargin(txtSTLMessage, false);
         }
 
         compositeSTLInformation.layout();
@@ -870,7 +908,7 @@ public class ReportPartTestLogView {
         return parentPart.getReport();
     }
 
-    public void enebleMargin(StyledText styledText, boolean enable) {
+    public void enableMargin(StyledText styledText, boolean enable) {
         styledText.setRedraw(false);
         if (enable) {
             styledText.getVerticalBar().setVisible(true);
