@@ -11,6 +11,7 @@ import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.ast.expr.MapEntryExpression;
 import org.codehaus.groovy.ast.expr.MapExpression;
 import org.codehaus.groovy.ast.expr.MethodCallExpression;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMethod;
@@ -154,5 +155,23 @@ public class TestCaseEntityUtil {
             LoggerSingleton.logError(e);
         }
         return "";
+    }
+
+    /**
+     * Get Test Case Entity list from their script file
+     * 
+     * @param scriptFiles list of test case script files
+     * @return List of TestCaseEntity
+     * @throws Exception
+     */
+    public static List<TestCaseEntity> getTestCaseEntities(List<IFile> scriptFiles) throws Exception {
+        List<TestCaseEntity> testCaseEntities = new ArrayList<TestCaseEntity>();
+        if (scriptFiles != null && !scriptFiles.isEmpty()) {
+            for (IFile file : scriptFiles) {
+                testCaseEntities.add(TestCaseController.getInstance().getTestCaseByScriptFilePath(
+                        file.getRawLocation().toString()));
+            }
+        }
+        return testCaseEntities;
     }
 }
