@@ -374,7 +374,12 @@ public class WebElementFileServiceManager {
 
     public static WebElementEntity moveWebElement(WebElementEntity webElement, FolderEntity destinationFolder)
             throws Exception {
-        return EntityFileServiceManager.move(webElement, destinationFolder);
+        String oldWebElementLocation = webElement.getLocation();
+        WebElementEntity newWebElement = EntityFileServiceManager.move(webElement, destinationFolder);
+        if (!newWebElement.getLocation().equalsIgnoreCase(oldWebElementLocation)) {
+            updateTestObjectReferences(newWebElement, oldWebElementLocation);
+        }
+        return newWebElement;
     }
 
     public static WebElementEntity getDuplicateWebElement(WebElementEntity parentWebElement, FolderEntity parentFolder,
