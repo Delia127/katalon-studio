@@ -2,16 +2,13 @@ package com.kms.katalon.core.webui.keyword;
 
 import groovy.transform.CompileStatic
 
-import java.io.File;
-
-import org.apache.commons.io.FileUtils;
-
-import java.awt.Rectangle
 import java.text.MessageFormat
 import java.util.concurrent.TimeUnit
 
+import org.apache.commons.io.FileUtils
 import org.openqa.selenium.Alert
 import org.openqa.selenium.By
+import org.openqa.selenium.Dimension
 import org.openqa.selenium.JavascriptExecutor
 import org.openqa.selenium.NoSuchElementException
 import org.openqa.selenium.NoSuchWindowException
@@ -38,6 +35,7 @@ import com.kms.katalon.core.testobject.ConditionType
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.testobject.TestObjectProperty
 import com.kms.katalon.core.util.ExceptionsUtil
+import com.kms.katalon.core.util.PathUtil
 import com.kms.katalon.core.webui.common.ScreenUtil
 import com.kms.katalon.core.webui.common.WebUiCommonHelper
 import com.kms.katalon.core.webui.constants.StringConstants
@@ -55,7 +53,15 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     /**
      * Open browser and navigate to the specified url; if url is left empty then just open browser
      * @param rawUrl
-     *      url of the web page to be opened, can be left empty or null
+     *         url of the web page to be opened, can be left empty or null. If rawUrl doesn't contain protocol prefix, 
+     *         then the protocol will be <code>http://</code>.
+     *      </p>Example:
+     *      <ul>
+     *          <li>http://katalon.kms-technology.com/</li>
+     *          <li>https://www.google.com</li>
+     *          <li>file:///D:/Development/index.html</li>
+     *          <li>kms-technology.com => http://kms-technology.com</li>
+     *      </ul>
      * @param flowControl
      * @throws StepFailedException
      */
@@ -66,11 +72,8 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             logger.logInfo(StringConstants.KW_LOG_INFO_OPENING_BROWSER);
             DriverFactory.openWebDriver();
             if (rawUrl != null && !rawUrl.isEmpty()) {
-                StringBuilder url = new StringBuilder(rawUrl);
-                if (!rawUrl.startsWith("http://") && !rawUrl.startsWith("https://")) {
-                    url.insert(0, "http://");
-                }
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_NAVIGATING_BROWSER_TO, url));
+                URL url = PathUtil.getUrl(rawUrl, "http");
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_NAVIGATING_BROWSER_TO, url.toString()));
                 DriverFactory.getWebDriver().get(url.toString());
             }
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_BROWSER_IS_OPENED_W_URL, rawUrl));
@@ -146,7 +149,14 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     /**
      * Navigate to the specified web page
      * @param rawUrl
-     *          url of the web page to navigate to
+     *          url of the web page to navigate to. If rawUrl doesn't contain protocol prefix, then the protocol will be <code>http://</code>.
+     *      </p>Example:
+     *      <ul>
+     *          <li>http://katalon.kms-technology.com/</li>
+     *          <li>https://www.google.com</li>
+     *          <li>file:///D:/Development/index.html</li>
+     *          <li>kms-technology.com => http://kms-technology.com</li>
+     *      </ul>
      * @param flowControl
      * @throws StepFailedException
      */
@@ -159,14 +169,11 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 throw new IllegalArgumentException(StringConstants.KW_EXC_URL_CANNOT_BE_NULL_OR_EMPTY);
             }
 
-            StringBuilder url = new StringBuilder(rawUrl);
-            if (!rawUrl.startsWith("http://") && !rawUrl.startsWith("https://")) {
-                url.insert(0, "http://");
-            }
-            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_NAVIGATING_TO, url));
+            URL url = PathUtil.getUrl(rawUrl, "http");
+            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_NAVIGATING_TO, url.toString()));
             WebDriver webDriver = DriverFactory.getWebDriver();
             webDriver.navigate().to(url.toString());
-            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_NAVIGATE_TO, url));
+            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_NAVIGATE_TO, url.toString()));
         }
         , flowControl, true, MessageFormat.format(StringConstants.KW_MSG_CANNOT_NAVIGATE_TO, rawUrl))
     }
@@ -3381,7 +3388,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static int getViewportWidth(FailureHandling flowControl) throws StepFailedException {
         return (int) WebUIKeywordMain.runKeyword({
             int viewportWidth = WebUiCommonHelper.getViewportWidth(DriverFactory.getWebDriver());
-            KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_VIEWPORT_WIDTH_X, viewportWidth));
+            KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_VIEWPORT_WIDTH_X, viewportWidth.toString()));
             return viewportWidth;
         }
         , flowControl, false, StringConstants.KW_MSG_CANNOT_GET_VIEWPORT_WIDTH)
@@ -3398,7 +3405,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static int getViewportHeight(FailureHandling flowControl) throws StepFailedException {
         return (int) WebUIKeywordMain.runKeyword({
             int viewportHeight = WebUiCommonHelper.getViewportHeight(DriverFactory.getWebDriver());
-            KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_VIEWPORT_HEIGHT_X, viewportHeight));
+            KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_VIEWPORT_HEIGHT_X, viewportHeight.toString()));
             return viewportHeight;
         }
         , flowControl, false, StringConstants.KW_MSG_CANNOT_GET_VIEWPORT_HEIGHT)
@@ -3500,7 +3507,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      *      represent a web element
      * @param attributeName
      *      the name of the attribute to verify
-     * @param attributeName
+     * @param attributeValue
      *      the value of the attribute to verify
      * @param timeOut
      *      system will wait at most timeout (seconds) to return result
@@ -3706,5 +3713,134 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue)
         : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_ATTRIBUTE_VALUE)
+    }
+
+    /**
+     * Set the size of the current window. This will change the outer window dimension and the viewport, synonymous to window.resizeTo() in JS.
+     * @param width
+     *      the target viewport width
+     * @param height
+     *      the target viewport height
+     * @param flowControl
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static void setViewPortSize(int width, int height, FailureHandling flowControl) {
+        WebUIKeywordMain.runKeyword({
+            logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_WIDTH);
+            if (width <= 0) {
+                throw new IllegalArgumentException(StringConstants.COMM_EXC_WIDTH_MUST_BE_ABOVE_ZERO);
+            }
+            logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_HEIGHT);
+            if (height <= 0) {
+                throw new IllegalArgumentException(StringConstants.COMM_EXC_HEIGHT_MUST_BE_ABOVE_ZERO);
+            }
+            DriverFactory.getWebDriver().manage().window().setSize(new Dimension(width, height));
+            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SET_VIEWPORT_WIDTH_X_HEIGHT_Y, width.toString(), height.toString()));
+        }
+        , flowControl, true, StringConstants.KW_MSG_CANNOT_SET_VIEWPORT)
+    }
+
+    /**
+     * Scroll the viewport to a specific position
+     * @param x
+     *      x position
+     * @param y
+     *      y position
+     * @param flowControl
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static void scrollToPosition(int x, int y, FailureHandling flowControl) {
+        WebUIKeywordMain.runKeyword({
+            logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_X);
+            if (x < 0) {
+                throw new IllegalArgumentException(StringConstants.COMM_EXC_X_MUST_BE_ABOVE_ZERO);
+            }
+            logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_Y);
+            if (y < 0) {
+                throw new IllegalArgumentException(StringConstants.COMM_EXC_Y_MUST_BE_ABOVE_ZERO);
+            }
+            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SCROLLING_TO_POSITION_X_Y, x.toString(), y.toString()));
+            ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript("window.scrollTo(" + x.toString() + ", " + y.toString() + ");");
+            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SCROLL_TO_POSITION_X_Y, x.toString(), y.toString()));
+        }
+        , flowControl, true, MessageFormat.format(StringConstants.KW_MSG_CANNOT_SCROLL_TO_POSITION_X_Y, x.toString(), y.toString()))
+    }
+
+    /**
+     * Get current web page's width
+     * @param flowControl
+     * @return current web page's width
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static int getPageWidth(FailureHandling flowControl) {
+        return (int) WebUIKeywordMain.runKeyword({
+            int pageWidth = (int) ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript('''return Math.max(
+                document.documentElement["clientWidth"], 
+                document.body["scrollWidth"], 
+                document.documentElement["scrollWidth"], 
+                document.body["offsetWidth"], 
+                document.documentElement["offsetWidth"]);''');
+            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_PAGE_WIDTH_X, pageWidth.toString()));
+            return pageWidth;
+        }
+        , flowControl, true, StringConstants.KW_MSG_CANNOT_GET_PAGE_WIDTH)
+    }
+    
+    /**
+     * Get current web page's height
+     * @param flowControl
+     * @return current web page's height
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static int getPageHeight(FailureHandling flowControl) {
+        return (int) WebUIKeywordMain.runKeyword({
+            int pageHeight = (int) ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript('''return Math.max(
+                document.documentElement["clientHeight"], 
+                document.body["scrollHeight"], 
+                document.documentElement["scrollHeight"], 
+                document.body["offsetHeight"], 
+                document.documentElement["offsetHeight"]);''');
+            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_PAGE_HEIGHT_X, pageHeight.toString()));
+            return pageHeight;
+        }
+        , flowControl, true, StringConstants.KW_MSG_CANNOT_GET_PAGE_HEIGHT)
+    }
+    
+    /**
+     * Get current view port left (x) position relatively to the web page
+     * @param flowControl
+     * @return current view port left (x) position
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static int getViewportLeftPosition(FailureHandling flowControl) {
+        return (int) WebUIKeywordMain.runKeyword({
+            Number leftPosition = (Number) ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript('return window.pageXOffset || document.documentElement.scrollLeft;');
+            int leftPositionIntValue = leftPosition.intValue();
+            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_VIEWPORT_LEFT_POSITION_X, leftPositionIntValue.toString()));
+            return leftPositionIntValue;
+        }
+        , flowControl, true, StringConstants.KW_MSG_CANNOT_GET_VIEWPORT_LEFT_POSITION)
+    }
+    
+    /**
+     * Get current view port top (y) position relatively to the web page
+     * @param flowControl
+     * @return current view port top (y) position
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static int getViewportTopPosition(FailureHandling flowControl) {
+        return (int) WebUIKeywordMain.runKeyword({
+            Number topPosition = (Number) ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript('return window.pageYOffset || document.documentElement.scrollTop;');
+            int topPositionIntValue = topPosition.intValue();
+            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_VIEWPORT_TOP_POSITION_X, topPositionIntValue.toString()));
+            return topPositionIntValue;
+        }
+        , flowControl, true, StringConstants.KW_MSG_CANNOT_GET_VIEWPORT_TOP_POSITION)
     }
 }

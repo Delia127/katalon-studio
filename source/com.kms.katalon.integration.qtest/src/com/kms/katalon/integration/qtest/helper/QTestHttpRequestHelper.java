@@ -77,7 +77,8 @@ public class QTestHttpRequestHelper {
             Map<String, String> cookies = new HashMap<String, String>();
             doLogin(credential, client, cookies);
             String result = doPost(client, credential.getServerUrl(), url, postParams, cookies);
-
+            doLogout(credential, client, cookies);
+            
             return result;
         } finally {
             IOUtils.closeQuietly(client);
@@ -92,7 +93,7 @@ public class QTestHttpRequestHelper {
             doLogin(credential, client, cookies);
 
             String result = doGet(client, credential.getServerUrl(), url, cookies);
-
+            doLogout(credential, client, cookies);
             return result;
         } finally {
             IOUtils.closeQuietly(client);
@@ -144,6 +145,11 @@ public class QTestHttpRequestHelper {
         doPost(client, credential.getServerUrl(), "/login?redirect=%2Fportal%2Fproject", postParams, cookies);
         doGet(client, credential.getServerUrl(), "/portal/project", cookies);
     }
+    
+    public static void doLogout(IQTestCredential credential, CloseableHttpClient client, Map<String, String> cookies)
+            throws QTestIOException {
+        doPost(client, credential.getServerUrl(), "/logout", new ArrayList<NameValuePair>(), cookies);
+    }
 
     private static String doPost(CloseableHttpClient client, String serverUrl, String url,
             List<NameValuePair> postParams, Map<String, String> cookies) throws QTestIOException {
@@ -193,8 +199,9 @@ public class QTestHttpRequestHelper {
         request.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
         request.setHeader("Accept-Language", "en-US,en;q=0.5");
         request.setHeader("Cookie", cookiesString(cookies));
+        request.setHeader("Connection", "keep-alive");
         request.setHeader("X-CSRF-Token", "0.0");
-
+        
         CloseableHttpResponse response = null;
         try {
             response = client.execute(request);

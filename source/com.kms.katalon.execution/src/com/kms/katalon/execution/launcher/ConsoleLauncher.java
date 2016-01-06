@@ -15,21 +15,25 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.RuntimeProcess;
+import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.core.logging.XmlLogRecordException;
+import com.kms.katalon.core.logging.model.ILogRecord;
+import com.kms.katalon.core.logging.model.TestCaseLogRecord;
+import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.reporting.ReportUtil;
 import com.kms.katalon.core.util.PathUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
-import com.kms.katalon.execution.generator.TestSuiteScriptGenerator;
 import com.kms.katalon.execution.launcher.manager.ConsoleMain;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
@@ -43,22 +47,15 @@ public class ConsoleLauncher extends AbstractLauncher {
         super(runConfig);
     }
 
-    protected static IFile generateTempTestSuiteScript(TestSuiteEntity testSuite, IRunConfiguration config,
-            TestSuiteExecutedEntity testSuiteExecutedEntity) throws Exception {
-        if (testSuite != null) {
-            File tempTestSuiteFile = new TestSuiteScriptGenerator(testSuite, config, testSuiteExecutedEntity)
-                    .generateScriptFile();
-            return GroovyUtil.getTempScriptIFile(tempTestSuiteFile, testSuite.getProject());
-        }
-        return null;
-    }
-
-    public void launch(TestSuiteEntity testSuite, TestSuiteExecutedEntity testSuiteExecutedEntity) throws Exception {
+    public void launch(TestSuiteEntity testSuite, TestSuiteExecutedEntity testSuiteExecutedEntity, int reRunTime,
+            List<String> passedTestCaseIds) throws Exception {
         if (testSuite != null) {
             executedEntity = testSuite;
             this.testSuiteExecutedEntity = testSuiteExecutedEntity;
             ExecutionUtil.writeRunConfigToFile(getRunConfiguration());
             scriptFile = generateTempTestSuiteScript(testSuite, runConfig, testSuiteExecutedEntity);
+            this.reRunTime = reRunTime;
+            this.passedTestCaseIds = passedTestCaseIds;
             LauncherManager.getInstance().addLauncher(this);
         }
     }
@@ -139,6 +136,8 @@ public class ConsoleLauncher extends AbstractLauncher {
                             // For report summary
                             prepareReport(testSuite, logFile);
 
+                            retryIfNecessary(testSuite, logFile);
+
                             stopAndSchedule();
 
                         } catch (Exception e) {
@@ -153,8 +152,49 @@ public class ConsoleLauncher extends AbstractLauncher {
                     }
                 }
             }
+
         });
         thread.start();
+    }
+
+    private static void collectPassedTestCaseIds(TestSuiteLogRecord testSuiteRecord, List<String> passedTestCaseIds) {
+        if (passedTestCaseIds == null) {
+            return;
+        }
+        for (ILogRecord childLogRecord : testSuiteRecord.getChildRecords()) {
+            if (childLogRecord instanceof TestCaseLogRecord
+                    && childLogRecord.getStatus().getStatusValue() == TestStatusValue.PASSED) {
+                passedTestCaseIds.add(childLogRecord.getName());
+            }
+        }
+    }
+
+    private void retryIfNecessary(final TestSuiteEntity testSuite, File logFile) throws Exception {
+        File testSuiteReportSourceFolder = logFile.getParentFile();
+        if (testSuiteReportSourceFolder == null) {
+            return;
+        }
+        TestSuiteLogRecord suiteLog = ReportUtil.generate(testSuiteReportSourceFolder.getAbsolutePath());
+        if (suiteLog != null && suiteLog.getStatus().getStatusValue() != TestStatusValue.PASSED
+                && reRunTime < testSuite.getNumberOfRerun() && runConfig instanceof AbstractRunConfiguration) {
+            System.out.println("Re-run test suite #" + (reRunTime + 1));
+            final AbstractRunConfiguration abstractRunConfiguration = (AbstractRunConfiguration) runConfig;
+            abstractRunConfiguration.generateLogFolder(testSuite);
+            abstractRunConfiguration.generateLogFilePath(testSuite);
+            if (testSuite.isRerunFailedTestCasesOnly()) {
+                collectPassedTestCaseIds(suiteLog, passedTestCaseIds);
+            }
+            Display.getDefault().syncExec(new Runnable() {
+                public void run() {
+                    try {
+                        ConsoleMain.launchTestSuite(testSuite, abstractRunConfiguration,
+                                testSuiteExecutedEntity.getReportFolderPath(), reRunTime + 1, passedTestCaseIds);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
     }
 
     private boolean prepareReport(TestSuiteEntity testSuite, File logFile) {
@@ -223,8 +263,6 @@ public class ConsoleLauncher extends AbstractLauncher {
 
                 sendReportEmail(testSuite, null, logFile, suitesSummaryForEmail);
 
-                // sendReportEmail(TestSuiteEntity testSuite, File csvFile, File logFile, List<Object[]>
-                // suitesSummaryForEmail)
                 return true;
             } catch (Exception e) {
                 System.out.println(MessageFormat.format(StringConstants.LAU_PRT_CANNOT_SEND_EMAIL, e.getMessage()));
@@ -258,6 +296,7 @@ public class ConsoleLauncher extends AbstractLauncher {
             executeScript(ProjectController.getInstance().getCurrentProject(), scriptFile);
             handleExecutionEvents(getCurrentLogFile(), (TestSuiteEntity) executedEntity, scriptFile);
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println(StringConstants.LAU_PRT_CANNOT_EXECUTE_TEST_SUITE);
         }
     }

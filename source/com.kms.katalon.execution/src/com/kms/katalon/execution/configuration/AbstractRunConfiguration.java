@@ -26,7 +26,7 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     protected String sourceName;
     protected String sourceDescription;
     protected String executionSettingFilePath;
-    
+
     public AbstractRunConfiguration() {
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
         if (currentProject != null) {
@@ -285,5 +285,18 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
             isFirst = false;
         }
         return nameStringBuilder.toString();
+    }
+    
+
+    public String getLogFolderPath() {
+        return logFolderPath;
+    }
+
+    public void setLogFolderPath(String logFolderPath) {
+        this.logFolderPath = logFolderPath;
+    }
+    
+    public void setExecutionSettingFilePath(String executionSettingFilePath) {
+        this.executionSettingFilePath = executionSettingFilePath;
     }
 }

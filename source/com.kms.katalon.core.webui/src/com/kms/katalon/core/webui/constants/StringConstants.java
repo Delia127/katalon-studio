@@ -465,6 +465,27 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_LOG_FAILED_WAIT_FOR_OBJ_X_HAS_ATTRIBUTE_Y_VALUE_Z = "Object ''{0}'' does not have attribute ''{1}'' with value ''{2}''";
     public static final String KW_MSG_CANNOT_WAIT_OBJ_X_ATTRIBUTE_Y_VALUE_Z = "Unable to wait for object ''{0}'' to have attribute ''{1}'' with value ''{2}''";
     public static final String KW_MSG_CANNOT_WAIT_OBJ_ATTRIBUTE_VALUE = "Unable to wait for element to have attribute with value";
+    public static final String KW_LOG_PASSED_SET_VIEWPORT_WIDTH_X_HEIGHT_Y = "Viewport is set to new size with width = {0} and height = {1}";
+    public static final String KW_MSG_CANNOT_SET_VIEWPORT = "Unable to set viewport size for browser";
+    public static final String COMM_LOG_INFO_CHECKING_WIDTH = "Checking width";
+    public static final String COMM_LOG_INFO_CHECKING_HEIGHT = "Checking height";
+    public static final String COMM_EXC_WIDTH_MUST_BE_ABOVE_ZERO = "Width must be > 0";
+    public static final String COMM_EXC_HEIGHT_MUST_BE_ABOVE_ZERO = "Height must be > 0";
+    public static final String COMM_LOG_INFO_CHECKING_X = "Checking x";
+    public static final String COMM_LOG_INFO_CHECKING_Y = "Checking y";
+    public static final String COMM_EXC_X_MUST_BE_ABOVE_ZERO = "X must be >= 0";
+    public static final String COMM_EXC_Y_MUST_BE_ABOVE_ZERO = "Y must be >= 0";
+    public static final String KW_LOG_PASSED_SCROLL_TO_POSITION_X_Y = "Browser is scrolled to position x = {0}, y = {1}";
+    public static final String KW_MSG_CANNOT_SCROLL_TO_POSITION_X_Y = "Unable to scroll to position x = {0}, y = {1}";
+    public static final String KW_LOG_INFO_SCROLLING_TO_POSITION_X_Y = "Scrolling to position x = {0}, y = {1}";
+    public static final String KW_LOG_PASSED_GET_PAGE_WIDTH_X = "Current page''s width is {0}";
+    public static final String KW_MSG_CANNOT_GET_PAGE_WIDTH = "Unable to get current page''s width";
+    public static final String KW_LOG_PASSED_GET_PAGE_HEIGHT_X = "Current page''s height is {0}";
+    public static final String KW_MSG_CANNOT_GET_PAGE_HEIGHT = "Unable to get current page''s height";
+    public static final String KW_LOG_PASSED_GET_VIEWPORT_LEFT_POSITION_X = "Current viewport''s left (x) position is {0}";
+    public static final String KW_MSG_CANNOT_GET_VIEWPORT_LEFT_POSITION = "Unable to get viewport''s left (x) position";
+    public static final String KW_LOG_PASSED_GET_VIEWPORT_TOP_POSITION_X = "Current viewport''s top (y) position is {0}";
+    public static final String KW_MSG_CANNOT_GET_VIEWPORT_TOP_POSITION = "Unable to get viewport''s top (y) position";
     
 	public static final String KW_CATEGORIZE_ALERT = "Alert";
 	public static final String KW_CATEGORIZE_ATTRIBUTE = "Attribute";

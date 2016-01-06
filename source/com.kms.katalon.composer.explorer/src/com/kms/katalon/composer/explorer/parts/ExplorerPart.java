@@ -174,7 +174,10 @@ public class ExplorerPart {
 
             @Override
             public void modifyText(ModifyEvent e) {
-
+                if (isSearching) {
+                    isSearching = false;
+                    updateStatusSearchLabel();
+                }
             }
         });
 
@@ -257,9 +260,9 @@ public class ExplorerPart {
         });
 
         Label seperator1 = new Label(searchComposite, SWT.SEPARATOR | SWT.VERTICAL);
-        GridData gd_seperator1 = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
-        gd_seperator1.heightHint = 22;
-        seperator1.setLayoutData(gd_seperator1);
+        GridData gdSeperator1 = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
+        gdSeperator1.heightHint = 22;
+        seperator1.setLayoutData(gdSeperator1);
 
         // label Filter
         lblFilter = new CLabel(searchComposite, SWT.NONE);

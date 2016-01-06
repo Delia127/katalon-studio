@@ -1,7 +1,12 @@
 package com.kms.katalon.core.util;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.regex.Pattern;
 
 public class PathUtil {
@@ -31,9 +36,10 @@ public class PathUtil {
         // "" token if the base ends in the path separator and is therefore
         // a directory. We require directory paths to end in the path
         // separator -- otherwise they are indistinguishable from files.
-        String[] base = basePath.replace(windowSeparator, relativeSeparator).split(Pattern.quote(relativeSeparator), -1);
-        String[] target = targetPath.replace(windowSeparator, relativeSeparator).split(Pattern.quote(relativeSeparator),
-                0);
+        String[] base = basePath.replace(windowSeparator, relativeSeparator)
+                .split(Pattern.quote(relativeSeparator), -1);
+        String[] target = targetPath.replace(windowSeparator, relativeSeparator).split(
+                Pattern.quote(relativeSeparator), 0);
 
         // First get all the common elements. Store them as a string,
         // and also count how many of them there are.
@@ -73,5 +79,40 @@ public class PathUtil {
         relative += targetPath.replace(windowSeparator, relativeSeparator).substring(common.length());
 
         return relative;
+    }
+
+    /**
+     * Returns an instance of {@link URL} that parsed from the given <code>rawUrl</code>
+     * 
+     * @param rawUrl
+     *            input of an URL.
+     *            <ul>
+     *            <li>https://www.google.com</li>
+     *            <li>file:///D:/Development/index.html</li>
+     *            <li>ftp://ftp.google.com/</li>
+     *            </ul>
+     * @param defaultProtocol
+     *            : In case the given <code>rawUrl</code> doesn't contain its protocol, system will use this parameter
+     *            instead. </p>Example: <li><code>rawUrl = google.com</code> and <code>defaultProtocol = https</code>
+     *            then <code>URL = https://www.google.com</code></li>
+     * 
+     * @return an instance of {@link URL}
+     * @throws MalformedURLException
+     * @throws URISyntaxException
+     */
+    public static URL getUrl(String rawUrl, String defaultProtocol) throws MalformedURLException, URISyntaxException {
+        URL url = null;
+        try {
+            url = new URL(rawUrl);
+        } catch (MalformedURLException e) {
+            try {
+                url = new URI(rawUrl).toURL();
+            } catch (IllegalArgumentException ex) {
+                url = new URI(defaultProtocol + "://" + rawUrl).toURL();
+            } catch (URISyntaxException ex) {
+                url = Paths.get(rawUrl).toUri().toURL();
+            }
+        }
+        return url;
     }
 }

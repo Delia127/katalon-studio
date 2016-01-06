@@ -27,6 +27,9 @@ public class VariableEntity implements Serializable {
 	}
 
 	public String getDefaultValue() {
+	    if (defaultValue.isEmpty()) {
+	        return "null";
+	    }
 		return defaultValue;
 	}
 

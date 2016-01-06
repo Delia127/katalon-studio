@@ -90,5 +90,11 @@ public interface PreferenceConstants {
         public static final String SLACK_SEND_CREATE_FOLDER = "slackConfig.sendCreateFolder";
         public static final String SLACK_SEND_CREATE_PACKAGE = "slackConfig.sendCreatePackage";
     }
+    
+    public interface ReportPreferenceConstants extends IPluginPreferenceConstants {
+        public static final String QUALIFIER = "com.kms.katalon.composer.report";
+
+        public static final String TEST_LOG_SEARCH_INCLUDE_CHILD_LOG_FOR_FIRST_MATCH = "testLog.includeChildrenForFirstMatch";
+    }
 
 }

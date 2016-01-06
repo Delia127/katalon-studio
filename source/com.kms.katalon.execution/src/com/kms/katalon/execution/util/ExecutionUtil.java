@@ -375,6 +375,5 @@ public class ExecutionUtil {
             // reading file failed or parsing json failed --> return empty map;
         }
         return null;
-
     }
 }
