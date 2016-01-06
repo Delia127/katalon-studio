@@ -9,7 +9,6 @@ public class ReportTestStepTreeViewer extends TreeViewer {
 	
 	public ReportTestStepTreeViewer(Composite parent, int style) {
 		super(parent, style);
-		// TODO Auto-generated constructor stub
 	}
 
 	public String getSearchedString() {
@@ -21,6 +20,8 @@ public class ReportTestStepTreeViewer extends TreeViewer {
 
 	public void setSearchedString(String searchedString) {
 		this.searchedString = searchedString;
+		ReportTestStepTableViewerFilter filter = (ReportTestStepTableViewerFilter) getFilters()[0];
+		filter.resetLookup();
 	}
 
 }

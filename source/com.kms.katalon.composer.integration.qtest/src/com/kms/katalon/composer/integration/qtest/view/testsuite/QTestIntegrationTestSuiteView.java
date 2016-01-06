@@ -8,6 +8,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -22,6 +23,7 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -36,6 +38,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.dialogs.PreferenceDialogBuilder;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
@@ -60,6 +63,7 @@ import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationView {
+
     public QTestIntegrationTestSuiteView(TestSuiteEntity testSuiteEntity, MPart mpart) {
         super(testSuiteEntity, mpart);
     }
@@ -145,7 +149,7 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
         Composite compositeSelectedParentDetails = new Composite(compositeSelectedParent, SWT.BORDER);
         compositeSelectedParentDetails.setBackground(ColorUtil.getWhiteBackgroundColor());
         compositeSelectedParentDetails.setBackgroundMode(SWT.INHERIT_FORCE);
-        
+
         compositeSelectedParentDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         GridLayout glCompositeSelectedParentDetails = new GridLayout(2, false);
         glCompositeSelectedParentDetails.verticalSpacing = 7;
@@ -300,11 +304,14 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
     }
 
     private void removeParentFromParentList() {
-        if (!isIntegrationActive()) { return; }
+        if (!isIntegrationActive()) {
+            return;
+        }
         IStructuredSelection selection = (IStructuredSelection) testSuiteParentTableViewer.getSelection();
         QTestSuite selectedQTestSuite = (QTestSuite) selection.getFirstElement();
         if (selectedQTestSuite.getId() > 0) {
-            if (!disintegrateTestSuiteWithQTest()) return;
+            if (!disintegrateTestSuiteWithQTest())
+                return;
         }
 
         getQTestSuites().remove(selectedQTestSuite);
@@ -314,7 +321,8 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
     }
 
     private void setDefaultQTestSuite(QTestSuite selectedQTestSuite) {
-        if (!isIntegrationActive()) return;
+        if (!isIntegrationActive())
+            return;
         selectedQTestSuite.setSelected(true);
         for (QTestSuite testSuite : getQTestSuites()) {
             if (!testSuite.equals(selectedQTestSuite)) {
@@ -327,14 +335,24 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
     }
 
     private void showTestSuiteNotValidNotification() {
-        MessageDialog.openInformation(null, StringConstants.INFORMATION,
-                StringConstants.VIEW_MSG_TEST_SUITE_NOT_IN_REPO);
+        if (!MessageDialog.openQuestion(null, StringConstants.INFORMATION,
+                StringConstants.VIEW_MSG_TEST_SUITE_NOT_IN_REPO)) {
+            return;
+        }
+        PreferenceDialog dialog = PreferenceDialogBuilder
+                .create()
+                .addDialogName(StringConstants.PROJECT_SETTINGS)
+                .addSelectedNode(StringConstants.PREF_TEST_SUITE_REPO_PAGE)
+                .addSize(new Point(800, 500))
+                .build();
+        dialog.open();
     }
 
     private void createTestSuiteParent() {
         try {
             ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-            if (!isIntegrationActive()) return;
+            if (!isIntegrationActive())
+                return;
             List<String> currentInUseParentStrings = new ArrayList<String>();
             for (QTestSuite qTestSuite : getQTestSuites()) {
                 currentInUseParentStrings.add(Long.toString(qTestSuite.getParent().getId()));
@@ -352,7 +370,8 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
                     currentInUseParentStrings, repo.getQTestProject());
             if (dialog.open() == Dialog.OK) {
                 QTestSuiteParent qTestSuiteParent = dialog.getNewTestSuiteParent();
-                if (qTestSuiteParent == null) return;
+                if (qTestSuiteParent == null)
+                    return;
 
                 QTestSuite qTestSuite = new QTestSuite();
                 qTestSuite.setParent(qTestSuiteParent);
@@ -362,21 +381,21 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
                 testSuiteParentTableViewer.refresh();
 
                 updateIntegratedEntity();
-                
+
                 TestSuiteParentCreationOption creationOption = QTestPreferenceDefaultValueInitializer
                         .getCreationOption();
                 switch (creationOption) {
-                    case CREATE_ONLY:
-                        break;
-                    case CREATE_AND_UPLOAD:
-                        uploadTestSuite(qTestSuite);
-                        break;
-                    case CREATE_UPLOAD_AND_SET_AS_DEFAULT:
-                        setDefaultQTestSuite(qTestSuite);
-                        uploadTestSuite(qTestSuite);
-                        break;
-                    default:
-                        break;
+                case CREATE_ONLY:
+                    break;
+                case CREATE_AND_UPLOAD:
+                    uploadTestSuite(qTestSuite);
+                    break;
+                case CREATE_UPLOAD_AND_SET_AS_DEFAULT:
+                    setDefaultQTestSuite(qTestSuite);
+                    uploadTestSuite(qTestSuite);
+                    break;
+                default:
+                    break;
                 }
 
                 testSuiteParentTableViewer.setSelection(new StructuredSelection(qTestSuite));
@@ -390,10 +409,9 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
 
     private boolean disintegrateTestSuiteWithQTest() {
         try {
-            if (!isIntegrationActive()) return false;
-
-            if (MessageDialog.openConfirm(null, StringConstants.CONFIRMATION,
-                    StringConstants.VIEW_CONFIRM_DISINTEGRATE_TEST_SUITE)) {
+            if (isIntegrationActive()
+                    && MessageDialog.openConfirm(null, StringConstants.CONFIRMATION,
+                            StringConstants.VIEW_CONFIRM_DISINTEGRATE_TEST_SUITE)) {
                 IStructuredSelection selection = (IStructuredSelection) testSuiteParentTableViewer.getSelection();
                 QTestSuite selectedQTestSuite = (QTestSuite) selection.getFirstElement();
 
@@ -422,7 +440,8 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
 
     private void navigateToQTest() {
         try {
-            if (!isIntegrationActive()) return;
+            if (!isIntegrationActive())
+                return;
             IStructuredSelection selection = (IStructuredSelection) testSuiteParentTableViewer.getSelection();
             QTestSuite selectedQTestSuite = (QTestSuite) selection.getFirstElement();
             ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
@@ -432,8 +451,8 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
                 return;
             }
 
-            URL url = QTestIntegrationTestSuiteManager.navigatedUrlForQTestSuite(getProjectDir(),
-                    selectedQTestSuite, repo.getQTestProject());
+            URL url = QTestIntegrationTestSuiteManager.navigatedUrlForQTestSuite(getProjectDir(), selectedQTestSuite,
+                    repo.getQTestProject());
             IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser();
             browser.openURL(url);
         } catch (Exception e) {
@@ -454,18 +473,20 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
 
     private void uploadTestSuite(QTestSuite selectedQTestSuite) {
         try {
-            if (!isIntegrationActive()) { return; }
+            if (!isIntegrationActive()) {
+                return;
+            }
             ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
             TestSuiteRepo repo = QTestIntegrationUtil.getTestSuiteRepo(testSuiteEntity, currentProject);
             if (repo == null) {
                 showTestSuiteNotValidNotification();
                 return;
             }
-            
+
             List<QTestSuite> uploadedQTestSuites = new ArrayList<QTestSuite>();
             uploadedQTestSuites.add(selectedQTestSuite);
             TestSuiteQTestSuitePair pair = new TestSuiteQTestSuitePair(testSuiteEntity, uploadedQTestSuites);
-            
+
             List<TestSuiteQTestSuitePair> pairs = new ArrayList<TestSuiteQTestSuitePair>();
             pairs.add(pair);
             UploadTestSuiteJob job = new UploadTestSuiteJob(pairs);
@@ -499,7 +520,7 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
 
         super.setDirty(dirty);
     }
-    
+
     private void updateIntegratedEntity() {
         IntegratedEntity testSuiteIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(testSuiteEntity);
 
@@ -568,7 +589,8 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
     }
 
     private List<QTestSuite> getQTestSuites() {
-        if (qTestSuites == null) qTestSuites = new ArrayList<QTestSuite>();
+        if (qTestSuites == null)
+            qTestSuites = new ArrayList<QTestSuite>();
         return qTestSuites;
     }
 

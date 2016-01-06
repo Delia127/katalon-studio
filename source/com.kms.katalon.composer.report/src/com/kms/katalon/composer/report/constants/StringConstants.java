@@ -31,4 +31,10 @@ public class StringConstants extends GlobalStringConstants {
 	
 	public static final String COLUMN_LBL_RUN_DATA_KEY = "Name";
 	public static final String COLUMN_LBL_RUN_DATA_VALUE = "Value";
+	
+	//AdvancedSearchTestLogDialog
+	public static final String DIA_TITLE_ADVANCED_SEARCH = "Advanced Search";
+	public static final String DIA_ERROR_MSG_UNABLE_TO_UPDATE_ADVANCED_SEARCH = "Unable to update advanced search.";
+	public static final String DIA_LBL_INCLUDE_CHILD_LOGS = "Include child logs of matched parent results.";
+	
 }
