@@ -17,8 +17,7 @@ import com.kms.katalon.execution.launcher.manager.ConsoleMain;
 
 public class Application implements IApplication {
 	private static final String CONSOLE_RUNNING_MODE_ARGUMENT = "-runMode=console";
-
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app.
@@ -26,8 +25,8 @@ public class Application implements IApplication {
 	 */
 	public Object start(IApplicationContext context) {
 		final Map<?, ?> args = context.getArguments();
-		boolean isConsoleMode = false;
 		final String[] appArgs = (String[]) args.get("application.args");
+		boolean isConsoleMode = false;
 		for (final String arg : appArgs) {
 			if (arg.toLowerCase().equals(CONSOLE_RUNNING_MODE_ARGUMENT.toLowerCase())) {
 				ApplicationRunningMode runningMode = ApplicationRunningMode.getInstance();

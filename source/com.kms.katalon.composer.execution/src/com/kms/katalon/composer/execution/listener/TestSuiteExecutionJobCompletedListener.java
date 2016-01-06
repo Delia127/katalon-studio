@@ -57,7 +57,7 @@ public class TestSuiteExecutionJobCompletedListener implements EventHandler {
         }
     }
 
-    private void collectPassedTestCaseIds(TestSuiteLogRecord testSuiteRecord, List<String> passedTestCaseIds) {
+    private static void collectPassedTestCaseIds(TestSuiteLogRecord testSuiteRecord, List<String> passedTestCaseIds) {
         if (passedTestCaseIds == null) {
             return;
         }

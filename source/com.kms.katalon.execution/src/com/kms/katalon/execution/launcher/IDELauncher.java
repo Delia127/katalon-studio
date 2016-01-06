@@ -30,8 +30,6 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
-import com.kms.katalon.execution.generator.TestCaseScriptGenerator;
-import com.kms.katalon.execution.generator.TestSuiteScriptGenerator;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.launcher.model.LauncherStatus;
@@ -41,10 +39,9 @@ import com.kms.katalon.groovy.util.GroovyUtil;
 
 @SuppressWarnings("restriction")
 public class IDELauncher extends AbstractLauncher {
-    private IEventBroker eventBroker;
     private Logger systemLogger;
     private LaunchMode launchMode;
-    private int reRunTime;
+    private IEventBroker eventBroker;
 
     public IDELauncher(IEventBroker eventBroker, Logger systemLogger, LaunchMode launchMode, IRunConfiguration runConfig) {
         super(runConfig);
@@ -75,31 +72,13 @@ public class IDELauncher extends AbstractLauncher {
             executedEntity = testSuite;
             this.testSuiteExecutedEntity = testSuiteExecutedEntity;
             ExecutionUtil.writeRunConfigToFile(getRunConfiguration());
-            scriptFile = generateTempTestSuiteScript(testSuite, runConfig);
+            scriptFile = generateTempTestSuiteScript(testSuite, runConfig, testSuiteExecutedEntity);
             this.reRunTime = reRunTime;
             this.passedTestCaseIds = passedTestCaseIds;
             LauncherManager.getInstance().addLauncher(this);
             eventBroker.post(EventConstants.CONSOLE_LOG_RESET, this.getId());
             eventBroker.post(EventConstants.JOB_REFRESH, null);
         }
-    }
-
-    private IFile generateTempTestSuiteScript(TestSuiteEntity testSuite, IRunConfiguration runConfig) throws Exception {
-        if (testSuite != null) {
-            File testSuiteScriptFile = new TestSuiteScriptGenerator(testSuite, runConfig, testSuiteExecutedEntity)
-                    .generateScriptFile();
-            return GroovyUtil.getTempScriptIFile(testSuiteScriptFile, testSuite.getProject());
-        }
-        return null;
-    }
-
-    private static IFile generateTempTestCaseScript(TestCaseEntity testCase, IRunConfiguration runConfig)
-            throws Exception {
-        if (testCase != null) {
-            File testSuiteScriptFile = new TestCaseScriptGenerator(testCase, runConfig).generateScriptFile();
-            return GroovyUtil.getTempScriptIFile(testSuiteScriptFile, testCase.getProject());
-        }
-        return null;
     }
 
     private void terminateProcess() throws DebugException {
