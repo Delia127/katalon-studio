@@ -45,18 +45,21 @@ import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class ConsoleLauncher extends AbstractLauncher {
+    private int rerunMaxNumber;
+
     public ConsoleLauncher(IRunConfiguration runConfig) {
         super(runConfig);
     }
 
     public void launch(TestSuiteEntity testSuite, TestSuiteExecutedEntity testSuiteExecutedEntity, int reRunTime,
-            List<String> passedTestCaseIds) throws Exception {
+            int rerunMaxNumber, List<String> passedTestCaseIds) throws Exception {
         if (testSuite != null) {
             executedEntity = testSuite;
             this.testSuiteExecutedEntity = testSuiteExecutedEntity;
             ExecutionUtil.writeRunConfigToFile(getRunConfiguration());
             scriptFile = generateTempTestSuiteScript(testSuite, runConfig, testSuiteExecutedEntity);
             this.reRunTime = reRunTime;
+            this.rerunMaxNumber = rerunMaxNumber;
             this.passedTestCaseIds = passedTestCaseIds;
             LauncherManager.getInstance().addLauncher(this);
         }
@@ -179,7 +182,7 @@ public class ConsoleLauncher extends AbstractLauncher {
         }
         TestSuiteLogRecord suiteLog = ReportUtil.generate(testSuiteReportSourceFolder.getAbsolutePath());
         if (suiteLog != null && suiteLog.getStatus().getStatusValue() != TestStatusValue.PASSED
-                && reRunTime < testSuite.getNumberOfRerun() && runConfig instanceof AbstractRunConfiguration) {
+                && reRunTime < rerunMaxNumber && runConfig instanceof AbstractRunConfiguration) {
             System.out.println("Re-run test suite #" + (reRunTime + 1));
             final AbstractRunConfiguration abstractRunConfiguration = (AbstractRunConfiguration) runConfig;
             abstractRunConfiguration.generateLogFolder(testSuite);
@@ -190,8 +193,8 @@ public class ConsoleLauncher extends AbstractLauncher {
             Display.getDefault().syncExec(new Runnable() {
                 public void run() {
                     try {
-                        ConsoleMain.launchTestSuite(testSuite, abstractRunConfiguration, testSuiteExecutedEntity.getReportFolderPath(),
-                                reRunTime + 1, passedTestCaseIds);
+                        ConsoleMain.launchTestSuite(testSuite, abstractRunConfiguration,
+                                testSuiteExecutedEntity.getReportFolderPath(), reRunTime + 1, rerunMaxNumber, passedTestCaseIds);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -223,11 +226,11 @@ public class ConsoleLauncher extends AbstractLauncher {
                     System.out.println(StringConstants.LAU_PRT_COPYING_RPT_TO_USR_RPT_FOLDER);
                     System.out.println(MessageFormat.format(StringConstants.LAU_PRT_USR_REPORT_FOLDER_X,
                             userReportFolder.getAbsolutePath()));
-                    
+
                     if (!userReportFolder.exists()) {
                         userReportFolder.mkdirs();
                     }
-                    
+
                     for (File reportChildSourceFile : testSuiteReportSourceFolder.listFiles()) {
                         String fileName = FilenameUtils.getBaseName(reportChildSourceFile.getName());
                         String fileExtension = FilenameUtils.getExtension(reportChildSourceFile.getName());
@@ -267,7 +270,7 @@ public class ConsoleLauncher extends AbstractLauncher {
                 List<Object[]> suitesSummaryForEmail = collectSummaryData(csvReports);
 
                 sendReportEmail(testSuite, null, logFile, suitesSummaryForEmail);
-                
+
                 return true;
             } catch (Exception e) {
                 System.out.println(MessageFormat.format(StringConstants.LAU_PRT_CANNOT_SEND_EMAIL, e.getMessage()));
