@@ -223,10 +223,11 @@ public class ConsoleLauncher extends AbstractLauncher {
                     System.out.println(StringConstants.LAU_PRT_COPYING_RPT_TO_USR_RPT_FOLDER);
                     System.out.println(MessageFormat.format(StringConstants.LAU_PRT_USR_REPORT_FOLDER_X,
                             userReportFolder.getAbsolutePath()));
-                    System.out.println(StringConstants.LAU_PRT_CLEANING_USR_RPT_FOLDER);
-
-                    cleanUserReportFolder(testSuite);
-
+                    
+                    if (!userReportFolder.exists()) {
+                        userReportFolder.mkdirs();
+                    }
+                    
                     for (File reportChildSourceFile : testSuiteReportSourceFolder.listFiles()) {
                         String fileName = FilenameUtils.getBaseName(reportChildSourceFile.getName());
                         String fileExtension = FilenameUtils.getExtension(reportChildSourceFile.getName());
@@ -276,6 +277,7 @@ public class ConsoleLauncher extends AbstractLauncher {
     }
 
     private void cleanUserReportFolder(TestSuiteEntity testSuite) throws IOException {
+        System.out.println(StringConstants.LAU_PRT_CLEANING_USR_RPT_FOLDER);
         FileUtils.cleanDirectory(getUserReportFolder(testSuite));
     }
 
