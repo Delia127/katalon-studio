@@ -36,11 +36,10 @@ public class DeleteTestSuiteHandler implements IDeleteEntityHandler {
             if (treeEntity == null || !(treeEntity instanceof TestSuiteTreeEntity)) {
                 return false;
             }
-            
-            String taskName = "Deleting " + treeEntity.getTypeName() + " '" + treeEntity.getText()
-                    + "'...";
+
+            String taskName = "Deleting " + treeEntity.getTypeName() + " '" + treeEntity.getText() + "'...";
             monitor.beginTask(taskName, 1);
-            
+
             TestSuiteEntity testSuite = (TestSuiteEntity) treeEntity.getObject();
 
             // remove TestSuite part from its partStack if it exists
@@ -48,8 +47,7 @@ public class DeleteTestSuiteHandler implements IDeleteEntityHandler {
 
             TestSuiteController.getInstance().deleteTestSuite(testSuite);
 
-            eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, TestSuiteController.getInstance()
-                    .getIdForDisplay(testSuite));
+            eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, testSuite.getIdForDisplay());
             return true;
         } catch (Exception e) {
             LoggerSingleton.logError(e);

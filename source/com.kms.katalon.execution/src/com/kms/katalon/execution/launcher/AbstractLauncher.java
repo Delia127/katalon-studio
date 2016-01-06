@@ -22,7 +22,6 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ReportController;
-import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
@@ -235,9 +234,9 @@ public abstract class AbstractLauncher {
     public String getEntityId() throws Exception {
         if (executedEntity != null) {
             if (executedEntity instanceof TestCaseEntity) {
-                return TestCaseController.getInstance().getIdForDisplay((TestCaseEntity) executedEntity);
+                return ((TestCaseEntity) executedEntity).getIdForDisplay();
             } else {
-                return TestSuiteController.getInstance().getIdForDisplay((TestSuiteEntity) executedEntity);
+                return ((TestSuiteEntity) executedEntity).getIdForDisplay();
             }
         }
         return "";

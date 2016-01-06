@@ -131,9 +131,12 @@ public class StringConstants extends GlobalStringConstants {
 
     // DeleteTestCaseHandler
     public static final String HAND_ERROR_MSG_UNABLE_TO_DEL_TEST_CASE = "Unable to delete Test Case.";
+    public static final String HAND_JOB_DELETING = "Deleting ''{0}''...";
     public static final String HAND_TITLE_DELETE = DELETE;
-    public static final String HAND_MSG_REMOVE_ENTITY_REF = "Currently, this file is used in some Test Cases. Do you want to remove its references as well?";
-    public static final String HAND_MSG_REMOVE_FOLDER_REF = "Currently, this folder are used in some Test Cases. Do you want to remove all the references as well?";
+
+    // DeleteTestCaseFolderHandler
+    public static final String HAND_ERROR_MSG_UNABLE_TO_DEL_TEST_CASE_FOLDER = "Unable to delete Test Case folder.";
+    public static final String HAND_JOB_DELETING_FOLDER = "Deleting folder ''{0}''...";
 
     // NewTestCaseHandler
     public static final String HAND_NEW_TEST_CASE = "New Test Case";
@@ -319,11 +322,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String KEYWORD_BROWSER_CONTROL_KEYWORD_ROOT_TREE_ITEM_LABEL = "Utils";
 
     // TestCaseReferencesDialog
-    public static final String DIA_MSG_HEADER_TEST_CASE_REFERENCES = "Test case ''{0}'' has been referred by some test "
-            + "suites listed below.\nDo you want to delete all these references?";
-    public static final String DIA_TITLE_TEST_CASE_REFERENCES = "Test Case's References Detected";
-    public static final String DIA_FIELD_TEST_SUITE_ID = "Test Suite ID";
-    
+    public static final String DIA_TITLE_TEST_CASE_REFERENCES = "Test Case's References";
+
     // TestCaseTreeTableInput
     public static final String WARN_TRY_STATEMENT_MUST_HAVE_CATCH_OR_FINALLY = "Try Statement must have as least 1 Catch or Finally Statement";
 }

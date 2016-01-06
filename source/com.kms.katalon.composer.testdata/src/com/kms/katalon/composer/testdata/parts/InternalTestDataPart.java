@@ -55,15 +55,18 @@ import com.kms.katalon.entity.testdata.InternalDataFilePropertyEntity;
 public class InternalTestDataPart extends TestDataMainPart {
 
     private Image addImage;
+
     private Table table;
 
     private static final int DF_DATA_COLUMN_WIDTH = 200;
+
     private static final int DF_UNREMOVEVABLE_COLUMN_WIDTH = 50;
+
     private static final int COLUMN_NO_IDX = 0;
 
     @Inject
     private EPartService partService;
-    
+
     @PostConstruct
     public void createControls(Composite parent, MPart mpart) {
         super.createControls(parent, mpart);
@@ -279,7 +282,7 @@ public class InternalTestDataPart extends TestDataMainPart {
             });
         }
 
-        //Add "Rename Column" menu item
+        // Add "Rename Column" menu item
         if (isEditableColumn(selectedColIndex)) {
             MenuItem menuItemRenameColumn = new MenuItem(menu, SWT.PUSH);
             menuItemRenameColumn.setText(StringConstants.PA_MENU_CONTEXT_RENAME_COL);
@@ -344,11 +347,11 @@ public class InternalTestDataPart extends TestDataMainPart {
 
         return menu;
     }
-    
+
     private boolean isEditableColumn(int selectedColIndex) {
         return selectedColIndex > COLUMN_NO_IDX && selectedColIndex < getColumnAddIndex();
     }
-    
+
     private boolean isTableContainingRow() {
         return table.getItemCount() > 1;
     }
@@ -404,15 +407,16 @@ public class InternalTestDataPart extends TestDataMainPart {
         try {
             String oldPk = originalDataFile.getId();
             String oldName = originalDataFile.getName();
-            String oldIdForDisplay = TestDataController.getInstance().getIdForDisplay(originalDataFile);
-            originalDataFile = updateInternalDataFileProperty(originalDataFile.getLocation(), txtName.getText(), txtDesc.getText(),
-                    originalDataFile.getDriver(), originalDataFile.getDataSourceUrl(), "", originalDataFile.getTableDataName(), headers, datas);
+            String oldIdForDisplay = originalDataFile.getIdForDisplay();
+            originalDataFile = updateInternalDataFileProperty(originalDataFile.getLocation(), txtName.getText(),
+                    txtDesc.getText(), originalDataFile.getDriver(), originalDataFile.getDataSourceUrl(), "",
+                    originalDataFile.getTableDataName(), headers, datas);
             updateDataFile(originalDataFile);
             dirtyable.setDirty(false);
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);
             if (!StringUtils.equalsIgnoreCase(oldName, originalDataFile.getName())) {
                 eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-                        TestDataController.getInstance().getIdForDisplay(originalDataFile) });
+                        originalDataFile.getIdForDisplay() });
             }
             sendTestDataUpdatedEvent(oldPk);
         } catch (DuplicatedFileNameException e) {
@@ -477,7 +481,7 @@ public class InternalTestDataPart extends TestDataMainPart {
 
     @Override
     protected Composite createFileInfoPart(Composite parent) {
-        //Internal data doesn't need to create File Info Part
+        // Internal data doesn't need to create File Info Part
         return null;
     }
 
@@ -555,7 +559,5 @@ public class InternalTestDataPart extends TestDataMainPart {
 
     @Override
     protected void preDestroy() {
-        // TODO Auto-generated method stub
-        
     }
 }

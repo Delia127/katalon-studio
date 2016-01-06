@@ -70,12 +70,19 @@ import com.kms.katalon.groovy.util.GroovyUtil;
 public class TestCaseCompositePart implements EventHandler, MultipleTabsCompositePart {
 
     public static final int CHILD_TEST_CASE_EDITOR_PART_INDEX = 1;
+
     private static final int CHILD_TEST_CASE_MANUAL_PART_INDEX = 0;
+
     private static final int CHILD_TEST_CASE_VARIABLE_PART_INDEX = 2;
+
     private static final int CHILD_TEST_CASE_INTEGRATION_PART_INDEX = 3;
+
     public static final String SCRIPT_TAB_TITLE = StringConstants.PA_TAB_SCRIPT;
+
     public static final String MANUAL_TAB_TITLE = StringConstants.PA_TAB_MANUAL;
+
     public static final String VARIABLE_TAB_TITLE = StringConstants.PA_TAB_VARIABLE;
+
     public static final String INTEGRATION_TAB_TITLE = StringConstants.PA_TAB_INTEGRATION;
 
     @Inject
@@ -119,11 +126,15 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
     private MPartStack subPartStack;
 
     private boolean editorLastDirty;
+
     private boolean isInitialized;
+
     private boolean isScriptChanged;
 
     private TestCaseEntity testCase;
+
     private TestCaseEntity originalTestCase;
+
     private List<ASTNode> astNodes;
 
     public boolean isInitialized() {
@@ -383,7 +394,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
 
             // back-up
             String oldPk = originalTestCase.getId();
-            String oldIdForDisplay = TestCaseController.getInstance().getIdForDisplay(originalTestCase);
+            String oldIdForDisplay = originalTestCase.getIdForDisplay();
             TestCaseEntity temp = new TestCaseEntity();
             TestCaseEntityUtil.copyTestCaseProperties(originalTestCase, temp);
             TestCaseEntityUtil.copyTestCaseProperties(testCase, originalTestCase);
@@ -398,7 +409,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                 // Send event if Test Case name has changed
                 if (nameChanged) {
                     eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-                            TestCaseController.getInstance().getIdForDisplay(originalTestCase) });
+                            originalTestCase.getIdForDisplay() });
 
                     // refresh TreeExplorer
                     eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);

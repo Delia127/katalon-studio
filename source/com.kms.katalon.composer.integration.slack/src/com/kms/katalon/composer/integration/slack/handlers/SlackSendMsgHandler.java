@@ -9,7 +9,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -24,15 +23,12 @@ import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.slack.constants.StringConstants;
 import com.kms.katalon.composer.integration.slack.util.SlackUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.PreferenceConstants;
-import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.controller.TestCaseController;
-import com.kms.katalon.controller.TestDataController;
-import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
@@ -41,13 +37,9 @@ import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.groovy.constant.GroovyConstants;
 
-@SuppressWarnings("restriction")
 public class SlackSendMsgHandler implements EventHandler {
     @Inject
     private IEventBroker eventBroker;
-
-    @Inject
-    private Logger logger;
 
     private SlackUtil slackUtil;
 
@@ -157,34 +149,26 @@ public class SlackSendMsgHandler implements EventHandler {
                 case EventConstants.TESTCASE_UPDATED:
                     // Update test case
                     if (UPDATE_TC)
-                        slackUtil.sendMessage(MessageFormat.format(
-                                StringConstants.EMOJI_MSG_UPDATE,
-                                slackUtil.fmtBold(TestCaseController.getInstance().getIdForDisplay(
-                                        (TestCaseEntity) ((Object[]) object)[1]))));
+                        slackUtil.sendMessage(MessageFormat.format(StringConstants.EMOJI_MSG_UPDATE,
+                                slackUtil.fmtBold(((TestCaseEntity) ((Object[]) object)[1]).getIdForDisplay())));
                     break;
                 case EventConstants.TEST_SUITE_UPDATED:
                     // Update test suite
                     if (UPDATE_TS)
-                        slackUtil.sendMessage(MessageFormat.format(
-                                StringConstants.EMOJI_MSG_UPDATE,
-                                slackUtil.fmtBold(TestSuiteController.getInstance().getIdForDisplay(
-                                        (TestSuiteEntity) ((Object[]) object)[1]))));
+                        slackUtil.sendMessage(MessageFormat.format(StringConstants.EMOJI_MSG_UPDATE,
+                                slackUtil.fmtBold(((TestSuiteEntity) ((Object[]) object)[1]).getIdForDisplay())));
                     break;
                 case EventConstants.TEST_DATA_UPDATED:
                     // Update test data (data file)
                     if (UPDATE_TD)
-                        slackUtil.sendMessage(MessageFormat.format(
-                                StringConstants.EMOJI_MSG_UPDATE,
-                                slackUtil.fmtBold(TestDataController.getInstance().getIdForDisplay(
-                                        (DataFileEntity) ((Object[]) object)[1]))));
+                        slackUtil.sendMessage(MessageFormat.format(StringConstants.EMOJI_MSG_UPDATE,
+                                slackUtil.fmtBold(((DataFileEntity) ((Object[]) object)[1]).getIdForDisplay())));
                     break;
                 case EventConstants.TEST_OBJECT_UPDATED:
                     // Update test object (object repository)
                     if (UPDATE_TO)
-                        slackUtil.sendMessage(MessageFormat.format(
-                                StringConstants.EMOJI_MSG_UPDATE,
-                                slackUtil.fmtBold(ObjectRepositoryController.getInstance().getIdForDisplay(
-                                        (WebElementEntity) ((Object[]) object)[1]))));
+                        slackUtil.sendMessage(MessageFormat.format(StringConstants.EMOJI_MSG_UPDATE,
+                                slackUtil.fmtBold(((WebElementEntity) ((Object[]) object)[1]).getIdForDisplay())));
                     break;
 
                 case EventConstants.EXPLORER_RENAMED_SELECTED_ITEM:
@@ -236,35 +220,28 @@ public class SlackSendMsgHandler implements EventHandler {
                     break;
             }
         } catch (Exception e) {
-            logger.error(e);
+            LoggerSingleton.logError(e);
         }
     }
 
     private void sendMsgForCreateNewEntity(Object object) throws Exception {
         if (CREATE_TC && object != null && object instanceof TestCaseTreeEntity) {
             // Create new test case
-            slackUtil.sendMessage(MessageFormat.format(
-                    StringConstants.EMOJI_MSG_NEW,
-                    slackUtil.fmtBold(TestCaseController.getInstance().getIdForDisplay(
-                            (TestCaseEntity) ((TestCaseTreeEntity) object).getObject()))));
+            slackUtil.sendMessage(MessageFormat.format(StringConstants.EMOJI_MSG_NEW,
+                    slackUtil.fmtBold(((TestCaseEntity) ((TestCaseTreeEntity) object).getObject()).getIdForDisplay())));
         } else if (CREATE_TS && object != null && object instanceof TestSuiteTreeEntity) {
             // Create new test suite
-            slackUtil.sendMessage(MessageFormat.format(
-                    StringConstants.EMOJI_MSG_NEW,
-                    slackUtil.fmtBold(TestSuiteController.getInstance().getIdForDisplay(
-                            (TestSuiteEntity) ((TestSuiteTreeEntity) object).getObject()))));
+            slackUtil
+                    .sendMessage(MessageFormat.format(StringConstants.EMOJI_MSG_NEW, slackUtil
+                            .fmtBold(((TestSuiteEntity) ((TestSuiteTreeEntity) object).getObject()).getIdForDisplay())));
         } else if (CREATE_TD && object != null && object instanceof TestDataTreeEntity) {
             // Create new test data (data file)
-            slackUtil.sendMessage(MessageFormat.format(
-                    StringConstants.EMOJI_MSG_NEW,
-                    slackUtil.fmtBold(TestDataController.getInstance().getIdForDisplay(
-                            (DataFileEntity) ((TestDataTreeEntity) object).getObject()))));
+            slackUtil.sendMessage(MessageFormat.format(StringConstants.EMOJI_MSG_NEW,
+                    slackUtil.fmtBold(((DataFileEntity) ((TestDataTreeEntity) object).getObject()).getIdForDisplay())));
         } else if (CREATE_TO && object != null && object instanceof WebElementTreeEntity) {
             // Create new test object (object repository)
-            slackUtil.sendMessage(MessageFormat.format(
-                    StringConstants.EMOJI_MSG_NEW,
-                    slackUtil.fmtBold(ObjectRepositoryController.getInstance().getIdForDisplay(
-                            (WebElementEntity) ((WebElementTreeEntity) object).getObject()))));
+            slackUtil.sendMessage(MessageFormat.format(StringConstants.EMOJI_MSG_NEW, slackUtil
+                    .fmtBold(((WebElementEntity) ((WebElementTreeEntity) object).getObject()).getIdForDisplay())));
         } else if (CREATE_KW && object != null && object instanceof KeywordTreeEntity) {
             // Create new keyword
             slackUtil.sendMessage(MessageFormat.format(StringConstants.EMOJI_MSG_NEW, slackUtil

@@ -18,8 +18,6 @@ import org.eclipse.debug.core.model.RuntimeProcess;
 import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.controller.TestCaseController;
-import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.core.logging.XmlLogRecordException;
@@ -85,8 +83,7 @@ public class ConsoleLauncher extends AbstractLauncher {
     }
 
     public String getDisplayID() throws Exception {
-        return TestSuiteController.getInstance().getIdForDisplay((TestSuiteEntity) executedEntity) + " - "
-                + runConfig.getName();
+        return ((TestSuiteEntity) executedEntity).getIdForDisplay() + " - " + runConfig.getName();
     }
 
     private void terminateProcess() throws DebugException {
@@ -236,8 +233,7 @@ public class ConsoleLauncher extends AbstractLauncher {
                         String fileExtension = FilenameUtils.getExtension(reportChildSourceFile.getName());
 
                         // ignore LOCK file
-                        if (fileExtension.equalsIgnoreCase("lck"))
-                            continue;
+                        if (fileExtension.equalsIgnoreCase("lck")) continue;
 
                         // Rename .csv, .log and .html file to user's format
                         if ((ConsoleMain.getReportFileName() != null)
@@ -285,8 +281,7 @@ public class ConsoleLauncher extends AbstractLauncher {
     }
 
     private File getUserReportFolder(TestSuiteEntity testSuite) {
-        if (testSuiteExecutedEntity.getReportFolderPath() == null)
-            return null;
+        if (testSuiteExecutedEntity.getReportFolderPath() == null) return null;
         try {
             File reportFolder = new File(PathUtil.relativeToAbsolutePath(testSuiteExecutedEntity.getReportFolderPath(),
                     testSuite.getProject().getFolderLocation()));
@@ -328,15 +323,13 @@ public class ConsoleLauncher extends AbstractLauncher {
         if ((record.getLevel() == LogLevel.FAILED || record.getLevel() == LogLevel.ERROR)
                 && record.getExceptions() != null) {
             for (XmlLogRecordException logRecordException : record.getExceptions()) {
-                if (!LogExceptionFilter.isTraceableException(logRecordException))
-                    continue;
+                if (!LogExceptionFilter.isTraceableException(logRecordException)) continue;
                 if (LogExceptionFilter.isTestCaseScript(logRecordException.getClassName())) {
                     TestCaseEntity testCase = LogExceptionFilter.getTestCaseByLogException(logRecordException);
                     if (testCase != null) {
                         System.out.println(record);
                         System.err.println(MessageFormat.format(StringConstants.LAU_PRT_X_FAILED_AT_LINE_Y,
-                                TestCaseController.getInstance().getIdForDisplay(testCase),
-                                logRecordException.getLineNumber()));
+                                testCase.getIdForDisplay(), logRecordException.getLineNumber()));
                         continue;
                     }
                 }

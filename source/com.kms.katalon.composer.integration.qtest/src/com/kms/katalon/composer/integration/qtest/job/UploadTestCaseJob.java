@@ -40,7 +40,9 @@ import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 public class UploadTestCaseJob extends QTestJob {
 
     private UISynchronize sync;
+
     private List<IntegratedFileEntity> uploadedEntities;
+
     private IQTestCredential credential;
 
     public UploadTestCaseJob(String name, UISynchronize sync) {
@@ -113,7 +115,7 @@ public class UploadTestCaseJob extends QTestJob {
     }
 
     private void uploadFolder(FolderEntity folderEntity, IProgressMonitor monitor) throws Exception {
-        String folderId = FolderController.getInstance().getIdForDisplay(folderEntity);
+        String folderId = folderEntity.getIdForDisplay();
         monitor.subTask(MessageFormat.format(StringConstants.JOB_SUB_TASK_UPLOAD_TEST_CASE, folderId));
 
         QTestProject qTestProject = QTestIntegrationUtil.getTestCaseRepo(folderEntity, projectEntity).getQTestProject();
@@ -154,11 +156,10 @@ public class UploadTestCaseJob extends QTestJob {
         uploadedEntities.add(folderEntity);
     }
 
-    private void uploadTestCase(TestCaseEntity testCaseEntity, IProgressMonitor monitor)
-            throws Exception {
+    private void uploadTestCase(TestCaseEntity testCaseEntity, IProgressMonitor monitor) throws Exception {
         QTestProject qTestProject = QTestIntegrationUtil.getTestCaseRepo(testCaseEntity, projectEntity)
                 .getQTestProject();
-        String testCaseId = TestCaseController.getInstance().getIdForDisplay(testCaseEntity);
+        String testCaseId = testCaseEntity.getIdForDisplay();
         monitor.subTask(MessageFormat.format(StringConstants.JOB_SUB_TASK_UPLOAD_TEST_CASE, testCaseId));
 
         QTestModule qTestParentModule = QTestIntegrationFolderManager.getQTestModuleByFolderEntity(testCaseEntity
@@ -174,8 +175,7 @@ public class UploadTestCaseJob extends QTestJob {
         QTestIntegrationFolderManager.updateModule(credential, qTestProject.getId(), qTestParentModule, false);
 
         for (QTestTestCase siblingQTestCase : qTestParentModule.getChildTestCases()) {
-            if (!testCaseEntity.getName().equalsIgnoreCase(siblingQTestCase.getName()))
-                continue;
+            if (!testCaseEntity.getName().equalsIgnoreCase(siblingQTestCase.getName())) continue;
 
             if (monitor.isCanceled()) {
                 throw new OperationCanceledException();

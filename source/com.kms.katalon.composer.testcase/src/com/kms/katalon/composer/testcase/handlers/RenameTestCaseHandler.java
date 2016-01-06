@@ -25,70 +25,70 @@ import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class RenameTestCaseHandler {
 
-	@Inject
-	private IEventBroker eventBroker;
+    @Inject
+    private IEventBroker eventBroker;
 
-	@Inject
-	private EPartService partService;
+    @Inject
+    private EPartService partService;
 
-	@Named(IServiceConstants.ACTIVE_SHELL)
-	private Shell parentShell;
+    @Named(IServiceConstants.ACTIVE_SHELL)
+    private Shell parentShell;
 
-	@PostConstruct
-	public void registerEventHandler() {
-		eventBroker.subscribe(EventConstants.EXPLORER_RENAME_SELECTED_ITEM, new EventHandler() {
-			@Override
-			public void handleEvent(Event event) {
-				Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-				if (object != null && object instanceof TestCaseTreeEntity) {
-					execute((TestCaseTreeEntity) object);
-				}
-			}
-		});
-	}
+    @PostConstruct
+    public void registerEventHandler() {
+        eventBroker.subscribe(EventConstants.EXPLORER_RENAME_SELECTED_ITEM, new EventHandler() {
+            @Override
+            public void handleEvent(Event event) {
+                Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+                if (object != null && object instanceof TestCaseTreeEntity) {
+                    execute((TestCaseTreeEntity) object);
+                }
+            }
+        });
+    }
 
-	private void execute(TestCaseTreeEntity testCaseTreeEntity) {
-		try {
-			if (testCaseTreeEntity.getObject() instanceof TestCaseEntity) {
-				RenameWizard renameWizard = new RenameWizard(testCaseTreeEntity, TestCaseController.getInstance()
-						.getSibblingTestCaseNames((TestCaseEntity) testCaseTreeEntity.getObject()));
-				CWizardDialog wizardDialog = new CWizardDialog(parentShell, renameWizard);
-				int code = wizardDialog.open();
-				if (code == Window.OK) {
-					TestCaseEntity testCase = (TestCaseEntity) testCaseTreeEntity.getObject();
-					String oldName = testCase.getName();
-					String pk = testCase.getId();
-					String oldIdForDisplay = TestCaseController.getInstance().getIdForDisplay(testCase);
-					try {
-						if (renameWizard.getNewNameValue() != null && !renameWizard.getNewNameValue().isEmpty()
-								&& !renameWizard.getNewNameValue().equals(oldName)) {
-							GroovyUtil.loadScriptContentIntoTestCase(testCase);
-							testCase.setName(renameWizard.getNewNameValue());
-							TestCaseController.getInstance().updateTestCase(testCase);
-							String newIdForDisplay = TestCaseController.getInstance().getIdForDisplay(testCase);
+    private void execute(TestCaseTreeEntity testCaseTreeEntity) {
+        try {
+            if (testCaseTreeEntity.getObject() instanceof TestCaseEntity) {
+                RenameWizard renameWizard = new RenameWizard(testCaseTreeEntity, TestCaseController.getInstance()
+                        .getSibblingTestCaseNames((TestCaseEntity) testCaseTreeEntity.getObject()));
+                CWizardDialog wizardDialog = new CWizardDialog(parentShell, renameWizard);
+                int code = wizardDialog.open();
+                if (code == Window.OK) {
+                    TestCaseEntity testCase = (TestCaseEntity) testCaseTreeEntity.getObject();
+                    String oldName = testCase.getName();
+                    String pk = testCase.getId();
+                    String oldIdForDisplay = testCase.getIdForDisplay();
+                    try {
+                        if (renameWizard.getNewNameValue() != null && !renameWizard.getNewNameValue().isEmpty()
+                                && !renameWizard.getNewNameValue().equals(oldName)) {
+                            GroovyUtil.loadScriptContentIntoTestCase(testCase);
+                            testCase.setName(renameWizard.getNewNameValue());
+                            TestCaseController.getInstance().updateTestCase(testCase);
+                            String newIdForDisplay = testCase.getIdForDisplay();
 
-							eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] {
-									oldIdForDisplay, newIdForDisplay });
-							eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
-									testCaseTreeEntity.getParent());
-							eventBroker.post(EventConstants.TESTCASE_UPDATED, new Object[] { pk, testCase });
+                            eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] {
+                                    oldIdForDisplay, newIdForDisplay });
+                            eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
+                                    testCaseTreeEntity.getParent());
+                            eventBroker.post(EventConstants.TESTCASE_UPDATED, new Object[] { pk, testCase });
 
-							partService.saveAll(false);
-						}
-					} catch (Exception ex) {
-						// Restore old name
-						testCase.setName(oldName);
-						LoggerSingleton.logError(ex);
-						MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,
-								StringConstants.HAND_ERROR_MSG_UNABLE_TO_RENAME_TEST_CASE);
-						return;
-					}
+                            partService.saveAll(false);
+                        }
+                    } catch (Exception ex) {
+                        // Restore old name
+                        testCase.setName(oldName);
+                        LoggerSingleton.logError(ex);
+                        MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,
+                                StringConstants.HAND_ERROR_MSG_UNABLE_TO_RENAME_TEST_CASE);
+                        return;
+                    }
 
-				}
-			}
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-	}
+                }
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
 
 }

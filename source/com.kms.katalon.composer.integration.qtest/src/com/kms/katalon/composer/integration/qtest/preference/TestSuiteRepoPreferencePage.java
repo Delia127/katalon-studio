@@ -253,7 +253,9 @@ public class TestSuiteRepoPreferencePage extends AbstractQTestIntegrationPage {
     @Override
     public boolean performOk() {
         // if it never be opened, just returns to the parent class
-        if (container == null) return true;
+        if (container == null) {
+            return true;
+        }
 
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
         

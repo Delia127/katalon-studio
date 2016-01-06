@@ -74,6 +74,15 @@ public class TestSuiteController extends EntityController {
         return dataProviderSetting.getTestSuiteDataProvider().moveTestSuite(testSuite, targetFolder);
     }
 
+    /**
+     * Get entity ID for display This function is deprecated. Please use {@link TestSuiteEntity#getIdForDisplay()}
+     * instead.
+     * 
+     * @param entity
+     * @return Test Suite ID for display
+     * @throws Exception
+     */
+    @Deprecated
     public String getIdForDisplay(TestSuiteEntity entity) throws Exception {
         return dataProviderSetting.getTestSuiteDataProvider().getIdForDisplay(entity)
                 .replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPERATOR);
@@ -171,8 +180,7 @@ public class TestSuiteController extends EntityController {
 
     /**
      * 
-     * @param testDataLinkId
-     *            : GUID of test data link
+     * @param testDataLinkId : GUID of test data link
      * @return find test data link in tree that has id equals the give id
      */
     public TestCaseTestDataLink getTestDataLink(String testDataLinkId, TestSuiteTestCaseLink testCaseLink) {
@@ -187,7 +195,7 @@ public class TestSuiteController extends EntityController {
     public String getAvailableTestSuiteName(FolderEntity parentFolder, String name) throws Exception {
         return dataProviderSetting.getTestSuiteDataProvider().getAvailableTestSuiteName(parentFolder, name);
     }
-    
+
     public TestSuiteTestCaseLink getTestCaseLink(String testCaseId, TestSuiteEntity testSuite) {
         return dataProviderSetting.getTestSuiteDataProvider().getTestCaseLink(testSuite, testCaseId);
     }

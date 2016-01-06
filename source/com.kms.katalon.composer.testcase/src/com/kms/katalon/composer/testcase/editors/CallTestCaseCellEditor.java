@@ -25,67 +25,67 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 public class CallTestCaseCellEditor extends AbstractDialogCellEditor {
 
-	private String selectedTestCasePk;
+    private String selectedTestCasePk;
 
-	public CallTestCaseCellEditor(Composite parent, String defaultContent, String selectedTestCasePk) {
-		super(parent, defaultContent);
-		this.selectedTestCasePk = selectedTestCasePk;
-	}
+    public CallTestCaseCellEditor(Composite parent, String defaultContent, String selectedTestCasePk) {
+        super(parent, defaultContent);
+        this.selectedTestCasePk = selectedTestCasePk;
+    }
 
-	protected void updateContents(Object value) {
-		if (value instanceof TestCaseEntity) {
-			try {
-				getDefaultLabel().setText(TestCaseController.getInstance().getIdForDisplay((TestCaseEntity) value));
-			} catch (Exception e) {
-				LoggerSingleton.logError(e);
-			}
-		} else if (defaultContent != null) {
-			super.updateContents(defaultContent);
-		} else {
-			super.updateContents(value);
-		}
-	}
+    protected void updateContents(Object value) {
+        if (value instanceof TestCaseEntity) {
+            try {
+                getDefaultLabel().setText(((TestCaseEntity) value).getIdForDisplay());
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        } else if (defaultContent != null) {
+            super.updateContents(defaultContent);
+        } else {
+            super.updateContents(value);
+        }
+    }
 
-	private FolderTreeEntity createSelectedTreeEntityHierachy(FolderEntity folderEntity, FolderEntity rootFolder) {
-		if (folderEntity == null || folderEntity.equals(rootFolder)) {
-			return null;
-		}
-		return new FolderTreeEntity(folderEntity, createSelectedTreeEntityHierachy(folderEntity.getParentFolder(),
-				rootFolder));
-	}
+    private FolderTreeEntity createSelectedTreeEntityHierachy(FolderEntity folderEntity, FolderEntity rootFolder) {
+        if (folderEntity == null || folderEntity.equals(rootFolder)) {
+            return null;
+        }
+        return new FolderTreeEntity(folderEntity, createSelectedTreeEntityHierachy(folderEntity.getParentFolder(),
+                rootFolder));
+    }
 
-	protected Object openDialogBox(Control cellEditorWindow) {
-		try {
-			EntityProvider entityProvider = new EntityProvider();
-			TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(Display.getCurrent().getActiveShell(),
-					new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(entityProvider));
+    protected Object openDialogBox(Control cellEditorWindow) {
+        try {
+            EntityProvider entityProvider = new EntityProvider();
+            TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(Display.getCurrent().getActiveShell(),
+                    new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(entityProvider));
 
-			dialog.setAllowMultiple(false);
-			dialog.setTitle(StringConstants.EDI_TITLE_TEST_CASE_BROWSER);
-			ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-			if (currentProject != null) {
-				FolderEntity rootFolder = FolderController.getInstance().getTestCaseRoot(currentProject);
-				dialog.setInput(TreeEntityUtil.getChildren(null, rootFolder));
-				if (selectedTestCasePk != null) {
-					TestCaseEntity selectedTestCase = TestCaseController.getInstance().getTestCaseByDisplayId(
-							selectedTestCasePk);
-					if (selectedTestCase != null) {
-						dialog.setInitialSelection(new TestCaseTreeEntity(selectedTestCase,
-								createSelectedTreeEntityHierachy(selectedTestCase.getParentFolder(), rootFolder)));
-					}
-				}
-			}
-			if (dialog.open() == Window.OK) {
-				return dialog.getFirstResult();
-			} else {
-				return null;
-			}
-		} catch (Exception e) {
-			MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
-					StringConstants.EDI_ERROR_MSG_CANNOT_OPEN_DIALOG);
-			LoggerSingleton.logError(e);
-			return null;
-		}
+            dialog.setAllowMultiple(false);
+            dialog.setTitle(StringConstants.EDI_TITLE_TEST_CASE_BROWSER);
+            ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+            if (currentProject != null) {
+                FolderEntity rootFolder = FolderController.getInstance().getTestCaseRoot(currentProject);
+                dialog.setInput(TreeEntityUtil.getChildren(null, rootFolder));
+                if (selectedTestCasePk != null) {
+                    TestCaseEntity selectedTestCase = TestCaseController.getInstance().getTestCaseByDisplayId(
+                            selectedTestCasePk);
+                    if (selectedTestCase != null) {
+                        dialog.setInitialSelection(new TestCaseTreeEntity(selectedTestCase,
+                                createSelectedTreeEntityHierachy(selectedTestCase.getParentFolder(), rootFolder)));
+                    }
+                }
+            }
+            if (dialog.open() == Window.OK) {
+                return dialog.getFirstResult();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                    StringConstants.EDI_ERROR_MSG_CANNOT_OPEN_DIALOG);
+            LoggerSingleton.logError(e);
+            return null;
+        }
 
-	}
+    }
 }

@@ -39,7 +39,6 @@ import com.kms.katalon.composer.testsuite.parts.TestSuitePartDataBindingView;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
-import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.core.testdata.TestData;
 import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -55,6 +54,7 @@ import com.kms.katalon.entity.variable.VariableEntity;
 public class TestDataToolItemListener extends SelectionAdapter {
 
     private TableViewer tableViewer;
+
     private TestSuitePartDataBindingView view;
 
     public TestDataToolItemListener(TableViewer treeViewer, TestSuitePartDataBindingView view) {
@@ -71,8 +71,7 @@ public class TestDataToolItemListener extends SelectionAdapter {
             return;
         }
 
-        if (e.getSource() == null)
-            return;
+        if (e.getSource() == null) return;
 
         if (e.getSource() instanceof ToolItem) {
             toolItemSelected(e);
@@ -84,50 +83,48 @@ public class TestDataToolItemListener extends SelectionAdapter {
     private void toolItemSelected(SelectionEvent e) {
         ToolItem toolItem = (ToolItem) e.getSource();
 
-        if (toolItem.getText() == null)
-            return;
+        if (toolItem.getText() == null) return;
 
         switch (toolItem.getToolTipText()) {
-        case ToolItemConstants.ADD:
-            if (e.detail == SWT.ARROW) {
-                createDropdownMenuAddItem(toolItem);
-            } else {
-                performAddTestDataLink(ToolItemConstants.ADD_AFTER);
-            }
-            return;
-        case ToolItemConstants.REMOVE:
-            removeTestDataLink();
-            return;
-        case ToolItemConstants.UP:
-            upTestDataLink();
-            return;
-        case ToolItemConstants.DOWN:
-            downTestDataLink();
-            return;
-        case ToolItemConstants.MAP:
-            mapTestDataLink();
-            return;
-        case ToolItemConstants.MAPALL:
-            mapAllTestDataLink();
-            return;
-        default:
-            return;
+            case ToolItemConstants.ADD:
+                if (e.detail == SWT.ARROW) {
+                    createDropdownMenuAddItem(toolItem);
+                } else {
+                    performAddTestDataLink(ToolItemConstants.ADD_AFTER);
+                }
+                return;
+            case ToolItemConstants.REMOVE:
+                removeTestDataLink();
+                return;
+            case ToolItemConstants.UP:
+                upTestDataLink();
+                return;
+            case ToolItemConstants.DOWN:
+                downTestDataLink();
+                return;
+            case ToolItemConstants.MAP:
+                mapTestDataLink();
+                return;
+            case ToolItemConstants.MAPALL:
+                mapAllTestDataLink();
+                return;
+            default:
+                return;
         }
     }
 
     private void menuItemSelected(SelectionEvent e) {
         MenuItem menuItem = (MenuItem) e.getSource();
-        if (menuItem.getText() == null)
-            return;
+        if (menuItem.getText() == null) return;
         switch (menuItem.getText()) {
-        case ToolItemConstants.ADD_AFTER:
-            performAddTestDataLink(ToolItemConstants.ADD_AFTER);
-            return;
-        case ToolItemConstants.ADD_BEFORE:
-            performAddTestDataLink(ToolItemConstants.ADD_BEFORE);
-            return;
-        default:
-            return;
+            case ToolItemConstants.ADD_AFTER:
+                performAddTestDataLink(ToolItemConstants.ADD_AFTER);
+                return;
+            case ToolItemConstants.ADD_BEFORE:
+                performAddTestDataLink(ToolItemConstants.ADD_BEFORE);
+                return;
+            default:
+                return;
         }
     }
 
@@ -152,8 +149,7 @@ public class TestDataToolItemListener extends SelectionAdapter {
     private void performAddTestDataLink(String offset) {
         try {
             ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-            if (currentProject == null)
-                return;
+            if (currentProject == null) return;
 
             EntityProvider entityProvider = new EntityProvider();
             TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(tableViewer.getTable().getShell(),
@@ -170,8 +166,7 @@ public class TestDataToolItemListener extends SelectionAdapter {
                 for (Object childResult : dialog.getResult()) {
                     if (childResult instanceof TestDataTreeEntity) {
                         DataFileEntity testData = (DataFileEntity) ((TestDataTreeEntity) childResult).getObject();
-                        if (testData == null)
-                            continue;
+                        if (testData == null) continue;
                         dataFileEntities.add(testData);
                     } else if (childResult instanceof FolderTreeEntity) {
                         dataFileEntities.addAll(getTestDatasFromFolderTree((FolderTreeEntity) childResult));
@@ -209,27 +204,27 @@ public class TestDataToolItemListener extends SelectionAdapter {
 
             TestCaseTestDataLink newTestDataLink = createTestDataLink(testData);
             switch (offset) {
-            case ToolItemConstants.ADD_AFTER: {
-                if (selectedIndex < 0) {
-                    int itemCount = tableViewer.getTable().getItemCount();
-                    getTableItems().add(itemCount, newTestDataLink);
-                    selectedIndex = itemCount;
-                } else {
-                    getTableItems().add(selectedIndex + 1, newTestDataLink);
-                    selectedIndex++;
+                case ToolItemConstants.ADD_AFTER: {
+                    if (selectedIndex < 0) {
+                        int itemCount = tableViewer.getTable().getItemCount();
+                        getTableItems().add(itemCount, newTestDataLink);
+                        selectedIndex = itemCount;
+                    } else {
+                        getTableItems().add(selectedIndex + 1, newTestDataLink);
+                        selectedIndex++;
+                    }
+                    break;
                 }
-                break;
-            }
-            case ToolItemConstants.ADD_BEFORE: {
-                if (selectedIndex <= 0) {
-                    getTableItems().add(0, newTestDataLink);
-                    selectedIndex = 1;
-                } else {
-                    getTableItems().add(selectedIndex, newTestDataLink);
-                    selectedIndex++;
+                case ToolItemConstants.ADD_BEFORE: {
+                    if (selectedIndex <= 0) {
+                        getTableItems().add(0, newTestDataLink);
+                        selectedIndex = 1;
+                    } else {
+                        getTableItems().add(selectedIndex, newTestDataLink);
+                        selectedIndex++;
+                    }
+                    break;
                 }
-                break;
-            }
             }
             addedTestDataLinkTreeNodes.add(newTestDataLink);
         }
@@ -238,15 +233,14 @@ public class TestDataToolItemListener extends SelectionAdapter {
 
     private TestCaseTestDataLink createTestDataLink(DataFileEntity testData) throws Exception {
         TestCaseTestDataLink testDataLink = new TestCaseTestDataLink();
-        testDataLink.setTestDataId(TestDataController.getInstance().getIdForDisplay(testData));
+        testDataLink.setTestDataId(testData.getIdForDisplay());
 
         return testDataLink;
     }
 
     private void removeTestDataLink() {
         StructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
-        if (selection == null || selection.size() == 0)
-            return;
+        if (selection == null || selection.size() == 0) return;
         @SuppressWarnings("unchecked")
         Iterator<TestCaseTestDataLink> iterator = selection.toList().iterator();
 

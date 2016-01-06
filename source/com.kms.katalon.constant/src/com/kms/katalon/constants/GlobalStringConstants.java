@@ -77,6 +77,7 @@ public class GlobalStringConstants {
     // Dialog Title
     public static final String CONFIRMATION = "Confirmation";
     public static final String NOTIFICATION = "Notification";
+    public static final String PROJECT_SETTINGS = "Project Settings";
 
     // Test Status
     public static final String ALL = "All";

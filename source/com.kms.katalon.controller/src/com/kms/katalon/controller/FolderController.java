@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
 
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.entity.IEntity;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -17,6 +18,7 @@ import com.kms.katalon.groovy.util.GroovyUtil;
 @Creatable
 public class FolderController extends EntityController implements Serializable {
     private static EntityController _instance;
+
     private static final long serialVersionUID = 5447512446375093789L;
 
     private FolderController() {
@@ -37,8 +39,7 @@ public class FolderController extends EntityController implements Serializable {
     /**
      * Get only children test case of the given folder
      * 
-     * @param parentFolder
-     *            : test case folder
+     * @param parentFolder : test case folder
      * @return Returns list of test case entity
      */
     public List<TestCaseEntity> getTestCaseChildren(FolderEntity parentFolder) throws Exception {
@@ -134,7 +135,7 @@ public class FolderController extends EntityController implements Serializable {
     public FolderEntity getFolderByDisplayId(ProjectEntity projectEntity, String folderDisplayId) throws Exception {
         if (folderDisplayId == null || folderDisplayId.isEmpty()) return null;
         String folderId = projectEntity.getFolderLocation() + File.separator
-                + folderDisplayId.replace("/", File.separator);
+                + folderDisplayId.replace(GlobalStringConstants.ENTITY_ID_SEPERATOR, File.separator);
         return dataProviderSetting.getFolderDataProvider().getFolder(folderId);
     }
 
@@ -171,8 +172,15 @@ public class FolderController extends EntityController implements Serializable {
         dataProviderSetting.getFolderDataProvider().refreshFolder(folder);
     }
 
+    /**
+     * Get Folder ID for display This function is deprecated. Please use {@link FolderEntity#getIdForDisplay()} instead.
+     * 
+     * @param folder
+     * @return Folder ID for display
+     */
+    @Deprecated
     public String getIdForDisplay(FolderEntity folder) {
-        return folder.getRelativePathForUI().replace(File.separator, "/");
+        return folder.getRelativePathForUI().replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPERATOR);
     }
 
     public void saveFolder(FolderEntity folder) throws Exception {

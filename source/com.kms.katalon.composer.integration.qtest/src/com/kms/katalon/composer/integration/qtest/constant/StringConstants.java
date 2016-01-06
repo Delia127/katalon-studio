@@ -143,6 +143,11 @@ public class StringConstants extends GlobalStringConstants {
     /******************************************************************************************************************/
 
     /*********************************************** Preference *******************************************************/
+    //PreferenceID
+    public static final String PREF_QTEST_MAIN_PAGE = "com.kms.katalon.composer.intergration.qtest.setting";    
+    public static final String PREF_TEST_CASE_REPO_PAGE = "com.kms.katalon.composer.integration.qtest.testCaseRepoMapping";
+    public static final String PREF_TEST_SUITE_REPO_PAGE = "com.kms.katalon.composer.integration.qtest.testSuiteRepoMapping";
+    
     // QTestIntegrationPage
     public static final String DIA_MSG_UNABLE_TO_SAVE_SETTING_PAGE = "Unable to save qTest's settings.";
     public static final String DIA_TITLE_ENABLE_INTEGRATION = "Enable integration";
@@ -210,8 +215,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String VIEW_TITLE_INTEGRATION_INFORMATION = "Integration Information";
     public static final String VIEW_TITLE_LIST_TEST_SUITE_PARENT = "List of test suite's parent";
 
-    public static final String VIEW_MSG_TEST_SUITE_NOT_IN_REPO = "Please make sure this Test Suite is in a valid Test "
-            + "Suite Repository.";
+    public static final String VIEW_MSG_TEST_SUITE_NOT_IN_REPO = "This test suite isn't defined in a valid \"Test Suite "
+            + "Repository\". Do you want to add this?";
     public static final String VIEW_CONFIRM_DISINTEGRATE_TEST_SUITE = "Are you sure you want to disintegrate this/these test "
             + "suite(s) with qTest?";
     public static final String VIEW_MSG_UNABLE_DISINTEGRATE_TEST_SUITE = "Unable to disintegrate this test suite on "
@@ -275,5 +280,8 @@ public class StringConstants extends GlobalStringConstants {
     /*********************************************** Handler **********************************************************/
     //ReportHandler
     public static final String HDL_LABEL_VALIDATING_REPORT = "{0}\tValidating...({1}%)";
+
+    // QTestSettingsHandler
+    public static final String HDL_TITLE_PROJECT_SETTINGS = "Project Settings";
     /******************************************************************************************************************/
 }

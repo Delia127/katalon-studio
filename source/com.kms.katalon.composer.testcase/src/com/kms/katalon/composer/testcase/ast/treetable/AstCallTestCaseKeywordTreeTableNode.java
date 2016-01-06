@@ -31,157 +31,158 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 
 public class AstCallTestCaseKeywordTreeTableNode extends AstBuiltInKeywordTreeTableNode {
-	private String testCasePk;
+    private String testCasePk;
 
-	public AstCallTestCaseKeywordTreeTableNode(ExpressionStatement methodCallStatement, AstTreeTableNode parentNode,
-			ASTNode parentObject, ClassNode scriptClass) {
-		super(methodCallStatement, parentNode, parentObject, scriptClass);
-		internallySetTestCasePk();
-	}
+    public AstCallTestCaseKeywordTreeTableNode(ExpressionStatement methodCallStatement, AstTreeTableNode parentNode,
+            ASTNode parentObject, ClassNode scriptClass) {
+        super(methodCallStatement, parentNode, parentObject, scriptClass);
+        internallySetTestCasePk();
+    }
 
-	@Override
-	public boolean isItemEditable() {
-		return false;
-	}
+    @Override
+    public boolean isItemEditable() {
+        return false;
+    }
 
-	private void internallySetTestCasePk() {
-		try {
-			ArgumentListExpression arguments = (ArgumentListExpression) methodCall.getArguments();
-			Expression objectExpression = AstTreeTableInputUtil.getCallTestCaseParam((MethodCallExpression) arguments
-					.getExpression(0));
-			if (objectExpression != null) {
-				TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByDisplayId(
-						objectExpression.getText());
-				testCasePk = TestCaseController.getInstance().getIdForDisplay(testCase);
-				return;
-			}
-		} catch (Exception e) {
-			// Do nothing
-		}
-		testCasePk = StringUtils.EMPTY;
-	}
+    private void internallySetTestCasePk() {
+        try {
+            ArgumentListExpression arguments = (ArgumentListExpression) methodCall.getArguments();
+            Expression objectExpression = AstTreeTableInputUtil.getCallTestCaseParam((MethodCallExpression) arguments
+                    .getExpression(0));
+            if (objectExpression != null) {
+                TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByDisplayId(
+                        objectExpression.getText());
+                testCasePk = testCase.getIdForDisplay();
+                return;
+            }
+        } catch (Exception e) {
+            // Do nothing
+        }
+        testCasePk = StringUtils.EMPTY;
+    }
 
-	protected void changeMapExpression(MapExpression mapExprs) {
-		ArgumentListExpression arguments = (ArgumentListExpression) methodCall.getArguments();
-		arguments.getExpressions().remove(1);
-		arguments.getExpressions().add(1, mapExprs);
-	}
+    protected void changeMapExpression(MapExpression mapExprs) {
+        ArgumentListExpression arguments = (ArgumentListExpression) methodCall.getArguments();
+        arguments.getExpressions().remove(1);
+        arguments.getExpressions().add(1, mapExprs);
+    }
 
-	protected void changeTestCasePk(TestCaseEntity testCase) {
-		try {
-			MethodCallExpression testCaseMethodCallEprs = AstTreeTableInputUtil
-					.generateTestCaseMethodCall(TestCaseController.getInstance().getIdForDisplay(testCase));
-			ArgumentListExpression arguments = (ArgumentListExpression) methodCall.getArguments();
-			arguments.getExpressions().remove(0);
-			arguments.getExpressions().add(0, testCaseMethodCallEprs);
+    protected void changeTestCasePk(TestCaseEntity testCase) {
+        try {
+            MethodCallExpression testCaseMethodCallEprs = AstTreeTableInputUtil.generateTestCaseMethodCall(testCase
+                    .getIdForDisplay());
+            ArgumentListExpression arguments = (ArgumentListExpression) methodCall.getArguments();
+            arguments.getExpressions().remove(0);
+            arguments.getExpressions().add(0, testCaseMethodCallEprs);
 
-			internallySetTestCasePk();
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-	}
+            internallySetTestCasePk();
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
 
-	@Override
-	public String getInputText() {
-		ArgumentListExpression arguments = (ArgumentListExpression) methodCall.getArguments();
-		if (arguments.getExpressions().size() > 0) {
-			try {
-				StringBuilder displayString = new StringBuilder();
-				Method keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
-						getBuiltInKWClassSimpleName(), getKeyword());
-				if (keywordMethod != null) {
-					int count = 0;
-					List<Class<?>> paramClasses = AstTreeTableInputUtil.getParamClasses(keywordMethod);
-					for (int i = 0; i < paramClasses.size(); i++) {
-						if (!TestCase.class.isAssignableFrom(paramClasses.get(i))
-								&& paramClasses.get(i) != FailureHandling.class) {
-							if (i < arguments.getExpressions().size()) {
-								if (count > 0) {
-									displayString.append("; ");
-								}
-								Expression inputExpression = arguments.getExpression(i);
-								displayString.append(AstTreeTableTextValueUtil.getInstance().getTextValue(inputExpression));
-								count++;
-							}
-						}
-					}
-				}
-				return displayString.toString();
-			} catch (Exception e) {
-				LoggerSingleton.logError(e);
-			}
+    @Override
+    public String getInputText() {
+        ArgumentListExpression arguments = (ArgumentListExpression) methodCall.getArguments();
+        if (arguments.getExpressions().size() > 0) {
+            try {
+                StringBuilder displayString = new StringBuilder();
+                Method keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
+                        getBuiltInKWClassSimpleName(), getKeyword());
+                if (keywordMethod != null) {
+                    int count = 0;
+                    List<Class<?>> paramClasses = AstTreeTableInputUtil.getParamClasses(keywordMethod);
+                    for (int i = 0; i < paramClasses.size(); i++) {
+                        if (!TestCase.class.isAssignableFrom(paramClasses.get(i))
+                                && paramClasses.get(i) != FailureHandling.class) {
+                            if (i < arguments.getExpressions().size()) {
+                                if (count > 0) {
+                                    displayString.append("; ");
+                                }
+                                Expression inputExpression = arguments.getExpression(i);
+                                displayString.append(AstTreeTableTextValueUtil.getInstance().getTextValue(
+                                        inputExpression));
+                                count++;
+                            }
+                        }
+                    }
+                }
+                return displayString.toString();
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
 
-		}
-		return "";
-	}
+        }
+        return "";
+    }
 
-	@Override
-	public boolean isInputEditable() {
-		return true;
-	}
+    @Override
+    public boolean isInputEditable() {
+        return true;
+    }
 
-	public List<VariableEntity> getCallTestCaseVariables() {
-		try {
-			return TestCaseEntityUtil.getCallTestCaseVariables((ArgumentListExpression) methodCall.getArguments());
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-		return Collections.emptyList();
-	}
+    public List<VariableEntity> getCallTestCaseVariables() {
+        try {
+            return TestCaseEntityUtil.getCallTestCaseVariables((ArgumentListExpression) methodCall.getArguments());
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        return Collections.emptyList();
+    }
 
-	@Override
-	public boolean isOutputEditatble() {
-		return false;
-	}
+    @Override
+    public boolean isOutputEditatble() {
+        return false;
+    }
 
-	@Override
-	public boolean isTestObjectEditable() {
-		return true;
-	}
+    @Override
+    public boolean isTestObjectEditable() {
+        return true;
+    }
 
-	@Override
-	public String getTestObjectText() {
-		try {
-			TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByDisplayId(testCasePk);
-			if (testCase != null) {
-				return testCase.getName();
-			}
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-		return "";
-	}
+    @Override
+    public String getTestObjectText() {
+        try {
+            TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByDisplayId(testCasePk);
+            if (testCase != null) {
+                return testCase.getName();
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        return "";
+    }
 
-	@Override
-	public CellEditor getCellEditorForTestObject(Composite parent) {
-		return new CallTestCaseCellEditor(parent, getTestObjectText(), testCasePk);
-	}
+    @Override
+    public CellEditor getCellEditorForTestObject(Composite parent) {
+        return new CallTestCaseCellEditor(parent, getTestObjectText(), testCasePk);
+    }
 
-	@Override
-	public boolean setTestObject(Object object) {
-		try {
-			if (object instanceof TestCaseTreeEntity
-					&& ((TestCaseTreeEntity) object).getObject() instanceof TestCaseEntity) {
-				TestCaseEntity newTestCase = (TestCaseEntity) ((TestCaseTreeEntity) object).getObject();
-				if (!testCasePk.equals(TestCaseController.getInstance().getIdForDisplay(newTestCase))) {
-					changeTestCasePk(newTestCase);
-					changeMapExpression(AstTreeTableInputUtil.generateTestCaseVariableBindingExpression(newTestCase));
-					return true;
-				}
-			}
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-		return false;
-	}
+    @Override
+    public boolean setTestObject(Object object) {
+        try {
+            if (object instanceof TestCaseTreeEntity
+                    && ((TestCaseTreeEntity) object).getObject() instanceof TestCaseEntity) {
+                TestCaseEntity newTestCase = (TestCaseEntity) ((TestCaseTreeEntity) object).getObject();
+                if (!testCasePk.equals(newTestCase.getIdForDisplay())) {
+                    changeTestCasePk(newTestCase);
+                    changeMapExpression(AstTreeTableInputUtil.generateTestCaseVariableBindingExpression(newTestCase));
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        return false;
+    }
 
-	@Override
-	public Image getNodeIcon() {
-		return ImageConstants.IMG_16_CALL_TEST_CASE;
-	}
+    @Override
+    public Image getNodeIcon() {
+        return ImageConstants.IMG_16_CALL_TEST_CASE;
+    }
 
-	@Override
-	public boolean hasChildren() {
-		return false;
-	}
+    @Override
+    public boolean hasChildren() {
+        return false;
+    }
 }

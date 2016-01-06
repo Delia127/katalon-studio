@@ -15,5 +15,11 @@
             handler="com.kms.katalon.composer.report.handlers.DeleteReportHandler">
       </client>
    </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.kms.katalon.composer.report.preference.ReportPreferenceInitializer">
+      </initializer>
+   </extension>
 
 </plugin>

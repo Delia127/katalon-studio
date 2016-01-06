@@ -13,6 +13,7 @@ public class ImageConstants {
 
     // TreeEntitySelectionDialog
     public static final Image IMG_16_SEARCH = ImageUtil.loadImage(currentBundle, "/icons/search_16.png");
+    public static final Image IMG_16_ADVANCED_SEARCH = ImageUtil.loadImage(currentBundle, "/icons/advanced_search_16.png");
     public static final Image IMG_16_CLOSE_SEARCH = ImageUtil.loadImage(currentBundle, "/icons/close_search_16.png");
 
     // FolderTreeEntity

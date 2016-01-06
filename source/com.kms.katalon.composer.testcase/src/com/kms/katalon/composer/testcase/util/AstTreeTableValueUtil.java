@@ -42,9 +42,6 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.model.CustomInputValueTypeCollector;
 import com.kms.katalon.composer.testcase.model.IInputValueType;
 import com.kms.katalon.composer.testcase.model.InputValueType;
-import com.kms.katalon.controller.ObjectRepositoryController;
-import com.kms.katalon.controller.TestCaseController;
-import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.entity.repository.WebElementEntity;
@@ -308,8 +305,7 @@ public class AstTreeTableValueUtil {
 
     private static Expression setValueForTestData(Object value) {
         try {
-            String testDataPk = TestDataController.getInstance().getIdForDisplay(
-                    (DataFileEntity) ((TestDataTreeEntity) value).getObject());
+            String testDataPk = ((DataFileEntity) ((TestDataTreeEntity) value).getObject()).getIdForDisplay();
             return AstTreeTableEntityUtil.getNewTestDataExpression(new ConstantExpression(testDataPk));
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -319,8 +315,7 @@ public class AstTreeTableValueUtil {
 
     private static Expression setValueForTestObject(Object value) {
         try {
-            String objectPk = ObjectRepositoryController.getInstance().getIdForDisplay(
-                    (WebElementEntity) ((WebElementTreeEntity) value).getObject());
+            String objectPk = ((WebElementEntity) ((WebElementTreeEntity) value).getObject()).getIdForDisplay();
             return AstTreeTableInputUtil.generateObjectMethodCall(objectPk);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -330,8 +325,8 @@ public class AstTreeTableValueUtil {
 
     private static Expression setValueForCallTestCase(Object value) {
         try {
-            return AstTreeTableInputUtil.generateTestCaseMethodCall(TestCaseController.getInstance().getIdForDisplay(
-                    (TestCaseEntity) ((TestCaseTreeEntity) value).getObject()));
+            return AstTreeTableInputUtil.generateTestCaseMethodCall(((TestCaseEntity) ((TestCaseTreeEntity) value)
+                    .getObject()).getIdForDisplay());
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }

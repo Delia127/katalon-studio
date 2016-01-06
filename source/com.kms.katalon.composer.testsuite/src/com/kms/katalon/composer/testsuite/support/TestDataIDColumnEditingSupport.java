@@ -10,7 +10,6 @@ import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testsuite.editors.TestDataCellEditor;
 import com.kms.katalon.composer.testsuite.parts.TestSuitePartDataBindingView;
-import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
 import com.kms.katalon.entity.link.VariableLink;
 import com.kms.katalon.entity.link.VariableLink.VariableType;
@@ -57,7 +56,7 @@ public class TestDataIDColumnEditingSupport extends EditingSupport {
 
                 TestDataTreeEntity treeEntity = (TestDataTreeEntity) value;
                 DataFileEntity testDataEntity = (DataFileEntity) treeEntity.getObject();
-                String testDataId = TestDataController.getInstance().getIdForDisplay(testDataEntity);
+                String testDataId = testDataEntity.getIdForDisplay();
                 if (testDataId != null && !testDataId.equals(link.getTestDataId())) {
                     link.setTestDataId(testDataId);
 
