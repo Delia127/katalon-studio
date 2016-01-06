@@ -66,17 +66,27 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
     private static final String DIALOG_TITLE = StringConstants.DIA_TITLE_TEST_OBJ_INPUT;
 
     private static final String OBJECT_FINDER_TAB_NAME = InputValueType.TestObject.toString();
+
     private static final String OTHER_TAB_NAME = StringConstants.DIA_TAB_OTHER;
+
     private static final String[] TEST_OBJECT_TABS = { OBJECT_FINDER_TAB_NAME, OTHER_TAB_NAME };
 
     private TestObjectBuilderDialog _instance;
+
     private TableViewer tableViewer;
+
     private Expression objectExpression;
+
     private int fWidth = 60;
+
     private int fHeight = 18;
+
     private ClassNode scriptClass;
+
     private boolean haveOtherTypes;
+
     private Composite comboComposite;
+
     private Combo combo;
 
     public TestObjectBuilderDialog(Shell parentShell, Expression objectExpression, IEntityLabelProvider labelProvider,
@@ -178,8 +188,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
                 protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
                     if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION) {
                         EventObject source = event.sourceEvent;
-                        if (source instanceof MouseEvent && ((MouseEvent) source).button == 3)
-                            return false;
+                        if (source instanceof MouseEvent && ((MouseEvent) source).button == 3) return false;
 
                         return true;
                     } else if (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED
@@ -286,8 +295,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
             try {
                 WebElementTreeEntity webElementTreeEntity = (WebElementTreeEntity) selectedObject;
                 if (webElementTreeEntity.getObject() instanceof WebElementEntity) {
-                    String objectPk = ObjectRepositoryController.getInstance().getIdForDisplay(
-                            (WebElementEntity) webElementTreeEntity.getObject());
+                    String objectPk = ((WebElementEntity) webElementTreeEntity.getObject()).getIdForDisplay();
                     objectExpression = AstTreeTableInputUtil.generateObjectMethodCall(objectPk);
                 }
             } catch (Exception e) {

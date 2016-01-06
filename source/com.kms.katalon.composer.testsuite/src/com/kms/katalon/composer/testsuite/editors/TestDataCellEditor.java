@@ -24,63 +24,64 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 
 public class TestDataCellEditor extends DialogCellEditor {
-	private String defaultContent;
-	private String selectedTestDataId;
+    private String defaultContent;
 
-	public TestDataCellEditor(Composite parent, String defaultContent, String selectedPk) {
-		super(parent, SWT.NONE);
-		this.defaultContent = defaultContent;
-		this.selectedTestDataId = selectedPk;
-	}
+    private String selectedTestDataId;
 
-	protected void updateContents(Object value) {
-		if (value instanceof DataFileEntity) {
-			try {
-				getDefaultLabel().setText(TestDataController.getInstance().getIdForDisplay((DataFileEntity) value));
-			} catch (Exception e) {
-				LoggerSingleton.logError(e);
-			}
-		} else if (defaultContent != null) {
-			super.updateContents(defaultContent);
-		} else {
-			super.updateContents(value);
-		}
-	}
+    public TestDataCellEditor(Composite parent, String defaultContent, String selectedPk) {
+        super(parent, SWT.NONE);
+        this.defaultContent = defaultContent;
+        this.selectedTestDataId = selectedPk;
+    }
 
-	@Override
-	protected Object openDialogBox(Control cellEditorWindow) {
-		try {
-			EntityProvider entityProvider = new EntityProvider();
-			TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(cellEditorWindow.getShell(),
-					new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(entityProvider));
+    protected void updateContents(Object value) {
+        if (value instanceof DataFileEntity) {
+            try {
+                getDefaultLabel().setText(((DataFileEntity) value).getIdForDisplay());
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        } else if (defaultContent != null) {
+            super.updateContents(defaultContent);
+        } else {
+            super.updateContents(value);
+        }
+    }
 
-			dialog.setAllowMultiple(false);
-			dialog.setTitle(StringConstants.EDI_TITLE_TEST_DATA_BROWSER);
-			ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-			if (currentProject != null) {
-				FolderEntity rootFolder = FolderController.getInstance().getTestDataRoot(currentProject);
-				dialog.setInput(TreeEntityUtil.getChildren(null, rootFolder));
-				if (selectedTestDataId != null) {
-					DataFileEntity selectedTestData = TestDataController.getInstance().getTestDataByDisplayId(
-							selectedTestDataId);
-					if (selectedTestData != null) {
-						dialog.setInitialSelection(new TestDataTreeEntity(selectedTestData, TreeEntityUtil
-								.createSelectedTreeEntityHierachy(selectedTestData.getParentFolder(), rootFolder)));
-					}
-				}
-			}
-			if (dialog.open() == Window.OK) {
-				return dialog.getFirstResult();
-			} else {
-				return null;
-			}
-		} catch (Exception e) {
-			MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
-					StringConstants.EDI_ERROR_MSG_CANNOT_OPEN_DIA);
-			LoggerSingleton.logError(e);
-			return null;
-		}
+    @Override
+    protected Object openDialogBox(Control cellEditorWindow) {
+        try {
+            EntityProvider entityProvider = new EntityProvider();
+            TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(cellEditorWindow.getShell(),
+                    new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(entityProvider));
 
-	}
+            dialog.setAllowMultiple(false);
+            dialog.setTitle(StringConstants.EDI_TITLE_TEST_DATA_BROWSER);
+            ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+            if (currentProject != null) {
+                FolderEntity rootFolder = FolderController.getInstance().getTestDataRoot(currentProject);
+                dialog.setInput(TreeEntityUtil.getChildren(null, rootFolder));
+                if (selectedTestDataId != null) {
+                    DataFileEntity selectedTestData = TestDataController.getInstance().getTestDataByDisplayId(
+                            selectedTestDataId);
+                    if (selectedTestData != null) {
+                        dialog.setInitialSelection(new TestDataTreeEntity(selectedTestData, TreeEntityUtil
+                                .createSelectedTreeEntityHierachy(selectedTestData.getParentFolder(), rootFolder)));
+                    }
+                }
+            }
+            if (dialog.open() == Window.OK) {
+                return dialog.getFirstResult();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                    StringConstants.EDI_ERROR_MSG_CANNOT_OPEN_DIA);
+            LoggerSingleton.logError(e);
+            return null;
+        }
+
+    }
 
 }

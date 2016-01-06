@@ -7,7 +7,6 @@ import java.util.List;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
-import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.entity.folder.FolderEntity;
 
 public class TestCaseFolderEntityProvider extends EntityProvider {
@@ -66,7 +65,7 @@ public class TestCaseFolderEntityProvider extends EntityProvider {
 
     private boolean isFolderQualified(FolderEntity folderEntity) {
         try {
-            String folderId = FolderController.getInstance().getIdForDisplay(folderEntity);
+            String folderId = folderEntity.getIdForDisplay();
             if (folderId == null || folderId.isEmpty()) return false;
 
             for (String existedFolderIds : registeredFolderIds) {

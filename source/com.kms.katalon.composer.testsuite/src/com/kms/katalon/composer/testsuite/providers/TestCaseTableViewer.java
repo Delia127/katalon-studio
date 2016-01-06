@@ -25,7 +25,9 @@ public class TestCaseTableViewer extends TableViewer {
     private List<TestSuiteTestCaseLink> data;
 
     private boolean isRunAll;
+
     private TestSuitePartTestCaseView parentView;
+
     private String searchedString;
 
     public TestCaseTableViewer(Composite parent, int style, TestSuitePartTestCaseView parentView) {
@@ -101,8 +103,8 @@ public class TestCaseTableViewer extends TableViewer {
     protected TestSuiteTestCaseLink createNewTestSuiteTestCaseLink(TestCaseEntity testCase) throws Exception {
         TestSuiteTestCaseLink link = new TestSuiteTestCaseLink();
         link.setIsRun(true);
-        link.setTestCaseId(TestCaseController.getInstance().getIdForDisplay(testCase));
-        
+        link.setTestCaseId(testCase.getIdForDisplay());
+
         for (VariableEntity variable : testCase.getVariables()) {
             VariableLink variableLink = new VariableLink();
             variableLink.setVariableId(variable.getId());
@@ -113,25 +115,27 @@ public class TestCaseTableViewer extends TableViewer {
 
     public void upTestCase(List<TestSuiteTestCaseLink> selectedObjects) {
         if (selectedObjects != null && selectedObjects.size() >= 1) {
-            
+
             Collections.sort(selectedObjects, new Comparator<TestSuiteTestCaseLink>() {
 
                 @Override
                 public int compare(TestSuiteTestCaseLink arg0, TestSuiteTestCaseLink arg1) {
                     return data.indexOf(arg0) > data.indexOf(arg1) ? 1 : -1;
                 }
-                
+
             });
-            
+
             for (TestSuiteTestCaseLink selectedLink : selectedObjects) {
 
                 int selectedIndex = data.indexOf(selectedLink) - 1;
                 if (selectedIndex >= 0) {
                     TestSuiteTestCaseLink linkBefore = (TestSuiteTestCaseLink) data.get(selectedIndex);
-                    
-                    //Avoid swap 2 objects that are both selected
-                    if (selectedObjects.contains(linkBefore)) { continue; }
-                    
+
+                    // Avoid swap 2 objects that are both selected
+                    if (selectedObjects.contains(linkBefore)) {
+                        continue;
+                    }
+
                     data.remove(selectedLink);
                     data.add(selectedIndex, selectedLink);
 
@@ -154,17 +158,19 @@ public class TestCaseTableViewer extends TableViewer {
                 public int compare(TestSuiteTestCaseLink arg0, TestSuiteTestCaseLink arg1) {
                     return data.indexOf(arg0) < data.indexOf(arg1) ? 1 : -1;
                 }
-                
+
             });
-            
+
             for (TestSuiteTestCaseLink selectedLink : selectedObjects) {
                 int selectedIndex = data.indexOf(selectedLink) + 1;
                 if (selectedIndex < data.size()) {
                     TestSuiteTestCaseLink linkAfter = (TestSuiteTestCaseLink) data.get(selectedIndex);
 
-                    //Avoid swap 2 objects that are both selected
-                    if (selectedObjects.contains(linkAfter)) { continue; }
-                    
+                    // Avoid swap 2 objects that are both selected
+                    if (selectedObjects.contains(linkAfter)) {
+                        continue;
+                    }
+
                     data.remove(selectedLink);
                     data.add(selectedIndex, selectedLink);
 
@@ -234,7 +240,7 @@ public class TestCaseTableViewer extends TableViewer {
         if (testCasesPKs.contains(oldPk)) {
             int index = testCasesPKs.indexOf(oldPk);
             TestSuiteTestCaseLink testCaseLink = (TestSuiteTestCaseLink) data.get(index);
-            testCaseLink.setTestCaseId(TestCaseController.getInstance().getIdForDisplay(testCase));
+            testCaseLink.setTestCaseId(testCase.getIdForDisplay());
             List<VariableLink> retainedVariableLinks = new ArrayList<VariableLink>();
             for (VariableEntity variable : testCase.getVariables()) {
                 boolean isNewVariable = true;
@@ -294,7 +300,7 @@ public class TestCaseTableViewer extends TableViewer {
     public void setSearchedString(String searchedString) {
         this.searchedString = searchedString;
     }
-    
+
     public void updateDirty(boolean dirty) {
         parentView.setDirty(dirty);
     }

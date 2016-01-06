@@ -73,6 +73,15 @@ public class TestCaseController extends EntityController {
         return dataProviderSetting.getTestCaseDataProvider().moveTestCase(testCaseEntity, destinationFolder);
     }
 
+    /**
+     * Get entity ID for display This function is deprecated. Please use {@link TestCaseEntity#getIdForDisplay()}
+     * instead.
+     * 
+     * @param entity
+     * @return Test Case ID for display
+     * @throws Exception
+     */
+    @Deprecated
     public String getIdForDisplay(TestCaseEntity entity) throws Exception {
         if (entity == null) {
             return "";
@@ -152,10 +161,23 @@ public class TestCaseController extends EntityController {
         return dataProviderSetting.getTestCaseDataProvider().getTestCaseByScriptFileName(scriptFileName);
     }
 
+    /**
+     * Get TestCaseEntity by its script file path
+     * 
+     * @param scriptFilePath raw location file path
+     * @return TestCaseEntity
+     * @throws Exception
+     */
     public TestCaseEntity getTestCaseByScriptFilePath(String scriptFilePath) throws Exception {
         return dataProviderSetting.getTestCaseDataProvider().getTestCaseByScriptFilePath(scriptFilePath);
     }
 
+    /**
+     * Find all Test Suite which is using the Test Case
+     * 
+     * @param testCase Test Case Entity
+     * @return List of Test Suite Entity
+     */
     public List<TestSuiteEntity> getTestCaseReferences(TestCaseEntity testCase) {
         try {
             return dataProviderSetting.getTestCaseDataProvider().getTestCaseReferences(testCase);

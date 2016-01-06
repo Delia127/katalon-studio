@@ -143,7 +143,7 @@ public class ExplorerPart {
         this.part = mpart;
         updateToolItemStatus();
         parent.setLayoutData(new GridData(GridData.FILL_BOTH));
-        parent.setLayout(new GridLayout(2, false));
+        parent.setLayout(new GridLayout(1, false));
 
         searchComposite = new Composite(parent, SWT.BORDER);
         searchComposite.setBackground(ColorUtil.getWhiteBackgroundColor());
@@ -196,7 +196,6 @@ public class ExplorerPart {
         });
 
         application.getContext().set(ExplorerPart.class.getName(), this);
-        new Label(parent, SWT.NONE);
 
         setViewer(new TreeViewer(parent, SWT.BORDER | SWT.MULTI | SWT.VIRTUAL));
         getTreeViewer().setUseHashlookup(true);

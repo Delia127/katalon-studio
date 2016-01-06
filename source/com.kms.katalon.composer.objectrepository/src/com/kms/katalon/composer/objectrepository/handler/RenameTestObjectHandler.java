@@ -57,14 +57,13 @@ public class RenameTestObjectHandler {
                     WebElementEntity webElement = (WebElementEntity) webElementTreeEntity.getObject();
                     String oldName = webElement.getName();
                     String pk = webElement.getId();
-                    String oldIdForDisplay = ObjectRepositoryController.getInstance().getIdForDisplay(webElement);
+                    String oldIdForDisplay = webElement.getIdForDisplay();
                     try {
                         if (renameWizard.getNewNameValue() != null && !renameWizard.getNewNameValue().isEmpty()
                                 && !renameWizard.getNewNameValue().equals(oldName)) {
                             webElement.setName(renameWizard.getNewNameValue());
                             ObjectRepositoryController.getInstance().updateWebElement(webElement);
-                            String newIdForDisplay = ObjectRepositoryController.getInstance().getIdForDisplay(
-                                    webElement);
+                            String newIdForDisplay = webElement.getIdForDisplay();
                             eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] {
                                     oldIdForDisplay, newIdForDisplay });
                         }

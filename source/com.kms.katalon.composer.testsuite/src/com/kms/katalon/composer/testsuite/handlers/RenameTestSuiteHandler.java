@@ -53,13 +53,13 @@ public class RenameTestSuiteHandler {
                     TestSuiteEntity testSuite = (TestSuiteEntity) testSuiteTreeEntity.getObject();
                     String oldName = testSuite.getName();
                     String pk = testSuite.getId();
-                    String oldIdForDisplay = TestSuiteController.getInstance().getIdForDisplay(testSuite);
+                    String oldIdForDisplay = testSuite.getIdForDisplay();
                     try {
                         if (renameWizard.getNewNameValue() != null && !renameWizard.getNewNameValue().isEmpty()
                                 && !renameWizard.getNewNameValue().equals(oldName)) {
                             testSuite.setName(renameWizard.getNewNameValue());
                             TestSuiteController.getInstance().updateTestSuite(testSuite);
-                            String newIdForDisplay = TestSuiteController.getInstance().getIdForDisplay(testSuite);
+                            String newIdForDisplay = testSuite.getIdForDisplay();
                             eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] {
                                     oldIdForDisplay, newIdForDisplay });
                         }

@@ -83,6 +83,15 @@ public class TestDataController extends EntityController {
         return dataProviderSetting.getDataFileDataProvider().updateDataFileProperty(dataFileInputProperties);
     }
 
+    /**
+     * Get entity ID for display This function is deprecated. Please use {@link DataFileEntity#getIdForDisplay()}
+     * instead.
+     * 
+     * @param entity
+     * @return Test Data ID for display
+     * @throws Exception
+     */
+    @Deprecated
     public String getIdForDisplay(DataFileEntity entity) throws Exception {
         return dataProviderSetting.getDataFileDataProvider().getIdForDisplay(entity)
                 .replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPERATOR);

@@ -93,19 +93,31 @@ public class ReportPart implements EventHandler {
     IEventBroker eventBroker;
 
     private ReportEntity report;
+
     private StyledText txtTestSuiteId, txtHostName, txtOS, txtPlatform, txtStartTime, txtEndTime, txtRunTime;
+
     private StyledText txtTotalTestCase, txtTCPasses, txtTCFailures, txtTCIncompleted;
+
     private TestSuiteLogRecord testSuiteLogRecord;
+
     private ReportTestCaseTableViewer testCaseTableViewer;
+
     private Text txtTestCaseSearch;
+
     private CLabel lblTestCaseSearch;
+
     private ReportTestCaseTableViewerFilter testCaseTableFilter;
+
     private Button btnFilterTestCasePassed;
+
     private Button btnFilterTestCaseFailed;
+
     private Button btnFilterTestCaseError;
 
     private TableViewer runDataTable;
+
     private TableViewer executionSettingTable;
+
     private ReportPartTestLogView testLogView;
 
     private Map<String, AbstractReportTestCaseIntegrationView> integratingCompositeMap;
@@ -211,8 +223,7 @@ public class ReportPart implements EventHandler {
             public void selectionChanged(SelectionChangedEvent event) {
                 ILogRecord selectedLogRecord = (ILogRecord) getSelectedTestCaseLogRecord();
 
-                if (selectedLogRecord == null)
-                    return;
+                if (selectedLogRecord == null) return;
                 testLogView.updateSelectedTestCase(selectedLogRecord);
             }
         });
@@ -231,7 +242,6 @@ public class ReportPart implements EventHandler {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                // TODO Auto-generated method stub
                 testCaseTableFilter.setShowFailed(btnFilterTestCaseFailed.getSelection());
                 testCaseTableViewer.refresh();
                 testLogView.updateSelectedTestCase(getSelectedTestCaseLogRecord());
@@ -242,7 +252,6 @@ public class ReportPart implements EventHandler {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                // TODO Auto-generated method stub
                 testCaseTableFilter.setShowError(btnFilterTestCaseError.getSelection());
                 testCaseTableViewer.refresh();
                 testLogView.updateSelectedTestCase(getSelectedTestCaseLogRecord());
@@ -253,7 +262,6 @@ public class ReportPart implements EventHandler {
 
             @Override
             public void keyReleased(KeyEvent e) {
-                // TODO Auto-generated method stub
             }
 
             @Override
@@ -280,7 +288,6 @@ public class ReportPart implements EventHandler {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                // TODO Auto-generated method stub
                 testCaseTableViewer.refresh();
             }
         });
@@ -357,8 +364,7 @@ public class ReportPart implements EventHandler {
         try {
             this.report = report;
 
-            if (report == null)
-                return;
+            if (report == null) return;
 
             this.testSuiteLogRecord = LogRecordLookup.getInstance().getTestSuiteLogRecord(report);
 
@@ -372,7 +378,7 @@ public class ReportPart implements EventHandler {
                 clearMouseDownListener(txtTestSuiteId);
 
                 if (testSuite != null) {
-                    txtTestSuiteId.setText(TestSuiteController.getInstance().getIdForDisplay(testSuite));
+                    txtTestSuiteId.setText(testSuite.getIdForDisplay());
                     registerTxtTestSuiteClickListener();
                 } else {
                     txtTestSuiteId.setText(testSuiteLogRecord.getSource());
@@ -441,8 +447,8 @@ public class ReportPart implements EventHandler {
                     : null);
             runDataTable.refresh();
             File executionSettingFile = ReportController.getInstance().getExecutionSettingFile(report.getLocation());
-            executionSettingTable.setInput(ExecutionUtil.readRunConfigSettingFromFile(executionSettingFile
-                    .getAbsolutePath()).entrySet());
+            executionSettingTable.setInput(ExecutionUtil.readRunConfigSettingFromFile(
+                    executionSettingFile.getAbsolutePath()).entrySet());
             executionSettingTable.refresh();
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -621,8 +627,9 @@ public class ReportPart implements EventHandler {
     private void createSummaryTabControl(final CTabFolder tabFolder) {
         final CTabItem tbtmSummary = new CTabItem(tabFolder, SWT.NONE);
         tbtmSummary.setText(StringConstants.TITLE_SUMMARY);
-        
-        final ScrolledComposite scrolledComposite = new ScrolledComposite(tabFolder, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+
+        final ScrolledComposite scrolledComposite = new ScrolledComposite(tabFolder, SWT.H_SCROLL | SWT.V_SCROLL
+                | SWT.BORDER);
         scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false, 1, 1));
         scrolledComposite.setExpandHorizontal(true);
         scrolledComposite.setExpandVertical(true);
@@ -848,10 +855,10 @@ public class ReportPart implements EventHandler {
         SashForm sashForm = new SashForm(composite, SWT.NONE);
         sashForm.setSashWidth(5);
         sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        
+
         SashForm sashFormSummary = new SashForm(sashForm, SWT.VERTICAL);
         sashFormSummary.setSashWidth(5);
-        
+
         createCompositeTestCaseTable(sashFormSummary);
         createCompositeSummary(sashFormSummary);
 
@@ -862,7 +869,7 @@ public class ReportPart implements EventHandler {
         testLogView.createCompositeSelectedTestLog(sashFormDetails);
 
         sashFormDetails.setWeights(new int[] { 6, 4 });
-        
+
         sashFormSummary.setWeights(new int[] { 75, 25 });
 
         sashForm.setWeights(new int[] { 35, 65 });

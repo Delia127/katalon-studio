@@ -92,7 +92,6 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.constants.PreferenceConstants.ExecutionPreferenceConstans;
-import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XMLLoggerParser;
 import com.kms.katalon.core.logging.XmlLogRecord;
@@ -115,20 +114,29 @@ public class LogViewerPart implements EventHandler {
     private IEventBroker eventBroker;
 
     private Table table;
+
     private LogTableViewer tableViewer;
+
     private ProgressBar progressBar;
+
     private int maxValue;
+
     private Label lblNumTestcases, lblNumFailures, lblNumPasses, lblNumErrors;
+
     private Composite parentComposite;
 
     private AbstractLauncher launcherWatched;
+
     private boolean isBusy;
+
     private boolean stopAdding;
 
     private LogRecordTreeViewer treeViewer;
+
     private StyledText txtStartTime, txtEndTime, txtEslapedTime, txtMessage;
 
     private ToolItem btnShowAllLogs, btnShowInfoLogs, btnShowPassedLogs, btnShowFailedLogs, btnShowErrorLogs;
+
     private List<XmlLogRecord> currentRecords;
 
     private Composite compositeTreeContainer;
@@ -225,7 +233,7 @@ public class LogViewerPart implements EventHandler {
         eventBroker.subscribe(EventConstants.CONSOLE_LOG_CHANGE_VIEW_TYPE, this);
         eventBroker.subscribe(EventConstants.EXPLORER_RELOAD_INPUT, this);
         eventBroker.subscribe(EventConstants.CONSOLE_LOG_WORD_WRAP, this);
-        
+
         PlatformUI.getWorkbench().getActiveWorkbenchWindow().getPages()[0].addPostSelectionListener(
                 IConsoleConstants.ID_CONSOLE_VIEW, new ISelectionListener() {
 
@@ -422,7 +430,7 @@ public class LogViewerPart implements EventHandler {
                                 TestCaseEntity testCase = LogExceptionFilter
                                         .getTestCaseByLogException(exceptionLogEntry);
                                 if (testCase != null) {
-                                    String testCaseId = TestCaseController.getInstance().getIdForDisplay(testCase);
+                                    String testCaseId = testCase.getIdForDisplay();
                                     exceptionLogString = exceptionLogEntry.toString().replace(
                                             exceptionLogEntry.getClassName(), testCaseId);
                                 }

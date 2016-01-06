@@ -1,9 +1,10 @@
 package com.kms.katalon.composer.testdata.dialog;
 
-import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -17,13 +18,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -33,122 +29,96 @@ import com.kms.katalon.composer.explorer.handlers.deletion.AbstractDeleteEntityD
 import com.kms.katalon.composer.explorer.handlers.deletion.AbstractDeleteReferredEntityHandler;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
-import com.kms.katalon.entity.testdata.DataFileEntity;
+import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class TestDataReferencesDialog extends AbstractDeleteEntityDialog {
+    private Map<String, List<TestSuiteTestCaseLink>> referencesInTestSuite;
 
-    // Fields
-    private Map<String, List<TestSuiteTestCaseLink>> fTestDataReferences;
-    private DataFileEntity fDataFileEntity;
+    private List<TestSuiteTestCaseLink> allAffectedTestCase;
 
-    // Controls
-    private TableViewer testSuiteTableViewer;
     private TableViewer testCaseLinkTableViewer;
-    private Label lblStatus;
 
-    public TestDataReferencesDialog(Shell parentShell, DataFileEntity dataFileEntity,
-            Map<String, List<TestSuiteTestCaseLink>> testDataReferences, AbstractDeleteReferredEntityHandler handler) {
+    public TestDataReferencesDialog(Shell parentShell, String testDataId,
+            Map<String, List<TestSuiteTestCaseLink>> referencesInTestSuite, List<TestCaseEntity> referencesInTestCase,
+            AbstractDeleteReferredEntityHandler handler) {
         super(parentShell, handler);
-        fTestDataReferences = testDataReferences;
-        fDataFileEntity = dataFileEntity;
+        setDialogTitle(StringConstants.DIA_TITLE_TEST_DATA_REFERENCES);
+        setEntityId(testDataId);
+        this.referencesInTestSuite = referencesInTestSuite;
+        setAllAffectedTestCase(referencesInTestCase);
+    }
+
+    @Override
+    protected Control createDialogBody(Composite parent) {
+        SashForm sashForm = new SashForm(parent, SWT.NONE);
+        sashForm.setSashWidth(5);
+        sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+
+        createSourceTable(sashForm);
+
+        createTestCaseLinkTable(sashForm);
+
+        sashForm.setWeights(new int[] { 45, 55 });
+        return parent;
     }
 
     @Override
     protected void registerControlModifyListeners() {
-        testSuiteTableViewer.addPostSelectionChangedListener(new ISelectionChangedListener() {
+        super.registerControlModifyListeners();
+
+        tableViewer.addPostSelectionChangedListener(new ISelectionChangedListener() {
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 updateTestCaseLinkTableInput();
             }
         });
-
-        mainComposite.addListener(SWT.Resize, new Listener() {
-
-            @Override
-            public void handleEvent(Event event) {
-                lblStatus.pack(true);
-            }
-        });
     }
 
     private void updateTestCaseLinkTableInput() {
-        IStructuredSelection selection = (IStructuredSelection) testSuiteTableViewer.getSelection();
+        IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
         if (selection == null || selection.size() != 1) return;
         String testSuiteId = (String) selection.getFirstElement();
-        testCaseLinkTableViewer.setInput(fTestDataReferences.get(testSuiteId));
+        if (StringUtils.equals(testSuiteId, StringConstants.DIA_LBL_REFERENCED_TEST_CASES)) {
+            testCaseLinkTableViewer.setInput(allAffectedTestCase);
+        } else {
+            testCaseLinkTableViewer.setInput(referencesInTestSuite.get(testSuiteId));
+        }
     }
 
     @Override
     protected void setInput() {
-        try {
-            lblStatus.setText(MessageFormat.format(StringConstants.DIA_MSG_HEADER_TEST_DATA_REFERENCES,
-                    TestDataController.getInstance().getIdForDisplay(fDataFileEntity)));
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-        }
+        List<String> sources = new ArrayList<String>();
+        sources.add(StringConstants.DIA_LBL_REFERENCED_TEST_CASES);
+        sources.addAll(referencesInTestSuite.keySet());
 
-        testSuiteTableViewer.setInput(fTestDataReferences.keySet());
-        testSuiteTableViewer.getTable().setSelection(0);
+        tableViewer.setInput(sources);
+        tableViewer.getTable().setSelection(0);
         updateTestCaseLinkTableInput();
 
         mainComposite.layout(true, true);
     }
 
-    @Override
-    protected Control createDialogComposite(Composite parent) {
-        Composite mainComposite = new Composite(parent, SWT.NONE);
-        GridLayout glMainComposite = new GridLayout(1, false);
-        glMainComposite.marginWidth = 0;
-        glMainComposite.marginHeight = 0;
-        mainComposite.setLayout(glMainComposite);
+    private void createSourceTable(Composite parent) {
+        Composite compositeSourceTable = new Composite(parent, SWT.NONE);
 
-        Composite compositeHeader = new Composite(mainComposite, SWT.NONE);
-        GridLayout glCompositeHeader = new GridLayout(2, false);
-        glCompositeHeader.horizontalSpacing = 15;
-        compositeHeader.setLayout(glCompositeHeader);
-        compositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-
-        Label lblImage = new Label(compositeHeader, SWT.NONE);
-        lblImage.setImage(Display.getCurrent().getSystemImage(SWT.ICON_WARNING));
-
-        lblStatus = new Label(compositeHeader, SWT.WRAP);
-        lblStatus.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-
-        SashForm sashForm = new SashForm(mainComposite, SWT.NONE);
-        sashForm.setSashWidth(5);
-        sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-
-        createTestSuiteTable(sashForm);
-
-        createTestCaseLinkTable(sashForm);
-
-        sashForm.setWeights(new int[] { 45, 55 });
-
-        return mainComposite;
-    }
-
-    private void createTestSuiteTable(Composite parent) {
-        Composite compositeTestSuiteTable = new Composite(parent, SWT.NONE);
-
-        testSuiteTableViewer = new TableViewer(compositeTestSuiteTable, SWT.FULL_SELECTION);
-        Table tableTestSuite = testSuiteTableViewer.getTable();
+        tableViewer = new TableViewer(compositeSourceTable, SWT.FULL_SELECTION);
+        Table tableTestSuite = tableViewer.getTable();
         tableTestSuite.setHeaderVisible(true);
 
-        TableViewerColumn tableViewerColumnTestSuiteID = new TableViewerColumn(testSuiteTableViewer, SWT.NONE);
+        TableViewerColumn tableViewerColumnTestSuiteID = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnTestSuiteID = tableViewerColumnTestSuiteID.getColumn();
         tblclmnTestSuiteID.setWidth(200);
-        tblclmnTestSuiteID.setText("Test Suite ID");
+        tblclmnTestSuiteID.setText(StringConstants.DIA_COL_REFERENCED_BY);
         tableViewerColumnTestSuiteID.setLabelProvider(new ColumnLabelProvider());
 
-        testSuiteTableViewer.setContentProvider(ArrayContentProvider.getInstance());
+        tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
         TableColumnLayout tableLayout = new TableColumnLayout();
         tableLayout.setColumnData(tblclmnTestSuiteID, new ColumnWeightData(98, 190));
-        compositeTestSuiteTable.setLayout(tableLayout);
+        compositeSourceTable.setLayout(tableLayout);
     }
 
     private void createTestCaseLinkTable(Composite parent) {
@@ -161,30 +131,40 @@ public class TestDataReferencesDialog extends AbstractDeleteEntityDialog {
 
         TableViewerColumn tableViewerColumnTestCaseOrder = new TableViewerColumn(testCaseLinkTableViewer, SWT.NONE);
         TableColumn tblclmnTestCaseLinkOrder = tableViewerColumnTestCaseOrder.getColumn();
-        tblclmnTestCaseLinkOrder.setText(StringConstants.ID);
+        tblclmnTestCaseLinkOrder.setText(StringConstants.NO_);
         tableViewerColumnTestCaseOrder.setLabelProvider(new ColumnLabelProvider());
         tableViewerColumnTestCaseOrder.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
                 if (element == null || !(element instanceof TestSuiteTestCaseLink)) {
-                    return "";
+                    return StringConstants.EMPTY;
                 }
                 TestSuiteTestCaseLink testCaseLink = (TestSuiteTestCaseLink) element;
-                TestSuiteEntity testSuite = getSelectedTestSuite();
-                return Integer.toString(testSuite.getTestSuiteTestCaseLinks().indexOf(testCaseLink) + 1);
+                Object o = getSelectedSource();
+                if (o != null && o instanceof TestSuiteEntity) {
+                    // The selection is TestSuiteEntity
+                    TestSuiteEntity testSuite = (TestSuiteEntity) o;
+                    return Integer.toString(testSuite.getTestSuiteTestCaseLinks().indexOf(testCaseLink) + 1);
+                } else {
+                    if (o != null) {
+                        return Integer.toString(allAffectedTestCase.indexOf(testCaseLink) + 1);
+                    } else {
+                        return StringConstants.EMPTY;
+                    }
+                }
             }
         });
 
         TableViewerColumn tableViewerColumnTestCaseID = new TableViewerColumn(testCaseLinkTableViewer, SWT.NONE);
         TableColumn tblclmnTestCaseID = tableViewerColumnTestCaseID.getColumn();
         tblclmnTestCaseID.setWidth(190);
-        tblclmnTestCaseID.setText("Test Case ID");
+        tblclmnTestCaseID.setText(StringConstants.DIA_COL_TEST_CASE_ID);
         tableViewerColumnTestCaseID.setLabelProvider(new ColumnLabelProvider());
         tableViewerColumnTestCaseID.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
                 if (element == null || !(element instanceof TestSuiteTestCaseLink)) {
-                    return "";
+                    return StringConstants.EMPTY;
                 }
                 TestSuiteTestCaseLink testCaseLink = (TestSuiteTestCaseLink) element;
                 return testCaseLink.getTestCaseId();
@@ -199,23 +179,35 @@ public class TestDataReferencesDialog extends AbstractDeleteEntityDialog {
         testCaseLinkTableViewer.setContentProvider(ArrayContentProvider.getInstance());
     }
 
-    @Override
-    protected String getDialogTitle() {
-        return "Test Data's References Dialog";
-    }
-    
-    private TestSuiteEntity getSelectedTestSuite() {
-        IStructuredSelection selection = (IStructuredSelection) testSuiteTableViewer.getSelection();
+    private Object getSelectedSource() {
+        IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
         if (selection == null || selection.size() != 1) {
             return null;
         }
         String testSuiteId = (String) selection.getFirstElement();
+
         try {
-            return TestSuiteController.getInstance().getTestSuiteByDisplayId(testSuiteId,
-                    ProjectController.getInstance().getCurrentProject());
+            if (StringUtils.equals(testSuiteId, StringConstants.DIA_LBL_REFERENCED_TEST_CASES)) {
+                return StringConstants.DIA_LBL_REFERENCED_TEST_CASES;
+            } else {
+                return TestSuiteController.getInstance().getTestSuiteByDisplayId(testSuiteId,
+                        ProjectController.getInstance().getCurrentProject());
+            }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             return null;
+        }
+    }
+
+    private void setAllAffectedTestCase(List<TestCaseEntity> testCases) {
+        if (testCases == null || testCases.isEmpty()) {
+            return;
+        }
+        allAffectedTestCase = new ArrayList<TestSuiteTestCaseLink>();
+        for (TestCaseEntity tc : testCases) {
+            TestSuiteTestCaseLink link = new TestSuiteTestCaseLink();
+            link.setTestCaseId(tc.getIdForDisplay());
+            allAffectedTestCase.add(link);
         }
     }
 

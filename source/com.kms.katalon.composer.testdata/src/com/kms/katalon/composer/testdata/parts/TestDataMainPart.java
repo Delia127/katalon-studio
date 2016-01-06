@@ -52,7 +52,9 @@ import com.kms.katalon.entity.testdata.DataFileEntity;
 
 public abstract class TestDataMainPart implements EventHandler, IPartListener {
     public static final int MAX_LABEL_WIDTH = 70;
+
     protected static final int MAX_COLUMN_COUNT = 100;
+
     protected static final int COLUMN_WIDTH = 200;
 
     @Inject
@@ -80,19 +82,33 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
     protected Set<Thread> currentThreads;
 
     protected ModifyListener modifyListener;
+
     private Composite infoCompositeName;
+
     private Composite infoCompositeId;
+
     private Label labelId;
+
     private Composite infoCompositeDescription;
+
     private Label labelDescription;
+
     private Composite infoCompositeDataType;
+
     private Label labelDataType;
+
     private Composite compositeInfoHeader;
+
     private Composite compositeInfoDetails;
+
     private Composite compositeGeneralInfo;
+
     private Composite compositeFileInfo;
+
     private Composite compositeDataTable;
+
     private ImageButton btnExpandGeneralInformation;
+
     private Label lblInformations;
 
     private boolean isInfoCompositeExpanded;
@@ -320,7 +336,7 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
     private void updateGeneralInfo(DataFileEntity dataFile) {
         try {
             txtName.setText(dataFile.getName());
-            txtId.setText(TestDataController.getInstance().getIdForDisplay(dataFile));
+            txtId.setText(dataFile.getIdForDisplay());
             txtDesc.setText(dataFile.getDescription());
             txtDataType.setText(dataFile.getDriver().name());
         } catch (Exception e) {
@@ -341,7 +357,7 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
                     if (dataFile.equals(originalDataFile)) {
                         return;
                     }
-                    
+
                     this.originalDataFile = dataFile;
 
                     boolean oldDirty = dirtyable.isDirty();
@@ -427,7 +443,8 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
 
                     }
                 } else {
-                    FolderTreeEntity parentFolderTreeEntity = getParentFolderTreeEntity(originalDataFile.getParentFolder(),
+                    FolderTreeEntity parentFolderTreeEntity = getParentFolderTreeEntity(
+                            originalDataFile.getParentFolder(),
                             FolderController.getInstance().getTestDataRoot(originalDataFile.getProject()));
                     if (parentFolderTreeEntity != null) {
                         eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentFolderTreeEntity);
@@ -440,14 +457,13 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
                 isConfirmDialogShowed = true;
                 SAXParseException saxParserException = (SAXParseException) e.getLinkedException().getCause();
 
-                MessageDialog.openError(
-                        Display.getCurrent().getActiveShell(),
-                        StringConstants.ERROR_TITLE,
+                MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                         MessageFormat.format(StringConstants.PA_ERROR_MSG_FILE_X_IS_WRONG_FORMAT_AT_LINE_Y,
                                 originalDataFile.getLocation(), saxParserException.getLineNumber()));
                 isConfirmDialogShowed = false;
                 try {
-                    FolderTreeEntity parentFolderTreeEntity = getParentFolderTreeEntity(originalDataFile.getParentFolder(),
+                    FolderTreeEntity parentFolderTreeEntity = getParentFolderTreeEntity(
+                            originalDataFile.getParentFolder(),
                             FolderController.getInstance().getTestDataRoot(originalDataFile.getProject()));
 
                     if (parentFolderTreeEntity != null) {
@@ -489,7 +505,7 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
         }
         threadIterator = null;
     }
-    
+
     protected abstract void preDestroy();
 
     public void partActivated(MPart part) {

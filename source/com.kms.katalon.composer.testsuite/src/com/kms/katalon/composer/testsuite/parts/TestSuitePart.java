@@ -90,12 +90,19 @@ public class TestSuitePart implements EventHandler {
     private MPart mpart;
 
     private Composite compositeExecutionDetails;
+
     private org.eclipse.swt.widgets.List listMailRcp;
+
     private ListViewer listMailRcpViewer;
+
     private Button btnAddMailRcp, btnDeleteMailRcp, btnClearMailRcp;
+
     private Button radioUseDefaultPageLoadTimeout, radioUserDefinePageLoadTimeout;
+
     private Composite compositeLastRunAndReRun;
+
     private ImageButton btnExpandInformation, btnExpandExecutionComposite;
+
     private Button rerunTestCaseOnly;
 
     private TestSuiteCompositePart parentTestSuiteCompositePart;
@@ -339,8 +346,7 @@ public class TestSuitePart implements EventHandler {
                 try {
                     int timeout = Integer.parseInt(text);
                     getTestSuite().setPageLoadTimeout((short) timeout);
-                } catch (NumberFormatException ex) {
-                }
+                } catch (NumberFormatException ex) {}
             }
         });
         txtUserDefinePageLoadTimeout.addVerifyListener(verifyNumberListener);
@@ -365,12 +371,11 @@ public class TestSuitePart implements EventHandler {
                         ((Text) e.getSource()).setText(String.valueOf(rerun));
                     }
                     getTestSuite().setNumberOfRerun(rerun);
-                } catch (NumberFormatException ex) {
-                }
+                } catch (NumberFormatException ex) {}
             }
         });
         txtRerun.addVerifyListener(verifyNumberListener);
-        
+
         rerunTestCaseOnly.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -432,7 +437,7 @@ public class TestSuitePart implements EventHandler {
     }
 
     private void loadTestSuiteInfo(final TestSuiteEntity testSuite) throws Exception {
-        String testSuiteIdForDisplay = TestSuiteController.getInstance().getIdForDisplay(testSuite);
+        String testSuiteIdForDisplay = testSuite.getIdForDisplay();
 
         // binding name
         textTestSuiteName.setText(testSuite.getName());
@@ -742,14 +747,14 @@ public class TestSuitePart implements EventHandler {
         txtRerun.setLayoutData(gdTxtRerun);
         txtRerun.setToolTipText(StringConstants.PA_LBL_TOOLTIP_RETRY);
         txtRerun.setTextLimit(3);
-        
+
         Label lblReRunTestCaseOnly = new Label(compositeLastRunAndReRun, SWT.NONE);
         GridData gdLblReRunTestCaseOnly = new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1);
         gdLblReRunTestCaseOnly.widthHint = 150;
         lblReRunTestCaseOnly.setLayoutData(gdLblReRunTestCaseOnly);
         lblReRunTestCaseOnly.setText(StringConstants.PA_LBL_TEST_CASE_ONLY);
         lblReRunTestCaseOnly.setToolTipText(StringConstants.PA_LBL_TOOLTIP_TEST_CASE_ONLY);
-        
+
         rerunTestCaseOnly = new Button(compositeLastRunAndReRun, SWT.CHECK);
         GridData gdRerunTestCase = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
         gdRerunTestCase.heightHint = 20;

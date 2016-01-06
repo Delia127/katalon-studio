@@ -238,8 +238,8 @@ public abstract class VariableBuilderDialog extends AbstractDialog {
         getButton(OK).setEnabled(enable);
     }
 
-    protected String getDialogTitle() {
-        return dialogTitle != null ? dialogTitle : "";
+    public String getDialogTitle() {
+        return dialogTitle != null ? dialogTitle : StringConstants.EMPTY;
     }
 
     @Override
