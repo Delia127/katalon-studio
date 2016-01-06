@@ -83,7 +83,6 @@ import com.kms.katalon.composer.testsuite.editors.TestDataCellEditor;
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.core.keyword.IKeywordContributor;
 import com.kms.katalon.core.model.FailureHandling;
@@ -1009,8 +1008,7 @@ public class AstTreeTableInputUtil {
 
         ArgumentListExpression argumentList = (ArgumentListExpression) keywordMethodCallExpression.getArguments();
 
-        MethodCallExpression testCaseMethodCallEprs = generateTestCaseMethodCall(TestCaseController.getInstance()
-                .getIdForDisplay(testCase));
+        MethodCallExpression testCaseMethodCallEprs = generateTestCaseMethodCall(testCase.getIdForDisplay());
         MapExpression mapExpression = generateTestCaseVariableBindingExpression(testCase);
         PropertyExpression propertyExprs = (PropertyExpression) argumentList.getExpression(argumentList
                 .getExpressions().size() - 1);
@@ -1061,8 +1059,7 @@ public class AstTreeTableInputUtil {
     }
 
     public static boolean isGlobalVariablePropertyExpression(PropertyExpression propertyExprs) {
-        if (!(propertyExprs.getObjectExpression() instanceof VariableExpression))
-            return false;
+        if (!(propertyExprs.getObjectExpression() instanceof VariableExpression)) return false;
         if (propertyExprs.getObjectExpression().getText().equals(InputValueType.GlobalVariable.name())) {
             return true;
         } else {

@@ -95,7 +95,6 @@ import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransferData;
 import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.core.keyword.IKeywordContributor;
 import com.kms.katalon.core.model.FailureHandling;
@@ -107,8 +106,11 @@ import com.kms.katalon.entity.variable.VariableEntity;
 public class TestCasePart implements EventHandler {
 
     private Text textTestCaseName;
+
     private Text textTestCaseDescription;
+
     private Text textTestCaseComment;
+
     private Text textTestCaseTag;
 
     private Text lblTestCaseIDContain;
@@ -118,9 +120,11 @@ public class TestCasePart implements EventHandler {
             compositeSteps;
 
     private ImageButton btnExpandVisualizer, btnExpandGeneralInformation;
+
     private ToolItem tltmRecord, tltmAddStep, tltmInsertStep, tltmRemoveStep, tltmUp, tltmDown;
 
     private boolean isInfoExpanded, isVisualExpanded;
+
     // private Table table;
     // private TestStepTableViewer checkboxTableViewer;
     TreeViewer treeTable;
@@ -128,6 +132,7 @@ public class TestCasePart implements EventHandler {
     private MPart mPart;
 
     private TestCaseTreeTableInput treeTableInput;
+
     private Composite composite;
 
     public MPart getMPart() {
@@ -138,7 +143,9 @@ public class TestCasePart implements EventHandler {
     private IEventBroker eventBroker;
 
     private TestCaseSelectionListener selectionListener;
+
     private TestCaseCompositePart parentTestCaseCompositePart;
+
     private Listener layoutGeneralCompositeListener = new Listener() {
 
         @Override
@@ -146,6 +153,7 @@ public class TestCasePart implements EventHandler {
             layoutGeneralComposite();
         }
     };
+
     private Label lblGeneralInformation;
 
     @PostConstruct
@@ -504,8 +512,7 @@ public class TestCasePart implements EventHandler {
             protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
                 if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION) {
                     EventObject source = event.sourceEvent;
-                    if (source instanceof MouseEvent && ((MouseEvent) source).button == 3)
-                        return false;
+                    if (source instanceof MouseEvent && ((MouseEvent) source).button == 3) return false;
 
                     return true;
                 } else if (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && event.keyCode == SWT.CR) {
@@ -586,11 +593,13 @@ public class TestCasePart implements EventHandler {
                     insertMenuItem.setMenu(insertMenu);
 
                     // Add step before
-                    AstTreeTableEntityUtil.addActionSubMenu(insertMenu, TreeTableMenuItemConstants.AddAction.InsertBefore,
+                    AstTreeTableEntityUtil.addActionSubMenu(insertMenu,
+                            TreeTableMenuItemConstants.AddAction.InsertBefore,
                             StringConstants.ADAP_MENU_CONTEXT_INSERT_BEFORE, selectionListener);
 
                     // Add step after
-                    AstTreeTableEntityUtil.addActionSubMenu(insertMenu, TreeTableMenuItemConstants.AddAction.InsertAfter,
+                    AstTreeTableEntityUtil.addActionSubMenu(insertMenu,
+                            TreeTableMenuItemConstants.AddAction.InsertAfter,
                             StringConstants.ADAP_MENU_CONTEXT_INSERT_AFTER, selectionListener);
                 }
 
@@ -759,7 +768,7 @@ public class TestCasePart implements EventHandler {
         try {
             TestCaseEntity testCase = getTestCase();
             // update info of TestCase
-            String dispID = TestCaseController.getInstance().getIdForDisplay(testCase).replace("\\", "/");
+            String dispID = testCase.getIdForDisplay().replace("\\", "/");
             lblTestCaseIDContain.setText(dispID);
 
             if (testCase.getName() != null) {
@@ -882,39 +891,39 @@ public class TestCasePart implements EventHandler {
         Object value = menuItem.getData(TreeTableMenuItemConstants.MENU_ITEM_ACTION_KEY);
         if (value instanceof AddAction) {
             switch ((AddAction) value) {
-            case Add:
-                addType = NodeAddType.Add;
-                break;
-            case InsertAfter:
-                addType = NodeAddType.InserAfter;
-                break;
-            case InsertBefore:
-                addType = NodeAddType.InserBefore;
-                break;
+                case Add:
+                    addType = NodeAddType.Add;
+                    break;
+                case InsertAfter:
+                    addType = NodeAddType.InserAfter;
+                    break;
+                case InsertBefore:
+                    addType = NodeAddType.InserBefore;
+                    break;
 
             }
         }
         switch (menuItem.getID()) {
-        case TreeTableMenuItemConstants.CHANGE_FAILURE_HANDLING_MENU_ITEM_ID:
-            Object failureHandlingValue = menuItem.getData(TreeTableMenuItemConstants.FAILURE_HANDLING_KEY);
-            if (failureHandlingValue instanceof FailureHandling) {
-                changeKeywordFailureHandling((FailureHandling) failureHandlingValue);
-            }
-            break;
-        case TreeTableMenuItemConstants.COPY_MENU_ITEM_ID:
-            copyTestStep();
-            break;
-        case TreeTableMenuItemConstants.CUT_MENU_ITEM_ID:
-            cutTestStep();
-            break;
-        case TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID:
-            pasteTestStep();
-            break;
-        case TreeTableMenuItemConstants.REMOVE_MENU_ITEM_ID:
-            removeTestStep();
-        default:
-            treeTableInput.addNewAstObject(menuItem.getID(), addType);
-            break;
+            case TreeTableMenuItemConstants.CHANGE_FAILURE_HANDLING_MENU_ITEM_ID:
+                Object failureHandlingValue = menuItem.getData(TreeTableMenuItemConstants.FAILURE_HANDLING_KEY);
+                if (failureHandlingValue instanceof FailureHandling) {
+                    changeKeywordFailureHandling((FailureHandling) failureHandlingValue);
+                }
+                break;
+            case TreeTableMenuItemConstants.COPY_MENU_ITEM_ID:
+                copyTestStep();
+                break;
+            case TreeTableMenuItemConstants.CUT_MENU_ITEM_ID:
+                cutTestStep();
+                break;
+            case TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID:
+                pasteTestStep();
+                break;
+            case TreeTableMenuItemConstants.REMOVE_MENU_ITEM_ID:
+                removeTestStep();
+            default:
+                treeTableInput.addNewAstObject(menuItem.getID(), addType);
+                break;
         }
     }
 

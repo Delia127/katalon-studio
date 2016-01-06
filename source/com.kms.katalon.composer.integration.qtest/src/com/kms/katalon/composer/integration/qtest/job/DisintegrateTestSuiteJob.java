@@ -36,7 +36,7 @@ public class DisintegrateTestSuiteJob extends QTestJob {
             for (TestSuiteEntity testSuite : fTestSuites) {
                 String testSuiteId = null;
                 try {
-                    testSuiteId = TestSuiteController.getInstance().getIdForDisplay(testSuite);
+                    testSuiteId = testSuite.getIdForDisplay();
                     List<QTestSuite> qTestSuites = QTestIntegrationTestSuiteManager
                             .getQTestSuiteListByIntegratedEntity(QTestIntegrationUtil.getIntegratedEntity(testSuite));
 
@@ -54,7 +54,7 @@ public class DisintegrateTestSuiteJob extends QTestJob {
                     TestSuiteController.getInstance().updateTestSuite(testSuite);
                     EventBrokerSingleton.getInstance().getEventBroker()
                             .post(EventConstants.TEST_SUITE_UPDATED, new Object[] { testSuite.getId(), testSuite });
-                    
+
                 } catch (QTestInvalidFormatException e) {
                     MessageDialog.openError(null, StringConstants.WARN,
                             MessageFormat.format(StringConstants.JOB_MSG_TEST_SUITE_INVALID_FORMAT, testSuiteId));
@@ -63,7 +63,7 @@ public class DisintegrateTestSuiteJob extends QTestJob {
                     LoggerSingleton.logError(e);
                     return StatusUtil.getErrorStatus(getClass(), e);
                 }
-               
+
             }
             return Status.OK_STATUS;
         } finally {

@@ -11,7 +11,6 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testsuite.editors.TestCaseCellEditor;
 import com.kms.katalon.composer.testsuite.parts.TestSuitePartTestCaseView;
 import com.kms.katalon.composer.testsuite.providers.TestCaseTableViewer;
-import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.link.VariableLink;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -19,7 +18,9 @@ import com.kms.katalon.entity.variable.VariableEntity;
 
 public class TestCaseIdColumnEditingSupport extends EditingSupport {
     private TestCaseTableViewer viewer;
+
     private TestSuitePartTestCaseView eventBroker;
+
     private static final String FIELD_NAME = "testCaseId";
 
     public TestCaseIdColumnEditingSupport(ColumnViewer viewer, TestSuitePartTestCaseView eventBroker) {
@@ -60,7 +61,7 @@ public class TestCaseIdColumnEditingSupport extends EditingSupport {
                 TestCaseEntity testCaseEntity = (TestCaseEntity) ((TestCaseTreeEntity) value).getObject();
 
                 if (testCaseEntity == null) return;
-                String testCaseId = TestCaseController.getInstance().getIdForDisplay(testCaseEntity);
+                String testCaseId = testCaseEntity.getIdForDisplay();
                 String oldTestCaseId = testCaseLink.getTestCaseId();
 
                 if (testCaseId.equals(oldTestCaseId)) return;

@@ -3,8 +3,7 @@ package com.kms.katalon.execution.generator
 import groovy.text.GStringTemplateEngine
 import groovy.transform.CompileStatic
 
-import com.kms.katalon.controller.TestCaseController
-import com.kms.katalon.core.configuration.RunConfiguration;
+import com.kms.katalon.core.configuration.RunConfiguration
 import com.kms.katalon.core.driver.DriverCleanerCollector
 import com.kms.katalon.core.keyword.IKeywordContributor
 import com.kms.katalon.core.logging.KeywordLogger
@@ -13,8 +12,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testcase.TestCaseBinding
 import com.kms.katalon.custom.factory.BuiltInMethodNodeFactory
 import com.kms.katalon.entity.testcase.TestCaseEntity
-import com.kms.katalon.execution.configuration.IRunConfiguration;
-import com.kms.katalon.execution.util.ExecutionUtil
+import com.kms.katalon.execution.configuration.IRunConfiguration
 
 @CompileStatic
 class TestCaseScriptTemplate {
@@ -59,7 +57,7 @@ DriverCleanerCollector.getInstance().cleanDriversAfterRunningTestCase()
 
         importNames.addAll(driverCleaners)
 
-        String testCaseId = TestCaseController.getInstance().getIdForDisplay(testCase)
+        String testCaseId = testCase.getIdForDisplay()
 
         def binding = [
             "importNames"     : importNames,

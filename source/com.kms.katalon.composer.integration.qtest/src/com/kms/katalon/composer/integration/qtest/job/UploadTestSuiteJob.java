@@ -114,7 +114,7 @@ public class UploadTestSuiteJob extends QTestJob {
         List<QTestSuite> uploadedQTestSuites = new ArrayList<QTestSuite>();
         try {
 
-            String testSuiteId = TestSuiteController.getInstance().getIdForDisplay(testSuite);
+            String testSuiteId = testSuite.getIdForDisplay();
 
             monitor.beginTask(MessageFormat.format(StringConstants.JOB_TASK_UPLOADING_TEST_SUITE_ENTITY,
                     getWrappedName(testSuiteId)), unUploadedQTestSuites.size() + 1);

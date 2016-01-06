@@ -107,8 +107,7 @@ public class RefreshFolderHandler {
         @Override
         protected IStatus run(IProgressMonitor monitor) {
             try {
-                monitor.beginTask("Refreshing folder: " + FolderController.getInstance().getIdForDisplay(folderEntity)
-                        + "...", 2);
+                monitor.beginTask("Refreshing folder: " + folderEntity.getIdForDisplay() + "...", 2);
                 ProjectEntity projectEntity = folderEntity.getProject();
                 GroovyRefreshUtil.refreshFolder(folderEntity.getRelativePath(), folderEntity.getProject(),
                         new SubProgressMonitor(monitor, 1));

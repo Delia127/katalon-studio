@@ -63,7 +63,7 @@ public class TestCaseTableViewerFilter extends ViewerFilter {
     private String getEntityValueBySearchTag(String searchTag, TestCaseEntity testCase) throws Exception {
         switch (searchTag) {
             case "id":
-                return TestCaseController.getInstance().getIdForDisplay(testCase);
+                return testCase.getIdForDisplay();
             case "name":
                 return testCase.getName();
             case "description":

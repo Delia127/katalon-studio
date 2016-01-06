@@ -52,18 +52,27 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
     // Children of tabFolder are CTabItem that also are widgets of children of
     // subPartStack
     private MCompositePart compositePart;
+
     private MPartStack subPartStack;
+
     private CTabFolder tabFolder;
+
     private TestSuitePart childTestSuiteMainPart;
+
     private TestSuiteIntegrationPart childTestSuiteIntegrationPart;
+
     private boolean isInitialized;
 
     private static final int COMPOSITE_SIZE = 1;
+
     private static final int SUB_PARTSTACK_SIZE = 2;
 
     private static final int CHILD_TESTSUITE_MAIN_PART_INDEX = 0;
+
     private static final int CHILD_TESTSUITE_INTEGRATION_PART_INDEX = 1;
+
     public static final String MAIN_TAB_TITLE = StringConstants.PA_TAB_MAIN;
+
     public static final String INTEGRATION_TAB_TITLE = StringConstants.PA_TAB_INTEGRATION;
 
     private static boolean isConfirmationDialogShowed = false;
@@ -71,6 +80,7 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
     // originalTestSuite for saving.
     // testSuite for working on children part;
     private TestSuiteEntity originalTestSuite, testSuite;
+
     private Composite parent;
 
     @Inject
@@ -247,7 +257,7 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
         // back-up
         TestSuiteEntity temp = new TestSuiteEntity();
         TestSuiteEntityUtil.copyTestSuiteProperties(originalTestSuite, temp);
-        String oldIdForDisplay = TestSuiteController.getInstance().getIdForDisplay(originalTestSuite);
+        String oldIdForDisplay = originalTestSuite.getIdForDisplay();
         TestSuiteEntityUtil.copyTestSuiteProperties(testSuite, originalTestSuite);
 
         try {
@@ -257,7 +267,7 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
             // Send event if Test Suite name has changed
             if (!StringUtils.equalsIgnoreCase(temp.getName(), originalTestSuite.getName())) {
                 eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-                        TestSuiteController.getInstance().getIdForDisplay(originalTestSuite) });
+                        originalTestSuite.getIdForDisplay() });
             }
 
             eventBroker.post(EventConstants.TEST_SUITE_UPDATED, new Object[] { testSuite.getId(), originalTestSuite });

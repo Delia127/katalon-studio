@@ -49,17 +49,25 @@ import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 public class TestCaseRepoDialog extends Dialog {
 
     private Composite container;
+
     private Text txtQTestModule;
+
     private Text txtKatalonFolder;
+
     private Button btnUpdateProjects;
+
     private Button btnFindQTestModule;
+
     private Button btnBrowseKatalonFolder;
+
     private Combo cbProjects;
 
     private List<String> folderIds;
 
     private QTestModule qTestModule;
+
     private QTestProject qTestProject;
+
     private String folderId;
 
     private Map<Long, QTestProject> qTestProjectsMap;
@@ -229,7 +237,7 @@ public class TestCaseRepoDialog extends Dialog {
         } else {
             newShell.setText(StringConstants.DIA_TITLE_EDIT_TEST_CASE_REPO);
         }
-        
+
     }
 
     public List<String> getFolderIds() {
@@ -243,8 +251,8 @@ public class TestCaseRepoDialog extends Dialog {
     private void updateProjects() {
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
         try {
-            List<QTestProject> updatedProjects = QTestIntegrationProjectManager.getAllProject(
-                    QTestSettingCredential.getCredential(projectDir));
+            List<QTestProject> updatedProjects = QTestIntegrationProjectManager.getAllProject(QTestSettingCredential
+                    .getCredential(projectDir));
             mergeProjects(updatedProjects);
             updateProjectComboboxItems();
         } catch (Exception e) {
@@ -315,7 +323,7 @@ public class TestCaseRepoDialog extends Dialog {
                 Object[] results = dialog.getResult();
                 if (results == null || results.length != 1) return;
                 FolderTreeEntity folderTreeEntity = (FolderTreeEntity) results[0];
-                folderId = FolderController.getInstance().getIdForDisplay((FolderEntity) folderTreeEntity.getObject());
+                folderId = ((FolderEntity) folderTreeEntity.getObject()).getIdForDisplay();
                 txtKatalonFolder.setText(folderId);
             }
         } catch (Exception e) {
