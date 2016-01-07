@@ -10,7 +10,7 @@ public class TestSuiteExecutedEntity {
 	private String testSuiteId;
 	private List<TestCaseExecutedEntity> testCaseExecutedEntities;
 	private Map<String, TestData> testDataMap;
-	private String reportFolderPath;
+	private ReportLocationSetting reportLocationSetting;
 
 	public String getTestSuiteId() {
 		return testSuiteId;
@@ -47,13 +47,13 @@ public class TestSuiteExecutedEntity {
 	public void setTestDataMap(Map<String, TestData> testDataMap) {
 		this.testDataMap = testDataMap;
 	}
+	
+    public ReportLocationSetting getReportLocationSetting() {
+        return reportLocationSetting;
+    }
 
-	public String getReportFolderPath() {
-		return reportFolderPath;
-	}
-
-	public void setReportFolderPath(String reportFolderPath) {
-		this.reportFolderPath = reportFolderPath;
-	}
+    public void setReportLocation(ReportLocationSetting reportLocation) {
+        this.reportLocationSetting = reportLocation;
+    }
 
 }
