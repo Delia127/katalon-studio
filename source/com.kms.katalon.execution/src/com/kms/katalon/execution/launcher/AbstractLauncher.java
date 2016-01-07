@@ -112,33 +112,28 @@ public abstract class AbstractLauncher {
         }
     }
 
-    /*public static void sendSummaryEmail(TestSuiteEntity testSuite, File csvFile, List<Object[]> suitesSummaryForEmail) throws Exception {
-        String prefFile = Platform.getInstallLocation()
-                .getDataArea("config/.metadata/.plugins/org.eclipse.core.runtime/.settings/com.kms.katalon.dal.prefs")
-                .getFile();
-        if ((new File(prefFile)).exists()) {
-            PreferenceStore prefs = new PreferenceStore(prefFile);
-            prefs.load();
-            EmailConfig conf = new EmailConfig();
-            conf.tos = getRecipients(testSuite.getMailRecipient(),
-                    prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_REPORT_RECIPIENTS));
-            conf.host = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_HOST);
-            conf.port = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_PORT);
-            conf.from = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_USERNAME);
-            conf.securityProtocol = MailSecurityProtocolType.valueOf(prefs
-                    .getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_SECURITY_PROTOCOL));
-            conf.username = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_USERNAME);
-            conf.password = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_PASSWORD);
-            conf.signature = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_SIGNATURE);
-            conf.sendAttachment = prefs.getBoolean(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_ATTACHMENT);
-
-            if (conf.host != null && !conf.host.equals("") && conf.port != null && !conf.port.equals("")
-                    && conf.tos != null && conf.tos.length > 0 && conf.from != null && !conf.from.equals("")) {
-
-                MailUtil.sendSummaryMail(conf, csvFile, null, suitesSummaryForEmail);
-            }
-        }
-    }*/
+    /*
+     * public static void sendSummaryEmail(TestSuiteEntity testSuite, File csvFile, List<Object[]>
+     * suitesSummaryForEmail) throws Exception { String prefFile = Platform.getInstallLocation()
+     * .getDataArea("config/.metadata/.plugins/org.eclipse.core.runtime/.settings/com.kms.katalon.dal.prefs")
+     * .getFile(); if ((new File(prefFile)).exists()) { PreferenceStore prefs = new PreferenceStore(prefFile);
+     * prefs.load(); EmailConfig conf = new EmailConfig(); conf.tos = getRecipients(testSuite.getMailRecipient(),
+     * prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_REPORT_RECIPIENTS)); conf.host =
+     * prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_HOST); conf.port =
+     * prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_PORT); conf.from =
+     * prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_USERNAME); conf.securityProtocol =
+     * MailSecurityProtocolType.valueOf(prefs
+     * .getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_SECURITY_PROTOCOL)); conf.username =
+     * prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_USERNAME); conf.password =
+     * prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_PASSWORD); conf.signature =
+     * prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_SIGNATURE); conf.sendAttachment =
+     * prefs.getBoolean(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_ATTACHMENT);
+     * 
+     * if (conf.host != null && !conf.host.equals("") && conf.port != null && !conf.port.equals("") && conf.tos != null
+     * && conf.tos.length > 0 && conf.from != null && !conf.from.equals("")) {
+     * 
+     * MailUtil.sendSummaryMail(conf, csvFile, null, suitesSummaryForEmail); } } }
+     */
 
     protected List<Object[]> collectSummaryData(List<String> csvReports) throws Exception {
         List<Object[]> newDatas = new ArrayList<Object[]>();
@@ -188,7 +183,7 @@ public abstract class AbstractLauncher {
                     String testName = testIndex + "." + testRow[0];
                     newDatas.add(ArrayUtils.addAll(new String[] { suiteName, testName, browser },
                             Arrays.copyOfRange(testRow, 2, testRow.length)));
-                    //String testStatus = testRow[5];
+                    // String testStatus = testRow[5];
                     String testStatus = testRow[6];
                     if (TestStatusValue.PASSED.toString().equals(testStatus)) {
                         arrSuitesSummaryForEmail[1] = (Integer) arrSuitesSummaryForEmail[1] + 1;
@@ -203,15 +198,15 @@ public abstract class AbstractLauncher {
             }
         }
 
-		File csvSummaryFile = new File(System.getProperty("java.io.tmpdir") + "Summary.csv");
+        File csvSummaryFile = new File(System.getProperty("java.io.tmpdir") + "Summary.csv");
         if (csvSummaryFile.exists()) {
             csvSummaryFile.delete();
         }
         CsvWriter.writeArraysToCsv(CsvWriter.SUMMARY_HEADER, newDatas, csvSummaryFile);
-        
+
         return suitesSummaryForEmail;
     }
-    
+
     public LauncherStatus getStatus() {
         return status;
     }
@@ -328,11 +323,15 @@ public abstract class AbstractLauncher {
         return launcherResult;
     }
 
-    protected void uploadReportToIntegratingProduct(TestSuiteLogRecord suiteLog) throws Exception {
+    protected void uploadReportToIntegratingProduct(TestSuiteLogRecord suiteLog) {
         if (executedEntity instanceof TestSuiteEntity) {
             for (Entry<String, ReportIntegrationContribution> reportContributorEntry : ReportIntegrationFactory
                     .getInstance().getIntegrationContributorMap().entrySet()) {
-                reportContributorEntry.getValue().uploadTestSuiteResult((TestSuiteEntity) executedEntity, suiteLog);
+                try {
+                    reportContributorEntry.getValue().uploadTestSuiteResult((TestSuiteEntity) executedEntity, suiteLog);
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
+                }
             }
         }
     }
@@ -340,8 +339,10 @@ public abstract class AbstractLauncher {
     /**
      * Get all recipient email address from Preference and Test Suite without duplication
      * 
-     * @param testSuiteRecipients recipients from Test Suite
-     * @param reportRecipients recipients from Preferences > Execution > Email > Report Recipients
+     * @param testSuiteRecipients
+     *            recipients from Test Suite
+     * @param reportRecipients
+     *            recipients from Preferences > Execution > Email > Report Recipients
      * @return non-duplicated recipients
      */
     private static String[] getRecipients(String testSuiteRecipients, String reportRecipients) {
@@ -351,13 +352,14 @@ public abstract class AbstractLauncher {
                 : new String[] {}));
         if (tsRecipients != null) {
             for (String recipient : tsRecipients) {
-                if (recipientList.contains(recipient.trim())) continue;
+                if (recipientList.contains(recipient.trim()))
+                    continue;
                 recipientList.add(recipient);
             }
         }
         return recipientList.toArray(new String[recipientList.size()]);
     }
-    
+
     protected static IFile generateTempTestSuiteScript(TestSuiteEntity testSuite, IRunConfiguration config,
             TestSuiteExecutedEntity testSuiteExecutedEntity) throws Exception {
         if (testSuite != null) {
@@ -367,7 +369,7 @@ public abstract class AbstractLauncher {
         }
         return null;
     }
-    
+
     protected static IFile generateTempTestCaseScript(TestCaseEntity testCase, IRunConfiguration runConfig)
             throws Exception {
         if (testCase != null) {

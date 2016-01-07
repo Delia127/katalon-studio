@@ -25,6 +25,7 @@ import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.entity.ExecutionEntity;
+import com.kms.katalon.execution.entity.ReportLocationSetting;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.exception.KatalonArgumentNotValidException;
 import com.kms.katalon.execution.integration.IntegrationCommand;
@@ -48,6 +49,7 @@ public class ConsoleMain {
     private final static String SHOW_STATUS_DELAY_ARGUMENT = "-statusDelay=";
     private final static String REPORT_FOLDER_ARGUMENT = "-reportFolder=";
     private final static String REPORT_FILE_NAME_ARGUMENT = "-reportFileName=";
+    private final static String CLEAN_REPORT_FOLDER = "-cleanReportFolder";
     private final static String CONF_FILE_NAME_ARGUMENT = "-confFile=";
     private final static String RETRY_ARGUMENT = "-retry=";
 
@@ -55,7 +57,6 @@ public class ConsoleMain {
     public static boolean endSummaryReport = false;
     public static boolean summaryReport = false;
     private static int showProgressDelay = 15;
-    private static String reportFileName = "report";
     private static int returnCode = 0;
 
     public void launch(String[] arguments) throws Exception {
@@ -87,7 +88,7 @@ public class ConsoleMain {
         Map<String, String> runInput = new HashMap<String, String>();
         String testSuiteID = null;
         String argBrowserType = null;
-        String testSuiteReportFolder = null;
+        ReportLocationSetting reportLocSetting = new ReportLocationSetting();
         boolean foundExecutionArgument = false;
         int rerunMaxNumber = -1;
 
@@ -133,7 +134,7 @@ public class ConsoleMain {
                     argBrowserType = arguments[offset].substring(BROWSER_TYPE_ARGUMENT.length());
                     offset++;
                 } else if (arguments[offset].startsWith(REPORT_FOLDER_ARGUMENT)) {
-                    testSuiteReportFolder = arguments[offset].substring(REPORT_FOLDER_ARGUMENT.length());
+                    reportLocSetting.setReportFolderPath(arguments[offset].substring(REPORT_FOLDER_ARGUMENT.length()));
                     offset++;
                 } else if (arguments[offset].startsWith(RETRY_ARGUMENT)) {
                     String stringValue = arguments[offset].substring(RETRY_ARGUMENT.length());
@@ -154,11 +155,14 @@ public class ConsoleMain {
                 } else if (arguments[offset].startsWith(REPORT_FILE_NAME_ARGUMENT)) {
                     String reportFileName = arguments[offset].substring(REPORT_FILE_NAME_ARGUMENT.length());
                     if (reportFileName != null && !reportFileName.isEmpty()) {
-                        setReportFileName(reportFileName);
+                        reportLocSetting.setReportFileName(reportFileName);
                     } else {
                         System.out.println(StringConstants.MNG_PRT_INVALID_FILE_NAME_ARG);
                         closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
                     }
+                    offset++;
+                }  else if (arguments[offset].equals(CLEAN_REPORT_FOLDER)) {
+                    reportLocSetting.setCleanReportFolder(true);
                     offset++;
                 } else {
                     int intIndx = processIntegrationArgs(opts, integrationCmds, arguments, offset);
@@ -197,14 +201,13 @@ public class ConsoleMain {
             return;
         }
 
-        ExecutionEntity executionEntity = addExecutionEntities(testSuiteID, argBrowserType, projectEntity,
-                testSuiteReportFolder, runInput);
+        ExecutionEntity executionEntity = addExecutionEntities(testSuiteID, argBrowserType, projectEntity, runInput);
         if (executionEntity == null) {
             return;
         }
         executionEntities.add(executionEntity);
         startExecutionStatusThread();
-        launch(executionEntities.get(0), projectEntity, 0, rerunMaxNumber, new ArrayList<String>());
+        launch(executionEntities.get(0), projectEntity, 0, rerunMaxNumber, new ArrayList<String>(), reportLocSetting);
     }
 
     private int processIntegrationArgs(Options opts, List<IntegrationCommand> integrationCmds, String[] arguments,
@@ -349,20 +352,20 @@ public class ConsoleMain {
      * @throws Exception
      */
     public static void launch(ExecutionEntity executionEntity, ProjectEntity project, int rerunTime, int rerunMaxNumber,
-            List<String> passedTestCaseIds) throws Exception {
+            List<String> passedTestCaseIds, ReportLocationSetting reportLocation) throws Exception {
         TestSuiteEntity testSuite = executionEntity.getTestSuite();
         for (IRunConfiguration runConfig : executionEntity.getRunConfigurations()) {
-            launchTestSuite(testSuite, runConfig, executionEntity.getReportFolderPath(), rerunTime, rerunMaxNumber,
+            launchTestSuite(testSuite, runConfig, reportLocation, rerunTime, rerunMaxNumber,
                     passedTestCaseIds);
         }
     }
 
     public static void launchTestSuite(TestSuiteEntity testSuite, IRunConfiguration runConfig,
-            String reportFolderPath, int rerunTime, int rerunMaxNumber, List<String> passedTestCaseIds) throws Exception,
+            ReportLocationSetting reportLocation, int rerunTime, int rerunMaxNumber, List<String> passedTestCaseIds) throws Exception,
             InterruptedException {
         TestSuiteExecutedEntity testSuiteExecutedEntity = ExecutionUtil.loadTestDataForTestSuite(testSuite,
                 testSuite.getProject(), passedTestCaseIds);
-        testSuiteExecutedEntity.setReportFolderPath(reportFolderPath);
+        testSuiteExecutedEntity.setReportLocation(reportLocation);
         ConsoleLauncher launcher = new ConsoleLauncher(runConfig);
         launcher.setTotalTestCase(testSuiteExecutedEntity.getTotalTestCases());
         if (rerunMaxNumber == -1) {
@@ -389,7 +392,7 @@ public class ConsoleMain {
     }
 
     private ExecutionEntity addExecutionEntities(String testSuiteID, String argBrowserType,
-            ProjectEntity projectEntity, String reportFolderPath, Map<String, String> runInput)
+            ProjectEntity projectEntity, Map<String, String> runInput)
             throws InterruptedException, CoreException {
         try {
             if (testSuiteID == null) {
@@ -418,7 +421,6 @@ public class ConsoleMain {
                         testSuite, runInput);
                 if (runConfig != null) {
                     executionEntity.getRunConfigurations().add(runConfig);
-                    executionEntity.setReportFolderPath(reportFolderPath);
                 } else {
                     System.out.println(MessageFormat.format(StringConstants.MNG_PRT_INVALID_BROWSER_X, sBrowserType));
                     closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
@@ -486,14 +488,6 @@ public class ConsoleMain {
      * 
      * }
      */
-
-    public static String getReportFileName() {
-        return reportFileName;
-    }
-
-    private static void setReportFileName(String reportFileName) {
-        ConsoleMain.reportFileName = reportFileName;
-    }
 
     private List<String> parseXmlConfFile(String filePath) throws Exception {
         List<String> params = new ArrayList<String>();
