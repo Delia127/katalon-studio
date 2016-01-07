@@ -33,6 +33,7 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.constants.StringConstants;
+import com.kms.katalon.execution.entity.ReportLocationSetting;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.launcher.manager.ConsoleMain;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
@@ -191,7 +192,8 @@ public class ConsoleLauncher extends AbstractLauncher {
                 public void run() {
                     try {
                         ConsoleMain.launchTestSuite(testSuite, abstractRunConfiguration,
-                                testSuiteExecutedEntity.getReportFolderPath(), reRunTime + 1, rerunMaxNumber, passedTestCaseIds);
+                                testSuiteExecutedEntity.getReportLocationSetting(), reRunTime + 1, rerunMaxNumber,
+                                passedTestCaseIds);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -216,6 +218,7 @@ public class ConsoleLauncher extends AbstractLauncher {
                 uploadReportToIntegratingProduct(suiteLog);
                 System.out.println(StringConstants.LAU_PRT_REPORT_SENT);
 
+                ReportLocationSetting reportLocSetting = testSuiteExecutedEntity.getReportLocationSetting();
                 // report folder that is set by user.
                 File userReportFolder = getUserReportFolder(testSuite);
 
@@ -224,8 +227,8 @@ public class ConsoleLauncher extends AbstractLauncher {
                     System.out.println(MessageFormat.format(StringConstants.LAU_PRT_USR_REPORT_FOLDER_X,
                             userReportFolder.getAbsolutePath()));
 
-                    if (!userReportFolder.exists()) {
-                        userReportFolder.mkdirs();
+                    if (reportLocSetting.isCleanReportFolderFlagActive()) {
+                        cleanUserReportFolder(userReportFolder);
                     }
 
                     for (File reportChildSourceFile : testSuiteReportSourceFolder.listFiles()) {
@@ -233,13 +236,14 @@ public class ConsoleLauncher extends AbstractLauncher {
                         String fileExtension = FilenameUtils.getExtension(reportChildSourceFile.getName());
 
                         // ignore LOCK file
-                        if (fileExtension.equalsIgnoreCase("lck")) continue;
+                        if (fileExtension.equalsIgnoreCase("lck")) {
+                            continue;
+                        }
 
-                        // Rename .csv, .log and .html file to user's format
-                        if ((ConsoleMain.getReportFileName() != null)
-                                && (fileExtension.equals("csv") || fileExtension.equals("log") || fileExtension
+                        if (reportLocSetting.isReportFileNameSet()
+                                && (fileExtension.equals("csv") || fileExtension
                                         .equals("html"))) {
-                            fileName = ConsoleMain.getReportFileName();
+                            fileName = reportLocSetting.getReportFileName();
                         }
 
                         // Copy child file to user's report folder
@@ -275,20 +279,26 @@ public class ConsoleLauncher extends AbstractLauncher {
         return false;
     }
 
-    private void cleanUserReportFolder(TestSuiteEntity testSuite) throws IOException {
+    private void cleanUserReportFolder(File file) throws IOException {
         System.out.println(StringConstants.LAU_PRT_CLEANING_USR_RPT_FOLDER);
-        FileUtils.cleanDirectory(getUserReportFolder(testSuite));
+        FileUtils.cleanDirectory(file);
     }
 
     private File getUserReportFolder(TestSuiteEntity testSuite) {
-        if (testSuiteExecutedEntity.getReportFolderPath() == null) return null;
+        ReportLocationSetting rpLocSetting = testSuiteExecutedEntity.getReportLocationSetting();
+
+        if (!rpLocSetting.isReportFolderPathSet()) {
+            return null;
+        }
+
         try {
-            File reportFolder = new File(PathUtil.relativeToAbsolutePath(testSuiteExecutedEntity.getReportFolderPath(),
-                    testSuite.getProject().getFolderLocation()));
+            File reportFolder = new File(PathUtil.relativeToAbsolutePath(rpLocSetting.getReportFolderPath(), testSuite
+                    .getProject().getFolderLocation()));
 
             if (reportFolder != null && !reportFolder.exists()) {
                 reportFolder.mkdirs();
             }
+
             return reportFolder;
         } catch (Exception e) {
             return null;
@@ -323,7 +333,8 @@ public class ConsoleLauncher extends AbstractLauncher {
         if ((record.getLevel() == LogLevel.FAILED || record.getLevel() == LogLevel.ERROR)
                 && record.getExceptions() != null) {
             for (XmlLogRecordException logRecordException : record.getExceptions()) {
-                if (!LogExceptionFilter.isTraceableException(logRecordException)) continue;
+                if (!LogExceptionFilter.isTraceableException(logRecordException))
+                    continue;
                 if (LogExceptionFilter.isTestCaseScript(logRecordException.getClassName())) {
                     TestCaseEntity testCase = LogExceptionFilter.getTestCaseByLogException(logRecordException);
                     if (testCase != null) {

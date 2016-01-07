@@ -9,7 +9,6 @@ import com.kms.katalon.execution.configuration.IRunConfiguration;
 public class ExecutionEntity {
 	private TestSuiteEntity testSuite;
 	private List<IRunConfiguration> runConfigurations;
-	private String reportFolderPath;
 
 	public List<IRunConfiguration> getRunConfigurations() {
 		if (runConfigurations == null) {
@@ -28,13 +27,5 @@ public class ExecutionEntity {
 
 	public void setTestSuite(TestSuiteEntity testSuite) {
 		this.testSuite = testSuite;
-	}
-
-	public String getReportFolderPath() {
-		return reportFolderPath;
-	}
-
-	public void setReportFolderPath(String reportFolderPath) {
-		this.reportFolderPath = reportFolderPath;
 	}
 }
