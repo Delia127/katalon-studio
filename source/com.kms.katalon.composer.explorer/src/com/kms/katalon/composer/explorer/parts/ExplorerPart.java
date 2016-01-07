@@ -28,7 +28,6 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
@@ -40,10 +39,8 @@ import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
@@ -95,7 +92,7 @@ public class ExplorerPart {
     public static final String KEYWORD_SEARCH_ALL = "all";
     private DragSource dragSource;
     private Text txtInput;
-    private TreeViewer viewer;
+    private TreeViewer treeViewer;
     private CLabel lblSearch, lblFilter;
     private SearchDropDownBox searchDropDownBox;
 
@@ -103,13 +100,16 @@ public class ExplorerPart {
     private List<ITreeEntity> treeEntities;
 
     private boolean isSearching;
+    
+    //Represent path of the tree items that each one is expanded before searching
+    private Object[] expandedTreeElements;
 
     private TreeViewer getViewer() {
-        return viewer;
+        return treeViewer;
     }
 
     private void setViewer(TreeViewer viewer) {
-        this.viewer = viewer;
+        this.treeViewer = viewer;
     }
 
     @Inject
@@ -170,23 +170,9 @@ public class ExplorerPart {
         gdTxtInput.grabExcessVerticalSpace = true;
         gdTxtInput.verticalAlignment = SWT.CENTER;
         txtInput.setLayoutData(gdTxtInput);
-        txtInput.addModifyListener(new ModifyListener() {
+        
 
-            @Override
-            public void modifyText(ModifyEvent e) {
-                if (isSearching) {
-                    isSearching = false;
-                    updateStatusSearchLabel();
-                }
-            }
-        });
-
-        txtInput.addKeyListener(new KeyListener() {
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-            }
-
+        txtInput.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR) {
@@ -199,16 +185,10 @@ public class ExplorerPart {
         new Label(parent, SWT.NONE);
 
         setViewer(new TreeViewer(parent, SWT.BORDER | SWT.MULTI | SWT.VIRTUAL));
-        getTreeViewer().setUseHashlookup(true);
+        treeViewer.setUseHashlookup(true);
         getViewer().getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
 
-        viewer.getTree().addKeyListener(new KeyListener() {
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-                //Nothing to do here
-            }
-
+        treeViewer.getTree().addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (((e.stateMask & SWT.CTRL) == SWT.CTRL)) {
@@ -223,7 +203,6 @@ public class ExplorerPart {
         getViewer().setContentProvider(contentProvider);
         entityLabelProvider = new EntityLabelProvider();
         getViewer().setLabelProvider(entityLabelProvider);
-        // viewer.setAutoExpandLevel(2);
 
         getViewer().addSelectionChangedListener(new ISelectionChangedListener() {
             public void selectionChanged(SelectionChangedEvent event) {
@@ -334,69 +313,70 @@ public class ExplorerPart {
      * selection type and searched string
      */
     public void filterTreeEntitiesByType() {
-        if (getTreeViewer().getTree().isDisposed()) return;
-        while (getTreeViewer().isBusy()) {
-            // wait for tree is not busy
-        }
-        BusyIndicator.showWhile(getTreeViewer().getTree().getDisplay(), new Runnable() {
-            @Override
-            public void run() {
-                TreePath[] expandedTreePaths = getViewer().getExpandedTreePaths();
-                String searchedText = txtInput.getText();
-                String broadcastMessage = getMessage();
-                entityLabelProvider.setSearchString(broadcastMessage);
-                entityViewerFilter.setSearchString(broadcastMessage);
-                getTreeViewer().getTree().setRedraw(false);
-                getTreeViewer().refresh();
-                // keep the tree expands all if it is being searched
-                if (searchedText != null && StringUtils.isNotEmpty(searchedText)) {
-                    getViewer().expandAll();
-                } else {
-                    for (TreePath treePath : expandedTreePaths) {
-                        getTreeViewer().expandToLevel(treePath, 1);
-                    }
-                }
-                getTreeViewer().getTree().setRedraw(true);
-                txtInput.setFocus();
-            }
-        });
+        fitlterTreeEntities(false, false);
+        txtInput.setFocus();
     }
 
     /**
      * After user type a text on searched text box, all entities will be filtered by all elements by the text
      */
     private void filterTreeEntitiesBySearchedText() {
-        if (getTreeViewer().getTree().isDisposed()) return;
-        final String searchString = txtInput.getText();
-        while (getTreeViewer().isBusy()) {
-            // wait for tree is not busy
+        fitlterTreeEntities(true, true); 
+    }
+    
+    private void fitlterTreeEntities(final boolean updateLabel, final boolean keepExpandedState) {
+        if (treeViewer.getTree().isDisposed()) {
+            return;
         }
-        BusyIndicator.showWhile(getTreeViewer().getTree().getDisplay(), new Runnable() {
+        
+        final String searchString = txtInput.getText();
+        while (treeViewer.isBusy()) {
+            // wait for the tree until it is not busy
+        }
+        
+        if (!searchString.equals(txtInput.getText()) || treeViewer.getInput() == null) {
+            return;
+        }
+        
+        //Remember last expanded state
+        if (keepExpandedState && StringUtils.isNotBlank(searchString) && !isSearching) {
+            expandedTreeElements = treeViewer.getExpandedElements();
+        }
+        
+        BusyIndicator.showWhile(treeViewer.getTree().getDisplay(), new Runnable() {
             @Override
             public void run() {
                 try {
-                    if (searchString.equals(txtInput.getText()) && getTreeViewer().getInput() != null) {
-                        String broadcastMessage = getMessage();
-                        entityLabelProvider.setSearchString(broadcastMessage);
-                        entityViewerFilter.setSearchString(broadcastMessage);
-                        // getTreeViewer().getTree().setRedraw(false);
-                        getTreeViewer().refresh(true);
-                        if (searchString != null && !searchString.isEmpty()) {
-                            isSearching = true;
-                            getTreeViewer().expandAll();
-                        } else {
-                            isSearching = false;
-                            getTreeViewer().collapseAll();
+                    String broadcastMessage = getMessage();
+                    entityLabelProvider.setSearchString(broadcastMessage);
+                    entityViewerFilter.setSearchString(broadcastMessage);
+                    // viewer.getTree().setRedraw(false);
+                    treeViewer.refresh(true);
+                    
+                    if (StringUtils.isNotBlank(searchString)) {
+                        treeViewer.expandAll();
+                    } else {
+                        treeViewer.collapseAll();
+                        
+                        if (expandedTreeElements != null) {
+                            //Restore last expanded state
+                            for (Object treePath : expandedTreeElements) {
+                                treeViewer.setExpandedState(treePath, true);
+                            }
                         }
+                    }
+                    
+                    if (updateLabel) {
+                        isSearching = StringUtils.isNotBlank(searchString);
                         updateStatusSearchLabel();
                     }
                 } catch (Exception e) {
-                    LoggerSingleton.getInstance().getLogger().error(e);
+                    LoggerSingleton.logError(e);
                 } finally {
-                    // getTreeViewer().getTree().setRedraw(true);
+                    // viewer.getTree().setRedraw(true);
                 }
             }
-        });
+        });  
     }
 
     private void openAdvancedSearchDialog() {
@@ -415,11 +395,13 @@ public class ExplorerPart {
                     dialog = new AdvancedSearchDialog(shell, treeEntity.getSearchTags(), txtInput.getText(), location);
                 } else {
                     for (ITreeEntity treeEntity : treeEntities) {
-                        if (treeEntity.getSearchTags() != null) {
-                            for (String tag : treeEntity.getSearchTags()) {
-                                if (!searchTags.contains(tag)) {
-                                    searchTags.add(tag);
-                                }
+                        if (treeEntity.getSearchTags() == null) {
+                            continue;
+                        }
+                        
+                        for (String tag : treeEntity.getSearchTags()) {
+                            if (!searchTags.contains(tag)) {
+                                searchTags.add(tag);
                             }
                         }
                     }
@@ -436,7 +418,7 @@ public class ExplorerPart {
                 shell.dispose();
             }
         } catch (Exception e) {
-            LoggerSingleton.getInstance().getLogger().error(e);
+            LoggerSingleton.logError(e);
         }
     }
 
@@ -456,29 +438,25 @@ public class ExplorerPart {
         partService.activate(part, true);
     }
 
-    public TreeViewer getTreeViewer() {
-        return getViewer();
-    }
-
     @Inject
     @Optional
     private void reloadTreeInputEventHandler(
             @UIEventTopic(EventConstants.EXPLORER_RELOAD_INPUT) final List<Object> treeEntities) {
         try {
-            if (getTreeViewer().getTree().isDisposed()) return;
-            while (getTreeViewer().isBusy()) {
+            if (treeViewer.getTree().isDisposed()) return;
+            while (treeViewer.isBusy()) {
                 // wait for tree is not busy
             }
             // wait for reseting search field complete
             resetSearchField();
             searchDropDownBox.clearInput();
-            getTreeViewer().getTree().clearAll(true);
-            getTreeViewer().setInput(treeEntities);
+            treeViewer.getTree().clearAll(true);
+            treeViewer.setInput(treeEntities);
             updateTreeEntities(treeEntities);
-            getTreeViewer().refresh();
+            treeViewer.refresh();
 
             reloadTreeEntityTransfers();
-            EntityProvider dataProvider = (EntityProvider) getTreeViewer().getContentProvider();
+            EntityProvider dataProvider = (EntityProvider) treeViewer.getContentProvider();
             getViewer().setSelection(new TreeSelection(dataProvider.getTreePath(treeEntities.get(0))), true);
 
         } catch (Exception e) {
@@ -517,21 +495,21 @@ public class ExplorerPart {
         if (object == null) {
             return;
         }
-        viewer.expandToLevel(object, 1);
+        treeViewer.expandToLevel(object, 1);
     }
 
     private void refresh(Object object) {
-        viewer.getControl().setRedraw(false);
-        Object[] expandedElements = viewer.getExpandedElements();
+        treeViewer.getControl().setRedraw(false);
+        Object[] expandedElements = treeViewer.getExpandedElements();
         if (object == null) {
-            viewer.refresh();
+            treeViewer.refresh();
         } else {
-            viewer.refresh(object);
+            treeViewer.refresh(object);
         }
         for (Object element : expandedElements) {
-            viewer.setExpandedState(element, true);
+            treeViewer.setExpandedState(element, true);
         }
-        viewer.getControl().setRedraw(true);
+        treeViewer.getControl().setRedraw(true);
     }
 
     @Inject
@@ -566,8 +544,8 @@ public class ExplorerPart {
     @Inject
     @Optional
     private void collapseAllItems(@UIEventTopic(EventConstants.EXPLORER_COLLAPSE_ALL_ITEMS) Object object) {
-        if (getTreeViewer() != null) {
-            getTreeViewer().collapseAll();
+        if (treeViewer != null) {
+            treeViewer.collapseAll();
         }
     }
 
@@ -575,19 +553,25 @@ public class ExplorerPart {
         getViewer().addDoubleClickListener(new IDoubleClickListener() {
             @Override
             public void doubleClick(DoubleClickEvent event) {
-                if (selectionService == null) return;
+                if (selectionService == null || event.getSelection() == null) {
+                    return;
+                }
+                
                 Object selectedElement = ((IStructuredSelection) event.getSelection()).getFirstElement();
-                if (selectedElement == null || !(selectedElement instanceof ITreeEntity)) return;
+                
+                if (selectedElement == null || !(selectedElement instanceof ITreeEntity)) {
+                    return;
+                }
 
-                EntityProvider contentProvider = (EntityProvider) viewer.getContentProvider();
+                EntityProvider contentProvider = (EntityProvider) treeViewer.getContentProvider();
                 if (contentProvider.hasChildren(selectedElement)) {
-                    viewer.setExpandedState(selectedElement, !viewer.getExpandedState(selectedElement));
+                    treeViewer.setExpandedState(selectedElement, !treeViewer.getExpandedState(selectedElement));
                 } else {
                     try {
                         eventBroker.send(EventConstants.EXPLORER_OPEN_SELECTED_ITEM,
                                 ((ITreeEntity) selectedElement).getObject());
                     } catch (Exception e) {
-                        LoggerSingleton.getInstance().getLogger().error(e);
+                        LoggerSingleton.logError(e);
                     }
                 }
             }
@@ -644,7 +628,7 @@ public class ExplorerPart {
 
     @PreDestroy
     public void dispose() {
-        getTreeViewer().getTree().dispose();
+        treeViewer.getTree().dispose();
     }
 
 }
