@@ -284,15 +284,16 @@ public abstract class RequestObjectPart implements EventHandler {
     protected abstract void createServiceInfoComposite(Composite mainComposite);
 
     protected ParameterTable createParamsTable(Composite containerComposite, boolean isHttpHeader) {
-    	
-    	TableColumnLayout tableColumnLayout = new TableColumnLayout();
+
+        TableColumnLayout tableColumnLayout = new TableColumnLayout();
         Composite compositeTableDetails = new Composite(containerComposite, SWT.NONE);
         GridData gdData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
         gdData.heightHint = 100;
         compositeTableDetails.setLayoutData(gdData);
         compositeTableDetails.setLayout(tableColumnLayout);
-        
-        final ParameterTable tblProperties = new ParameterTable(compositeTableDetails, SWT.BORDER | SWT.FULL_SELECTION | SWT.NO_SCROLL | SWT.V_SCROLL, dirtyable);
+
+        final ParameterTable tblProperties = new ParameterTable(compositeTableDetails, SWT.BORDER | SWT.FULL_SELECTION
+                | SWT.NO_SCROLL | SWT.V_SCROLL, dirtyable);
         tblProperties.createTableEditor();
 
         tblProperties.getTable().setHeaderVisible(true);
@@ -327,8 +328,7 @@ public abstract class RequestObjectPart implements EventHandler {
             }
         });
         tableColumnLayout.setColumnData(treeViewerColumnName.getColumn(), new ColumnWeightData(30));
-        
-        
+
         TableViewerColumn treeViewerColumnValue = new TableViewerColumn(tblProperties, SWT.NONE);
         treeViewerColumnValue.getColumn().setText(ParameterTable.columnNames[1]);
         treeViewerColumnValue.getColumn().setWidth(500);
@@ -340,8 +340,7 @@ public abstract class RequestObjectPart implements EventHandler {
             }
         });
         tableColumnLayout.setColumnData(treeViewerColumnValue.getColumn(), new ColumnWeightData(60));
-        
-        
+
         tblProperties.setContentProvider(ArrayContentProvider.getInstance());
 
         // Set tooltip for table
@@ -380,7 +379,7 @@ public abstract class RequestObjectPart implements EventHandler {
     protected void showEntityFieldsToUi() {
         String dispID = "";
         try {
-            dispID = ObjectRepositoryController.getInstance().getIdForDisplay(originalWsObject);
+            dispID = originalWsObject.getIdForDisplay();
         } catch (Exception ex) {
             MessageDialog
                     .openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, ex.getMessage());
@@ -401,7 +400,7 @@ public abstract class RequestObjectPart implements EventHandler {
         try {
             String oldPk = originalWsObject.getId();
             String oldName = originalWsObject.getName();
-            String oldIdForDisplay = ObjectRepositoryController.getInstance().getIdForDisplay(originalWsObject);
+            String oldIdForDisplay = originalWsObject.getIdForDisplay();
 
             updateEntityBeforeSaved();
             ObjectRepositoryController.getInstance().saveWebElement(originalWsObject);
@@ -409,7 +408,7 @@ public abstract class RequestObjectPart implements EventHandler {
             // Notify if name has changed
             if (!oldName.equalsIgnoreCase(txtName.getText())) {
                 eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-                        ObjectRepositoryController.getInstance().getIdForDisplay(originalWsObject) });
+                        originalWsObject.getIdForDisplay() });
             }
             eventBroker.post(EventConstants.TEST_OBJECT_UPDATED, new Object[] { oldPk, originalWsObject });
             eventBroker.post(EventConstants.EXPLORER_REFRESH, null);

@@ -34,173 +34,173 @@ import com.kms.katalon.execution.logging.LogExceptionFilter;
 @SuppressWarnings("restriction")
 public class DebugBreakpointView extends JDIModelPresentation implements IDebugEditorPresentation {
 
-	@Override
-	public IEditorInput getEditorInput(Object element) {
-		try {
-			if (element instanceof IFile) {
-				IFile file = (IFile) element;
-				String fileName = FilenameUtils.getBaseName(file.getName());
-				if (LogExceptionFilter.isTestCaseScript(fileName)) {
-					TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByScriptName(fileName);
-					if (testCase != null) {
-						return getTestScriptEditor(testCase).getEditorInput();
-					}
-				}
+    @Override
+    public IEditorInput getEditorInput(Object element) {
+        try {
+            if (element instanceof IFile) {
+                IFile file = (IFile) element;
+                String fileName = FilenameUtils.getBaseName(file.getName());
+                if (LogExceptionFilter.isTestCaseScript(fileName)) {
+                    TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByScriptName(fileName);
+                    if (testCase != null) {
+                        return getTestScriptEditor(testCase).getEditorInput();
+                    }
+                }
 
-			} else if (element instanceof Breakpoint) {
-				// open by clicking on item in BreakPointView
-				Breakpoint breakpoint = (Breakpoint) element;
-				IMarker marker = breakpoint.getMarker();
+            } else if (element instanceof Breakpoint) {
+                // open by clicking on item in BreakPointView
+                Breakpoint breakpoint = (Breakpoint) element;
+                IMarker marker = breakpoint.getMarker();
 
-				Map<String, Object> attributes = marker.getAttributes();
-				String className = (String) attributes.get(StringConstants.DBG_STRING_TYPE_NAME);
-				if (LogExceptionFilter.isTestCaseScript(className)) {
-					TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByScriptName(className);
-					if (testCase != null) {
-						AbstractTextEditor editor = getTestScriptEditor(testCase);
+                Map<String, Object> attributes = marker.getAttributes();
+                String className = (String) attributes.get(StringConstants.DBG_STRING_TYPE_NAME);
+                if (LogExceptionFilter.isTestCaseScript(className)) {
+                    TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByScriptName(className);
+                    if (testCase != null) {
+                        AbstractTextEditor editor = getTestScriptEditor(testCase);
 
-						goToLine(editor, (int) attributes.get(StringConstants.DBG_STRING_LINE_NUMBER));
+                        goToLine(editor, (int) attributes.get(StringConstants.DBG_STRING_LINE_NUMBER));
 
-						// return null because Eclipse always opens default
-						// editor.
-						return null;
-					}
-				}
+                        // return null because Eclipse always opens default
+                        // editor.
+                        return null;
+                    }
+                }
 
-			}
-		} catch (Exception e) {
+            }
+        } catch (Exception e) {
 
-		}
-		return super.getEditorInput(element);
-	}
+        }
+        return super.getEditorInput(element);
+    }
 
-	@Override
-	public String getEditorId(IEditorInput input, Object element) {
-		try {
-			IEditorDescriptor descriptor = IDE.getEditorDescriptor(input.getName());
+    @Override
+    public String getEditorId(IEditorInput input, Object element) {
+        try {
+            IEditorDescriptor descriptor = IDE.getEditorDescriptor(input.getName());
 
-			String id = descriptor.getId();
+            String id = descriptor.getId();
 
-			return id;
-		} catch (PartInitException e) {
-			return null;
-		}
-	}
+            return id;
+        } catch (PartInitException e) {
+            return null;
+        }
+    }
 
-	@Override
-	public String getText(Object element) {
-		try {
-			if (element instanceof Breakpoint) {
-				// for BreakpointView
-				StringBuilder stringBuilder = new StringBuilder();
-				Breakpoint breakpoint = (Breakpoint) element;
-				IMarker marker = breakpoint.getMarker();
+    @Override
+    public String getText(Object element) {
+        try {
+            if (element instanceof Breakpoint) {
+                // for BreakpointView
+                StringBuilder stringBuilder = new StringBuilder();
+                Breakpoint breakpoint = (Breakpoint) element;
+                IMarker marker = breakpoint.getMarker();
 
-				Map<String, Object> attributes = marker.getAttributes();
-				String className = (String) attributes.get(StringConstants.DBG_STRING_TYPE_NAME);
-				String testCaseId = getTestCaseIdByClassName(className);
-				if (!testCaseId.isEmpty()) {
-					stringBuilder.append(testCaseId);
-				} else {
-					stringBuilder.append(className);
-				}
-				int lineNumber = (int) attributes.get(StringConstants.DBG_STRING_LINE_NUMBER);
-				stringBuilder.append(" [line:").append(Integer.toString(lineNumber)).append("]");
-				return stringBuilder.toString();
-			} else if (element instanceof JDIStackFrame) {
-				JDIStackFrame stackFrame = (JDIStackFrame) element;
-				String className = stackFrame.getDeclaringTypeName();
-				String testCaseId = getTestCaseIdByClassName(className);
-				if (testCaseId != null && !testCaseId.isEmpty()) {
-					String parentText = super.getText(element);
-					return parentText.replace(className, testCaseId);
-				} else {
-					return super.getText(element);
-				}
-			} else if (element instanceof IThread) {
-				IThread iThread = (IThread) element;
-				JDIStackFrame stackFrame = (JDIStackFrame) iThread.getTopStackFrame();
-				String className = stackFrame.getDeclaringTypeName();
-				String testCaseId = getTestCaseIdByClassName(className);
-				
-				if (testCaseId != null && !testCaseId.isEmpty()) {
-					String parentText = super.getText(element);
-					return parentText.replace(className, testCaseId);
-				}
-			}
-		} catch (Exception e) {
-			// Eclipse's bug, just ignore it
-		}
-		String debugText = super.getText(element);
-		return debugText;
-	}
+                Map<String, Object> attributes = marker.getAttributes();
+                String className = (String) attributes.get(StringConstants.DBG_STRING_TYPE_NAME);
+                String testCaseId = getTestCaseIdByClassName(className);
+                if (!testCaseId.isEmpty()) {
+                    stringBuilder.append(testCaseId);
+                } else {
+                    stringBuilder.append(className);
+                }
+                int lineNumber = (int) attributes.get(StringConstants.DBG_STRING_LINE_NUMBER);
+                stringBuilder.append(" [line:").append(Integer.toString(lineNumber)).append("]");
+                return stringBuilder.toString();
+            } else if (element instanceof JDIStackFrame) {
+                JDIStackFrame stackFrame = (JDIStackFrame) element;
+                String className = stackFrame.getDeclaringTypeName();
+                String testCaseId = getTestCaseIdByClassName(className);
+                if (testCaseId != null && !testCaseId.isEmpty()) {
+                    String parentText = super.getText(element);
+                    return parentText.replace(className, testCaseId);
+                } else {
+                    return super.getText(element);
+                }
+            } else if (element instanceof IThread) {
+                IThread iThread = (IThread) element;
+                JDIStackFrame stackFrame = (JDIStackFrame) iThread.getTopStackFrame();
+                String className = stackFrame.getDeclaringTypeName();
+                String testCaseId = getTestCaseIdByClassName(className);
 
-	private String getTestCaseIdByClassName(String className) throws Exception {
-		if (LogExceptionFilter.isTestCaseScript(className)) {
-			TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByScriptName(className);
-			if (testCase != null) {
-				return TestCaseController.getInstance().getIdForDisplay(testCase);
-			}
-		}
-		return "";
-	}
+                if (testCaseId != null && !testCaseId.isEmpty()) {
+                    String parentText = super.getText(element);
+                    return parentText.replace(className, testCaseId);
+                }
+            }
+        } catch (Exception e) {
+            // Eclipse's bug, just ignore it
+        }
+        String debugText = super.getText(element);
+        return debugText;
+    }
 
-	private static void goToLine(IEditorPart editorPart, int lineNumber) {
-		if (!(editorPart instanceof ITextEditor) || lineNumber <= 0) {
-			return;
-		}
-		ITextEditor editor = (ITextEditor) editorPart;
-		IDocument document = editor.getDocumentProvider().getDocument(editor.getEditorInput());
-		if (document != null) {
-			IRegion lineInfo = null;
-			try {
-				// line count internally starts with 0, and not with 1 like in
-				// GUI
-				lineInfo = document.getLineInformation(lineNumber - 1);
-			} catch (BadLocationException e) {
-				// ignored because line number may not really exist in document,
-				// we guess this...
-			}
-			if (lineInfo != null) {
-				editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
-			}
-		}
-	}
+    private String getTestCaseIdByClassName(String className) throws Exception {
+        if (LogExceptionFilter.isTestCaseScript(className)) {
+            TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByScriptName(className);
+            if (testCase != null) {
+                return testCase.getIdForDisplay();
+            }
+        }
+        return "";
+    }
 
-	@Override
-	public boolean addAnnotations(IEditorPart editorPart, IStackFrame frame) {
-		try {
-			String className = "";
-			if (editorPart.getEditorInput() instanceof FileEditorInput) {
-				className = FilenameUtils.getBaseName(editorPart.getEditorInput().getName());
-			} else if (frame instanceof JDIStackFrame) {
-				JDIStackFrame jdiStackFrame = (JDIStackFrame) frame;
-				className = FilenameUtils.getBaseName(jdiStackFrame.getSourcePath());
-			}
+    private static void goToLine(IEditorPart editorPart, int lineNumber) {
+        if (!(editorPart instanceof ITextEditor) || lineNumber <= 0) {
+            return;
+        }
+        ITextEditor editor = (ITextEditor) editorPart;
+        IDocument document = editor.getDocumentProvider().getDocument(editor.getEditorInput());
+        if (document != null) {
+            IRegion lineInfo = null;
+            try {
+                // line count internally starts with 0, and not with 1 like in
+                // GUI
+                lineInfo = document.getLineInformation(lineNumber - 1);
+            } catch (BadLocationException e) {
+                // ignored because line number may not really exist in document,
+                // we guess this...
+            }
+            if (lineInfo != null) {
+                editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
+            }
+        }
+    }
 
-			String testCaseId = getTestCaseIdByClassName(className);
-			if (testCaseId == null || testCaseId.isEmpty()) return false;
+    @Override
+    public boolean addAnnotations(IEditorPart editorPart, IStackFrame frame) {
+        try {
+            String className = "";
+            if (editorPart.getEditorInput() instanceof FileEditorInput) {
+                className = FilenameUtils.getBaseName(editorPart.getEditorInput().getName());
+            } else if (frame instanceof JDIStackFrame) {
+                JDIStackFrame jdiStackFrame = (JDIStackFrame) frame;
+                className = FilenameUtils.getBaseName(jdiStackFrame.getSourcePath());
+            }
 
-			TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByDisplayId(testCaseId);
-			getTestScriptEditor(testCase);
-		} catch (Exception e) {
-			// If an exception occurs that means test case meta data
-			// file(.tc) does not exist.
-		}
-		return false;
-	}
+            String testCaseId = getTestCaseIdByClassName(className);
+            if (testCaseId == null || testCaseId.isEmpty()) return false;
 
-	@Override
-	public void removeAnnotations(IEditorPart editorPart, IThread thread) {
-		// do nothing
-	}
+            TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByDisplayId(testCaseId);
+            getTestScriptEditor(testCase);
+        } catch (Exception e) {
+            // If an exception occurs that means test case meta data
+            // file(.tc) does not exist.
+        }
+        return false;
+    }
 
-	private AbstractTextEditor getTestScriptEditor(TestCaseEntity testCase) {
-		LogExceptionNavigator navigator = new LogExceptionNavigator();
-		MPart compabilityEditorPart = navigator.getTestCaseGroovyEditor(testCase);
-		CompatibilityEditor compabilityEditor = (CompatibilityEditor) compabilityEditorPart.getObject();
-		AbstractTextEditor editor = (AbstractTextEditor) compabilityEditor.getEditor();
-		return editor;
-	}
+    @Override
+    public void removeAnnotations(IEditorPart editorPart, IThread thread) {
+        // do nothing
+    }
+
+    private AbstractTextEditor getTestScriptEditor(TestCaseEntity testCase) {
+        LogExceptionNavigator navigator = new LogExceptionNavigator();
+        MPart compabilityEditorPart = navigator.getTestCaseGroovyEditor(testCase);
+        CompatibilityEditor compabilityEditor = (CompatibilityEditor) compabilityEditorPart.getObject();
+        AbstractTextEditor editor = (AbstractTextEditor) compabilityEditor.getEditor();
+        return editor;
+    }
 
 }

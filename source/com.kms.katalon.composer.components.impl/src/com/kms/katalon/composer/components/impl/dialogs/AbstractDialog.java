@@ -10,16 +10,20 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
+import com.kms.katalon.composer.components.impl.constants.StringConstants;
+
 public abstract class AbstractDialog extends Dialog {
 
     protected Composite mainComposite;
 
+    private String dialogTitle = StringConstants.EMPTY;
+
     public AbstractDialog(Shell parentShell) {
         super(parentShell);
     }
-    
+
     /**
-     * Creates parent container that includes child container and horizontal line. 
+     * Creates parent container that includes child container and horizontal line.
      */
     @Override
     protected Control createDialogArea(Composite parent) {
@@ -29,7 +33,7 @@ public abstract class AbstractDialog extends Dialog {
         Composite mainContainer = new Composite(mainComposite, SWT.NONE);
         mainContainer.setLayout(new FillLayout(SWT.HORIZONTAL));
         mainContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        
+
         createDialogContainer(mainContainer);
 
         Label label = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL);
@@ -49,7 +53,7 @@ public abstract class AbstractDialog extends Dialog {
      * Used for children can register event listener of their control after creating them.
      */
     protected abstract void registerControlModifyListeners();
-    
+
     /**
      * Used for children set value to their control after creating them.
      */
@@ -57,19 +61,20 @@ public abstract class AbstractDialog extends Dialog {
 
     /**
      * Let children create its control.
+     * 
      * @param parent main container.
      * @return main area of children.
      */
     protected abstract Control createDialogContainer(Composite parent);
 
     /**
-     * Creates shell without focusing to another shell ({@link SWT.PRIMARY_MODAL}), can resize, can close and has title. 
+     * Creates shell without focusing to another shell ({@link SWT.PRIMARY_MODAL}), can resize, can close and has title.
      */
     @Override
     protected void setShellStyle(int arg) {
         super.setShellStyle(arg | SWT.PRIMARY_MODAL | SWT.CLOSE | SWT.TITLE | SWT.RESIZE);
     }
-    
+
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
@@ -77,10 +82,21 @@ public abstract class AbstractDialog extends Dialog {
     }
 
     /**
+     * Set title for dialog
+     * 
+     * @param dialogTitle
+     */
+    public void setDialogTitle(String dialogTitle) {
+        this.dialogTitle = dialogTitle;
+    }
+
+    /**
+     * Get dialog title
+     * 
      * @return Title of the dialog.
      */
-    protected String getDialogTitle() {
-        return "";
+    public String getDialogTitle() {
+        return this.dialogTitle;
     }
-    
+
 }

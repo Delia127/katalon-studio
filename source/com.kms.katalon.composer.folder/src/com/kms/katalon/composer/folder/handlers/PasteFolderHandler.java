@@ -67,6 +67,12 @@ public class PasteFolderHandler {
     @Named(IServiceConstants.ACTIVE_SHELL)
     Shell parentShell;
 
+    /** Used to locate the last pasted tree entity */
+    private ITreeEntity lastPastedTreeEntity;
+
+    /** Used to locate the last pasted parent tree entity */
+    private ITreeEntity parentPastedTreeEntity;
+
     @PostConstruct
     private void registerEventHandler() {
         eventBroker.subscribe(EventConstants.EXPLORER_PASTE_SELECTED_ITEM, new EventHandler() {
@@ -92,6 +98,8 @@ public class PasteFolderHandler {
                             ITreeEntity[] treeEntities = (ITreeEntity[]) clipboard.getContents(TreeEntityTransfer
                                     .getInstance());
                             if (verifyPaste(treeEntities, targetFolder)) {
+                                parentPastedTreeEntity = targetTreeEntity;
+                                lastPastedTreeEntity = null;
                                 if (TransferMoveFlag.isMove()) {
                                     move(treeEntities, targetFolder);
                                     for (ITreeEntity treeEntity : treeEntities) {
@@ -102,6 +110,8 @@ public class PasteFolderHandler {
                                     copy(treeEntities, targetFolder);
                                 }
                                 eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, targetTreeEntity);
+                                eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM,
+                                        lastPastedTreeEntity != null ? lastPastedTreeEntity : targetTreeEntity);
                             }
                         }
                     }
@@ -183,7 +193,9 @@ public class PasteFolderHandler {
             }
             // Do not allow pasting across file type areas
             if (!treeEntity.getCopyTag().equals(targetFolder.getFolderType().toString())) {
-                MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                MessageDialog.openError(
+                        Display.getCurrent().getActiveShell(),
+                        StringConstants.ERROR_TITLE,
                         MessageFormat.format(StringConstants.HAND_ERROR_MSG_CANNOT_PASTE_INTO_DIFF_REGION,
                                 treeEntity.getCopyTag(), targetFolder.getFolderType().toString()));
                 return false;
@@ -196,9 +208,9 @@ public class PasteFolderHandler {
         if (testCase != null) {
             TestCaseEntity copiedTestCase = TestCaseController.getInstance().copyTestCase(testCase, targetFolder);
             if (copiedTestCase != null) {
-                eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM, new Object[] {
-                        TestCaseController.getInstance().getIdForDisplay(testCase),
-                        TestCaseController.getInstance().getIdForDisplay(copiedTestCase) });
+                eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM,
+                        new Object[] { testCase.getIdForDisplay(), copiedTestCase.getIdForDisplay() });
+                lastPastedTreeEntity = new TestCaseTreeEntity(copiedTestCase, parentPastedTreeEntity);
             }
         }
     }
@@ -209,6 +221,7 @@ public class PasteFolderHandler {
             eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM, new Object[] {
                     folder.getRelativePathForUI().replace('\\', IPath.SEPARATOR) + IPath.SEPARATOR,
                     copiedFolder.getRelativePathForUI().replace('\\', IPath.SEPARATOR) + IPath.SEPARATOR });
+            lastPastedTreeEntity = new FolderTreeEntity(copiedFolder, parentPastedTreeEntity);
         }
     }
 
@@ -216,9 +229,9 @@ public class PasteFolderHandler {
         if (testSuite != null) {
             TestSuiteEntity copiedTestSuite = TestSuiteController.getInstance().copyTestSuite(testSuite, targetFolder);
             if (copiedTestSuite != null) {
-                eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM, new Object[] {
-                        TestSuiteController.getInstance().getIdForDisplay(testSuite),
-                        TestSuiteController.getInstance().getIdForDisplay(copiedTestSuite) });
+                eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM,
+                        new Object[] { testSuite.getIdForDisplay(), copiedTestSuite.getIdForDisplay() });
+                lastPastedTreeEntity = new TestSuiteTreeEntity(copiedTestSuite, parentPastedTreeEntity);
             }
         }
     }
@@ -227,9 +240,9 @@ public class PasteFolderHandler {
         if (dataFile != null) {
             DataFileEntity copiedDataFile = TestDataController.getInstance().copyDataFile(dataFile, targetFolder);
             if (copiedDataFile != null) {
-                eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM, new Object[] {
-                        TestDataController.getInstance().getIdForDisplay(dataFile),
-                        TestDataController.getInstance().getIdForDisplay(copiedDataFile) });
+                eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM,
+                        new Object[] { dataFile.getIdForDisplay(), copiedDataFile.getIdForDisplay() });
+                lastPastedTreeEntity = new TestDataTreeEntity(copiedDataFile, parentPastedTreeEntity);
             }
         }
     }
@@ -239,9 +252,9 @@ public class PasteFolderHandler {
             WebElementEntity copiedWebElement = ObjectRepositoryController.getInstance().copyWebElement(webElement,
                     targetFolder);
             if (copiedWebElement != null) {
-                eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM, new Object[] {
-                        ObjectRepositoryController.getInstance().getIdForDisplay(webElement),
-                        ObjectRepositoryController.getInstance().getIdForDisplay(copiedWebElement) });
+                eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM,
+                        new Object[] { webElement.getIdForDisplay(), copiedWebElement.getIdForDisplay() });
+                lastPastedTreeEntity = new WebElementTreeEntity(copiedWebElement, parentPastedTreeEntity);
             }
         }
     }
@@ -272,13 +285,14 @@ public class PasteFolderHandler {
         if (testCase != null) {
             TestCaseController testCaseController = TestCaseController.getInstance();
             String oldPk = testCase.getId();
-            String oldIdForDisplay = testCaseController.getIdForDisplay(testCase);
+            String oldIdForDisplay = testCase.getIdForDisplay();
             testCase = testCaseController.moveTestCase(testCase, targetFolder);
             String newPk = testCase.getId();
             if (!oldPk.equals(newPk)) {
                 eventBroker.post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-                        testCaseController.getIdForDisplay(testCase) });
+                        testCase.getIdForDisplay() });
                 eventBroker.post(EventConstants.TESTCASE_UPDATED, new Object[] { oldPk, testCase });
+                lastPastedTreeEntity = new TestCaseTreeEntity(testCase, parentPastedTreeEntity);
             }
         }
     }
@@ -321,7 +335,10 @@ public class PasteFolderHandler {
                 }
             }
 
-            FolderController.getInstance().moveFolder(folder, targetFolder);
+            FolderEntity movedFolder = FolderController.getInstance().moveFolder(folder, targetFolder);
+            if (movedFolder != null) {
+                lastPastedTreeEntity = new FolderTreeEntity(movedFolder, parentPastedTreeEntity);
+            }
             // afterSave
             // send notification event
             if (folder.getFolderType() == FolderType.TESTCASE) {
@@ -353,13 +370,14 @@ public class PasteFolderHandler {
         if (testSuite != null) {
             TestSuiteController testSuiteController = TestSuiteController.getInstance();
             String oldPk = testSuite.getId();
-            String oldIdForDisplay = testSuiteController.getIdForDisplay(testSuite);
+            String oldIdForDisplay = testSuite.getIdForDisplay();
             testSuite = testSuiteController.moveTestSuite(testSuite, targetFolder);
             String newPk = testSuite.getId();
             if (!oldPk.equals(newPk)) {
                 eventBroker.post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-                        testSuiteController.getIdForDisplay(testSuite) });
+                        testSuite.getIdForDisplay() });
                 eventBroker.post(EventConstants.TEST_SUITE_UPDATED, new Object[] { oldPk, testSuite });
+                lastPastedTreeEntity = new TestSuiteTreeEntity(testSuite, parentPastedTreeEntity);
             }
         }
     }
@@ -368,13 +386,14 @@ public class PasteFolderHandler {
         if (dataFile != null) {
             TestDataController testDataController = TestDataController.getInstance();
             String oldPk = dataFile.getId();
-            String oldIdForDisplay = testDataController.getIdForDisplay(dataFile);
+            String oldIdForDisplay = dataFile.getIdForDisplay();
             dataFile = testDataController.moveDataFile(dataFile, targetFolder);
             String newPk = dataFile.getId();
             if (!oldPk.equals(newPk)) {
                 eventBroker.post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-                        testDataController.getIdForDisplay(dataFile) });
+                        dataFile.getIdForDisplay() });
                 eventBroker.post(EventConstants.TEST_DATA_UPDATED, new Object[] { oldPk, dataFile });
+                lastPastedTreeEntity = new TestDataTreeEntity(dataFile, parentPastedTreeEntity);
             }
         }
     }
@@ -383,13 +402,14 @@ public class PasteFolderHandler {
         if (webElement != null) {
             ObjectRepositoryController objectRepositoryController = ObjectRepositoryController.getInstance();
             String oldPk = webElement.getId();
-            String oldIdForDisplay = objectRepositoryController.getIdForDisplay(webElement);
+            String oldIdForDisplay = webElement.getIdForDisplay();
             webElement = objectRepositoryController.moveWebElement(webElement, targetFolder);
             String newPk = webElement.getId();
             if (!oldPk.equals(newPk)) {
                 eventBroker.post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-                        objectRepositoryController.getIdForDisplay(webElement) });
+                        webElement.getIdForDisplay() });
                 eventBroker.post(EventConstants.TEST_OBJECT_UPDATED, new Object[] { oldPk, webElement });
+                lastPastedTreeEntity = new WebElementTreeEntity(webElement, parentPastedTreeEntity);
             }
         }
     }

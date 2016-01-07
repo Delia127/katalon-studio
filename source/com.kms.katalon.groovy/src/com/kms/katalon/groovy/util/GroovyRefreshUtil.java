@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -131,7 +132,7 @@ public class GroovyRefreshUtil {
         List<IFile> testCaseFiles = GroovyUtil.getAllScriptFiles(testCaseRootFolder);
         List<IFile> affectedTestCases = new ArrayList<IFile>();
         for (IFile scriptFile : testCaseFiles) {
-            if (hasRefInScript(ref, scriptFile)) {
+            if (hasRefInTestCaseScript(ref, scriptFile)) {
                 affectedTestCases.add(scriptFile);
             }
         }
@@ -147,12 +148,12 @@ public class GroovyRefreshUtil {
      * @throws CoreException
      * @throws IOException
      */
-    public static boolean hasReferencesInTestCaseScripts(String ref, ProjectEntity projectEntity) throws CoreException,
+    public static boolean hasRefInTestCaseScripts(String ref, ProjectEntity projectEntity) throws CoreException,
             IOException {
         IFolder testCaseRootFolder = GroovyUtil.getTestCaseScriptSourceFolder(projectEntity);
         List<IFile> testCaseFiles = GroovyUtil.getAllScriptFiles(testCaseRootFolder);
         for (IFile scriptFile : testCaseFiles) {
-            if (hasRefInScript(ref, scriptFile)) {
+            if (hasRefInTestCaseScript(ref, scriptFile)) {
                 return true;
             }
         }
@@ -168,13 +169,17 @@ public class GroovyRefreshUtil {
      * @throws CoreException
      * @throws IOException
      */
-    private static boolean hasRefInScript(String ref, IFile scriptFile) throws CoreException, IOException {
+    private static boolean hasRefInTestCaseScript(String ref, IFile scriptFile) throws CoreException, IOException {
         InputStream scriptFileStreamContent = scriptFile.getContents();
         boolean hasRef = false;
         try {
             String testCaseContent = IOUtils.toString(scriptFileStreamContent);
-            if (testCaseContent.contains(ref)) {
-                hasRef = true;
+            if (StringUtils.endsWith(ref, "/")) {
+                // check for folder ID
+                hasRef = testCaseContent.contains(ref);
+            } else {
+                // check for other entity ID
+                hasRef = testCaseContent.contains("'" + ref + "'") || testCaseContent.contains("\"" + ref + "\"");
             }
         } finally {
             if (scriptFileStreamContent != null) {

@@ -44,7 +44,7 @@ public class DisintegrateTestCaseJob extends QTestJob {
             try {
                 if (fileEntity instanceof TestCaseEntity) {
                     TestCaseEntity testCaseEntity = (TestCaseEntity) fileEntity;
-                    String testCaseId = TestCaseController.getInstance().getIdForDisplay(testCaseEntity);
+                    String testCaseId = testCaseEntity.getIdForDisplay();
                     monitor.subTask(MessageFormat.format(StringConstants.JOB_SUB_TASK_DISINTEGRATE_TEST_CASE,
                             testCaseId));
 
@@ -65,7 +65,7 @@ public class DisintegrateTestCaseJob extends QTestJob {
                         continue;
                     }
 
-                    String folderId = FolderController.getInstance().getIdForDisplay(folderEntity);
+                    String folderId = folderEntity.getIdForDisplay();
                     monitor.subTask(MessageFormat.format(StringConstants.JOB_SUB_TASK_DISINTEGRATE_TEST_CASE, folderId));
                     IntegratedEntity folderIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(folderEntity);
 

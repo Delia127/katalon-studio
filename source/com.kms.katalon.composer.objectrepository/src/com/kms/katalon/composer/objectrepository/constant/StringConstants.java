@@ -11,9 +11,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String ERROR_TITLE = ERROR;
     public static final String HAND_ERROR_MSG_UNABLE_TO_DEL_TEST_OBJ = "Unable to delete Test Object";
     public static final String HAND_DELETE_OBJECT_TASK_NAME = "Deleting {0} ''{1}''...";
-    public static final String HAND_TITLE_DELETE = DELETE;
-    public static final String HAND_MSG_REMOVE_ENTITY_REF = "Currently, this file is used in some Test Cases. Do you want to remove its references as well?";
-    public static final String HAND_MSG_REMOVE_FOLDER_REF = "Currently, this folder children are used in some Test Cases. Do you want to remove all the references as well?";
     
     // DeleteTestObjectFolderHandler
     public static final String HAND_DELETE_OBJECT_FOLDER_TASK_NAME = "Deleting folder ''{0}''...";
@@ -76,4 +73,5 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_MSG_HEADER_TEST_OBJECT_REFERENCES = "Test object ''{0}'' has been referred by some test "
             + "objects listed below.\nDo you want to delete all these references?";
     public static final String DIA_FIELD_TEST_OBJECT_ID = "Test Object ID";
+    public static final String DIA_TITLE_TEST_OBJECT_REFERENCES = "Test Object's References";
 }

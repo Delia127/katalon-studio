@@ -45,8 +45,11 @@ import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class ExecutionUtil {
     private static final String BIT = "bit";
+
     private static final String OS_ARCHITECTURE_PROPERTY = "sun.arch.data.model";
+
     private static final String OS_NAME_PROPERTY = "os.name";
+
     private static final String UNKNOW_HOST = "Unknow host";
 
     public static String getLocalHostName() {
@@ -108,7 +111,7 @@ public class ExecutionUtil {
     public static TestSuiteExecutedEntity loadTestDataForTestSuite(TestSuiteEntity testSuite, ProjectEntity project,
             List<String> passedTestCaseIds) throws Exception {
         TestSuiteExecutedEntity testSuiteExecutedEntity = new TestSuiteExecutedEntity();
-        testSuiteExecutedEntity.setTestSuiteId(TestSuiteController.getInstance().getIdForDisplay(testSuite));
+        testSuiteExecutedEntity.setTestSuiteId(testSuite.getIdForDisplay());
         String projectDir = project.getFolderLocation();
 
         // key: id of id of test data
@@ -123,7 +126,7 @@ public class ExecutionUtil {
                         testCaseLink.getTestCaseId()));
             }
             if (passedTestCaseIds != null && testSuite.isRerunFailedTestCasesOnly()
-                    && passedTestCaseIds.contains(TestCaseController.getInstance().getIdForDisplay(testCase))) {
+                    && passedTestCaseIds.contains(testCase.getIdForDisplay())) {
                 continue;
             }
 
@@ -157,8 +160,7 @@ public class ExecutionUtil {
                     } else {
                         TestDataExecutedEntity testDataExecutedEntity = getTestDataExecutedEntity(testCaseLink,
                                 testDataLink, testData);
-                        if (testDataExecutedEntity == null)
-                            continue;
+                        if (testDataExecutedEntity == null) continue;
 
                         int rowCount = testDataExecutedEntity.getRowIndexes().length;
 
@@ -218,8 +220,7 @@ public class ExecutionUtil {
      * @param numberTestCaseUsedOnce
      */
     private static void cutRedundantIndexes(TestCaseExecutedEntity testCaseExecutedEntity, int numberTestCaseUsedOnce) {
-        if (numberTestCaseUsedOnce <= 1)
-            return;
+        if (numberTestCaseUsedOnce <= 1) return;
 
         for (TestDataExecutedEntity siblingDataExecuted : testCaseExecutedEntity.getTestDataExecutions()) {
             if ((siblingDataExecuted.getType() == TestDataCombinationType.ONE)
@@ -248,95 +249,95 @@ public class ExecutionUtil {
         int rowCount = 0;
 
         switch (testDataLink.getIterationEntity().getIterationType()) {
-        case ALL: {
-            rowCount = testData.getRowNumbers();
+            case ALL: {
+                rowCount = testData.getRowNumbers();
 
-            if (rowCount <= 0) {
-                throw new IllegalArgumentException(MessageFormat.format(
-                        StringConstants.UTIL_EXC_TD_X_DOES_NOT_CONTAIN_ANY_RECORDS, testDataLink.getTestDataId()));
-            }
-
-            int[] rowIndexes = new int[rowCount];
-            for (int index = 0; index < rowCount; index++) {
-                rowIndexes[index] = index + 1;
-            }
-            testDataExecutedEntity.setRowIndexes(rowIndexes);
-
-            break;
-        }
-        case RANGE: {
-            int rowStart = testDataLink.getIterationEntity().getFrom();
-            int rowEnd = testDataLink.getIterationEntity().getTo();
-
-            if (rowStart > testData.getRowNumbers()) {
-                throw new IllegalArgumentException(MessageFormat.format(
-                        StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_START_AT_ROW_IDX,
-                        testDataLink.getTestDataId(), Integer.toString(testData.getRowNumbers()),
-                        testCaseLink.getTestCaseId(), Integer.toString(rowStart)));
-            }
-
-            if (rowEnd > testData.getRowNumbers()) {
-                throw new IllegalArgumentException(MessageFormat.format(
-                        StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_ENDS_AT_ROW_IDX,
-                        testDataLink.getTestDataId(), Integer.toString(testData.getRowNumbers()),
-                        testCaseLink.getTestCaseId(), Integer.toString(rowEnd)));
-            }
-            rowCount = rowEnd - rowStart + 1;
-
-            int[] rowIndexes = new int[rowCount];
-            for (int index = 0; index < rowCount; index++) {
-                rowIndexes[index] = index + rowStart;
-            }
-            testDataExecutedEntity.setRowIndexes(rowIndexes);
-
-            break;
-        }
-        case SPECIFIC:
-            String[] rowIndexesString = testDataLink.getIterationEntity().getValue().replace(" ", "").split(",");
-            rowCount = rowIndexesString.length;
-
-            List<Integer> rowIndexArray = new ArrayList<Integer>();
-            for (int index = 0; index < rowCount; index++) {
-                if (rowIndexesString[index].isEmpty()) {
-                    continue;
+                if (rowCount <= 0) {
+                    throw new IllegalArgumentException(MessageFormat.format(
+                            StringConstants.UTIL_EXC_TD_X_DOES_NOT_CONTAIN_ANY_RECORDS, testDataLink.getTestDataId()));
                 }
-                if (rowIndexesString[index].contains("-")) {
-                    int rowStart = Integer.valueOf(rowIndexesString[index].split("-")[0]);
-                    int rowEnd = Integer.valueOf(rowIndexesString[index].split("-")[1]);
 
-                    if (rowStart > testData.getRowNumbers()) {
-                        throw new IllegalArgumentException(MessageFormat.format(
-                                StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_START_AT_ROW_IDX,
-                                testDataLink.getTestDataId(), Integer.toString(testData.getRowNumbers()),
-                                testCaseLink.getTestCaseId(), Integer.toString(rowStart)));
-                    }
+                int[] rowIndexes = new int[rowCount];
+                for (int index = 0; index < rowCount; index++) {
+                    rowIndexes[index] = index + 1;
+                }
+                testDataExecutedEntity.setRowIndexes(rowIndexes);
 
-                    if (rowEnd > testData.getRowNumbers()) {
-                        throw new IllegalArgumentException(MessageFormat.format(
-                                StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_ENDS_AT_ROW_IDX,
-                                testDataLink.getTestDataId(), Integer.toString(testData.getRowNumbers()),
-                                testCaseLink.getTestCaseId(), Integer.toString(rowEnd)));
+                break;
+            }
+            case RANGE: {
+                int rowStart = testDataLink.getIterationEntity().getFrom();
+                int rowEnd = testDataLink.getIterationEntity().getTo();
+
+                if (rowStart > testData.getRowNumbers()) {
+                    throw new IllegalArgumentException(MessageFormat.format(
+                            StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_START_AT_ROW_IDX,
+                            testDataLink.getTestDataId(), Integer.toString(testData.getRowNumbers()),
+                            testCaseLink.getTestCaseId(), Integer.toString(rowStart)));
+                }
+
+                if (rowEnd > testData.getRowNumbers()) {
+                    throw new IllegalArgumentException(MessageFormat.format(
+                            StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_ENDS_AT_ROW_IDX,
+                            testDataLink.getTestDataId(), Integer.toString(testData.getRowNumbers()),
+                            testCaseLink.getTestCaseId(), Integer.toString(rowEnd)));
+                }
+                rowCount = rowEnd - rowStart + 1;
+
+                int[] rowIndexes = new int[rowCount];
+                for (int index = 0; index < rowCount; index++) {
+                    rowIndexes[index] = index + rowStart;
+                }
+                testDataExecutedEntity.setRowIndexes(rowIndexes);
+
+                break;
+            }
+            case SPECIFIC:
+                String[] rowIndexesString = testDataLink.getIterationEntity().getValue().replace(" ", "").split(",");
+                rowCount = rowIndexesString.length;
+
+                List<Integer> rowIndexArray = new ArrayList<Integer>();
+                for (int index = 0; index < rowCount; index++) {
+                    if (rowIndexesString[index].isEmpty()) {
+                        continue;
                     }
-                    for (int rowIndex = rowStart; rowIndex <= rowEnd; rowIndex++) {
+                    if (rowIndexesString[index].contains("-")) {
+                        int rowStart = Integer.valueOf(rowIndexesString[index].split("-")[0]);
+                        int rowEnd = Integer.valueOf(rowIndexesString[index].split("-")[1]);
+
+                        if (rowStart > testData.getRowNumbers()) {
+                            throw new IllegalArgumentException(MessageFormat.format(
+                                    StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_START_AT_ROW_IDX,
+                                    testDataLink.getTestDataId(), Integer.toString(testData.getRowNumbers()),
+                                    testCaseLink.getTestCaseId(), Integer.toString(rowStart)));
+                        }
+
+                        if (rowEnd > testData.getRowNumbers()) {
+                            throw new IllegalArgumentException(MessageFormat.format(
+                                    StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_ENDS_AT_ROW_IDX,
+                                    testDataLink.getTestDataId(), Integer.toString(testData.getRowNumbers()),
+                                    testCaseLink.getTestCaseId(), Integer.toString(rowEnd)));
+                        }
+                        for (int rowIndex = rowStart; rowIndex <= rowEnd; rowIndex++) {
+                            rowIndexArray.add(rowIndex);
+                        }
+
+                    } else {
+                        int rowIndex = Integer.valueOf(rowIndexesString[index]);
+
+                        if (rowIndex < 1 || rowIndex > testData.getRowNumbers()) {
+                            throw new IllegalArgumentException(MessageFormat.format(
+                                    StringConstants.UTIL_EXC_IDX_X_INVALID_TC_Y_TD_Z, rowIndexesString[index],
+                                    testCaseLink.getTestCaseId(), testDataLink.getTestDataId()));
+                        }
+
                         rowIndexArray.add(rowIndex);
                     }
-
-                } else {
-                    int rowIndex = Integer.valueOf(rowIndexesString[index]);
-
-                    if (rowIndex < 1 || rowIndex > testData.getRowNumbers()) {
-                        throw new IllegalArgumentException(MessageFormat.format(
-                                StringConstants.UTIL_EXC_IDX_X_INVALID_TC_Y_TD_Z, rowIndexesString[index],
-                                testCaseLink.getTestCaseId(), testDataLink.getTestDataId()));
-                    }
-
-                    rowIndexArray.add(rowIndex);
                 }
-            }
-            testDataExecutedEntity.setRowIndexes(ArrayUtils.toPrimitive(rowIndexArray.toArray(new Integer[rowIndexArray
-                    .size()])));
+                testDataExecutedEntity.setRowIndexes(ArrayUtils.toPrimitive(rowIndexArray
+                        .toArray(new Integer[rowIndexArray.size()])));
 
-            break;
+                break;
         }
         if (rowCount == 0) {
             return null;
@@ -364,8 +365,7 @@ public class ExecutionUtil {
         Gson gsonObj = new Gson();
         try {
             String executionConfigFileContent = FileUtils.readFileToString(executionConfigFile);
-            Type collectionType = new TypeToken<Map<String, Object>>() {
-            }.getType();
+            Type collectionType = new TypeToken<Map<String, Object>>() {}.getType();
             Map<String, Object> result = gsonObj.fromJson(executionConfigFileContent, collectionType);
             if (result == null || !(result.get(RunConfiguration.EXECUTION_DRIVER_PROPERTY) instanceof Map<?, ?>)) {
                 return new LinkedHashMap<String, Object>();
@@ -375,6 +375,5 @@ public class ExecutionUtil {
             // reading file failed or parsing json failed --> return empty map;
         }
         return null;
-
     }
 }

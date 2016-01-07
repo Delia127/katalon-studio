@@ -280,5 +280,8 @@ public class StringConstants extends GlobalStringConstants {
     /*********************************************** Handler **********************************************************/
     //ReportHandler
     public static final String HDL_LABEL_VALIDATING_REPORT = "{0}\tValidating...({1}%)";
+
+    // QTestSettingsHandler
+    public static final String HDL_TITLE_PROJECT_SETTINGS = "Project Settings";
     /******************************************************************************************************************/
 }

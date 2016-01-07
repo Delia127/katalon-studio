@@ -12,8 +12,8 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
-import com.kms.katalon.composer.report.preference.ReportPreferenceInitializer;
 import com.kms.katalon.composer.report.constants.StringConstants;
+import com.kms.katalon.composer.report.preference.ReportPreferenceInitializer;
 
 public class AdvancedSearchTestLogDialog extends AbstractDialog {
 
@@ -22,6 +22,7 @@ public class AdvancedSearchTestLogDialog extends AbstractDialog {
 
     public AdvancedSearchTestLogDialog(Shell parentShell) {
         super(parentShell);
+        setDialogTitle(StringConstants.DIA_TITLE_ADVANCED_SEARCH);
     }
 
     @Override
@@ -55,9 +56,5 @@ public class AdvancedSearchTestLogDialog extends AbstractDialog {
             return;
         }
         super.okPressed();
-    }
-
-    protected String getDialogTitle() {
-        return StringConstants.DIA_TITLE_ADVANCED_SEARCH;
     }
 }

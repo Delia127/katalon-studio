@@ -45,14 +45,21 @@ import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 
 public class TestSuiteRepoDialog extends Dialog {
     private Composite container;
+
     private Text txtKatalonFolder;
+
     private Button btnUpdateProjects;
+
     private Button btnBrowseKatalonFolder;
+
     private Combo cbProjects;
 
     private QTestProject selectedQTestProject;
+
     private String selectedFolderId;
+
     private List<String> folderIds;
+
     private Map<Long, QTestProject> qTestProjectsMap;
 
     public TestSuiteRepoDialog(Shell parentShell, List<QTestProject> qTestProjects, List<String> folderIds,
@@ -105,15 +112,13 @@ public class TestSuiteRepoDialog extends Dialog {
 
         cbProjects.setItems(projectNames.toArray(new String[projectNames.size()]));
 
-        if (cbProjects.getItemCount() <= 0)
-            return;
+        if (cbProjects.getItemCount() <= 0) return;
 
         if (selectedProjectName.isEmpty()) {
             cbProjects.select(0);
         } else {
             int index = projectNames.indexOf(selectedProjectName);
-            if (index >= 0)
-                cbProjects.select(index);
+            if (index >= 0) cbProjects.select(index);
         }
     }
 
@@ -242,11 +247,9 @@ public class TestSuiteRepoDialog extends Dialog {
             }
             if (dialog.open() == Dialog.OK) {
                 Object[] results = dialog.getResult();
-                if (results == null || results.length != 1)
-                    return;
+                if (results == null || results.length != 1) return;
                 FolderTreeEntity folderTreeEntity = (FolderTreeEntity) results[0];
-                selectedFolderId = FolderController.getInstance().getIdForDisplay(
-                        (FolderEntity) folderTreeEntity.getObject());
+                selectedFolderId = ((FolderEntity) folderTreeEntity.getObject()).getIdForDisplay();
                 txtKatalonFolder.setText(selectedFolderId);
             }
         } catch (Exception e) {

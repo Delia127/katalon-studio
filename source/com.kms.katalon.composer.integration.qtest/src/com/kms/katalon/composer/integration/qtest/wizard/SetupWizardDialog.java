@@ -83,12 +83,19 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
 
     // Controls
     private Composite stepArea;
+
     private TableViewer tableViewer;
+
     private Button backButton;
+
     private Button nextButton;
+
     private Button finishButton;
+
     private Button cancelButton;
+
     private Composite stepDetailsComposite;
+
     private Label lblStepHeader;
 
     // Fields
@@ -244,7 +251,6 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
 
             /*
              * (non-Javadoc)
-             * 
              * @see org.eclipse.swt.widgets.Listener#handleEvent(org.eclipse.swt.widgets.Event)
              */
             @Override
@@ -369,8 +375,7 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
     private void backPressed() {
         Map<String, Object> pageSharedData = wizardManager.getCurrentPage().storeControlStates();
         if (pageSharedData != null) {
-            sharedData.putAll(pageSharedData);
-            ;
+            sharedData.putAll(pageSharedData);;
         }
 
         showPage(wizardManager.backPage());
@@ -379,8 +384,7 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
     private void nextPressed() {
         Map<String, Object> pageSharedData = wizardManager.getCurrentPage().storeControlStates();
         if (pageSharedData != null) {
-            sharedData.putAll(pageSharedData);
-            ;
+            sharedData.putAll(pageSharedData);;
         }
 
         showPage(wizardManager.nextPage());
@@ -585,8 +589,8 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
             FolderEntity testCaseFolderEntity = (FolderEntity) selectedTestCaseFolderTree.getObject();
             FolderEntity testSuiteFolderEntity = (FolderEntity) selectedTestSuiteFolderTree.getObject();
 
-            String testCaseFolderId = FolderController.getInstance().getIdForDisplay(testCaseFolderEntity);
-            String testSuiteFolderId = FolderController.getInstance().getIdForDisplay(testSuiteFolderEntity);
+            String testCaseFolderId = testCaseFolderEntity.getIdForDisplay();
+            String testSuiteFolderId = testSuiteFolderEntity.getIdForDisplay();
 
             defaultQTestPrject.getTestCaseFolderIds().add(testCaseFolderId);
             defaultQTestPrject.getTestSuiteFolderIds().add(testSuiteFolderId);

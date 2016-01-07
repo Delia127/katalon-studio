@@ -59,6 +59,15 @@ public class ObjectRepositoryController extends EntityController {
         dataProviderSetting.getWebElementDataProvider().updateWebElement(webElement);
     }
 
+    /**
+     * Get entity ID for display This function is deprecated. Please use {@link WebElementEntity#getIdForDisplay()}
+     * instead.
+     * 
+     * @param entity
+     * @return Test Object ID for display
+     * @throws Exception
+     */
+    @Deprecated
     public String getIdForDisplay(WebElementEntity entity) throws Exception {
         return dataProviderSetting.getWebElementDataProvider().getIdForDisplay(entity)
                 .replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPERATOR);
@@ -105,9 +114,9 @@ public class ObjectRepositoryController extends EntityController {
     public List<WebElementEntity> getTestObjectReferences(WebElementEntity webElement, ProjectEntity projectEntity)
             throws Exception {
         return dataProviderSetting.getWebElementDataProvider().getWebElementPropertyByRefElement(
-                getIdForDisplay(webElement), projectEntity, true);
+                webElement.getIdForDisplay(), projectEntity, true);
     }
-    
+
     public static WebElementPropertyEntity getRefElementProperty(WebElementEntity webElement) {
         return dataProviderSetting.getWebElementDataProvider().getRefElementProperty(webElement);
     }

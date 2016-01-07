@@ -530,7 +530,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
             ableToReload = false;
             String oldPk = originalDataFile.getId();
             String oldName = originalDataFile.getName();
-            String oldIdForDisplay = TestDataController.getInstance().getIdForDisplay(originalDataFile);
+            String oldIdForDisplay = originalDataFile.getIdForDisplay();
             originalDataFile = updateDataFileProperty(originalDataFile.getLocation(), txtName.getText(),
                     txtDesc.getText(), DataFileDriverType.ExcelFile, txtFileName.getText(), cbbSheets.getText(),
                     ckcbUseRelativePath.getSelection(), true);
@@ -539,7 +539,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);
             if (!StringUtils.equalsIgnoreCase(oldName, originalDataFile.getName())) {
                 eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-                        TestDataController.getInstance().getIdForDisplay(originalDataFile) });
+                        originalDataFile.getIdForDisplay() });
             }
             sendTestDataUpdatedEvent(oldPk);
         } catch (DuplicatedFileNameException e) {

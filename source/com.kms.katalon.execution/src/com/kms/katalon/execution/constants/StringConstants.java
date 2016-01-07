@@ -34,6 +34,7 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String MNG_PRT_INVALID_ARG_CANNOT_FIND_PROJ_X = "Invalid argument: Cannot find project ''{0}''.";
 	public static final String MNG_PRT_TEST_SUITE_X_NOT_FOUND = "Test suite ''{0}'' not found.";
 	public static final String MNG_PRT_INVALID_BROWSER_X = "Invalid browser: ''{0}''";
+	public static final String MNG_PRT_INVALID_RETRY_ARGUMENT = "Invalid retry argument value: ''{0}''. Using test suite's retry value.";
 
 	// LauncherResult
 	public static final String MODEL_TOTAL_PASSED_FAILED_ERRORS = "Total: {0}, Passed: {1}, Failed: {2}, Errors: {3}.";

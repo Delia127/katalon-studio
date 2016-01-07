@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.testdata.handlers;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.explorer.handlers.deletion.AbstractDeleteReferredEntityHandler;
 import com.kms.katalon.composer.folder.handlers.deletion.IDeleteFolderHandler;
+import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
 import com.kms.katalon.composer.testdata.dialog.TestDataReferencesDialog;
 import com.kms.katalon.constants.EventConstants;
@@ -27,6 +29,7 @@ import com.kms.katalon.entity.IEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
+import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.groovy.util.GroovyRefreshUtil;
 
@@ -37,8 +40,6 @@ public class DeleteTestDataFolderHandler extends AbstractDeleteReferredEntityHan
 
     @Inject
     private UISynchronize sync;
-
-    private boolean isRemovingRef = false;
 
     @Override
     public FolderType getFolderType() {
@@ -53,23 +54,14 @@ public class DeleteTestDataFolderHandler extends AbstractDeleteReferredEntityHan
             }
 
             final FolderEntity folderEntity = (FolderEntity) folderTreeEntity.getObject();
-            final String folderId = FolderController.getInstance().getIdForDisplay(folderEntity);
+            final String folderId = folderEntity.getIdForDisplay();
             List<Object> descendant = FolderController.getInstance().getAllDescentdantEntities(folderEntity);
 
-            monitor.beginTask("Deleting folder: " + folderId + "...", descendant.size() + 1);
+            monitor.beginTask(MessageFormat.format(StringConstants.HAND_JOB_DELETING_FOLDER, folderId),
+                    descendant.size() + 1);
 
-            final boolean hasRef = GroovyRefreshUtil
-                    .hasReferencesInTestCaseScripts(folderId, folderEntity.getProject());
-            sync.syncExec(new Runnable() {
-
-                @Override
-                public void run() {
-                    if (hasRef) {
-                        isRemovingRef = MessageDialog.openQuestion(Display.getCurrent().getActiveShell(),
-                                StringConstants.HAND_TITLE_DELETE, StringConstants.HAND_MSG_REMOVE_FOLDER_REF);
-                    }
-                }
-            });
+            List<IFile> affectedTestCaseScripts = GroovyRefreshUtil.findReferencesInTestCaseScripts(folderId
+                    + StringConstants.ENTITY_ID_SEPERATOR, folderEntity.getProject());
 
             List<IEntity> undeleteTestDatas = new ArrayList<IEntity>();
 
@@ -79,7 +71,7 @@ public class DeleteTestDataFolderHandler extends AbstractDeleteReferredEntityHan
                 }
 
                 if (descendantObject instanceof DataFileEntity) {
-                    if (!deleteTestData((DataFileEntity) descendantObject, monitor, isRemovingRef)) {
+                    if (!deleteTestData((DataFileEntity) descendantObject, monitor, affectedTestCaseScripts)) {
                         undeleteTestDatas.add((DataFileEntity) descendantObject);
                     }
                 } else if (descendantObject instanceof FolderEntity) {
@@ -100,14 +92,16 @@ public class DeleteTestDataFolderHandler extends AbstractDeleteReferredEntityHan
     }
 
     private boolean deleteTestData(final DataFileEntity testData, IProgressMonitor monitor,
-            boolean isRemovingRefInTestCaseScript) {
+            List<IFile> affectedTestCaseScripts) {
         try {
-            monitor.subTask("Deleting folder: " + testData.getName() + "...");
-
-            final Map<String, List<TestSuiteTestCaseLink>> testDataReferences = TestDataController.getInstance()
+            monitor.subTask(MessageFormat.format(StringConstants.HAND_JOB_DELETING_FOLDER, testData.getName()));
+            final String testDataId = testData.getIdForDisplay();
+            final Map<String, List<TestSuiteTestCaseLink>> referencesInTestSuite = TestDataController.getInstance()
                     .getTestDataReferences(testData);
+            final List<TestCaseEntity> referencesInTestCase = TestCaseEntityUtil
+                    .getTestCaseEntities(affectedTestCaseScripts);
 
-            if (!testDataReferences.values().isEmpty()) {
+            if (!referencesInTestSuite.values().isEmpty()) {
                 if (!canDelete()) {
                     if (!needToShowPreferenceDialog()) {
                         return false;
@@ -120,26 +114,22 @@ public class DeleteTestDataFolderHandler extends AbstractDeleteReferredEntityHan
                         @Override
                         public void run() {
                             TestDataReferencesDialog dialog = new TestDataReferencesDialog(Display.getCurrent()
-                                    .getActiveShell(), testData, testDataReferences, handler);
+                                    .getActiveShell(), testDataId, referencesInTestSuite, referencesInTestCase, handler);
                             dialog.open();
                         }
                     });
                 }
 
                 if (canDelete()) {
-                    DeleteTestDataHandler.deleteTestDataReferences(testData, testDataReferences, eventBroker);
+                    // remove test data references in test suite
+                    DeleteTestDataHandler.removeReferencesInTestSuites(testData, referencesInTestSuite, eventBroker);
+
+                    // remove test data references in test case script
+                    GroovyRefreshUtil.removeReferencesInTestCaseScripts(testDataId, affectedTestCaseScripts);
                 } else {
                     return false;
                 }
 
-            }
-
-            String testDataId = TestDataController.getInstance().getIdForDisplay(testData);
-            if (isRemovingRefInTestCaseScript) {
-                // Find all Test Case script which has relationship with the Test Object
-                List<IFile> affectedTestCaseScripts = GroovyRefreshUtil.findReferencesInTestCaseScripts(testDataId,
-                        testData.getProject());
-                GroovyRefreshUtil.removeReferencesInTestCaseScripts(testDataId, affectedTestCaseScripts);
             }
 
             // remove TestCase part from its partStack if it exists
@@ -170,16 +160,15 @@ public class DeleteTestDataFolderHandler extends AbstractDeleteReferredEntityHan
             }
 
             if (canDelete) {
-                String folderId = FolderController.getInstance().getIdForDisplay(folderEntity);
-
-                monitor.subTask("Deleting folder: " + folderId + "...");
+                monitor.subTask(MessageFormat.format(StringConstants.HAND_JOB_DELETING_FOLDER,
+                        folderEntity.getIdForDisplay()));
                 FolderController.getInstance().deleteFolder(folderEntity);
             } else {
                 undeletedTestDatas.add(folderEntity);
             }
 
-        } catch (Exception ex) {
-            LoggerSingleton.logError(ex);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
         } finally {
             monitor.worked(1);
         }
