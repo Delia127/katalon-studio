@@ -39,6 +39,8 @@ import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseEvent;
@@ -530,7 +532,6 @@ public class TestCasePart implements EventHandler {
             @Override
             public void handleEvent(org.eclipse.swt.widgets.Event event) {
                 // do nothing to prevent double click to expand tree items
-
             }
         });
 
@@ -538,6 +539,7 @@ public class TestCasePart implements EventHandler {
         treeTable.getTree().setToolTipText("");
         ColumnViewerToolTipSupport.enableFor(treeTable);
 
+        addTreeTableKeyListener();
         createContextMenu();
         hookDragEvent();
         hookDropEvent();
@@ -625,6 +627,25 @@ public class TestCasePart implements EventHandler {
 
                 addFailureHandlingSubMenu(menu);
                 treeTable.getTree().setMenu(menu);
+            }
+        });
+    }
+
+    /**
+     * Add KeyListener to TreeTable. By handle DEL key code, test step can be removed faster.
+     */
+    private void addTreeTableKeyListener() {
+        treeTable.getControl().addKeyListener(new KeyListener() {
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.keyCode == SWT.DEL) {
+                    removeTestStep();
+                }
             }
         });
     }
