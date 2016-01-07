@@ -632,7 +632,7 @@ public class TestCasePart implements EventHandler {
     }
 
     /**
-     * Add KeyListener to TreeTable. By handle DEL key code, test step can be removed faster.
+     * Add KeyListener to TreeTable. Handle Delete, Ctrl + c, Ctrl + x, Ctrl + v for test steps
      */
     private void addTreeTableKeyListener() {
         treeTable.getControl().addKeyListener(new KeyListener() {
@@ -645,6 +645,14 @@ public class TestCasePart implements EventHandler {
             public void keyPressed(KeyEvent e) {
                 if (e.keyCode == SWT.DEL) {
                     removeTestStep();
+                } else if (((e.stateMask & SWT.CTRL) == SWT.CTRL)) {
+                    if (e.keyCode == 'c') {
+                        copyTestStep();
+                    } else if (e.keyCode == 'x') {
+                        cutTestStep();
+                    } else if (e.keyCode == 'v') {
+                        pasteTestStep();
+                    }
                 }
             }
         });
