@@ -283,7 +283,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -324,7 +324,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -366,7 +366,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -408,7 +408,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -453,7 +453,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -508,7 +508,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -562,7 +562,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -616,7 +616,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -657,7 +657,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -698,7 +698,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -727,7 +727,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_CLICKED, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -757,7 +757,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_FORM_CONTAINING_OBJ_IS_SUBMITTED, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -787,7 +787,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_IS_DOUBLE_CLICKED_ON, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -817,7 +817,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_IS_RIGHT_CLICKED_ON, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -850,7 +850,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_IS_HOVERED, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -883,7 +883,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_KEYS_SENT_TO_OBJ, strKeys, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -916,7 +916,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_IS_FOCUSED, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -948,7 +948,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_TXT_IS, to.getObjectId(), text));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
                 return text;
             }
@@ -987,7 +987,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_ATTR_IS, attribute, to.getObjectId(), attrValue));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
                 return attrValue;
             }
@@ -1024,7 +1024,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TXT_IS_SET_ON_OBJ, text, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_SET_TXT_X_OF_OBJ_Y, text, to.getObjectId())
@@ -1054,7 +1054,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_IS_CHECKED, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_CHECK_OBJ_X, to.getObjectId())
@@ -1084,7 +1084,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_IS_UNCHECKED, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_UNCHECK_OBJ_X, to.getObjectId())
@@ -1125,7 +1125,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OPTS_W_INDEX_IN_X_ARE_SELECTED_ON_OBJ_Y, WebUiCommonHelper.integerArrayToString(indexes), to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null && range != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_SEL_OPT_BY_INDEX_X_OF_OBJ_Y, range, to.getObjectId())
@@ -1163,7 +1163,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SELECTED_ALL_OPT_W_VAL_X_IN_OBJ_Y, value, to.getObjectId(), regularExpressionLog));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null && value != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_SELECT_OPT_BY_VAL_OF_OBJ, value, to.getObjectId(), regularExpressionLog)
@@ -1191,7 +1191,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ALL_OBJ_OPTS_ARE_SELECTED, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_SELECT_ALL_OBJ_OPTS, to.getObjectId())
@@ -1228,7 +1228,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SELECTED_ALL_OPT_W_LBL_X_IN_OBJ_Y, labelText, to.getObjectId(), regularExpressionLog));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null && labelText != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_SEL_OPT_BY_LBL_OF_OBJ, labelText, to.getObjectId(), regularExpressionLog)
@@ -1270,7 +1270,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OPTS_W_IDX_IN_X_ARE_DESELECTED_ON_OBJ, WebUiCommonHelper.integerArrayToString(indexes), to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null && range != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_DESELECT_OPT_BY_IDX_OF_OBJ, range, to.getObjectId())
@@ -1307,7 +1307,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OPTS_W_VAL_ARE_DESELECTED_ON_OBJ, value, to.getObjectId(), regularExpressionLog));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null && value != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_DESELECT_OPT_BY_VAL_OF_OBJ, value, to.getObjectId(), regularExpressionLog)
@@ -1346,7 +1346,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_DESELECTED_OPTS_W_LBL_X_ON_OBJ, labelText, to.getObjectId(), regularExpressionLog));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null && labelText != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_DESEL_OPT_BY_LBL_OF_OBJ, labelText, to.getObjectId(), regularExpressionLog)
@@ -1375,7 +1375,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_DESELECTED_ALL_OPTS_ON_OBJ, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_SEL_ALL_OPTS_ON_OBJ, to.getObjectId())
@@ -1411,7 +1411,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_IS_CHECKED, to.getObjectId())
@@ -1449,7 +1449,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_IS_NOT_CHECKED, to.getObjectId())
@@ -1485,7 +1485,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 WebUIKeywordMain.stepFailed(ExceptionsUtil.getMessageForThrowable(ex), flowControl, null, true);
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -1548,7 +1548,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 WebUIKeywordMain.stepFailed(ExceptionsUtil.getMessageForThrowable(e), flowControl, null, true);
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -1972,7 +1972,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 return num;
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return 0;
@@ -2012,7 +2012,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 return num;
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return 0;
@@ -2062,7 +2062,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 return numPresent > 0;
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -2111,7 +2111,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 return numPresent > 0;
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -2161,7 +2161,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
                 return numPresent == 0;
             }
@@ -2212,7 +2212,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 return numPresent == 0;
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -2267,7 +2267,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 return (numLabelOptions > 0 && (numSelectedOptions == numLabelOptions));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -2322,7 +2322,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 return (numValueOptions > 0 && (numSelectedOptions == numValueOptions));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -2378,7 +2378,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 return (numLabelOptions > 0 && (numNotSelectedOptions == numLabelOptions));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null && label != null) ?
@@ -2432,7 +2432,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 return (numValueOptions > 0 && (numNotSelectedOptions == numValueOptions));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null && value != null) ?
@@ -2486,7 +2486,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null && range != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OPT_IS_SELECTED_IN_IDX_RANGE_X_IN_OBJ, range, to.getObjectId())
@@ -2538,7 +2538,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null && range != null) ?
@@ -2556,30 +2556,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_FRAME)
     public static void switchToDefaultContent(FailureHandling flowControl) throws StepFailedException {
-        WebUIKeywordMain.runKeyword({ switchToDefaultContent(); } , flowControl, true, StringConstants.KW_MSG_CANNOT_SWITCH_TO_DEFAULT_CONTENT)
-    }
-
-    /**
-     * Internal method to switch to default content
-     * @throws StepFailedException
-     */
-    @CompileStatic
-    public static void switchToDefaultContent() throws StepFailedException {
-        try {
-            if (DriverFactory.getAlert() != null) {
-                logger.logWarning(StringConstants.KW_LOG_WARNING_SWITCHING_TO_DEFAULT_CONTENT_FAILED_BC_ALERT_ON_PAGE);
-                return;
-            }
-            logger.logInfo(StringConstants.KW_LOG_INFO_SWITCHING_TO_DEFAULT_CONTENT);
-            DriverFactory.getWebDriver().switchTo().defaultContent();
-        } catch (NoSuchWindowException e) {
-            // Switching to default content in IE without in frame will raise
-            // this exception, so do nothing here.
-        } catch (WebDriverException e) {
-            // Switching to default content is optional, so exception will not
-            // make it fail, therefore only warn user about the exception
-            logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_SWITCHING_TO_DEFAULT_CONTENT_FAILED_BC_OF_X, ExceptionsUtil.getMessageForThrowable(e)));
-        }
+        WebUIKeywordMain.runKeyword({ WebUiCommonHelper.switchToDefaultContent(); } , flowControl, true, StringConstants.KW_MSG_CANNOT_SWITCH_TO_DEFAULT_CONTENT)
     }
 
     /**
@@ -2804,7 +2781,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 builder.perform();
                 Thread.sleep(250);
                 if (isSwitchToFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
                 isSwitchToFrame = switchToFrame(destinationObject);
 
@@ -2818,7 +2795,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_DRAGGED_OBJ_W_ID_X_TO_OBJ_W_ID_Y, sourceObject.getObjectId(), destinationObject))
             } finally {
                 if (isSwitchToFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, StringConstants.KW_MSG_CANNOT_DRAG_AND_DROP_TO_OBJ)
@@ -2853,7 +2830,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_DRAGGED_OBJ_BY_OFFSET_DISTANCE_X_Y, sourceObject.getObjectId(), xOffset, yOffset));
             } finally {
                 if (isSwitchToFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, StringConstants.KW_MSG_CANNOT_DRAG_AND_DROP_BY_OFFSET_DISTANCE)
@@ -3111,12 +3088,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     public static WebElement findWebElement(TestObject to, int timeOut = RunConfiguration.getTimeOut()) throws IllegalArgumentException, WebElementNotFoundException, StepFailedException {
-        List<WebElement> elements = findWebElements(to, timeOut);
-        if (elements != null && elements.size() > 0) {
-            return elements.get(0);
-        } else {
-            throw new WebElementNotFoundException(to.getObjectId(), WebUiCommonHelper.buildLocator(to));
-        }
+        return WebUiCommonHelper.findWebElement(to, timeOut);
     }
 
     /**
@@ -3134,45 +3106,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     public static List<WebElement> findWebElements(TestObject to, int timeOut) throws WebElementNotFoundException {
-        timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-        final By locator = WebUiCommonHelper.buildLocator(to);
-        try {
-            if (locator != null) {
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID, to.getObjectId(), locator.toString(), timeOut));
-                // Handle firefox problems regarding issue
-                // https://code.google.com/p/selenium/issues/detail?id=4757
-                WebDriver webDriver = DriverFactory.getWebDriver();
-
-                float timeCount = 0;
-                long miliseconds = System.currentTimeMillis();
-                while (timeCount < timeOut) {
-                    try {
-                        List<WebElement> webElements = webDriver.findElements(locator);
-                        if (webElements != null && webElements.size() > 0) {
-                            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS, webElements.size(),
-                                    to.getObjectId(), locator.toString(), timeOut));
-                            return webElements;
-                        }
-                    } catch (NoSuchElementException e) {
-                        // not found element yet, moving on
-                    }
-
-                    timeCount += ((System.currentTimeMillis() - miliseconds) / 1000);
-
-                    Thread.sleep(500);
-                    timeCount += 0.5;
-
-                    miliseconds = System.currentTimeMillis();
-                }
-            } else {
-                throw new IllegalArgumentException(MessageFormat.format(StringConstants.KW_EXC_WEB_ELEMENT_W_ID_DOES_NOT_HAVE_SATISFY_PROP, to.getObjectId()));
-            }
-        } catch (TimeoutException e) {
-            // timeOut, do nothing
-        } catch (InterruptedException e) {
-            // interrupted, do nothing
-        }
-        return Collections.emptyList();
+        return WebUiCommonHelper.findWebElements(to, timeOut);
     }
 
     /**
@@ -3256,7 +3190,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_FILE_X_SENT_TO_OBJ_Y, fileAbsolutePath, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -3289,7 +3223,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SCROLLING_TO_OBJ_X, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -3310,14 +3244,8 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
     public static boolean verifyElementVisibleInViewport(TestObject to, int timeOut, FailureHandling flowControl) {
         WebUIKeywordMain.runKeyword({
-            boolean isSwitchIntoFrame = false;
             try {
-                WebUiCommonHelper.checkTestObjectParameter(to);
-                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                WebDriver driver = DriverFactory.getWebDriver();
-                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
-                WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
-                if (WebUiCommonHelper.isElementVisibleInViewport(driver, foundElement)) {
+                if (WebUiCommonHelper.isElementVisibleInViewport(DriverFactory.getWebDriver(), to, timeOut)) {
                     KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_VISIBLE_IN_VIEWPORT, to.getObjectId()));
                     return true;
                 }  else {
@@ -3326,10 +3254,6 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } catch (WebElementNotFoundException ex) {
                 logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
-            } finally {
-                if (isSwitchIntoFrame) {
-                    WebUiBuiltInKeywords.switchToDefaultContent();
-                }
             }
             return false;
         }
@@ -3350,14 +3274,8 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
     public static boolean verifyElementNotVisibleInViewport(TestObject to, int timeOut, FailureHandling flowControl) {
         WebUIKeywordMain.runKeyword({
-            boolean isSwitchIntoFrame = false;
             try {
-                WebUiCommonHelper.checkTestObjectParameter(to);
-                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                WebDriver driver = DriverFactory.getWebDriver();
-                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
-                WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
-                if (WebUiCommonHelper.isElementVisibleInViewport(driver, foundElement)) {
+                if (WebUiCommonHelper.isElementVisibleInViewport(DriverFactory.getWebDriver(), to, timeOut)) {
                     WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_NOT_VISIBLE_IN_VIEWPORT, to.getObjectId()), flowControl, null, true);
                     return false;
                 }  else {
@@ -3366,12 +3284,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } catch (WebElementNotFoundException ex) {
                 logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
-            } finally {
-                if (isSwitchIntoFrame) {
-                    WebUiBuiltInKeywords.switchToDefaultContent();
-                }
             }
-            return false;
         }
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_NOT_VISIBLE_IN_VIEWPORT, to.getObjectId())
         : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_NOT_VISIBLE_IN_VIEWPORT)
@@ -3447,7 +3360,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    WebUiBuiltInKeywords.switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -3492,7 +3405,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    WebUiBuiltInKeywords.switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -3547,7 +3460,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    WebUiBuiltInKeywords.switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -3599,7 +3512,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
             } finally {
                 if (isSwitchIntoFrame) {
-                    WebUiBuiltInKeywords.switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -3643,16 +3556,16 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                         });
                 if (notHasAttribute) {
                     logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
-                    return false;
+                    return true;
                 }
             } catch (WebElementNotFoundException ex) {
                 logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
             } catch (TimeoutException e) {
                 logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
-                return true;
+                return false;
             } finally {
                 if (isSwitchIntoFrame) {
-                    WebUiBuiltInKeywords.switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -3706,7 +3619,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_FAILED_WAIT_FOR_OBJ_X_HAS_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue));
             } finally {
                 if (isSwitchIntoFrame) {
-                    WebUiBuiltInKeywords.switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -3788,7 +3701,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, true, StringConstants.KW_MSG_CANNOT_GET_PAGE_WIDTH)
     }
-    
+
     /**
      * Get current web page's height
      * @param flowControl
@@ -3809,7 +3722,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, true, StringConstants.KW_MSG_CANNOT_GET_PAGE_HEIGHT)
     }
-    
+
     /**
      * Get current view port left (x) position relatively to the web page
      * @param flowControl
@@ -3826,7 +3739,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, true, StringConstants.KW_MSG_CANNOT_GET_VIEWPORT_LEFT_POSITION)
     }
-    
+
     /**
      * Get current view port top (y) position relatively to the web page
      * @param flowControl
