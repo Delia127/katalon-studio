@@ -1,6 +1,11 @@
 package com.kms.katalon.core.testdata.reader;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.util.CellRangeAddress;
 
 import com.kms.katalon.core.constants.StringConstants;
 
@@ -9,9 +14,14 @@ public abstract class SheetPOI {
 
     private int columnCount = -1;
     private String sheetName;
+    protected List<CellRangeAddress> mergedRegionsList;
 
-    public SheetPOI(String sheetName) {
+    public SheetPOI(String sheetName, Sheet sheetInstance) {
         setSheetName(sheetName);
+        mergedRegionsList = new ArrayList<CellRangeAddress>();
+        for (int i = 0; i < sheetInstance.getNumMergedRegions(); i++) {
+            mergedRegionsList.add(sheetInstance.getMergedRegion(i));
+        }
     }
 
     public String getSheetName() {
@@ -39,6 +49,15 @@ public abstract class SheetPOI {
             // throw new IllegalArgumentException(MessageFormat.format(StringConstants.EXCEL_INVALID_COL_NUMBER, col,
             // maxColumnAtRow));
             return "";
+        }
+
+        // check if cell index is in a merged region
+        for (CellRangeAddress mergedRegion : mergedRegionsList) {
+            // If the region does contain the cell index
+            if (mergedRegion.isInRange(row, col)) {
+                // Now, you need to get the cell from the top left hand corner of this
+                return internallyGetCellText(mergedRegion.getFirstColumn(), mergedRegion.getFirstRow());
+            }
         }
 
         return internallyGetCellText(col, row);

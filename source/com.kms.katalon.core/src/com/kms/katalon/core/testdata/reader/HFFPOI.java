@@ -20,7 +20,7 @@ public class HFFPOI extends SheetPOI {
                                                  // .xls file
 
     public HFFPOI(HSSFWorkbook xlsInstance, HSSFSheet xlsSheetInstance, String sheetName) {
-        super(sheetName);
+        super(sheetName, xlsSheetInstance);
         this.lowerInstance = xlsInstance;
         this.lowerSheetInstance = xlsSheetInstance;
         if (xlsSheetInstance != null) xlsSheetInstance.setForceFormulaRecalculation(true);
