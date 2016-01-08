@@ -22,8 +22,6 @@ import com.kms.katalon.core.logging.model.TestStepLogRecord;
 import com.kms.katalon.core.util.DateUtil;
 
 public class ReportPartTestStepLabelProvider extends StyledCellLabelProvider {
-
-	
 	public static final int CLMN_TEST_LOG_ITEM_IDX = 0;
 	public static final int CLMN_TEST_LOG_DESCRIPTION_IDX = 1;
 	public static final int CLMN_TEST_LOG_ELAPSED_IDX = 2;
@@ -55,6 +53,10 @@ public class ReportPartTestStepLabelProvider extends StyledCellLabelProvider {
 					return ImageConstants.IMG_16_FAILED;
 				case PASSED:
 					return ImageConstants.IMG_16_PASSED;
+                case INCOMPLETE:
+                    return ImageConstants.IMG_16_INCOMPLETE;
+                default:
+                    break;
 				}	
 			}
 		}

@@ -130,6 +130,10 @@
 			<conditionExpression><![CDATA[$F{status}.getStatusValue() == com.kms.katalon.core.logging.model.TestStatus.TestStatusValue.ERROR]]></conditionExpression>
 			<style mode="Opaque" forecolor="#FFCC00"/>
 		</conditionalStyle>
+        <conditionalStyle>
+			<conditionExpression><![CDATA[$F{status}.getStatusValue() == com.kms.katalon.core.logging.model.TestStatus.TestStatusValue.INCOMPLETE]]></conditionExpression>
+			<style mode="Opaque" forecolor="#996600"/>
+		</conditionalStyle>
 	</style>
 	<subDataset name="stepDataset" uuid="26c60fcb-aa92-40f8-831a-21d6a0d805a8">
 		<parameter name="LOG_FOLDER" class="java.lang.String"/>

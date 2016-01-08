@@ -57,7 +57,11 @@ public class ColorUtil {
     }
 
     public static Color getWarningLogBackgroundColor() {
-        return new Color(Display.getCurrent(), 201, 173, 61);
+        return new Color(Display.getCurrent(), 247, 168, 98);
+    }
+    
+    public static Color getIncompleteLogColor() {
+        return new Color(Display.getCurrent(), 153, 117, 21);
     }
 
     // #F6F6F6

@@ -4,7 +4,7 @@ package com.kms.katalon.core.logging.model;
 public class TestStatus {
 	
 	public enum TestStatusValue {
-		PASSED, FAILED, NOT_RUN, ERROR;	//Suite & Test status 
+		PASSED, FAILED, NOT_RUN, ERROR, INCOMPLETE;	//Suite & Test status 
 		
 //		public static int indexOf(TestStatusValue testStatusValue) {
 //			if (testStatusValue != null) {

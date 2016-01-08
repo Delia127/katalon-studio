@@ -11,6 +11,18 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String DIA_NEW_VAR_MSG = "Create a new variable";
 	public static final String DIA_EDIT_VAR_TITLE = "Edit Variable";
 
+    // VariableBuilderDialog
+    public static final String DIA_TITLE_NEW_VAR = "New Variable";
+    public static final String DIA_TITLE_EDIT_VAR = "Edit Variable";
+    public static final String DIA_INFO_MSG_CREATE_NEW_VAR = "Create a new variable";
+    public static final String DIA_INFO_MSG_EDIT_NEW_VAR = "Edit an existing variable";
+    public static final String DIA_CTRL_VAR_INFO = "Variable names are case-sensitive.\n"
+            + "A variable's name can be any letters, digits, the dollar sign \"$\", or the underscore charater \"_\".\n"
+            + "However, it cannot start with a digit.";
+    public static final String PA_COL_DEFAULT_VALUE_TYPE = "Init Value Type";
+    public static final String PA_COL_DEFAULT_VALUE = "Init Value";
+    public static final String PA_COL_DESCRIPTION = DESCRIPTION;
+
 	// GlobalVariablePart
 	public static final String PA_BTN_TIP_ADD = ADD;
 	public static final String PA_BTN_TIP_REMOVE = DELETE;

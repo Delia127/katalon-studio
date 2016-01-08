@@ -18,10 +18,12 @@ public abstract class AbstractLogRecord implements ILogRecord {
     protected long endTime;
     protected List<ILogRecord> childRecords;
     protected ILogRecord parentLogRecord;
+    protected boolean interuppted;
 
     public AbstractLogRecord(String name) {
         setName(name);
         childRecords = new ArrayList<ILogRecord>();
+        interuppted = false;
     }
 
     @Override
@@ -77,23 +79,31 @@ public abstract class AbstractLogRecord implements ILogRecord {
     @Override
     public TestStatus getStatus() {
         TestStatus testStatus = new TestStatus();
-        testStatus.setStatusValue(TestStatusValue.PASSED);
-        
-        if (childRecords == null || childRecords.size() == 0) { return testStatus; }
-        
+        if (isInterrupted()) {
+            testStatus.setStatusValue(TestStatusValue.INCOMPLETE);
+            return testStatus;
+        } else {
+            testStatus.setStatusValue(TestStatusValue.PASSED);
+        }
+
+        if (childRecords == null || childRecords.size() == 0) {
+            return testStatus;
+        }
+
         setMessage(childRecords.get(childRecords.size() - 1).getMessage());
-        
+
         for (ILogRecord logRecord : getChildRecords()) {
             if (!(logRecord instanceof TestCaseLogRecord && ((TestCaseLogRecord) logRecord).isOptional())) {
                 TestStatusValue logRecordStatusValue = logRecord.getStatus().getStatusValue();
-                if (logRecordStatusValue == TestStatusValue.ERROR || logRecordStatusValue == TestStatusValue.FAILED) {
+                if (logRecordStatusValue == TestStatusValue.ERROR || logRecordStatusValue == TestStatusValue.FAILED
+                        || logRecordStatusValue == TestStatusValue.INCOMPLETE) {
                     testStatus.setStatusValue(logRecordStatusValue);
                     setMessage(logRecord.getMessage());
                     break;
                 }
             }
         }
-        
+
         return testStatus;
     }
 
@@ -160,14 +170,22 @@ public abstract class AbstractLogRecord implements ILogRecord {
         }
 
         String attachment = null;
-        
+
         if (this instanceof MessageLogRecord) {
             attachment = ((MessageLogRecord) this).getAttachment();
         }
         if (!StringUtils.isBlank(attachment)) {
-            attachments.add(attachment);    
+            attachments.add(attachment);
         }
 
         return attachments.toArray(new String[attachments.size()]);
+    }
+    
+    public boolean isInterrupted() {
+        return interuppted;
+    }
+    
+    public void setInterrupted(boolean interrupted) {
+        interuppted = interrupted;
     }
 }
