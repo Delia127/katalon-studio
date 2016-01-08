@@ -32,6 +32,7 @@ import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.exception.WebElementNotFoundException;
 
 public class WebUiCommonHelper extends KeywordHelper {
+    private static final String CSS_LOCATOR_PROPERTY_NAME = "css";
     private static final String WEB_ELEMENT_TAG = "tag";
     private static final String XPATH_PREFIX = "//";
     private static final String XPATH_ATTRIBUTE_PREFIX = "@";
@@ -442,6 +443,16 @@ public class WebUiCommonHelper extends KeywordHelper {
     }
 
     public static By buildLocator(TestObject to) {
+        String cssLocatorValue = null;
+        for (TestObjectProperty property : to.getActiveProperties()) {
+            if (property.getName().equals(CSS_LOCATOR_PROPERTY_NAME)) {
+                cssLocatorValue = property.getValue();
+                break;
+            }
+        }
+        if (cssLocatorValue != null) {
+            return By.cssSelector(cssLocatorValue);
+        }
         List<String> xpathList = new ArrayList<String>();
         for (TestObjectProperty property : to.getActiveProperties()) {
             String xpath = buildXpath(property);
@@ -452,7 +463,7 @@ public class WebUiCommonHelper extends KeywordHelper {
         return intersectXpathList(xpathList);
     }
 
-    public static By intersectXpathList(List<String> xpathList) {
+    private static By intersectXpathList(List<String> xpathList) {
         StringBuilder xpathString = new StringBuilder();
         for (String xpath : xpathList) {
             if (xpathString.toString().isEmpty()) {
