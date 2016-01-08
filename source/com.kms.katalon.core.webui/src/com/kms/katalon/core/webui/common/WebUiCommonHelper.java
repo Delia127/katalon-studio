@@ -30,7 +30,6 @@ import com.kms.katalon.core.util.ExceptionsUtil;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.exception.WebElementNotFoundException;
-import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords;
 
 public class WebUiCommonHelper extends KeywordHelper {
     private static final String WEB_ELEMENT_TAG = "tag";
@@ -602,7 +601,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                 }
             }
 
-            WebElement foundElement = WebUiBuiltInKeywords.findWebElement(testObject, timeOut);
+            WebElement foundElement = findWebElement(testObject, timeOut);
             return isElementVisibleInViewport(driver, foundElement);
         } finally {
             if (isSwitchIntoFrame) {
