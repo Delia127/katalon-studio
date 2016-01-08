@@ -18,7 +18,7 @@ public class XSSPOI extends SheetPOI {
                                             // .xlsx file
 
     public XSSPOI(XSSFWorkbook workbookInstance, XSSFSheet sheetInstance, String sheetName) {
-        super(sheetName);
+        super(sheetName, sheetInstance);
         setWorkbookInstance(workbookInstance);
         setSheetInstance(sheetInstance);
     }
@@ -45,52 +45,52 @@ public class XSSPOI extends SheetPOI {
         }
 
         switch (curCell.getCellType()) {
-            case Cell.CELL_TYPE_STRING:
-                return curCell.getRichStringCellValue().getString();
-            case Cell.CELL_TYPE_NUMERIC: {
-                DataFormatter formatter = new DataFormatter(Locale.getDefault());
+        case Cell.CELL_TYPE_STRING:
+            return curCell.getRichStringCellValue().getString();
+        case Cell.CELL_TYPE_NUMERIC: {
+            DataFormatter formatter = new DataFormatter(Locale.getDefault());
 
-                return formatter.formatRawCellContents(curCell.getNumericCellValue(), -1,
-                        getFormatString(curCell.getCellStyle().getDataFormatString()));
-            }
-            case Cell.CELL_TYPE_BOOLEAN:
-                return Boolean.toString(curCell.getBooleanCellValue());
-            case Cell.CELL_TYPE_FORMULA: {
-                // try with String
-                try {
-                    FormulaEvaluator formulaEval = workbookInstance.getCreationHelper().createFormulaEvaluator();
-                    CellValue cellVal = formulaEval.evaluate(curCell);
-                    switch (cellVal.getCellType()) {
-                        case Cell.CELL_TYPE_BLANK:
-                            return "";
-                        case Cell.CELL_TYPE_STRING:
-                            return cellVal.getStringValue();
-                        case Cell.CELL_TYPE_NUMERIC:
-                            DataFormatter formatter = new DataFormatter(Locale.getDefault());
-
-                            return formatter.formatRawCellContents(curCell.getNumericCellValue(), -1,
-                                    getFormatString(curCell.getCellStyle().getDataFormatString()));
-                        default:
-                            return cellVal.formatAsString();
-                    }
-                } catch (Exception e) {
-                }
-                // try with number
-                try {
+            return formatter.formatRawCellContents(curCell.getNumericCellValue(), -1, getFormatString(curCell
+                    .getCellStyle().getDataFormatString()));
+        }
+        case Cell.CELL_TYPE_BOOLEAN:
+            return Boolean.toString(curCell.getBooleanCellValue());
+        case Cell.CELL_TYPE_FORMULA: {
+            // try with String
+            try {
+                FormulaEvaluator formulaEval = workbookInstance.getCreationHelper().createFormulaEvaluator();
+                CellValue cellVal = formulaEval.evaluate(curCell);
+                switch (cellVal.getCellType()) {
+                case Cell.CELL_TYPE_BLANK:
+                    return "";
+                case Cell.CELL_TYPE_STRING:
+                    return cellVal.getStringValue();
+                case Cell.CELL_TYPE_NUMERIC:
                     DataFormatter formatter = new DataFormatter(Locale.getDefault());
 
-                    return formatter.formatRawCellContents(curCell.getNumericCellValue(), -1,
-                            getFormatString(curCell.getCellStyle().getDataFormatString()));
-                } catch (Exception e1) {
+                    return formatter.formatRawCellContents(curCell.getNumericCellValue(), -1, getFormatString(curCell
+                            .getCellStyle().getDataFormatString()));
+                default:
+                    return cellVal.formatAsString();
                 }
-                try {
-                    return curCell.getStringCellValue();
-                } catch (java.lang.IllegalStateException ex) {
-                    return curCell.getRawValue();
-                }
+            } catch (Exception e) {
             }
-            default:
+            // try with number
+            try {
+                DataFormatter formatter = new DataFormatter(Locale.getDefault());
+
+                return formatter.formatRawCellContents(curCell.getNumericCellValue(), -1, getFormatString(curCell
+                        .getCellStyle().getDataFormatString()));
+            } catch (Exception e1) {
+            }
+            try {
                 return curCell.getStringCellValue();
+            } catch (java.lang.IllegalStateException ex) {
+                return curCell.getRawValue();
+            }
+        }
+        default:
+            return curCell.getStringCellValue();
         }
     }
 
@@ -117,7 +117,7 @@ public class XSSPOI extends SheetPOI {
     @Override
     public int getMaxColumn(int rowIndex) {
         XSSFRow curRow = sheetInstance.getRow(rowIndex);
-        
+
         if (curRow != null) {
             return curRow.getLastCellNum();
         } else {
