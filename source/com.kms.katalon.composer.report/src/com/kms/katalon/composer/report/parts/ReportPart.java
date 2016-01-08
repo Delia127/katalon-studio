@@ -39,8 +39,8 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Cursor;
@@ -90,43 +90,29 @@ import com.kms.katalon.execution.util.ExecutionUtil;
 public class ReportPart implements EventHandler {
 
     @Inject
-    IEventBroker eventBroker;
+    private IEventBroker eventBroker;
 
-    private ReportEntity report;
-
+    // Controls
     private StyledText txtTestSuiteId, txtHostName, txtOS, txtPlatform, txtStartTime, txtEndTime, txtRunTime;
-
-    private StyledText txtTotalTestCase, txtTCPasses, txtTCFailures, txtTCIncompleted;
-
+    private StyledText txtTotalTestCase, txtTCPasses, txtTCFailures, txtTCIncompleted, txtTCErrors;
     private TestSuiteLogRecord testSuiteLogRecord;
-
     private ReportTestCaseTableViewer testCaseTableViewer;
-
     private Text txtTestCaseSearch;
-
     private CLabel lblTestCaseSearch;
-
     private ReportTestCaseTableViewerFilter testCaseTableFilter;
 
-    private Button btnFilterTestCasePassed;
+    private Button btnFilterTestCasePassed, btnFilterTestCaseFailed, btnFilterTestCaseError,
+            btnFilterTestCaseIncomplete;
 
-    private Button btnFilterTestCaseFailed;
-
-    private Button btnFilterTestCaseError;
-
-    private TableViewer runDataTable;
-
-    private TableViewer executionSettingTable;
-
+    private TableViewer runDataTable, executionSettingTable;
     private ReportPartTestLogView testLogView;
-
-    private Map<String, AbstractReportTestCaseIntegrationView> integratingCompositeMap;
-
-    private int selectedTestCaseRecordIndex;
-
-    boolean isSearching;
-
     private Combo comboTestCaseIntegration;
+
+    // Fields
+    private Map<String, AbstractReportTestCaseIntegrationView> integratingCompositeMap;
+    private int selectedTestCaseRecordIndex;
+    private boolean isSearching;
+    private ReportEntity report;
 
     private final class MapDataKeyLabelProvider extends ColumnLabelProvider {
         @Override
@@ -223,7 +209,10 @@ public class ReportPart implements EventHandler {
             public void selectionChanged(SelectionChangedEvent event) {
                 ILogRecord selectedLogRecord = (ILogRecord) getSelectedTestCaseLogRecord();
 
-                if (selectedLogRecord == null) return;
+                if (selectedLogRecord == null) {
+                    return;
+                }
+
                 testLogView.updateSelectedTestCase(selectedLogRecord);
             }
         });
@@ -232,7 +221,7 @@ public class ReportPart implements EventHandler {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                testCaseTableFilter.setShowPassed(btnFilterTestCasePassed.getSelection());
+                testCaseTableFilter.showPassed(btnFilterTestCasePassed.getSelection());
                 testCaseTableViewer.refresh();
                 testLogView.updateSelectedTestCase(getSelectedTestCaseLogRecord());
             }
@@ -242,7 +231,7 @@ public class ReportPart implements EventHandler {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                testCaseTableFilter.setShowFailed(btnFilterTestCaseFailed.getSelection());
+                testCaseTableFilter.showFailed(btnFilterTestCaseFailed.getSelection());
                 testCaseTableViewer.refresh();
                 testLogView.updateSelectedTestCase(getSelectedTestCaseLogRecord());
             }
@@ -252,17 +241,23 @@ public class ReportPart implements EventHandler {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                testCaseTableFilter.setShowError(btnFilterTestCaseError.getSelection());
+                testCaseTableFilter.showError(btnFilterTestCaseError.getSelection());
                 testCaseTableViewer.refresh();
                 testLogView.updateSelectedTestCase(getSelectedTestCaseLogRecord());
             }
         });
 
-        txtTestCaseSearch.addKeyListener(new KeyListener() {
+        btnFilterTestCaseIncomplete.addSelectionListener(new SelectionAdapter() {
 
             @Override
-            public void keyReleased(KeyEvent e) {
+            public void widgetSelected(SelectionEvent e) {
+                testCaseTableFilter.showIncomplete(btnFilterTestCaseIncomplete.getSelection());
+                testCaseTableViewer.refresh();
+                testLogView.updateSelectedTestCase(getSelectedTestCaseLogRecord());
             }
+        });
+
+        txtTestCaseSearch.addKeyListener(new KeyAdapter() {
 
             @Override
             public void keyPressed(KeyEvent e) {
@@ -364,7 +359,8 @@ public class ReportPart implements EventHandler {
         try {
             this.report = report;
 
-            if (report == null) return;
+            if (report == null)
+                return;
 
             this.testSuiteLogRecord = LogRecordLookup.getInstance().getTestSuiteLogRecord(report);
 
@@ -406,13 +402,11 @@ public class ReportPart implements EventHandler {
             }
 
             int totalTestCases = testSuiteLogRecord.getTotalTestCases();
-            int totalPassedTestCases = testSuiteLogRecord.getTotalPassedTestCases();
-            int totalFailedTestCases = testSuiteLogRecord.getTotalFailedTestCases();
-            int totalErrorTestCases = testSuiteLogRecord.getTotalErrorTestCases();
             txtTotalTestCase.setText(Integer.toString(totalTestCases));
-            txtTCPasses.setText(Integer.toString(totalPassedTestCases));
-            txtTCFailures.setText(Integer.toString(totalFailedTestCases));
-            txtTCIncompleted.setText(Integer.toString(totalErrorTestCases));
+            txtTCPasses.setText(Integer.toString(testSuiteLogRecord.getTotalPassedTestCases()));
+            txtTCFailures.setText(Integer.toString(testSuiteLogRecord.getTotalFailedTestCases()));
+            txtTCErrors.setText(Integer.toString(testSuiteLogRecord.getTotalErrorTestCases()));
+            txtTCIncompleted.setText(Integer.toString(testSuiteLogRecord.getTotalIncompleteTestCases()));
 
             txtStartTime.setText(DateUtil.getDateTimeFormatted(testSuiteLogRecord.getStartTime()));
             txtEndTime.setText(DateUtil.getDateTimeFormatted(testSuiteLogRecord.getEndTime()));
@@ -465,28 +459,37 @@ public class ReportPart implements EventHandler {
 
     private void createCompositeTestCaseFilter(Composite compositeTestCaseTree) {
         Composite compositeTestCaseFilter = new Composite(compositeTestCaseTree, SWT.NONE);
-        GridLayout gl_compositeTestCaseFilter = new GridLayout(4, false);
+        GridLayout gl_compositeTestCaseFilter = new GridLayout(1, false);
         gl_compositeTestCaseFilter.marginHeight = 0;
         compositeTestCaseFilter.setLayout(gl_compositeTestCaseFilter);
         compositeTestCaseFilter.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
-        btnFilterTestCasePassed = new Button(compositeTestCaseFilter, SWT.CHECK);
+        Composite compositeTestCaseFilterSelection = new Composite(compositeTestCaseFilter, SWT.NONE);
+        compositeTestCaseFilterSelection.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        compositeTestCaseFilterSelection.setLayout(new GridLayout(4, false));
+
+        btnFilterTestCasePassed = new Button(compositeTestCaseFilterSelection, SWT.CHECK);
         btnFilterTestCasePassed.setText("Passed");
         btnFilterTestCasePassed.setImage(ImageConstants.IMG_16_PASSED);
         btnFilterTestCasePassed.setSelection(true);
 
-        btnFilterTestCaseFailed = new Button(compositeTestCaseFilter, SWT.CHECK);
+        btnFilterTestCaseFailed = new Button(compositeTestCaseFilterSelection, SWT.CHECK);
         btnFilterTestCaseFailed.setText("Failed");
         btnFilterTestCaseFailed.setImage(ImageConstants.IMG_16_FAILED);
         btnFilterTestCaseFailed.setSelection(true);
 
-        btnFilterTestCaseError = new Button(compositeTestCaseFilter, SWT.CHECK);
+        btnFilterTestCaseError = new Button(compositeTestCaseFilterSelection, SWT.CHECK);
         btnFilterTestCaseError.setText("Error");
         btnFilterTestCaseError.setImage(ImageConstants.IMG_16_ERROR);
         btnFilterTestCaseError.setSelection(true);
 
+        btnFilterTestCaseIncomplete = new Button(compositeTestCaseFilterSelection, SWT.CHECK);
+        btnFilterTestCaseIncomplete.setText("Incomplete");
+        btnFilterTestCaseIncomplete.setImage(ImageConstants.IMG_16_INCOMPLETE);
+        btnFilterTestCaseIncomplete.setSelection(true);
+
         Composite compositeTableTestCaseSearch = new Composite(compositeTestCaseFilter, SWT.BORDER);
-        compositeTableTestCaseSearch.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        compositeTableTestCaseSearch.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
         compositeTableTestCaseSearch.setBackground(ColorUtil.getWhiteBackgroundColor());
         GridLayout gl_compositeTableTestCaseSearch = new GridLayout(2, false);
         gl_compositeTableTestCaseSearch.marginWidth = 0;
@@ -569,9 +572,10 @@ public class ReportPart implements EventHandler {
         ColumnViewerToolTipSupport.enableFor(testCaseTableViewer);
 
         testCaseTableFilter = new ReportTestCaseTableViewerFilter();
-        testCaseTableFilter.setShowPassed(btnFilterTestCasePassed.getSelection());
-        testCaseTableFilter.setShowFailed(btnFilterTestCaseFailed.getSelection());
-        testCaseTableFilter.setShowError(btnFilterTestCaseError.getSelection());
+        testCaseTableFilter.showPassed(btnFilterTestCasePassed.getSelection());
+        testCaseTableFilter.showFailed(btnFilterTestCaseFailed.getSelection());
+        testCaseTableFilter.showError(btnFilterTestCaseError.getSelection());
+        testCaseTableFilter.showIncomplete(btnFilterTestCaseIncomplete.getSelection());
 
         testCaseTableViewer.addFilter(testCaseTableFilter);
     }
@@ -736,47 +740,49 @@ public class ReportPart implements EventHandler {
         new Label(compositeSummaryDetails, SWT.NONE);
         new Label(compositeSummaryDetails, SWT.NONE);
 
-        Composite composite = new Composite(compositeSummaryDetails, SWT.NONE);
-        composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
-        GridLayout gl_composite = new GridLayout(6, false);
-        gl_composite.horizontalSpacing = 50;
-        gl_composite.marginWidth = 0;
-        gl_composite.marginHeight = 0;
-        composite.setLayout(gl_composite);
-        composite.setBackground(ColorUtil.getWhiteBackgroundColor());
-
-        Label lblPassed = new Label(composite, SWT.NONE);
+        Label lblPassed = new Label(compositeSummaryDetails, SWT.NONE);
         lblPassed.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
         lblPassed.setText("Passed");
         setLabelToBeBold(lblPassed);
         lblPassed.setForeground(ColorUtil.getPassedLogBackgroundColor());
         lblPassed.setBackground(ColorUtil.getWhiteBackgroundColor());
 
-        txtTCPasses = new StyledText(composite, SWT.READ_ONLY);
+        txtTCPasses = new StyledText(compositeSummaryDetails, SWT.READ_ONLY);
         txtTCPasses.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
         txtTCPasses.setForeground(ColorUtil.getPassedLogBackgroundColor());
 
-        Label lblFailed = new Label(composite, SWT.NONE);
+        Label lblFailed = new Label(compositeSummaryDetails, SWT.NONE);
         lblFailed.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
         lblFailed.setText("Failed");
         setLabelToBeBold(lblFailed);
         lblFailed.setForeground(ColorUtil.getFailedLogBackgroundColor());
         lblFailed.setBackground(ColorUtil.getWhiteBackgroundColor());
 
-        txtTCFailures = new StyledText(composite, SWT.READ_ONLY);
+        txtTCFailures = new StyledText(compositeSummaryDetails, SWT.READ_ONLY);
         txtTCFailures.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
         txtTCFailures.setForeground(ColorUtil.getFailedLogBackgroundColor());
 
-        Label lblIncompleted = new Label(composite, SWT.NONE);
+        Label lblError = new Label(compositeSummaryDetails, SWT.NONE);
+        lblError.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
+        lblError.setText("Error");
+        setLabelToBeBold(lblError);
+        lblError.setForeground(ColorUtil.getWarningLogBackgroundColor());
+        lblError.setBackground(ColorUtil.getWhiteBackgroundColor());
+
+        txtTCErrors = new StyledText(compositeSummaryDetails, SWT.READ_ONLY);
+        txtTCErrors.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+        txtTCErrors.setForeground(ColorUtil.getWarningLogBackgroundColor());
+
+        Label lblIncompleted = new Label(compositeSummaryDetails, SWT.NONE);
         lblIncompleted.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
-        lblIncompleted.setText("Error");
+        lblIncompleted.setText("Incomplete");
         setLabelToBeBold(lblIncompleted);
-        lblIncompleted.setForeground(ColorUtil.getWarningLogBackgroundColor());
+        lblIncompleted.setForeground(ColorUtil.getIncompleteLogColor());
         lblIncompleted.setBackground(ColorUtil.getWhiteBackgroundColor());
 
-        txtTCIncompleted = new StyledText(composite, SWT.READ_ONLY);
+        txtTCIncompleted = new StyledText(compositeSummaryDetails, SWT.READ_ONLY);
         txtTCIncompleted.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-        txtTCIncompleted.setForeground(ColorUtil.getWarningLogBackgroundColor());
+        txtTCIncompleted.setForeground(ColorUtil.getIncompleteLogColor());
     }
 
     private void createExecutionSettingTabControls(CTabFolder tabFolder) {
@@ -850,6 +856,7 @@ public class ReportPart implements EventHandler {
     private void createControls(Composite parent) {
 
         Composite composite = new Composite(parent, SWT.NONE);
+        composite.setBounds(0, 0, 561, 500);
         composite.setLayout(new GridLayout(1, false));
 
         SashForm sashForm = new SashForm(composite, SWT.NONE);
@@ -927,6 +934,10 @@ public class ReportPart implements EventHandler {
         if (event.getTopic().equals(EventConstants.REPORT_UPDATED)) {
             try {
                 Object[] objects = (Object[]) event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+                if (objects == null || objects.length != 2) {
+                    return;
+                }
+
                 String updatedReportId = (String) objects[0];
                 if (updatedReportId == null) {
                     return;

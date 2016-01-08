@@ -11,10 +11,15 @@ import com.kms.katalon.core.logging.model.MessageLogRecord;
 
 public class ReportTestStepTableViewerFilter extends ReportTestCaseTableViewerFilter {
 
+    private List<Object> sortedElements;
+
     /**
      * Used to store element that has been sorted
      */
-    private List<Object> sortedElements;
+    public ReportTestStepTableViewerFilter() {
+        super();
+        resetLookup();
+    }
     
     /*package*/ void resetLookup() {
         sortedElements = new ArrayList<Object>();
@@ -22,10 +27,6 @@ public class ReportTestStepTableViewerFilter extends ReportTestCaseTableViewerFi
 
     @Override
     public boolean select(Viewer viewer, Object parentElement, Object element) {
-        if (viewer.getInput().equals(parentElement)) {
-            sortedElements = new ArrayList<Object>();
-        }
-
         if (sortedElements.contains(element)) {
             return true;
         }

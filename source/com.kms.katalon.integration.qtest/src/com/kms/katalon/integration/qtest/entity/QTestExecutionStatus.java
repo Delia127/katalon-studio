@@ -24,7 +24,7 @@ public class QTestExecutionStatus extends QTestEntity {
             return "Passed";
         } else if (katalonStatus.equalsIgnoreCase("FAILED") || katalonStatus.equalsIgnoreCase("ERROR")) {
             return "Failed";
-        } else if (katalonStatus.equalsIgnoreCase("INCOMPLETED") || katalonStatus.equalsIgnoreCase("SKIPPED")) {
+        } else if (katalonStatus.equalsIgnoreCase("INCOMPLETE") || katalonStatus.equalsIgnoreCase("SKIPPED")) {
             return "Incomplete";
         } else {
             return "Unexecuted";
