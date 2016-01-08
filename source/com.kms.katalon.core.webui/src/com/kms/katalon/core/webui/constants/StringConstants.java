@@ -433,6 +433,8 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_LOG_INFO_VIEWPORT_RECT = "Viewport infomation: width = {0}, height = {1}";
     public static final String KW_LOG_PASSED_OBJ_X_VISIBLE_IN_VIEWPORT = "Object ''{0}'' is present and visible in viewport";
     public static final String KW_LOG_FAILED_OBJ_X_VISIBLE_IN_VIEWPORT = "Object ''{0}'' is present but is not visible in viewport";
+    public static final String KW_MSG_PARENT_OBJECT_IS_NOT_VISIBLE_IN_VIEWPORT = "Parent frame ''{0}'' is not visible in viewport";
+    public static final String KW_LOG_INFO_CHECKING_TO_IFRAME_X_IN_VIEWPORT = "Checking iframe ''{0}'' position inside viewport";
     public static final String KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT = "Object ''{0}'' is not present";
     public static final String KW_MSG_CANNOT_VERIFY_OBJ_X_VISIBLE_IN_VIEWPORT = "Unable to verify if object ''{0}'' is visible in viewport";
     public static final String KW_MSG_CANNOT_VERIFY_OBJ_VISIBLE_IN_VIEWPORT = "Unable to verify if object is visible in viewport";

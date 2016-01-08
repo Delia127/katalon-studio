@@ -7,12 +7,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.codehaus.groovy.ast.ASTNode;
-import org.codehaus.groovy.ast.builder.AstBuilder;
-import org.codehaus.groovy.ast.expr.ConstantExpression;
-import org.codehaus.groovy.ast.stmt.BlockStatement;
-import org.codehaus.groovy.ast.stmt.ReturnStatement;
-import org.codehaus.groovy.control.MultipleCompilationErrorsException;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
@@ -159,7 +153,8 @@ public class GlobalVariablePart implements EventHandler {
             public void widgetSelected(SelectionEvent e) {
                 IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
 
-                if (selection == null || selection.getFirstElement() == null) return;
+                if (selection == null || selection.getFirstElement() == null)
+                    return;
 
                 eventBroker.post(EventConstants.GLOBAL_VARIABLE_SHOW_REFERENCES, selection.getFirstElement());
             }
@@ -194,6 +189,20 @@ public class GlobalVariablePart implements EventHandler {
             }
         });
 
+        TableViewerColumn tableViewerColumnDescription = new TableViewerColumn(tableViewer, SWT.NONE);
+        TableColumn tblclmnDescription = tableViewerColumnDescription.getColumn();
+        tblclmnDescription.setWidth(150);
+        tblclmnDescription.setText(StringConstants.PA_COL_DESCRIPTION);
+        tableViewerColumnDescription.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                if (element != null && element instanceof GlobalVariableEntity) {
+                    return ((GlobalVariableEntity) element).getDescription();
+                }
+                return "";
+            }
+        });
+
         setInput();
         registerControlModifyListeners();
     }
@@ -217,7 +226,8 @@ public class GlobalVariablePart implements EventHandler {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 StructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
-                if (selection.getFirstElement() == null) return;
+                if (selection.getFirstElement() == null)
+                    return;
                 GlobalVariableEntity selectedVariable = (GlobalVariableEntity) selection.getFirstElement();
 
                 Point pt = composite.toDisplay(1, 1);
@@ -225,20 +235,29 @@ public class GlobalVariablePart implements EventHandler {
                         selectedVariable, pt);
                 String variableName = selectedVariable.getName();
                 String variableValue = selectedVariable.getInitValue();
+                String variableDescription = selectedVariable.getDescription();
                 if (dialog.open() == Dialog.OK) {
                     GlobalVariableEntity variable = dialog.getVariableEntity();
-                    tableViewer.refresh(variable);
 
                     boolean needToUpdateReferences = false;
 
+                    if (!variableDescription.equals(variable.getDescription())) {
+                        selectedVariable.setDescription(variable.getDescription());
+                        setDirty(true);
+                    }
+
                     if (!variableValue.equals(variable.getInitValue())) {
+                        selectedVariable.setInitValue(variable.getInitValue());
                         setDirty(true);
                     }
 
                     if (!variableName.equals(variable.getName())) {
+                        selectedVariable.setName(variable.getName());
                         setDirty(true);
                         needToUpdateReferences = true;
                     }
+
+                    tableViewer.refresh(selectedVariable);
 
                     try {
                         if (mpart.isDirty()) {
@@ -295,7 +314,8 @@ public class GlobalVariablePart implements EventHandler {
                         List<GlobalVariableEntity> globalVariables = GlobalVariableController.getInstance()
                                 .getAllGlobalVariables(project);
 
-                        if (globalVariables == tableViewer.getInput()) return;
+                        if (globalVariables == tableViewer.getInput())
+                            return;
 
                         GlobalVariableController.getInstance().updateVariables(globalVariables, project);
                         setInput();
@@ -365,22 +385,6 @@ public class GlobalVariablePart implements EventHandler {
                     }
                     if (globalVariable.getInitValue().isEmpty()) {
                         globalVariable.setInitValue("''");
-                    }
-                    List<ASTNode> nodes = null;
-                    try {
-                        nodes = new AstBuilder().buildFromString(globalVariable.getInitValue());
-                    } catch (MultipleCompilationErrorsException e) {
-                        globalVariable.setInitValue("'" + globalVariable.getInitValue().replace("'", "\\'") + "'");
-                    }
-                    if (nodes != null && nodes.size() == 1) {
-                        BlockStatement statement = (BlockStatement) nodes.get(0);
-                        if (statement.getStatements().size() == 1
-                                && statement.getStatements().get(0) instanceof ReturnStatement) {
-                            ReturnStatement returnStatement = (ReturnStatement) statement.getStatements().get(0);
-                            if (!(returnStatement.getExpression() instanceof ConstantExpression)) {
-                                globalVariable.setInitValue("'" + globalVariable.getInitValue() + "'");
-                            }
-                        }
                     }
                     names.add(globalVariable.getName());
                     variables.add(globalVariable);
