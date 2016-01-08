@@ -16,6 +16,7 @@ public class TestCaseLogRecord extends AbstractLogRecord {
      * Returns if the result of current test case is optional or not.
      * <p>
      * Used when the current test case is called by another test case.
+     * 
      * @return true if result of this is optional. Otherwise, false.
      */
     public boolean isOptional() {
@@ -39,18 +40,21 @@ public class TestCaseLogRecord extends AbstractLogRecord {
 
     @Override
     public TestStatus getStatus() {
+        TestStatus testStatus = super.getStatus(); 
+
+        if (isInterrupted()) {
+            testStatus.setStatusValue(TestStatusValue.INCOMPLETE);
+            return testStatus;
+        }
+        
         if (getChildRecords().length == 0) {
-            TestStatus testStatus = new TestStatus();
             testStatus.setStatusValue(TestStatusValue.PASSED);
             if (childRecords.size() > 0) {
                 ILogRecord logRecord = childRecords.get(childRecords.size() - 1);
                 setMessage(logRecord.getMessage());
                 return logRecord.getStatus();
             }
-
-            return testStatus;
-        } else {
-            return super.getStatus();
         }
+        return testStatus;
     }
 }

@@ -14,26 +14,26 @@ import com.kms.katalon.core.reporting.ReportUtil;
 import com.kms.katalon.entity.report.ReportEntity;
 
 public class LogRecordLookup implements EventHandler {
-    
+
     private static LogRecordLookup _instance;
-    
-    //Key: id of report entity, Value: the relevant TestSuiteLogRecord instance of the report
+
+    // Key: id of report entity, Value: the relevant TestSuiteLogRecord instance of the report
     private Map<String, TestSuiteLogRecord> suiteLogRecordMap;
-    
+
     private LogRecordLookup() {
         suiteLogRecordMap = new HashMap<String, TestSuiteLogRecord>();
-        
+
         EventBrokerSingleton.getInstance().getEventBroker().subscribe(EventConstants.REPORT_DELETED, this);
         EventBrokerSingleton.getInstance().getEventBroker().subscribe(EventConstants.PROJECT_OPENED, this);
     }
-    
+
     public static LogRecordLookup getInstance() {
         if (_instance == null) {
             _instance = new LogRecordLookup();
         }
         return _instance;
     }
-    
+
     public synchronized TestSuiteLogRecord getTestSuiteLogRecord(ReportEntity reportEntity) {
         TestSuiteLogRecord suiteLogRecord = suiteLogRecordMap.get(reportEntity.getId());
         if (suiteLogRecord == null) {
@@ -44,10 +44,10 @@ public class LogRecordLookup implements EventHandler {
                 LoggerSingleton.logError(e);
             }
         }
-        
+
         return suiteLogRecord;
     }
-    
+
     public void refreshLogRecord(ReportEntity reportEntity) {
         if (reportEntity != null) {
             try {
@@ -63,17 +63,30 @@ public class LogRecordLookup implements EventHandler {
     public void handleEvent(Event event) {
         String topic = event.getTopic();
         switch (topic) {
-            case EventConstants.REPORT_DELETED: {
-                String reportId = (String) event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-                if (suiteLogRecordMap.containsKey(reportId)) {
-                    suiteLogRecordMap.remove(reportId);
-                }
-                break;
+        case EventConstants.REPORT_UPDATED: {
+            // Remove TestSuiteLogRecord if it's out of date
+            Object[] objects = (Object[]) event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+            if (objects == null || objects.length != 2) {
+                return;
             }
-            case EventConstants.PROJECT_OPENED: {
-                getInstance().suiteLogRecordMap.clear();
-                break;
+            String updatedReportId = (String) objects[0];
+            if (suiteLogRecordMap.containsKey(updatedReportId)) {
+                suiteLogRecordMap.remove(updatedReportId);
             }
+            break;
+        }
+        case EventConstants.REPORT_DELETED: {
+            // Remove TestSuiteLogRecord if it has been deleted
+            String reportId = (String) event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+            if (suiteLogRecordMap.containsKey(reportId)) {
+                suiteLogRecordMap.remove(reportId);
+            }
+            break;
+        }
+        case EventConstants.PROJECT_OPENED: {
+            suiteLogRecordMap.clear();
+            break;
+        }
         }
     }
 }

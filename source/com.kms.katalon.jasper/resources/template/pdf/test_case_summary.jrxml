@@ -16,6 +16,10 @@
 			<conditionExpression><![CDATA[$P{testCaseRecord}.getStatus().getStatusValue() == com.kms.katalon.core.logging.model.TestStatus.TestStatusValue.ERROR]]></conditionExpression>
 			<style mode="Opaque" forecolor="#FFCC00"/>
 		</conditionalStyle>
+        <conditionalStyle>
+			<conditionExpression><![CDATA[$P{testCaseRecord}.getStatus().getStatusValue() == com.kms.katalon.core.logging.model.TestStatus.TestStatusValue.INCOMPLETE]]></conditionExpression>
+			<style mode="Opaque" forecolor="#996600"/>
+		</conditionalStyle>
 	</style>
 	<parameter name="testCaseRecord" class="com.kms.katalon.core.logging.model.TestCaseLogRecord"/>
 	<summary>

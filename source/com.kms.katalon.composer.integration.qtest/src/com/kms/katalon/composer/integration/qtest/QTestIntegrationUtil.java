@@ -421,6 +421,10 @@ public class QTestIntegrationUtil {
     public static TestSuiteEntity addNewTestRunToTestSuite(TestSuiteEntity testSuiteEntity,
             IntegratedEntity testSuiteIntegratedEntity, QTestSuite qTestSuite, QTestRun testRun,
             List<QTestSuite> qTestSuiteCollection) throws Exception {
+        if (qTestSuite.getTestRuns().contains(testRun)) {
+            return testSuiteEntity;
+        }
+        
         qTestSuite.getTestRuns().add(testRun);
 
         for (int index = 0; index < qTestSuiteCollection.size(); index++) {
