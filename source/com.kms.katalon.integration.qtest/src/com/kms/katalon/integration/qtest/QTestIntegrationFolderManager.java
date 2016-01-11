@@ -153,7 +153,7 @@ public class QTestIntegrationFolderManager {
      */
     public static QTestModule createNewQTestTCFolder(IQTestCredential credential, long projectId, long parentId,
             String name) throws QTestUnauthorizedException, QTestInvalidFormatException {
-        String accessToken = credential.getToken().getAccessToken();
+        String accessToken = credential.getToken().getAccessTokenHeader();
         if (!QTestIntegrationAuthenticationManager.validateToken(accessToken)) {
             throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
         }
@@ -224,7 +224,7 @@ public class QTestIntegrationFolderManager {
             QTestModule qTestParentModule) throws QTestException {
         String serverUrl = credential.getServerUrl();
 
-        if (!QTestIntegrationAuthenticationManager.validateToken(credential.getToken().getAccessToken())) {
+        if (!QTestIntegrationAuthenticationManager.validateToken(credential.getToken().getAccessTokenHeader())) {
             throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
         }
 

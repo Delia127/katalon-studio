@@ -18,21 +18,35 @@ public class V7Token extends AbstractQTestToken {
     }
 
     @Override
-    public String getAccessToken() throws QTestInvalidFormatException {
+    public String getAccessTokenHeader() throws QTestInvalidFormatException {
         try {
             JsonObject js = new JsonObject(rawToken);
             if (!js.has("access_token")) {
-                throw QTestInvalidFormatException.createInvalidJsonFormatException("Missing access_token");
+                throw QTestInvalidFormatException.createInvalidTokenException("Missing access_token in " + rawToken);
             }
             
             if (!js.has("token_type")) {
-                throw QTestInvalidFormatException.createInvalidJsonFormatException("Missing token_type");
+                throw QTestInvalidFormatException.createInvalidTokenException("Missing token_type in " + rawToken);
             }
             
             StringBuilder accessTokenBuilder = new StringBuilder();
             accessTokenBuilder.append(js.get("token_type")).append(" ").append(js.get("access_token"));
             
             return accessTokenBuilder.toString();
+        } catch (JsonException e) {
+            throw QTestInvalidFormatException.createInvalidJsonFormatException(e.getMessage());
+        }
+    }
+
+    @Override
+    public String getAccessToken() throws QTestInvalidFormatException {
+        try {
+            JsonObject js = new JsonObject(rawToken);
+            if (!js.has("access_token")) {
+                throw QTestInvalidFormatException.createInvalidTokenException("Missing access_token in " + rawToken);
+            }
+            
+            return js.getString("access_token");
         } catch (JsonException e) {
             throw QTestInvalidFormatException.createInvalidJsonFormatException(e.getMessage());
         }

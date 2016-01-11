@@ -155,7 +155,7 @@ public class QTestIntegrationTestCaseManager {
     public static QTestTestCase addTestCase(QTestProject qTestProject, long parentId, String name, String description,
            IQTestCredential credential) throws QTestException {
         String serverUrl = credential.getServerUrl();
-        String accessToken = credential.getToken().getAccessToken();
+        String accessToken = credential.getToken().getAccessTokenHeader();
         if (!QTestIntegrationAuthenticationManager.validateToken(accessToken)) {
             throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
         }
@@ -329,7 +329,7 @@ public class QTestIntegrationTestCaseManager {
      */
     private static TestCase getTestCaseFromQTest(IQTestCredential credential, long projectId, long qTestId,
             long qTestVersionId) throws QTestUnauthorizedException, QTestInvalidFormatException {
-        String accessToken = credential.getToken().getAccessToken();
+        String accessToken = credential.getToken().getAccessTokenHeader();
         if (!QTestIntegrationAuthenticationManager.validateToken(accessToken)) {
             throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
         }
@@ -383,7 +383,7 @@ public class QTestIntegrationTestCaseManager {
      * @see {@link QTestTestCase#getVersionId()}
      */
     public static long getTestCaseVersionId(IQTestCredential credential, long projectId, long testCaseId) throws QTestException {
-        String token = credential.getToken().getAccessToken();
+        String token = credential.getToken().getAccessTokenHeader();
 
         if (!QTestIntegrationAuthenticationManager.validateToken(token)) {
             throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
@@ -404,7 +404,7 @@ public class QTestIntegrationTestCaseManager {
      */
     public static List<QTestStep> getListSteps(IQTestCredential credential, long projectId, QTestTestCase testCase)
             throws QTestException {
-        String accessToken = credential.getToken().getAccessToken();
+        String accessToken = credential.getToken().getAccessTokenHeader();
 
         if (!QTestIntegrationAuthenticationManager.validateToken(accessToken)) {
             throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);

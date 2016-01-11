@@ -37,7 +37,7 @@ public class QTestAPIRequestHelper {
      */
     public static String sendPostOrPutRequestViaAPI(String url, IQTestToken token, String body, String type)
             throws QTestException {
-        if (!QTestIntegrationAuthenticationManager.validateToken(token.getAccessToken())) {
+        if (!QTestIntegrationAuthenticationManager.validateToken(token.getAccessTokenHeader())) {
             throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
         }
 
@@ -50,7 +50,7 @@ public class QTestAPIRequestHelper {
             con.setRequestMethod(type);
             con.setRequestProperty(QTestStringConstants.RQ_PROPERTY_USER_AGENT,
                     QTestStringConstants.RQ_DF_VALUE_USER_AGENT);
-            con.setRequestProperty(QTestStringConstants.RQ_PROPERTY_AUTHORIZATION, token.getAccessToken());
+            con.setRequestProperty(QTestStringConstants.RQ_PROPERTY_AUTHORIZATION, token.getAccessTokenHeader());
             con.setRequestProperty(QTestStringConstants.RQ_PROPERTY_CONTENT_TYPE,
                     QTestStringConstants.RQ_DF_VALUE_CONTENT_TYPE);
             con.setDoOutput(true);
@@ -97,7 +97,7 @@ public class QTestAPIRequestHelper {
      *             if the connection is invalid.
      */
     public static String sendGetRequestViaAPI(String url, IQTestToken token) throws QTestException {
-        if (!QTestIntegrationAuthenticationManager.validateToken(token.getAccessToken())) {
+        if (!QTestIntegrationAuthenticationManager.validateToken(token.getAccessTokenHeader())) {
             throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
         }
 
@@ -109,8 +109,8 @@ public class QTestAPIRequestHelper {
             con.setRequestMethod(QTestStringConstants.CON_GET_METHOD);
             con.setRequestProperty(QTestStringConstants.RQ_PROPERTY_USER_AGENT,
                     QTestStringConstants.RQ_DF_VALUE_USER_AGENT);
-            con.setRequestProperty(QTestStringConstants.RQ_PROPERTY_AUTHORIZATION, token.getAccessToken());
-
+            con.setRequestProperty(QTestStringConstants.RQ_PROPERTY_AUTHORIZATION, token.getAccessTokenHeader());
+            
             return getResponse(con.getInputStream());
         } catch (IOException e) {
             if (con != null) {

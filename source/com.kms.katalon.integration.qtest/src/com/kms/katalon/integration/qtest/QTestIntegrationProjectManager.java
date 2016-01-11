@@ -121,7 +121,7 @@ public class QTestIntegrationProjectManager {
      * @see {@link #getAll(String, String)}
      */
     public static List<QTestProject> getAllProject(IQTestCredential credential) throws QTestException {
-        String accessToken = credential.getToken().getAccessToken();
+        String accessToken = credential.getToken().getAccessTokenHeader();
         if (!QTestIntegrationAuthenticationManager.validateToken(accessToken)) {
             throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
         }
