@@ -67,7 +67,7 @@ public enum InputValueType implements IInputValueType {
         case TestDataValue:
             return AstTreeTableEntityUtil.getNewTestDataValueExpression(
                     AstTreeTableEntityUtil.getNewTestDataExpression(new ConstantExpression(null)),
-                    new ConstantExpression(null), new ConstantExpression(0));
+                    new ConstantExpression(1), new ConstantExpression(1));
         case TestData:
             return AstTreeTableEntityUtil.getNewTestDataExpression(new ConstantExpression(null));
         case TestCase:
