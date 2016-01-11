@@ -41,13 +41,9 @@ public class KeywordHelper {
 		}
 		return timeout;
 	}
-	
-
 
 	public static int comparingNumberObject(Object actualNumber, Object expectedNumber)
 			throws IllegalArgumentException {
-		KeywordLogger logger = KeywordLogger.getInstance();
-		logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_NUM_PARAMS);
 		if (actualNumber == null) {
 			throw new IllegalArgumentException(StringConstants.COMM_EXC_ACTUAL_NUM_IS_NULL);
 		}
@@ -69,8 +65,6 @@ public class KeywordHelper {
 
 		BigDecimal num1 = NumberUtils.createBigDecimal(String.valueOf(actualNumber));
 		BigDecimal num2 = NumberUtils.createBigDecimal(String.valueOf(expectedNumber));
-
-		logger.logInfo(MessageFormat.format(StringConstants.COMM_LOG_INFO_COMPARE_ACTUAL_W_EXPECTED_NUM, num1, num2));
 		return num1.compareTo(num2);
 	}
 
