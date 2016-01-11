@@ -425,6 +425,8 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String KW_LOG_INFO_OBJ_X_HAS_PARENT_FRAME = "Object: ''{0}'' has parent frame";
 	public static final String KW_LOG_INFO_SWITCHING_TO_IFRAME_X = "Switching to iframe: ''{0}''";
 	public static final String KW_LOG_INFO_SWITCHED_TO_IFRAME_X = "Switched to iframe: ''{0}''";
+	public static final String KW_LOG_FAILED_SWITCHED_TO_IFRAME = "Unable to switch to iframe";
+	public static final String KW_LOG_FAILED_SWITCHED_TO_IFRAME_X = "Unable to switch to iframe: ''{0}''";
     public static final String KW_LOG_INFO_SCROLLING_TO_OBJ_X = "Scrolling to object ''{0}''";
     public static final String KW_LOG_PASSED_SCROLLING_TO_OBJ_X = "Scroll to object ''{0}'' successfully";
     public static final String KW_MSG_CANNOT_SCROLLING_TO_OBJ_X = "Unable to scroll to object ''{0}''";
