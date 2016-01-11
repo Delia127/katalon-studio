@@ -15,6 +15,11 @@ public class V6Token extends AbstractQTestToken {
     }
 
     @Override
+    public String getAccessTokenHeader() throws QTestInvalidFormatException {
+        return rawToken;
+    }
+
+    @Override
     public String getAccessToken() throws QTestInvalidFormatException {
         return rawToken;
     }

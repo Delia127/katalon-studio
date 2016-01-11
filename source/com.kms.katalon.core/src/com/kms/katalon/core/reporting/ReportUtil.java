@@ -270,14 +270,15 @@ public class ReportUtil {
     }
 
     private static void processInterruptedLog(ILogRecord logRecord) {
-        if (logRecord.hasChildRecords()) {
-            ILogRecord[] childRecords = logRecord.getChildRecords();
+        ILogRecord[] childRecords = logRecord.getChildRecords();
+        if (childRecords != null && childRecords.length > 0) {
             ILogRecord lastLogRecord = childRecords[childRecords.length - 1];
             logRecord.setEndTime(lastLogRecord.getEndTime() != 0 ? lastLogRecord.getEndTime() : lastLogRecord
                     .getStartTime());
         } else {
             logRecord.setEndTime(logRecord.getStartTime());
         }
+        logRecord.setInterrupted(true);
     }
 
     private static void processStepMessageLog(XmlLogRecord xmlLogRecord, ILogRecord logRecord) {

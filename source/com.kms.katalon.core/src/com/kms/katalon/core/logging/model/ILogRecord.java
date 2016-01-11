@@ -44,4 +44,8 @@ public interface ILogRecord {
 	public ILogRecord getParentLogRecord();
 
     public void setParentLogRecord(ILogRecord parentLogRecord);
+    
+    public boolean isInterrupted();
+    
+    public void setInterrupted(boolean interrupted);
 }

@@ -38,6 +38,7 @@ public class ImageConstants {
 	public static final Image IMG_16_PASSED= ImageUtil.loadImage(currentBundle, "/icons/log_passed_16.png");
 	public static final Image IMG_16_FAILED = ImageUtil.loadImage(currentBundle, "/icons/log_failed_16.png");
 	public static final Image IMG_16_ERROR = ImageUtil.loadImage(currentBundle, "/icons/log_error_16.png");
+	public static final Image IMG_16_INCOMPLETE = ImageUtil.loadImage(currentBundle, "/icons/log_incomplete_16.png");
 	public static final Image IMG_16_INFO = ImageUtil.loadImage(currentBundle, "/icons/log_info_16.png");
 	public static final Image IMG_16_NOT_RUN = ImageUtil.loadImage(currentBundle, "/icons/log_not_run_16.png");
 	

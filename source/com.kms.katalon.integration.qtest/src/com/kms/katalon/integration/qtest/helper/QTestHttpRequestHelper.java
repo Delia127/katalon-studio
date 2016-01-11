@@ -11,9 +11,11 @@ import java.util.Map.Entry;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -23,13 +25,44 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import com.kms.katalon.integration.qtest.credential.IQTestCredential;
+import com.kms.katalon.integration.qtest.credential.IQTestToken;
+import com.kms.katalon.integration.qtest.credential.QTestTokenManager;
+import com.kms.katalon.integration.qtest.exception.QTestAPIConnectionException;
+import com.kms.katalon.integration.qtest.exception.QTestException;
 import com.kms.katalon.integration.qtest.exception.QTestIOException;
+import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
+import com.kms.katalon.integration.qtest.setting.QTestVersion;
 
 public class QTestHttpRequestHelper {
 
-    public static String getToken(IQTestCredential credential, String url) throws QTestIOException {
+    public static String getV7Token(IQTestCredential credential, String url) throws QTestException {
+        HttpResponseResult reponseResult = internallyGetV7Token(credential, url);
+        int statusCode =  reponseResult.getStatusLine().getStatusCode() ;
+        if (statusCode == HttpStatus.SC_OK) {
+            return reponseResult.getResult();
+        } else if (statusCode == HttpStatus.SC_UNAUTHORIZED){
+            CloseableHttpClient client = null;
+            try {
+                client = HttpClientBuilder.create().build();
+                Map<String, String> cookies = new HashMap<String, String>();
+                doTerminateAllSession(credential, client, cookies);
+            } finally {
+                IOUtils.closeQuietly(client);
+            }
+            return internallyGetV7Token(credential, url).getResult();
+        } else {
+            throw new QTestAPIConnectionException(reponseResult.getResult());
+        }
+    }
+
+    private static HttpResponseResult internallyGetV7Token(IQTestCredential credential, String url)
+            throws QTestIOException {
         CloseableHttpClient client = null;
         try {
             client = HttpClientBuilder.create().build();
@@ -45,6 +78,7 @@ public class QTestHttpRequestHelper {
             post.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_FORM_URLENCODED.toString());
 
             CloseableHttpResponse response = null;
+            HttpResponseResult reponseResult = new HttpResponseResult();
             try {
                 post.setEntity(new UrlEncodedFormEntity(postParams));
 
@@ -57,7 +91,12 @@ public class QTestHttpRequestHelper {
                 while ((line = rd.readLine()) != null) {
                     result.append(line);
                 }
-                return result.toString();
+
+                reponseResult.setHeaders(response.getAllHeaders());
+                reponseResult.setResult(result.toString());
+                reponseResult.setStatusLine(response.getStatusLine());
+
+                return reponseResult;
             } catch (IOException ex) {
                 throw new QTestIOException(ex);
             } finally {
@@ -69,30 +108,31 @@ public class QTestHttpRequestHelper {
     }
 
     public static String sendPostRequest(IQTestCredential credential, String url, List<NameValuePair> postParams)
-            throws QTestIOException {
+            throws QTestInvalidFormatException, QTestException {
         CloseableHttpClient client = null;
         try {
             client = HttpClientBuilder.create().build();
 
             Map<String, String> cookies = new HashMap<String, String>();
             doLogin(credential, client, cookies);
-            String result = doPost(client, credential.getServerUrl(), url, postParams, cookies);
+            String result = doPost(client, credential.getServerUrl(), url, postParams, cookies).getResult();
             doLogout(credential, client, cookies);
-            
+
             return result;
         } finally {
             IOUtils.closeQuietly(client);
         }
     }
 
-    public static String sendGetRequest(IQTestCredential credential, String url) throws QTestIOException {
+    public static String sendGetRequest(IQTestCredential credential, String url) throws QTestInvalidFormatException,
+            QTestException {
         CloseableHttpClient client = null;
         try {
             client = HttpClientBuilder.create().build();
             Map<String, String> cookies = new HashMap<String, String>();
             doLogin(credential, client, cookies);
 
-            String result = doGet(client, credential.getServerUrl(), url, cookies);
+            String result = doGet(client, credential.getServerUrl(), url, cookies).getResult();
             doLogout(credential, client, cookies);
             return result;
         } finally {
@@ -135,23 +175,84 @@ public class QTestHttpRequestHelper {
         return builder.toString();
     }
 
+    private static void doTerminateAllSession(IQTestCredential credential, CloseableHttpClient client,
+            Map<String, String> cookies) throws QTestException {
+        doLogin(credential, client, cookies);
+        doLogout(credential, client, cookies);
+    }
+
     public static void doLogin(IQTestCredential credential, CloseableHttpClient client, Map<String, String> cookies)
-            throws QTestIOException {
+            throws QTestInvalidFormatException, QTestException {
         doGet(client, credential.getServerUrl(), "/portal/loginform", cookies);
         List<NameValuePair> postParams = new ArrayList<NameValuePair>();
         postParams.add(new BasicNameValuePair("j_username", credential.getUsername()));
         postParams.add(new BasicNameValuePair("j_password", credential.getPassword()));
 
-        doPost(client, credential.getServerUrl(), "/login?redirect=%2Fportal%2Fproject", postParams, cookies);
+        HttpResponseResult responseResult = doPost(client, credential.getServerUrl(),
+                "/login?redirect=%2Fportal%2Fproject", postParams, cookies);
+
+        // In qTestV7, when returned cookies doesn't contain UserContextToken as well that means the login sessions has
+        // reached to limit.
+        // We need to terminate all sessions except the whole of the current credential to successfully login.
+        String contextToken = cookies.get("UserContextToken");
+        if ((StringUtils.isBlank(contextToken) || contextToken.equals("\"\""))
+                && credential.getVersion() == QTestVersion.V7) {
+
+            // Get path of the url to terminate sessions
+            String url = responseResult.getHeader("Location").getValue().replaceFirst(credential.getServerUrl(), "");
+
+            List<String> activeTokens = getActiveTokens(client, credential.getServerUrl(), url, cookies);
+
+            // Revoke all sessions that is different with current credential's token.
+            for (String activeToken : activeTokens) {
+                IQTestToken token = credential.getToken();
+                if (token != null && token.getAccessToken().equalsIgnoreCase(activeToken)) {
+                    continue;
+                }
+
+                QTestAPIRequestHelper.sendPostRequestViaAPI(credential.getServerUrl() + "/oauth/revoke",
+                        QTestTokenManager.getTokenByAccessToken(credential.getVersion(), activeToken), "");
+            }
+
+            // Re-login to get new UserContextToken
+            doPost(client, credential.getServerUrl(), "/login?redirect=%2Fportal%2Fproject", postParams, cookies);
+
+        }
+
+        // Access portal project
         doGet(client, credential.getServerUrl(), "/portal/project", cookies);
     }
-    
+
+    private static List<String> getActiveTokens(CloseableHttpClient client, String serverUrl, String url,
+            Map<String, String> cookies) throws QTestIOException {
+        List<String> activeTokens = new ArrayList<String>();
+        String htmlResult = doGet(client, serverUrl, url, cookies).getResult();
+        Document doc = Jsoup.parse(htmlResult);
+        Element table = doc.select("table#activeSessionTable").get(0);
+        Elements tableHeaderRows = doc.select("table#activeSessionTable thead tr").get(0).children();
+        int activeTokenClmnIdx = 0;
+        while (activeTokenClmnIdx < tableHeaderRows.size()) {
+            if ("id".equalsIgnoreCase(tableHeaderRows.get(activeTokenClmnIdx).attributes().get("data-field"))) {
+                break;
+            }
+            activeTokenClmnIdx++;
+        }
+
+        if (activeTokenClmnIdx < tableHeaderRows.size()) {
+            Elements activeTokenCells = table.select("tbody tr td:eq(" + Integer.toString(activeTokenClmnIdx) + ")");
+            for (Element cell : activeTokenCells) {
+                activeTokens.add(cell.text());
+            }
+        }
+        return activeTokens;
+    }
+
     public static void doLogout(IQTestCredential credential, CloseableHttpClient client, Map<String, String> cookies)
             throws QTestIOException {
         doPost(client, credential.getServerUrl(), "/logout", new ArrayList<NameValuePair>(), cookies);
     }
 
-    private static String doPost(CloseableHttpClient client, String serverUrl, String url,
+    private static HttpResponseResult doPost(CloseableHttpClient client, String serverUrl, String url,
             List<NameValuePair> postParams, Map<String, String> cookies) throws QTestIOException {
 
         HttpPost post = new HttpPost(serverUrl + url);
@@ -166,6 +267,7 @@ public class QTestHttpRequestHelper {
         post.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
         post.setHeader("X-CSRF-Token", "0.0");
 
+        HttpResponseResult reponseResult = new HttpResponseResult();
         CloseableHttpResponse response = null;
         try {
             post.setEntity(new UrlEncodedFormEntity(postParams));
@@ -183,7 +285,11 @@ public class QTestHttpRequestHelper {
             // set cookies
             addCookies(response, cookies);
 
-            return result.toString();
+            reponseResult.setHeaders(response.getAllHeaders());
+            reponseResult.setResult(result.toString());
+            reponseResult.setStatusLine(response.getStatusLine());
+
+            return reponseResult;
         } catch (IOException ex) {
             throw new QTestIOException(ex);
         } finally {
@@ -191,8 +297,8 @@ public class QTestHttpRequestHelper {
         }
     }
 
-    private static String doGet(CloseableHttpClient client, String serverUrl, String url, Map<String, String> cookies)
-            throws QTestIOException {
+    private static HttpResponseResult doGet(CloseableHttpClient client, String serverUrl, String url,
+            Map<String, String> cookies) throws QTestIOException {
         HttpGet request = new HttpGet(serverUrl + url);
 
         request.setHeader("User-Agent", "Mozilla/5.0");
@@ -201,7 +307,8 @@ public class QTestHttpRequestHelper {
         request.setHeader("Cookie", cookiesString(cookies));
         request.setHeader("Connection", "keep-alive");
         request.setHeader("X-CSRF-Token", "0.0");
-        
+
+        HttpResponseResult reponseResult = new HttpResponseResult();
         CloseableHttpResponse response = null;
         try {
             response = client.execute(request);
@@ -215,8 +322,11 @@ public class QTestHttpRequestHelper {
 
             // set cookies
             addCookies(response, cookies);
+            reponseResult.setHeaders(response.getAllHeaders());
+            reponseResult.setResult(result.toString());
+            reponseResult.setStatusLine(response.getStatusLine());
 
-            return result.toString();
+            return reponseResult;
         } catch (IOException ex) {
             throw new QTestIOException(ex);
         } finally {
@@ -234,11 +344,16 @@ public class QTestHttpRequestHelper {
 
     private static void addCookies(HttpResponse response, Map<String, String> cookies) {
         for (Header header : response.getHeaders("Set-Cookie")) {
-            String composedValue = header.getValue();
-            int seperatingIndex = composedValue.indexOf("=");
-            String name = composedValue.substring(0, seperatingIndex);
-            String value = composedValue.substring(seperatingIndex + 1);
-            cookies.put(name, value);
+            for (String composedValue : header.getValue().trim().split(";")) {
+                int seperatingIndex = composedValue.indexOf("=");
+                if (seperatingIndex == -1) {
+                    cookies.put(composedValue, "");
+                } else {
+                    String name = composedValue.substring(0, seperatingIndex);
+                    String value = composedValue.substring(seperatingIndex + 1);
+                    cookies.put(name, value);
+                }
+            }
         }
     }
 }

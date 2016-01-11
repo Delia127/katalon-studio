@@ -309,9 +309,10 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
         }
         IStructuredSelection selection = (IStructuredSelection) testSuiteParentTableViewer.getSelection();
         QTestSuite selectedQTestSuite = (QTestSuite) selection.getFirstElement();
-        if (selectedQTestSuite.getId() > 0) {
-            if (!disintegrateTestSuiteWithQTest())
-                return;
+        
+        //Return if system cannot disintegrate test suite with qTest 
+        if (selectedQTestSuite.getId() > 0 && !disintegrateTestSuiteWithQTest()) {
+            return;
         }
 
         getQTestSuites().remove(selectedQTestSuite);
@@ -321,8 +322,10 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
     }
 
     private void setDefaultQTestSuite(QTestSuite selectedQTestSuite) {
-        if (!isIntegrationActive())
+        if (!isIntegrationActive()) {
             return;
+        }
+        
         selectedQTestSuite.setSelected(true);
         for (QTestSuite testSuite : getQTestSuites()) {
             if (!testSuite.equals(selectedQTestSuite)) {
@@ -370,8 +373,9 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
                     currentInUseParentStrings, repo.getQTestProject());
             if (dialog.open() == Dialog.OK) {
                 QTestSuiteParent qTestSuiteParent = dialog.getNewTestSuiteParent();
-                if (qTestSuiteParent == null)
+                if (qTestSuiteParent == null) {
                     return;
+                }
 
                 QTestSuite qTestSuite = new QTestSuite();
                 qTestSuite.setParent(qTestSuiteParent);
@@ -440,8 +444,10 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
 
     private void navigateToQTest() {
         try {
-            if (!isIntegrationActive())
+            if (!isIntegrationActive()) {
                 return;
+            }
+            
             IStructuredSelection selection = (IStructuredSelection) testSuiteParentTableViewer.getSelection();
             QTestSuite selectedQTestSuite = (QTestSuite) selection.getFirstElement();
             ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();

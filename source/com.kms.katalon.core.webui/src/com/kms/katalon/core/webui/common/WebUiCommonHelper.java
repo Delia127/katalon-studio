@@ -3,6 +3,7 @@ package com.kms.katalon.core.webui.common;
 import java.awt.Rectangle;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -10,6 +11,9 @@ import java.util.regex.Pattern;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.NoSuchWindowException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
@@ -22,10 +26,13 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
+import com.kms.katalon.core.util.ExceptionsUtil;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.DriverFactory;
+import com.kms.katalon.core.webui.exception.WebElementNotFoundException;
 
 public class WebUiCommonHelper extends KeywordHelper {
+    private static final String CSS_LOCATOR_PROPERTY_NAME = "css";
     private static final String WEB_ELEMENT_TAG = "tag";
     private static final String XPATH_PREFIX = "//";
     private static final String XPATH_ATTRIBUTE_PREFIX = "@";
@@ -436,6 +443,16 @@ public class WebUiCommonHelper extends KeywordHelper {
     }
 
     public static By buildLocator(TestObject to) {
+        String cssLocatorValue = null;
+        for (TestObjectProperty property : to.getActiveProperties()) {
+            if (property.getName().equals(CSS_LOCATOR_PROPERTY_NAME)) {
+                cssLocatorValue = property.getValue();
+                break;
+            }
+        }
+        if (cssLocatorValue != null) {
+            return By.cssSelector(cssLocatorValue);
+        }
         List<String> xpathList = new ArrayList<String>();
         for (TestObjectProperty property : to.getActiveProperties()) {
             String xpath = buildXpath(property);
@@ -446,7 +463,7 @@ public class WebUiCommonHelper extends KeywordHelper {
         return intersectXpathList(xpathList);
     }
 
-    public static By intersectXpathList(List<String> xpathList) {
+    private static By intersectXpathList(List<String> xpathList) {
         StringBuilder xpathString = new StringBuilder();
         for (String xpath : xpathList) {
             if (xpathString.toString().isEmpty()) {
@@ -544,22 +561,207 @@ public class WebUiCommonHelper extends KeywordHelper {
                 .executeScript("return Math.max(document.documentElement.clientHeight, window.innerHeight || 0);"));
         return longValue.intValue();
     }
-    
+
     public static Rectangle getElementRect(WebDriver webDriver, WebElement element) {
         JavascriptExecutor javascriptExecutor = (JavascriptExecutor) webDriver;
-        Number left = (Number) (javascriptExecutor.executeScript("return arguments[0].getBoundingClientRect().left", element));
-        Number right = (Number) (javascriptExecutor.executeScript("return arguments[0].getBoundingClientRect().right", element));
-        Number top = (Number) (javascriptExecutor.executeScript("return arguments[0].getBoundingClientRect().top", element));
-        Number bottom = (Number) (javascriptExecutor.executeScript("return arguments[0].getBoundingClientRect().bottom", element));
-        return new Rectangle(left.intValue(), top.intValue(), right.intValue() - left.intValue(), bottom.intValue() - top.intValue());
+        Number left = (Number) (javascriptExecutor.executeScript("return arguments[0].getBoundingClientRect().left",
+                element));
+        Number right = (Number) (javascriptExecutor.executeScript("return arguments[0].getBoundingClientRect().right",
+                element));
+        Number top = (Number) (javascriptExecutor.executeScript("return arguments[0].getBoundingClientRect().top",
+                element));
+        Number bottom = (Number) (javascriptExecutor.executeScript(
+                "return arguments[0].getBoundingClientRect().bottom", element));
+        return new Rectangle(left.intValue(), top.intValue(), right.intValue() - left.intValue(), bottom.intValue()
+                - top.intValue());
     }
-    
+
+    public static boolean isElementVisibleInViewport(WebDriver driver, TestObject testObject, int timeOut)
+            throws IllegalArgumentException, StepFailedException, WebElementNotFoundException {
+        WebUiCommonHelper.checkTestObjectParameter(testObject);
+        TestObject parentObject = testObject != null ? testObject.getParentObject() : null;
+        List<TestObject> frames = new ArrayList<TestObject>();
+        while (parentObject != null) {
+            frames.add(parentObject);
+            parentObject = parentObject.getParentObject();
+        }
+        boolean isSwitchIntoFrame = false;
+        double xOffset = 0;
+        double yOffset = 0;
+        try {
+            if (frames.size() > 0) {
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_OBJ_X_HAS_PARENT_FRAME,
+                        testObject.getObjectId()));
+                for (int i = frames.size() - 1; i >= 0; i--) {
+                    TestObject frameObject = frames.get(i);
+                    logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHING_TO_IFRAME_X,
+                            frameObject.getObjectId()));
+                    WebElement frameElement = findWebElement(frameObject, timeOut);
+                    if (frameElement != null) {
+                        logger.logInfo(MessageFormat.format(
+                                StringConstants.KW_LOG_INFO_CHECKING_TO_IFRAME_X_IN_VIEWPORT, frameObject.getObjectId()));
+
+                        Rectangle elementRect = WebUiCommonHelper.getElementRect(driver, frameElement);
+                        elementRect.setRect(elementRect.getX() + xOffset, elementRect.getY() + yOffset,
+                                elementRect.getWidth(), elementRect.getHeight());
+                        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_ELEMENT_RECT,
+                                elementRect.getX(), elementRect.getY(), elementRect.getWidth(), elementRect.getHeight()));
+                        Rectangle documentRect = new Rectangle(0, 0, WebUiCommonHelper.getViewportWidth(driver),
+                                WebUiCommonHelper.getViewportHeight(driver));
+                        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_VIEWPORT_RECT,
+                                documentRect.getWidth(), documentRect.getHeight()));
+                        if (!documentRect.intersects(elementRect)) {
+                            logger.logInfo(MessageFormat.format(
+                                    StringConstants.KW_MSG_PARENT_OBJECT_IS_NOT_VISIBLE_IN_VIEWPORT,
+                                    frameObject.getObjectId()));
+                            return false;
+                        }
+                        xOffset += frameElement.getLocation().getX();
+                        yOffset += frameElement.getLocation().getY();
+                        driver.switchTo().frame(frameElement);
+                        isSwitchIntoFrame = true;
+                        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHED_TO_IFRAME_X,
+                                frameObject.getObjectId()));
+                    }
+                }
+            }
+
+            WebElement foundElement = findWebElement(testObject, timeOut);
+            return isElementVisibleInViewport(driver, foundElement);
+        } finally {
+            if (isSwitchIntoFrame) {
+                switchToDefaultContent();
+            }
+        }
+    }
+
     public static boolean isElementVisibleInViewport(WebDriver driver, WebElement element) {
         Rectangle elementRect = WebUiCommonHelper.getElementRect(driver, element);
-        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_ELEMENT_RECT, elementRect.getX(), elementRect.getY(),
-                elementRect.getWidth(), elementRect.getHeight()));
-        Rectangle documentRect = new Rectangle(0, 0, WebUiCommonHelper.getViewportWidth(driver), WebUiCommonHelper.getViewportHeight(driver));
-        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_VIEWPORT_RECT, documentRect.getWidth(), documentRect.getHeight()));
+        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_ELEMENT_RECT, elementRect.getX(),
+                elementRect.getY(), elementRect.getWidth(), elementRect.getHeight()));
+        Rectangle documentRect = new Rectangle(0, 0, WebUiCommonHelper.getViewportWidth(driver),
+                WebUiCommonHelper.getViewportHeight(driver));
+        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_VIEWPORT_RECT, documentRect.getWidth(),
+                documentRect.getHeight()));
         return documentRect.intersects(elementRect);
+    }
+
+    public static List<WebElement> findWebElements(TestObject testObject, int timeOut) {
+        timeOut = WebUiCommonHelper.checkTimeout(timeOut);
+        final By locator = WebUiCommonHelper.buildLocator(testObject);
+        try {
+            if (locator != null) {
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID,
+                        testObject.getObjectId(), locator.toString(), timeOut));
+                // Handle firefox problems regarding issue
+                // https://code.google.com/p/selenium/issues/detail?id=4757
+                WebDriver webDriver = DriverFactory.getWebDriver();
+
+                float timeCount = 0;
+                long miliseconds = System.currentTimeMillis();
+                while (timeCount < timeOut) {
+                    try {
+                        List<WebElement> webElements = webDriver.findElements(locator);
+                        if (webElements != null && webElements.size() > 0) {
+                            logger.logInfo(MessageFormat.format(
+                                    StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS, webElements.size(),
+                                    testObject.getObjectId(), locator.toString(), timeOut));
+                            return webElements;
+                        }
+                    } catch (NoSuchElementException e) {
+                        // not found element yet, moving on
+                    }
+
+                    timeCount += ((System.currentTimeMillis() - miliseconds) / 1000);
+
+                    Thread.sleep(500);
+                    timeCount += 0.5;
+
+                    miliseconds = System.currentTimeMillis();
+                }
+            } else {
+                throw new IllegalArgumentException(MessageFormat.format(
+                        StringConstants.KW_EXC_WEB_ELEMENT_W_ID_DOES_NOT_HAVE_SATISFY_PROP, testObject.getObjectId()));
+            }
+        } catch (TimeoutException e) {
+            // timeOut, do nothing
+        } catch (InterruptedException e) {
+            // interrupted, do nothing
+        }
+        return Collections.emptyList();
+    }
+
+    public static WebElement findWebElement(TestObject testObject, int timeOut) throws WebElementNotFoundException {
+        List<WebElement> elements = findWebElements(testObject, timeOut);
+        if (elements != null && elements.size() > 0) {
+            return elements.get(0);
+        } else {
+            throw new WebElementNotFoundException(testObject.getObjectId(), buildLocator(testObject));
+        }
+    }
+
+    /**
+     * Internal method to switch to default content
+     * 
+     * @throws StepFailedException
+     */
+    public static void switchToDefaultContent() throws StepFailedException {
+        try {
+            if (DriverFactory.getAlert() != null) {
+                logger.logWarning(StringConstants.KW_LOG_WARNING_SWITCHING_TO_DEFAULT_CONTENT_FAILED_BC_ALERT_ON_PAGE);
+                return;
+            }
+            logger.logInfo(StringConstants.KW_LOG_INFO_SWITCHING_TO_DEFAULT_CONTENT);
+            DriverFactory.getWebDriver().switchTo().defaultContent();
+        } catch (NoSuchWindowException e) {
+            // Switching to default content in IE without in frame will raise
+            // this exception, so do nothing here.
+        } catch (WebDriverException e) {
+            // Switching to default content is optional, so exception will not
+            // make it fail, therefore only warn user about the exception
+            logger.logWarning(MessageFormat.format(
+                    StringConstants.KW_LOG_WARNING_SWITCHING_TO_DEFAULT_CONTENT_FAILED_BC_OF_X,
+                    ExceptionsUtil.getMessageForThrowable(e)));
+        }
+    }
+
+    /***
+     * Switch to parent frames if test object has parent objects
+     * 
+     * @param testObject
+     * @param timeOut
+     * @return
+     * @throws WebElementNotFoundException
+     */
+    public static boolean switchToParentFrame(TestObject testObject, int timeOut) throws WebElementNotFoundException {
+        TestObject parentObject = testObject != null ? testObject.getParentObject() : null;
+        List<TestObject> frames = new ArrayList<TestObject>();
+        while (parentObject != null) {
+            frames.add(parentObject);
+            parentObject = parentObject.getParentObject();
+        }
+        boolean isSwitchIntoFrame = false;
+        if (frames.size() > 0) {
+            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_OBJ_X_HAS_PARENT_FRAME,
+                    testObject.getObjectId()));
+            WebDriver webDriver = DriverFactory.getWebDriver();
+            for (int i = frames.size() - 1; i >= 0; i--) {
+                TestObject frameObject = frames.get(i);
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHING_TO_IFRAME_X,
+                        frameObject.getObjectId()));
+                WebElement frameElement = findWebElement(frameObject, timeOut);
+                if (frameElement != null) {
+                    webDriver.switchTo().frame(frameElement);
+                    isSwitchIntoFrame = true;
+                    logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHED_TO_IFRAME_X,
+                            frameObject.getObjectId()));
+                }
+            }
+        }
+        return isSwitchIntoFrame;
+    }
+
+    public static boolean switchToParentFrame(TestObject testObject) throws WebElementNotFoundException {
+        return switchToParentFrame(testObject, RunConfiguration.getTimeOut());
     }
 }

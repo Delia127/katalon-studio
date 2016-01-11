@@ -855,39 +855,20 @@ public class AstTreeTableInputUtil {
                         TestCasePreferenceDefaultValueInitializer.getDefaultFailureHandling().name());
             }
         }
-
-        if (existingParam instanceof MethodCallExpression) {
-            if (isObjectArgument((MethodCallExpression) existingParam)) {
-                Class<?> objectClass = null;
-                try {
-                    objectClass = Class.forName(classFullName);
-                } catch (ClassNotFoundException e) {
-                    // Class not found, do nothing
-                }
-                if (objectClass != null && TestObject.class.isAssignableFrom(objectClass)) {
-                    return existingParam;
-                } else {
-                    return new ConstantExpression(null);
-                }
-            }
-            if (isCallTestCaseArgument((MethodCallExpression) existingParam)) {
-                Class<?> testCaseClass = null;
-                try {
-                    testCaseClass = Class.forName(classFullName);
-                } catch (ClassNotFoundException e) {
-                    // Class not found, do nothing
-                }
-                if (testCaseClass != null && TestCase.class.isAssignableFrom(testCaseClass)) {
-                    return existingParam;
-                } else {
-                    return new ConstantExpression(null);
-                }
-            }
-
-            if (isTestDataValueArgument((MethodCallExpression) existingParam)) {
+        Class<?> objectClass = null;
+        try {
+            objectClass = Class.forName(classFullName);
+        } catch (ClassNotFoundException e) {
+            // Class not found, do nothing
+        }
+        if (objectClass != null && TestObject.class.isAssignableFrom(objectClass)) {
+            if (existingParam instanceof MethodCallExpression && isObjectArgument((MethodCallExpression) existingParam)) {
                 return existingParam;
+            } else {
+                return generateObjectMethodCall(null);
             }
         }
+
         if (existingParam instanceof VariableExpression || existingParam instanceof MapExpression
                 || existingParam instanceof CastExpression || existingParam instanceof BinaryExpression) {
             return existingParam;
@@ -963,10 +944,6 @@ public class AstTreeTableInputUtil {
             } else if (existingParam instanceof ConstantExpression) {
                 return new ConstantExpression(0);
             }
-        }
-
-        if ((classFullName.equals(TestObject.class.getName()) || classFullName.equals(TestObject.class.getSimpleName()))) {
-            return generateObjectMethodCall(null);
         }
         if (methodName.equals("delay") && paramName.equals("second")) {
             if (existingParam == null) {
@@ -1059,7 +1036,8 @@ public class AstTreeTableInputUtil {
     }
 
     public static boolean isGlobalVariablePropertyExpression(PropertyExpression propertyExprs) {
-        if (!(propertyExprs.getObjectExpression() instanceof VariableExpression)) return false;
+        if (!(propertyExprs.getObjectExpression() instanceof VariableExpression))
+            return false;
         if (propertyExprs.getObjectExpression().getText().equals(InputValueType.GlobalVariable.name())) {
             return true;
         } else {

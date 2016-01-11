@@ -249,7 +249,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 boolean elementNotFound = false;
                 final By locator = WebUiCommonHelper.buildLocator(to);
                 try {
@@ -283,7 +283,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -310,7 +310,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement foundElement = null;
                 try {
                     foundElement = findWebElement(to, timeOut);
@@ -324,7 +324,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -348,7 +348,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to, RunConfiguration.getTimeOut());
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, RunConfiguration.getTimeOut());
                 try {
                     WebElement foundElement = findWebElement(to, RunConfiguration.getTimeOut());
                     if (foundElement.isDisplayed()) {
@@ -366,7 +366,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -390,7 +390,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to, RunConfiguration.getTimeOut());
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, RunConfiguration.getTimeOut());
                 try {
                     WebElement foundElement = findWebElement(to, RunConfiguration.getTimeOut());
                     if (!foundElement.isDisplayed()) {
@@ -408,7 +408,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -435,7 +435,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 try {
                     WebElement foundElement = findWebElement(to, timeOut);
                     WebDriverWait wait = new WebDriverWait(DriverFactory.getWebDriver(), timeOut);
@@ -453,7 +453,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -480,7 +480,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 try {
                     WebElement foundElement = findWebElement(to, timeOut);
                     WebDriverWait wait = new WebDriverWait(DriverFactory.getWebDriver(), timeOut);
@@ -508,7 +508,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -536,7 +536,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 WebUiCommonHelper.checkTestObjectParameter(to);
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
                 try {
-                    isSwitchIntoFrame = switchToFrame(to, timeOut);
+                    isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                     WebElement foundElement = findWebElement(to, timeOut);
                     WebDriverWait wait = new WebDriverWait(DriverFactory.getWebDriver(), timeOut);
                     foundElement = wait.until(new ExpectedCondition<WebElement>() {
@@ -562,7 +562,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -590,7 +590,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 WebUiCommonHelper.checkTestObjectParameter(to);
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
                 try {
-                    isSwitchIntoFrame = switchToFrame(to, timeOut);
+                    isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                     WebElement foundElement = findWebElement(to, timeOut);
                     WebDriverWait wait = new WebDriverWait(DriverFactory.getWebDriver(), timeOut);
                     foundElement = wait.until(new ExpectedCondition<WebElement>() {
@@ -616,7 +616,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -641,7 +641,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
                 try {
-                    isSwitchIntoFrame = switchToFrame(to, RunConfiguration.getTimeOut());
+                    isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, RunConfiguration.getTimeOut());
                     WebElement foundElement = findWebElement(to, RunConfiguration.getTimeOut());
                     if (foundElement.isEnabled()) {
                         logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_IS_CLICKABLE, to.getObjectId()));
@@ -657,7 +657,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -682,7 +682,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
                 try {
-                    isSwitchIntoFrame = switchToFrame(to, RunConfiguration.getTimeOut());
+                    isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, RunConfiguration.getTimeOut());
                     WebElement foundElement = findWebElement(to, RunConfiguration.getTimeOut());
                     if (foundElement.isEnabled()) {
                         WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_IS_CLICKABLE, to.getObjectId()),
@@ -698,7 +698,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -720,14 +720,14 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CLICKING_ON_OBJ, to.getObjectId()));
                 webElement.click();
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_CLICKED, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -750,14 +750,14 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SUBMITTING_ON_FORM_CONTAINING_OBJ, to.getObjectId()));
                 webElement.submit();
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_FORM_CONTAINING_OBJ_IS_SUBMITTED, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -779,7 +779,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_DOUBLE_CLICK_ON_OBJ, to.getObjectId()));
                 Actions action = new Actions(DriverFactory.getWebDriver());
@@ -787,7 +787,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_IS_DOUBLE_CLICKED_ON, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -809,7 +809,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_RIGHT_CLICKING_ON_OBJ, to.getObjectId()));
                 Actions action = new Actions(DriverFactory.getWebDriver());
@@ -817,7 +817,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_IS_RIGHT_CLICKED_ON, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -842,7 +842,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (DriverFactory.getExecutedBrowser() == WebUIDriverType.IE_DRIVER) {
                     WebUiCommonHelper.focusOnBrowser();
                 }
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement hoverElement = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_MOVING_MOUSE_OVER_OBJ, to.getObjectId()));
                 Actions builder = new Actions(DriverFactory.getWebDriver());
@@ -850,7 +850,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_IS_HOVERED, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -876,14 +876,14 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (to == null) {
                     to = new TestObject("tempBody").addProperty("css", ConditionType.EQUALS, "body");
                 }
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SENDING_KEYS_TO_OBJ, strKeys, to.getObjectId()));
                 WebElement webElement = findWebElement(to);
                 webElement.sendKeys(strKeys);
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_KEYS_SENT_TO_OBJ, strKeys, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -905,7 +905,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement element = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FOCUSING_ON_OBJ, to.getObjectId()));
                 if ("input".equals(element.getTagName())) {
@@ -916,7 +916,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_IS_FOCUSED, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -941,14 +941,14 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             String text = "";
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement element = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_GETTING_OBJ_TXT, to.getObjectId()));
                 text = element.getText();
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_TXT_IS, to.getObjectId(), text));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
                 return text;
             }
@@ -980,14 +980,14 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (attribute == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_ATTR_IS_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement element = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_GETTING_OBJ_ATTR, attribute, to.getObjectId()));
                 attrValue = element.getAttribute(attribute);
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_ATTR_IS, attribute, to.getObjectId(), attrValue));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
                 return attrValue;
             }
@@ -1016,7 +1016,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (text == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_TXT_IS_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SETTING_OBJ_TXT_TO_VAL, to.getObjectId(), text));
                 webElement.clear();
@@ -1024,7 +1024,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TXT_IS_SET_ON_OBJ, text, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_SET_TXT_X_OF_OBJ_Y, text, to.getObjectId())
@@ -1045,7 +1045,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CHECKING_ON_OBJ, to.getObjectId()));
                 if (!webElement.isSelected()) {
@@ -1054,7 +1054,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_IS_CHECKED, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_CHECK_OBJ_X, to.getObjectId())
@@ -1075,7 +1075,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_UNCHECKING_ON_OBJ, to.getObjectId()));
                 if (webElement.isSelected()) {
@@ -1084,7 +1084,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_IS_UNCHECKED, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_UNCHECK_OBJ_X, to.getObjectId())
@@ -1118,14 +1118,14 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
                 Integer[] indexes = WebUiCommonHelper.indexRangeToArray(String.valueOf(range));
                 if (indexes.length > 0) {
-                    isSwitchIntoFrame = switchToFrame(to);
+                    isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                     WebElement webElement = findWebElement(to);
                     WebUiCommonHelper.selectOrDeselectOptionsByIndex(new Select(webElement), indexes, true, to);
                 }
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OPTS_W_INDEX_IN_X_ARE_SELECTED_ON_OBJ_Y, WebUiCommonHelper.integerArrayToString(indexes), to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null && range != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_SEL_OPT_BY_INDEX_X_OF_OBJ_Y, range, to.getObjectId())
@@ -1156,14 +1156,14 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (value == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_VAL_IS_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 Select select = new Select(webElement);
                 WebUiCommonHelper.selectOrDeselectOptionsByValue(new Select(webElement), value, isRegex, true, to, regularExpressionLog)
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SELECTED_ALL_OPT_W_VAL_X_IN_OBJ_Y, value, to.getObjectId(), regularExpressionLog));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null && value != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_SELECT_OPT_BY_VAL_OF_OBJ, value, to.getObjectId(), regularExpressionLog)
@@ -1185,13 +1185,13 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 WebUiCommonHelper.selectOrDeselectAllOptions(new Select(webElement), true, to)
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ALL_OBJ_OPTS_ARE_SELECTED, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_SELECT_ALL_OBJ_OPTS, to.getObjectId())
@@ -1222,13 +1222,13 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (labelText == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_LBL_IS_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 WebUiCommonHelper.selectOrDeselectOptionsByLabel(new Select(webElement), labelText, isRegex, true, to, regularExpressionLog)
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SELECTED_ALL_OPT_W_LBL_X_IN_OBJ_Y, labelText, to.getObjectId(), regularExpressionLog));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null && labelText != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_SEL_OPT_BY_LBL_OF_OBJ, labelText, to.getObjectId(), regularExpressionLog)
@@ -1262,7 +1262,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
                 Integer[] indexes = WebUiCommonHelper.indexRangeToArray(String.valueOf(range));
                 if (indexes.length > 0) {
-                    isSwitchIntoFrame = switchToFrame(to);
+                    isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                     WebElement webElement = findWebElement(to);
                     Select select = new Select(webElement);
                     WebUiCommonHelper.selectOrDeselectOptionsByIndex(select, indexes, false, to);
@@ -1270,7 +1270,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OPTS_W_IDX_IN_X_ARE_DESELECTED_ON_OBJ, WebUiCommonHelper.integerArrayToString(indexes), to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null && range != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_DESELECT_OPT_BY_IDX_OF_OBJ, range, to.getObjectId())
@@ -1301,13 +1301,13 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (value == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_VAL_IS_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 WebUiCommonHelper.selectOrDeselectOptionsByValue(new Select(webElement), value, isRegex, false, to, regularExpressionLog)
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OPTS_W_VAL_ARE_DESELECTED_ON_OBJ, value, to.getObjectId(), regularExpressionLog));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null && value != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_DESELECT_OPT_BY_VAL_OF_OBJ, value, to.getObjectId(), regularExpressionLog)
@@ -1339,14 +1339,14 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (labelText == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_LBL_IS_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 Select select = new Select(webElement);
                 WebUiCommonHelper.selectOrDeselectOptionsByLabel(new Select(webElement), labelText, isRegex, false, to, regularExpressionLog)
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_DESELECTED_OPTS_W_LBL_X_ON_OBJ, labelText, to.getObjectId(), regularExpressionLog));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null && labelText != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_DESEL_OPT_BY_LBL_OF_OBJ, labelText, to.getObjectId(), regularExpressionLog)
@@ -1368,14 +1368,14 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 Select selection = new Select(webElement);
                 WebUiCommonHelper.selectOrDeselectAllOptions(new Select(webElement), false, to)
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_DESELECTED_ALL_OPTS_ON_OBJ, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_SEL_ALL_OPTS_ON_OBJ, to.getObjectId())
@@ -1399,7 +1399,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement webElement = findWebElement(to, timeOut);
                 boolean isChecked = webElement.isSelected();
                 if (!isChecked) {
@@ -1411,7 +1411,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_IS_CHECKED, to.getObjectId())
@@ -1437,7 +1437,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement webElement = findWebElement(to, timeOut);
                 boolean isChecked = webElement.isSelected();
                 if (isChecked) {
@@ -1449,7 +1449,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_IS_NOT_CHECKED, to.getObjectId())
@@ -1474,7 +1474,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement foundElement = null;
                 foundElement = findWebElement(to, timeOut);
                 if (foundElement != null) {
@@ -1485,7 +1485,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 WebUIKeywordMain.stepFailed(ExceptionsUtil.getMessageForThrowable(ex), flowControl, null, true);
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -1512,7 +1512,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 boolean elementNotFound = false;
                 final By locator = WebUiCommonHelper.buildLocator(to);
                 try {
@@ -1548,7 +1548,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 WebUIKeywordMain.stepFailed(ExceptionsUtil.getMessageForThrowable(e), flowControl, null, true);
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -1963,7 +1963,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_COUNTING_TOTAL_OPTS_OF_OBJ_X, to.getObjectId()));
                 Select select = new Select(webElement);
@@ -1972,7 +1972,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 return num;
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return 0;
@@ -1997,7 +1997,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 Select select = new Select(webElement);
                 int num = 0;
@@ -2012,7 +2012,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 return num;
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return 0;
@@ -2049,7 +2049,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (label == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_LBL_CANNOT_BE_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement webElement = findWebElement(to, timeOut);
                 int numPresent = WebUiCommonHelper.getNumberOfOptionByLabel(new Select(webElement), label, isRegex,
                         to.getObjectId());
@@ -2062,7 +2062,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 return numPresent > 0;
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -2098,7 +2098,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (value == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_VAL_CANNOT_BE_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement webElement = findWebElement(to, timeOut);
                 int numPresent = WebUiCommonHelper.getNumberOfOptionByValue(new Select(webElement), value, isRegex,
                         to.getObjectId());
@@ -2111,7 +2111,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 return numPresent > 0;
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -2149,7 +2149,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (label == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_LBL_CANNOT_BE_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement webElement = findWebElement(to, timeOut);
                 numPresent = WebUiCommonHelper.getNumberOfOptionByLabel(new Select(webElement), label, isRegex,
                         to.getObjectId());
@@ -2161,7 +2161,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
                 return numPresent == 0;
             }
@@ -2198,7 +2198,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (value == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_VAL_CANNOT_BE_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement webElement = findWebElement(to, timeOut);
                 int numPresent = WebUiCommonHelper.getNumberOfOptionByValue(new Select(webElement), value, isRegex,
                         to.getObjectId());
@@ -2212,7 +2212,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 return numPresent == 0;
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -2249,7 +2249,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (label == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_LBL_CANNOT_BE_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement webElement = findWebElement(to, timeOut);
                 Select select = new Select(webElement);
                 int numLabelOptions = WebUiCommonHelper.getNumberOfOptionByLabel(select, label, isRegex, to.getObjectId());
@@ -2267,7 +2267,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 return (numLabelOptions > 0 && (numSelectedOptions == numLabelOptions));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -2304,7 +2304,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (value == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_VAL_CANNOT_BE_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement webElement = findWebElement(to, timeOut);
                 Select select = new Select(webElement);
                 int numValueOptions = WebUiCommonHelper.getNumberOfOptionByValue(select, value, isRegex, to.getObjectId());
@@ -2322,7 +2322,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 return (numValueOptions > 0 && (numSelectedOptions == numValueOptions));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -2359,7 +2359,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (label == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_LBL_CANNOT_BE_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement webElement = findWebElement(to, timeOut);
                 Select select = new Select(webElement);
                 int numLabelOptions = WebUiCommonHelper.getNumberOfOptionByLabel(select, label, isRegex, to.getObjectId());
@@ -2378,7 +2378,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 return (numLabelOptions > 0 && (numNotSelectedOptions == numLabelOptions));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null && label != null) ?
@@ -2414,7 +2414,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (value == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_VAL_CANNOT_BE_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement webElement = findWebElement(to, timeOut);
                 Select select = new Select(webElement);
                 int numValueOptions = WebUiCommonHelper.getNumberOfOptionByValue(select, value, isRegex, to.getObjectId());
@@ -2432,7 +2432,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 return (numValueOptions > 0 && (numNotSelectedOptions == numValueOptions));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null && value != null) ?
@@ -2466,7 +2466,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (range == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_INDEX_RANGE_CANNOT_BE_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement webElement = findWebElement(to, timeOut);
                 Select select = new Select(webElement);
                 Integer[] indexes = WebUiCommonHelper.indexRangeToArray(String.valueOf(range));
@@ -2486,7 +2486,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null && range != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OPT_IS_SELECTED_IN_IDX_RANGE_X_IN_OBJ, range, to.getObjectId())
@@ -2519,7 +2519,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (range == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_INDEX_RANGE_CANNOT_BE_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement webElement = findWebElement(to, timeOut);
                 Select select = new Select(webElement);
                 Integer[] indexes = WebUiCommonHelper.indexRangeToArray(String.valueOf(range));
@@ -2538,7 +2538,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, (to != null && range != null) ?
@@ -2556,30 +2556,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_FRAME)
     public static void switchToDefaultContent(FailureHandling flowControl) throws StepFailedException {
-        WebUIKeywordMain.runKeyword({ switchToDefaultContent(); } , flowControl, true, StringConstants.KW_MSG_CANNOT_SWITCH_TO_DEFAULT_CONTENT)
-    }
-
-    /**
-     * Internal method to switch to default content
-     * @throws StepFailedException
-     */
-    @CompileStatic
-    public static void switchToDefaultContent() throws StepFailedException {
-        try {
-            if (DriverFactory.getAlert() != null) {
-                logger.logWarning(StringConstants.KW_LOG_WARNING_SWITCHING_TO_DEFAULT_CONTENT_FAILED_BC_ALERT_ON_PAGE);
-                return;
-            }
-            logger.logInfo(StringConstants.KW_LOG_INFO_SWITCHING_TO_DEFAULT_CONTENT);
-            DriverFactory.getWebDriver().switchTo().defaultContent();
-        } catch (NoSuchWindowException e) {
-            // Switching to default content in IE without in frame will raise
-            // this exception, so do nothing here.
-        } catch (WebDriverException e) {
-            // Switching to default content is optional, so exception will not
-            // make it fail, therefore only warn user about the exception
-            logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_SWITCHING_TO_DEFAULT_CONTENT_FAILED_BC_OF_X, ExceptionsUtil.getMessageForThrowable(e)));
-        }
+        WebUIKeywordMain.runKeyword({ WebUiCommonHelper.switchToDefaultContent(); } , flowControl, true, StringConstants.KW_MSG_CANNOT_SWITCH_TO_DEFAULT_CONTENT)
     }
 
     /**
@@ -2786,7 +2763,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static void dragAndDropToObject(TestObject sourceObject, TestObject destinationObject,
             FailureHandling flowControl) {
         WebUIKeywordMain.runKeyword({
-            boolean isSwitchToFrame = false;
+            boolean isSwitchIntoFrame = false;
             try {
                 logger.logInfo(StringConstants.KW_LOG_INFO_CHK_SRC_OBJ);
                 if (sourceObject == null) {
@@ -2799,14 +2776,14 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_START_DRAGGING_OBJ_W_ID_X_TO_OBJ_W_ID_Y, sourceObject.getObjectId(), destinationObject));
 
                 Actions builder = new Actions(DriverFactory.getWebDriver());
-                isSwitchToFrame = switchToFrame(sourceObject);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(sourceObject);
                 builder.clickAndHold(findWebElement(sourceObject));
                 builder.perform();
                 Thread.sleep(250);
-                if (isSwitchToFrame) {
-                    switchToDefaultContent();
+                if (isSwitchIntoFrame) {
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
-                isSwitchToFrame = switchToFrame(destinationObject);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(destinationObject);
 
                 WebElement destinationWebElement = findWebElement(destinationObject);
                 builder.moveToElement(destinationWebElement, 5, 5);
@@ -2817,8 +2794,8 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_DRAGGED_OBJ_W_ID_X_TO_OBJ_W_ID_Y, sourceObject.getObjectId(), destinationObject))
             } finally {
-                if (isSwitchToFrame) {
-                    switchToDefaultContent();
+                if (isSwitchIntoFrame) {
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, StringConstants.KW_MSG_CANNOT_DRAG_AND_DROP_TO_OBJ)
@@ -2840,20 +2817,20 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static void dragAndDropByOffset(TestObject sourceObject, int xOffset, int yOffset,
             FailureHandling flowControl) {
         WebUIKeywordMain.runKeyword({
-            boolean isSwitchToFrame = false;
+            boolean isSwitchIntoFrame = false;
             try {
                 logger.logInfo(StringConstants.KW_LOG_INFO_CHK_SRC_OBJ);
                 if (sourceObject == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_SRC_OBJ_IS_NULL);
                 }
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_START_DRAGGING_OBJ_BY_OFFSET_DISTANCE_X_Y, sourceObject.getObjectId(), xOffset, yOffset));
-                isSwitchToFrame = switchToFrame(sourceObject);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(sourceObject);
                 (new Actions(DriverFactory.getWebDriver())).dragAndDropBy(findWebElement(sourceObject), xOffset, yOffset)
                         .perform();
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_DRAGGED_OBJ_BY_OFFSET_DISTANCE_X_Y, sourceObject.getObjectId(), xOffset, yOffset));
             } finally {
-                if (isSwitchToFrame) {
-                    switchToDefaultContent();
+                if (isSwitchIntoFrame) {
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         } , flowControl, true, StringConstants.KW_MSG_CANNOT_DRAG_AND_DROP_BY_OFFSET_DISTANCE)
@@ -2862,100 +2839,129 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     /**
      * Navigate to a page that requires authentication. System will enter username and password
      * @param url
-     *          url of the page to navigate
+     *          url of the page to navigate (optional)
      * @param userName
      *          username to authenticate
      * @param password
      *          password to authenticate
-     * @param  
+     * @param timeout 
      *          time to wait since navigating to the page until entering username
      * @param flowControl
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
-    //public static void authenticate(final String url, String userName, String password, int timeout,
-    //        FailureHandling flowControl) {
-    public static void authenticate(String userName, String password, FailureHandling flowControl) {
+    public static void authenticate(final String url, String userName, String password, int timeout,
+            FailureHandling flowControl) {
+    //public static void authenticate(String userName, String password, FailureHandling flowControl) {
 
         WebUIKeywordMain.runKeyword({
-
-            if (System.getProperty("os.name") == null || !System.getProperty("os.name").toLowerCase().contains("win")) {
-                throw new Exception("Unsupported platform (only support Windows)");
-            }
-
-            if(DriverFactory.getExecutedBrowser() != WebUIDriverType.IE_DRIVER &&
-            DriverFactory.getExecutedBrowser() != WebUIDriverType.FIREFOX_DRIVER &&
-            DriverFactory.getExecutedBrowser() != WebUIDriverType.CHROME_DRIVER){
-                throw new Exception("Unsupported browser (only support IE, FF, Chrome)");
-            }
-
-            KeywordLogger.getInstance().logInfo(StringConstants.KW_LOG_INFO_CHECKING_USERNAME);
-            if (userName == null) {
-                throw new IllegalArgumentException(StringConstants.KW_EXC_USERNAME_IS_NULL);
-            }
-            KeywordLogger.getInstance().logInfo(StringConstants.KW_LOG_INFO_CHECKING_PASSWORD);
-            if (password == null) {
-                throw new IllegalArgumentException(StringConstants.KW_EXC_PASSWORD_IS_NULL);
-            }
-
-            WebDriver driver = DriverFactory.getWebDriver();
-
-            // send username and pasword to authentication popup
-            //screenUtil.authenticate(userName, password);
-            File kmsIeFolder = FileUtil.getKmsIeDriverDirectory();
-            File authFolder = FileUtil.getAuthenticationDirectory();
-            File userNameParamFile = new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set user name" + File.separator + "paramter0");
-            File passwordParamFile = new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set password" + File.separator + "paramter0");
-
-            //Set user name
-            FileUtils.writeStringToFile(userNameParamFile, userName, false);
-            String[] cmd = [kmsIeFolder.getAbsolutePath() + "/kmsie.exe", userNameParamFile.getParent()];
-            Process proc = Runtime.getRuntime().exec(cmd);
-            //The default timeout for this task is 10s (implemented inside KMS IE Driver)
-            proc.waitFor();
-            //Check result
-            String resStatus = FileUtils.readFileToString(
-                    new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set user name" + File.separator + "result_status"),
-                    "UTF-8");
-            if(!"PASSED".equals(resStatus.trim())){
-                //Should consider to read result_message
-                String errMsg = FileUtils.readFileToString(
-                        new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set user name" + File.separator + "result_message"),
-                        "UTF-8");
-                throw new Exception("Failed to set user name on Authentication dialog: " + errMsg);
-            }
-
-            //Set password
-            FileUtils.writeStringToFile(passwordParamFile, password, false);
-            cmd = [kmsIeFolder.getAbsolutePath() + "/kmsie.exe", passwordParamFile.getParent()];
-            proc = Runtime.getRuntime().exec(cmd);
-            proc.waitFor();
-            resStatus = FileUtils.readFileToString(
-                    new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set password" + File.separator + "result_status"),
-                    "UTF-8");
-            if(!"PASSED".equals(resStatus.trim())){
-                String errMsg = FileUtils.readFileToString(
-                        new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set password" + File.separator + "result_message"),
-                        "UTF-8");
-                throw new Exception("Failed to set password on Authentication dialog: " + errMsg);
-            }
-
-            //Click OK
-            cmd = [kmsIeFolder.getAbsolutePath() + "/kmsie.exe", new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "click ok").getAbsolutePath()];
-            proc = Runtime.getRuntime().exec(cmd);
-            proc.waitFor();
-            resStatus = FileUtils.readFileToString(
-                    new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "click ok" + File.separator + "result_status"),
-                    "UTF-8");
-            if(!"PASSED".equals(resStatus.trim())){
-                String errMsg = FileUtils.readFileToString(
-                        new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "click ok" + File.separator + "result_message"),
-                        "UTF-8");
-                throw new Exception("Failed to click OK button on Authentication dialog: " + errMsg);
-            }
-
-            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_NAVIAGTED_TO_AUTHENTICATED_PAGE, userName, password));
-
+			
+			Thread navigateThread = null;
+			
+			try{
+				
+				if (System.getProperty("os.name") == null || !System.getProperty("os.name").toLowerCase().contains("win")) {
+					throw new Exception("Unsupported platform (only support Windows)");
+				}
+	
+				if(DriverFactory.getExecutedBrowser() != WebUIDriverType.IE_DRIVER &&
+				DriverFactory.getExecutedBrowser() != WebUIDriverType.FIREFOX_DRIVER &&
+				DriverFactory.getExecutedBrowser() != WebUIDriverType.CHROME_DRIVER){
+					throw new Exception("Unsupported browser (only support IE, FF, Chrome)");
+				}
+	
+				timeout = WebUiCommonHelper.checkTimeout(timeout);
+				
+				KeywordLogger.getInstance().logInfo(StringConstants.KW_LOG_INFO_CHECKING_USERNAME);
+				if (userName == null) {
+					throw new IllegalArgumentException(StringConstants.KW_EXC_USERNAME_IS_NULL);
+				}
+				KeywordLogger.getInstance().logInfo(StringConstants.KW_LOG_INFO_CHECKING_PASSWORD);
+				if (password == null) {
+					throw new IllegalArgumentException(StringConstants.KW_EXC_PASSWORD_IS_NULL);
+				}
+	
+				WebDriver driver = DriverFactory.getWebDriver();
+				
+				if(url != null && !url.equals("")){
+					navigateThread = new Thread() {
+						public void run() {
+							driver.get(url);
+						}
+					};
+					navigateThread.start();
+					//Wait for secured page is fully loaded
+					Thread.sleep(timeout * 1000);
+					
+					/*if (DriverFactory.getExecutedBrowser() == WebUIDriverType.IE_DRIVER) {
+						if(DriverFactory.getWebDriver().getTitle().trim().startsWith("Certificate Error")){
+							DriverFactory.getWebDriver().get("javascript:{document.getElementById('overridelink').click();}");
+							Thread.sleep(3000);
+						}
+					}*/
+				}
+				
+				// send username and pasword to authentication popup
+				//screenUtil.authenticate(userName, password);
+				File kmsIeFolder = FileUtil.getKmsIeDriverDirectory();
+				File authFolder = FileUtil.getAuthenticationDirectory();
+				File userNameParamFile = new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set user name" + File.separator + "paramter0");
+				File passwordParamFile = new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set password" + File.separator + "paramter0");
+	
+				//Set user name
+				FileUtils.writeStringToFile(userNameParamFile, userName, false);
+				String[] cmd = [kmsIeFolder.getAbsolutePath() + "/kmsie.exe", userNameParamFile.getParent()];
+				Process proc = Runtime.getRuntime().exec(cmd);
+				//The default timeout for this task is 10s (implemented inside KMS IE Driver)
+				proc.waitFor();
+				//Check result
+				String resStatus = FileUtils.readFileToString(
+						new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set user name" + File.separator + "result_status"),
+						"UTF-8");
+				if(!"PASSED".equals(resStatus.trim())){
+					//Should consider to read result_message
+					String errMsg = FileUtils.readFileToString(
+							new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set user name" + File.separator + "result_message"),
+							"UTF-8");
+					throw new Exception("Failed to set user name on Authentication dialog: " + errMsg);
+				}
+	
+				//Set password
+				FileUtils.writeStringToFile(passwordParamFile, password, false);
+				cmd = [kmsIeFolder.getAbsolutePath() + "/kmsie.exe", passwordParamFile.getParent()];
+				proc = Runtime.getRuntime().exec(cmd);
+				proc.waitFor();
+				resStatus = FileUtils.readFileToString(
+						new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set password" + File.separator + "result_status"),
+						"UTF-8");
+				if(!"PASSED".equals(resStatus.trim())){
+					String errMsg = FileUtils.readFileToString(
+							new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set password" + File.separator + "result_message"),
+							"UTF-8");
+					throw new Exception("Failed to set password on Authentication dialog: " + errMsg);
+				}
+	
+				//Click OK
+				cmd = [kmsIeFolder.getAbsolutePath() + "/kmsie.exe", new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "click ok").getAbsolutePath()];
+				proc = Runtime.getRuntime().exec(cmd);
+				proc.waitFor();
+				resStatus = FileUtils.readFileToString(
+						new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "click ok" + File.separator + "result_status"),
+						"UTF-8");
+				if(!"PASSED".equals(resStatus.trim())){
+					String errMsg = FileUtils.readFileToString(
+							new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "click ok" + File.separator + "result_message"),
+							"UTF-8");
+					throw new Exception("Failed to click OK button on Authentication dialog: " + errMsg);
+				}
+	
+				logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_NAVIAGTED_TO_AUTHENTICATED_PAGE, userName, password));
+			}
+			finally{
+				if (navigateThread != null && navigateThread.isAlive()) {
+					navigateThread.interrupt();
+				}
+			}
         } , flowControl, true, StringConstants.KW_MSG_CANNOT_NAV_TO_AUTHENTICATED_PAGE)
     }
 
@@ -3111,12 +3117,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     public static WebElement findWebElement(TestObject to, int timeOut = RunConfiguration.getTimeOut()) throws IllegalArgumentException, WebElementNotFoundException, StepFailedException {
-        List<WebElement> elements = findWebElements(to, timeOut);
-        if (elements != null && elements.size() > 0) {
-            return elements.get(0);
-        } else {
-            throw new WebElementNotFoundException(to.getObjectId(), WebUiCommonHelper.buildLocator(to));
-        }
+        return WebUiCommonHelper.findWebElement(to, timeOut);
     }
 
     /**
@@ -3134,53 +3135,18 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     public static List<WebElement> findWebElements(TestObject to, int timeOut) throws WebElementNotFoundException {
-        timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-        final By locator = WebUiCommonHelper.buildLocator(to);
-        try {
-            if (locator != null) {
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID, to.getObjectId(), locator.toString(), timeOut));
-                // Handle firefox problems regarding issue
-                // https://code.google.com/p/selenium/issues/detail?id=4757
-                WebDriver webDriver = DriverFactory.getWebDriver();
-
-                float timeCount = 0;
-                long miliseconds = System.currentTimeMillis();
-                while (timeCount < timeOut) {
-                    try {
-                        List<WebElement> webElements = webDriver.findElements(locator);
-                        if (webElements != null && webElements.size() > 0) {
-                            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS, webElements.size(),
-                                    to.getObjectId(), locator.toString(), timeOut));
-                            return webElements;
-                        }
-                    } catch (NoSuchElementException e) {
-                        // not found element yet, moving on
-                    }
-
-                    timeCount += ((System.currentTimeMillis() - miliseconds) / 1000);
-
-                    Thread.sleep(500);
-                    timeCount += 0.5;
-
-                    miliseconds = System.currentTimeMillis();
-                }
-            } else {
-                throw new IllegalArgumentException(MessageFormat.format(StringConstants.KW_EXC_WEB_ELEMENT_W_ID_DOES_NOT_HAVE_SATISFY_PROP, to.getObjectId()));
-            }
-        } catch (TimeoutException e) {
-            // timeOut, do nothing
-        } catch (InterruptedException e) {
-            // interrupted, do nothing
-        }
-        return Collections.emptyList();
+        return WebUiCommonHelper.findWebElements(to, timeOut);
     }
-
+    
     /**
-     * Switch to the parent frames of web element if element has parent frames
+     * Switch the current context into an iframe
      * @param to
      *      represent a web element
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
      * @return
-     *      true if is switched to the parent frame; otherwise, false
+     *      true if the current context is switched to the iframe; otherwise, false
      * @throws IllegalArgumentException
      * @throws WebElementNotFoundException
      * @throws StepFailedException
@@ -3188,30 +3154,23 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_FRAME)
-    public static boolean switchToFrame(TestObject to, int timeOut = RunConfiguration.getTimeOut()) throws IllegalArgumentException,
+    public static boolean switchToFrame(TestObject to, int timeOut, FailureHandling flowControl) throws IllegalArgumentException,
     WebElementNotFoundException, StepFailedException, WebDriverException {
-        TestObject parentObject = to != null ? to.getParentObject() : null;
-        List<TestObject> frames = new ArrayList<TestObject>();
-        while (parentObject != null) {
-            frames.add(parentObject);
-            parentObject = parentObject.getParentObject();
-        }
-        boolean isSwitchIntoFrame = false;
-        if (frames.size() > 0) {
-            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_OBJ_X_HAS_PARENT_FRAME, to.getObjectId()));
-            WebDriver webDriver = DriverFactory.getWebDriver();
-            for (int i = frames.size() - 1; i >= 0; i--) {
-                TestObject frameObject = frames.get(i);
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHING_TO_IFRAME_X, frameObject.getObjectId()));
-                WebElement frameElement = findWebElement(frameObject, timeOut);
-                if (frameElement != null) {
-                    webDriver.switchTo().frame(frameElement);
-                    isSwitchIntoFrame = true;
-                    logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHED_TO_IFRAME_X, frameObject.getObjectId()));
-                }
+        return WebUIKeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
+            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHING_TO_IFRAME_X,
+                    to.getObjectId()));
+            WebElement frameElement = WebUiCommonHelper.findWebElement(to, timeOut);
+            if (frameElement != null) {
+                DriverFactory.getWebDriver().switchTo().frame(frameElement);
+                isSwitchIntoFrame = true;
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHED_TO_IFRAME_X,
+                        to.getObjectId()));
             }
-        }
-        return isSwitchIntoFrame;
+            return isSwitchIntoFrame;
+        } , flowControl, true, (to != null) ?
+        MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_IMG_X_PRESENT, to.getObjectId()) :
+        StringConstants.KW_LOG_FAILED_SWITCHED_TO_IFRAME)
     }
 
     /**
@@ -3249,14 +3208,14 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to)
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_UPLOADING_FILE_X_TO_OBJ_Y, fileAbsolutePath, to.getObjectId()));
                 WebElement webElement = findWebElement(to);
                 webElement.sendKeys(fileAbsolutePath);
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_FILE_X_SENT_TO_OBJ_Y, fileAbsolutePath, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -3282,14 +3241,14 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to)
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SCROLLING_TO_OBJ_X, to.getObjectId()));
                 ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript("arguments[0].scrollIntoView();", webElement);
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SCROLLING_TO_OBJ_X, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
         }
@@ -3310,14 +3269,8 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
     public static boolean verifyElementVisibleInViewport(TestObject to, int timeOut, FailureHandling flowControl) {
         WebUIKeywordMain.runKeyword({
-            boolean isSwitchIntoFrame = false;
             try {
-                WebUiCommonHelper.checkTestObjectParameter(to);
-                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                WebDriver driver = DriverFactory.getWebDriver();
-                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
-                WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
-                if (WebUiCommonHelper.isElementVisibleInViewport(driver, foundElement)) {
+                if (WebUiCommonHelper.isElementVisibleInViewport(DriverFactory.getWebDriver(), to, timeOut)) {
                     KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_VISIBLE_IN_VIEWPORT, to.getObjectId()));
                     return true;
                 }  else {
@@ -3326,10 +3279,6 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } catch (WebElementNotFoundException ex) {
                 logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
-            } finally {
-                if (isSwitchIntoFrame) {
-                    WebUiBuiltInKeywords.switchToDefaultContent();
-                }
             }
             return false;
         }
@@ -3350,14 +3299,8 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
     public static boolean verifyElementNotVisibleInViewport(TestObject to, int timeOut, FailureHandling flowControl) {
         WebUIKeywordMain.runKeyword({
-            boolean isSwitchIntoFrame = false;
             try {
-                WebUiCommonHelper.checkTestObjectParameter(to);
-                timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                WebDriver driver = DriverFactory.getWebDriver();
-                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
-                WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
-                if (WebUiCommonHelper.isElementVisibleInViewport(driver, foundElement)) {
+                if (WebUiCommonHelper.isElementVisibleInViewport(DriverFactory.getWebDriver(), to, timeOut)) {
                     WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_NOT_VISIBLE_IN_VIEWPORT, to.getObjectId()), flowControl, null, true);
                     return false;
                 }  else {
@@ -3366,12 +3309,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             } catch (WebElementNotFoundException ex) {
                 logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
-            } finally {
-                if (isSwitchIntoFrame) {
-                    WebUiBuiltInKeywords.switchToDefaultContent();
-                }
             }
-            return false;
         }
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_NOT_VISIBLE_IN_VIEWPORT, to.getObjectId())
         : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_NOT_VISIBLE_IN_VIEWPORT)
@@ -3434,7 +3372,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
                 if (foundElement.getAttribute(attributeName) != null) {
                     KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
@@ -3447,7 +3385,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    WebUiBuiltInKeywords.switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -3479,7 +3417,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
                 if (foundElement.getAttribute(attributeName) == null) {
                     KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_NOT_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
@@ -3492,7 +3430,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    WebUiBuiltInKeywords.switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -3526,7 +3464,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
                 if (foundElement.getAttribute(attributeName) != null) {
                     if (foundElement.getAttribute(attributeName).equals(attributeValue)) {
@@ -3547,7 +3485,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
             } finally {
                 if (isSwitchIntoFrame) {
-                    WebUiBuiltInKeywords.switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -3579,7 +3517,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
                 Boolean hasAttribute = new FluentWait<WebElement>(foundElement)
                         .pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeOut, TimeUnit.SECONDS)
@@ -3599,7 +3537,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
             } finally {
                 if (isSwitchIntoFrame) {
-                    WebUiBuiltInKeywords.switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -3631,7 +3569,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
                 Boolean notHasAttribute = new FluentWait<WebElement>(foundElement)
                         .pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeOut, TimeUnit.SECONDS)
@@ -3643,16 +3581,16 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                         });
                 if (notHasAttribute) {
                     logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
-                    return false;
+                    return true;
                 }
             } catch (WebElementNotFoundException ex) {
                 logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_WARNING_OBJ_X_IS_NOT_PRESENT, to.getObjectId()));
             } catch (TimeoutException e) {
                 logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
-                return true;
+                return false;
             } finally {
                 if (isSwitchIntoFrame) {
-                    WebUiBuiltInKeywords.switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -3686,7 +3624,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
                 Boolean hasAttributeValue = new FluentWait<WebElement>(foundElement)
                         .pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeOut, TimeUnit.SECONDS)
@@ -3706,7 +3644,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_FAILED_WAIT_FOR_OBJ_X_HAS_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue));
             } finally {
                 if (isSwitchIntoFrame) {
-                    WebUiBuiltInKeywords.switchToDefaultContent();
+                    WebUiCommonHelper.switchToDefaultContent();
                 }
             }
             return false;
@@ -3788,7 +3726,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, true, StringConstants.KW_MSG_CANNOT_GET_PAGE_WIDTH)
     }
-    
+
     /**
      * Get current web page's height
      * @param flowControl
@@ -3809,7 +3747,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, true, StringConstants.KW_MSG_CANNOT_GET_PAGE_HEIGHT)
     }
-    
+
     /**
      * Get current view port left (x) position relatively to the web page
      * @param flowControl
@@ -3826,7 +3764,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, true, StringConstants.KW_MSG_CANNOT_GET_VIEWPORT_LEFT_POSITION)
     }
-    
+
     /**
      * Get current view port top (y) position relatively to the web page
      * @param flowControl

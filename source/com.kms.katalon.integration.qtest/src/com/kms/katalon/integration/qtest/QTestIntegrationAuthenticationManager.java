@@ -54,7 +54,7 @@ public class QTestIntegrationAuthenticationManager {
             break;
         }
         case V7: {
-            requestResult = QTestHttpRequestHelper.getToken(qTestCrediential, "/oauth/token");
+            requestResult = QTestHttpRequestHelper.getV7Token(qTestCrediential, "/oauth/token");
             break;
         }
         default:
@@ -62,6 +62,20 @@ public class QTestIntegrationAuthenticationManager {
         }
 
         return QTestTokenManager.getToken(requestResult);
+    }
+    
+    public static boolean terminateToken(IQTestCredential credential, IQTestToken token) throws QTestException {
+        switch (credential.getVersion()) {
+        case V6: {
+            return true;
+        }
+        case V7: {
+            QTestAPIRequestHelper.sendPostRequestViaAPI("/oauth/revoke", token, "");
+            return true;
+        }
+        default:
+            return false;
+        }
     }
 
     private static String getTokenViaQTestV6(String serverURL, String username, String password) throws QTestException {

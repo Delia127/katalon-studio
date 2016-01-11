@@ -24,18 +24,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_IMAGE_CLOSE_SEARCH_TOOLTIP = CLEAR;
     public static final String DIA_KEYWORD_SEARCH_ALL = "all";
 
-    // VariableBuilderDialog
-    public static final String DIA_TITLE_NEW_VAR = "New Variable";
-    public static final String DIA_TITLE_EDIT_VAR = "Edit Variable";
-    public static final String DIA_ERROR_MSG_INVALID_VAR_NAME = "Variable's name is not a valid qualifier";
-    public static final String DIA_LBL_DEFAULT_VALUE = "Default Value";
-    public static final String DIA_LBL_VALUE_TYPE = "Value Type";
-    public static final String DIA_INFO_MSG_CREATE_NEW_VAR = "Create a new variable";
-    public static final String DIA_INFO_MSG_EDIT_NEW_VAR = "Edit an existing variable";
-    public static final String DIA_CTRL_VAR_INFO = "Variable names are case-sensitive.\n"
-            + "A variable's name can be any letters, digits, the dollar sign \"$\", or the underscore charater \"_\".\n"
-            + "However, it cannot start with a digit.";
-
     // FolderTreeEntity
     public static final String TREE_FOLDER_TYPE_NAME = FOLDER;
 

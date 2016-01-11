@@ -39,8 +39,7 @@ public class TestStepLogRecord extends AbstractLogRecord {
 
 	@Override
 	public TestStatus getStatus() {
-		TestStatus testStatus = new TestStatus();
-		testStatus.setStatusValue(TestStatusValue.PASSED);
+		TestStatus testStatus = super.getStatus();
 		 
         if (childRecords == null || childRecords.size() == 0) { return testStatus; }
         

@@ -16,4 +16,8 @@ public class QTestInvalidFormatException extends QTestException {
         return new QTestInvalidFormatException(MessageFormat.format(QTestMessageConstants.QTEST_INVALID_JSON_FORMAT,
                 message));
     }
+    
+    public static QTestInvalidFormatException createInvalidTokenException(String message) {
+        return new QTestInvalidFormatException(message);
+    }
 }

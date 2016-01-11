@@ -415,7 +415,7 @@ public class QTestIntegrationTestSuiteManager {
     public static QTestSuite uploadTestSuite(IQTestCredential credentials, String name, String description,
             QTestSuiteParent parent, QTestProject qTestProject) throws QTestException {
 
-        String token = credentials.getToken().getAccessToken();
+        String token = credentials.getToken().getAccessTokenHeader();
         String serverUrl = credentials.getServerUrl();
 
         if (!QTestIntegrationAuthenticationManager.validateToken(token)) {
@@ -461,7 +461,7 @@ public class QTestIntegrationTestSuiteManager {
     public static QTestSuite getDuplicatedTestSuiteOnQTest(IQTestCredential credentials, String name,
             QTestSuiteParent parent, QTestProject qTestProject) throws QTestUnauthorizedException,
             QTestInvalidFormatException {
-        String token = credentials.getToken().getAccessToken();
+        String token = credentials.getToken().getAccessTokenHeader();
         String serverUrl = credentials.getServerUrl();
 
         if (!QTestIntegrationAuthenticationManager.validateToken(token)) {
@@ -663,7 +663,7 @@ public class QTestIntegrationTestSuiteManager {
             IQTestCredential credentials) throws QTestInvalidFormatException {
         List<QTestRun> qTestRuns = new ArrayList<QTestRun>();
 
-        QTestCredentials qTestCredentials = new BasicQTestCredentials(credentials.getToken().getAccessToken());
+        QTestCredentials qTestCredentials = new BasicQTestCredentials(credentials.getToken().getAccessTokenHeader());
 
         TestExecutionService service = new TestExecutionServiceClient(qTestCredentials);
         service.setEndpoint(credentials.getServerUrl());
