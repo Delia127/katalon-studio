@@ -161,6 +161,15 @@ public class BuiltinKeywords {
         , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJECTS_ARE_NOT_EQUAL, actualObject, expectedObject))
     }
 
+    /**
+     * Verify if the actual number is greater than the expected number
+     * @param actualNumber
+     * @param expectedNumber
+     * @param flowControl
+     * @return
+     *      true the actual number is greater than the expected number; otherwise false
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_NUMBER)
     public static boolean verifyGreaterThan(Object actualNumber, Object expectedNumber, FailureHandling flowControl) throws StepFailedException {
@@ -177,6 +186,15 @@ public class BuiltinKeywords {
         , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_GREATER, actualNumber, expectedNumber))
     }
 
+    /**
+     * Verify if the actual number is greater than or equal with the expected number
+     * @param actualNumber
+     * @param expectedNumber
+     * @param flowControl
+     * @return
+     *      true the actual number is greater than or equal with the expected number ; otherwise false
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_NUMBER)
     public static boolean verifyGreaterThanOrEqual(Object actualNumber, Object expectedNumber, FailureHandling flowControl) throws StepFailedException {
@@ -192,6 +210,15 @@ public class BuiltinKeywords {
         , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_NUMS_ARE_GT_OR_EQ, actualNumber, expectedNumber))
     }
 
+    /**
+     * Verify if the actual number is less than the expected number
+     * @param actualNumber
+     * @param expectedNumber
+     * @param flowControl
+     * @return
+     *      true the actual number is less than the expected number; otherwise false
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_NUMBER)
     public static boolean verifyLessThan(Object actualNumber, Object expectedNumber, FailureHandling flowControl) throws StepFailedException {
@@ -208,6 +235,15 @@ public class BuiltinKeywords {
         , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_LT, actualNumber, expectedNumber))
     }
 
+    /**
+     * Verify if the actual number is less than or equal with the expected number
+     * @param actualNumber
+     * @param expectedNumber
+     * @param flowControl
+     * @return
+     *      true the actual number is less than or equal with the expected number; otherwise false
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_NUMBER)
     public static boolean verifyLessThanOrEqual(Object actualNumber, Object expectedNumber, FailureHandling flowControl) throws StepFailedException {
@@ -224,6 +260,15 @@ public class BuiltinKeywords {
         , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_LT_OR_EQ_TO, actualNumber, expectedNumber))
     }
 
+    /**
+     * Concatenate string array into a single string
+     * @param strings
+     *      a string array
+     * @param flowControl
+     * @return
+     *      the result string
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
     public static String concatenate(String[] strings, FailureHandling flowControl) throws StepFailedException {
@@ -251,6 +296,15 @@ public class BuiltinKeywords {
         , flowControl, (stringArrayValue != null) ? MessageFormat.format(StringConstants.KW_CANNOT_CONCAT_STR_ARRAY, stringArrayValue) : StringConstants.KW_CANNOT_CONCAT)
     }
 
+    /**
+     * Call and execute another test case
+     * @param calledTestCase
+     *      represent a test case
+     * @param binding
+     *      map object contain variables bindings for the called test case
+     * @param flowControl
+     * @throws Exception
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
     public static callTestCase(TestCase calledTestCase, Map<String, Object> binding, FailureHandling flowControl) throws Exception {
@@ -290,6 +344,13 @@ public class BuiltinKeywords {
         : StringConstants.KW_MSG_CANNOT_CALL_TC)
     }
 
+    /**
+     * Delay execution for a specific time (in seconds)
+     * @param second
+     *      number of seconds to delay
+     * @param flowControl
+     * @throws StepFailedException
+     */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
     public static void delay(Object second, FailureHandling flowControl) throws StepFailedException {
@@ -304,8 +365,5 @@ public class BuiltinKeywords {
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_DELAYED_SEC, second));
         }
         , flowControl, StringConstants.KW_MSG_CANNOT_DELAY_BROWSER)
-    }
-
-    public static void verifyValue(Object actualValue, Object expectedValue, String operator) {
     }
 }
