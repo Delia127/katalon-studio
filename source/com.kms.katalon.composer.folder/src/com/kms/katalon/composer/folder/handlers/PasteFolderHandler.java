@@ -1,8 +1,6 @@
 package com.kms.katalon.composer.folder.handlers;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -44,6 +42,7 @@ import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.controller.util.EntityControllerUtil;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
@@ -110,7 +109,7 @@ public class PasteFolderHandler {
                                     copy(treeEntities, targetFolder);
                                 }
                                 eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, targetTreeEntity);
-                                eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM,
+                                eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM,
                                         lastPastedTreeEntity != null ? lastPastedTreeEntity : targetTreeEntity);
                             }
                         }
@@ -282,138 +281,41 @@ public class PasteFolderHandler {
     }
 
     private void moveTestCase(TestCaseEntity testCase, FolderEntity targetFolder) throws Exception {
-        if (testCase != null) {
-            TestCaseController testCaseController = TestCaseController.getInstance();
-            String oldPk = testCase.getId();
-            String oldIdForDisplay = testCase.getIdForDisplay();
-            testCase = testCaseController.moveTestCase(testCase, targetFolder);
-            String newPk = testCase.getId();
-            if (!oldPk.equals(newPk)) {
-                eventBroker.post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-                        testCase.getIdForDisplay() });
-                eventBroker.post(EventConstants.TESTCASE_UPDATED, new Object[] { oldPk, testCase });
-                lastPastedTreeEntity = new TestCaseTreeEntity(testCase, parentPastedTreeEntity);
-            }
+        TestCaseEntity movedTestCase = EntityControllerUtil.moveTestCase(testCase, targetFolder);
+        if (movedTestCase != null) {
+            lastPastedTreeEntity = new TestCaseTreeEntity(movedTestCase, parentPastedTreeEntity);
         }
     }
 
     private void moveFolder(FolderEntity folder, FolderEntity targetFolder) throws Exception {
-        if (targetFolder != null && folder != null && folder.getFolderType() == targetFolder.getFolderType()) {
-
-            // get collection of descendant entities that doesn't include descendant folder entity
-            List<Object> allDescendantEntites = new ArrayList<Object>();
-            for (Object descendantEntity : FolderController.getInstance().getAllDescentdantEntities(folder)) {
-                if (!(descendantEntity instanceof FolderEntity)) {
-                    allDescendantEntites.add(descendantEntity);
-                }
-            }
-
-            List<String> lstDescendantEntityLocations = new ArrayList<>();
-            if (folder.getFolderType() == FolderType.TESTCASE) {
-                for (Object child : allDescendantEntites) {
-                    if (child != null && child instanceof TestCaseEntity) {
-                        lstDescendantEntityLocations.add(((TestCaseEntity) child).getId());
-                    }
-                }
-            } else if (folder.getFolderType() == FolderType.DATAFILE) {
-                for (Object child : allDescendantEntites) {
-                    if (child != null && child instanceof DataFileEntity) {
-                        lstDescendantEntityLocations.add(((DataFileEntity) child).getId());
-                    }
-                }
-            } else if (folder.getFolderType() == FolderType.TESTSUITE) {
-                for (Object child : allDescendantEntites) {
-                    if (child != null && child instanceof TestSuiteEntity) {
-                        lstDescendantEntityLocations.add(((TestSuiteEntity) child).getId());
-                    }
-                }
-            } else if (folder.getFolderType() == FolderType.WEBELEMENT) {
-                for (Object child : allDescendantEntites) {
-                    if (child != null && child instanceof WebElementEntity) {
-                        lstDescendantEntityLocations.add(((WebElementEntity) child).getId());
-                    }
-                }
-            }
-
-            FolderEntity movedFolder = FolderController.getInstance().moveFolder(folder, targetFolder);
-            if (movedFolder != null) {
-                lastPastedTreeEntity = new FolderTreeEntity(movedFolder, parentPastedTreeEntity);
-            }
-            // afterSave
-            // send notification event
-            if (folder.getFolderType() == FolderType.TESTCASE) {
-                for (int i = 0; i < lstDescendantEntityLocations.size(); i++) {
-                    eventBroker.post(EventConstants.TESTCASE_UPDATED,
-                            new Object[] { lstDescendantEntityLocations.get(i), allDescendantEntites.get(i) });
-                }
-            } else if (folder.getFolderType() == FolderType.DATAFILE) {
-                for (int i = 0; i < lstDescendantEntityLocations.size(); i++) {
-                    eventBroker.post(EventConstants.TEST_DATA_UPDATED,
-                            new Object[] { lstDescendantEntityLocations.get(i), allDescendantEntites.get(i) });
-                }
-            } else if (folder.getFolderType() == FolderType.TESTSUITE) {
-                for (int i = 0; i < lstDescendantEntityLocations.size(); i++) {
-                    eventBroker.post(EventConstants.TEST_SUITE_UPDATED,
-                            new Object[] { lstDescendantEntityLocations.get(i), allDescendantEntites.get(i) });
-                }
-            } else if (folder.getFolderType() == FolderType.WEBELEMENT) {
-                for (int i = 0; i < lstDescendantEntityLocations.size(); i++) {
-                    eventBroker.post(EventConstants.TEST_OBJECT_UPDATED,
-                            new Object[] { lstDescendantEntityLocations.get(i), allDescendantEntites.get(i) });
-                }
-            }
-
+        FolderEntity movedFolder = EntityControllerUtil.moveFolder(folder, targetFolder);
+        if (movedFolder != null) {
+            lastPastedTreeEntity = new FolderTreeEntity(movedFolder, parentPastedTreeEntity);
         }
     }
 
     private void moveTestSuite(TestSuiteEntity testSuite, FolderEntity targetFolder) throws Exception {
-        if (testSuite != null) {
-            TestSuiteController testSuiteController = TestSuiteController.getInstance();
-            String oldPk = testSuite.getId();
-            String oldIdForDisplay = testSuite.getIdForDisplay();
-            testSuite = testSuiteController.moveTestSuite(testSuite, targetFolder);
-            String newPk = testSuite.getId();
-            if (!oldPk.equals(newPk)) {
-                eventBroker.post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-                        testSuite.getIdForDisplay() });
-                eventBroker.post(EventConstants.TEST_SUITE_UPDATED, new Object[] { oldPk, testSuite });
-                lastPastedTreeEntity = new TestSuiteTreeEntity(testSuite, parentPastedTreeEntity);
-            }
+        TestSuiteEntity movedTestSuite = EntityControllerUtil.moveTestSuite(testSuite, targetFolder);
+        if (movedTestSuite != null) {
+            lastPastedTreeEntity = new TestSuiteTreeEntity(movedTestSuite, parentPastedTreeEntity);
         }
     }
 
     private void moveTestData(DataFileEntity dataFile, FolderEntity targetFolder) throws Exception {
-        if (dataFile != null) {
-            TestDataController testDataController = TestDataController.getInstance();
-            String oldPk = dataFile.getId();
-            String oldIdForDisplay = dataFile.getIdForDisplay();
-            dataFile = testDataController.moveDataFile(dataFile, targetFolder);
-            String newPk = dataFile.getId();
-            if (!oldPk.equals(newPk)) {
-                eventBroker.post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-                        dataFile.getIdForDisplay() });
-                eventBroker.post(EventConstants.TEST_DATA_UPDATED, new Object[] { oldPk, dataFile });
-                lastPastedTreeEntity = new TestDataTreeEntity(dataFile, parentPastedTreeEntity);
-            }
+        DataFileEntity movedTestData = EntityControllerUtil.moveTestData(dataFile, targetFolder);
+        if (movedTestData != null) {
+            lastPastedTreeEntity = new TestDataTreeEntity(movedTestData, parentPastedTreeEntity);
         }
     }
 
     private void moveTestObject(WebElementEntity webElement, FolderEntity targetFolder) throws Exception {
-        if (webElement != null) {
-            ObjectRepositoryController objectRepositoryController = ObjectRepositoryController.getInstance();
-            String oldPk = webElement.getId();
-            String oldIdForDisplay = webElement.getIdForDisplay();
-            webElement = objectRepositoryController.moveWebElement(webElement, targetFolder);
-            String newPk = webElement.getId();
-            if (!oldPk.equals(newPk)) {
-                eventBroker.post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-                        webElement.getIdForDisplay() });
-                eventBroker.post(EventConstants.TEST_OBJECT_UPDATED, new Object[] { oldPk, webElement });
-                lastPastedTreeEntity = new WebElementTreeEntity(webElement, parentPastedTreeEntity);
-            }
+        WebElementEntity movedTestObject = EntityControllerUtil.moveTestObject(webElement, targetFolder);
+        if (movedTestObject != null) {
+            lastPastedTreeEntity = new WebElementTreeEntity(movedTestObject, parentPastedTreeEntity);
         }
     }
 
     private void moveKeywordPackage(IPackageFragment packageFragment, FolderEntity targetFolder) {
+        // not allow moving package
     }
 }

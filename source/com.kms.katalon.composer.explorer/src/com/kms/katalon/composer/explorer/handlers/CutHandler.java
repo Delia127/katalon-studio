@@ -15,49 +15,46 @@ import com.kms.katalon.constants.IdConstants;
 
 public class CutHandler implements IHandler {
 
-	@CanExecute
-	public static boolean canExecute(ESelectionService selectionService) {
-		return CopyHandler.canExecute(selectionService);
-	}
+    @CanExecute
+    public static boolean canExecute(ESelectionService selectionService) {
+        return CopyHandler.canExecute(selectionService);
+    }
 
-	@Execute
-	public static void execute(ESelectionService selectionService) {
-		CopyHandler.execute(selectionService);
-		TransferMoveFlag.setMove(true);
-	}
+    @Execute
+    public static void execute(ESelectionService selectionService) {
+        CopyHandler.execute(selectionService);
+        TransferMoveFlag.setMove(true);
+    }
 
-	@Override
-	public void addHandlerListener(IHandlerListener handlerListener) {
-		// TODO Auto-generated method stub
-	}
+    @Override
+    public void addHandlerListener(IHandlerListener handlerListener) {
+    }
 
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
-	}
+    @Override
+    public void dispose() {
+    }
 
-	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
-		String activePartId = HandlerUtil.getActivePartId(event);
-		if (activePartId != null && activePartId.equals(IdConstants.EXPLORER_PART_ID)) {
-			execute(SelectionServiceSingleton.getInstance().getSelectionService());
-		}
-		return null;
-	}
+    @Override
+    public Object execute(ExecutionEvent event) throws ExecutionException {
+        String activePartId = HandlerUtil.getActivePartId(event);
+        if (activePartId != null && activePartId.equals(IdConstants.EXPLORER_PART_ID)) {
+            execute(SelectionServiceSingleton.getInstance().getSelectionService());
+        }
+        return null;
+    }
 
-	@Override
-	public boolean isEnabled() {
-		return canExecute(SelectionServiceSingleton.getInstance().getSelectionService());
-	}
+    @Override
+    public boolean isEnabled() {
+        return canExecute(SelectionServiceSingleton.getInstance().getSelectionService());
+    }
 
-	@Override
-	public boolean isHandled() {
-		return true;
-	}
+    @Override
+    public boolean isHandled() {
+        return true;
+    }
 
-	@Override
-	public void removeHandlerListener(IHandlerListener handlerListener) {
-		// TODO Auto-generated method stub
-	}
+    @Override
+    public void removeHandlerListener(IHandlerListener handlerListener) {
+    }
 
 }

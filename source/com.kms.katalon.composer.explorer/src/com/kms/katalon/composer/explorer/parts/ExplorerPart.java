@@ -28,6 +28,7 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
@@ -38,6 +39,7 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DragSourceListener;
+import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -57,6 +59,10 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 
+import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -72,36 +78,47 @@ import com.kms.katalon.composer.explorer.handlers.RefreshHandler;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
+import com.kms.katalon.composer.explorer.providers.TreeEntityDropListener;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants;
+import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 @SuppressWarnings("restriction")
 public class ExplorerPart {
 
     private static final String SEARCH_TEXT_DEFAULT_VALUE = StringConstants.PA_SEARCH_TEXT_DEFAULT_VALUE;
+
     private static final String EXPLORER_POPUPMENU_ID = "com.kms.katalon.composer.explorer.popupmenu";
 
     private static final String IMAGE_SEARCH_TOOLTIP = StringConstants.PA_IMAGE_TIP_SEARCH;
+
     private static final String IMAGE_CLOSE_SEARCH_TOOLTIP = StringConstants.PA_IMAGE_TIP_CLOSE_SEARCH;
+
     private static final String IMAGE_ADVANCED_SEARCH_TOOLTIP = StringConstants.PA_IMAGE_TIP_ADVANCED_SEARCH;
 
     private static final int KEYWORD_SEARCH_ALL_INDEX = 0;
+
     public static final String KEYWORD_SEARCH_ALL = "all";
+
     private DragSource dragSource;
+
     private Text txtInput;
+
     private TreeViewer treeViewer;
+
     private CLabel lblSearch, lblFilter;
+
     private SearchDropDownBox searchDropDownBox;
 
     // input of tree explorer
     private List<ITreeEntity> treeEntities;
 
     private boolean isSearching;
-    
-    //Represent path of the tree items that each one is expanded before searching
+
+    // Represent path of the tree items that each one is expanded before searching
     private Object[] expandedTreeElements;
 
     private TreeViewer getViewer() {
@@ -122,8 +139,11 @@ public class ExplorerPart {
     private EMenuService menuService;
 
     private EntityLabelProvider entityLabelProvider;
+
     private EntityViewerFilter entityViewerFilter;
+
     private Composite parent;
+
     private Composite searchComposite;
 
     @Inject
@@ -170,7 +190,6 @@ public class ExplorerPart {
         gdTxtInput.grabExcessVerticalSpace = true;
         gdTxtInput.verticalAlignment = SWT.CENTER;
         txtInput.setLayoutData(gdTxtInput);
-        
 
         txtInput.addKeyListener(new KeyAdapter() {
             @Override
@@ -258,6 +277,7 @@ public class ExplorerPart {
 
         hookDoubleClickEvent();
         hookDragEvent();
+        hookDropEvent();
 
         menuService.registerContextMenu(getViewer().getControl(), EXPLORER_POPUPMENU_ID);
 
@@ -276,7 +296,9 @@ public class ExplorerPart {
         IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
                 PreferenceConstants.ExplorerPreferenceConstants.QUALIFIER);
         for (MToolBarElement toolbarElement : part.getToolbar().getChildren()) {
-            if (!(toolbarElement instanceof MHandledToolItem)) { continue; }
+            if (!(toolbarElement instanceof MHandledToolItem)) {
+                continue;
+            }
             MHandledToolItem toolItem = (MHandledToolItem) toolbarElement;
             switch (toolItem.getElementId()) {
                 case IdConstants.EXPLORER_TOOL_ITEM_LINK_PART: {
@@ -320,28 +342,28 @@ public class ExplorerPart {
      * After user type a text on searched text box, all entities will be filtered by all elements by the text
      */
     private void filterTreeEntitiesBySearchedText() {
-        fitlterTreeEntities(true, true); 
+        fitlterTreeEntities(true, true);
     }
-    
+
     private void fitlterTreeEntities(final boolean updateLabel, final boolean keepExpandedState) {
         if (treeViewer.getTree().isDisposed()) {
             return;
         }
-        
+
         final String searchString = txtInput.getText();
         while (treeViewer.isBusy()) {
             // wait for the tree until it is not busy
         }
-        
+
         if (!searchString.equals(txtInput.getText()) || treeViewer.getInput() == null) {
             return;
         }
-        
-        //Remember last expanded state
+
+        // Remember last expanded state
         if (keepExpandedState && StringUtils.isNotBlank(searchString) && !isSearching) {
             expandedTreeElements = treeViewer.getExpandedElements();
         }
-        
+
         BusyIndicator.showWhile(treeViewer.getTree().getDisplay(), new Runnable() {
             @Override
             public void run() {
@@ -351,20 +373,20 @@ public class ExplorerPart {
                     entityViewerFilter.setSearchString(broadcastMessage);
                     // viewer.getTree().setRedraw(false);
                     treeViewer.refresh(true);
-                    
+
                     if (StringUtils.isNotBlank(searchString)) {
                         treeViewer.expandAll();
                     } else {
                         treeViewer.collapseAll();
-                        
+
                         if (expandedTreeElements != null) {
-                            //Restore last expanded state
+                            // Restore last expanded state
                             for (Object treePath : expandedTreeElements) {
                                 treeViewer.setExpandedState(treePath, true);
                             }
                         }
                     }
-                    
+
                     if (updateLabel) {
                         isSearching = StringUtils.isNotBlank(searchString);
                         updateStatusSearchLabel();
@@ -375,7 +397,7 @@ public class ExplorerPart {
                     // viewer.getTree().setRedraw(true);
                 }
             }
-        });  
+        });
     }
 
     private void openAdvancedSearchDialog() {
@@ -397,7 +419,7 @@ public class ExplorerPart {
                         if (treeEntity.getSearchTags() == null) {
                             continue;
                         }
-                        
+
                         for (String tag : treeEntity.getSearchTags()) {
                             if (!searchTags.contains(tag)) {
                                 searchTags.add(tag);
@@ -487,7 +509,7 @@ public class ExplorerPart {
     private void refreshTreeEntity(@UIEventTopic(EventConstants.EXPLORER_REFRESH_TREE_ENTITY) Object object) {
         refresh(object);
     }
-    
+
     @Inject
     @Optional
     private void expandTreeEntity(@UIEventTopic(EventConstants.EXPLORER_EXPAND_TREE_ENTITY) Object object) {
@@ -499,15 +521,13 @@ public class ExplorerPart {
 
     private void refresh(Object object) {
         treeViewer.getControl().setRedraw(false);
-        Object[] expandedElements = treeViewer.getExpandedElements();
+        TreePath[] expandedTreePaths = getViewer().getExpandedTreePaths();
         if (object == null) {
             treeViewer.refresh();
         } else {
             treeViewer.refresh(object);
         }
-        for (Object element : expandedElements) {
-            treeViewer.setExpandedState(element, true);
-        }
+        getViewer().setExpandedTreePaths(expandedTreePaths);
         treeViewer.getControl().setRedraw(true);
     }
 
@@ -517,11 +537,21 @@ public class ExplorerPart {
         if (object == null || !(object instanceof ITreeEntity)) {
             return;
         }
+        TreePath[] expandedTreePaths = getViewer().getExpandedTreePaths();
+        getViewer().getControl().setRedraw(false);
+        // reload input
+        getViewer().setInput(getViewer().getInput());
+
+        // restore expanded tree paths
+        getViewer().setExpandedTreePaths(expandedTreePaths);
+        getViewer().getControl().setRedraw(true);
+
+        // set new selection
         getViewer().setSelection(new StructuredSelection(object));
         getViewer().setExpandedState(object, true);
         setFocus();
     }
-    
+
     @Inject
     @Optional
     private void showItem(@UIEventTopic(EventConstants.EXPLORER_SHOW_ITEM) Object object) {
@@ -555,9 +585,9 @@ public class ExplorerPart {
                 if (selectionService == null || event.getSelection() == null) {
                     return;
                 }
-                
+
                 Object selectedElement = ((IStructuredSelection) event.getSelection()).getFirstElement();
-                
+
                 if (selectedElement == null || !(selectedElement instanceof ITreeEntity)) {
                     return;
                 }
@@ -591,6 +621,22 @@ public class ExplorerPart {
                 } else {
                     event.doit = false;
                 }
+
+                // do not allow drag in Reports and Keywords area
+                try {
+                    for (TreeItem item : selection) {
+                        if (item.getData() instanceof ReportTreeEntity || item.getData() instanceof KeywordTreeEntity
+                                || item.getData() instanceof PackageTreeEntity) {
+                            event.doit = false;
+                        } else if (item.getData() instanceof FolderTreeEntity
+                                && ((FolderTreeEntity) item.getData()).getCopyTag()
+                                        .equals(FolderType.REPORT.toString())) {
+                            event.doit = false;
+                        }
+                    }
+                } catch (Exception e) {
+                    LoggerSingleton.logError(e);
+                }
             };
 
             public void dragSetData(DragSourceEvent event) {
@@ -605,6 +651,13 @@ public class ExplorerPart {
             public void dragFinished(DragSourceEvent event) {
             }
         });
+    }
+
+    private void hookDropEvent() {
+        DropTarget dt = new DropTarget(treeViewer.getTree(), DND.DROP_MOVE);
+        List<Transfer> treeEntityTransfers = TransferTypeCollection.getInstance().getTreeEntityTransfer();
+        dt.setTransfer(treeEntityTransfers.toArray(new Transfer[treeEntityTransfers.size()]));
+        dt.addDropListener(new TreeEntityDropListener(treeViewer, eventBroker));
     }
 
     public List<ITreeEntity> getSearchDropBoxElements() {
