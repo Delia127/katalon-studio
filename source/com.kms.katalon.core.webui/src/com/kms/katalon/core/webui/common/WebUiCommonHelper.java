@@ -586,6 +586,8 @@ public class WebUiCommonHelper extends KeywordHelper {
             parentObject = parentObject.getParentObject();
         }
         boolean isSwitchIntoFrame = false;
+        double xOffset = 0;
+        double yOffset = 0;
         try {
             if (frames.size() > 0) {
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_OBJ_X_HAS_PARENT_FRAME,
@@ -596,14 +598,26 @@ public class WebUiCommonHelper extends KeywordHelper {
                             frameObject.getObjectId()));
                     WebElement frameElement = findWebElement(frameObject, timeOut);
                     if (frameElement != null) {
-                        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CHECKING_TO_IFRAME_X_IN_VIEWPORT,
-                                frameObject.getObjectId()));
-                        if (!WebUiCommonHelper.isElementVisibleInViewport(driver, frameElement)) {
+                        logger.logInfo(MessageFormat.format(
+                                StringConstants.KW_LOG_INFO_CHECKING_TO_IFRAME_X_IN_VIEWPORT, frameObject.getObjectId()));
+
+                        Rectangle elementRect = WebUiCommonHelper.getElementRect(driver, frameElement);
+                        elementRect.setRect(elementRect.getX() + xOffset, elementRect.getY() + yOffset,
+                                elementRect.getWidth(), elementRect.getHeight());
+                        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_ELEMENT_RECT,
+                                elementRect.getX(), elementRect.getY(), elementRect.getWidth(), elementRect.getHeight()));
+                        Rectangle documentRect = new Rectangle(0, 0, WebUiCommonHelper.getViewportWidth(driver),
+                                WebUiCommonHelper.getViewportHeight(driver));
+                        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_VIEWPORT_RECT,
+                                documentRect.getWidth(), documentRect.getHeight()));
+                        if (!documentRect.intersects(elementRect)) {
                             logger.logInfo(MessageFormat.format(
                                     StringConstants.KW_MSG_PARENT_OBJECT_IS_NOT_VISIBLE_IN_VIEWPORT,
                                     frameObject.getObjectId()));
                             return false;
                         }
+                        xOffset += frameElement.getLocation().getX();
+                        yOffset += frameElement.getLocation().getY();
                         driver.switchTo().frame(frameElement);
                         isSwitchIntoFrame = true;
                         logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHED_TO_IFRAME_X,
@@ -709,5 +723,45 @@ public class WebUiCommonHelper extends KeywordHelper {
                     StringConstants.KW_LOG_WARNING_SWITCHING_TO_DEFAULT_CONTENT_FAILED_BC_OF_X,
                     ExceptionsUtil.getMessageForThrowable(e)));
         }
+    }
+
+    /***
+     * Switch to parent frames if test object has parent objects
+     * 
+     * @param testObject
+     * @param timeOut
+     * @return
+     * @throws WebElementNotFoundException
+     */
+    public static boolean switchToParentFrame(TestObject testObject, int timeOut) throws WebElementNotFoundException {
+        TestObject parentObject = testObject != null ? testObject.getParentObject() : null;
+        List<TestObject> frames = new ArrayList<TestObject>();
+        while (parentObject != null) {
+            frames.add(parentObject);
+            parentObject = parentObject.getParentObject();
+        }
+        boolean isSwitchIntoFrame = false;
+        if (frames.size() > 0) {
+            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_OBJ_X_HAS_PARENT_FRAME,
+                    testObject.getObjectId()));
+            WebDriver webDriver = DriverFactory.getWebDriver();
+            for (int i = frames.size() - 1; i >= 0; i--) {
+                TestObject frameObject = frames.get(i);
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHING_TO_IFRAME_X,
+                        frameObject.getObjectId()));
+                WebElement frameElement = findWebElement(frameObject, timeOut);
+                if (frameElement != null) {
+                    webDriver.switchTo().frame(frameElement);
+                    isSwitchIntoFrame = true;
+                    logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHED_TO_IFRAME_X,
+                            frameObject.getObjectId()));
+                }
+            }
+        }
+        return isSwitchIntoFrame;
+    }
+
+    public static boolean switchToParentFrame(TestObject testObject) throws WebElementNotFoundException {
+        return switchToParentFrame(testObject, RunConfiguration.getTimeOut());
     }
 }

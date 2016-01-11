@@ -249,7 +249,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 boolean elementNotFound = false;
                 final By locator = WebUiCommonHelper.buildLocator(to);
                 try {
@@ -310,7 +310,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement foundElement = null;
                 try {
                     foundElement = findWebElement(to, timeOut);
@@ -348,7 +348,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to, RunConfiguration.getTimeOut());
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, RunConfiguration.getTimeOut());
                 try {
                     WebElement foundElement = findWebElement(to, RunConfiguration.getTimeOut());
                     if (foundElement.isDisplayed()) {
@@ -390,7 +390,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to, RunConfiguration.getTimeOut());
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, RunConfiguration.getTimeOut());
                 try {
                     WebElement foundElement = findWebElement(to, RunConfiguration.getTimeOut());
                     if (!foundElement.isDisplayed()) {
@@ -435,7 +435,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 try {
                     WebElement foundElement = findWebElement(to, timeOut);
                     WebDriverWait wait = new WebDriverWait(DriverFactory.getWebDriver(), timeOut);
@@ -480,7 +480,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 try {
                     WebElement foundElement = findWebElement(to, timeOut);
                     WebDriverWait wait = new WebDriverWait(DriverFactory.getWebDriver(), timeOut);
@@ -536,7 +536,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 WebUiCommonHelper.checkTestObjectParameter(to);
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
                 try {
-                    isSwitchIntoFrame = switchToFrame(to, timeOut);
+                    isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                     WebElement foundElement = findWebElement(to, timeOut);
                     WebDriverWait wait = new WebDriverWait(DriverFactory.getWebDriver(), timeOut);
                     foundElement = wait.until(new ExpectedCondition<WebElement>() {
@@ -590,7 +590,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 WebUiCommonHelper.checkTestObjectParameter(to);
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
                 try {
-                    isSwitchIntoFrame = switchToFrame(to, timeOut);
+                    isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                     WebElement foundElement = findWebElement(to, timeOut);
                     WebDriverWait wait = new WebDriverWait(DriverFactory.getWebDriver(), timeOut);
                     foundElement = wait.until(new ExpectedCondition<WebElement>() {
@@ -641,7 +641,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
                 try {
-                    isSwitchIntoFrame = switchToFrame(to, RunConfiguration.getTimeOut());
+                    isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, RunConfiguration.getTimeOut());
                     WebElement foundElement = findWebElement(to, RunConfiguration.getTimeOut());
                     if (foundElement.isEnabled()) {
                         logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_IS_CLICKABLE, to.getObjectId()));
@@ -682,7 +682,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
                 try {
-                    isSwitchIntoFrame = switchToFrame(to, RunConfiguration.getTimeOut());
+                    isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, RunConfiguration.getTimeOut());
                     WebElement foundElement = findWebElement(to, RunConfiguration.getTimeOut());
                     if (foundElement.isEnabled()) {
                         WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_IS_CLICKABLE, to.getObjectId()),
@@ -720,7 +720,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CLICKING_ON_OBJ, to.getObjectId()));
                 webElement.click();
@@ -750,7 +750,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SUBMITTING_ON_FORM_CONTAINING_OBJ, to.getObjectId()));
                 webElement.submit();
@@ -779,7 +779,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_DOUBLE_CLICK_ON_OBJ, to.getObjectId()));
                 Actions action = new Actions(DriverFactory.getWebDriver());
@@ -809,7 +809,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_RIGHT_CLICKING_ON_OBJ, to.getObjectId()));
                 Actions action = new Actions(DriverFactory.getWebDriver());
@@ -842,7 +842,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (DriverFactory.getExecutedBrowser() == WebUIDriverType.IE_DRIVER) {
                     WebUiCommonHelper.focusOnBrowser();
                 }
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement hoverElement = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_MOVING_MOUSE_OVER_OBJ, to.getObjectId()));
                 Actions builder = new Actions(DriverFactory.getWebDriver());
@@ -876,7 +876,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (to == null) {
                     to = new TestObject("tempBody").addProperty("css", ConditionType.EQUALS, "body");
                 }
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SENDING_KEYS_TO_OBJ, strKeys, to.getObjectId()));
                 WebElement webElement = findWebElement(to);
                 webElement.sendKeys(strKeys);
@@ -905,7 +905,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement element = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FOCUSING_ON_OBJ, to.getObjectId()));
                 if ("input".equals(element.getTagName())) {
@@ -941,7 +941,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             String text = "";
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement element = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_GETTING_OBJ_TXT, to.getObjectId()));
                 text = element.getText();
@@ -980,7 +980,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (attribute == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_ATTR_IS_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement element = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_GETTING_OBJ_ATTR, attribute, to.getObjectId()));
                 attrValue = element.getAttribute(attribute);
@@ -1016,7 +1016,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (text == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_TXT_IS_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SETTING_OBJ_TXT_TO_VAL, to.getObjectId(), text));
                 webElement.clear();
@@ -1045,7 +1045,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CHECKING_ON_OBJ, to.getObjectId()));
                 if (!webElement.isSelected()) {
@@ -1075,7 +1075,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_UNCHECKING_ON_OBJ, to.getObjectId()));
                 if (webElement.isSelected()) {
@@ -1118,7 +1118,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
                 Integer[] indexes = WebUiCommonHelper.indexRangeToArray(String.valueOf(range));
                 if (indexes.length > 0) {
-                    isSwitchIntoFrame = switchToFrame(to);
+                    isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                     WebElement webElement = findWebElement(to);
                     WebUiCommonHelper.selectOrDeselectOptionsByIndex(new Select(webElement), indexes, true, to);
                 }
@@ -1156,7 +1156,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (value == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_VAL_IS_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 Select select = new Select(webElement);
                 WebUiCommonHelper.selectOrDeselectOptionsByValue(new Select(webElement), value, isRegex, true, to, regularExpressionLog)
@@ -1185,7 +1185,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 WebUiCommonHelper.selectOrDeselectAllOptions(new Select(webElement), true, to)
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ALL_OBJ_OPTS_ARE_SELECTED, to.getObjectId()));
@@ -1222,7 +1222,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (labelText == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_LBL_IS_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 WebUiCommonHelper.selectOrDeselectOptionsByLabel(new Select(webElement), labelText, isRegex, true, to, regularExpressionLog)
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SELECTED_ALL_OPT_W_LBL_X_IN_OBJ_Y, labelText, to.getObjectId(), regularExpressionLog));
@@ -1262,7 +1262,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
                 Integer[] indexes = WebUiCommonHelper.indexRangeToArray(String.valueOf(range));
                 if (indexes.length > 0) {
-                    isSwitchIntoFrame = switchToFrame(to);
+                    isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                     WebElement webElement = findWebElement(to);
                     Select select = new Select(webElement);
                     WebUiCommonHelper.selectOrDeselectOptionsByIndex(select, indexes, false, to);
@@ -1301,7 +1301,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (value == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_VAL_IS_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 WebUiCommonHelper.selectOrDeselectOptionsByValue(new Select(webElement), value, isRegex, false, to, regularExpressionLog)
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OPTS_W_VAL_ARE_DESELECTED_ON_OBJ, value, to.getObjectId(), regularExpressionLog));
@@ -1339,7 +1339,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (labelText == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_LBL_IS_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 Select select = new Select(webElement);
                 WebUiCommonHelper.selectOrDeselectOptionsByLabel(new Select(webElement), labelText, isRegex, false, to, regularExpressionLog)
@@ -1368,7 +1368,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 Select selection = new Select(webElement);
                 WebUiCommonHelper.selectOrDeselectAllOptions(new Select(webElement), false, to)
@@ -1399,7 +1399,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement webElement = findWebElement(to, timeOut);
                 boolean isChecked = webElement.isSelected();
                 if (!isChecked) {
@@ -1437,7 +1437,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement webElement = findWebElement(to, timeOut);
                 boolean isChecked = webElement.isSelected();
                 if (isChecked) {
@@ -1474,7 +1474,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement foundElement = null;
                 foundElement = findWebElement(to, timeOut);
                 if (foundElement != null) {
@@ -1512,7 +1512,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 boolean elementNotFound = false;
                 final By locator = WebUiCommonHelper.buildLocator(to);
                 try {
@@ -1963,7 +1963,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_COUNTING_TOTAL_OPTS_OF_OBJ_X, to.getObjectId()));
                 Select select = new Select(webElement);
@@ -1997,7 +1997,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 Select select = new Select(webElement);
                 int num = 0;
@@ -2049,7 +2049,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (label == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_LBL_CANNOT_BE_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement webElement = findWebElement(to, timeOut);
                 int numPresent = WebUiCommonHelper.getNumberOfOptionByLabel(new Select(webElement), label, isRegex,
                         to.getObjectId());
@@ -2098,7 +2098,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (value == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_VAL_CANNOT_BE_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement webElement = findWebElement(to, timeOut);
                 int numPresent = WebUiCommonHelper.getNumberOfOptionByValue(new Select(webElement), value, isRegex,
                         to.getObjectId());
@@ -2149,7 +2149,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (label == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_LBL_CANNOT_BE_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement webElement = findWebElement(to, timeOut);
                 numPresent = WebUiCommonHelper.getNumberOfOptionByLabel(new Select(webElement), label, isRegex,
                         to.getObjectId());
@@ -2198,7 +2198,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (value == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_VAL_CANNOT_BE_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement webElement = findWebElement(to, timeOut);
                 int numPresent = WebUiCommonHelper.getNumberOfOptionByValue(new Select(webElement), value, isRegex,
                         to.getObjectId());
@@ -2249,7 +2249,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (label == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_LBL_CANNOT_BE_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement webElement = findWebElement(to, timeOut);
                 Select select = new Select(webElement);
                 int numLabelOptions = WebUiCommonHelper.getNumberOfOptionByLabel(select, label, isRegex, to.getObjectId());
@@ -2304,7 +2304,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (value == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_VAL_CANNOT_BE_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement webElement = findWebElement(to, timeOut);
                 Select select = new Select(webElement);
                 int numValueOptions = WebUiCommonHelper.getNumberOfOptionByValue(select, value, isRegex, to.getObjectId());
@@ -2359,7 +2359,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (label == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_LBL_CANNOT_BE_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement webElement = findWebElement(to, timeOut);
                 Select select = new Select(webElement);
                 int numLabelOptions = WebUiCommonHelper.getNumberOfOptionByLabel(select, label, isRegex, to.getObjectId());
@@ -2414,7 +2414,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (value == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_VAL_CANNOT_BE_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement webElement = findWebElement(to, timeOut);
                 Select select = new Select(webElement);
                 int numValueOptions = WebUiCommonHelper.getNumberOfOptionByValue(select, value, isRegex, to.getObjectId());
@@ -2466,7 +2466,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (range == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_INDEX_RANGE_CANNOT_BE_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement webElement = findWebElement(to, timeOut);
                 Select select = new Select(webElement);
                 Integer[] indexes = WebUiCommonHelper.indexRangeToArray(String.valueOf(range));
@@ -2519,7 +2519,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 if (range == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_INDEX_RANGE_CANNOT_BE_NULL);
                 }
-                isSwitchIntoFrame = switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement webElement = findWebElement(to, timeOut);
                 Select select = new Select(webElement);
                 Integer[] indexes = WebUiCommonHelper.indexRangeToArray(String.valueOf(range));
@@ -2763,7 +2763,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static void dragAndDropToObject(TestObject sourceObject, TestObject destinationObject,
             FailureHandling flowControl) {
         WebUIKeywordMain.runKeyword({
-            boolean isSwitchToFrame = false;
+            boolean isSwitchIntoFrame = false;
             try {
                 logger.logInfo(StringConstants.KW_LOG_INFO_CHK_SRC_OBJ);
                 if (sourceObject == null) {
@@ -2776,14 +2776,14 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_START_DRAGGING_OBJ_W_ID_X_TO_OBJ_W_ID_Y, sourceObject.getObjectId(), destinationObject));
 
                 Actions builder = new Actions(DriverFactory.getWebDriver());
-                isSwitchToFrame = switchToFrame(sourceObject);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(sourceObject);
                 builder.clickAndHold(findWebElement(sourceObject));
                 builder.perform();
                 Thread.sleep(250);
-                if (isSwitchToFrame) {
+                if (isSwitchIntoFrame) {
                     WebUiCommonHelper.switchToDefaultContent();
                 }
-                isSwitchToFrame = switchToFrame(destinationObject);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(destinationObject);
 
                 WebElement destinationWebElement = findWebElement(destinationObject);
                 builder.moveToElement(destinationWebElement, 5, 5);
@@ -2794,7 +2794,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_DRAGGED_OBJ_W_ID_X_TO_OBJ_W_ID_Y, sourceObject.getObjectId(), destinationObject))
             } finally {
-                if (isSwitchToFrame) {
+                if (isSwitchIntoFrame) {
                     WebUiCommonHelper.switchToDefaultContent();
                 }
             }
@@ -2817,19 +2817,19 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static void dragAndDropByOffset(TestObject sourceObject, int xOffset, int yOffset,
             FailureHandling flowControl) {
         WebUIKeywordMain.runKeyword({
-            boolean isSwitchToFrame = false;
+            boolean isSwitchIntoFrame = false;
             try {
                 logger.logInfo(StringConstants.KW_LOG_INFO_CHK_SRC_OBJ);
                 if (sourceObject == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_SRC_OBJ_IS_NULL);
                 }
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_START_DRAGGING_OBJ_BY_OFFSET_DISTANCE_X_Y, sourceObject.getObjectId(), xOffset, yOffset));
-                isSwitchToFrame = switchToFrame(sourceObject);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(sourceObject);
                 (new Actions(DriverFactory.getWebDriver())).dragAndDropBy(findWebElement(sourceObject), xOffset, yOffset)
                         .perform();
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_DRAGGED_OBJ_BY_OFFSET_DISTANCE_X_Y, sourceObject.getObjectId(), xOffset, yOffset));
             } finally {
-                if (isSwitchToFrame) {
+                if (isSwitchIntoFrame) {
                     WebUiCommonHelper.switchToDefaultContent();
                 }
             }
@@ -3110,11 +3110,11 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Switch to the parent frames of web element if element has parent frames
+     * Switch into an iframe
      * @param to
      *      represent a web element
      * @return
-     *      true if is switched to the parent frame; otherwise, false
+     *      true if is switched to the iframe; otherwise, false
      * @throws IllegalArgumentException
      * @throws WebElementNotFoundException
      * @throws StepFailedException
@@ -3122,28 +3122,17 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_FRAME)
-    public static boolean switchToFrame(TestObject to, int timeOut = RunConfiguration.getTimeOut()) throws IllegalArgumentException,
+    public static boolean switchToFrame(TestObject to, int timeOut) throws IllegalArgumentException,
     WebElementNotFoundException, StepFailedException, WebDriverException {
-        TestObject parentObject = to != null ? to.getParentObject() : null;
-        List<TestObject> frames = new ArrayList<TestObject>();
-        while (parentObject != null) {
-            frames.add(parentObject);
-            parentObject = parentObject.getParentObject();
-        }
-        boolean isSwitchIntoFrame = false;
-        if (frames.size() > 0) {
-            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_OBJ_X_HAS_PARENT_FRAME, to.getObjectId()));
-            WebDriver webDriver = DriverFactory.getWebDriver();
-            for (int i = frames.size() - 1; i >= 0; i--) {
-                TestObject frameObject = frames.get(i);
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHING_TO_IFRAME_X, frameObject.getObjectId()));
-                WebElement frameElement = findWebElement(frameObject, timeOut);
-                if (frameElement != null) {
-                    webDriver.switchTo().frame(frameElement);
-                    isSwitchIntoFrame = true;
-                    logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHED_TO_IFRAME_X, frameObject.getObjectId()));
-                }
-            }
+        boolean isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
+        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHING_TO_IFRAME_X,
+            to.getObjectId()));
+        WebElement frameElement = WebUiCommonHelper.findWebElement(to, timeOut);
+        if (frameElement != null) {
+            DriverFactory.getWebDriver().switchTo().frame(frameElement);
+            isSwitchIntoFrame = true;
+            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHED_TO_IFRAME_X,
+                    to.getObjectId()));
         }
         return isSwitchIntoFrame;
     }
@@ -3183,7 +3172,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to)
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_UPLOADING_FILE_X_TO_OBJ_Y, fileAbsolutePath, to.getObjectId()));
                 WebElement webElement = findWebElement(to);
                 webElement.sendKeys(fileAbsolutePath);
@@ -3216,7 +3205,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to)
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                isSwitchIntoFrame = switchToFrame(to);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SCROLLING_TO_OBJ_X, to.getObjectId()));
                 ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript("arguments[0].scrollIntoView();", webElement);
@@ -3347,7 +3336,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
                 if (foundElement.getAttribute(attributeName) != null) {
                     KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
@@ -3392,7 +3381,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
                 if (foundElement.getAttribute(attributeName) == null) {
                     KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_NOT_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName));
@@ -3439,7 +3428,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
                 if (foundElement.getAttribute(attributeName) != null) {
                     if (foundElement.getAttribute(attributeName).equals(attributeValue)) {
@@ -3492,7 +3481,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
                 Boolean hasAttribute = new FluentWait<WebElement>(foundElement)
                         .pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeOut, TimeUnit.SECONDS)
@@ -3544,7 +3533,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
                 Boolean notHasAttribute = new FluentWait<WebElement>(foundElement)
                         .pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeOut, TimeUnit.SECONDS)
@@ -3599,7 +3588,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL);
                 }
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
-                isSwitchIntoFrame = WebUiBuiltInKeywords.switchToFrame(to, timeOut);
+                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut);
                 WebElement foundElement = WebUiBuiltInKeywords.findWebElement(to, timeOut);
                 Boolean hasAttributeValue = new FluentWait<WebElement>(foundElement)
                         .pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeOut, TimeUnit.SECONDS)
