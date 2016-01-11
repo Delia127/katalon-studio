@@ -15,12 +15,18 @@ public class QTestTokenManager {
         if (StringUtils.isBlank(rawToken)) {
             return null;
         }
+        IQTestToken token = null;
         try {
             new JsonObject(rawToken);
-            return new V7Token(rawToken);
+            token = new V7Token(rawToken);
         } catch (JsonException ex) {
-            return new V6Token(rawToken);
+            token = new V6Token(rawToken);
         }
+        
+        if (token != null) {
+            token.getAccessTokenHeader();
+        }
+        return token;
     }
     
     public static IQTestToken getToken(QTestVersion version, String rawToken) throws QTestInvalidFormatException {
@@ -31,5 +37,19 @@ public class QTestTokenManager {
         } else {
             return qTestToken;
         }
+    }
+    
+    public static IQTestToken getTokenByAccessToken(QTestVersion version, String accessToken) throws QTestInvalidFormatException {
+        if (version == QTestVersion.V6) {
+            return new V6Token(accessToken);
+        } else if (version == QTestVersion.V7) {
+            try {
+                JsonObject js = new JsonObject().put("access_token", accessToken).put("token_type", "bearer");
+                return new V7Token(js.toString());
+            } catch (JsonException e) {
+                throw QTestInvalidFormatException.createInvalidJsonFormatException(e.getMessage());
+            }
+        }
+        return null;
     }
 }

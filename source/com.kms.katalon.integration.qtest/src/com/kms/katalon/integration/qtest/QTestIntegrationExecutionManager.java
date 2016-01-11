@@ -57,7 +57,7 @@ public class QTestIntegrationExecutionManager {
 
     public static List<QTestRun> getTestRuns(IQTestCredential credential, long projectId, long testSuiteId)
             throws QTestException {
-        if (!QTestIntegrationAuthenticationManager.validateToken(credential.getToken().getAccessToken())) {
+        if (!QTestIntegrationAuthenticationManager.validateToken(credential.getToken().getAccessTokenHeader())) {
             throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
         }
 

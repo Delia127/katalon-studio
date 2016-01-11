@@ -435,7 +435,7 @@ public class QTestIntegrationReportManager {
      */
     public static List<QTestExecutionStatus> getMappingStatuses(long projectId, IQTestCredential credential)
             throws QTestException {
-        if (!QTestIntegrationAuthenticationManager.validateToken(credential.getToken().getAccessToken())) {
+        if (!QTestIntegrationAuthenticationManager.validateToken(credential.getToken().getAccessTokenHeader())) {
             throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
         }
         List<QTestExecutionStatus> list = new ArrayList<QTestExecutionStatus>();

@@ -26,7 +26,7 @@ public class QTestIntegrationTestStepManager {
     
     public static QTestTestStep addTestStep(IQTestCredential credential, long projectId, long testCaseId, long testCaseVersionId,
             String description) throws QTestUnauthorizedException, QTestInvalidFormatException {
-        String token = credential.getToken().getAccessToken();
+        String token = credential.getToken().getAccessTokenHeader();
         String serverUrl = credential.getServerUrl();
 
         if (!QTestIntegrationAuthenticationManager.validateToken(token)) {
