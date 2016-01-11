@@ -3108,13 +3108,16 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static List<WebElement> findWebElements(TestObject to, int timeOut) throws WebElementNotFoundException {
         return WebUiCommonHelper.findWebElements(to, timeOut);
     }
-
+    
     /**
-     * Switch into an iframe
+     * Switch the current context into an iframe
      * @param to
      *      represent a web element
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
      * @return
-     *      true if is switched to the iframe; otherwise, false
+     *      true if the current context is switched to the iframe; otherwise, false
      * @throws IllegalArgumentException
      * @throws WebElementNotFoundException
      * @throws StepFailedException
@@ -3122,19 +3125,23 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_FRAME)
-    public static boolean switchToFrame(TestObject to, int timeOut) throws IllegalArgumentException,
+    public static boolean switchToFrame(TestObject to, int timeOut, FailureHandling flowControl) throws IllegalArgumentException,
     WebElementNotFoundException, StepFailedException, WebDriverException {
-        boolean isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
-        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHING_TO_IFRAME_X,
-            to.getObjectId()));
-        WebElement frameElement = WebUiCommonHelper.findWebElement(to, timeOut);
-        if (frameElement != null) {
-            DriverFactory.getWebDriver().switchTo().frame(frameElement);
-            isSwitchIntoFrame = true;
-            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHED_TO_IFRAME_X,
+        return WebUIKeywordMain.runKeyword({
+            boolean isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
+            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHING_TO_IFRAME_X,
                     to.getObjectId()));
-        }
-        return isSwitchIntoFrame;
+            WebElement frameElement = WebUiCommonHelper.findWebElement(to, timeOut);
+            if (frameElement != null) {
+                DriverFactory.getWebDriver().switchTo().frame(frameElement);
+                isSwitchIntoFrame = true;
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHED_TO_IFRAME_X,
+                        to.getObjectId()));
+            }
+            return isSwitchIntoFrame;
+        } , flowControl, true, (to != null) ?
+        MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_IMG_X_PRESENT, to.getObjectId()) :
+        StringConstants.KW_LOG_FAILED_SWITCHED_TO_IFRAME)
     }
 
     /**
