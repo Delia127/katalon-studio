@@ -130,6 +130,10 @@
 			<conditionExpression><![CDATA[$F{status}.getStatusValue() == com.kms.katalon.core.logging.model.TestStatus.TestStatusValue.ERROR]]></conditionExpression>
 			<style mode="Opaque" forecolor="#FFCC00"/>
 		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$F{status}.getStatusValue() == com.kms.katalon.core.logging.model.TestStatus.TestStatusValue.INCOMPLETE]]></conditionExpression>
+			<style mode="Opaque" forecolor="#996600"/>
+		</conditionalStyle>
 	</style>
 	<subDataset name="New Dataset 1" uuid="ab5c4a9e-3fb2-45f0-aac2-e1ca9b7d01e8">
 		<queryString>
@@ -173,7 +177,7 @@
 	<group name="Summary">
 		<groupExpression><![CDATA[$P{JASPER_REPORT}]]></groupExpression>
 		<groupHeader>
-			<band height="191" splitType="Stretch">
+			<band height="228" splitType="Stretch">
 				<staticText>
 					<reportElement positionType="Float" x="0" y="77" width="515" height="20" uuid="8c9d2c4d-d2bd-459e-bfb5-5bd04127b35d"/>
 					<textElement>
@@ -182,46 +186,46 @@
 					<text><![CDATA[Summary]]></text>
 				</staticText>
 				<textField>
-					<reportElement positionType="Float" x="100" y="144" width="84" height="13" uuid="a8cae007-0daf-4c9b-b59f-3425894019bc"/>
+					<reportElement positionType="Float" x="100" y="153" width="172" height="13" uuid="a8cae007-0daf-4c9b-b59f-3425894019bc"/>
 					<textElement textAlignment="Left">
 						<font size="9"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$P{TEST_SUITE}.getTotalPassedTestCases()]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement positionType="Float" x="254" y="144" width="78" height="13" uuid="4c259081-7dfc-4c45-8c76-cabca3c8cc1e"/>
+					<reportElement positionType="Float" x="342" y="153" width="173" height="13" uuid="4c259081-7dfc-4c45-8c76-cabca3c8cc1e"/>
 					<textElement textAlignment="Left">
 						<font size="9"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$P{TEST_SUITE}.getTotalFailedTestCases()]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement positionType="Float" x="402" y="144" width="113" height="13" uuid="95195b85-abbb-459a-9640-2c1ab32fae4c"/>
+					<reportElement positionType="Float" x="100" y="166" width="172" height="13" uuid="95195b85-abbb-459a-9640-2c1ab32fae4c"/>
 					<textElement textAlignment="Left">
 						<font size="9"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$P{TEST_SUITE}.getTotalErrorTestCases()]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement positionType="Float" x="30" y="144" width="485" height="13" uuid="fe826ac5-9315-46d5-ba63-1afcd57ab3dc"/>
+					<reportElement positionType="Float" x="30" y="153" width="101" height="13" forecolor="#00CC66" uuid="fe826ac5-9315-46d5-ba63-1afcd57ab3dc"/>
 					<textElement>
-						<font size="9"/>
+						<font size="9" isBold="false"/>
 					</textElement>
-					<text><![CDATA[Passes]]></text>
+					<text><![CDATA[Passed]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="184" y="144" width="70" height="14" uuid="f96984e7-5996-4c82-bfa8-94b20934bc88"/>
+					<reportElement positionType="Float" x="272" y="153" width="70" height="13" forecolor="#FF3333" uuid="f96984e7-5996-4c82-bfa8-94b20934bc88"/>
 					<textElement>
-						<font size="9"/>
+						<font size="9" isBold="false"/>
 					</textElement>
-					<text><![CDATA[Fails]]></text>
+					<text><![CDATA[Failed]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="332" y="144" width="70" height="13" uuid="d26ef02c-4884-49ca-ba93-2953a9c4c7e6"/>
+					<reportElement positionType="Float" x="30" y="166" width="101" height="13" forecolor="#FFCC00" uuid="d26ef02c-4884-49ca-ba93-2953a9c4c7e6"/>
 					<textElement>
-						<font size="9"/>
+						<font size="9" isBold="false"/>
 					</textElement>
-					<text><![CDATA[Errors]]></text>
+					<text><![CDATA[Error]]></text>
 				</staticText>
 				<textField isStretchWithOverflow="true" bookmarkLevel="1">
 					<reportElement positionType="Float" x="100" y="99" width="415" height="14" uuid="da93f9bf-00a4-4eda-97e2-1906a15b34b8"/>
@@ -288,42 +292,42 @@
 					<text><![CDATA[Execution Environment]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="30" y="157" width="485" height="14" uuid="7214a304-0a5e-4260-baa2-c57e36cf0831"/>
+					<reportElement positionType="Float" x="30" y="191" width="485" height="14" uuid="7214a304-0a5e-4260-baa2-c57e36cf0831"/>
 					<textElement>
 						<font size="9"/>
 					</textElement>
 					<text><![CDATA[Start]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="272" y="157" width="70" height="14" uuid="c33ac256-d389-4f52-b181-6be95f20a280"/>
+					<reportElement positionType="Float" x="272" y="191" width="70" height="14" uuid="c33ac256-d389-4f52-b181-6be95f20a280"/>
 					<textElement>
 						<font size="9"/>
 					</textElement>
 					<text><![CDATA[End]]></text>
 				</staticText>
 				<textField>
-					<reportElement positionType="Float" x="100" y="157" width="172" height="14" uuid="39ffbb35-d034-4c95-802f-3a1750728760"/>
+					<reportElement positionType="Float" x="100" y="191" width="172" height="14" uuid="39ffbb35-d034-4c95-802f-3a1750728760"/>
 					<textElement>
 						<font size="9"/>
 					</textElement>
 					<textFieldExpression><![CDATA[com.kms.katalon.core.util.DateUtil.getDateTimeFormatted($P{TEST_SUITE}.getStartTime())]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement positionType="Float" x="342" y="157" width="173" height="14" uuid="72de1184-286f-4a2e-9f9f-3910ca887641"/>
+					<reportElement positionType="Float" x="342" y="191" width="173" height="14" uuid="72de1184-286f-4a2e-9f9f-3910ca887641"/>
 					<textElement>
 						<font size="9"/>
 					</textElement>
 					<textFieldExpression><![CDATA[com.kms.katalon.core.util.DateUtil.getDateTimeFormatted($P{TEST_SUITE}.getEndTime())]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement positionType="Float" x="30" y="171" width="485" height="14" uuid="39b1a494-8fb8-4b11-83d3-110419c24d9f"/>
+					<reportElement positionType="Float" x="30" y="205" width="485" height="14" uuid="39b1a494-8fb8-4b11-83d3-110419c24d9f"/>
 					<textElement>
 						<font size="9"/>
 					</textElement>
 					<text><![CDATA[Elapsed]]></text>
 				</staticText>
 				<textField>
-					<reportElement positionType="Float" x="100" y="171" width="415" height="14" uuid="ed291613-7140-4336-b976-4f2945e21d67"/>
+					<reportElement positionType="Float" x="100" y="205" width="415" height="14" uuid="ed291613-7140-4336-b976-4f2945e21d67"/>
 					<textElement>
 						<font size="9"/>
 					</textElement>
@@ -344,19 +348,33 @@
 					<textFieldExpression><![CDATA[$P{TEST_SUITE}.getDescription()]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement positionType="Float" x="100" y="130" width="415" height="14" uuid="c45f9f7e-c72e-4442-a2b6-0646cc4d2b56"/>
+					<reportElement positionType="Float" x="100" y="139" width="415" height="14" uuid="c45f9f7e-c72e-4442-a2b6-0646cc4d2b56"/>
 					<textElement>
 						<font size="9"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$P{TEST_SUITE}.getTotalTestCases()]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement positionType="Float" mode="Transparent" x="30" y="130" width="485" height="14" uuid="8b05db84-e388-4257-b61c-292a4ccc6899"/>
+					<reportElement positionType="Float" mode="Transparent" x="30" y="139" width="101" height="14" uuid="8b05db84-e388-4257-b61c-292a4ccc6899"/>
 					<textElement>
-						<font size="9"/>
+						<font size="9" isBold="false"/>
 					</textElement>
 					<text><![CDATA[Total]]></text>
 				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="272" y="166" width="70" height="13" forecolor="#99751B" uuid="2a1a2312-435f-469a-852f-74de49fecaa3"/>
+					<textElement>
+						<font size="9" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Incomplete]]></text>
+				</staticText>
+				<textField>
+					<reportElement positionType="Float" x="342" y="166" width="173" height="13" uuid="9d1bd558-b368-4d3d-8c5f-70af9eb20809"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{TEST_SUITE}.getTotalIncompleteTestCases()]]></textFieldExpression>
+				</textField>
 			</band>
 		</groupHeader>
 	</group>

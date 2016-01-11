@@ -12,11 +12,13 @@ public class ReportTestCaseTableViewerFilter extends ViewerFilter {
     public static final int PASSED     = 1 << 1;
     public static final int FAILED     = 1 << 2;
     public static final int ERROR      = 1 << 3;
+    public static final int INCOMPLETE = 1 << 4;
     
     private boolean showInfo;
     private boolean showPassed;
     private boolean showFailed;
     private boolean showError;
+    private boolean showIncomplete;
     
 	@Override
 	public boolean select(Viewer viewer, Object parentElement, Object element) {
@@ -27,7 +29,9 @@ public class ReportTestCaseTableViewerFilter extends ViewerFilter {
 		String searchString = tablerView.getSearchedString();
 		if (searchString == null || searchString.isEmpty()) return true;
 		
-		if (logRecord.getName() == null) return false;
+		if (logRecord.getName() == null) {
+		    return false;
+		}
 		
 		String testCaseId = logRecord.getName();
 		String testCaseName = testCaseId.substring(testCaseId.lastIndexOf("/") + 1, testCaseId.length());
@@ -45,6 +49,8 @@ public class ReportTestCaseTableViewerFilter extends ViewerFilter {
 				return INFO;
 			} else {
 				switch (logRecord.getStatus().getStatusValue()) {
+				case INCOMPLETE:
+                    return INCOMPLETE;
 				case ERROR:
 					return ERROR;
 				case FAILED:
@@ -64,43 +70,52 @@ public class ReportTestCaseTableViewerFilter extends ViewerFilter {
 		int filterPassed = (showPassed) ? PASSED : 0;
 		int filterFailed = (showFailed) ? FAILED : 0;
 		int filterError = (showError) ? ERROR : 0;
+		int filterIncomplete = (showIncomplete) ? INCOMPLETE : 0;
 		
 		return  (filterInfo & INFO) | 
 				(filterPassed & PASSED) | 
 				(filterFailed & FAILED) | 
-				(filterError & ERROR);
+				(filterError & ERROR) |
+				(filterIncomplete & INCOMPLETE);
 	}
 
-	public boolean isShowInfo() {
+	public boolean isInfoShown() {
 		return showInfo;
 	}
 
-	public void setShowInfo(boolean showInfo) {
+	public void showInfo(boolean showInfo) {
 		this.showInfo = showInfo;
 	}
 
-	public boolean isShowPassed() {
+	public boolean isPassedShown() {
 		return showPassed;
 	}
 
-	public void setShowPassed(boolean showPassed) {
+	public void showPassed(boolean showPassed) {
 		this.showPassed = showPassed;
 	}
 
-	public boolean isShowError() {
+	public boolean isErrorShown() {
 		return showError;
 	}
 
-	public void setShowError(boolean showError) {
+	public void showError(boolean showError) {
 		this.showError = showError;
 	}
 
-	public boolean isShowFailed() {
+	public boolean isFailedShown() {
 		return showFailed;
 	}
 
-	public void setShowFailed(boolean showFailed) {
+	public void showFailed(boolean showFailed) {
 		this.showFailed = showFailed;
 	}
 
+    public boolean isIncompleteShown() {
+        return showIncomplete;
+    }
+
+    public void showIncomplete(boolean showIncomplete) {
+        this.showIncomplete = showIncomplete;
+    }
 }

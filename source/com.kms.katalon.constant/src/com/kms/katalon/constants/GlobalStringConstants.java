@@ -86,6 +86,7 @@ public class GlobalStringConstants {
     public static final String INFO = "Info";
     public static final String WARN = "Warning";
     public static final String ERROR = "Error";
+    public static final String INCOMPLETE = "Incomplete";
 
     // Tool-bar
     public static final String FOLDER = "Folder";

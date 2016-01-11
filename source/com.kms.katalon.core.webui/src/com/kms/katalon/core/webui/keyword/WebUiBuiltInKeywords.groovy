@@ -2839,100 +2839,129 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     /**
      * Navigate to a page that requires authentication. System will enter username and password
      * @param url
-     *          url of the page to navigate
+     *          url of the page to navigate (optional)
      * @param userName
      *          username to authenticate
      * @param password
      *          password to authenticate
-     * @param  
+     * @param timeout 
      *          time to wait since navigating to the page until entering username
      * @param flowControl
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
-    //public static void authenticate(final String url, String userName, String password, int timeout,
-    //        FailureHandling flowControl) {
-    public static void authenticate(String userName, String password, FailureHandling flowControl) {
+    public static void authenticate(final String url, String userName, String password, int timeout,
+            FailureHandling flowControl) {
+    //public static void authenticate(String userName, String password, FailureHandling flowControl) {
 
         WebUIKeywordMain.runKeyword({
-
-            if (System.getProperty("os.name") == null || !System.getProperty("os.name").toLowerCase().contains("win")) {
-                throw new Exception("Unsupported platform (only support Windows)");
-            }
-
-            if(DriverFactory.getExecutedBrowser() != WebUIDriverType.IE_DRIVER &&
-            DriverFactory.getExecutedBrowser() != WebUIDriverType.FIREFOX_DRIVER &&
-            DriverFactory.getExecutedBrowser() != WebUIDriverType.CHROME_DRIVER){
-                throw new Exception("Unsupported browser (only support IE, FF, Chrome)");
-            }
-
-            KeywordLogger.getInstance().logInfo(StringConstants.KW_LOG_INFO_CHECKING_USERNAME);
-            if (userName == null) {
-                throw new IllegalArgumentException(StringConstants.KW_EXC_USERNAME_IS_NULL);
-            }
-            KeywordLogger.getInstance().logInfo(StringConstants.KW_LOG_INFO_CHECKING_PASSWORD);
-            if (password == null) {
-                throw new IllegalArgumentException(StringConstants.KW_EXC_PASSWORD_IS_NULL);
-            }
-
-            WebDriver driver = DriverFactory.getWebDriver();
-
-            // send username and pasword to authentication popup
-            //screenUtil.authenticate(userName, password);
-            File kmsIeFolder = FileUtil.getKmsIeDriverDirectory();
-            File authFolder = FileUtil.getAuthenticationDirectory();
-            File userNameParamFile = new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set user name" + File.separator + "paramter0");
-            File passwordParamFile = new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set password" + File.separator + "paramter0");
-
-            //Set user name
-            FileUtils.writeStringToFile(userNameParamFile, userName, false);
-            String[] cmd = [kmsIeFolder.getAbsolutePath() + "/kmsie.exe", userNameParamFile.getParent()];
-            Process proc = Runtime.getRuntime().exec(cmd);
-            //The default timeout for this task is 10s (implemented inside KMS IE Driver)
-            proc.waitFor();
-            //Check result
-            String resStatus = FileUtils.readFileToString(
-                    new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set user name" + File.separator + "result_status"),
-                    "UTF-8");
-            if(!"PASSED".equals(resStatus.trim())){
-                //Should consider to read result_message
-                String errMsg = FileUtils.readFileToString(
-                        new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set user name" + File.separator + "result_message"),
-                        "UTF-8");
-                throw new Exception("Failed to set user name on Authentication dialog: " + errMsg);
-            }
-
-            //Set password
-            FileUtils.writeStringToFile(passwordParamFile, password, false);
-            cmd = [kmsIeFolder.getAbsolutePath() + "/kmsie.exe", passwordParamFile.getParent()];
-            proc = Runtime.getRuntime().exec(cmd);
-            proc.waitFor();
-            resStatus = FileUtils.readFileToString(
-                    new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set password" + File.separator + "result_status"),
-                    "UTF-8");
-            if(!"PASSED".equals(resStatus.trim())){
-                String errMsg = FileUtils.readFileToString(
-                        new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set password" + File.separator + "result_message"),
-                        "UTF-8");
-                throw new Exception("Failed to set password on Authentication dialog: " + errMsg);
-            }
-
-            //Click OK
-            cmd = [kmsIeFolder.getAbsolutePath() + "/kmsie.exe", new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "click ok").getAbsolutePath()];
-            proc = Runtime.getRuntime().exec(cmd);
-            proc.waitFor();
-            resStatus = FileUtils.readFileToString(
-                    new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "click ok" + File.separator + "result_status"),
-                    "UTF-8");
-            if(!"PASSED".equals(resStatus.trim())){
-                String errMsg = FileUtils.readFileToString(
-                        new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "click ok" + File.separator + "result_message"),
-                        "UTF-8");
-                throw new Exception("Failed to click OK button on Authentication dialog: " + errMsg);
-            }
-
-            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_NAVIAGTED_TO_AUTHENTICATED_PAGE, userName, password));
-
+			
+			Thread navigateThread = null;
+			
+			try{
+				
+				if (System.getProperty("os.name") == null || !System.getProperty("os.name").toLowerCase().contains("win")) {
+					throw new Exception("Unsupported platform (only support Windows)");
+				}
+	
+				if(DriverFactory.getExecutedBrowser() != WebUIDriverType.IE_DRIVER &&
+				DriverFactory.getExecutedBrowser() != WebUIDriverType.FIREFOX_DRIVER &&
+				DriverFactory.getExecutedBrowser() != WebUIDriverType.CHROME_DRIVER){
+					throw new Exception("Unsupported browser (only support IE, FF, Chrome)");
+				}
+	
+				timeout = WebUiCommonHelper.checkTimeout(timeout);
+				
+				KeywordLogger.getInstance().logInfo(StringConstants.KW_LOG_INFO_CHECKING_USERNAME);
+				if (userName == null) {
+					throw new IllegalArgumentException(StringConstants.KW_EXC_USERNAME_IS_NULL);
+				}
+				KeywordLogger.getInstance().logInfo(StringConstants.KW_LOG_INFO_CHECKING_PASSWORD);
+				if (password == null) {
+					throw new IllegalArgumentException(StringConstants.KW_EXC_PASSWORD_IS_NULL);
+				}
+	
+				WebDriver driver = DriverFactory.getWebDriver();
+				
+				if(url != null && !url.equals("")){
+					navigateThread = new Thread() {
+						public void run() {
+							driver.get(url);
+						}
+					};
+					navigateThread.start();
+					//Wait for secured page is fully loaded
+					Thread.sleep(timeout * 1000);
+					
+					/*if (DriverFactory.getExecutedBrowser() == WebUIDriverType.IE_DRIVER) {
+						if(DriverFactory.getWebDriver().getTitle().trim().startsWith("Certificate Error")){
+							DriverFactory.getWebDriver().get("javascript:{document.getElementById('overridelink').click();}");
+							Thread.sleep(3000);
+						}
+					}*/
+				}
+				
+				// send username and pasword to authentication popup
+				//screenUtil.authenticate(userName, password);
+				File kmsIeFolder = FileUtil.getKmsIeDriverDirectory();
+				File authFolder = FileUtil.getAuthenticationDirectory();
+				File userNameParamFile = new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set user name" + File.separator + "paramter0");
+				File passwordParamFile = new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set password" + File.separator + "paramter0");
+	
+				//Set user name
+				FileUtils.writeStringToFile(userNameParamFile, userName, false);
+				String[] cmd = [kmsIeFolder.getAbsolutePath() + "/kmsie.exe", userNameParamFile.getParent()];
+				Process proc = Runtime.getRuntime().exec(cmd);
+				//The default timeout for this task is 10s (implemented inside KMS IE Driver)
+				proc.waitFor();
+				//Check result
+				String resStatus = FileUtils.readFileToString(
+						new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set user name" + File.separator + "result_status"),
+						"UTF-8");
+				if(!"PASSED".equals(resStatus.trim())){
+					//Should consider to read result_message
+					String errMsg = FileUtils.readFileToString(
+							new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set user name" + File.separator + "result_message"),
+							"UTF-8");
+					throw new Exception("Failed to set user name on Authentication dialog: " + errMsg);
+				}
+	
+				//Set password
+				FileUtils.writeStringToFile(passwordParamFile, password, false);
+				cmd = [kmsIeFolder.getAbsolutePath() + "/kmsie.exe", passwordParamFile.getParent()];
+				proc = Runtime.getRuntime().exec(cmd);
+				proc.waitFor();
+				resStatus = FileUtils.readFileToString(
+						new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set password" + File.separator + "result_status"),
+						"UTF-8");
+				if(!"PASSED".equals(resStatus.trim())){
+					String errMsg = FileUtils.readFileToString(
+							new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set password" + File.separator + "result_message"),
+							"UTF-8");
+					throw new Exception("Failed to set password on Authentication dialog: " + errMsg);
+				}
+	
+				//Click OK
+				cmd = [kmsIeFolder.getAbsolutePath() + "/kmsie.exe", new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "click ok").getAbsolutePath()];
+				proc = Runtime.getRuntime().exec(cmd);
+				proc.waitFor();
+				resStatus = FileUtils.readFileToString(
+						new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "click ok" + File.separator + "result_status"),
+						"UTF-8");
+				if(!"PASSED".equals(resStatus.trim())){
+					String errMsg = FileUtils.readFileToString(
+							new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "click ok" + File.separator + "result_message"),
+							"UTF-8");
+					throw new Exception("Failed to click OK button on Authentication dialog: " + errMsg);
+				}
+	
+				logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_NAVIAGTED_TO_AUTHENTICATED_PAGE, userName, password));
+			}
+			finally{
+				if (navigateThread != null && navigateThread.isAlive()) {
+					navigateThread.interrupt();
+				}
+			}
         } , flowControl, true, StringConstants.KW_MSG_CANNOT_NAV_TO_AUTHENTICATED_PAGE)
     }
 
