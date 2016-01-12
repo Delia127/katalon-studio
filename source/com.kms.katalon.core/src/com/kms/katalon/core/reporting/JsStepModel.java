@@ -132,7 +132,7 @@ public class JsStepModel extends JsModel {
 	private void initStatus() {
 		String statVal = "";
 		if (stepLogEntity.getStatus() == null) {
-			statVal = TestStatusValue.NOT_RUN.ordinal() + "";
+			statVal = TestStatusValue.INCOMPLETE.ordinal() + "";
 		} else {
 			statVal = stepLogEntity.getStatus().getStatusValue().ordinal() + "";
 		}

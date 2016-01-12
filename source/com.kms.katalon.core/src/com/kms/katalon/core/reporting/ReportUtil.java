@@ -115,7 +115,7 @@ public class ReportUtil {
     }
 
     private static void collectInfoLines(ILogRecord logRecord, List<ILogRecord> rmvLogs) {
-        if (logRecord instanceof MessageLogRecord && logRecord.getStatus().getStatusValue() == TestStatusValue.NOT_RUN) {
+        if (logRecord instanceof MessageLogRecord && logRecord.getStatus().getStatusValue() == TestStatusValue.INCOMPLETE) {
             rmvLogs.add(logRecord);
         }
         for (ILogRecord childLogRecord : logRecord.getChildRecords()) {
@@ -149,6 +149,7 @@ public class ReportUtil {
         // Write main HTML Report
         FileUtils.writeStringToFile(new File(logFolder, logFolder.getName() + ".html"), htmlSb.toString());
 
+        /*
         // Write CSV file
         CsvWriter.writeCsvReport(suiteLogEntity, new File(logFolder, logFolder.getName() + ".csv"),
                 Arrays.asList(suiteLogEntity.getChildRecords()));
@@ -166,6 +167,7 @@ public class ReportUtil {
         htmlSb.append(generateVars(strings, suiteLogEntity, sbModel));
         readFileToStringBuilder(ResourceLoader.HTML_TEMPLATE_CONTENT, htmlSb);
         FileUtils.writeStringToFile(new File(logFolder, "Report.html"), htmlSb.toString());
+        */
     }
 
     public static void writeLogRecordToHTMLFile(TestSuiteLogRecord suiteLogEntity, File destFile,
@@ -400,7 +402,7 @@ public class ReportUtil {
         } else if (level == LogLevel.PASSED) {
             testStatus.setStatusValue(TestStatusValue.PASSED);
         } else {
-            testStatus.setStatusValue(TestStatusValue.NOT_RUN);
+            testStatus.setStatusValue(TestStatusValue.INCOMPLETE);
         }
     }
 

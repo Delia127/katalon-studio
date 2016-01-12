@@ -45,25 +45,35 @@ import org.eclipse.swt.widgets.Combo;
 
 public class AuthenticationWizardPage extends AbstractWizardPage {
 
-    // Field
+    // Fields
     private IQTestToken fToken;
     private String fServerUrl;
     private String fUsername;
     private String fPassword;
     private QTestVersion fVersion;
+   
+    private boolean isDirty;
+    private boolean isPasswordShowed;
+    private String lblStatusText;
 
+    //Controls
     private Text txtServerURL;
     private Text txtUsername;
     private Text txtPassword;
     private Button btnShowPassword;
     private Label lblConnectedStatus;
     private Button btnConnect;
-
-    // Field
-    private boolean isDirty;
-    private boolean isPasswordShowed;
-    private String lblStatusText;
-
+    
+    private GifCLabel connectingLabel;
+    private Composite connectingComposite;
+    private Label lblConnecting;
+    private InputStream inputStream;
+    private Composite headerComposite;
+    private Label lblHeader;
+    private Composite stepAreaComposite;
+    private Label lblVersion;
+    private Combo cbbQTestVersion;
+    
     public AuthenticationWizardPage() {
         isDirty = false;
         isPasswordShowed = false;
@@ -85,16 +95,6 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
             firePageChanged();
         }
     };
-    
-    private GifCLabel connectingLabel;
-    private Composite connectingComposite;
-    private Label lblConnecting;
-    private InputStream inputStream;
-    private Composite headerComposite;
-    private Label lblHeader;
-    private Composite stepAreaComposite;
-    private Label lblVersion;
-    private Combo cbbQTestVersion;
 
     @Override
     public String getTitle() {
