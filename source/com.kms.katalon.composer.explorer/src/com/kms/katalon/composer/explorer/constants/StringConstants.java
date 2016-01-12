@@ -22,6 +22,7 @@ public class StringConstants extends GlobalStringConstants {
 
     // AbstractDeleteEntityDialog
     public static final String DIA_FIELD_SOURCE_ID = "Source ID";
+
     public static final String DIA_MSG_HEADER_ENTITY_REFERENCES = "Caution: ''{0}'' has been referred by some sources listed below.\nDo you want to remove all these references?";
 
     // RenameHandler
@@ -37,4 +38,9 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_IMAGE_TIP_SEARCH = SEARCH;
 
     public static final String PA_IMAGE_TIP_CLOSE_SEARCH = CLEAR;
+
+    // TreeEntityDropListener
+    public static final String LIS_ERROR_MSG_CANNOT_MOVE_THE_SELECTION = "Unable to move the selection: {0}";
+
+    public static final String LIS_ERROR_MSG_CANNOT_MOVE_INTO_DIFF_REGION = "Cannot move ''{0}'' type into ''{1}'' region";
 }

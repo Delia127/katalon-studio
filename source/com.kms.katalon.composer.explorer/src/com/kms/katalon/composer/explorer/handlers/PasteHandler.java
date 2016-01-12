@@ -15,9 +15,11 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.SelectionServiceSingleton;
+import com.kms.katalon.composer.components.transfer.TransferMoveFlag;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
@@ -47,6 +49,24 @@ public class PasteHandler implements IHandler {
                         if (entity.getEntityTransfer() == null
                                 || clipboard.getContents(entity.getEntityTransfer()) == null) {
                             return false;
+                        }
+
+                        // Handle moving entities to the same location
+                        if (entity.getEntityTransfer() != null
+                                && clipboard.getContents(entity.getEntityTransfer()) != null) {
+                            Object transferingObjects = clipboard.getContents(entity.getEntityTransfer());
+                            if (TransferMoveFlag.isMove()) {
+                                if (!(entity instanceof FolderTreeEntity)
+                                        && entity.getParent().equals(
+                                                ((ITreeEntity[]) transferingObjects)[0].getParent())) {
+                                    // Disable to paste on the same location
+                                    return false;
+                                } else if (entity instanceof FolderTreeEntity
+                                        && entity.equals(((ITreeEntity[]) transferingObjects)[0].getParent())) {
+                                    // Disable to paste on the same location
+                                    return false;
+                                }
+                            }
                         }
                     }
                 }
