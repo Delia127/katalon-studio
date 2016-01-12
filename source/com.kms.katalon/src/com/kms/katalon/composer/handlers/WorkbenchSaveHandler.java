@@ -61,6 +61,8 @@ public class WorkbenchSaveHandler extends PartServiceSaveHandler {
                 return Save.CANCEL;
             }
             case NO: {
+                //Marks the part has No selection to be not dirty
+                dirtyPart.setDirty(false);
                 return Save.NO;
             }
             case YES: {
@@ -91,7 +93,7 @@ public class WorkbenchSaveHandler extends PartServiceSaveHandler {
         Object[] toSave = dialog.getResult();
         Save[] retSaves = new Save[parts.size()];
         Arrays.fill(retSaves, Save.NO);
-        for (int i = 0; i < retSaves.length; i++) {
+        for (int i = 0; i < parts.size(); i++) {
             MPart part = parts.get(i);
             for (Object o : toSave) {
                 if (o == part) {
@@ -99,6 +101,8 @@ public class WorkbenchSaveHandler extends PartServiceSaveHandler {
                     break;
                 }
             }
+            //Marks the part has No selection to be not dirty
+            part.setDirty(false);
         }
         return retSaves;
     }
