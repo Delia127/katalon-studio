@@ -72,6 +72,7 @@ public class RestfulClient implements Requestor {
 		
 		ResponseObject responseObject = new ResponseObject(sb.toString());
 		responseObject.setContentType(con.getContentType());
+		responseObject.setHeaderFields(con.getHeaderFields());
 		
 		return responseObject;
 	}
