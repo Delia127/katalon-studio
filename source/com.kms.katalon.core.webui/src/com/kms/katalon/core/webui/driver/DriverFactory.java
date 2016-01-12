@@ -416,6 +416,20 @@ public class DriverFactory {
             }
         }
     }
+    
+    public static int getCurrentWindowIndex() {
+        verifyWebDriverIsOpen();
+        String currentWindowHandle = localWebServerStorage.get().getWindowHandle();
+        Set<String> availableWindowHandles = localWebServerStorage.get().getWindowHandles();
+        int count = 0;
+        for (String windowHandle : availableWindowHandles) {
+            if (windowHandle.equals(currentWindowHandle)) {
+                return count;
+            }
+            count++;
+        }
+        throw new StepFailedException(StringConstants.XML_LOG_ERROR_CANNOT_FOUND_WINDOW_HANDLE);
+    }
 
     private static String getIEDriverPath() {
         return RunConfiguration.getStringProperty(IE_DRIVER_PATH_PROPERTY);
