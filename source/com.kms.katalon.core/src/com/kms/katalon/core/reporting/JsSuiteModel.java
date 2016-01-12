@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
+import com.kms.katalon.core.logging.model.TestStatus;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 
@@ -47,7 +48,7 @@ public class JsSuiteModel extends JsModel {
 		// Meta data, empty
 		metaData = new JsModel();
 		// Suite Status
-		int[] totalFailsErrors = initStatus();
+		int[] totalFailsErrorsIncompletes = initStatus();
 		// Sub-suite
 		subSuite = new JsModel();
 		// Child tests
@@ -60,18 +61,17 @@ public class JsSuiteModel extends JsModel {
 		// Keywords
 		suiteKeyword = new JsModel();
 		// Summary result
-		initSummary(totalFailsErrors);
+		initSummary(totalFailsErrorsIncompletes);
 	}
 
 	/**
-	 * @return total failures & errors
+	 * @return total failures & errors & incomplete
 	 **/
 	private int[] initStatus() {
 
 		status = new JsModel();
 
-		// Status (0: index of STATUSES['FAIL', 'PASS', 'NOT_RUN'], 1:
-		// startMillis, 2: elapsed, 3: message (if any))
+		// Status (0: index of STATUSES['FAIL', 'PASS', 'NOT_RUN'], 1: startMillis, 2: elapsed, 3: message (if any))
 		TestStatusValue suiteStat = TestStatusValue.PASSED;
 		long suiteStartTime = suiteLog.getStartTime();
 		long suiteEndTime = suiteLog.getEndTime();
@@ -79,17 +79,22 @@ public class JsSuiteModel extends JsModel {
 		String lastErrMsg = "";
 		int totalFail = 0;
 		int totalErr = 0;
+		int totalInComplete = 0;
 		for (ILogRecord testLogEntity : suiteLog.getChildRecords()) {
-			if (testLogEntity.getStatus() != null
-					&& testLogEntity.getStatus().getStatusValue() == TestStatusValue.FAILED) {
+			TestStatus testStatus = testLogEntity.getStatus();  
+			if (testStatus != null && testStatus.getStatusValue() == TestStatusValue.FAILED) {
 				suiteStat = TestStatusValue.FAILED;
 				lastErrMsg = testLogEntity.getMessage();
 				totalFail++;
-			} else if (testLogEntity.getStatus() != null
-					&& testLogEntity.getStatus().getStatusValue() == TestStatusValue.ERROR) {
+			} else if (testStatus != null && testStatus.getStatusValue() == TestStatusValue.ERROR) {
 				suiteStat = TestStatusValue.ERROR;
 				lastErrMsg = testLogEntity.getMessage();
 				totalErr++;
+			}
+			else if (testStatus != null && (testStatus.getStatusValue() == TestStatusValue.INCOMPLETE)) {
+				suiteStat = TestStatusValue.INCOMPLETE;
+				lastErrMsg = testLogEntity.getMessage();
+				totalInComplete++;
 			}
 		}
 		String statValue = suiteStat.ordinal() + "";
@@ -103,18 +108,17 @@ public class JsSuiteModel extends JsModel {
 		}
 		suiteLog.getStatus().setStatusValue(suiteStat);
 
-		return new int[] { totalFail, totalErr };
+		return new int[] { totalFail, totalErr, totalInComplete };
 	}
 
-	private void initSummary(int[] totalFailsErrors) {
+	private void initSummary(int[] totalFailsErrorsIncompletes) {
 		// Summary result
 		int totalChildCount = suiteLog.getChildRecords().length;
 		sum = new JsModel();
 		sum.props.add(new JsModelProperty("total", String.valueOf(totalChildCount), null));
-		sum.props.add(new JsModelProperty("passes", String.valueOf(totalChildCount
-				- (totalFailsErrors[0] + totalFailsErrors[1])), null));
-		sum.props.add(new JsModelProperty("fails", String.valueOf(totalFailsErrors[0]), null));
-		sum.props.add(new JsModelProperty("errors", String.valueOf(totalFailsErrors[1]), null));
+		sum.props.add(new JsModelProperty("passes", String.valueOf(totalChildCount - (totalFailsErrorsIncompletes[0] + totalFailsErrorsIncompletes[1] + totalFailsErrorsIncompletes[2])), null));
+		sum.props.add(new JsModelProperty("fails", String.valueOf(totalFailsErrorsIncompletes[0]), null));
+		sum.props.add(new JsModelProperty("errors", String.valueOf(totalFailsErrorsIncompletes[1]), null));
 	}
 
 	public StringBuilder toArrayString() {

@@ -44,8 +44,8 @@ public class ReportPartTestCaseLabelProvider extends StyledCellLabelProvider {
                         return ImageConstants.IMG_16_ERROR;
                     case FAILED:
                         return ImageConstants.IMG_16_FAILED;
-                    case NOT_RUN:
-                        return ImageConstants.IMG_16_FAILED;
+                        // case NOT_RUN:
+                        // return ImageConstants.IMG_16_FAILED;
                     case PASSED:
                         return ImageConstants.IMG_16_PASSED;
                     case INCOMPLETE:

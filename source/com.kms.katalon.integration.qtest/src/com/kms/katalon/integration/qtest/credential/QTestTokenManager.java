@@ -9,8 +9,7 @@ import com.kms.katalon.integration.qtest.credential.impl.V7Token;
 import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 import com.kms.katalon.integration.qtest.setting.QTestVersion;
 
-
-public class QTestTokenManager {    
+public class QTestTokenManager {
     public static IQTestToken getToken(String rawToken) throws QTestInvalidFormatException {
         if (StringUtils.isBlank(rawToken)) {
             return null;
@@ -22,29 +21,31 @@ public class QTestTokenManager {
         } catch (JsonException ex) {
             token = new V6Token(rawToken);
         }
-        
+
         if (token != null) {
             token.getAccessTokenHeader();
         }
         return token;
     }
-    
+
     public static IQTestToken getToken(QTestVersion version, String rawToken) throws QTestInvalidFormatException {
         IQTestToken qTestToken = getToken(rawToken);
-        
+
         if (qTestToken.getVersion().higherThan(version)) {
             throw new QTestInvalidFormatException("Token and version are not compatible");
         } else {
             return qTestToken;
         }
     }
-    
-    public static IQTestToken getTokenByAccessToken(QTestVersion version, String accessToken) throws QTestInvalidFormatException {
+
+    public static IQTestToken getTokenByAccessToken(QTestVersion version, String accessToken)
+            throws QTestInvalidFormatException {
         if (version == QTestVersion.V6) {
             return new V6Token(accessToken);
         } else if (version == QTestVersion.V7) {
             try {
-                JsonObject js = new JsonObject().put("access_token", accessToken).put("token_type", "bearer");
+                JsonObject js = new JsonObject().put(V7Token.ACCESS_TOKEN, accessToken).put(V7Token.TOKEN_TYPE,
+                        V7Token.DF_TOKEN_TYPE);
                 return new V7Token(js.toString());
             } catch (JsonException e) {
                 throw QTestInvalidFormatException.createInvalidJsonFormatException(e.getMessage());

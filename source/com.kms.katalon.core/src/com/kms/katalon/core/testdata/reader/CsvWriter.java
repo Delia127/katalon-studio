@@ -102,7 +102,7 @@ public class CsvWriter {
                         DateUtil.getDateTimeFormatted(logRecord.getStartTime()),
                         DateUtil.getDateTimeFormatted(logRecord.getEndTime()),
                         DateUtil.getElapsedTime(logRecord.getStartTime(), logRecord.getEndTime()),
-                        status != null ? status.getStatusValue().name() : TestStatusValue.NOT_RUN.name() });
+                        status != null ? status.getStatusValue().name() : TestStatusValue.INCOMPLETE.name() });
         csvWriter.write(writtenObjects, DETAILS_PROCESSORS);
     }
 
