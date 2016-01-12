@@ -86,7 +86,7 @@ public class ObjectRepository {
 			objectProperty.setActive(isPropertySelected);
 
 			// Check if this element is inside a frame
-			if (Arrays.asList(PARENT_FRAME_ATTRS).contains(propertyName)) {
+			if (Arrays.asList(PARENT_FRAME_ATTRS).contains(propertyName) && isPropertySelected) {
 				TestObject parentObject = findTestObject(propertyValue);
 				testObject.setParentObject(parentObject);
 			} else {
