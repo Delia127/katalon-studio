@@ -54,7 +54,7 @@ public class FolderController extends EntityController implements Serializable {
     }
 
     public List<Object> getAllDescentdantEntities(FolderEntity folder) throws Exception {
-        List<Object> allDescendant = new ArrayList<>();
+        List<Object> allDescendant = new ArrayList<Object>();
         for (Object child : getChildren(folder)) {
             if (child instanceof FolderEntity) {
                 allDescendant.addAll(getAllDescentdantEntities((FolderEntity) child));

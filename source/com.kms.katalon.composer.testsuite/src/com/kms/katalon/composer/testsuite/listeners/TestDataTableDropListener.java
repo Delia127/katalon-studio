@@ -47,7 +47,7 @@ public class TestDataTableDropListener extends TableDropTargetEffect {
             // int destIndex = (destItem != null) ? inputs.indexOf(destItem) : inputs.size() - 1;
             int destIndex = (destItem != null) ? inputs.indexOf(destItem) : inputs.size();
             if (event.data instanceof String) {
-                List<TestCaseTestDataLink> movedItems = new ArrayList<>();
+                List<TestCaseTestDataLink> movedItems = new ArrayList<TestCaseTestDataLink>();
                 List<String> testDataIds = Arrays.asList(String.valueOf(event.data).split("\n"));
                 for (TestCaseTestDataLink link : inputs) {
                     if (testDataIds.contains(link.getTestDataId())) {
@@ -66,7 +66,7 @@ public class TestDataTableDropListener extends TableDropTargetEffect {
                 part.setDirty(true);
             } else if (event.data instanceof ITreeEntity[]) {
                 try {
-                    List<TestCaseTestDataLink> addedTestDataLinkTreeNodes = new ArrayList<>();
+                    List<TestCaseTestDataLink> addedTestDataLinkTreeNodes = new ArrayList<TestCaseTestDataLink>();
                     for (ITreeEntity iTreeEntity : (ITreeEntity[]) event.data) {
                         if (iTreeEntity instanceof TestDataTreeEntity) {
                             DataFileEntity testData = (DataFileEntity) ((TestDataTreeEntity) iTreeEntity).getObject();

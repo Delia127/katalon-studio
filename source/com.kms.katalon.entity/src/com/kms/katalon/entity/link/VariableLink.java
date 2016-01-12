@@ -6,9 +6,13 @@ import java.util.List;
 
 public class VariableLink implements Serializable {
     private static final long serialVersionUID = 1L;
+
     private String variableId;
+
     private String value;
+
     private VariableType type;
+
     private String testDataLinkId;
 
     public VariableLink() {
@@ -73,7 +77,7 @@ public class VariableLink implements Serializable {
         }
 
         public static List<String> getValueStrings() {
-            List<String> valueStrings = new ArrayList<>();
+            List<String> valueStrings = new ArrayList<String>();
             for (VariableType type : values()) {
                 valueStrings.add(type.toString());
             }

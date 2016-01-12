@@ -86,6 +86,8 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
                 continue;
             }
 
+            treeEntity.loadAllDescentdantEntities();
+
             if (treeEntity instanceof TestCaseTreeEntity) {
                 TestCaseEntity movedTc = EntityControllerUtil.moveTestCase(
                         (TestCaseEntity) ((TestCaseTreeEntity) treeEntity).getObject(), targetFolder);

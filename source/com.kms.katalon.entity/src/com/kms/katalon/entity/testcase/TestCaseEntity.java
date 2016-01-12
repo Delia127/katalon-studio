@@ -28,9 +28,9 @@ public class TestCaseEntity extends IntegratedFileEntity {
     private byte[] scriptContents;
 
     public TestCaseEntity() {
-        variables = new ArrayList<>();
-        dataFiles = new ArrayList<>();
-        dataFileLocations = new ArrayList<>();
+        variables = new ArrayList<VariableEntity>();
+        dataFiles = new ArrayList<DataFileEntity>();
+        dataFileLocations = new ArrayList<String>();
     }
 
     public String getComment() {

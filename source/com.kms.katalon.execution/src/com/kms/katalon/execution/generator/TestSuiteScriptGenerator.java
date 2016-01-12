@@ -33,11 +33,15 @@ import com.kms.katalon.groovy.util.GroovyUtil;
 public class TestSuiteScriptGenerator {
     private static final String TEMPLATE_CLASS_NAME = IdConstants.KATALON_EXECUTION_BUNDLE_ID
             + ".generator.TestSuiteScriptTemplate";
+
     private static final String GENERATED_TEST_SUITE_SCRIPT_METHOD_NAME = "generateTestSuiteScriptFile";
+
     private static final String TEMP_TEST_SUITE_FILE_NAME = "TempTestSuite";
 
     private TestSuiteEntity testSuite;
+
     private IRunConfiguration config;
+
     private TestSuiteExecutedEntity testSuiteExecuted;
 
     public TestSuiteScriptGenerator(TestSuiteEntity testSuite, IRunConfiguration config,
@@ -66,7 +70,7 @@ public class TestSuiteScriptGenerator {
     }
 
     public List<String> createTestCaseBindings() throws Exception {
-        List<String> testCaseBindings = new ArrayList<>();
+        List<String> testCaseBindings = new ArrayList<String>();
         StringBuilder syntaxErrorCollector = new StringBuilder();
 
         List<TestSuiteTestCaseLink> lstTestCaseRun = TestSuiteController.getInstance().getTestSuiteTestCaseRun(

@@ -9,11 +9,17 @@ import com.kms.katalon.integration.qtest.entity.QTestModule;
 
 public class ModuleDownloadedPreviewTreeNode implements DownloadedPreviewTreeNode {
     private QTestModule module;
+
     private boolean isSelected;
+
     private boolean isAnyChildSelected;
+
     private List<TestCaseDownloadedPreviewTreeNode> childTestCaseTrees;
+
     private List<ModuleDownloadedPreviewTreeNode> childModuleTrees;
+
     private FolderEntity folderEntity;
+
     private ModuleDownloadedPreviewTreeNode parent;
 
     public ModuleDownloadedPreviewTreeNode(QTestModule module, FolderEntity folder,
@@ -51,7 +57,7 @@ public class ModuleDownloadedPreviewTreeNode implements DownloadedPreviewTreeNod
     }
 
     public List<TestCaseDownloadedPreviewTreeNode> getChildTestCaseTrees() {
-        if (childTestCaseTrees == null) childTestCaseTrees = new ArrayList<>();
+        if (childTestCaseTrees == null) childTestCaseTrees = new ArrayList<TestCaseDownloadedPreviewTreeNode>();
         return childTestCaseTrees;
     }
 
@@ -60,7 +66,7 @@ public class ModuleDownloadedPreviewTreeNode implements DownloadedPreviewTreeNod
     }
 
     public List<ModuleDownloadedPreviewTreeNode> getChildModuleTrees() {
-        if (childModuleTrees == null) childModuleTrees = new ArrayList<>();
+        if (childModuleTrees == null) childModuleTrees = new ArrayList<ModuleDownloadedPreviewTreeNode>();
         return childModuleTrees;
     }
 

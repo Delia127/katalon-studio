@@ -21,15 +21,23 @@ import com.kms.katalon.core.constants.StringConstants;
  */
 public class RunConfiguration {
     public static final String LOG_FILE_PATH_PROPERTY = StringConstants.CONF_PROPERTY_LOG_FILE_PATH;
+
     public static final String TIMEOUT_PROPERTY = StringConstants.CONF_PROPERTY_TIMEOUT;
+
     public static final String PROJECT_DIR_PROPERTY = StringConstants.CONF_PROPERTY_PROJECT_DIR;
 
     public static final String HOST_NAME = StringConstants.CONF_PROPERTY_HOST_NAME;
+
     public static final String HOST_OS = StringConstants.CONF_PROPERTY_HOST_OS;
+
     public static final String EXCUTION_SOURCE = StringConstants.CONF_PROPERTY_EXECUTION_SOURCE;
+
     public static final String EXCUTION_SOURCE_NAME = StringConstants.CONF_PROPERTY_EXECUTION_SOURCE_NAME;
+
     public static final String EXCUTION_SOURCE_ID = StringConstants.CONF_PROPERTY_EXECUTION_SOURCE_ID;
+
     public static final String EXCUTION_SOURCE_DESCRIPTION = StringConstants.CONF_PROPERTY_EXECUTION_SOURCE_DESCRIPTION;
+
     public static final String EXECUTION_DRIVER_PROPERTY = StringConstants.CONF_PROPERTY_EXECUTION_DRIVER_PROPERTY;
 
     private static final ThreadLocal<Map<String, Object>> localExecutionSettingMapStorage = new ThreadLocal<Map<String, Object>>() {
@@ -45,7 +53,7 @@ public class RunConfiguration {
             return new String();
         }
     };
-    
+
     private static final ThreadLocal<List<Object>> localDriverStorage = new ThreadLocal<List<Object>>() {
         @Override
         protected List<Object> initialValue() {
@@ -69,18 +77,19 @@ public class RunConfiguration {
             Gson gsonObj = new Gson();
             try {
                 String propertyConfigFileContent = FileUtils.readFileToString(executionSettingFile);
-                Type collectionType = new TypeToken<Map<String, Object>>() {
-                }.getType();
+                Type collectionType = new TypeToken<Map<String, Object>>() {}.getType();
                 Map<String, Object> result = gsonObj.fromJson(propertyConfigFileContent, collectionType);
                 if (result != null) {
                     localExecutionSettingMapStorage.set(result);
                 }
-            } catch (IOException | JsonSyntaxException exception) {
-                // reading file failed or parsing json failed --> do nothing;
+            } catch (IOException exception) {
+                // reading file failed --> do nothing;
+            } catch (JsonSyntaxException exception) {
+                // parsing json failed --> do nothing;
             }
         }
     }
-    
+
     public static void setExecutionSetting(Map<String, Object> executionSettingMap) {
         if (executionSettingMap == null) {
             return;
@@ -136,7 +145,7 @@ public class RunConfiguration {
     public static Map<String, Object> getExecutionProperties() {
         return (Map<String, Object>) getProperty(EXECUTION_DRIVER_PROPERTY);
     }
-    
+
     public static Object getExecutionProperty(String propertyName) {
         Map<String, Object> executionDriverProperty = getExecutionProperties();
         if (executionDriverProperty != null) {
@@ -144,7 +153,7 @@ public class RunConfiguration {
         }
         return null;
     }
-    
+
     public static Object[] getStoredDrivers() {
         return localDriverStorage.get().toArray();
     }
@@ -154,7 +163,7 @@ public class RunConfiguration {
             localDriverStorage.get().add(driver);
         }
     }
-    
+
     public static void removeDriver(Object driver) {
         if (localDriverStorage.get().contains(driver)) {
             localDriverStorage.get().remove(driver);

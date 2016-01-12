@@ -29,12 +29,17 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 public class TestCaseTableLabelProvider extends StyledCellLabelProvider {
 
     public static final int COLUMN_NOTIFICATION_INDEX = 0;
+
     public static final int COLUMN_ORDER_INDEX = 1;
+
     public static final int COLUMN_ID_INDEX = 2;
+
     public static final int COLUMN_DESCRIPTION_INDEX = 3;
+
     public static final int COLUMN_RUN_INDEX = 4;
 
     private static TestCaseController testCaseController = TestCaseController.getInstance();
+
     private int columnIndex;
 
     public TestCaseTableLabelProvider(int columnIndex) {
@@ -133,7 +138,7 @@ public class TestCaseTableLabelProvider extends StyledCellLabelProvider {
             cell.setForeground(ColorUtil.getDefaultTextColor());
         }
 
-        List<StyleRange> range = new ArrayList<>();
+        List<StyleRange> range = new ArrayList<StyleRange>();
 
         if (columnIndex != COLUMN_ORDER_INDEX) {
             String searchString = getTestCaseTableViewer().getSearchedString().trim().toLowerCase();

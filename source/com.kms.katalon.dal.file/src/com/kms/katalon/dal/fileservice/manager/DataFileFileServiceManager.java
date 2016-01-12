@@ -75,7 +75,7 @@ public class DataFileFileServiceManager {
      * @param dataFilePk
      * @param projectPk
      * @return the string contains information of all entities that refer to the data file entity, if none return empty
-     *         string
+     * string
      * @throws Exception
      */
     private static String isDataFileReferred(DataFileEntity dataFile, List<TestSuiteEntity> testSuiteList,
@@ -136,8 +136,8 @@ public class DataFileFileServiceManager {
      * 
      * @param dataFileEntity
      * @return a hash map of list of {@link TestSuiteTestCaseLink}
-     * @throws Exception
-     *             thrown if the given test data is null or system cannot get all test suites of the current project.
+     * @throws Exception thrown if the given test data is null or system cannot get all test suites of the current
+     * project.
      */
     public static Map<String, List<TestSuiteTestCaseLink>> getTestDataReferences(DataFileEntity dataFileEntity)
             throws Exception {
@@ -203,7 +203,7 @@ public class DataFileFileServiceManager {
      * @param folder
      * @param projectPk
      * @return the string contains information of all entities that refer to its children data file entity, if none
-     *         return empty string
+     * return empty string
      * @throws Exception
      */
     private static String canDeleteDataFileFolder(FolderEntity folder, List<TestSuiteEntity> testSuiteList)
@@ -258,8 +258,7 @@ public class DataFileFileServiceManager {
     /**
      * get a data file entity by its location (absolute path)
      * 
-     * @param dataFilePk
-     *            : the data file's location
+     * @param dataFilePk : the data file's location
      * @return
      * @throws Exception
      */
@@ -537,7 +536,7 @@ public class DataFileFileServiceManager {
         testDataEntity.setSheetName(internalData.getSheetName());
 
         if (testDataEntity.getDriver() == DataFileDriverType.InternalData) {
-            List<InternalDataColumnEntity> lstInternalDataColumnEntities = new ArrayList<>();
+            List<InternalDataColumnEntity> lstInternalDataColumnEntities = new ArrayList<InternalDataColumnEntity>();
             for (Object o : internalData.getHeaderColumn()) {
                 lstInternalDataColumnEntities.add((InternalDataColumnEntity) o);
             }
