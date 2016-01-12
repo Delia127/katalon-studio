@@ -108,6 +108,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_MSG_UNABLE_TO_GET_TOKEN = "Unable to get token";
     public static final String DIA_TITLE_GENERATE_TOKEN = "Generate new token";
     public static final String DIA_TITLE_GENERATE = "Generate";
+    public static final String DIA_JOB_GENERATE_TOKEN = "Generating new token";
 
     // ListReportUploadingPreviewDialog
     public static final String DIA_TITLE_TEST_LOG_UPLOADING_PREVIEW = "Test Log Uploading Preview";

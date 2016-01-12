@@ -21,4 +21,8 @@ public class UISynchronizeService {
 	public void setSync(UISynchronize sync) {
 		this.sync = sync;
 	}
+	
+	public static void syncExec(Runnable runnable) {
+	    getInstance().getSync().syncExec(runnable);
+	}
 }
