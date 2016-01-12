@@ -72,12 +72,12 @@ public class StringConstants {
 	public static final String KW_MSG_TXTS_MATCHED_BUT_EXPECTED_UNMATCHED = "Actual text ''{0}'' and expected text ''{1}'' are matched {2}, but expected not to be matched";
 	public static final String KW_LOG_PASSED_TXTS_UNMATCHED = "Actual text ''{0}'' and expected text ''{1}'' are not matched {2}";
 	public static final String KW_MSG_CANNOT_VERIFY_TXTS_ARE_UNMATCHED = "Unable to verify not match between actual text ''{0}'' and expected text ''{1}'' {2}";
-	public static final String KW_MSG_NUMS_ARE_NOT_EQUAL = "Actual number ''{0}'' and expected number ''{1}'' are not equal";
-	public static final String KW_LOG_PASSED_NUMS_ARE_EQUAL = "Actual number ''{0}'' and expected number ''{1}'' are equal";
-	public static final String KW_MSG_CANNOT_VERIFY_NUMS_ARE_EQUAL = "Unable to verify equal between actual number ''{0}'' and expected number ''{1}''";
-	public static final String KW_MSG_NUMS_ARE_EQUAL = "Actual number ''{0}'' and expected number ''{1}'' are equal";
-	public static final String KW_LOG_PASSED_NUMS_ARE_NOT_EQUAL = "Actual number ''{0}'' and expected number ''{1}'' are not equal";
-	public static final String KW_MSG_CANNOT_VERIFY_NUMS_ARE_NOT_EQUAL = "Unable to verify not equal between actual number ''{0}'' and expected number ''{1}''";
+	public static final String KW_MSG_OBJECTS_ARE_NOT_EQUAL = "Actual object ''{0}'' and expected object ''{1}'' are not equal";
+	public static final String KW_LOG_PASSED_OBJECTS_ARE_EQUAL = "Actual object ''{0}'' and expected object ''{1}'' are equal";
+	public static final String KW_MSG_CANNOT_VERIFY_OBJECTS_ARE_EQUAL = "Unable to verify equal between actual object ''{0}'' and expected object ''{1}''";
+	public static final String KW_MSG_OBJECTS_ARE_EQUAL = "Actual object ''{0}'' and expected object ''{1}'' are equal";
+	public static final String KW_LOG_PASSED_OBJECTS_ARE_NOT_EQUAL = "Actual object ''{0}'' and expected object ''{1}'' are not equal";
+	public static final String KW_MSG_CANNOT_VERIFY_OBJECTS_ARE_NOT_EQUAL = "Unable to verify not equal between actual object ''{0}'' and expected object ''{1}''";
 	public static final String KW_LOG_PASSED_ACTUAL_NUM_IS_GREATER_THAN_EXPECTED_NUM = "Actual number ''{0}'' is greater than expected number ''{1}''";
 	public static final String KW_MSG_ACTUAL_NUM_IS_NOT_GREATER_THAN_EXPECTED_NUM = "Actual number ''{0}'' is not greater than expected number ''{1}''";
 	public static final String KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_GREATER = "Unable to verify greater between actual number ''{0}'' and expected number ''{1}'''";
@@ -121,7 +121,7 @@ public class StringConstants {
 	public static final String COMM_EXC_EXPECTED_NUM_IS_NULL = "Expected number is null";
 	public static final String COMM_EXC_INVALID_ACTUAL_NUM = "Actual number with value ''{0}'' is not a valid number";
 	public static final String COMM_EXC_INVALID_EXPECTED_NUM = "Expected number with value ''{0}'' is not a valid number";
-	public static final String COMM_LOG_INFO_COMPARE_ACTUAL_W_EXPECTED_NUM = "Comparing actual number ''{0}'' with expected number ''{1}''";
+	public static final String COMM_LOG_INFO_COMPARE_ACTUAL_W_EXPECTED = "Comparing actual object ''{0}'' with expected object ''{1}''";
 	public static final String COMM_LOG_INFO_CONVERTING_RANGE_PARAM_TO_INDEX_ARRAY = "Converting range parameter ''{0}'' to index array";
 	public static final String COMM_EXC_INVALID_RANGE = "Range ''{0}'' is invalid ({1})";
 	public static final String COMM_LOG_INFO_RANGE_PARAM_IS_CONVERTED_TO_INDEX_ARRAY = "Range parameter ''{0}'' is converted to index array {1}";
