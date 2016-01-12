@@ -26,7 +26,7 @@ public class LogFileWatcher extends AbstractLogFileWatcher {
 	@Override
 	public void run() {
 		try {
-			while (!stopSignal) {
+			while ((!isStopSignal() || reader.ready())) {
 				StringBuilder builder = new StringBuilder();
 				while (true) {
 					Thread.sleep(delay);
