@@ -38,7 +38,7 @@ public class TestCaseFileServiceManager {
     public static String getAvailableName(FolderEntity parentFolder, String name) throws Exception {
         if (parentFolder != null) {
             String newname = name;
-            List<String> fileNames = new ArrayList<>();
+            List<String> fileNames = new ArrayList<String>();
 
             for (FileEntity testCase : FolderFileServiceManager.getChildren(parentFolder)) {
                 fileNames.add(testCase.getName().toLowerCase());
@@ -58,8 +58,7 @@ public class TestCaseFileServiceManager {
      * Create new Test Case
      * 
      * @param parentFolder
-     * @param defaultName
-     *            Test Case name. Default name (New Test Case) will be used if this null or empty
+     * @param defaultName Test Case name. Default name (New Test Case) will be used if this null or empty
      * @return {@link TestCaseEntity}
      * @throws Exception
      */
@@ -141,7 +140,7 @@ public class TestCaseFileServiceManager {
                         GroovyUtil.getScriptPackageRelativePathForTestCase(oldRelativeTcId));
 
                 oldScriptFolder.delete(true, null);
-                
+
                 GroovyUtil.updateTestCasePasted(testCase);
 
                 FolderFileServiceManager.refreshFolder(testCase.getParentFolder());
@@ -401,7 +400,7 @@ public class TestCaseFileServiceManager {
 
         for (TestSuiteEntity testSuite : allTestSuites) {
             String testSuiteId = testSuite.getRelativePathForUI().replace(File.separator, "/");
-            
+
             if (dataProviderSetting.getTestSuiteDataProvider().getTestCaseLink(testSuite, testCaseId) != null) {
                 exception.addReference(testCaseId, testSuiteId);
             }
@@ -540,20 +539,20 @@ public class TestCaseFileServiceManager {
 
     public static List<TestSuiteEntity> getTestCaseReferences(TestCaseEntity testCase) throws Exception {
         List<TestSuiteEntity> testCaseReferences = new ArrayList<TestSuiteEntity>();
-        
+
         String testCaseId = testCase.getRelativePathForUI().replace(File.separator, "/");
 
         FileServiceDataProviderSetting dataProviderSetting = new FileServiceDataProviderSetting();
-        
+
         List<TestSuiteEntity> allTestSuites = FolderFileServiceManager
                 .getDescendantTestSuitesOfFolder(FolderFileServiceManager.getTestSuiteRoot(testCase.getProject()));
-        
+
         for (TestSuiteEntity testSuite : allTestSuites) {
             if (dataProviderSetting.getTestSuiteDataProvider().getTestCaseLink(testSuite, testCaseId) != null) {
                 testCaseReferences.add(testSuite);
             }
         }
-    
+
         return testCaseReferences;
     }
 

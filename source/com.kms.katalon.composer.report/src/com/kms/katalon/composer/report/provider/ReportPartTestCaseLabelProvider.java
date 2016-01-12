@@ -23,7 +23,9 @@ import com.kms.katalon.core.util.DateUtil;
 public class ReportPartTestCaseLabelProvider extends StyledCellLabelProvider {
 
     private static final int CLMN_TEST_CASE_ORDER = 0;
+
     private static final int CLMN_TEST_CASE_NAME = 1;
+
     private static final int CLMN_TEST_CASE_INTEGRATION = 2;
 
     private ReportPart reportPart;
@@ -33,40 +35,39 @@ public class ReportPartTestCaseLabelProvider extends StyledCellLabelProvider {
     }
 
     public Image getImage(Object element, int columnIndex) {
-        if (element == null || !(element instanceof ILogRecord))
-            return null;
+        if (element == null || !(element instanceof ILogRecord)) return null;
         switch (columnIndex) {
-        case CLMN_TEST_CASE_NAME:
-            ILogRecord logRecord = (ILogRecord) element;
-            switch (logRecord.getStatus().getStatusValue()) {
-            case ERROR:
-                return ImageConstants.IMG_16_ERROR;
-            case FAILED:
-                return ImageConstants.IMG_16_FAILED;
-            case NOT_RUN:
-                return ImageConstants.IMG_16_FAILED;
-            case PASSED:
-                return ImageConstants.IMG_16_PASSED;
-            case INCOMPLETE:
-                return ImageConstants.IMG_16_INCOMPLETE;
-            default:
+            case CLMN_TEST_CASE_NAME:
+                ILogRecord logRecord = (ILogRecord) element;
+                switch (logRecord.getStatus().getStatusValue()) {
+                    case ERROR:
+                        return ImageConstants.IMG_16_ERROR;
+                    case FAILED:
+                        return ImageConstants.IMG_16_FAILED;
+                    case NOT_RUN:
+                        return ImageConstants.IMG_16_FAILED;
+                    case PASSED:
+                        return ImageConstants.IMG_16_PASSED;
+                    case INCOMPLETE:
+                        return ImageConstants.IMG_16_INCOMPLETE;
+                    default:
+                        break;
+                }
                 break;
-            }
-            break;
-        case CLMN_TEST_CASE_INTEGRATION:
-            String integratedProduct = reportPart.getIntegratedProductName();
-            if (integratedProduct == null || integratedProduct.isEmpty()) {
-                return null;
-            }
-            return reportPart.getIntegratingCompositeMap().get(integratedProduct).getImage((TestCaseLogRecord) element);
+            case CLMN_TEST_CASE_INTEGRATION:
+                String integratedProduct = reportPart.getIntegratedProductName();
+                if (integratedProduct == null || integratedProduct.isEmpty()) {
+                    return null;
+                }
+                return reportPart.getIntegratingCompositeMap().get(integratedProduct)
+                        .getImage((TestCaseLogRecord) element);
         }
         return null;
     }
 
     private int getOrder(ILogRecord[] testCaseLogRecords, ILogRecord testCaseLogRecord) {
         for (int index = 0; index < testCaseLogRecords.length; index++) {
-            if (testCaseLogRecord.equals(testCaseLogRecords[index]))
-                return index + 1;
+            if (testCaseLogRecord.equals(testCaseLogRecords[index])) return index + 1;
         }
         return 0;
     }
@@ -74,21 +75,21 @@ public class ReportPartTestCaseLabelProvider extends StyledCellLabelProvider {
     private StyledString getText(ILogRecord logRecord, int columnIndex) {
         StyledString styledString = new StyledString();
         switch (columnIndex) {
-        case CLMN_TEST_CASE_ORDER:
-            styledString.append(Integer.toString(getOrder((ILogRecord[]) getViewer().getInput(), logRecord)));
-            break;
-        case CLMN_TEST_CASE_NAME:
-            String testCaseId = logRecord.getName();
-            String testCaseName = testCaseId.substring(testCaseId.lastIndexOf("/") + 1, testCaseId.length());
-            styledString.append(testCaseName);
+            case CLMN_TEST_CASE_ORDER:
+                styledString.append(Integer.toString(getOrder((ILogRecord[]) getViewer().getInput(), logRecord)));
+                break;
+            case CLMN_TEST_CASE_NAME:
+                String testCaseId = logRecord.getName();
+                String testCaseName = testCaseId.substring(testCaseId.lastIndexOf("/") + 1, testCaseId.length());
+                styledString.append(testCaseName);
 
-            String eslapsedTime = DateUtil.getElapsedTime(logRecord.getStartTime(), logRecord.getEndTime());
-            if (!StringUtils.isBlank(eslapsedTime)) {
-                styledString.append(" (" + eslapsedTime + ")", StyledString.COUNTER_STYLER);
-            }
-            break;
-        case CLMN_TEST_CASE_INTEGRATION:
-            break;
+                String eslapsedTime = DateUtil.getElapsedTime(logRecord.getStartTime(), logRecord.getEndTime());
+                if (!StringUtils.isBlank(eslapsedTime)) {
+                    styledString.append(" (" + eslapsedTime + ")", StyledString.COUNTER_STYLER);
+                }
+                break;
+            case CLMN_TEST_CASE_INTEGRATION:
+                break;
         }
         return styledString;
     }
@@ -98,7 +99,7 @@ public class ReportPartTestCaseLabelProvider extends StyledCellLabelProvider {
         if (cell.getElement() != null) {
             cell.setImage(getImage(cell.getElement(), cell.getColumnIndex()));
 
-            List<StyleRange> range = new ArrayList<>();
+            List<StyleRange> range = new ArrayList<StyleRange>();
             StyledString styledString = getText((ILogRecord) cell.getElement(), cell.getColumnIndex());
             cell.setText(styledString.toString());
             range.addAll(Arrays.asList(styledString.getStyleRanges()));

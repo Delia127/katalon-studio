@@ -29,7 +29,7 @@ public class EntityControllerUtil {
                 }
             }
 
-            List<String> lstDescendantEntityLocations = new ArrayList<>();
+            List<String> lstDescendantEntityLocations = new ArrayList<String>();
             if (folder.getFolderType() == FolderType.TESTCASE) {
                 for (Object child : allDescendantEntites) {
                     if (child != null && child instanceof TestCaseEntity) {

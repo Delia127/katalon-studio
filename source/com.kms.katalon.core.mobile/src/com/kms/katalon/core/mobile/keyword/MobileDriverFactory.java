@@ -30,11 +30,13 @@ import com.kms.katalon.core.mobile.util.MobileDriverPropertyUtil;
 
 public class MobileDriverFactory {
     private static final String APPIUM_SERVER_URL_SUFFIX = "/wd/hub";
+
     private static final String APPIUM_SERVER_URL_PREFIX = "http://127.0.0.1:";
 
     public static final String EXECUTED_PLATFORM = StringConstants.CONF_EXECUTED_PLATFORM;
+
     public static final String EXECUTED_DEVICE_NAME = StringConstants.CONF_EXECUTED_DEVICE_NAME;
-    
+
     private static Process webProxyServer;
 
     public enum OsType {
@@ -61,7 +63,7 @@ public class MobileDriverFactory {
             return null;
         }
     };
-    
+
     private static final ThreadLocal<Map<String, String>> localStorageIosDevices = new ThreadLocal<Map<String, String>>() {
         @Override
         protected Map<String, String> initialValue() {
@@ -73,7 +75,7 @@ public class MobileDriverFactory {
             return null;
         }
     };
-    
+
     private static final ThreadLocal<Map<String, String>> localStorageAndroidDevices = new ThreadLocal<Map<String, String>>() {
         @Override
         protected Map<String, String> initialValue() {
@@ -209,7 +211,7 @@ public class MobileDriverFactory {
         }
         return false;
     }
-    
+
     private static boolean isWebProxyServerStarted() {
         if (webProxyServer == null) {
             return false;
@@ -251,11 +253,10 @@ public class MobileDriverFactory {
         pb.redirectOutput(new File(new File(RunConfiguration.getLogFilePath()).getParent() + File.separator
                 + "appium.log"));
         localStorageAppiumServer.set(pb.start());
-        while (!isServerStarted()) {
-        }
+        while (!isServerStarted()) {}
         KeywordLogger.getInstance().logInfo("Appium server started on port " + localStorageAppiumPort.get());
     }
-    
+
     private static void startWebProxyServer(String deviceId) throws Exception {
         String webProxyServerLocation = "ios_webkit_debug_proxy";
         int webProxyPort = 27753;
@@ -264,8 +265,7 @@ public class MobileDriverFactory {
         webProxyServerProcessBuilder.redirectOutput(new File(new File(RunConfiguration.getLogFilePath()).getParent()
                 + File.separator + "appium-proxy-server.log"));
         webProxyServer = webProxyServerProcessBuilder.start();
-        while (!isWebProxyServerStarted()) {
-        }
+        while (!isWebProxyServerStarted()) {}
         KeywordLogger.getInstance().logInfo("ios_webkit_debug_proxy server started on port " + webProxyPort);
     }
 
@@ -281,7 +281,7 @@ public class MobileDriverFactory {
     }
 
     public static List<String> getDevices() throws Exception {
-        List<String> devices = new ArrayList<>();
+        List<String> devices = new ArrayList<String>();
         devices.addAll(localStorageAndroidDevices.get().values());
         devices.addAll(localStorageIosDevices.get().values());
         return devices;
@@ -290,7 +290,7 @@ public class MobileDriverFactory {
     private static Map<String, String> getIosDevices() throws Exception {
         Map<String, String> iosDevices = new LinkedHashMap<String, String>();
         if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-            List<String> deviceIds = new ArrayList<>();
+            List<String> deviceIds = new ArrayList<String>();
             String[] cmd = { "idevice_id", "-l" };
             ProcessBuilder pb = new ProcessBuilder(cmd);
             Process p = pb.start();
@@ -334,7 +334,7 @@ public class MobileDriverFactory {
 
         String adbPath = System.getenv("ANDROID_HOME");
         if (adbPath != null) {
-            List<String> deviceIds = new ArrayList<>();
+            List<String> deviceIds = new ArrayList<String>();
             adbPath += File.separator + "platform-tools" + File.separator + "adb";
             String[] cmd = new String[] { adbPath, "devices" };
             ProcessBuilder pb = new ProcessBuilder(cmd);
@@ -416,18 +416,18 @@ public class MobileDriverFactory {
     public static String getDeviceName() {
         return RunConfiguration.getStringProperty(EXECUTED_DEVICE_NAME);
     }
-    
+
     public static AppiumDriver<?> getDriver() throws StepFailedException {
         verifyWebDriverIsOpen();
         return localStorageAppiumDriver.get();
     }
-    
+
     private static void verifyWebDriverIsOpen() throws StepFailedException {
         if (localStorageAppiumDriver.get() == null) {
             throw new StepFailedException("No application is started yet.");
         }
     }
-    
+
     public static void closeDriver() {
         AppiumDriver<?> webDriver = localStorageAppiumDriver.get();
         if (null != webDriver && null != ((RemoteWebDriver) webDriver).getSessionId()) {

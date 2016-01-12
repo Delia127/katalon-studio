@@ -21,97 +21,97 @@ import com.kms.katalon.composer.explorer.parts.ExplorerPart;
 
 @SuppressWarnings("restriction")
 public class EntityLabelProvider extends StyledCellLabelProvider implements IEntityLabelProvider {
-	private String searchString;
+    private String searchString;
 
-	public void setSearchString(String searchString) {
-		this.searchString = searchString;
-	}
+    public void setSearchString(String searchString) {
+        this.searchString = searchString;
+    }
 
-	public String getText(Object element) {
-		try {
-			if (element instanceof ITreeEntity) {
-				return ((ITreeEntity) element).getText();
-			}
-		} catch (Exception e) {
-			LoggerSingleton.getInstance().getLogger().error(e);
-		}
-		return StringUtils.EMPTY;
-	}
+    public String getText(Object element) {
+        try {
+            if (element instanceof ITreeEntity) {
+                return ((ITreeEntity) element).getText();
+            }
+        } catch (Exception e) {
+            LoggerSingleton.getInstance().getLogger().error(e);
+        }
+        return StringUtils.EMPTY;
+    }
 
-	public Image getImage(Object element) {
-		try {
-			if (element instanceof ITreeEntity) {
-				return ((ITreeEntity) element).getImage();
-			}
-		} catch (Exception e) {
-			LoggerSingleton.getInstance().getLogger().error(e);
-		}
-		return null;
-	}
+    public Image getImage(Object element) {
+        try {
+            if (element instanceof ITreeEntity) {
+                return ((ITreeEntity) element).getImage();
+            }
+        } catch (Exception e) {
+            LoggerSingleton.getInstance().getLogger().error(e);
+        }
+        return null;
+    }
 
-	/**
-	 *  Highlight partial texts of element if they match with searchString
-	 */
-	@Override
-	public void update(ViewerCell cell) {
-		cell.setText(getText(cell.getElement()));
+    /**
+     * Highlight partial texts of element if they match with searchString
+     */
+    @Override
+    public void update(ViewerCell cell) {
+        cell.setText(getText(cell.getElement()));
 
-		List<StyleRange> range = new ArrayList<>();
-		if (searchString != null && !searchString.equals("")) {
-			String highlightString = findNameValueInSearchString(cell.getElement());
-			if (cell.getText().toLowerCase().contains(highlightString) && !highlightString.equals("")) {
+        List<StyleRange> range = new ArrayList<StyleRange>();
+        if (searchString != null && !searchString.equals("")) {
+            String highlightString = findNameValueInSearchString(cell.getElement());
+            if (cell.getText().toLowerCase().contains(highlightString) && !highlightString.equals("")) {
 
-				Matcher m = Pattern.compile(Pattern.quote(highlightString)).matcher(cell.getText().toLowerCase());
-				while (m.find()) {
-					StyleRange myStyledRange = new StyleRange(m.start(), highlightString.length(), null,
-							ColorUtil.getHighlightBackgroundColor());
-					range.add(myStyledRange);
-				}
-			}
-		}
-		cell.setStyleRanges(range.toArray(new StyleRange[range.size()]));
+                Matcher m = Pattern.compile(Pattern.quote(highlightString)).matcher(cell.getText().toLowerCase());
+                while (m.find()) {
+                    StyleRange myStyledRange = new StyleRange(m.start(), highlightString.length(), null,
+                            ColorUtil.getHighlightBackgroundColor());
+                    range.add(myStyledRange);
+                }
+            }
+        }
+        cell.setStyleRanges(range.toArray(new StyleRange[range.size()]));
 
-		cell.setImage(getImage(cell.getElement()));
-		super.update(cell);
-	}
+        cell.setImage(getImage(cell.getElement()));
+        super.update(cell);
+    }
 
-	private String findNameValueInSearchString(Object element) {
-		try {
-			if (searchString != null && StringUtils.isNotEmpty(searchString) && element != null
-					&& element instanceof ITreeEntity) {
+    private String findNameValueInSearchString(Object element) {
+        try {
+            if (searchString != null && StringUtils.isNotEmpty(searchString) && element != null
+                    && element instanceof ITreeEntity) {
 
-				ITreeEntity entity = ((ITreeEntity) element);
-				String keyWord = entity.getKeyWord() + ":";
-				String regex = "^" + keyWord + ".*$";
+                ITreeEntity entity = ((ITreeEntity) element);
+                String keyWord = entity.getKeyWord() + ":";
+                String regex = "^" + keyWord + ".*$";
 
-				// keyword all
-				String keyWordAll = ExplorerPart.KEYWORD_SEARCH_ALL + ":";
-				String regexKeyWordAll = "^" + keyWordAll + ".*$";
+                // keyword all
+                String keyWordAll = ExplorerPart.KEYWORD_SEARCH_ALL + ":";
+                String regexKeyWordAll = "^" + keyWordAll + ".*$";
 
-				String contentString = searchString.toLowerCase().trim();
-				if (searchString.matches(regex) || searchString.matches(regexKeyWordAll)) {
-					// cut keyWord
-					if (searchString.matches(regex)) {
-						contentString = contentString.substring(keyWord.length()).trim();
-					} else {
-						contentString = contentString.substring(keyWordAll.length()).trim();
-					}
-					Map<String, String> tagMap = EntityViewerFilter.parseSearchedString(entity.getSearchTags(),
-							contentString);
-					if (tagMap != null && !tagMap.isEmpty()) {
-						for (Entry<String, String> entry : tagMap.entrySet()) {
-							if (entry.getKey().equals("name")) {
-								return entry.getValue();
-							}
-						}
-					}
-				}
-				return contentString;
-			}
-			return StringUtils.EMPTY;
-		} catch (Exception e) {
-			LoggerSingleton.getInstance().getLogger().error(e);
-			return StringUtils.EMPTY;
-		}
-	}
+                String contentString = searchString.toLowerCase().trim();
+                if (searchString.matches(regex) || searchString.matches(regexKeyWordAll)) {
+                    // cut keyWord
+                    if (searchString.matches(regex)) {
+                        contentString = contentString.substring(keyWord.length()).trim();
+                    } else {
+                        contentString = contentString.substring(keyWordAll.length()).trim();
+                    }
+                    Map<String, String> tagMap = EntityViewerFilter.parseSearchedString(entity.getSearchTags(),
+                            contentString);
+                    if (tagMap != null && !tagMap.isEmpty()) {
+                        for (Entry<String, String> entry : tagMap.entrySet()) {
+                            if (entry.getKey().equals("name")) {
+                                return entry.getValue();
+                            }
+                        }
+                    }
+                }
+                return contentString;
+            }
+            return StringUtils.EMPTY;
+        } catch (Exception e) {
+            LoggerSingleton.getInstance().getLogger().error(e);
+            return StringUtils.EMPTY;
+        }
+    }
 }

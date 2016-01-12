@@ -383,7 +383,7 @@ public class InternalTestDataPart extends TestDataMainPart {
 
     @Persist
     public void save() {
-        List<Object> headers = new ArrayList<>();
+        List<Object> headers = new ArrayList<Object>();
         for (int i = 1; i < getColumnAddIndex(); i++) {
             CustomTableColumn col = (CustomTableColumn) table.getColumn(i);
             InternalDataColumnEntity internalDataColumn = new InternalDataColumnEntity();
@@ -393,10 +393,10 @@ public class InternalTestDataPart extends TestDataMainPart {
 
             headers.add(internalDataColumn);
         }
-        List<List<Object>> datas = new ArrayList<>();
+        List<List<Object>> datas = new ArrayList<List<Object>>();
         for (TableItem tableItem : table.getItems()) {
             if (tableItem.getImage() != null) continue;
-            List<Object> values = new ArrayList<>();
+            List<Object> values = new ArrayList<Object>();
             for (int i = 1; i < table.getColumnCount(); i++) {
                 String text = tableItem.getText(i);
                 values.add(text == null ? "" : text);

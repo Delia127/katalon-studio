@@ -21,35 +21,54 @@ import com.kms.katalon.execution.mobile.driver.IosDriverConnector;
 
 public class MobileExecutionUtil {
     private static final String RO_BUILD_VERSION_RELEASE = "ro.build.version.release";
+
     private static final String RO_PRODUCT_MODEL = "ro.product.model";
+
     private static final String RO_PRODUCT_MANUFACTURER = "ro.product.manufacturer";
+
     private static final String ABD_COMMAND_GETPROP_OPTION = "getprop";
+
     private static final String ADB_COMMAND_SHELL_OPTION = "shell";
+
     private static final String ADB_COMMAND_S_OPTION = "-s";
+
     private static final String DEVICE_LINE_SPLITTER = "\\s";
+
     private static final String DEVICE_LINE_STARTER = "device";
+
     private static final String LIST_OF_DEVICES_LINE_STARTER = "list of devices";
+
     private static final String ADB_OPTION_LIST_DEVICES = "devices";
+
     private static final String ADB_EXECUTATBLE = "adb";
+
     private static final String ANDROID_PLATFORM_TOOLS_FOLDER = "platform-tools";
+
     private static final String ANDROID_HOME_ENVIRONMENT_VARIABLE = "ANDROID_HOME";
+
     private static final String PRODUCT_VERSION_LINE_STARTER = "ProductVersion:";
+
     private static final String DEVICE_NAME_LINE_STARTER = "DeviceName:";
+
     private static final String DEVICE_CLASS_LINE_STARTER = "DeviceClass:";
+
     private static final String IDEVICEINFO_OPTION = "-u";
+
     private static final String IDEVICEINFO_COMMAND = "ideviceinfo";
+
     private static final String IDEVICEID_LIST_OPTION = "-l";
+
     private static final String IDEVICEID_COMMAND = "idevice_id";
 
     public static IDriverConnector getMobileDriverConnector(MobileDriverType mobileDriverType, String projectDirectory)
             throws IOException {
         switch (mobileDriverType) {
-        case ANDROID_DRIVER:
-            return new AndroidDriverConnector(projectDirectory + File.separator
-                    + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME);
-        case IOS_DRIVER:
-            return new IosDriverConnector(projectDirectory + File.separator
-                    + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME);
+            case ANDROID_DRIVER:
+                return new AndroidDriverConnector(projectDirectory + File.separator
+                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME);
+            case IOS_DRIVER:
+                return new IosDriverConnector(projectDirectory + File.separator
+                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME);
         }
         return null;
     }
@@ -61,7 +80,7 @@ public class MobileExecutionUtil {
             return deviceMap;
         }
 
-        List<String> deviceIds = new ArrayList<>();
+        List<String> deviceIds = new ArrayList<String>();
         String[] cmd = { IDEVICEID_COMMAND, IDEVICEID_LIST_OPTION };
         ProcessBuilder pb = new ProcessBuilder(cmd);
 
@@ -109,7 +128,7 @@ public class MobileExecutionUtil {
 
         String adbPath = System.getenv(ANDROID_HOME_ENVIRONMENT_VARIABLE);
         if (adbPath != null) {
-            List<String> deviceIds = new ArrayList<>();
+            List<String> deviceIds = new ArrayList<String>();
             adbPath += File.separator + ANDROID_PLATFORM_TOOLS_FOLDER + File.separator + ADB_EXECUTATBLE;
             String[] cmd = new String[] { adbPath, ADB_OPTION_LIST_DEVICES };
             ProcessBuilder pb = new ProcessBuilder(cmd);
@@ -174,12 +193,12 @@ public class MobileExecutionUtil {
 
     public static String getDefaultDeviceName(FileEntity fileEntity, MobileDriverType platform) throws IOException {
         switch (platform) {
-        case ANDROID_DRIVER:
-            return new AndroidDriverConnector(fileEntity.getProject().getFolderLocation() + File.separator
-                    + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME).getDeviceName();
-        case IOS_DRIVER:
-            return new IosDriverConnector(fileEntity.getProject().getFolderLocation() + File.separator
-                    + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME).getDeviceName();
+            case ANDROID_DRIVER:
+                return new AndroidDriverConnector(fileEntity.getProject().getFolderLocation() + File.separator
+                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME).getDeviceName();
+            case IOS_DRIVER:
+                return new IosDriverConnector(fileEntity.getProject().getFolderLocation() + File.separator
+                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME).getDeviceName();
         }
         return null;
     }
@@ -188,12 +207,12 @@ public class MobileExecutionUtil {
             InterruptedException {
         Map<String, String> deviceMap = null;
         switch (mobileDriverType) {
-        case ANDROID_DRIVER:
-            deviceMap = MobileExecutionUtil.getAndroidDevices();
-            break;
-        case IOS_DRIVER:
-            deviceMap = MobileExecutionUtil.getIosDevices();
-            break;
+            case ANDROID_DRIVER:
+                deviceMap = MobileExecutionUtil.getAndroidDevices();
+                break;
+            case IOS_DRIVER:
+                deviceMap = MobileExecutionUtil.getIosDevices();
+                break;
         }
         for (Entry<String, String> device : deviceMap.entrySet()) {
             if (device.getKey().equals(deviceName)) {

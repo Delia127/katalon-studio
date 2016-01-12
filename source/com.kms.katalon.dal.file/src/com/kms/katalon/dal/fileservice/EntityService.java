@@ -44,8 +44,11 @@ import com.kms.katalon.entity.project.ProjectEntity;
 public final class EntityService {
 
     private static EntityService singleton;
+
     private EntityCache cache;
+
     private Marshaller marshaller;
+
     private Unmarshaller unmarshaller;
 
     private static final String BIDING_FILES_LOCATION = "res/mapping";
@@ -270,7 +273,7 @@ public final class EntityService {
     public String getAvailableName(String folderPk, String name, boolean isFile) {
         String newName = name;
         File parentFolder = new File(folderPk);
-        List<String> fileNames = new ArrayList<>();
+        List<String> fileNames = new ArrayList<String>();
         if (parentFolder.exists() && parentFolder.isDirectory()) {
             for (File file : parentFolder.listFiles(EntityFileServiceManager.fileFilter)) {
                 if (file.isFile()) {
