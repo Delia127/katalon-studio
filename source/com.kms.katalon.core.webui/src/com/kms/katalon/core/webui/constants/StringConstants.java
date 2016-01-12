@@ -67,6 +67,7 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String XML_LOG_STARTING_DRIVER_X = "Starting ''{0}'' driver";
     public static final String XML_LOG_CONNECTING_TO_REMOTE_WEB_SERVER_X_WITH_TYPE_Y = "Connecting to remote web server ''{0}'' with type ''{1}''";
     public static final String XML_LOG_ERROR_BROWSER_NOT_IE = "Executing browser is not IE";
+    public static final String XML_LOG_ERROR_CANNOT_FOUND_WINDOW_HANDLE = "Cannot found current window handle";
 	
 	// BrowserNotOpenedException
 	public static final String EXC_BROWSER_IS_NOT_OPENED = "Browser is not opened";
@@ -104,7 +105,10 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String KW_MSG_CANNOT_GET_CURR_WINDOW_TITLE = "Unable to get the title of the current window";
 	public static final String KW_LOG_INFO_GETTING_CURR_WINDOW_URL = "Getting current window's url";
 	public static final String KW_LOG_PASSED_CURR_WINDOW_URL = "Current window''s url is: ''{0}''";
-	public static final String KW_MSG_CANNOT_GET_CURR_WINDOW_URL = "Unable to get the title of the current window";
+	public static final String KW_MSG_CANNOT_GET_CURR_WINDOW_URL = "Unable to get the url of the current window";
+    public static final String KW_LOG_INFO_GETTING_CURR_WINDOW_INDEX = "Getting current window's index";
+    public static final String KW_LOG_PASSED_CURR_WINDOW_INDEX = "Current window''s index is: {0}";
+    public static final String KW_MSG_CANNOT_GET_CURR_WINDOW_INDEX = "Unable to get the index of the current window";
 	public static final String KW_LOG_INFO_MAX_CURR_WINDOW = "Maximizing current window";
 	public static final String KW_LOG_PASSED_MAX_CURR_WINDOW = "Current window maximized";
 	public static final String KW_MSG_CANNOT_MAX_CURR_WINDOW = "Unable to maximize current window";
