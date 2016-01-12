@@ -13,12 +13,17 @@ import com.kms.katalon.core.constants.StringConstants;
 
 public class KeywordLogger {
     private String logFilePath;
+
     private Logger logger;
+
     private String pendingDescription = null;
+
     private Stack<KeywordStackElement> currentKeywordStack = null;
+
     private Stack<Stack<KeywordStackElement>> keywordStacksContainer = new Stack<Stack<KeywordStackElement>>();
+
     private int nestedLevel;
-    
+
     private static final ThreadLocal<KeywordLogger> localKeywordLoggerStorage = new ThreadLocal<KeywordLogger>() {
         @Override
         protected KeywordLogger initialValue() {
@@ -28,6 +33,7 @@ public class KeywordLogger {
 
     public class KeywordStackElement {
         private String keywordName;
+
         private int nestedLevel;
 
         public KeywordStackElement(String keywordName, int nestedLevel) {
@@ -60,9 +66,8 @@ public class KeywordLogger {
     }
 
     /**
-     * @return Returns current logger if it exists. Otherwise, create a new one
-     *         includes: customized log file with XML format and customized
-     *         console handler.
+     * @return Returns current logger if it exists. Otherwise, create a new one includes: customized log file with XML
+     * format and customized console handler.
      */
     private Logger getLogger() {
         if (logger == null) {
@@ -77,10 +82,10 @@ public class KeywordLogger {
                 String logFolder = new File(getLogFilePath()).getParent();
 
                 // Split log into 100 files, every file is maximum 100MB
-                
-                //TODO The log file now is 100GB. We will fix it in next sprint.
+
+                // TODO The log file now is 100GB. We will fix it in next sprint.
                 FileHandler fileHandler = new FileHandler(logFolder + File.separator + "execution%g.log",
-                        100 * 1024 * 1024 * 1024 , 100, true);
+                        100 * 1024 * 1024 * 1024, 100, true);
                 logger.addHandler(fileHandler);
 
                 CustomXmlFormatter formatter = new CustomXmlFormatter();
@@ -89,7 +94,9 @@ public class KeywordLogger {
                 SystemConsoleHandler consoleHandler = new SystemConsoleHandler();
                 logger.addHandler(consoleHandler);
 
-            } catch (SecurityException | IOException e) {
+            } catch (SecurityException e) {
+                System.err.println("Unable to create logger. Root cause (" + e.getMessage() + ").");
+            } catch (IOException e) {
                 System.err.println("Unable to create logger. Root cause (" + e.getMessage() + ").");
             }
         }
@@ -193,7 +200,7 @@ public class KeywordLogger {
                 .log(new XmlLogRecord(LogLevel.END, StringConstants.LOG_END_KEYWORD + " : " + name, nestedLevel,
                         attributes));
     }
-    
+
     public void endKeyword(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
         getLogger()
                 .log(new XmlLogRecord(LogLevel.END, StringConstants.LOG_END_KEYWORD + " : " + name, nestedLevel,
@@ -236,7 +243,7 @@ public class KeywordLogger {
     public void logInfo(String message, Map<String, String> attributes) {
         logMessage(LogLevel.INFO, message, attributes);
     }
-    
+
     public void logRunData(String dataKey, String dataValue) {
         Map<String, String> attributeMap = new HashMap<String, String>();
         attributeMap.put(dataKey, dataValue);

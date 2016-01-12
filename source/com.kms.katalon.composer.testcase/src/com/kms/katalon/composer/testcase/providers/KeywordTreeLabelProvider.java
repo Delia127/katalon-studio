@@ -20,7 +20,9 @@ import com.kms.katalon.composer.testcase.keywords.KeywordBrowserTreeEntity;
 
 public class KeywordTreeLabelProvider extends StyledCellLabelProvider implements IEntityLabelProvider {
     private static Image KEYWORD_ICON = null;
+
     private static Image FOLDER_ICON = null;
+
     private String searchString = null;
 
     public KeywordTreeLabelProvider() {
@@ -51,7 +53,7 @@ public class KeywordTreeLabelProvider extends StyledCellLabelProvider implements
         }
         return "";
     }
-    
+
     @Override
     public String getToolTipText(Object element) {
         if (element instanceof IKeywordBrowserTreeEntity) {
@@ -72,7 +74,7 @@ public class KeywordTreeLabelProvider extends StyledCellLabelProvider implements
     public void update(ViewerCell cell) {
         cell.setText(getText(cell.getElement()));
 
-        List<StyleRange> range = new ArrayList<>();
+        List<StyleRange> range = new ArrayList<StyleRange>();
         if (searchString != null && !searchString.equals("")) {
             searchString = searchString.toLowerCase();
             if (cell.getText().toLowerCase().contains(searchString) && !searchString.isEmpty()) {

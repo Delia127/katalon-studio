@@ -32,7 +32,7 @@ public class TestCaseTableViewer extends TableViewer {
 
     public TestCaseTableViewer(Composite parent, int style, TestSuitePartTestCaseView parentView) {
         super(parent, style);
-        testCasesPKs = new ArrayList<>();
+        testCasesPKs = new ArrayList<String>();
         data = new ArrayList<TestSuiteTestCaseLink>();
         this.parentView = parentView;
         searchedString = StringUtils.EMPTY;

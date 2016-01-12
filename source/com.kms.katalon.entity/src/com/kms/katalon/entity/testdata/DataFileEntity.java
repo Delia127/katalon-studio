@@ -11,193 +11,196 @@ import com.kms.katalon.entity.util.Util;
 
 public class DataFileEntity extends FileEntity {
 
-	private static final long serialVersionUID = 1L;
-	public static final String DEFAULT_DATA_SOURCE_URL = "SourceURL";
-	private static final String ID_PREFIX = "DF";
-	
-	private DataFileDriverType driver;
+    private static final long serialVersionUID = 1L;
 
-	private String dataSourceUrl;
+    public static final String DEFAULT_DATA_SOURCE_URL = "SourceURL";
 
-	private String sheetName;
+    private static final String ID_PREFIX = "DF";
 
-	private String dataFileGUID;
+    private DataFileDriverType driver;
 
-	private boolean isInternalPath;
+    private String dataSourceUrl;
 
-	private List<InternalDataColumnEntity> internalDataColumns;
+    private String sheetName;
 
-	private List<List<Object>> data;
+    private String dataFileGUID;
 
-	private List<List<Object>> encriptData;
+    private boolean isInternalPath;
 
-	private boolean containsHeaders;
+    private List<InternalDataColumnEntity> internalDataColumns;
 
-	private String csvSeperator;
+    private List<List<Object>> data;
 
-	public DataFileDriverType getDriver() {
-	    if (driver == null) {
-	        driver = DataFileDriverType.ExcelFile;
-	    }
-		return this.driver;
-	}
+    private List<List<Object>> encriptData;
 
-	public void setDriver(DataFileDriverType driver) {
-		this.driver = driver;
-	}
+    private boolean containsHeaders;
 
-	public String getDataSourceUrl() {
+    private String csvSeperator;
+
+    public DataFileDriverType getDriver() {
+        if (driver == null) {
+            driver = DataFileDriverType.ExcelFile;
+        }
+        return this.driver;
+    }
+
+    public void setDriver(DataFileDriverType driver) {
+        this.driver = driver;
+    }
+
+    public String getDataSourceUrl() {
         if (dataSourceUrl == null) {
             dataSourceUrl = StringUtils.EMPTY;
         }
-		return this.dataSourceUrl;
-	}
+        return this.dataSourceUrl;
+    }
 
-	public void setDataSourceUrl(String dataSourceUrl) {
-		this.dataSourceUrl = dataSourceUrl;
-	}
+    public void setDataSourceUrl(String dataSourceUrl) {
+        this.dataSourceUrl = dataSourceUrl;
+    }
 
-	public String getSheetName() {
-	    if (sheetName == null) {
-	        sheetName = StringUtils.EMPTY;
-	    }
-		return this.sheetName;
-	}
+    public String getSheetName() {
+        if (sheetName == null) {
+            sheetName = StringUtils.EMPTY;
+        }
+        return this.sheetName;
+    }
 
-	public void setSheetName(String sheetName) {
-		this.sheetName = sheetName;
-	}
+    public void setSheetName(String sheetName) {
+        this.sheetName = sheetName;
+    }
 
-	public String getDataFileGUID() {
-	    if (dataFileGUID == null) {
-	        dataFileGUID = Util.generateGuid();
-	    }
-		return this.dataFileGUID;
-	}
+    public String getDataFileGUID() {
+        if (dataFileGUID == null) {
+            dataFileGUID = Util.generateGuid();
+        }
+        return this.dataFileGUID;
+    }
 
-	public void setDataFileGUID(String dataFileGUID) {
-		this.dataFileGUID = dataFileGUID;
-	}
+    public void setDataFileGUID(String dataFileGUID) {
+        this.dataFileGUID = dataFileGUID;
+    }
 
-	public DataFileEntity clone() {
-		DataFileEntity clonedDataFile = (DataFileEntity) super.clone();
-		clonedDataFile.setDataFileGUID(dataFileGUID);
-		return clonedDataFile;
-	}
-	public List<List<Object>> getData() {
-		if (data == null) {
-			data = new ArrayList<>();
-		}
-		return data;
-	}
+    public DataFileEntity clone() {
+        DataFileEntity clonedDataFile = (DataFileEntity) super.clone();
+        clonedDataFile.setDataFileGUID(dataFileGUID);
+        return clonedDataFile;
+    }
 
-	public void setData(List<List<Object>> data) {
-		this.data = data;
-	}
-	
-	public List<InternalDataColumnEntity> getInternalDataColumns() {
-		if (internalDataColumns == null) {
-			internalDataColumns = new ArrayList<InternalDataColumnEntity>();
-		}
-		return internalDataColumns;
-	}
+    public List<List<Object>> getData() {
+        if (data == null) {
+            data = new ArrayList<List<Object>>();
+        }
+        return data;
+    }
 
-	public void setInternalDataColumns(List<InternalDataColumnEntity> internalDataColumns) {
-		this.internalDataColumns = internalDataColumns;
-	}
-	
-	public String getTableDataName() {
-		return ID_PREFIX + getId();
-	}
+    public void setData(List<List<Object>> data) {
+        this.data = data;
+    }
 
-	public enum DataFileDriverType {
-		ExcelFile("Excel File"), CSV("CSV File"), InternalData("Internal Data");
+    public List<InternalDataColumnEntity> getInternalDataColumns() {
+        if (internalDataColumns == null) {
+            internalDataColumns = new ArrayList<InternalDataColumnEntity>();
+        }
+        return internalDataColumns;
+    }
 
-		private String text;
+    public void setInternalDataColumns(List<InternalDataColumnEntity> internalDataColumns) {
+        this.internalDataColumns = internalDataColumns;
+    }
 
-		private DataFileDriverType(String text) {
-			this.text = text;
-		}
+    public String getTableDataName() {
+        return ID_PREFIX + getId();
+    }
 
-		@Override
-		public String toString() {
-			return text;
-		}
+    public enum DataFileDriverType {
+        ExcelFile("Excel File"), CSV("CSV File"), InternalData("Internal Data");
 
-		public String value() {
-			return name();
-		}
+        private String text;
 
-		public static DataFileDriverType fromValue(String v) {
-			for (int i = 0; i < values().length; i++) {
-				if (values()[i].toString().equals(v)) {
-					return values()[i];
-				}
-			}
-			return valueOf(v);
-		}
+        private DataFileDriverType(String text) {
+            this.text = text;
+        }
 
-		public static String[] stringValues() {
-			String[] stringValues = new String[values().length];
-			for (int i = 0; i < values().length; i++) {
-				stringValues[i] = values()[i].toString();
-			}
-			return stringValues;
-		}
-	}
+        @Override
+        public String toString() {
+            return text;
+        }
 
-	public String buildDataFileEntityId() {
-		return ID_PREFIX + String.format("%010d", getId());
-	}
+        public String value() {
+            return name();
+        }
 
-	public String buildDataFileEntityId(long id) {
-		return ID_PREFIX + String.format("%010d", id);
-	}
+        public static DataFileDriverType fromValue(String v) {
+            for (int i = 0; i < values().length; i++) {
+                if (values()[i].toString().equals(v)) {
+                    return values()[i];
+                }
+            }
+            return valueOf(v);
+        }
 
-	public boolean getIsInternalPath() {
-		return isInternalPath;
-	}
+        public static String[] stringValues() {
+            String[] stringValues = new String[values().length];
+            for (int i = 0; i < values().length; i++) {
+                stringValues[i] = values()[i].toString();
+            }
+            return stringValues;
+        }
+    }
 
-	public void setIsInternalPath(boolean isInternalPath) {
-		this.isInternalPath = isInternalPath;
-	}
-	
-	public static String getTestDataFileExtension() {
-		return ".dat";
-	}
-	
-	@Override
-	public String getFileExtension() {
-		return getTestDataFileExtension();
-	}
-	
-	public List<List<Object>> getEncriptData() {
-		return encriptData;
-	}
+    public String buildDataFileEntityId() {
+        return ID_PREFIX + String.format("%010d", getId());
+    }
 
-	public void setEncriptData(List<List<Object>> data) {
-		this.encriptData = data;
-	}
+    public String buildDataFileEntityId(long id) {
+        return ID_PREFIX + String.format("%010d", id);
+    }
 
-	public String getCsvSeperator() {
-	    if (csvSeperator == null) {
-	        csvSeperator = StringUtils.EMPTY;
-	    }
-		return csvSeperator;
-	}
+    public boolean getIsInternalPath() {
+        return isInternalPath;
+    }
 
-	public void setCsvSeperator(String csvSeperator) {
-		this.csvSeperator = csvSeperator;
-	}
+    public void setIsInternalPath(boolean isInternalPath) {
+        this.isInternalPath = isInternalPath;
+    }
 
-	public boolean isContainsHeaders() {
-		return containsHeaders;
-	}
+    public static String getTestDataFileExtension() {
+        return ".dat";
+    }
 
-	public void setContainsHeaders(boolean containsHeaders) {
-		this.containsHeaders = containsHeaders;
-	}
-	
+    @Override
+    public String getFileExtension() {
+        return getTestDataFileExtension();
+    }
+
+    public List<List<Object>> getEncriptData() {
+        return encriptData;
+    }
+
+    public void setEncriptData(List<List<Object>> data) {
+        this.encriptData = data;
+    }
+
+    public String getCsvSeperator() {
+        if (csvSeperator == null) {
+            csvSeperator = StringUtils.EMPTY;
+        }
+        return csvSeperator;
+    }
+
+    public void setCsvSeperator(String csvSeperator) {
+        this.csvSeperator = csvSeperator;
+    }
+
+    public boolean isContainsHeaders() {
+        return containsHeaders;
+    }
+
+    public void setContainsHeaders(boolean containsHeaders) {
+        this.containsHeaders = containsHeaders;
+    }
+
     @Override
     public boolean equals(Object obj) {
         boolean isEquals = super.equals(obj);
