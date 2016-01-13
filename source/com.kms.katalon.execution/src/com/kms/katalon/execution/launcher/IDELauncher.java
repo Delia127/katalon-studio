@@ -122,6 +122,9 @@ public class IDELauncher extends AbstractLauncher {
 
                     if (terminated) {
                         try {
+                            watcher.setStopSignal(true);
+                            threadWatcher.join();
+                            
                             if (!forcedStop) {
                                 long currentTime = System.currentTimeMillis();
                                 while (System.currentTimeMillis() - currentTime < 30000) {
@@ -143,9 +146,6 @@ public class IDELauncher extends AbstractLauncher {
                                 eventBroker.post(EventConstants.JOB_REFRESH, null);
                                 prepareReport(testSuite, logFile);
                             }
-
-                            watcher.setStopSignal(true);
-                            threadWatcher.join();
                             Display.getDefault().syncExec(new Runnable() {
                                 public void run() {
                                     try {
