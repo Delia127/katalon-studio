@@ -6,6 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.TreeDropTargetEffect;
 import org.eclipse.swt.widgets.Display;
@@ -86,8 +87,6 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
                 continue;
             }
 
-            treeEntity.loadAllDescentdantEntities();
-
             if (treeEntity instanceof TestCaseTreeEntity) {
                 TestCaseEntity movedTc = EntityControllerUtil.moveTestCase(
                         (TestCaseEntity) ((TestCaseTreeEntity) treeEntity).getObject(), targetFolder);
@@ -129,6 +128,12 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
             throw new Exception(MessageFormat.format(StringConstants.LIS_ERROR_MSG_CANNOT_MOVE_INTO_DIFF_REGION,
                     treeEntity.getCopyTag(), targetFolder.getFolderType().toString()));
         }
+    }
+
+    @Override
+    public void dragOver(DropTargetEvent event) {
+        event.feedback = DND.FEEDBACK_EXPAND | DND.FEEDBACK_SELECT;
+        super.dragOver(event);
     }
 
 }

@@ -17,106 +17,108 @@ import com.kms.katalon.entity.testdata.DataFileEntity;
 
 public class TestDataTreeEntity extends AbstractTreeEntity {
 
-	private static final long serialVersionUID = 7158033879727783488L;
+    private static final long serialVersionUID = 7158033879727783488L;
 
-	private static final String TEST_DATA_TYPE_NAME = StringConstants.TREE_TEST_DATA_TYPE_NAME;
+    private static final String TEST_DATA_TYPE_NAME = StringConstants.TREE_TEST_DATA_TYPE_NAME;
 
-	public static final String KEY_WORD = StringConstants.TREE_TEST_DATA_KW;
+    public static final String KEY_WORD = StringConstants.TREE_TEST_DATA_KW;
 
-	public static final String[] SEARCH_TAGS = new String[] { "id", "name", "description", "source name" };
+    public static final String[] SEARCH_TAGS = new String[] { "id", "name", "description", "source name" };
 
-	private DataFileEntity testData;
+    private DataFileEntity testData;
 
-	public TestDataTreeEntity(DataFileEntity testData, ITreeEntity parentTreeEntity) {
-		super(testData, parentTreeEntity);
-		this.testData = testData;
-	}
-	
-    @Override
-    public Object getObject() throws Exception {
-        return TestDataController.getInstance().getTestData(testData.getId());
+    public TestDataTreeEntity(DataFileEntity testData, ITreeEntity parentTreeEntity) {
+        super(testData, parentTreeEntity);
+        this.testData = testData;
     }
 
-	@Override
-	public Object[] getChildren() throws Exception {
-		return null;
-	}
+    @Override
+    public Object getObject() throws Exception {
+        this.testData = TestDataController.getInstance().getTestData(testData.getId());
+        loadAllDescentdantEntities();
+        return testData;
+    }
 
-	@Override
-	public boolean hasChildren() throws Exception {
-		return false;
-	}
+    @Override
+    public Object[] getChildren() throws Exception {
+        return null;
+    }
 
-	@Override
-	public Image getImage() throws Exception {
-		return ImageConstants.IMG_16_TEST_DATA;
-	}
+    @Override
+    public boolean hasChildren() throws Exception {
+        return false;
+    }
 
-	@Override
-	public String getTypeName() throws Exception {
-		return TEST_DATA_TYPE_NAME;
-	}
+    @Override
+    public Image getImage() throws Exception {
+        return ImageConstants.IMG_16_TEST_DATA;
+    }
 
-	@Override
-	public boolean isRemoveable() throws Exception {
-		return true;
-	}
+    @Override
+    public String getTypeName() throws Exception {
+        return TEST_DATA_TYPE_NAME;
+    }
 
-	@Override
-	public boolean isRenamable() throws Exception {
-		return true;
-	}
+    @Override
+    public boolean isRemoveable() throws Exception {
+        return true;
+    }
 
-	@Override
-	public Transfer getEntityTransfer() throws Exception {
-		return TreeEntityTransfer.getInstance();
-	}
+    @Override
+    public boolean isRenamable() throws Exception {
+        return true;
+    }
 
-	@Override
-	public String getCopyTag() throws Exception {
-		return FolderType.DATAFILE.toString();
-	}
+    @Override
+    public Transfer getEntityTransfer() throws Exception {
+        return TreeEntityTransfer.getInstance();
+    }
 
-	@Override
-	public void setObject(Object object) throws Exception {
-		if (object instanceof DataFileEntity) {
-			entity = (Entity) object;
-			testData = (DataFileEntity) object;
-		}
-	}
+    @Override
+    public String getCopyTag() throws Exception {
+        return FolderType.DATAFILE.toString();
+    }
 
-	@Override
-	public String getKeyWord() throws Exception {
-		return KEY_WORD;
-	}
+    @Override
+    public void setObject(Object object) throws Exception {
+        if (object instanceof DataFileEntity) {
+            entity = (Entity) object;
+            testData = (DataFileEntity) object;
+        }
+    }
 
-	@Override
-	public String[] getSearchTags() throws Exception {
-		return SEARCH_TAGS;
-	}
+    @Override
+    public String getKeyWord() throws Exception {
+        return KEY_WORD;
+    }
 
-	@Override
-	public String getPropertyValue(String key) {
-		if (testData != null) {
-			if (key.equals("name")) {
-				return testData.getName();
-			} else if (key.equals("id")) {
-				return testData.getRelativePathForUI().replace(File.separator, "/");
-			} else if (key.equals("description")) {
-				return testData.getDescription();
-			} else if (key.equals("source name")) {
-				return testData.getLocation();
-			}
-		}
-		return StringUtils.EMPTY;
-	}
+    @Override
+    public String[] getSearchTags() throws Exception {
+        return SEARCH_TAGS;
+    }
 
-	@Override
-	public Image getEntryImage() throws Exception {
-		return getImage();
-	}
+    @Override
+    public String getPropertyValue(String key) {
+        if (testData != null) {
+            if (key.equals("name")) {
+                return testData.getName();
+            } else if (key.equals("id")) {
+                return testData.getRelativePathForUI().replace(File.separator, "/");
+            } else if (key.equals("description")) {
+                return testData.getDescription();
+            } else if (key.equals("source name")) {
+                return testData.getLocation();
+            }
+        }
+        return StringUtils.EMPTY;
+    }
 
-	@Override
-	public void loadAllDescentdantEntities() throws Exception {
-	}
+    @Override
+    public Image getEntryImage() throws Exception {
+        return getImage();
+    }
+
+    @Override
+    public void loadAllDescentdantEntities() throws Exception {
+    }
 }
