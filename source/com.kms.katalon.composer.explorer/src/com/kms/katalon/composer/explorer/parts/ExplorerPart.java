@@ -522,6 +522,7 @@ public class ExplorerPart {
     private void refresh(Object object) {
         treeViewer.getControl().setRedraw(false);
         TreePath[] expandedTreePaths = getViewer().getExpandedTreePaths();
+        getViewer().collapseAll();
         if (object == null) {
             treeViewer.refresh();
         } else {
