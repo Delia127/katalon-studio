@@ -115,8 +115,10 @@ public class ReportUtil {
     }
 
     private static void collectInfoLines(ILogRecord logRecord, List<ILogRecord> rmvLogs) {
-        if (logRecord instanceof MessageLogRecord && logRecord.getStatus().getStatusValue() == TestStatusValue.INCOMPLETE) {
-            rmvLogs.add(logRecord);
+        if (logRecord instanceof MessageLogRecord) {
+        	if(logRecord.getStatus().getStatusValue() == TestStatusValue.INCOMPLETE || logRecord.getStatus().getStatusValue() == TestStatusValue.INFO){
+        		rmvLogs.add(logRecord);	
+        	}
         }
         for (ILogRecord childLogRecord : logRecord.getChildRecords()) {
             collectInfoLines(childLogRecord, rmvLogs);
@@ -149,7 +151,7 @@ public class ReportUtil {
         // Write main HTML Report
         FileUtils.writeStringToFile(new File(logFolder, logFolder.getName() + ".html"), htmlSb.toString());
 
-        /*
+        
         // Write CSV file
         CsvWriter.writeCsvReport(suiteLogEntity, new File(logFolder, logFolder.getName() + ".csv"),
                 Arrays.asList(suiteLogEntity.getChildRecords()));
@@ -167,7 +169,7 @@ public class ReportUtil {
         htmlSb.append(generateVars(strings, suiteLogEntity, sbModel));
         readFileToStringBuilder(ResourceLoader.HTML_TEMPLATE_CONTENT, htmlSb);
         FileUtils.writeStringToFile(new File(logFolder, "Report.html"), htmlSb.toString());
-        */
+        
     }
 
     public static void writeLogRecordToHTMLFile(TestSuiteLogRecord suiteLogEntity, File destFile,
