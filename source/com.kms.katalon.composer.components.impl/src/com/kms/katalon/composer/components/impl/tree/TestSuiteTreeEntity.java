@@ -16,75 +16,76 @@ import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class TestSuiteTreeEntity extends AbstractTreeEntity {
-	
-	private static final long serialVersionUID = -8388373715110244233L;
 
-	private static final String TEST_SUITE_TYPE_NAME = StringConstants.TREE_TEST_SUITE_TYPE_NAME;
+    private static final long serialVersionUID = -8388373715110244233L;
 
-	public static final String KEY_WORD = StringConstants.TREE_TEST_SUITE_KW;
-	
-	public static final String[] SEARCH_TAGS = new String[] {"id", "name", "description"};
+    private static final String TEST_SUITE_TYPE_NAME = StringConstants.TREE_TEST_SUITE_TYPE_NAME;
 
-	private TestSuiteEntity testSuite;
-	
-	public TestSuiteTreeEntity(TestSuiteEntity testSuite, ITreeEntity parentTreeEntity) {
-		super(testSuite, parentTreeEntity);
-		this.testSuite = testSuite;
-	}
-	
-	@Override
-    public Object getObject() throws Exception {
-        return TestSuiteController.getInstance().getTestSuite(testSuite.getId());
+    public static final String KEY_WORD = StringConstants.TREE_TEST_SUITE_KW;
+
+    public static final String[] SEARCH_TAGS = new String[] { "id", "name", "description" };
+
+    private TestSuiteEntity testSuite;
+
+    public TestSuiteTreeEntity(TestSuiteEntity testSuite, ITreeEntity parentTreeEntity) {
+        super(testSuite, parentTreeEntity);
+        this.testSuite = testSuite;
     }
 
-	
-	@Override
-	public Object[] getChildren() throws Exception {
-		return null;
-	}
-	
-	@Override
-	public boolean hasChildren() throws Exception {
-		return false;	
-	}
+    @Override
+    public Object getObject() throws Exception {
+        this.testSuite = TestSuiteController.getInstance().getTestSuite(testSuite.getId());
+        loadAllDescentdantEntities();
+        return testSuite;
+    }
 
-	@Override
-	public Image getImage() throws Exception {
-		return ImageConstants.IMG_16_TEST_SUITE;
-	}
+    @Override
+    public Object[] getChildren() throws Exception {
+        return null;
+    }
 
-	@Override
-	public String getTypeName() throws Exception {
-		return TEST_SUITE_TYPE_NAME;
-	}
+    @Override
+    public boolean hasChildren() throws Exception {
+        return false;
+    }
 
-	@Override
-	public boolean isRemoveable() throws Exception {
-		return true;
-	}
+    @Override
+    public Image getImage() throws Exception {
+        return ImageConstants.IMG_16_TEST_SUITE;
+    }
 
-	@Override
-	public boolean isRenamable() throws Exception {
-		return true;
-	}
+    @Override
+    public String getTypeName() throws Exception {
+        return TEST_SUITE_TYPE_NAME;
+    }
 
-	@Override
-	public Transfer getEntityTransfer() throws Exception {
-		return TreeEntityTransfer.getInstance();
-	}
+    @Override
+    public boolean isRemoveable() throws Exception {
+        return true;
+    }
 
-	@Override
-	public String getCopyTag() throws Exception {
-		return FolderType.TESTSUITE.toString();
-	}
-	
-	@Override
-	public void setObject(Object object) throws Exception {
-		if (object instanceof TestSuiteEntity) {
-			entity = (Entity) object;
-			testSuite = (TestSuiteEntity) object;
-		}
-	}
+    @Override
+    public boolean isRenamable() throws Exception {
+        return true;
+    }
+
+    @Override
+    public Transfer getEntityTransfer() throws Exception {
+        return TreeEntityTransfer.getInstance();
+    }
+
+    @Override
+    public String getCopyTag() throws Exception {
+        return FolderType.TESTSUITE.toString();
+    }
+
+    @Override
+    public void setObject(Object object) throws Exception {
+        if (object instanceof TestSuiteEntity) {
+            entity = (Entity) object;
+            testSuite = (TestSuiteEntity) object;
+        }
+    }
 
     @Override
     public String getKeyWord() throws Exception {
@@ -113,7 +114,7 @@ public class TestSuiteTreeEntity extends AbstractTreeEntity {
         return getImage();
     }
 
-	@Override
-	public void loadAllDescentdantEntities() throws Exception {
-	}
+    @Override
+    public void loadAllDescentdantEntities() throws Exception {
+    }
 }

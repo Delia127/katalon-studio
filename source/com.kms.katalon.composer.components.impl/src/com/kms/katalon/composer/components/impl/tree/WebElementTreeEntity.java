@@ -17,77 +17,79 @@ import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
 public class WebElementTreeEntity extends AbstractTreeEntity {
-	
-	private static final long serialVersionUID = -736426078298872979L;
 
-	private static final String OBJECT_TYPE_NAME = StringConstants.TREE_OBJECT_TYPE_NAME;
+    private static final long serialVersionUID = -736426078298872979L;
 
-	public static final String KEY_WORD = StringConstants.TREE_OBJECT_KW;
-	
-	public static final String[] SEARCH_TAGS = new String[] {"id", "name"};
-    
-	private WebElementEntity webElement;
-	
-	public WebElementTreeEntity(WebElementEntity webElement, ITreeEntity parentTreeEntity) {
-		super(webElement, parentTreeEntity);
-		this.webElement = webElement;
-	}
-	
-	@Override
-    public Object getObject() throws Exception {
-        return ObjectRepositoryController.getInstance().getWebElement(webElement.getId());
+    private static final String OBJECT_TYPE_NAME = StringConstants.TREE_OBJECT_TYPE_NAME;
+
+    public static final String KEY_WORD = StringConstants.TREE_OBJECT_KW;
+
+    public static final String[] SEARCH_TAGS = new String[] { "id", "name" };
+
+    private WebElementEntity webElement;
+
+    public WebElementTreeEntity(WebElementEntity webElement, ITreeEntity parentTreeEntity) {
+        super(webElement, parentTreeEntity);
+        this.webElement = webElement;
     }
-	
-	@Override
-	public Object[] getChildren() throws Exception {
-		return null;
-	}
-	
-	@Override
-	public boolean hasChildren() throws Exception {
-		return false;	
-	}
-	
-	@Override
-	public Image getImage() throws Exception {
-	    if (webElement instanceof WebServiceRequestEntity) {
-	        return ImageConstants.IMG_16_WS_TEST_OBJECT;
-	    }
-		return ImageConstants.IMG_16_TEST_OBJECT;
-	}
 
-	@Override
-	public String getTypeName() throws Exception {
-		return OBJECT_TYPE_NAME;
-	}
+    @Override
+    public Object getObject() throws Exception {
+        this.webElement = ObjectRepositoryController.getInstance().getWebElement(webElement.getId());
+        loadAllDescentdantEntities();
+        return webElement;
+    }
 
-	@Override
-	public boolean isRemoveable() throws Exception {
-		return true;
-	}
+    @Override
+    public Object[] getChildren() throws Exception {
+        return null;
+    }
 
-	@Override
-	public boolean isRenamable() throws Exception {
-		return true;
-	}
+    @Override
+    public boolean hasChildren() throws Exception {
+        return false;
+    }
 
-	@Override
-	public Transfer getEntityTransfer() throws Exception {
-		return TreeEntityTransfer.getInstance();
-	}
+    @Override
+    public Image getImage() throws Exception {
+        if (webElement instanceof WebServiceRequestEntity) {
+            return ImageConstants.IMG_16_WS_TEST_OBJECT;
+        }
+        return ImageConstants.IMG_16_TEST_OBJECT;
+    }
 
-	@Override
-	public String getCopyTag() throws Exception {
-		return FolderType.WEBELEMENT.toString();
-	}
+    @Override
+    public String getTypeName() throws Exception {
+        return OBJECT_TYPE_NAME;
+    }
 
-	@Override
-	public void setObject(Object object) throws Exception {
-		if (object instanceof WebElementEntity) {
-			entity = (Entity) object;
-			webElement = (WebElementEntity) object;
-		}
-	}
+    @Override
+    public boolean isRemoveable() throws Exception {
+        return true;
+    }
+
+    @Override
+    public boolean isRenamable() throws Exception {
+        return true;
+    }
+
+    @Override
+    public Transfer getEntityTransfer() throws Exception {
+        return TreeEntityTransfer.getInstance();
+    }
+
+    @Override
+    public String getCopyTag() throws Exception {
+        return FolderType.WEBELEMENT.toString();
+    }
+
+    @Override
+    public void setObject(Object object) throws Exception {
+        if (object instanceof WebElementEntity) {
+            entity = (Entity) object;
+            webElement = (WebElementEntity) object;
+        }
+    }
 
     @Override
     public String getKeyWord() throws Exception {
@@ -96,7 +98,7 @@ public class WebElementTreeEntity extends AbstractTreeEntity {
 
     @Override
     public String[] getSearchTags() throws Exception {
-        return SEARCH_TAGS; 
+        return SEARCH_TAGS;
     }
 
     @Override
@@ -114,7 +116,7 @@ public class WebElementTreeEntity extends AbstractTreeEntity {
         return getImage();
     }
 
-	@Override
-	public void loadAllDescentdantEntities() throws Exception {
-	}
+    @Override
+    public void loadAllDescentdantEntities() throws Exception {
+    }
 }
