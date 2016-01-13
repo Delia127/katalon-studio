@@ -18,104 +18,109 @@ import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class TestCaseTreeEntity extends AbstractTreeEntity {
 
-	private static final long serialVersionUID = 4448626929311619089L;
+    private static final long serialVersionUID = 4448626929311619089L;
 
-	private static final String TEST_CASE_TYPE_NAME = StringConstants.TREE_TEST_CASE_TYPE_NAME;
-	public static final String KEY_WORD = StringConstants.TREE_TEST_CASE_KW;
-	public static final String[] SEARCH_TAGS = new String[] { "id", "name", "tag", "comment", "description" };
-	private TestCaseEntity testCase;
+    private static final String TEST_CASE_TYPE_NAME = StringConstants.TREE_TEST_CASE_TYPE_NAME;
 
-	public TestCaseTreeEntity(TestCaseEntity testCase, ITreeEntity parentTreeEntity) {
-		super(testCase, parentTreeEntity);
-		this.testCase = testCase;
-	}
-	
-	@Override
-    public Object getObject() throws Exception {
-        return TestCaseController.getInstance().getTestCase(testCase.getId());
+    public static final String KEY_WORD = StringConstants.TREE_TEST_CASE_KW;
+
+    public static final String[] SEARCH_TAGS = new String[] { "id", "name", "tag", "comment", "description" };
+
+    private TestCaseEntity testCase;
+
+    public TestCaseTreeEntity(TestCaseEntity testCase, ITreeEntity parentTreeEntity) {
+        super(testCase, parentTreeEntity);
+        this.testCase = testCase;
     }
 
-	@Override
-	public Object[] getChildren() throws Exception {
-		return null;
-	}
+    @Override
+    public Object getObject() throws Exception {
+        this.testCase = TestCaseController.getInstance().getTestCase(testCase.getId());
+        loadAllDescentdantEntities();
+        return testCase;
+    }
 
-	@Override
-	public boolean hasChildren() throws Exception {
-		return false;
-	}
+    @Override
+    public Object[] getChildren() throws Exception {
+        return null;
+    }
 
-	@Override
-	public Image getImage() throws Exception {
-		return ImageConstants.IMG_16_TEST_CASE;
-	}
+    @Override
+    public boolean hasChildren() throws Exception {
+        return false;
+    }
 
-	@Override
-	public String getTypeName() throws Exception {
-		return TEST_CASE_TYPE_NAME;
-	}
+    @Override
+    public Image getImage() throws Exception {
+        return ImageConstants.IMG_16_TEST_CASE;
+    }
 
-	@Override
-	public boolean isRemoveable() throws Exception {
-		return true;
-	}
+    @Override
+    public String getTypeName() throws Exception {
+        return TEST_CASE_TYPE_NAME;
+    }
 
-	@Override
-	public boolean isRenamable() throws Exception {
-		return true;
-	}
+    @Override
+    public boolean isRemoveable() throws Exception {
+        return true;
+    }
 
-	@Override
-	public Transfer getEntityTransfer() throws Exception {
-		return TreeEntityTransfer.getInstance();
-	}
+    @Override
+    public boolean isRenamable() throws Exception {
+        return true;
+    }
 
-	@Override
-	public String getCopyTag() throws Exception {
-		return FolderType.TESTCASE.toString();
-	}
+    @Override
+    public Transfer getEntityTransfer() throws Exception {
+        return TreeEntityTransfer.getInstance();
+    }
 
-	@Override
-	public String getKeyWord() throws Exception {
-		return KEY_WORD;
-	}
+    @Override
+    public String getCopyTag() throws Exception {
+        return FolderType.TESTCASE.toString();
+    }
 
-	@Override
-	public String[] getSearchTags() throws Exception {
-		return SEARCH_TAGS;
-	}
+    @Override
+    public String getKeyWord() throws Exception {
+        return KEY_WORD;
+    }
 
-	@Override
-	public String getPropertyValue(String key) {
-		if (key.equals("id")) {
-			return testCase.getRelativePathForUI().replace(File.separator, "/");
-		} else if (key.equals("name")) {
-			return testCase.getName();
-		} else if (key.equals("tag")) {
-			return testCase.getTag();
-		} else if (key.equals("comment")) {
-			return testCase.getComment();
-		} else if (key.equals("description")) {
-			return testCase.getDescription();
-		}
-		return StringUtils.EMPTY;
-	}
+    @Override
+    public String[] getSearchTags() throws Exception {
+        return SEARCH_TAGS;
+    }
 
-	@Override
-	public Image getEntryImage() throws Exception {
-		return getImage();
-	}
-	
-	@Override
-	public void setObject(Object object) throws Exception {
-		if (object instanceof TestCaseEntity) {
-			entity = (Entity) object;
-			testCase = (TestCaseEntity) object;
-		}
-	}
+    @Override
+    public String getPropertyValue(String key) {
+        if (key.equals("id")) {
+            return testCase.getRelativePathForUI().replace(File.separator, "/");
+        } else if (key.equals("name")) {
+            return testCase.getName();
+        } else if (key.equals("tag")) {
+            return testCase.getTag();
+        } else if (key.equals("comment")) {
+            return testCase.getComment();
+        } else if (key.equals("description")) {
+            return testCase.getDescription();
+        }
+        return StringUtils.EMPTY;
+    }
 
-	@Override
-	public void loadAllDescentdantEntities() throws Exception {
-		GroovyUtil.loadScriptContentIntoTestCase(testCase);
-	}
+    @Override
+    public Image getEntryImage() throws Exception {
+        return getImage();
+    }
+
+    @Override
+    public void setObject(Object object) throws Exception {
+        if (object instanceof TestCaseEntity) {
+            entity = (Entity) object;
+            testCase = (TestCaseEntity) object;
+        }
+    }
+
+    @Override
+    public void loadAllDescentdantEntities() throws Exception {
+        GroovyUtil.loadScriptContentIntoTestCase(testCase);
+    }
 }

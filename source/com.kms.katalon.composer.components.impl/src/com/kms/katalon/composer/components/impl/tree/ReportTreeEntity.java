@@ -14,102 +14,104 @@ import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.report.ReportEntity;
 
 public class ReportTreeEntity extends AbstractTreeEntity {
-	
-	private static final long serialVersionUID = -5738894941424885826L;
-	
-	private static final String REPORT_TYPE_NAME = StringConstants.TREE_REPORT_TYPE_NAME;
-	
+
+    private static final long serialVersionUID = -5738894941424885826L;
+
+    private static final String REPORT_TYPE_NAME = StringConstants.TREE_REPORT_TYPE_NAME;
+
     public static final String KEY_WORD = StringConstants.TREE_REPORT_KW;
-    
-    public static final String[] SEARCH_TAGS = new String[] {"id", "name"};
-    
+
+    public static final String[] SEARCH_TAGS = new String[] { "id", "name" };
+
     private ReportEntity report;
-    
-	public ReportTreeEntity(ReportEntity report, ITreeEntity parentTreeEntity) {
-		super(report, parentTreeEntity);
-		this.report = report;
-	}
-	
-    @Override
-    public Object getObject() throws Exception {
-        return ReportController.getInstance().getReportEntity(report.getId());
+
+    public ReportTreeEntity(ReportEntity report, ITreeEntity parentTreeEntity) {
+        super(report, parentTreeEntity);
+        this.report = report;
     }
 
-	@Override
-	public Object[] getChildren() throws Exception {
-		return null;
-	}
-	
-	@Override
-	public Image getImage() throws Exception {
-		return ImageConstants.IMG_16_REPORT;
-	}
+    @Override
+    public Object getObject() throws Exception {
+        this.report = ReportController.getInstance().getReportEntity(report.getId());
+        loadAllDescentdantEntities();
+        return report;
+    }
 
-	@Override
-	public String getTypeName() throws Exception {
-		return REPORT_TYPE_NAME;
-	}
+    @Override
+    public Object[] getChildren() throws Exception {
+        return null;
+    }
 
-	@Override
-	public String getCopyTag() throws Exception {
-		//return FolderType.REPORT.toString();
-		return null;
-	}
+    @Override
+    public Image getImage() throws Exception {
+        return ImageConstants.IMG_16_REPORT;
+    }
 
-	@Override
-	public boolean hasChildren() throws Exception {
-		return false;
-	}
+    @Override
+    public String getTypeName() throws Exception {
+        return REPORT_TYPE_NAME;
+    }
 
-	@Override
-	public boolean isRemoveable() throws Exception {
-		return true;
-	}
+    @Override
+    public String getCopyTag() throws Exception {
+        // return FolderType.REPORT.toString();
+        return null;
+    }
 
-	@Override
-	public boolean isRenamable() throws Exception {
-		return false;
-	}
+    @Override
+    public boolean hasChildren() throws Exception {
+        return false;
+    }
 
-	@Override
-	public Transfer getEntityTransfer() throws Exception {
-		return null;
-	}
+    @Override
+    public boolean isRemoveable() throws Exception {
+        return true;
+    }
 
-	@Override
-	public void setObject(Object object) throws Exception {
-		if (object instanceof ReportEntity) {
-			entity = (Entity) object;
-			report = (ReportEntity) object;
-		}
-	}
+    @Override
+    public boolean isRenamable() throws Exception {
+        return false;
+    }
 
-	@Override
-	public String getKeyWord() throws Exception {
-		return KEY_WORD;
-	}
+    @Override
+    public Transfer getEntityTransfer() throws Exception {
+        return null;
+    }
 
-	@Override
-	public String[] getSearchTags() throws Exception {
-		return SEARCH_TAGS;
-	}
+    @Override
+    public void setObject(Object object) throws Exception {
+        if (object instanceof ReportEntity) {
+            entity = (Entity) object;
+            report = (ReportEntity) object;
+        }
+    }
 
-	@Override
-	public String getPropertyValue(String key) {
-		if (key.equals("id")) {
+    @Override
+    public String getKeyWord() throws Exception {
+        return KEY_WORD;
+    }
+
+    @Override
+    public String[] getSearchTags() throws Exception {
+        return SEARCH_TAGS;
+    }
+
+    @Override
+    public String getPropertyValue(String key) {
+        if (key.equals("id")) {
             return report.getRelativePathForUI().replace(File.separator, "/");
         } else if (key.equals("name")) {
             return report.getName();
         }
         return StringUtils.EMPTY;
-	}
+    }
 
-	@Override
-	public Image getEntryImage() throws Exception {
-		return getImage();
-	}
+    @Override
+    public Image getEntryImage() throws Exception {
+        return getImage();
+    }
 
-	@Override
-	public void loadAllDescentdantEntities() throws Exception {
-	}
+    @Override
+    public void loadAllDescentdantEntities() throws Exception {
+    }
 }
