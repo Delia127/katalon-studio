@@ -401,8 +401,10 @@ public class ReportUtil {
             testStatus.setStatusValue(TestStatusValue.ERROR);
         } else if (level == LogLevel.PASSED) {
             testStatus.setStatusValue(TestStatusValue.PASSED);
-        } else {
+        } else if (level == LogLevel.INCOMPLETE) {
             testStatus.setStatusValue(TestStatusValue.INCOMPLETE);
+        } else {
+            testStatus.setStatusValue(TestStatusValue.PASSED);
         }
     }
 
