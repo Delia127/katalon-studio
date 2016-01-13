@@ -85,8 +85,9 @@ h2 {
     color: #FFCC00 !important;
     font-weight: bold;
 }
-.not-run {
-    color: #444444 !important;
+.incomplete {
+	color: #FF8000 !important;
+    /*	color: #444444 !important;	*/
 }
 /* Top right header */
 #top-right-header {
@@ -1182,8 +1183,13 @@ window.testdata = function () {
     var elementsById = {};
     var idCounter = 0;
     var _statistics = null;
-    var STATUSES = ['PASSED', 'FAILED', 'INFO', 'ERROR'];
+    
+    //var STATUSES = ['PASSED', 'FAILED', 'INFO', 'ERROR'];
+    //var LEVELS = STATUSES;
+    
+    var STATUSES = ['PASSED', 'FAILED', 'INCOMPLETE', 'ERROR', 'INFO'];
     var LEVELS = STATUSES;
+    
     var KEYWORDS = ['KEYWORD', 'SETUP', 'TEARDOWN', 'FOR', 'VAR'];
     function addElement(elem) {
         if (!elem.id)
@@ -1328,20 +1334,16 @@ window.testdata = function () {
 				criticalFailed: stats[2] - stats[3]
 			};		
 		}
-		else if(stats.length = 6){
-			var __total = stats[0];
-			var __pass = stats[1];
-			var __error = stats[5];
-			var __fail = __total - (__pass+__error);
+		else if(stats.length == 5){
 			return {
-				total: __total,
-				totalPassed: __pass,
-				totalFailed: __fail,
-				totalError: __error,
-				
+				total: stats[0],
+				totalPassed: stats[1],
+				totalFailed: stats[2],
+				totalError: stats[3],
 				critical: stats[2],
 				criticalPassed: stats[3],
-				criticalFailed: stats[2] - stats[3]
+				criticalFailed: stats[2] - stats[3],
+				totalIncomplete: stats[4]
 			};		
 		}
     }
@@ -1586,7 +1588,8 @@ $.template('suiteStatusMessageTemplate',
     '${total} test total, ' +
     '<span class="passed">${totalPassed} passed</span>' + ', ' +    
     '<span class="failed">${totalFailed} failed</span>' + ', ' +
-	'<span class="error">{{if totalError}}${totalError}{{else}}0{{/if}} error</span>'
+	'<span class="error">{{if totalError}}${totalError}{{else}}0{{/if}} error</span>' + ', ' +
+	'<span class="incomplete">{{if totalIncomplete}}${totalIncomplete}{{else}}0{{/if}} incomplete</span>'
 );
 // For complete cross-browser experience..
 // http://www.quirksmode.org/js/events_order.html
