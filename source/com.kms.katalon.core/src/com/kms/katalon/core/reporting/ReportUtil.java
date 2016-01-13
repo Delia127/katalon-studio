@@ -293,9 +293,8 @@ public class ReportUtil {
             messageLogRecord.setAttachment(xmlLogRecord.getProperties()
                     .get(StringConstants.XML_LOG_ATTACHMENT_PROPERTY));
         }
-        TestStatus testStatus = new TestStatus();
         LogLevel logLevel = (LogLevel) LogLevel.parse(xmlLogRecord.getLevel().toString());
-        assignTestStatus(testStatus, logLevel);
+        TestStatus testStatus = evalTestStatus(logRecord, logLevel);
         messageLogRecord.setStatus(testStatus);
         logRecord.addChildRecord(messageLogRecord);
     }
@@ -394,16 +393,20 @@ public class ReportUtil {
         return testSuiteLogRecord;
     }
 
-    private static void assignTestStatus(TestStatus testStatus, LogLevel level) {
+    private static TestStatus evalTestStatus(ILogRecord logRecord, LogLevel level) {
+    	TestStatus testStatus = new TestStatus();
         if (level == LogLevel.FAILED) {
             testStatus.setStatusValue(TestStatusValue.FAILED);
         } else if (level == LogLevel.ERROR) {
             testStatus.setStatusValue(TestStatusValue.ERROR);
         } else if (level == LogLevel.PASSED) {
             testStatus.setStatusValue(TestStatusValue.PASSED);
-        } else {
+        } else if (level == LogLevel.ABORTED || level == LogLevel.INCOMPLETE) {
             testStatus.setStatusValue(TestStatusValue.INCOMPLETE);
-        }
+	    } else if (level == LogLevel.INFO) {
+	        testStatus.setStatusValue(TestStatusValue.INFO);
+	    }
+        return testStatus;
     }
 
     private static void readFileToStringBuilder(String fileName, StringBuilder sb) throws IOException,
