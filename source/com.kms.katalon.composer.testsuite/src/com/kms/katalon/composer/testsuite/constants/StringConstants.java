@@ -137,7 +137,7 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PA_LBL_RETRY = "Retry";
     
-    public static final String PA_LBL_TEST_CASE_ONLY = "Only Retry Failed Test Cases";
+    public static final String PA_LBL_TEST_CASE_ONLY = "Failed Test Cases Only";
 
     public static final String PA_LBL_TIP_LAST_RUN = "Navigate to the report page of the last run";
 
