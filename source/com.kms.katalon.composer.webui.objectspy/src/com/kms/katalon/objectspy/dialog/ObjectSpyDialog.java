@@ -28,13 +28,10 @@ import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.CheckStateChangedEvent;
-import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.EditingSupport;
-import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -47,7 +44,6 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.KeyEvent;
@@ -85,15 +81,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
-import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
-import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
-import com.kms.katalon.composer.explorer.providers.FolderProvider;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -108,7 +99,6 @@ import com.kms.katalon.objectspy.element.HTMLElement.HTMLStatus;
 import com.kms.katalon.objectspy.element.HTMLFrameElement;
 import com.kms.katalon.objectspy.element.HTMLPageElement;
 import com.kms.katalon.objectspy.element.HTMLRawElement;
-import com.kms.katalon.objectspy.element.tree.CheckboxTreeSelectionHelper;
 import com.kms.katalon.objectspy.element.tree.HTMLElementLabelProvider;
 import com.kms.katalon.objectspy.element.tree.HTMLElementTreeContentProvider;
 import com.kms.katalon.objectspy.element.tree.HTMLRawElementLabelProvider;
@@ -129,7 +119,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
 
     private TableViewer attributesTableViewer;
 
-    private CheckboxTreeViewer elementTreeViewer;
+    private TreeViewer elementTreeViewer;
 
     private Logger logger;
 
@@ -244,36 +234,27 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         lblCapturedObjects.setFont(getFontBold(lblCapturedObjects));
         lblCapturedObjects.setText(StringConstants.DIA_LBL_CAPTURED_OBJECTS);
 
-        elementTreeViewer = new CheckboxTreeViewer(capturedObjectComposite, SWT.BORDER | SWT.MULTI);
+        elementTreeViewer = new TreeViewer(capturedObjectComposite, SWT.BORDER | SWT.MULTI);
         HTMLElementTreeContentProvider contentProvider = new HTMLElementTreeContentProvider();
-        CheckboxTreeSelectionHelper.attach(elementTreeViewer, contentProvider);
         elementTreeViewer.getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
 
         elementTreeViewer.setContentProvider(contentProvider);
         elementTreeViewer.setLabelProvider(new HTMLElementLabelProvider());
 
         elementTreeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 if (event.getSelection() instanceof TreeSelection) {
                     TreeSelection treeSelection = (TreeSelection) event.getSelection();
-                    Object o = treeSelection.getFirstElement();
-                    enableToolItem(removeElementToolItem, o instanceof HTMLElement);
-                    if (o instanceof HTMLElement) {
-                        selectedElement = (HTMLElement) o;
+                    Object selectedObject = treeSelection.getFirstElement();
+                    enableToolItem(removeElementToolItem, selectedObject instanceof HTMLElement);
+                    enableToolItem(addFrameElementToolItem, selectedObject instanceof HTMLElement);
+                    enableToolItem(addElementToolItem, selectedObject instanceof HTMLElement);
+                    if (selectedObject instanceof HTMLElement) {
+                        selectedElement = (HTMLElement) selectedObject;
                         refreshAttributesTable(selectedElement);
                     }
                 }
-            }
-
-        });
-        elementTreeViewer.addCheckStateListener(new ICheckStateListener() {
-
-            @Override
-            public void checkStateChanged(CheckStateChangedEvent event) {
-                Object[] checkedElements = elementTreeViewer.getCheckedElements();
-                enableToolItem(addElmtToObjRepoToolItem, checkedElements != null && checkedElements.length > 0);
             }
 
         });
@@ -611,10 +592,6 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         elementTreeViewer.setExpandedState(object, true);
     }
 
-    private void setCheckedTreeItem(Object object) {
-        elementTreeViewer.setChecked(object, true);
-    }
-
     private HTMLFrameElement getParentElement(ITreeSelection selection) {
         HTMLElement element = (HTMLElement) selection.getFirstElement();
         HTMLFrameElement parentElement = null;
@@ -662,14 +639,12 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                             HTMLFrameElement newFrameElement = HTMLElementUtil.generateNewFrameElement(parentElement);
                             refreshTree(elementTreeViewer, parentElement);
                             setSelectedTreeItem(newFrameElement);
-                            if (elementTreeViewer.getChecked(parentElement)) {
-                                setCheckedTreeItem(newFrameElement);
-                            }
                         }
                     }
                 }
             }
         });
+        addFrameElementToolItem.setEnabled(false);
 
         addElementToolItem = new ToolItem(mainToolbar, SWT.NONE);
         addElementToolItem.setImage(ImageConstants.IMG_24_NEW_ELEMENT);
@@ -687,14 +662,12 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                             HTMLElement newElement = HTMLElementUtil.generateNewElement(parentElement);
                             refreshTree(elementTreeViewer, parentElement);
                             setSelectedTreeItem(newElement);
-                            if (elementTreeViewer.getChecked(parentElement)) {
-                                setCheckedTreeItem(newElement);
-                            }
                         }
                     }
                 }
             }
         });
+        addElementToolItem.setEnabled(false);
 
         new ToolItem(mainToolbar, SWT.SEPARATOR);
 
@@ -726,9 +699,6 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                             }
                         }
                     }
-
-                    Object[] checkedElements = elementTreeViewer.getCheckedElements();
-                    enableToolItem(addElmtToObjRepoToolItem, checkedElements != null && checkedElements.length > 0);
                 }
             }
         });
@@ -739,7 +709,6 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         addElmtToObjRepoToolItem.setImage(ImageConstants.IMG_24_ADD_TO_OBJECT_REPOSITORY);
         addElmtToObjRepoToolItem.setText(StringConstants.DIA_TOOLITEM_TIP_ADD_ELEMENT_TO_OBJECT_REPO);
         addElmtToObjRepoToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_ADD_ELEMENT_TO_OBJECT_REPO);
-        addElmtToObjRepoToolItem.setEnabled(false);
         addElmtToObjRepoToolItem.addSelectionListener(new SelectionAdapter() {
 
             @Override
@@ -811,23 +780,8 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
 
     private void addElementToObjectRepository() throws Exception {
         AddToObjectRepositoryDialog addToObjectRepositoryDialog = new AddToObjectRepositoryDialog(getParentShell(),
-                new EntityLabelProvider(), new FolderProvider(), new EntityViewerFilter(new FolderProvider()));
-        if (addToObjectRepositoryDialog.open() == Window.OK) {
-            Object object = addToObjectRepositoryDialog.getFirstResult();
-            if (object instanceof FolderTreeEntity) {
-                FolderEntity parentFolder = (FolderEntity) ((FolderTreeEntity) object).getObject();
-                for (HTMLPageElement pageElement : elements) {
-                    if (elementTreeViewer.getChecked(pageElement) || elementTreeViewer.getGrayed(pageElement)) {
-                        for (HTMLElement childElement : pageElement.getChildElements()) {
-                            addCheckedElement(childElement, parentFolder, null);
-                        }
-                    }
-                }
-                eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, ((FolderTreeEntity) object).getParent());
-                eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, object);
-                eventBroker.send(EventConstants.EXPLORER_EXPAND_TREE_ENTITY, object);
-            }
-        }
+                elements, eventBroker, elementTreeViewer.getExpandedElements());
+        addToObjectRepositoryDialog.open();
     }
 
     @SuppressWarnings("unchecked")
@@ -911,20 +865,6 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
     protected void handleShellCloseEvent() {
         super.handleShellCloseEvent();
         dispose();
-    }
-
-    public void addCheckedElement(HTMLElement element, FolderEntity parentFolder, WebElementEntity refElement)
-            throws Exception {
-        WebElementEntity importedElement = null;
-        if (elementTreeViewer.getChecked(element) || elementTreeViewer.getGrayed(element)) {
-            importedElement = ObjectRepositoryController.getInstance().importWebElement(
-                    HTMLElementUtil.convertElementToWebElementEntity(element, refElement, parentFolder), parentFolder);
-        }
-        if (element instanceof HTMLFrameElement) {
-            for (HTMLElement childElement : ((HTMLFrameElement) element).getChildElements()) {
-                addCheckedElement(childElement, parentFolder, importedElement);
-            }
-        }
     }
 
     public void dispose() {
