@@ -6,7 +6,7 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_S2W4QCauEeS9vYgzPyb1ug" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Handler" xmi:id="_-S5J0AOcEeWw1uW0NQbOIw" elementId="com.kms.katalon.composer.mobile.objectspy.handler.spy.mobile" contributionURI="bundleclass://com.kms.katalon.composer.mobile.objectspy/com.kms.katalon.composer.mobile.handler.MobileSpyMobileHandler" command="_zzwRcAOcEeWw1uW0NQbOIw"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_WEjTEAObEeWw1uW0NQbOIw" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="index:14">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_WEjTEAObEeWw1uW0NQbOIw" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="last">
     <elements xsi:type="menu:HandledToolItem" xmi:id="_px19EAObEeWw1uW0NQbOIw" elementId="com.kms.katalon.composer.mobile.objectspy.handledtoolitem.objectSpy.mobile" label="" iconURI="platform:/plugin/com.kms.katalon.composer.mobile.objectspy/icons/object_spy_mobile_28.png" tooltip="Mobile Object Spy" command="_zzwRcAOcEeWw1uW0NQbOIw">
       <tags>FORCE_TEXT</tags>
     </elements>
