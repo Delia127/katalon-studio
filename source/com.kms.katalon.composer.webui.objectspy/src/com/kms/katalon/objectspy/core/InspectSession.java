@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
+import java.text.MessageFormat;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -32,18 +33,22 @@ import com.kms.katalon.objectspy.util.WinRegistry;
 
 @SuppressWarnings("restriction")
 public class InspectSession implements Runnable {
+    private static final String LOAD_EXTENSION_CHROME_PREFIX = "load-extension=";
+    private static final String OBJECT_SPY_ADD_ON_NAME = "Object Spy";
+    private static final String SERVER_URL_EXPRESSION_FOR_CHROME = "qAutomate_server_url = ''{0}''";
+    private static final String SERVER_FILE_FOR_CHROME = "server.js";
+    private static final String SERVER_URL_PREFERENCE_KEY = "serverUrl";
     private static final String SERVER_URL_FILE_NAME = "serverUrl.txt";
     private static final String OBJECT_SPY_APPLICATION_DATA_FOLDER = System.getProperty("user.home") + File.separator
             + "AppData" + File.separator + "Local" + File.separator + "KMS" + File.separator + "qAutomate"
             + File.separator + "ObjectSpy";
-
     protected static final String IE_ADDON_BHO_KEY = "{8CB0FB3A-8EFA-4F94-B605-F3427688F8C7}";
     protected static final String WINDOWS_32BIT_BHO_REGISTRY_KEY = "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\explorer\\Browser Helper Objects";
     protected static final String WINDOWS_BHO_REGISTRY_KEY = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\explorer\\Browser Helper Objects";
     protected static final String IE_ABSOLUTE_PATH = "C:\\Program Files\\Internet Explorer\\iexplore.exe";
     protected static final String IE_32BIT_ABSOLUTE_PATH = "C:\\Program Files (x86)\\Internet Explorer\\iexplore.exe";
     protected static final String CHROME_EXTENSION_RELATIVE_PATH = File.separator + "Chrome" + File.separator
-            + "Object Spy";
+            + OBJECT_SPY_ADD_ON_NAME;
     protected static final String FIREFOX_ADDON_RELATIVE_PATH = File.separator + "Firefox" + File.separator
             + "objectspy.xpi";
 
@@ -185,7 +190,7 @@ public class InspectSession implements Runnable {
         if (file != null) {
             FirefoxProfile firefoxProfile = new FirefoxProfile();
             firefoxProfile.addExtension(file);
-            firefoxProfile.setPreference("serverUrl", serverUrl);
+            firefoxProfile.setPreference(SERVER_URL_PREFERENCE_KEY, serverUrl);
             return firefoxProfile;
         }
         return null;
@@ -196,12 +201,13 @@ public class InspectSession implements Runnable {
         if (chromeExtensionFolder == null || !chromeExtensionFolder.isDirectory() || !chromeExtensionFolder.exists()) {
             throw new ExtensionNotFoundException(getChromeExtensionPath(), WebUIDriverType.CHROME_DRIVER);
         }
-        File serverUrlScriptFile = new File(chromeExtensionFolder.getAbsolutePath() + File.separator + "server.js");
-        FileUtils.writeStringToFile(serverUrlScriptFile, "qAutomate_server_url = '" + serverUrl + "'",
-                Charset.defaultCharset());
+        File serverUrlScriptFile = new File(chromeExtensionFolder.getAbsolutePath() + File.separator
+                + SERVER_FILE_FOR_CHROME);
+        FileUtils.writeStringToFile(serverUrlScriptFile,
+                MessageFormat.format(SERVER_URL_EXPRESSION_FOR_CHROME, serverUrl), Charset.defaultCharset());
 
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("load-extension=" + chromeExtensionFolder.getAbsolutePath());
+        options.addArguments(LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getAbsolutePath());
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability(ChromeOptions.CAPABILITY, options);
         return capabilities;
@@ -248,7 +254,7 @@ public class InspectSession implements Runnable {
     }
 
     protected String getAddOnName() {
-        return "Object Spy";
+        return OBJECT_SPY_ADD_ON_NAME;
     }
 
     protected String getChromeExtensionPath() {
