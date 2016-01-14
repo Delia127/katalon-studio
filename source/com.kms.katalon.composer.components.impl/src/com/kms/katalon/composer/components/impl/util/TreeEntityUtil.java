@@ -2,6 +2,8 @@ package com.kms.katalon.composer.components.impl.util;
 
 import java.util.Collections;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
@@ -65,32 +67,46 @@ public class TreeEntityUtil {
         return new TestCaseTreeEntity(testCaseEntity, createSelectedTreeEntityHierachy(
                 testCaseEntity.getParentFolder(), testCaseRootFolder));
     }
-    
-    public static WebElementTreeEntity getWebElementTreeEntity(WebElementEntity testObjectEntity, ProjectEntity projectEntity)
-            throws Exception {
+
+    public static WebElementTreeEntity getWebElementTreeEntity(WebElementEntity testObjectEntity,
+            ProjectEntity projectEntity) throws Exception {
         FolderEntity testCaseRootFolder = FolderController.getInstance().getObjectRepositoryRoot(projectEntity);
         return new WebElementTreeEntity(testObjectEntity, createSelectedTreeEntityHierachy(
                 testObjectEntity.getParentFolder(), testCaseRootFolder));
     }
-    
+
     public static TestDataTreeEntity getTestDataTreeEntity(DataFileEntity testDataEntity, ProjectEntity projectEntity)
             throws Exception {
         FolderEntity testCaseRootFolder = FolderController.getInstance().getTestDataRoot(projectEntity);
         return new TestDataTreeEntity(testDataEntity, createSelectedTreeEntityHierachy(
                 testDataEntity.getParentFolder(), testCaseRootFolder));
     }
-    
-    public static TestSuiteTreeEntity getTestSuiteTreeEntity(TestSuiteEntity testSuiteEntity, ProjectEntity projectEntity)
-            throws Exception {
+
+    public static TestSuiteTreeEntity getTestSuiteTreeEntity(TestSuiteEntity testSuiteEntity,
+            ProjectEntity projectEntity) throws Exception {
         FolderEntity testCaseRootFolder = FolderController.getInstance().getTestSuiteRoot(projectEntity);
         return new TestSuiteTreeEntity(testSuiteEntity, createSelectedTreeEntityHierachy(
                 testSuiteEntity.getParentFolder(), testCaseRootFolder));
     }
-    
+
     public static ReportTreeEntity getReportTreeEntity(ReportEntity reportEntity, ProjectEntity projectEntity)
             throws Exception {
         FolderEntity testCaseRootFolder = FolderController.getInstance().getReportRoot(projectEntity);
-        return new ReportTreeEntity(reportEntity, createSelectedTreeEntityHierachy(
-                reportEntity.getParentFolder(), testCaseRootFolder));
+        return new ReportTreeEntity(reportEntity, createSelectedTreeEntityHierachy(reportEntity.getParentFolder(),
+                testCaseRootFolder));
+    }
+
+    /**
+     * Get readable keyword name by capitalized and separated the words.
+     * <p>
+     * Example: getReadableKeywordName("getDeviceOSVersion") will be "Get Device OS Version"
+     * 
+     * @param keywordMethodName keyword name (also known as method name)
+     * @return Readable Keyword Name
+     */
+    public static String getReadableKeywordName(String keywordMethodName) {
+        if (keywordMethodName == null) return keywordMethodName;
+        return StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(StringUtils.capitalize(keywordMethodName)),
+                " ");
     }
 }

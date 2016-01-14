@@ -50,6 +50,11 @@ public class AstStatementTreeTableNode extends AstAbstractTreeTableNode {
     }
 
     @Override
+    public String getItemTextForDisplay() {
+        return getItemText();
+    }
+
+    @Override
     public AstTreeTableNode getParent() {
         return parentNode;
     }

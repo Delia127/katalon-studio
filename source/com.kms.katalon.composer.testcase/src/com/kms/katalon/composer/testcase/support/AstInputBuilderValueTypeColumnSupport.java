@@ -18,13 +18,17 @@ import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
 
 public class AstInputBuilderValueTypeColumnSupport extends EditingSupport {
     protected AstBuilderDialog parentDialog;
+
     protected ClassNode scriptClass;
+
     protected List<String> inputValueTypeNames;
+
     protected String customTag;
+
     protected IInputValueType[] defaultInputValueTypes;
 
-    public AstInputBuilderValueTypeColumnSupport(ColumnViewer viewer, IInputValueType[] defaultInputValueTypes, String customTag, AstBuilderDialog parentDialog,
-            ClassNode scriptClass) {
+    public AstInputBuilderValueTypeColumnSupport(ColumnViewer viewer, IInputValueType[] defaultInputValueTypes,
+            String customTag, AstBuilderDialog parentDialog, ClassNode scriptClass) {
         super(viewer);
         this.defaultInputValueTypes = defaultInputValueTypes;
         this.customTag = customTag;
@@ -53,7 +57,7 @@ public class AstInputBuilderValueTypeColumnSupport extends EditingSupport {
         if (element instanceof ASTNode) {
             IInputValueType valueType = AstTreeTableValueUtil.getTypeValue((ASTNode) element, scriptClass);
             if (valueType != null) {
-                return inputValueTypeNames.indexOf(valueType.getName());
+                return inputValueTypeNames.indexOf(valueType.getReadableName());
             }
         }
         return 0;

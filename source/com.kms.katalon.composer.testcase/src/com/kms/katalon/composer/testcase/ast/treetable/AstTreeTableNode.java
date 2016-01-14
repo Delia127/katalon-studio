@@ -15,6 +15,7 @@ public interface AstTreeTableNode {
 	public boolean isInputEditable();
 	public boolean isOutputEditatble();
 	public String getItemText();
+	public String getItemTextForDisplay();
 	public String getItemTooltipText();
 	public String getTestObjectText();
     public String getTestObjectTooltipText();

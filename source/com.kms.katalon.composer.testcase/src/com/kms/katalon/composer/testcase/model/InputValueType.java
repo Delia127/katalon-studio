@@ -6,6 +6,7 @@ import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
@@ -17,6 +18,11 @@ public enum InputValueType implements IInputValueType {
     @Override
     public String getName() {
         return name();
+    }
+
+    @Override
+    public String getReadableName() {
+        return TreeEntityUtil.getReadableKeywordName(name());
     }
 
     @Override
@@ -32,52 +38,52 @@ public enum InputValueType implements IInputValueType {
     @Override
     public Object getNewValue(Object existingValue) {
         switch (this) {
-        case String:
-            return AstTreeTableEntityUtil.getNewStringConstantExpression();
-        case Number:
-            return AstTreeTableEntityUtil.getNewNumberConstantExpression();
-        case Boolean:
-            return AstTreeTableEntityUtil.getNewBooleanConstantExpression();
-        case Null:
-            return new ConstantExpression(null);
-        case Binary:
-            return AstTreeTableEntityUtil.getNewBinaryExpression();
-        case Variable:
-            return AstTreeTableEntityUtil.getNewVariableExpression();
-        case MethodCall:
-            return AstTreeTableEntityUtil.getNewMethodCallExpression();
-        case Condition:
-            return AstTreeTableEntityUtil.getNewBooleanExpression();
-        case List:
-            return AstTreeTableEntityUtil.getNewListExpression();
-        case Map:
-            return AstTreeTableEntityUtil.getNewMapExpression();
-        case ClosureList:
-            return AstTreeTableEntityUtil.getNewClosureListExpression();
-        case Range:
-            return AstTreeTableEntityUtil.getNewRangeExpression();
-        case Property:
-            return AstTreeTableEntityUtil.getNewPropertyExpression();
-        case GlobalVariable:
-            return AstTreeTableEntityUtil.getNewGlobalVariablePropertyExpression();
-        case TestObject:
-            return AstTreeTableInputUtil.generateObjectMethodCall(null);
-        case Class:
-            return AstTreeTableEntityUtil.createNewClassExpressionFromType(String.class);
-        case TestDataValue:
-            return AstTreeTableEntityUtil.getNewTestDataValueExpression(
-                    AstTreeTableEntityUtil.getNewTestDataExpression(new ConstantExpression(null)),
-                    new ConstantExpression(1), new ConstantExpression(1));
-        case TestData:
-            return AstTreeTableEntityUtil.getNewTestDataExpression(new ConstantExpression(null));
-        case TestCase:
-            return AstTreeTableEntityUtil.getNewTestCaseExpression();
-        case This:
-            return new VariableExpression("this");
-        case Throwable:
-            return AstTreeTableEntityUtil.getNewExceptionExpression();
-        default:
-            return new ConstantExpression(null);
+            case String:
+                return AstTreeTableEntityUtil.getNewStringConstantExpression();
+            case Number:
+                return AstTreeTableEntityUtil.getNewNumberConstantExpression();
+            case Boolean:
+                return AstTreeTableEntityUtil.getNewBooleanConstantExpression();
+            case Null:
+                return new ConstantExpression(null);
+            case Binary:
+                return AstTreeTableEntityUtil.getNewBinaryExpression();
+            case Variable:
+                return AstTreeTableEntityUtil.getNewVariableExpression();
+            case MethodCall:
+                return AstTreeTableEntityUtil.getNewMethodCallExpression();
+            case Condition:
+                return AstTreeTableEntityUtil.getNewBooleanExpression();
+            case List:
+                return AstTreeTableEntityUtil.getNewListExpression();
+            case Map:
+                return AstTreeTableEntityUtil.getNewMapExpression();
+            case ClosureList:
+                return AstTreeTableEntityUtil.getNewClosureListExpression();
+            case Range:
+                return AstTreeTableEntityUtil.getNewRangeExpression();
+            case Property:
+                return AstTreeTableEntityUtil.getNewPropertyExpression();
+            case GlobalVariable:
+                return AstTreeTableEntityUtil.getNewGlobalVariablePropertyExpression();
+            case TestObject:
+                return AstTreeTableInputUtil.generateObjectMethodCall(null);
+            case Class:
+                return AstTreeTableEntityUtil.createNewClassExpressionFromType(String.class);
+            case TestDataValue:
+                return AstTreeTableEntityUtil.getNewTestDataValueExpression(
+                        AstTreeTableEntityUtil.getNewTestDataExpression(new ConstantExpression(null)),
+                        new ConstantExpression(1), new ConstantExpression(1));
+            case TestData:
+                return AstTreeTableEntityUtil.getNewTestDataExpression(new ConstantExpression(null));
+            case TestCase:
+                return AstTreeTableEntityUtil.getNewTestCaseExpression();
+            case This:
+                return new VariableExpression("this");
+            case Throwable:
+                return AstTreeTableEntityUtil.getNewExceptionExpression();
+            default:
+                return new ConstantExpression(null);
         }
     }
 
