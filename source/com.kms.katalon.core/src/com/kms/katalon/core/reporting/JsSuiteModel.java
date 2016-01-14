@@ -119,6 +119,7 @@ public class JsSuiteModel extends JsModel {
 		sum.props.add(new JsModelProperty("passes", String.valueOf(totalChildCount - (totalFailsErrorsIncompletes[0] + totalFailsErrorsIncompletes[1] + totalFailsErrorsIncompletes[2])), null));
 		sum.props.add(new JsModelProperty("fails", String.valueOf(totalFailsErrorsIncompletes[0]), null));
 		sum.props.add(new JsModelProperty("errors", String.valueOf(totalFailsErrorsIncompletes[1]), null));
+		sum.props.add(new JsModelProperty("incompletes", String.valueOf(totalFailsErrorsIncompletes[2]), null));
 	}
 
 	public StringBuilder toArrayString() {

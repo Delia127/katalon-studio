@@ -183,7 +183,7 @@ public abstract class AbstractLauncher {
                     String testName = testIndex + "." + testRow[0];
                     newDatas.add(ArrayUtils.addAll(new String[] { suiteName, testName, browser },
                             Arrays.copyOfRange(testRow, 2, testRow.length)));
-                    // String testStatus = testRow[5];
+                    
                     String testStatus = testRow[6];
                     if (TestStatusValue.PASSED.toString().equals(testStatus)) {
                         arrSuitesSummaryForEmail[1] = (Integer) arrSuitesSummaryForEmail[1] + 1;
@@ -191,7 +191,7 @@ public abstract class AbstractLauncher {
                         arrSuitesSummaryForEmail[2] = (Integer) arrSuitesSummaryForEmail[2] + 1;
                     } else if (TestStatusValue.ERROR.toString().equals(testStatus)) {
                         arrSuitesSummaryForEmail[3] = (Integer) arrSuitesSummaryForEmail[3] + 1;
-                    } else {
+                    } else if (TestStatusValue.INCOMPLETE.toString().equals(testStatus)) {
                         arrSuitesSummaryForEmail[4] = (Integer) arrSuitesSummaryForEmail[4] + 1;
                     }
                 }
