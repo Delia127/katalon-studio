@@ -270,7 +270,7 @@ public class GenerateNewTokenDialog extends AbstractDialog {
         glPasswordComposite.marginWidth = 0;
         passwordComposite.setLayout(glPasswordComposite);
 
-        txtPassword = new Text(passwordComposite, SWT.BORDER | SWT.PASSWORD);
+        txtPassword = new Text(passwordComposite, SWT.BORDER);
         txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         btnShowPassword = new Button(passwordComposite, SWT.CHECK);

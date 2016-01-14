@@ -115,8 +115,10 @@ public class ReportUtil {
     }
 
     private static void collectInfoLines(ILogRecord logRecord, List<ILogRecord> rmvLogs) {
-        if (logRecord instanceof MessageLogRecord && logRecord.getStatus().getStatusValue() == TestStatusValue.INCOMPLETE) {
-            rmvLogs.add(logRecord);
+        if (logRecord instanceof MessageLogRecord) {
+        	if(logRecord.getStatus().getStatusValue() == TestStatusValue.INCOMPLETE || logRecord.getStatus().getStatusValue() == TestStatusValue.INFO){
+        		rmvLogs.add(logRecord);	
+        	}
         }
         for (ILogRecord childLogRecord : logRecord.getChildRecords()) {
             collectInfoLines(childLogRecord, rmvLogs);
@@ -149,7 +151,7 @@ public class ReportUtil {
         // Write main HTML Report
         FileUtils.writeStringToFile(new File(logFolder, logFolder.getName() + ".html"), htmlSb.toString());
 
-        /*
+        
         // Write CSV file
         CsvWriter.writeCsvReport(suiteLogEntity, new File(logFolder, logFolder.getName() + ".csv"),
                 Arrays.asList(suiteLogEntity.getChildRecords()));
@@ -167,7 +169,7 @@ public class ReportUtil {
         htmlSb.append(generateVars(strings, suiteLogEntity, sbModel));
         readFileToStringBuilder(ResourceLoader.HTML_TEMPLATE_CONTENT, htmlSb);
         FileUtils.writeStringToFile(new File(logFolder, "Report.html"), htmlSb.toString());
-        */
+        
     }
 
     public static void writeLogRecordToHTMLFile(TestSuiteLogRecord suiteLogEntity, File destFile,
@@ -293,9 +295,8 @@ public class ReportUtil {
             messageLogRecord.setAttachment(xmlLogRecord.getProperties()
                     .get(StringConstants.XML_LOG_ATTACHMENT_PROPERTY));
         }
-        TestStatus testStatus = new TestStatus();
         LogLevel logLevel = (LogLevel) LogLevel.parse(xmlLogRecord.getLevel().toString());
-        assignTestStatus(testStatus, logLevel);
+        TestStatus testStatus = evalTestStatus(logRecord, logLevel);
         messageLogRecord.setStatus(testStatus);
         logRecord.addChildRecord(messageLogRecord);
     }
@@ -394,18 +395,20 @@ public class ReportUtil {
         return testSuiteLogRecord;
     }
 
-    private static void assignTestStatus(TestStatus testStatus, LogLevel level) {
+    private static TestStatus evalTestStatus(ILogRecord logRecord, LogLevel level) {
+    	TestStatus testStatus = new TestStatus();
         if (level == LogLevel.FAILED) {
             testStatus.setStatusValue(TestStatusValue.FAILED);
         } else if (level == LogLevel.ERROR) {
             testStatus.setStatusValue(TestStatusValue.ERROR);
         } else if (level == LogLevel.PASSED) {
             testStatus.setStatusValue(TestStatusValue.PASSED);
-        } else if (level == LogLevel.INCOMPLETE) {
+        } else if (level == LogLevel.ABORTED || level == LogLevel.INCOMPLETE) {
             testStatus.setStatusValue(TestStatusValue.INCOMPLETE);
-        } else {
-            testStatus.setStatusValue(TestStatusValue.PASSED);
-        }
+	    } else if (level == LogLevel.INFO) {
+	        testStatus.setStatusValue(TestStatusValue.INFO);
+	    }
+        return testStatus;
     }
 
     private static void readFileToStringBuilder(String fileName, StringBuilder sb) throws IOException,

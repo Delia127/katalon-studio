@@ -4,12 +4,13 @@ package com.kms.katalon.core.logging.model;
 public class TestStatus {
 	
 	public enum TestStatusValue {
+
 		//PASSED, FAILED, NOT_RUN, ERROR, INCOMPLETE;	//Suite & Test status
 		
 		/**
-		 * In HTML report support 4 statuses: PASSED, FAILED, NOT_RUN, ERROR. INCOMPLETE and NO_RUN in HTML report should be the same meaning
+		 * If the order of these statuses changed, please also change their corresponding order in html_template.txt  
 		 */
-		PASSED, FAILED, INCOMPLETE, ERROR;	//Suite & Test status
+		PASSED, FAILED, INCOMPLETE, ERROR, INFO;	//Suite & Test status
 		
 //		public static int indexOf(TestStatusValue testStatusValue) {
 //			if (testStatusValue != null) {
@@ -26,8 +27,8 @@ public class TestStatus {
 	// Error Java stack Trace
 	protected String stackTrace = ""; 	
 
-	//Default is NOT_RUN
-	protected TestStatusValue statusValue = TestStatusValue.INCOMPLETE;
+	//Default is PASSED
+	protected TestStatusValue statusValue = TestStatusValue.PASSED;
 
 	public String getStackTrace() {
 		return stackTrace;
