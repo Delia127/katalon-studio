@@ -52,6 +52,7 @@ public class ConsoleMain {
     private final static String CLEAN_REPORT_FOLDER = "-cleanReportFolder";
     private final static String CONF_FILE_NAME_ARGUMENT = "-confFile=";
     private final static String RETRY_ARGUMENT = "-retry=";
+    private final static String RETY_FAIL_TEST_CASE_ONLY_ARGUMENT = "-retryFailedTestCases=";
 
     public static boolean startSummaryReport = false;
     public static boolean endSummaryReport = false;
@@ -91,6 +92,7 @@ public class ConsoleMain {
         ReportLocationSetting reportLocSetting = new ReportLocationSetting();
         boolean foundExecutionArgument = false;
         int rerunMaxNumber = -1;
+        Boolean isRerunFailedTestCaseOnly = null;
 
         List<IntegrationCommand> integrationCmds = ReportIntegrationFactory.getInstance().getIntegrationCommands();
         Options opts = new Options();
@@ -141,8 +143,13 @@ public class ConsoleMain {
                     try {
                         rerunMaxNumber = Integer.valueOf(stringValue);
                     } catch (NumberFormatException e) {
-                        System.out.println(MessageFormat.format(StringConstants.MNG_PRT_INVALID_RETRY_ARGUMENT, stringValue));
+                        System.out.println(MessageFormat.format(StringConstants.MNG_PRT_INVALID_RETRY_ARGUMENT,
+                                stringValue));
                     }
+                    offset++;
+                } else if (arguments[offset].startsWith(RETY_FAIL_TEST_CASE_ONLY_ARGUMENT)) {
+                    String stringValue = arguments[offset].substring(RETY_FAIL_TEST_CASE_ONLY_ARGUMENT.length());
+                    isRerunFailedTestCaseOnly = Boolean.parseBoolean(stringValue);
                     offset++;
                 } else if (arguments[offset].startsWith(SHOW_STATUS_DELAY_ARGUMENT)) {
                     showProgressDelay = Integer.valueOf(arguments[offset]
@@ -161,7 +168,7 @@ public class ConsoleMain {
                         closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
                     }
                     offset++;
-                }  else if (arguments[offset].equals(CLEAN_REPORT_FOLDER)) {
+                } else if (arguments[offset].equals(CLEAN_REPORT_FOLDER)) {
                     reportLocSetting.setCleanReportFolder(true);
                     offset++;
                 } else {
@@ -186,7 +193,7 @@ public class ConsoleMain {
             closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
             return;
         }
-        
+
         System.out.println(StringConstants.MNG_PRT_LOADING_PROJ);
         ProjectEntity projectEntity = getProject(projectPk);
         if (projectEntity == null) {
@@ -194,7 +201,7 @@ public class ConsoleMain {
         }
 
         System.out.println(StringConstants.MNG_PRT_PROJ_LOADED);
-        
+
         if (!foundExecutionArgument) {
             System.out.println(StringConstants.MNG_PRT_MISSING_EXECUTION_ARG);
             closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
@@ -207,7 +214,7 @@ public class ConsoleMain {
         }
         executionEntities.add(executionEntity);
         startExecutionStatusThread();
-        launch(executionEntities.get(0), projectEntity, 0, rerunMaxNumber, new ArrayList<String>(), reportLocSetting);
+        launch(executionEntities.get(0), projectEntity, 0, rerunMaxNumber, isRerunFailedTestCaseOnly, new ArrayList<String>(), reportLocSetting);
     }
 
     private int processIntegrationArgs(Options opts, List<IntegrationCommand> integrationCmds, String[] arguments,
@@ -351,18 +358,19 @@ public class ConsoleMain {
      * @param project
      * @throws Exception
      */
-    public static void launch(ExecutionEntity executionEntity, ProjectEntity project, int rerunTime, int rerunMaxNumber,
-            List<String> passedTestCaseIds, ReportLocationSetting reportLocation) throws Exception {
+    public static void launch(ExecutionEntity executionEntity, ProjectEntity project, int rerunTime,
+            int rerunMaxNumber, Boolean isRerunFailedTestCaseOnly, List<String> passedTestCaseIds,
+            ReportLocationSetting reportLocation) throws Exception {
         TestSuiteEntity testSuite = executionEntity.getTestSuite();
         for (IRunConfiguration runConfig : executionEntity.getRunConfigurations()) {
-            launchTestSuite(testSuite, runConfig, reportLocation, rerunTime, rerunMaxNumber,
+            launchTestSuite(testSuite, runConfig, reportLocation, rerunTime, rerunMaxNumber, isRerunFailedTestCaseOnly,
                     passedTestCaseIds);
         }
     }
 
     public static void launchTestSuite(TestSuiteEntity testSuite, IRunConfiguration runConfig,
-            ReportLocationSetting reportLocation, int rerunTime, int rerunMaxNumber, List<String> passedTestCaseIds) throws Exception,
-            InterruptedException {
+            ReportLocationSetting reportLocation, int rerunTime, int rerunMaxNumber, Boolean isRerunFailedTestCaseOnly,
+            List<String> passedTestCaseIds) throws Exception, InterruptedException {
         TestSuiteExecutedEntity testSuiteExecutedEntity = ExecutionUtil.loadTestDataForTestSuite(testSuite,
                 testSuite.getProject(), passedTestCaseIds);
         testSuiteExecutedEntity.setReportLocation(reportLocation);
@@ -371,7 +379,10 @@ public class ConsoleMain {
         if (rerunMaxNumber == -1) {
             rerunMaxNumber = testSuite.getNumberOfRerun();
         }
-        launcher.launch(testSuite, testSuiteExecutedEntity, rerunTime, rerunMaxNumber, passedTestCaseIds);
+        if (isRerunFailedTestCaseOnly == null) {
+            isRerunFailedTestCaseOnly = testSuite.isRerunFailedTestCasesOnly();
+        }
+        launcher.launch(testSuite, testSuiteExecutedEntity, rerunTime, rerunMaxNumber, isRerunFailedTestCaseOnly, passedTestCaseIds);
         Thread.sleep(1000);
     }
 
@@ -392,8 +403,7 @@ public class ConsoleMain {
     }
 
     private ExecutionEntity addExecutionEntities(String testSuiteID, String argBrowserType,
-            ProjectEntity projectEntity, Map<String, String> runInput)
-            throws InterruptedException, CoreException {
+            ProjectEntity projectEntity, Map<String, String> runInput) throws InterruptedException, CoreException {
         try {
             if (testSuiteID == null) {
                 System.out.println(StringConstants.MNG_PRT_MISSING_TESTSUITE_ARG);
