@@ -33,19 +33,14 @@ public class KeywordBrowserTreeEntity implements IKeywordBrowserTreeEntity {
     }
 
     @Override
-    public String getReadableName() {
-        return (isCustom) ? getName() : TreeEntityUtil.getReadableKeywordName(getName());
-    }
-
-    @Override
     public String getToolTip() {
         ProjectEntity project = ProjectController.getInstance().getCurrentProject();
         if (isCustom || project == null) {
-            return getReadableName();
+            return getName();
         }
         String keywordJavaDoc = TestCaseEntityUtil.getKeywordJavaDocText(fullClassName, keywordName, null);
         if (keywordJavaDoc.isEmpty()) {
-            return getReadableName();
+            return TreeEntityUtil.getReadableKeywordName(getName());
         } else {
             return keywordJavaDoc;
         }

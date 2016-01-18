@@ -101,11 +101,14 @@ public class TreeEntityUtil {
      * <p>
      * Example: getReadableKeywordName("getDeviceOSVersion") will be "Get Device OS Version"
      * 
-     * @param keywordMethodName keyword name (also known as method name)
+     * @param keywordMethodName
+     *            keyword name (also known as method name)
      * @return Readable Keyword Name
      */
     public static String getReadableKeywordName(String keywordMethodName) {
-        if (keywordMethodName == null) return keywordMethodName;
+        if (keywordMethodName == null) {
+            return keywordMethodName;
+        }
         return StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(StringUtils.capitalize(keywordMethodName)),
                 " ");
     }

@@ -40,6 +40,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
@@ -244,7 +245,9 @@ public class TestCaseVariablePart {
                                     .parseGroovyScriptAndGetFirstItem(((VariableEntity) element).getDefaultValue()),
                                     parentTestCaseCompositePart.getChildTestCasePart().getTreeTableInput()
                                             .getMainClassNode());
-                            return valueType.getName();
+                            if (valueType != null) {
+                                return TreeEntityUtil.getReadableKeywordName(valueType.getName());
+                            }
                         } catch (Exception e) {
                             LoggerSingleton.logError(e);
                         }

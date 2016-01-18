@@ -44,12 +44,7 @@ public class KeysInputValueType implements ICustomInputValueType {
     public String getName() {
         return NAME;
     }
-
-    @Override
-    public String getReadableName() {
-        return getName();
-    }
-
+    
     @Override
     public String[] getTags() {
         return new String[] { ICustomInputValueType.TAG_KEYWORD_INPUT };
