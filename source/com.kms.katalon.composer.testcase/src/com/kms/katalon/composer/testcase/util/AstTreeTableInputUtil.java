@@ -374,12 +374,12 @@ public class AstTreeTableInputUtil {
     public static List<String> getInputValueTypeStringList(IInputValueType[] defaultInputValueTypes, String customTag) {
         List<String> inputValueTypeStringList = new ArrayList<String>();
         for (IInputValueType builtinValueType : defaultInputValueTypes) {
-            inputValueTypeStringList.add(builtinValueType.getName());
+            inputValueTypeStringList.add(builtinValueType.getReadableName());
         }
         for (ICustomInputValueType customInputValueType : CustomInputValueTypeCollector.getInstance()
                 .getAllCustomInputValueTypes()) {
             if (containsTag(customInputValueType, customTag)) {
-                inputValueTypeStringList.add(customInputValueType.getName());
+                inputValueTypeStringList.add(customInputValueType.getReadableName());
             }
         }
         return inputValueTypeStringList;
@@ -400,12 +400,12 @@ public class AstTreeTableInputUtil {
     public static IInputValueType getInputValueTypeFromString(String inputValueTypeName) {
         for (IInputValueType customInputValueType : CustomInputValueTypeCollector.getInstance()
                 .getAllCustomInputValueTypes()) {
-            if (customInputValueType.getName().equals(inputValueTypeName)) {
+            if (customInputValueType.getReadableName().equals(inputValueTypeName)) {
                 return customInputValueType;
             }
         }
         for (IInputValueType builtinValueType : InputValueType.values()) {
-            if (builtinValueType.getName().equals(inputValueTypeName)) {
+            if (builtinValueType.getReadableName().equals(inputValueTypeName)) {
                 return builtinValueType;
             }
         }

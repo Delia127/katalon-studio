@@ -14,6 +14,7 @@ import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.model.IInputValueType;
 import com.kms.katalon.composer.testcase.model.InputParameter;
@@ -102,7 +103,7 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
             List<Method> builtInKeywordMethods = KeywordController.getInstance().getBuiltInKeywords(
                     getBuiltInKWClassSimpleName());
             for (Method keywordMethod : builtInKeywordMethods) {
-                keywordNames.add(keywordMethod.getName());
+                keywordNames.add(TreeEntityUtil.getReadableKeywordName(keywordMethod.getName()));
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);

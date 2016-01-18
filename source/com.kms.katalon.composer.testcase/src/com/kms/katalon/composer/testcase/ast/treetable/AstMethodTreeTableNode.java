@@ -45,6 +45,11 @@ public class AstMethodTreeTableNode extends AstAbstractTreeTableNode {
     }
 
     @Override
+    public String getItemTextForDisplay() {
+        return getItemText();
+    }
+
+    @Override
     public boolean hasChildren() {
         if (methodNode.getCode() != null) {
             if (methodNode.getCode() instanceof BlockStatement) {

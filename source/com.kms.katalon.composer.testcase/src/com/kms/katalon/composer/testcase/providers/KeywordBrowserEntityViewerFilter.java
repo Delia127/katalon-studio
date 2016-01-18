@@ -21,11 +21,11 @@ public class KeywordBrowserEntityViewerFilter extends AbstractEntityViewerFilter
 		if (element instanceof IKeywordBrowserTreeEntity) {
 			
 			IKeywordBrowserTreeEntity entity = ((IKeywordBrowserTreeEntity) element);
-			if (entity.getParent() != null && entity.getParent().getName().toLowerCase().contains(searchString.toLowerCase())) {
+			if (entity.getParent() != null && entity.getParent().getReadableName().toLowerCase().contains(searchString.toLowerCase())) {
 				return true;
 			}
 			
-			if (entity.getName().toLowerCase().contains(searchString.toLowerCase())) {
+			if (entity.getReadableName().toLowerCase().contains(searchString.toLowerCase())) {
 				return true;
 			}
 			if (entity.hasChildren()) {

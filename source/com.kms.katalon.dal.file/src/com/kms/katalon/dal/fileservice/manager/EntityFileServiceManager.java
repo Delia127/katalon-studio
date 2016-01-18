@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.xml.bind.UnmarshalException;
+
 import org.apache.commons.io.FileUtils;
 
 import com.kms.katalon.dal.fileservice.EntityService;
@@ -176,23 +178,31 @@ public class EntityFileServiceManager {
 
     public static <T extends FileEntity> List<T> getDescendants(FolderEntity parentFolder, Class<T> clazz)
             throws Exception {
-        if (parentFolder != null) {
-            List<T> childrenEntities = new ArrayList<T>();
-            File localFolder = new File(parentFolder.getLocation());
-            if (localFolder.exists() && localFolder.isDirectory()) {
-                for (File localFile : localFolder.listFiles(fileFilter)) {
-                    FileEntity fileEntity = EntityFileServiceManager.get(localFile);
-                    if (fileEntity != null && clazz.isInstance(fileEntity)) {
-                        childrenEntities.add(clazz.cast(fileEntity));
-                    }
-                    if (fileEntity instanceof FolderEntity) {
-                        childrenEntities.addAll(getDescendants((FolderEntity) fileEntity, clazz));
-                    }
+        if (parentFolder == null) {
+            throw new IllegalArgumentException("Folder cannot be null");
+        }
+        
+        List<T> childrenEntities = new ArrayList<T>();
+        File localFolder = new File(parentFolder.getLocation());
+        if (localFolder.exists() && localFolder.isDirectory()) {
+            for (File localFile : localFolder.listFiles(fileFilter)) {
+                FileEntity fileEntity = null;
+                try {
+                    fileEntity = EntityFileServiceManager.get(localFile);
+                } catch (UnmarshalException ex) {
+                    //Ignore trashed files
+                    continue;
+                }
+                
+                if (fileEntity != null && clazz.isInstance(fileEntity)) {
+                    childrenEntities.add(clazz.cast(fileEntity));
+                }
+                if (fileEntity instanceof FolderEntity) {
+                    childrenEntities.addAll(getDescendants((FolderEntity) fileEntity, clazz));
                 }
             }
-            return childrenEntities;
         }
-        return Collections.emptyList();
+        return childrenEntities;
     }
 
     public static void delete(FileEntity entity) throws Exception {
