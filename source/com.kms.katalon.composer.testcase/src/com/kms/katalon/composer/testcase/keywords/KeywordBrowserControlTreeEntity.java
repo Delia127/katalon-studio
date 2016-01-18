@@ -2,8 +2,11 @@ package com.kms.katalon.composer.testcase.keywords;
 
 public class KeywordBrowserControlTreeEntity implements IKeywordBrowserTreeEntity {
     private static final long serialVersionUID = 2322349837906808313L;
+
     private int controlStatementId;
+
     private String displayName;
+
     private KeywordBrowserFolderTreeEntity parentTreeEntity;
 
     public KeywordBrowserControlTreeEntity(int controlStatementId, String displayName,

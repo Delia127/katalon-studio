@@ -364,6 +364,7 @@ public class SlackPreferencePage extends FieldEditorPreferencePage {
         if (loaded) {
             validate();
             if (isValid) {
+                trimFields();
                 return super.performOk();
             }
             return isValid;
@@ -376,9 +377,16 @@ public class SlackPreferencePage extends FieldEditorPreferencePage {
         if (loaded) {
             validate();
             if (isValid) {
+                trimFields();
                 super.performApply();
             }
         }
+    }
+
+    private void trimFields() {
+        token.setStringValue(token.getStringValue().trim());
+        channel.setStringValue(channel.getStringValue().trim());
+        username.setStringValue(username.getStringValue().trim());
     }
 
     private void testSlackConnection() {

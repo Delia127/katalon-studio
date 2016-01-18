@@ -8,18 +8,23 @@ import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.testcase.ast.treetable.AstStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
+import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
 
 public class AstTreeLabelProvider extends StyledCellLabelProvider {
 
     private static final int CLMN_ITEM_IDX = 0;
+
     private static final int CLMN_OBJECT_IDX = 1;
+
     private static final int CLMN_INPUT_IDX = 2;
+
     private static final int CLMN_OUTPUT_IDX = 3;
+
     private static final int CLMN_DESCRIPTION_IDX = 4;
-    
+
     private int columnIndex;
-    
+
     public Image getImage(Object element) {
         if (element == null || !(element instanceof AstTreeTableNode)) {
             return null;
@@ -36,13 +41,13 @@ public class AstTreeLabelProvider extends StyledCellLabelProvider {
 
     public String getText(Object element) {
         if (element == null || !(element instanceof AstTreeTableNode)) {
-            return "";
+            return StringConstants.EMPTY;
         }
         AstTreeTableNode treeTableNode = (AstTreeTableNode) element;
         switch (columnIndex) {
             case CLMN_ITEM_IDX:
                 return ((treeTableNode instanceof AstStatementTreeTableNode) ? (treeTableNode.getIndex() + " - ") : "")
-                        + treeTableNode.getItemText();
+                        + treeTableNode.getItemTextForDisplay();
             case CLMN_OBJECT_IDX:
                 return treeTableNode.getTestObjectText();
             case CLMN_INPUT_IDX:
@@ -52,7 +57,7 @@ public class AstTreeLabelProvider extends StyledCellLabelProvider {
             case CLMN_DESCRIPTION_IDX:
                 return getDescriptionText(treeTableNode);
             default:
-                return "";
+                return StringConstants.EMPTY;
         }
     }
 
@@ -68,22 +73,22 @@ public class AstTreeLabelProvider extends StyledCellLabelProvider {
             }
         }
 
-        return "";
+        return StringConstants.EMPTY;
     }
 
     @Override
-    public void update(ViewerCell cell) {        
+    public void update(ViewerCell cell) {
         columnIndex = cell.getColumnIndex();
         cell.setText(getText(cell.getElement()));
         cell.setImage(getImage(cell.getElement()));
 
         super.update(cell);
     }
-    
+
     @Override
     public String getToolTipText(Object element) {
         if (element == null || !(element instanceof AstTreeTableNode)) {
-            return "";
+            return StringConstants.EMPTY;
         }
         AstTreeTableNode treeTableNode = (AstTreeTableNode) element;
         switch (columnIndex) {
@@ -98,7 +103,7 @@ public class AstTreeLabelProvider extends StyledCellLabelProvider {
             case CLMN_DESCRIPTION_IDX:
                 return getDescriptionText(treeTableNode);
             default:
-                return "";
+                return StringConstants.EMPTY;
         }
     }
 

@@ -1,8 +1,5 @@
 package com.kms.katalon.composer.global.dialog;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.eclipse.jface.fieldassist.ControlDecoration;
@@ -10,7 +7,6 @@ import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -28,10 +24,12 @@ import org.eclipse.swt.widgets.TableColumn;
 
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.global.constants.StringConstants;
 import com.kms.katalon.composer.testcase.model.IInputValueType;
 import com.kms.katalon.composer.testcase.model.InputValueType;
+import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
@@ -41,9 +39,9 @@ import com.kms.katalon.groovy.constant.GroovyConstants;
 
 public class GlobalVariableBuilderDialog extends AbstractDialog {
     private static final InputValueType[] defaultInputValueTypes = { InputValueType.String, InputValueType.Number,
-            InputValueType.Boolean, InputValueType.Null, InputValueType.TestDataValue,
-            InputValueType.TestObject, InputValueType.TestData, InputValueType.Property, InputValueType.List,
-            InputValueType.Map };
+            InputValueType.Boolean, InputValueType.Null, InputValueType.TestDataValue, InputValueType.TestObject,
+            InputValueType.TestData, InputValueType.Property, InputValueType.List, InputValueType.Map };
+    private static final String CUSTOM_TAG = "Global Variable";
 
     public enum DialogType {
         NEW, EDIT
@@ -93,7 +91,7 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
         Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
-        
+
         ControlDecoration controlDecoration = new ControlDecoration(tableViewer.getTable(), SWT.LEFT | SWT.TOP);
         controlDecoration.setDescriptionText(StringConstants.DIA_CTRL_VAR_INFO);
         controlDecoration.setImage(FieldDecorationRegistry.getDefault()
@@ -147,19 +145,8 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
         tblclmnName.setText(StringConstants.PA_COL_NAME);
 
         TableViewerColumn tableViewerColumnDefaultValueType = new TableViewerColumn(tableViewer, SWT.NONE);
-        tableViewerColumnDefaultValueType.setEditingSupport(new EditingSupport(tableViewer) {
-            private static final String CUSTOM_TAG = "Global Variable";
-            protected List<String> inputValueTypeNames = new ArrayList<String>();
-
-            @Override
-            protected CellEditor getCellEditor(Object element) {
-                inputValueTypeNames.clear();
-                inputValueTypeNames.addAll(AstTreeTableInputUtil.getInputValueTypeStringList(defaultInputValueTypes,
-                        CUSTOM_TAG));
-                return new ComboBoxCellEditor((Composite) getViewer().getControl(), inputValueTypeNames
-                        .toArray(new String[inputValueTypeNames.size()]));
-            }
-
+        tableViewerColumnDefaultValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer,
+                defaultInputValueTypes, CUSTOM_TAG, null, null) {
             @Override
             protected boolean canEdit(Object element) {
                 if (element instanceof GlobalVariableEntity) {
@@ -222,7 +209,9 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
                             IInputValueType valueType = AstTreeTableValueUtil.getTypeValue(GroovyParser
                                     .parseGroovyScriptAndGetFirstItem(((GlobalVariableEntity) element).getInitValue()),
                                     null);
-                            return valueType.getName();
+                            if (valueType != null) {
+                                return TreeEntityUtil.getReadableKeywordName(valueType.getName());
+                            }
                         } catch (Exception e) {
                             LoggerSingleton.logError(e);
                         }
@@ -281,8 +270,8 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
             protected void setValue(Object element, Object value) {
                 if (element != null && element instanceof GlobalVariableEntity && value != null) {
                     try {
-                        ASTNode astNode = GroovyParser.parseGroovyScriptAndGetFirstItem(((GlobalVariableEntity) element)
-                                .getInitValue());
+                        ASTNode astNode = GroovyParser
+                                .parseGroovyScriptAndGetFirstItem(((GlobalVariableEntity) element).getInitValue());
                         IInputValueType inputValueType = AstTreeTableValueUtil.getTypeValue(astNode, null);
                         if (inputValueType != null) {
                             Object object = inputValueType.changeValue(
@@ -381,7 +370,7 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
     protected Point getInitialSize() {
         return new Point(650, 250);
     }
-    
+
     private void refresh() {
         tableViewer.setInput(new Object[] { fVariableEntity });
         validate();

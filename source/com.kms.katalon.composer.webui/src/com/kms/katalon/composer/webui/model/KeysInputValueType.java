@@ -16,13 +16,15 @@ import com.kms.katalon.composer.webui.component.KeysInputCellEditor;
 public class KeysInputValueType implements ICustomInputValueType {
 
     private static final String NAME = "Keys";
+
     public static final String KEYS_CHORDS_METHOD_NAME = "chord";
-    
+
     public static final String TAG_KEYS = NAME;
 
     @Override
     public CellEditor getCellEditorForValue(Composite parent, Object astObject, ClassNode scriptClass) {
-        return new KeysInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(astObject), scriptClass);
+        return new KeysInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(astObject),
+                scriptClass);
     }
 
     @Override
@@ -42,7 +44,7 @@ public class KeysInputValueType implements ICustomInputValueType {
     public String getName() {
         return NAME;
     }
-
+    
     @Override
     public String[] getTags() {
         return new String[] { ICustomInputValueType.TAG_KEYWORD_INPUT };
@@ -63,11 +65,12 @@ public class KeysInputValueType implements ICustomInputValueType {
     public Object changeValue(Object astObject, Object newValue, ClassNode scriptClass) {
         return AstTreeTableValueUtil.setValue(astObject, newValue, scriptClass);
     }
-    
+
     @Override
     public String getDisplayValue(Object astObject) {
         if (astObject instanceof MethodCallExpression) {
-            return AstTreeTableTextValueUtil.getInstance().getTextValue(((MethodCallExpression) astObject).getArguments());
+            return AstTreeTableTextValueUtil.getInstance().getTextValue(
+                    ((MethodCallExpression) astObject).getArguments());
         }
         return AstTreeTableTextValueUtil.getInstance().getTextValue(astObject);
     }

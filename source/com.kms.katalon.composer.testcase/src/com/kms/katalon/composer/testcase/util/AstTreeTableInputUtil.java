@@ -52,6 +52,7 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.components.impl.editors.StringComboBoxCellEditor;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.ast.editors.BinaryCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.BooleanCellEditor;
@@ -375,6 +376,21 @@ public class AstTreeTableInputUtil {
         List<String> inputValueTypeStringList = new ArrayList<String>();
         for (IInputValueType builtinValueType : defaultInputValueTypes) {
             inputValueTypeStringList.add(builtinValueType.getName());
+        }
+        for (ICustomInputValueType customInputValueType : CustomInputValueTypeCollector.getInstance()
+                .getAllCustomInputValueTypes()) {
+            if (containsTag(customInputValueType, customTag)) {
+                inputValueTypeStringList.add(customInputValueType.getName());
+            }
+        }
+        return inputValueTypeStringList;
+    }
+
+    public static List<String> getReadableInputValueTypeStringList(IInputValueType[] defaultInputValueTypes,
+            String customTag) {
+        List<String> inputValueTypeStringList = new ArrayList<String>();
+        for (IInputValueType builtinValueType : defaultInputValueTypes) {
+            inputValueTypeStringList.add(TreeEntityUtil.getReadableKeywordName(builtinValueType.getName()));
         }
         for (ICustomInputValueType customInputValueType : CustomInputValueTypeCollector.getInstance()
                 .getAllCustomInputValueTypes()) {

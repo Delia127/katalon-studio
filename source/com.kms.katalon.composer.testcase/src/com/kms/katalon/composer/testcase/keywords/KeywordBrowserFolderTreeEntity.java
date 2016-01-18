@@ -4,49 +4,53 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class KeywordBrowserFolderTreeEntity implements IKeywordBrowserTreeEntity {
-	protected static final long serialVersionUID = 1L;
-	protected String name;
-	protected IKeywordBrowserTreeEntity parent;
-	protected List<IKeywordBrowserTreeEntity> children;
+    protected static final long serialVersionUID = 1L;
 
-	public KeywordBrowserFolderTreeEntity(String name, IKeywordBrowserTreeEntity parent) {
-		this.name = name;
-		this.parent = parent;
-		this.children = new ArrayList<IKeywordBrowserTreeEntity>();
-	}
-	
-	public KeywordBrowserFolderTreeEntity(String name, IKeywordBrowserTreeEntity parent, List<IKeywordBrowserTreeEntity> children) {
-		this.name = name;
-		this.parent = parent;
-		this.children = children;
-	}
+    protected String name;
 
-	@Override
-	public String getName() {
-		return name;
-	}
+    protected IKeywordBrowserTreeEntity parent;
 
-	@Override
-	public String getToolTip() {
-		return getName();
-	}
+    protected List<IKeywordBrowserTreeEntity> children;
 
-	@Override
-	public IKeywordBrowserTreeEntity getParent() {
-		return parent;
-	}
+    public KeywordBrowserFolderTreeEntity(String name, IKeywordBrowserTreeEntity parent) {
+        this.name = name;
+        this.parent = parent;
+        this.children = new ArrayList<IKeywordBrowserTreeEntity>();
+    }
 
-	@Override
-	public boolean hasChildren() {
-		return children != null && children.size() > 0;
-	}
+    public KeywordBrowserFolderTreeEntity(String name, IKeywordBrowserTreeEntity parent,
+            List<IKeywordBrowserTreeEntity> children) {
+        this.name = name;
+        this.parent = parent;
+        this.children = children;
+    }
 
-	@Override
-	public Object[] getChildren() {
-		return children.toArray();
-	}
-	
-	public void setChildren(List<IKeywordBrowserTreeEntity> children) {
-		this.children = children;
-	}
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String getToolTip() {
+        return getName();
+    }
+
+    @Override
+    public IKeywordBrowserTreeEntity getParent() {
+        return parent;
+    }
+
+    @Override
+    public boolean hasChildren() {
+        return children != null && children.size() > 0;
+    }
+
+    @Override
+    public Object[] getChildren() {
+        return children.toArray();
+    }
+
+    public void setChildren(List<IKeywordBrowserTreeEntity> children) {
+        this.children = children;
+    }
 }

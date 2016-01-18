@@ -65,7 +65,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
 
     private static final String DIALOG_TITLE = StringConstants.DIA_TITLE_TEST_OBJ_INPUT;
 
-    private static final String OBJECT_FINDER_TAB_NAME = InputValueType.TestObject.toString();
+    private static final String OBJECT_FINDER_TAB_NAME = TreeEntityUtil.getReadableKeywordName(InputValueType.TestObject.getName());
 
     private static final String OTHER_TAB_NAME = StringConstants.DIA_TAB_OTHER;
 
