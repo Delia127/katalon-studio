@@ -35,6 +35,11 @@ public class AstClassTreeTableNode extends AstAbstractTreeTableNode {
 	}
 
 	@Override
+    public String getItemTextForDisplay() {
+        return getItemText();
+    }
+
+    @Override
 	public boolean hasChildren() {
 		if (classNode.getMethods().size() > 0 || classNode.getFields().size() > 0) {
 			return true;

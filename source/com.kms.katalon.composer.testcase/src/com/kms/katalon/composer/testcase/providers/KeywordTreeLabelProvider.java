@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Event;
 import com.kms.katalon.composer.components.impl.providers.IEntityLabelProvider;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
+import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.keywords.IKeywordBrowserTreeEntity;
 import com.kms.katalon.composer.testcase.keywords.KeywordBrowserControlTreeEntity;
 import com.kms.katalon.composer.testcase.keywords.KeywordBrowserTreeEntity;
@@ -49,9 +50,9 @@ public class KeywordTreeLabelProvider extends StyledCellLabelProvider implements
     @Override
     public String getText(Object element) {
         if (element instanceof IKeywordBrowserTreeEntity) {
-            return ((IKeywordBrowserTreeEntity) element).getName();
+            return ((IKeywordBrowserTreeEntity) element).getReadableName();
         }
-        return "";
+        return StringConstants.EMPTY;
     }
 
     @Override
@@ -59,7 +60,7 @@ public class KeywordTreeLabelProvider extends StyledCellLabelProvider implements
         if (element instanceof IKeywordBrowserTreeEntity) {
             return ((IKeywordBrowserTreeEntity) element).getToolTip();
         }
-        return "";
+        return StringConstants.EMPTY;
     }
 
     @Override

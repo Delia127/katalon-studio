@@ -9,6 +9,9 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
@@ -37,9 +40,9 @@ import com.kms.katalon.composer.testcase.keywords.BuiltinKeywordFolderBrowserTre
 import com.kms.katalon.composer.testcase.keywords.CustomKeywordFolderBrowserTreeEntity;
 import com.kms.katalon.composer.testcase.keywords.IKeywordBrowserTreeEntity;
 import com.kms.katalon.composer.testcase.keywords.KeywordBrowserControlTreeEntity;
+import com.kms.katalon.composer.testcase.keywords.KeywordBrowserFolderTreeEntity;
 import com.kms.katalon.composer.testcase.keywords.KeywordBrowserTreeEntity;
 import com.kms.katalon.composer.testcase.keywords.KeywordBrowserTreeEntityTransfer;
-import com.kms.katalon.composer.testcase.keywords.KeywordBrowserFolderTreeEntity;
 import com.kms.katalon.composer.testcase.providers.KeywordBrowserEntityViewerFilter;
 import com.kms.katalon.composer.testcase.providers.KeywordTreeContentProvider;
 import com.kms.katalon.composer.testcase.providers.KeywordTreeLabelProvider;
@@ -53,7 +56,9 @@ public class KeywordBrowserPart implements EventHandler {
     private TreeViewer treeViewer;
 
     private Text txtSearchInput;
+
     private KeywordTreeLabelProvider labelProvider;
+
     private KeywordBrowserEntityViewerFilter viewerFilter;
 
     @Inject
@@ -63,12 +68,36 @@ public class KeywordBrowserPart implements EventHandler {
     public void init(Composite parent, MPart mpart) {
         createControls(parent);
         registerListerners();
+        hookDoubleClickEvent();
         hookDragEvent();
         loadTreeData();
     }
 
     private void registerListerners() {
         eventBroker.subscribe(EventConstants.PROJECT_OPENED, this);
+    }
+
+    private void hookDoubleClickEvent() {
+        treeViewer.addDoubleClickListener(new IDoubleClickListener() {
+            @Override
+            public void doubleClick(DoubleClickEvent event) {
+                if (event.getSelection() == null) {
+                    return;
+                }
+
+                Object selectedElement = ((IStructuredSelection) event.getSelection()).getFirstElement();
+
+                if (selectedElement == null || !(selectedElement instanceof KeywordBrowserFolderTreeEntity)) {
+                    return;
+                }
+
+                KeywordTreeContentProvider contentProvider = (KeywordTreeContentProvider) treeViewer
+                        .getContentProvider();
+                if (contentProvider.hasChildren(selectedElement)) {
+                    treeViewer.setExpandedState(selectedElement, !treeViewer.getExpandedState(selectedElement));
+                }
+            }
+        });
     }
 
     private void hookDragEvent() {
@@ -148,7 +177,6 @@ public class KeywordBrowserPart implements EventHandler {
 
             @Override
             public void keyReleased(KeyEvent e) {
-                // TODO Auto-generated method stub
             }
 
             @Override

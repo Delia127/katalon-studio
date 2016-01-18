@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -25,6 +26,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.model.InputValueType;
@@ -36,14 +38,21 @@ import com.kms.katalon.core.model.FailureHandling;
 public class TestCasePreferencePage extends PreferencePage {
 
     private Button btnDefaultVariableIsConstant, btnDefaultVariableIsVariable;
+
     private Button btnGenerateDefaultValue, btnGenerateVariable, btnExportVariable;
+
     private Group grpDefaultKeyword;
+
     private ListViewer listViewerKwType, listViewerKwName;
+
     private Combo comboDefaultFailureHandling;
+
     private Combo comboKeywordType;
 
     private IKeywordContributor[] contributors;
+
     private Composite fieldEditorParent;
+
     private static final String[] DF_FAILURE_HANDLING_VALUES = FailureHandling.valueStrings();
 
     private Map<String, String> defaultKeywords;
@@ -105,7 +114,7 @@ public class TestCasePreferencePage extends PreferencePage {
 
         comboDefaultFailureHandling = new Combo(compositeDefaultFailureHandling, SWT.READ_ONLY);
         comboDefaultFailureHandling.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
-        
+
         Composite compositeDefaultKeywordType = new Composite(fieldEditorParent, SWT.NONE);
         compositeDefaultKeywordType.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
         compositeDefaultKeywordType.setLayout(new GridLayout(2, false));
@@ -200,7 +209,7 @@ public class TestCasePreferencePage extends PreferencePage {
             public String getText(Object element) {
                 if (element instanceof Method && element != null) {
                     Method method = (Method) element;
-                    return method.getName();
+                    return TreeEntityUtil.getReadableKeywordName(method.getName());
                 }
                 return StringUtils.EMPTY;
             }
@@ -296,7 +305,7 @@ public class TestCasePreferencePage extends PreferencePage {
     }
 
     private void initDefaultFailureHandlingValue(boolean isDefault) {
-        comboDefaultFailureHandling.setItems(DF_FAILURE_HANDLING_VALUES);
+        comboDefaultFailureHandling.setItems(getFailureHandlingKeys(DF_FAILURE_HANDLING_VALUES));
         String cbbDfFailureHandlingText = getPreferenceStore().getString(
                 PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_FAILURE_HANDLING);
         if (isDefault) {
@@ -304,12 +313,24 @@ public class TestCasePreferencePage extends PreferencePage {
                     PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_FAILURE_HANDLING);
         }
 
-        comboDefaultFailureHandling.setText(cbbDfFailureHandlingText);
+        comboDefaultFailureHandling.setText(getFailureHandlingKey(cbbDfFailureHandlingText));
+    }
+
+    private String[] getFailureHandlingKeys(String[] values) {
+        String[] keys = new String[values.length];
+        for (int i = 0; i < values.length; i++) {
+            keys[i] = getFailureHandlingKey(values[i]);
+            comboDefaultFailureHandling.setData(keys[i], values[i]);
+        }
+        return keys;
+    }
+
+    private String getFailureHandlingKey(String failureHandlingValue) {
+        return WordUtils.capitalizeFully(failureHandlingValue.replaceAll("_", " "));
     }
 
     private void initDefaultKeywordValue(boolean isDefault) throws Exception {
-        if (contributors.length <= 0)
-            return;
+        if (contributors.length <= 0) return;
 
         listViewerKwType.setInput(contributors);
 
@@ -359,12 +380,12 @@ public class TestCasePreferencePage extends PreferencePage {
 
         InputValueType valueType = InputValueType.valueOf(defaultVariableType);
         switch (valueType) {
-        case Variable:
-            btnDefaultVariableIsVariable.setSelection(true);
-            break;
-        default:
-            btnDefaultVariableIsConstant.setSelection(true);
-            break;
+            case Variable:
+                btnDefaultVariableIsVariable.setSelection(true);
+                break;
+            default:
+                btnDefaultVariableIsConstant.setSelection(true);
+                break;
         }
 
         boolean generateDefaultValue = getPreferenceStore().getBoolean(
@@ -455,7 +476,7 @@ public class TestCasePreferencePage extends PreferencePage {
         // Default Failure Handling
         getPreferenceStore().setValue(
                 PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_FAILURE_HANDLING,
-                comboDefaultFailureHandling.getText());
+                comboDefaultFailureHandling.getData(comboDefaultFailureHandling.getText()).toString());
 
     }
 
