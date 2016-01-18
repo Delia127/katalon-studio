@@ -101,7 +101,9 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String NEW_FOLDER_DEFAULT_NAME = "New Folder";
 
-    public static final String DIA_MSG_PLS_SELECT_A_FOLDER = "Please select a folder";
+    public static final String DIA_MSG_PLS_SELECT_A_FOLDER = "Please select a target folder";
+    
+    public static final String DIA_MSG_PLS_SELECT_ELEMENT = "Please select elements to add to object repository";
 
     public static final String DIA_LBL_SELECT_A_DESTINATION_FOLDER = "Select a destination folder";
 }

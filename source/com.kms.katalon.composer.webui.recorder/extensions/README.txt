@@ -1,9 +1,9 @@
 To pack extensions for web browsers after update the scripts to use with the application, do the following:
 
 * Firefox:
-- Install Firefox Addon SDK
-- Run a console and activate the console using the firefox addon SDK
-- cd into the Firefox\Recorder and run the command "cfx xpi"
+- Install jpm (https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/jpm)
+- Build the extension using jpm xpi
+- Sign the exension xpi file with jpm sign (https://wiki.mozilla.org/Add-ons/Extension_Signing)
 
 * IE:
 - Open Solution using Visual Studio 2013

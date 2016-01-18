@@ -1,7 +1,8 @@
 {
-  "name": "objectspy",
   "title": "Object Spy",
-  "id": "jid1-U9b8TM9XILnsZw",
-  "description": "Spy element Firefox addon for qAutomate",
+  "name": "objectspy",
+  "version": "0.0.2",
+  "description": "Object Spy extension for Katalon",
+  "main": "./lib/main.js",
   "author": "hieumai"
 }
