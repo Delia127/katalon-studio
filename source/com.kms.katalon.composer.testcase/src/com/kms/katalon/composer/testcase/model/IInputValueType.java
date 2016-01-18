@@ -7,8 +7,6 @@ import org.eclipse.swt.widgets.Composite;
 public interface IInputValueType {
     public String getName();
 
-    public String getReadableName();
-
     public boolean isEditable(Object astObject, ClassNode scriptClass);
 
     public CellEditor getCellEditorForValue(Composite parent, Object astObject, ClassNode scriptClass);

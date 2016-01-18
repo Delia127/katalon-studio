@@ -6,7 +6,6 @@ import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.widgets.Composite;
 
-import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
@@ -19,12 +18,7 @@ public enum InputValueType implements IInputValueType {
     public String getName() {
         return name();
     }
-
-    @Override
-    public String getReadableName() {
-        return TreeEntityUtil.getReadableKeywordName(name());
-    }
-
+    
     @Override
     public boolean isEditable(Object astObject, ClassNode scriptClass) {
         return AstTreeTableValueUtil.getTypeValue(astObject, scriptClass) != null;

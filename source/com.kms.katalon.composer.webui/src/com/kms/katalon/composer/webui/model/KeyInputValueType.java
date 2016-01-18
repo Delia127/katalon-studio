@@ -48,11 +48,6 @@ public class KeyInputValueType implements ICustomInputValueType {
     }
 
     @Override
-    public String getReadableName() {
-        return getName();
-    }
-
-    @Override
     public String[] getTags() {
         return new String[] {};
     }

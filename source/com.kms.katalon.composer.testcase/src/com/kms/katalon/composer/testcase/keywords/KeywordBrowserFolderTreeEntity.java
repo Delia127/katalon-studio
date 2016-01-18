@@ -31,11 +31,6 @@ public class KeywordBrowserFolderTreeEntity implements IKeywordBrowserTreeEntity
     }
 
     @Override
-    public String getReadableName() {
-        return getName();
-    }
-
-    @Override
     public String getToolTip() {
         return getName();
     }
