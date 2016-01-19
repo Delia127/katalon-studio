@@ -32,13 +32,13 @@ public class LogTableViewer extends TableViewer {
     private IPreferenceStore store;
 
     //Represents the latest test case's result record, used to update progress bar of table viewer 
-    private LogRecord lastestResultRecord;
+    private LogRecord latestResultRecord;
 
     public LogTableViewer(Composite parent, int style, IEventBroker eventBroker) {
         super(parent, style);
         this.eventBroker = eventBroker;
         this.setContentProvider(new ArrayContentProvider());
-        store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
+        store = new ScopedPreferenceStore(InstanceScope.INSTANCE,
                 PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
         clearAll();
     }
@@ -47,7 +47,7 @@ public class LogTableViewer extends TableViewer {
         records = new ArrayList<XmlLogRecord>();
         super.setInput(records);
         logDepth = DEPTH_OF_MAIN_TEST_CASE;
-        lastestResultRecord = null;
+        latestResultRecord = null;
     }
 
     @Override
@@ -63,7 +63,7 @@ public class LogTableViewer extends TableViewer {
                 if (record.getSourceMethodName().equals(
                         com.kms.katalon.core.constants.StringConstants.LOG_END_TEST_METHOD)
                         && logDepth == DEPTH_OF_MAIN_TEST_CASE) {
-                    eventBroker.send(EventConstants.CONSOLE_LOG_UPDATE_PROGRESS_BAR, lastestResultRecord);
+                    eventBroker.send(EventConstants.CONSOLE_LOG_UPDATE_PROGRESS_BAR, latestResultRecord);
                 }
             } else if (logLevel.equals(LogLevel.START)) {
                 String startName = record.getSourceMethodName();
@@ -71,7 +71,7 @@ public class LogTableViewer extends TableViewer {
                     logDepth++;
                 }
             } else if (LogLevel.getResultLogs().contains(logLevel) && logDepth == DEPTH_OF_MAIN_TEST_CASE + 1) {
-                lastestResultRecord = record;
+                latestResultRecord = record;
             }
 
             updateTableBackgroundColor();
