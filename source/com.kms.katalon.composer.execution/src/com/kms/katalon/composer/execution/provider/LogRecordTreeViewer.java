@@ -32,7 +32,7 @@ public class LogRecordTreeViewer extends TreeViewer {
         super(parent, style);
         rootNodes = new ArrayList<ILogParentTreeNode>();
         this.eventBroker = eventBroker;
-        store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
+        store = new ScopedPreferenceStore(InstanceScope.INSTANCE,
                 PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
     }
 
@@ -263,8 +263,9 @@ public class LogRecordTreeViewer extends TreeViewer {
             foundNode = selectFailureRecursively(null, (ILogTreeNode) rootNodes.get(0), false);
         }
 
-        if (foundNode != null)
+        if (foundNode != null) {
             setSelection(new StructuredSelection(foundNode));
+        }
     }
 
     private void expandParentFailureRecursively(ILogParentTreeNode parentNode) {

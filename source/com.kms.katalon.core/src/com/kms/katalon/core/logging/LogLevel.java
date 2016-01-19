@@ -58,6 +58,7 @@ public class LogLevel extends Level {
 	    Set<LogLevel> resultLogs = new LinkedHashSet<LogLevel>();
 	    resultLogs.add(LogLevel.PASSED);
 	    resultLogs.add(LogLevel.FAILED);
+	    resultLogs.add(LogLevel.ERROR);
 	    resultLogs.add(LogLevel.INCOMPLETE);
 	    
 	    return resultLogs;
