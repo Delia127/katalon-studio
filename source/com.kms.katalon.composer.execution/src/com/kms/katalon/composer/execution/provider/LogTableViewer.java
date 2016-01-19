@@ -2,6 +2,7 @@ package com.kms.katalon.composer.execution.provider;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.LogRecord;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -23,87 +24,96 @@ import com.kms.katalon.core.logging.XmlLogRecord;
 
 public class LogTableViewer extends TableViewer {
 
-	private List<XmlLogRecord> records;
-	private int logDepth;
-	private IEventBroker eventBroker;
-	private IPreferenceStore store;
+    private static final int DEPTH_OF_MAIN_TEST_CASE = 0;
 
-	public LogTableViewer(Composite parent, int style, IEventBroker eventBroker) {
-		super(parent, style);
-		this.eventBroker = eventBroker;
-		this.setContentProvider(new ArrayContentProvider());
-		store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-				PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
-		clearAll();
-	}
+    private List<XmlLogRecord> records;
+    private int logDepth;
+    private IEventBroker eventBroker;
+    private IPreferenceStore store;
 
-	public void clearAll() {
-		records = new ArrayList<XmlLogRecord>();
-		super.setInput(records);
-		logDepth = 0;
-	}
+    //Represents the latest test case's result record, used to update progress bar of table viewer 
+    private LogRecord latestResultRecord;
 
-	@Override
-	public void add(Object object) {
-		if (object != null && object instanceof XmlLogRecord) {
-			XmlLogRecord record = (XmlLogRecord) object;
-			records.add(record);
-			super.add(record);
+    public LogTableViewer(Composite parent, int style, IEventBroker eventBroker) {
+        super(parent, style);
+        this.eventBroker = eventBroker;
+        this.setContentProvider(new ArrayContentProvider());
+        store = new ScopedPreferenceStore(InstanceScope.INSTANCE,
+                PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
+        clearAll();
+    }
 
-			if (record.getLevel().equals(LogLevel.END)) {
-				logDepth--;
-				if (record.getSourceMethodName().equals(
-						com.kms.katalon.core.constants.StringConstants.LOG_END_TEST_METHOD)) {
-					if (logDepth == 0 || logDepth == 1) {
-						eventBroker.send(EventConstants.CONSOLE_LOG_UPDATE_PROGRESS_BAR,
-								records.get(records.size() - 2));
-					}
-				}
-			} else if (record.getLevel().equals(LogLevel.START)) {
-				logDepth++;
-			}
+    public void clearAll() {
+        records = new ArrayList<XmlLogRecord>();
+        super.setInput(records);
+        logDepth = DEPTH_OF_MAIN_TEST_CASE;
+        latestResultRecord = null;
+    }
 
-			updateTableBackgroundColor();
-		}
-	}
+    @Override
+    public void add(Object object) {
+        if (object != null && object instanceof XmlLogRecord) {
+            XmlLogRecord record = (XmlLogRecord) object;
+            records.add(record);
+            super.add(record);
 
-	@Override
-	public void refresh() {
-		super.refresh();
-		super.setInput(records);
-		updateTableBackgroundColor();
-	}
+            LogLevel logLevel = (LogLevel) record.getLevel();
+            if (logLevel.equals(LogLevel.END)) {
+                logDepth--;
+                if (record.getSourceMethodName().equals(
+                        com.kms.katalon.core.constants.StringConstants.LOG_END_TEST_METHOD)
+                        && logDepth == DEPTH_OF_MAIN_TEST_CASE) {
+                    eventBroker.send(EventConstants.CONSOLE_LOG_UPDATE_PROGRESS_BAR, latestResultRecord);
+                }
+            } else if (logLevel.equals(LogLevel.START)) {
+                String startName = record.getSourceMethodName();
+                if (!startName.equals(com.kms.katalon.core.constants.StringConstants.LOG_START_SUITE_METHOD)) {
+                    logDepth++;
+                }
+            } else if (LogLevel.getResultLogs().contains(logLevel) && logDepth == DEPTH_OF_MAIN_TEST_CASE + 1) {
+                latestResultRecord = record;
+            }
 
-	private void updateTableBackgroundColor() {
-		Table table = this.getTable();
-		for (TableItem item : table.getItems()) {
-			XmlLogRecord record = (XmlLogRecord) item.getData();
-			if (record.getLevel().equals(LogLevel.PASSED)) {
-				item.setBackground(ColorUtil.getPassedLogBackgroundColor());
-				item.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
-			} else if (record.getLevel().equals(LogLevel.FAILED)) {
-				item.setBackground(ColorUtil.getFailedLogBackgroundColor());
-				item.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
-			} else if (record.getLevel().equals(LogLevel.ERROR) || record.getLevel().equals(LogLevel.WARNING)) {
-				item.setBackground(ColorUtil.getWarningLogBackgroundColor());
-				item.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
-			}
-		}
+            updateTableBackgroundColor();
+        }
+    }
 
-		if (isScrollLogEnable()) {
-			int lastItemIndex = table.getItemCount() - 1;
-			if (lastItemIndex >= 0) {
-				table.showItem(table.getItem(lastItemIndex));
-			}
-		}
+    @Override
+    public void refresh() {
+        super.refresh();
+        super.setInput(records);
+        updateTableBackgroundColor();
+    }
 
-	}
+    private void updateTableBackgroundColor() {
+        Table table = this.getTable();
+        for (TableItem item : table.getItems()) {
+            XmlLogRecord record = (XmlLogRecord) item.getData();
+            if (record.getLevel().equals(LogLevel.PASSED)) {
+                item.setBackground(ColorUtil.getPassedLogBackgroundColor());
+                item.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
+            } else if (record.getLevel().equals(LogLevel.FAILED)) {
+                item.setBackground(ColorUtil.getFailedLogBackgroundColor());
+                item.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+            } else if (record.getLevel().equals(LogLevel.ERROR) || record.getLevel().equals(LogLevel.WARNING)) {
+                item.setBackground(ColorUtil.getWarningLogBackgroundColor());
+                item.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
+            }
+        }
 
-	private boolean isScrollLogEnable() {
-		return !store.getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_PIN_LOG);
-	}
+        if (isScrollLogEnable()) {
+            int lastItemIndex = table.getItemCount() - 1;
+            if (lastItemIndex >= 0) {
+                table.showItem(table.getItem(lastItemIndex));
+            }
+        }
+    }
 
-	public List<XmlLogRecord> getRecords() {
-		return records;
-	}
+    private boolean isScrollLogEnable() {
+        return !store.getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_PIN_LOG);
+    }
+
+    public List<XmlLogRecord> getRecords() {
+        return records;
+    }
 }
