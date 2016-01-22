@@ -1,48 +1,34 @@
 package com.kms.katalon.composer.webui.recorder.action;
 
-import com.kms.katalon.objectspy.element.HTMLElement;
+import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords;
 
-public class HTMLAction {
-	private String actionName;
-	private String actionData;
-	private HTMLElement targetElement;
-	private String windowId;
-	
-	public HTMLAction(String actionName, HTMLElement targetElement, String actionData) {
-		this.actionName = actionName;
-		this.targetElement = targetElement;
-		this.actionData = actionData;
-	}
-	
-	public String getActionName() {
-		return actionName;
-	}
-	
-	public void setActionName(String actionName) {
-		this.actionName = actionName;
-	}
-	
-	public HTMLElement getTargetElement() {
-		return targetElement;
-	}
-	
-	public void setTargetElement(HTMLElement targetElement) {
-		this.targetElement = targetElement;
-	}
+public enum HTMLAction implements IHTMLAction {
+    LeftClick("click"), RightClick("rightClick"), DoubleClick("doubleClick"), Select("selectOptionByValue"), Deselect(
+            "deselectOptionByValue"), Check("check"), Uncheck("uncheck"), Submit("submit"), SetText("setText"), Navigate("navigateToUrl"), SwitchToWindow(
+            "switchToWindowTitle");
 
-	public String getActionData() {
-		return actionData;
-	}
+    private String mappedKeywordClass;
+    private String mappedKeywordMethod;
 
-	public void setActionData(String actionData) {
-		this.actionData = actionData;
-	}
+    private HTMLAction(String mappedKeywordMethod) {
+        this(WebUiBuiltInKeywords.class.getName(), mappedKeywordMethod);
+    }
 
-	public String getWindowId() {
-		return windowId;
-	}
+    private HTMLAction(String mappedKeywordClass, String mappedKeywordMethod) {
+        this.mappedKeywordClass = mappedKeywordClass;
+        this.mappedKeywordMethod = mappedKeywordMethod;
+    }
 
-	public void setWindowId(String windowId) {
-		this.windowId = windowId;
-	}
+    public String getMappedKeywordClass() {
+        return mappedKeywordClass;
+    }
+
+    public String getMappedKeywordMethod() {
+        return mappedKeywordMethod;
+    }
+
+    @Override
+    public String getName() {
+        return name();
+    }
 }
