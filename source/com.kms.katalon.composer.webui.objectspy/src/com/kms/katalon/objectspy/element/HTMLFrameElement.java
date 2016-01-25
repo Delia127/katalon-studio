@@ -25,4 +25,22 @@ public class HTMLFrameElement extends HTMLElement {
 	public void setChildElements(List<HTMLElement> childElements) {
 		this.childElements = childElements;
 	}
+	
+	public boolean contains(HTMLElement element) {
+	    boolean result = false;
+	    for (HTMLElement childElement : getChildElements()) {
+	        if (childElement.equals(element)) {
+	            result = true;
+	            break;
+	        }
+	        if (childElement instanceof HTMLFrameElement) {
+	            boolean isChildContains = ((HTMLFrameElement)childElement).contains(element);
+	            if (isChildContains) {
+	                result = true;
+	                break;
+	            }
+	        }
+	    }
+	    return result;
+	}
 }

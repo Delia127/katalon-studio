@@ -2,7 +2,6 @@ package com.kms.katalon.objectspy.dialog;
 
 import java.util.List;
 
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -32,13 +31,10 @@ import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.composer.explorer.providers.FolderProvider;
 import com.kms.katalon.composer.folder.dialogs.NewFolderDialog;
-import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
-import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.element.HTMLElement;
 import com.kms.katalon.objectspy.element.HTMLFrameElement;
@@ -46,7 +42,6 @@ import com.kms.katalon.objectspy.element.HTMLPageElement;
 import com.kms.katalon.objectspy.element.tree.CheckboxTreeSelectionHelper;
 import com.kms.katalon.objectspy.element.tree.HTMLElementLabelProvider;
 import com.kms.katalon.objectspy.element.tree.HTMLElementTreeContentProvider;
-import com.kms.katalon.objectspy.util.HTMLElementUtil;
 
 public class AddToObjectRepositoryDialog extends TreeEntitySelectionDialog {
     private int fWidth = 60;
@@ -55,24 +50,24 @@ public class AddToObjectRepositoryDialog extends TreeEntitySelectionDialog {
 
     private TreeViewer treeViewer;
 
-    private CheckboxTreeViewer htmlElementTreeViewer;
+    private boolean isCheckable;
+
+    private TreeViewer htmlElementTreeViewer;
 
     private FolderEntity rootFolderEntity;
 
     private FolderTreeEntity rootFolderTreeEntity;
 
     private List<HTMLPageElement> htmlElements;
-    
+
     private Object[] expandedHTMLElements;
 
-    private IEventBroker eventBroker;
-    
-
-    public AddToObjectRepositoryDialog(Shell parentShell, List<HTMLPageElement> htmlElements, IEventBroker eventBroker, Object[] expandedHTMLElements) {
+    public AddToObjectRepositoryDialog(Shell parentShell, boolean isCheckable, List<HTMLPageElement> htmlElements,
+            Object[] expandedHTMLElements) {
         super(parentShell, new EntityLabelProvider(), new FolderProvider(),
                 new EntityViewerFilter(new FolderProvider()));
+        this.isCheckable = isCheckable;
         this.htmlElements = htmlElements;
-        this.eventBroker = eventBroker;
         this.expandedHTMLElements = expandedHTMLElements;
         setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
         setTitle(StringConstants.TITLE_ADD_TO_OBJECT_DIALOG);
@@ -101,33 +96,15 @@ public class AddToObjectRepositoryDialog extends TreeEntitySelectionDialog {
 
         SashForm form = new SashForm(parent, SWT.HORIZONTAL);
 
-        Composite htmlObjectTreeComposite = new Composite(form, SWT.NONE);
-        GridLayout gl_htmlObjectComposite = new GridLayout();
-        gl_htmlObjectComposite.marginBottom = 5;
-        gl_htmlObjectComposite.horizontalSpacing = 0;
-        gl_htmlObjectComposite.marginWidth = 0;
-        gl_htmlObjectComposite.marginHeight = 0;
-        htmlObjectTreeComposite.setLayout(gl_htmlObjectComposite);
+        createLeftPanel(form);
 
-        htmlElementTreeViewer = new CheckboxTreeViewer(htmlObjectTreeComposite, SWT.BORDER | SWT.MULTI);
-        HTMLElementTreeContentProvider contentProvider = new HTMLElementTreeContentProvider();
-        CheckboxTreeSelectionHelper.attach(htmlElementTreeViewer, contentProvider);
-        htmlElementTreeViewer.getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
+        createRightPanel(form);
 
-        htmlElementTreeViewer.setContentProvider(contentProvider);
-        htmlElementTreeViewer.setLabelProvider(new HTMLElementLabelProvider());
+        return parent;
+    }
 
-        ColumnViewerToolTipSupport.enableFor(htmlElementTreeViewer, ToolTip.NO_RECREATE);
-        htmlElementTreeViewer.setInput(htmlElements);
-        if (expandedHTMLElements != null && expandedHTMLElements.length > 0) {
-            htmlElementTreeViewer.getControl().setRedraw(false);
-            for (Object expandedHTMLElement : expandedHTMLElements) {
-                htmlElementTreeViewer.setExpandedState(expandedHTMLElement, true);
-            }
-            htmlElementTreeViewer.getControl().setRedraw(true);
-        }
-        
-        Composite objectRepositoryComposite = new Composite(form, SWT.NONE);
+    private void createRightPanel(Composite parent) {
+        Composite objectRepositoryComposite = new Composite(parent, SWT.NONE);
 
         Label label = new Label(objectRepositoryComposite, SWT.NONE);
         label.setText(StringConstants.DIA_LBL_SELECT_A_DESTINATION_FOLDER);
@@ -143,8 +120,38 @@ public class AddToObjectRepositoryDialog extends TreeEntitySelectionDialog {
         treeWidget.setLayoutData(data);
         treeWidget.setFont(parent.getFont());
         treeWidget.setEnabled(true);
+    }
 
-        return parent;
+    private void createLeftPanel(Composite parent) {
+        Composite htmlObjectTreeComposite = new Composite(parent, SWT.NONE);
+        GridLayout gl_htmlObjectComposite = new GridLayout();
+        gl_htmlObjectComposite.marginBottom = 5;
+        gl_htmlObjectComposite.horizontalSpacing = 0;
+        gl_htmlObjectComposite.marginWidth = 0;
+        gl_htmlObjectComposite.marginHeight = 0;
+        htmlObjectTreeComposite.setLayout(gl_htmlObjectComposite);
+
+        HTMLElementTreeContentProvider contentProvider = new HTMLElementTreeContentProvider();
+        if (isCheckable) {
+            htmlElementTreeViewer = new CheckboxTreeViewer(htmlObjectTreeComposite, SWT.BORDER | SWT.MULTI);
+            CheckboxTreeSelectionHelper.attach((CheckboxTreeViewer) htmlElementTreeViewer, contentProvider);
+        } else {
+            htmlElementTreeViewer = new TreeViewer(htmlObjectTreeComposite, SWT.BORDER | SWT.MULTI);
+        }
+        htmlElementTreeViewer.getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
+
+        htmlElementTreeViewer.setContentProvider(contentProvider);
+        htmlElementTreeViewer.setLabelProvider(new HTMLElementLabelProvider());
+
+        ColumnViewerToolTipSupport.enableFor(htmlElementTreeViewer, ToolTip.NO_RECREATE);
+        htmlElementTreeViewer.setInput(htmlElements);
+        if (expandedHTMLElements != null && expandedHTMLElements.length > 0) {
+            htmlElementTreeViewer.getControl().setRedraw(false);
+            for (Object expandedHTMLElement : expandedHTMLElements) {
+                htmlElementTreeViewer.setExpandedState(expandedHTMLElement, true);
+            }
+            htmlElementTreeViewer.getControl().setRedraw(true);
+        }
     }
 
     private void refreshTreeEntity(Object object) {
@@ -207,7 +214,7 @@ public class AddToObjectRepositoryDialog extends TreeEntitySelectionDialog {
             }
 
         });
-        
+
         Button okButton = createButton(parent, 55, IDialogConstants.OK_LABEL, false);
         // Handle OK button
         okButton.addSelectionListener(new SelectionAdapter() {
@@ -219,54 +226,41 @@ public class AddToObjectRepositoryDialog extends TreeEntitySelectionDialog {
                             StringConstants.DIA_MSG_PLS_SELECT_A_FOLDER);
                     return;
                 }
-                Object[] checkedHTMLElements = htmlElementTreeViewer.getCheckedElements();
-                if (!(checkedHTMLElements != null && checkedHTMLElements.length > 0)) {
-                    MessageDialog.openWarning(getParentShell(), StringConstants.WARN,
-                            StringConstants.DIA_MSG_PLS_SELECT_ELEMENT);
-                    return;
-                }
-                try {
-                    addElementToObjectRepository((FolderTreeEntity) getFirstResult());
-                } catch (Exception exception) {
-                    LoggerSingleton.logError(exception);
-                    MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, exception.getMessage());
-                    return;
+                if (isCheckable) {
+                    Object[] checkedHTMLElements = ((CheckboxTreeViewer) htmlElementTreeViewer).getCheckedElements();
+                    if (!(checkedHTMLElements != null && checkedHTMLElements.length > 0)) {
+                        MessageDialog.openWarning(getParentShell(), StringConstants.WARN,
+                                StringConstants.DIA_MSG_PLS_SELECT_ELEMENT);
+                        return;
+                    }
+                    removeUncheckedElements(htmlElements);
                 }
                 setReturnCode(IDialogConstants.OK_ID);
                 close();
             }
 
         });
-        
-        createButton(parent, IDialogConstants.CANCEL_ID,
-                IDialogConstants.CANCEL_LABEL, false);
+
+        createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
     }
 
-    private void addElementToObjectRepository(FolderTreeEntity targetFolderTreeEntity) throws Exception {
-        FolderEntity parentFolder = (FolderEntity) (targetFolderTreeEntity).getObject();
-        for (HTMLPageElement pageElement : htmlElements) {
-            if (htmlElementTreeViewer.getChecked(pageElement) || htmlElementTreeViewer.getGrayed(pageElement)) {
-                for (HTMLElement childElement : pageElement.getChildElements()) {
-                    addCheckedElement(childElement, parentFolder, null);
+    private void removeUncheckedElements(List<? extends HTMLElement> elementList) {
+        int i = 0;
+        while (i < elementList.size()) {
+            HTMLElement childElement = elementList.get(i);
+            if (!(((CheckboxTreeViewer) htmlElementTreeViewer).getChecked(childElement) || ((CheckboxTreeViewer) htmlElementTreeViewer)
+                    .getGrayed(childElement))) {
+                elementList.remove(i);
+            } else {
+                if (childElement instanceof HTMLFrameElement) {
+                    removeUncheckedElements(((HTMLFrameElement) childElement).getChildElements());
                 }
+                i++;
             }
         }
-        eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, targetFolderTreeEntity.getParent());
-        eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, targetFolderTreeEntity);
-        eventBroker.send(EventConstants.EXPLORER_EXPAND_TREE_ENTITY, targetFolderTreeEntity);
     }
 
-    private void addCheckedElement(HTMLElement element, FolderEntity parentFolder, WebElementEntity refElement)
-            throws Exception {
-        WebElementEntity importedElement = null;
-        if (htmlElementTreeViewer.getChecked(element) || htmlElementTreeViewer.getGrayed(element)) {
-            importedElement = ObjectRepositoryController.getInstance().importWebElement(
-                    HTMLElementUtil.convertElementToWebElementEntity(element, refElement, parentFolder), parentFolder);
-        }
-        if (element instanceof HTMLFrameElement) {
-            for (HTMLElement childElement : ((HTMLFrameElement) element).getChildElements()) {
-                addCheckedElement(childElement, parentFolder, importedElement);
-            }
-        }
+    public List<HTMLPageElement> getHtmlElements() {
+        return htmlElements;
     }
 }
