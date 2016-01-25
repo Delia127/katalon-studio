@@ -877,17 +877,16 @@ public class AstTreeTableInputUtil {
         } catch (ClassNotFoundException e) {
             // Class not found, do nothing
         }
+        if (existingParam instanceof VariableExpression || existingParam instanceof MapExpression
+                || existingParam instanceof CastExpression || existingParam instanceof BinaryExpression) {
+            return existingParam;
+        }
         if (objectClass != null && TestObject.class.isAssignableFrom(objectClass)) {
             if (existingParam instanceof MethodCallExpression && isObjectArgument((MethodCallExpression) existingParam)) {
                 return existingParam;
             } else {
                 return generateObjectMethodCall(null);
             }
-        }
-
-        if (existingParam instanceof VariableExpression || existingParam instanceof MapExpression
-                || existingParam instanceof CastExpression || existingParam instanceof BinaryExpression) {
-            return existingParam;
         }
         if (classFullName.equals(List.class.getName()) || isArray) {
             if (existingParam instanceof ListExpression) {
