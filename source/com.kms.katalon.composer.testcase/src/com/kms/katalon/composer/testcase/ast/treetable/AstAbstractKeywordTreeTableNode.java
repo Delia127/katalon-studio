@@ -13,20 +13,11 @@ import org.codehaus.groovy.ast.expr.PropertyExpression;
 import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.codehaus.groovy.ast.tools.GeneralUtils;
-import org.eclipse.jface.fieldassist.ContentProposalAdapter;
-import org.eclipse.jface.fieldassist.IContentProposal;
-import org.eclipse.jface.fieldassist.IContentProposalListener;
-import org.eclipse.jface.fieldassist.IContentProposalListener2;
-import org.eclipse.jface.fieldassist.SimpleContentProposalProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 
-import com.kms.katalon.composer.components.adapter.CComboContentAdapter;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.ast.editors.InputCellEditor;
@@ -95,61 +86,18 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstStatementTreeTa
     @Override
     public CellEditor getCellEditorForItem(Composite parent) {
         List<String> keywordNames = getKeywordNames();
-        return createNewComboBoxCellEditor(keywordNames, parent);
+        List<String> toolTips = getKeywordToolTips();
+        final ContentProposalCheck contentProposalCheck = new ContentProposalCheck();
+        final ComboBoxCellEditorWithContentProposal cellEditor = new ComboBoxCellEditorWithContentProposal(parent,
+                keywordNames.toArray(new String[keywordNames.size()]), toolTips.toArray(new String[toolTips.size()]),
+                contentProposalCheck);
+
+        return cellEditor;
     }
 
     protected abstract List<String> getKeywordNames();
 
-    private CellEditor createNewComboBoxCellEditor(List<String> keywordNames, Composite parent) {
-        String[] keywordNamesArray = keywordNames.toArray(new String[keywordNames.size()]);
-        final ContentProposalCheck contentProposalCheck = new ContentProposalCheck();
-        final ComboBoxCellEditorWithContentProposal cellEditor = new ComboBoxCellEditorWithContentProposal(parent,
-                keywordNames.toArray(new String[keywordNames.size()]), contentProposalCheck);
-
-        if (cellEditor.getControl() instanceof CCombo) {
-            final CCombo combo = (CCombo) cellEditor.getControl();
-            SimpleContentProposalProvider proposalProvider = new SimpleContentProposalProvider(keywordNamesArray);
-            proposalProvider.setFiltering(true);
-            final ContentProposalAdapter adapter = new ContentProposalAdapter(combo, new CComboContentAdapter(),
-                    proposalProvider, null, null);
-
-            adapter.setPropagateKeys(true);
-            adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
-            adapter.addContentProposalListener(new IContentProposalListener2() {
-
-                @Override
-                public void proposalPopupOpened(ContentProposalAdapter adapter) {
-                    contentProposalCheck.setProposing(true);
-                }
-
-                @Override
-                public void proposalPopupClosed(ContentProposalAdapter adapter) {
-                    contentProposalCheck.setProposing(false);
-                }
-            });
-
-            adapter.addContentProposalListener(new IContentProposalListener() {
-
-                @Override
-                public void proposalAccepted(IContentProposal proposal) {
-                    cellEditor.loseFocus();
-                }
-            });
-
-            combo.addKeyListener(new KeyListener() {
-                @Override
-                public void keyReleased(KeyEvent e) {
-                }
-
-                @Override
-                public void keyPressed(KeyEvent e) {
-                    adapter.setEnabled(!combo.getListVisible());
-                }
-            });
-            return cellEditor;
-        }
-        return null;
-    }
+    protected abstract List<String> getKeywordToolTips();
 
     public String getKeyword() {
         return getItemText();

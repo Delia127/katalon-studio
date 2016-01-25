@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.testcase.util;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.safety.Whitelist;
@@ -25,6 +27,7 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
+import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.integration.IntegratedEntity;
@@ -34,87 +37,87 @@ import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class TestCaseEntityUtil {
-	public static void copyTestCaseProperties(TestCaseEntity src, TestCaseEntity des) {
-		des.setParentFolder(src.getParentFolder());
-		des.setProject(src.getProject());
+    public static void copyTestCaseProperties(TestCaseEntity src, TestCaseEntity des) {
+        des.setParentFolder(src.getParentFolder());
+        des.setProject(src.getProject());
 
-		des.setName(src.getName());
-		des.setComment(src.getComment());
-		des.setTag(src.getTag());
-		des.setDescription(src.getDescription());
+        des.setName(src.getName());
+        des.setComment(src.getComment());
+        des.setTag(src.getTag());
+        des.setDescription(src.getDescription());
 
-		des.getDataFileLocations().clear();
-		des.getDataFiles().clear();
-		for (DataFileEntity dataFile : src.getDataFiles()) {
-			des.getDataFiles().add(dataFile);
-			des.getDataFileLocations().add(dataFile.getRelativePath());
-		}
+        des.getDataFileLocations().clear();
+        des.getDataFiles().clear();
+        for (DataFileEntity dataFile : src.getDataFiles()) {
+            des.getDataFiles().add(dataFile);
+            des.getDataFileLocations().add(dataFile.getRelativePath());
+        }
 
-		des.getVariables().clear();
-		for (VariableEntity variable : src.getVariables()) {
-			des.getVariables().add(variable);
-		}
+        des.getVariables().clear();
+        for (VariableEntity variable : src.getVariables()) {
+            des.getVariables().add(variable);
+        }
 
-		des.getIntegratedEntities().clear();
-		for (IntegratedEntity integratedEntity : src.getIntegratedEntities()) {
-			des.getIntegratedEntities().add(integratedEntity);
-		}
-	}
+        des.getIntegratedEntities().clear();
+        for (IntegratedEntity integratedEntity : src.getIntegratedEntities()) {
+            des.getIntegratedEntities().add(integratedEntity);
+        }
+    }
 
-	public static boolean isClassChildOf(String parentClassName, String childClassName) {
-		try {
-			return Class.forName(parentClassName).isAssignableFrom(Class.forName(childClassName));
-		} catch (ClassNotFoundException ex) {
-			return false;
-		}
-	}
+    public static boolean isClassChildOf(String parentClassName, String childClassName) {
+        try {
+            return Class.forName(parentClassName).isAssignableFrom(Class.forName(childClassName));
+        } catch (ClassNotFoundException ex) {
+            return false;
+        }
+    }
 
-	public static List<TestCaseEntity> getTestCasesFromFolderTree(FolderTreeEntity folderTree) {
-		List<TestCaseEntity> lstTestCases = new ArrayList<TestCaseEntity>();
-		try {
-			for (Object child : folderTree.getChildren()) {
-				if (child instanceof TestCaseTreeEntity) {
-					lstTestCases.add((TestCaseEntity) ((TestCaseTreeEntity) child).getObject());
-				} else if (child instanceof FolderTreeEntity) {
-					lstTestCases.addAll(getTestCasesFromFolderTree((FolderTreeEntity) child));
-				}
-			}
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-		return lstTestCases;
-	}
+    public static List<TestCaseEntity> getTestCasesFromFolderTree(FolderTreeEntity folderTree) {
+        List<TestCaseEntity> lstTestCases = new ArrayList<TestCaseEntity>();
+        try {
+            for (Object child : folderTree.getChildren()) {
+                if (child instanceof TestCaseTreeEntity) {
+                    lstTestCases.add((TestCaseEntity) ((TestCaseTreeEntity) child).getObject());
+                } else if (child instanceof FolderTreeEntity) {
+                    lstTestCases.addAll(getTestCasesFromFolderTree((FolderTreeEntity) child));
+                }
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        return lstTestCases;
+    }
 
-	public static List<VariableEntity> getCallTestCaseVariables(ArgumentListExpression argumentListExpression)
-			throws Exception {
-		if (!TestCasePreferenceDefaultValueInitializer.isSetGenerateVariableDefaultValue()
-				&& TestCasePreferenceDefaultValueInitializer.isSetAutoExportVariables()) {
-			MethodCallExpression methodCallExpression = (MethodCallExpression) argumentListExpression.getExpression(0);
-			ConstantExpression constantExpression = (ConstantExpression) AstTreeTableInputUtil
-					.getCallTestCaseParam(methodCallExpression);
-			String calledTestCaseId = constantExpression.getText();
-			MapExpression mapExpression = (MapExpression) argumentListExpression.getExpression(1);
-			List<VariableEntity> variableEntities = new ArrayList<VariableEntity>();
-			for (MapEntryExpression entryExpression : mapExpression.getMapEntryExpressions()) {
-				String variableName = entryExpression.getKeyExpression().getText();
+    public static List<VariableEntity> getCallTestCaseVariables(ArgumentListExpression argumentListExpression)
+            throws Exception {
+        if (!TestCasePreferenceDefaultValueInitializer.isSetGenerateVariableDefaultValue()
+                && TestCasePreferenceDefaultValueInitializer.isSetAutoExportVariables()) {
+            MethodCallExpression methodCallExpression = (MethodCallExpression) argumentListExpression.getExpression(0);
+            ConstantExpression constantExpression = (ConstantExpression) AstTreeTableInputUtil
+                    .getCallTestCaseParam(methodCallExpression);
+            String calledTestCaseId = constantExpression.getText();
+            MapExpression mapExpression = (MapExpression) argumentListExpression.getExpression(1);
+            List<VariableEntity> variableEntities = new ArrayList<VariableEntity>();
+            for (MapEntryExpression entryExpression : mapExpression.getMapEntryExpressions()) {
+                String variableName = entryExpression.getKeyExpression().getText();
 
-				VariableEntity variableInCalledTestCase = TestCaseController.getInstance().getVariable(
-						calledTestCaseId, variableName);
+                VariableEntity variableInCalledTestCase = TestCaseController.getInstance().getVariable(
+                        calledTestCaseId, variableName);
 
-				VariableEntity newVariable = new VariableEntity();
-				newVariable.setName(variableName);
-				newVariable.setDefaultValue(variableInCalledTestCase.getDefaultValue());
+                VariableEntity newVariable = new VariableEntity();
+                newVariable.setName(variableName);
+                newVariable.setDefaultValue(variableInCalledTestCase.getDefaultValue());
 
-				variableEntities.add(newVariable);
-			}
+                variableEntities.add(newVariable);
+            }
 
-			return variableEntities;
-		} else {
-			return Collections.emptyList();
-		}
-	}
-	
-	// Parse java doc html into plain text
+            return variableEntities;
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    // Parse java doc html into plain text
     public static String parseJavaDocHTML(String javadocHTML) {
         if (javadocHTML == null) {
             return "";
@@ -134,7 +137,43 @@ public class TestCaseEntityUtil {
         return StringEscapeUtils.unescapeHtml(clean).trim().replaceAll("(?m)(^ *| +(?= |$))", "")
                 .replaceAll("(?m)^$([\r\n]+?)(^$[\r\n]+?^)+", "$1");
     }
-    
+
+    public static List<String> getAllKeywordJavaDocText(String keywordClassName, ClassNode scriptClass) {
+        List<String> allKeywordJavaDocs = new ArrayList<String>();
+        try {
+            Class<?> keywordType = AstTreeTableInputUtil.loadType(keywordClassName, scriptClass);
+            if (keywordType == null) {
+                return allKeywordJavaDocs;
+            }
+            IProject groovyProject = GroovyUtil.getGroovyProject(ProjectController.getInstance().getCurrentProject());
+            IJavaProject javaProject = JavaCore.create(groovyProject);
+            IType builtinKeywordType = javaProject.findType(keywordType.getName());
+            List<Method> builtInKeywordMethods = KeywordController.getInstance().getBuiltInKeywords(keywordClassName);
+            for (Method method : builtInKeywordMethods) {
+                IMethod builtInMethod = findBuiltinMethods(builtinKeywordType, method.getName(), javaProject);
+                if (builtInMethod != null) {
+                    allKeywordJavaDocs.add(parseJavaDocHTML(builtInMethod.getAttachedJavadoc(null)));
+                }
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        return allKeywordJavaDocs;
+    }
+
+    private static IMethod findBuiltinMethods(IType type, String methodName, IJavaProject javaProject)
+            throws JavaModelException {
+        for (IMethod keywordMethod : type.getMethods()) {
+            if (keywordMethod.getElementName().equals(methodName)) {
+                return keywordMethod;
+            }
+        }
+        if (!type.getSuperclassName().equals(Object.class.getName())) {
+            return findBuiltinMethods(javaProject.findType(type.getSuperclassName()), methodName, javaProject);
+        }
+        return null;
+    }
+
     public static String getKeywordJavaDocText(String keywordClassName, String methodName, ClassNode scriptClass) {
         try {
             Class<?> keywordType = AstTreeTableInputUtil.loadType(keywordClassName, scriptClass);
@@ -145,10 +184,9 @@ public class TestCaseEntityUtil {
             IJavaProject javaProject = JavaCore.create(groovyProject);
             IType builtinKeywordType = javaProject.findType(keywordType.getName());
             if (builtinKeywordType != null) {
-                for (IMethod keywordMethod : builtinKeywordType.getMethods()) {
-                    if (keywordMethod.getElementName().equals(methodName)) {
-                        return parseJavaDocHTML(keywordMethod.getAttachedJavadoc(null));
-                    }
+                IMethod builtInMethod = findBuiltinMethods(builtinKeywordType, methodName, javaProject);
+                if (builtInMethod != null) {
+                    return parseJavaDocHTML(builtInMethod.getAttachedJavadoc(null));
                 }
             }
         } catch (Exception e) {
@@ -160,7 +198,8 @@ public class TestCaseEntityUtil {
     /**
      * Get Test Case Entity list from their script file
      * 
-     * @param scriptFiles list of test case script files
+     * @param scriptFiles
+     *            list of test case script files
      * @return List of TestCaseEntity
      * @throws Exception
      */

@@ -2,6 +2,7 @@ package com.kms.katalon.composer.testcase.ast.treetable;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -109,6 +110,16 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
             LoggerSingleton.logError(e);
         }
         return keywordNames;
+    }
+
+    @Override
+    protected List<String> getKeywordToolTips() {
+        try {
+            return TestCaseEntityUtil.getAllKeywordJavaDocText(getBuiltInKWClassSimpleName(), scriptClass);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        return Collections.emptyList();
     }
 
     @Override
