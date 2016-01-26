@@ -3198,7 +3198,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
-    public static void takeScreenShot(FailureHandling flowControl) {
+    public static void takeScreenshot(FailureHandling flowControl) {
         WebUIKeywordMain.runKeyword({
             String screenFileName = FileUtil.takesScreenshot();
             if (screenFileName != null) {

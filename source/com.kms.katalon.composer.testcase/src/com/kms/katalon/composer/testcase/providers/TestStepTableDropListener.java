@@ -14,6 +14,7 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.TreeDropTargetEffect;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TreeItem;
 
@@ -48,7 +49,23 @@ public class TestStepTableDropListener extends TreeDropTargetEffect {
 
     @Override
     public void dragOver(DropTargetEvent event) {
-        super.dragOver(event);
+        event.feedback = DND.FEEDBACK_EXPAND | DND.FEEDBACK_SCROLL;
+        if (event.item != null) {
+            Point pt = event.display.map(null, treeViewer.getTree(), event.x, event.y);
+            TreeItem item = (TreeItem) event.item;
+            event.feedback |= getFeedBackByLocation(pt, item);
+        }
+    }
+
+    private static int getFeedBackByLocation(Point point, TreeItem treeItem) {
+        Rectangle bounds = treeItem.getBounds();
+        if (point.y < bounds.y + bounds.height / 3) {
+            return DND.FEEDBACK_INSERT_BEFORE;
+        } else if (point.y > bounds.y + 2 * bounds.height / 3) {
+            return DND.FEEDBACK_INSERT_AFTER;
+        } else {
+            return DND.FEEDBACK_SELECT;
+        }
     }
 
     @Override
@@ -156,10 +173,18 @@ public class TestStepTableDropListener extends TreeDropTargetEffect {
         getTestCaseTreeTableInput().addNewAstObject(statement, node, addType);
     }
 
-    private NodeAddType getNodeAddType(DropTargetEvent event) {
-        NodeAddType addType = (event.feedback == DND.FEEDBACK_INSERT_BEFORE) ? NodeAddType.InserBefore
-                : NodeAddType.Add;
-        return addType;
+    private NodeAddType getNodeAddType(DropTargetEvent event) throws Exception {
+        Point pt = event.display.map(null, treeViewer.getTree(), event.x, event.y);
+        TreeItem item = (TreeItem) event.item;
+        int feedBack = getFeedBackByLocation(pt, item);
+        switch (feedBack) {
+        case DND.FEEDBACK_INSERT_BEFORE:
+            return NodeAddType.InserBefore;
+        case DND.FEEDBACK_INSERT_AFTER:
+            return NodeAddType.InserAfter;
+        default:
+            return NodeAddType.Add;
+        }
     }
 
     private AstTreeTableNode getHoveredTreeTableNode(DropTargetEvent event) {

@@ -818,12 +818,29 @@ public class TestCaseTreeTableInput {
         }
     }
 
-    public void move(AstTreeTableNode sourceNode, AstTreeTableNode destinationNode, NodeAddType addType)
-            throws Exception {
-        List<AstTreeTableNode> nodeList = new ArrayList<AstTreeTableNode>();
-        nodeList.add(sourceNode);
-        cut(nodeList);
-        paste(destinationNode, addType);
+    public void move(AstTreeTableNode sourceNode, AstTreeTableNode destinationNode, NodeAddType addType) throws Exception {
+        if (sourceNode == null || destinationNode == null) {
+            return;
+        }
+        List<AstTreeTableNode> destinationNodeList = getNodeList(destinationNode);
+        int destinationNodeIndex = destinationNodeList.indexOf(destinationNode);
+        removeRow(sourceNode);
+        if (destinationNodeIndex == destinationNodeList.size() - 1) {
+            insertAstObject(sourceNode.getASTObject(), destinationNode, NodeAddType.InserAfter);
+        } else {
+            insertAstObject(sourceNode.getASTObject(), destinationNode, addType);
+        }
+    }
+
+    private List<AstTreeTableNode> getNodeList(AstTreeTableNode node) throws Exception {
+        if (node == null) {
+            return null;
+        }
+        if (node.getParent() == null) {
+            return astTreeTableNodes;
+        } else {
+            return node.getParent().getChildren();
+        }
     }
 
     public int getAstObjectIndexFromParentNode(AstTreeTableNode parentTreeTableNode, ASTNode astObject)
