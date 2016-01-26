@@ -32,6 +32,7 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.parts.MultipleTabsCompositePart;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
@@ -44,7 +45,7 @@ import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
-public class TestSuiteCompositePart implements EventHandler, MultipleTabsCompositePart {
+public class TestSuiteCompositePart implements EventHandler, MultipleTabsCompositePart, IComposerPart {
     // compositePart has only one child is subPartStack.
     // Children of subPartStack: childTestSuiteGeneralPart &
     // childTestSuiteIntegrationPart
@@ -405,5 +406,15 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
     public void openAddTestCaseDialog() {
         setSelectedPart(getChildMainPart());
         childTestSuiteMainPart.openAddTestCaseDialog();
+    }
+
+    @Override
+    public String getEntityId() {
+        return getOriginalTestSuite().getIdForDisplay();
+    }
+
+    @Override
+    public String getEntityKw() {
+        return StringConstants.ENTITY_KW_TEST_SUITE;
     }
 }

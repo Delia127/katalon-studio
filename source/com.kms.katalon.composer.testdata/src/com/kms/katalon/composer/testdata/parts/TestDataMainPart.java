@@ -40,6 +40,7 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.testdata.constants.ImageConstants;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
@@ -50,7 +51,7 @@ import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 
-public abstract class TestDataMainPart implements EventHandler, IPartListener {
+public abstract class TestDataMainPart implements EventHandler, IPartListener, IComposerPart {
     public static final int MAX_LABEL_WIDTH = 70;
 
     protected static final int MAX_COLUMN_COUNT = 100;
@@ -537,6 +538,20 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener {
         if (mpart.isVisible()) {
             getPartService().savePart(mpart, false);
         }
+    }
+
+    public DataFileEntity getDataFile() {
+        return originalDataFile;
+    }
+
+    @Override
+    public String getEntityId() {
+        return getDataFile().getIdForDisplay();
+    }
+
+    @Override
+    public String getEntityKw() {
+        return StringConstants.ENTITY_KW_TEST_DATA;
     }
 
 }

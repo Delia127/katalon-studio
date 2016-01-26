@@ -29,7 +29,7 @@ public class StringConstants extends GlobalStringConstants {
 
     // KeywordTreeEntity
     public static final String TREE_KEYWORD_TYPE_NAME = KEYWORD;
-    public static final String TREE_KEYWORD_KW = "kw";
+    public static final String TREE_KEYWORD_KW = ENTITY_KW_KEYWORD;
 
     // PackageTreeEntity
     public static final String TREE_PACKAGE_TYPE_NAME = PACKAGE;
@@ -37,21 +37,21 @@ public class StringConstants extends GlobalStringConstants {
 
     // ReportTreeEntity
     public static final String TREE_REPORT_TYPE_NAME = REPORT;
-    public static final String TREE_REPORT_KW = "rp";
+    public static final String TREE_REPORT_KW = ENTITY_KW_REPORT;
 
     // TestCaseTreeEntity
     public static final String TREE_TEST_CASE_TYPE_NAME = TEST_CASE;
-    public static final String TREE_TEST_CASE_KW = "tc";
+    public static final String TREE_TEST_CASE_KW = ENTITY_KW_TEST_CASE;
 
     // TestDataTreeEntity
     public static final String TREE_TEST_DATA_TYPE_NAME = TEST_DATA;
-    public static final String TREE_TEST_DATA_KW = "td";
+    public static final String TREE_TEST_DATA_KW = ENTITY_KW_TEST_DATA;
 
     // TestSuiteTreeEntity
     public static final String TREE_TEST_SUITE_TYPE_NAME = TEST_SUITE;
-    public static final String TREE_TEST_SUITE_KW = "ts";
+    public static final String TREE_TEST_SUITE_KW = ENTITY_KW_TEST_SUITE;
 
     // WebElementTreeEntity
     public static final String TREE_OBJECT_TYPE_NAME = OBJECT;
-    public static final String TREE_OBJECT_KW = "ob";
+    public static final String TREE_OBJECT_KW = ENTITY_KW_TEST_OBJECT;
 }

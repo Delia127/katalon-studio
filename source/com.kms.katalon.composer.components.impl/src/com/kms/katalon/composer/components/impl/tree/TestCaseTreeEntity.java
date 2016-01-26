@@ -1,7 +1,5 @@
 package com.kms.katalon.composer.components.impl.tree;
 
-import java.io.File;
-
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Image;
@@ -93,7 +91,7 @@ public class TestCaseTreeEntity extends AbstractTreeEntity {
     @Override
     public String getPropertyValue(String key) {
         if (key.equals("id")) {
-            return testCase.getRelativePathForUI().replace(File.separator, "/");
+            return testCase.getIdForDisplay();
         } else if (key.equals("name")) {
             return testCase.getName();
         } else if (key.equals("tag")) {

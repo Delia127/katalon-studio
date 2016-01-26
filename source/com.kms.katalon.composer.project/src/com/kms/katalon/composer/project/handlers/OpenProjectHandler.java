@@ -78,8 +78,7 @@ public class OpenProjectHandler {
 
                     if (projectFile != null) {
                         if (!CloseProjectHandler.closeCurrentProject(partService, modelService, application,
-                                eventBroker))
-                            return;
+                                eventBroker)) return;
                         openProjectEventHandler(projectFile.getAbsolutePath());
                     } else {
                         MessageDialog.openWarning(null, StringConstants.WARN_TITLE,
@@ -113,7 +112,6 @@ public class OpenProjectHandler {
                         public void run() {
                             try {
                                 List<ITreeEntity> treeEntities = new ArrayList<ITreeEntity>();
-                                // Set project name on window title
                                 if (project != null) {
                                     treeEntities.add(new FolderTreeEntity(FolderController.getInstance()
                                             .getTestCaseRoot(project), null));
@@ -128,11 +126,10 @@ public class OpenProjectHandler {
                                     treeEntities.add(new FolderTreeEntity(FolderController.getInstance().getReportRoot(
                                             project), null));
 
+                                    // Set project name on window title
                                     OpenProjectHandler.updateProjectTitle(project, modelService, app);
                                 }
-
                                 eventBroker.post(EventConstants.EXPLORER_RELOAD_INPUT, treeEntities);
-
                             } catch (Exception e) {
                                 LoggerSingleton.logError(e);
                             }
@@ -174,7 +171,8 @@ public class OpenProjectHandler {
         MWindow win = (MWindow) modelService.find(IdConstants.MAIN_WINDOW_ID, app);
         if (win != null) {
             win.setLabel(win.getLabel().split(" - ")[0] + " - " + projectEntity.getName() + " - [Location: "
-                    + projectEntity.getLocation() + "]");
+                    + projectEntity.getFolderLocation() + "]");
+            win.updateLocalization();
         }
     }
 }

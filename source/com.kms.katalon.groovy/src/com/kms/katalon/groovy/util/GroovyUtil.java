@@ -91,9 +91,9 @@ public class GroovyUtil {
         return location.replace(File.separator, "%").replace(":", "%");
     }
 
-    public static IPackageFragment getPackageFragmentFromLocation(String packageLocation, boolean isDefaultPackage)
-            throws Exception {
-        IFolder packageFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(packageLocation));
+    public static IPackageFragment getPackageFragmentFromLocation(String pkgRelativeLocationToProject,
+            boolean isDefaultPackage, ProjectEntity projectEntity) throws Exception {
+        IFolder packageFolder = getGroovyProject(projectEntity).getFolder(pkgRelativeLocationToProject);
         packageFolder.refreshLocal(IResource.DEPTH_INFINITE, null);
         if (packageFolder != null && packageFolder.exists()) {
             IJavaElement javaElement = JavaCore.create(packageFolder);
