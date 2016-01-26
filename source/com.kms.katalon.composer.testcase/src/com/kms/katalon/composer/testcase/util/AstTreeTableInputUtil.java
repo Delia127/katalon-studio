@@ -52,6 +52,7 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.components.impl.editors.StringComboBoxCellEditor;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.ast.editors.BinaryCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.BooleanCellEditor;
@@ -374,12 +375,27 @@ public class AstTreeTableInputUtil {
     public static List<String> getInputValueTypeStringList(IInputValueType[] defaultInputValueTypes, String customTag) {
         List<String> inputValueTypeStringList = new ArrayList<String>();
         for (IInputValueType builtinValueType : defaultInputValueTypes) {
-            inputValueTypeStringList.add(builtinValueType.getReadableName());
+            inputValueTypeStringList.add(builtinValueType.getName());
         }
         for (ICustomInputValueType customInputValueType : CustomInputValueTypeCollector.getInstance()
                 .getAllCustomInputValueTypes()) {
             if (containsTag(customInputValueType, customTag)) {
-                inputValueTypeStringList.add(customInputValueType.getReadableName());
+                inputValueTypeStringList.add(customInputValueType.getName());
+            }
+        }
+        return inputValueTypeStringList;
+    }
+
+    public static List<String> getReadableInputValueTypeStringList(IInputValueType[] defaultInputValueTypes,
+            String customTag) {
+        List<String> inputValueTypeStringList = new ArrayList<String>();
+        for (IInputValueType builtinValueType : defaultInputValueTypes) {
+            inputValueTypeStringList.add(TreeEntityUtil.getReadableKeywordName(builtinValueType.getName()));
+        }
+        for (ICustomInputValueType customInputValueType : CustomInputValueTypeCollector.getInstance()
+                .getAllCustomInputValueTypes()) {
+            if (containsTag(customInputValueType, customTag)) {
+                inputValueTypeStringList.add(customInputValueType.getName());
             }
         }
         return inputValueTypeStringList;
@@ -400,12 +416,12 @@ public class AstTreeTableInputUtil {
     public static IInputValueType getInputValueTypeFromString(String inputValueTypeName) {
         for (IInputValueType customInputValueType : CustomInputValueTypeCollector.getInstance()
                 .getAllCustomInputValueTypes()) {
-            if (customInputValueType.getReadableName().equals(inputValueTypeName)) {
+            if (customInputValueType.getName().equals(inputValueTypeName)) {
                 return customInputValueType;
             }
         }
         for (IInputValueType builtinValueType : InputValueType.values()) {
-            if (builtinValueType.getReadableName().equals(inputValueTypeName)) {
+            if (builtinValueType.getName().equals(inputValueTypeName)) {
                 return builtinValueType;
             }
         }
@@ -861,17 +877,16 @@ public class AstTreeTableInputUtil {
         } catch (ClassNotFoundException e) {
             // Class not found, do nothing
         }
+        if (existingParam instanceof VariableExpression || existingParam instanceof MapExpression
+                || existingParam instanceof CastExpression || existingParam instanceof BinaryExpression) {
+            return existingParam;
+        }
         if (objectClass != null && TestObject.class.isAssignableFrom(objectClass)) {
             if (existingParam instanceof MethodCallExpression && isObjectArgument((MethodCallExpression) existingParam)) {
                 return existingParam;
             } else {
                 return generateObjectMethodCall(null);
             }
-        }
-
-        if (existingParam instanceof VariableExpression || existingParam instanceof MapExpression
-                || existingParam instanceof CastExpression || existingParam instanceof BinaryExpression) {
-            return existingParam;
         }
         if (classFullName.equals(List.class.getName()) || isArray) {
             if (existingParam instanceof ListExpression) {

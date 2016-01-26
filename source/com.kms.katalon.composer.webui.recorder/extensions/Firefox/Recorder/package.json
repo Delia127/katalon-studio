@@ -1,7 +1,8 @@
 {
   "name": "recorder",
   "title": "Recorder",
-  "id": "jid1-U9b8TM9XILnsZw",
-  "description": "HTML Element Recorder Firefox addon for qAutomate",
-  "author": "hieumai"
+  "version": "0.0.1",
+  "description": "HTML Element Recorder Firefox addon for Katalon",
+  "author": "hieumai",
+  "main": "./lib/main.js"
 }

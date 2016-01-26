@@ -61,6 +61,11 @@ public class AstCustomKeywordTreeTableNode extends AstAbstractKeywordTreeTableNo
         }
         return keywordNames;
     }
+    
+    @Override
+    protected List<String> getKeywordToolTips() {
+        return getKeywordNames();
+    }
 
     @Override
     public boolean setItem(Object item) {

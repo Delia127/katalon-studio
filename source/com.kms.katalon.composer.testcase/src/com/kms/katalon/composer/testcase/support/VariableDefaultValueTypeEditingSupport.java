@@ -1,14 +1,9 @@
 package com.kms.katalon.composer.testcase.support;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.codehaus.groovy.ast.ASTNode;
-import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
-import org.eclipse.jface.viewers.ComboBoxCellEditor;
-import org.eclipse.jface.viewers.EditingSupport;
-import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.model.IInputValueType;
@@ -18,27 +13,18 @@ import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
 import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.entity.variable.VariableEntity;
 
-public class VariableDefaultValueTypeEditingSupport extends EditingSupport {
+public class VariableDefaultValueTypeEditingSupport extends AstInputBuilderValueTypeColumnSupport {
     private static final String CUSTOM_TAG = "Test Case Variable";
     private TestCaseVariablePart variablesPart;
-    private IInputValueType[] defaultInputValueTypes;
-    protected List<String> inputValueTypeNames;
+
 
     public VariableDefaultValueTypeEditingSupport(ColumnViewer viewer, TestCaseVariablePart variablesPart,
             IInputValueType[] defaultInputValueTypes) {
-        super(viewer);
+        super(viewer, defaultInputValueTypes, CUSTOM_TAG, null, null);
         this.variablesPart = variablesPart;
         this.defaultInputValueTypes = defaultInputValueTypes;
         inputValueTypeNames = new ArrayList<String>();
-    }
-
-    @Override
-    protected CellEditor getCellEditor(Object element) {
-        inputValueTypeNames.clear();
-        inputValueTypeNames.addAll(AstTreeTableInputUtil
-                .getInputValueTypeStringList(defaultInputValueTypes, CUSTOM_TAG));
-        return new ComboBoxCellEditor((Composite) getViewer().getControl(),
-                inputValueTypeNames.toArray(new String[inputValueTypeNames.size()]));
+        readableValueTypeNames = new ArrayList<String>();
     }
 
     @Override

@@ -352,7 +352,7 @@ public class AstTreeTableValueUtil {
     private static Expression setValue(ConstantExpression constantExpression, Object value) {
         Expression newExpression = null;
         if (constantExpression.getValue() instanceof Number) {
-            if (value instanceof String) {
+            if (value instanceof String && !((String) value).isEmpty()) {
                 Number numValue = 0;
                 try {
                     numValue = Numbers.parseInteger((String) value);

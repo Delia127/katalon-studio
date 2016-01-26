@@ -41,6 +41,7 @@ public class Application implements IApplication {
 		try {
 			int returnCode = PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
 			if (isConsoleMode) {
+			    System.setProperty(IApplicationContext.EXIT_DATA_PROPERTY, "");
 				return ConsoleMain.getReturnCode();
 			}
 			if (returnCode == PlatformUI.RETURN_RESTART)

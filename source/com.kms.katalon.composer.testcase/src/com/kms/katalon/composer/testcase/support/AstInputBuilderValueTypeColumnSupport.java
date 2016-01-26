@@ -23,6 +23,8 @@ public class AstInputBuilderValueTypeColumnSupport extends EditingSupport {
 
     protected List<String> inputValueTypeNames;
 
+    protected List<String> readableValueTypeNames;
+
     protected String customTag;
 
     protected IInputValueType[] defaultInputValueTypes;
@@ -35,6 +37,7 @@ public class AstInputBuilderValueTypeColumnSupport extends EditingSupport {
         this.parentDialog = parentDialog;
         this.scriptClass = scriptClass;
         inputValueTypeNames = new ArrayList<String>();
+        readableValueTypeNames = new ArrayList<String>();
     }
 
     @Override
@@ -57,7 +60,7 @@ public class AstInputBuilderValueTypeColumnSupport extends EditingSupport {
         if (element instanceof ASTNode) {
             IInputValueType valueType = AstTreeTableValueUtil.getTypeValue((ASTNode) element, scriptClass);
             if (valueType != null) {
-                return inputValueTypeNames.indexOf(valueType.getReadableName());
+                return inputValueTypeNames.indexOf(valueType.getName());
             }
         }
         return 0;
@@ -66,9 +69,13 @@ public class AstInputBuilderValueTypeColumnSupport extends EditingSupport {
     @Override
     protected CellEditor getCellEditor(Object element) {
         inputValueTypeNames.clear();
-        inputValueTypeNames.addAll(AstTreeTableInputUtil.getInputValueTypeStringList(defaultInputValueTypes, customTag));
+        inputValueTypeNames
+                .addAll(AstTreeTableInputUtil.getInputValueTypeStringList(defaultInputValueTypes, customTag));
+        readableValueTypeNames.clear();
+        readableValueTypeNames.addAll(AstTreeTableInputUtil.getReadableInputValueTypeStringList(defaultInputValueTypes,
+                customTag));
         return new ComboBoxCellEditor((Composite) getViewer().getControl(),
-                inputValueTypeNames.toArray(new String[inputValueTypeNames.size()]));
+                readableValueTypeNames.toArray(new String[readableValueTypeNames.size()]));
     }
 
     @Override

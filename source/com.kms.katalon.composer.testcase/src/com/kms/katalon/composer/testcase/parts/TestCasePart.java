@@ -72,6 +72,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
+import com.kms.katalon.composer.testcase.ast.treetable.AstMethodTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.components.FocusCellOwnerDrawHighlighterForMultiSelection;
@@ -733,7 +734,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
         TreeItem[] selection = treeTable.getTree().getSelection();
         List<AstTreeTableNode> treeEntities = new ArrayList<AstTreeTableNode>();
         for (TreeItem item : selection) {
-            if (item.getData() instanceof AstTreeTableNode) {
+            if (item.getData() instanceof AstTreeTableNode && !(item.getData() instanceof AstMethodTreeTableNode)) {
                 treeEntities.add((AstTreeTableNode) item.getData());
             }
         }

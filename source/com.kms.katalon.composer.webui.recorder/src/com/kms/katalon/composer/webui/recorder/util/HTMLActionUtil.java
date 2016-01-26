@@ -5,7 +5,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.expr.ArgumentListExpression;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.ast.expr.Expression;
@@ -21,6 +20,10 @@ import com.google.gson.JsonParser;
 import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
 import com.kms.katalon.composer.webui.recorder.action.HTMLAction;
+import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
+import com.kms.katalon.composer.webui.recorder.action.HTMLSynchronizeAction;
+import com.kms.katalon.composer.webui.recorder.action.HTMLValidationAction;
+import com.kms.katalon.composer.webui.recorder.action.IHTMLAction;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testobject.ObjectRepository;
 import com.kms.katalon.core.testobject.TestObject;
@@ -41,21 +44,11 @@ public class HTMLActionUtil {
 
     private static final String ACTION_WINDOW_ID_KEY = "windowId";
 
-    private static final String SWITCH_TO_WINDOW_KEYWORD_NAME = "switchToWindowTitle";
-
     private static final String SWITCH_TO_WINDOW_ACTION_KEY = "switchToWindow";
-
-    private static final String SUBMIT_KEYWORD_NAME = "submit";
 
     private static final String SUBMIT_ACTION_KEY = "submit";
 
-    private static final String DOUBLE_CLICK_KEYWORD_NAME = "doubleClick";
-
     private static final String DOUBLE_CLICK_ACTION_KEY = "doubleClick";
-
-    private static final String RIGHT_CLICK_KEYWORD_NAME = "rightClick";
-
-    private static final String LEFT_CLICK_KEYWORD_NAME = "click";
 
     private static final String MOUSE_CLICK_ACTION_DATA_RIGHT_CLICK = "right";
 
@@ -65,25 +58,13 @@ public class HTMLActionUtil {
 
     private static final String ELEMENT_TYPE_TEXTAREA = "textarea";
 
-    private static final String DESELECT_OPTION_BY_VALUE_KEYWORD_NAME = "deselectOptionByValue";
-
-    private static final String SELECT_OPTION_BY_VALUE_KEYWORD_NAME = "selectOptionByValue";
-
     private static final String ELEMENT_TYPE_SELECT = "select";
-
-    private static final String SET_TEXT_KEYWORD_NAME = "setText";
-
-    private static final String UNCHECK_KEYWORD_NAME = "uncheck";
-
-    private static final String CHECK_KEYWORD_NAME = "check";
 
     private static final String ELEMENT_TYPE_INPUT_CHECKBOX = "checkbox";
 
     private static final String ELEMENT_TYPE_INPUT = "input";
 
     private static final String INPUT_CHANGE_ACTION_KEY = "inputChange";
-
-    private static final String NAVIGATE_KEYWORD_NAME = "navigateToUrl";
 
     private static final String NAVIGATE_ACTION_KEY = "navigate";
 
@@ -93,7 +74,7 @@ public class HTMLActionUtil {
 
     private static final String ACTION_KEY = "action";
 
-    public static HTMLAction buildHTMLAction(String jsonString) throws Exception {
+    public static HTMLActionMapping buildActionMapping(String jsonString) throws Exception {
         JsonParser jsonParser = new JsonParser();
         JsonElement jsonElement = jsonParser.parse(HTMLElementUtil.decodeURIComponent(jsonString));
         String actionName = null;
@@ -142,23 +123,68 @@ public class HTMLActionUtil {
                     actionData = actionObject.get(ACTION_DATA_KEY).getAsString();
                 }
 
-                HTMLAction action = new HTMLAction(actionName, element, actionData);
+                HTMLActionMapping newActionMapping = buildActionMapping(actionName, actionData, element);
                 if (actionObject.get(ACTION_WINDOW_ID_KEY) != null) {
-                    action.setWindowId(actionObject.get(ACTION_WINDOW_ID_KEY).getAsString());
+                    newActionMapping.setWindowId(actionObject.get(ACTION_WINDOW_ID_KEY).getAsString());
                 }
-                return action;
+                return newActionMapping;
             }
 
         }
         return null;
     }
 
-    public static Statement generateWebUiTestStep(HTMLAction action, WebElementEntity createdTestObject)
+    public static HTMLActionMapping buildActionMapping(String recordedActionName, String actionData,
+            HTMLElement targetElement) {
+        switch (recordedActionName) {
+        case NAVIGATE_ACTION_KEY:
+            return new HTMLActionMapping(HTMLAction.Navigate, actionData, targetElement);
+        case INPUT_CHANGE_ACTION_KEY:
+            switch (targetElement.getType().toLowerCase()) {
+            case ELEMENT_TYPE_INPUT:
+                if (targetElement.getTypeAttribute() != null) {
+                    switch (targetElement.getTypeAttribute().toLowerCase()) {
+                    case ELEMENT_TYPE_INPUT_CHECKBOX:
+                        if (actionData.toLowerCase().equals(Boolean.TRUE.toString().toLowerCase())) {
+                            return new HTMLActionMapping(HTMLAction.Check, actionData, targetElement);
+                        } else if (actionData.toLowerCase().equals(Boolean.FALSE.toString().toLowerCase())) {
+                            return new HTMLActionMapping(HTMLAction.Uncheck, actionData, targetElement);
+                        }
+                    }
+                }
+                return new HTMLActionMapping(HTMLAction.SetText, actionData, targetElement);
+            case ELEMENT_TYPE_TEXTAREA:
+                return new HTMLActionMapping(HTMLAction.SetText, actionData, targetElement);
+            }
+        case SELECT_ACTION_KEY:
+            return new HTMLActionMapping(HTMLAction.Select, actionData, targetElement);
+        case DESELECT_ACTION_KEY:
+            return new HTMLActionMapping(HTMLAction.Deselect, actionData, targetElement);
+        case MOUSE_CLICK_ACTION_KEY:
+            switch (actionData) {
+            case MOUSE_CLICK_ACTION_DATA_LEFT_CLICK:
+                return new HTMLActionMapping(HTMLAction.LeftClick, "", targetElement);
+            case MOUSE_CLICK_ACTION_DATA_RIGHT_CLICK:
+                return new HTMLActionMapping(HTMLAction.RightClick, "", targetElement);
+            }
+        case DOUBLE_CLICK_ACTION_KEY:
+            return new HTMLActionMapping(HTMLAction.DoubleClick, actionData, targetElement);
+        case SUBMIT_ACTION_KEY:
+            return new HTMLActionMapping(HTMLAction.Submit, actionData, targetElement);
+        case SWITCH_TO_WINDOW_ACTION_KEY:
+            return new HTMLActionMapping(HTMLAction.SwitchToWindow, actionData, targetElement);
+        }
+        return null;
+    }
+
+    public static Statement generateWebUiTestStep(HTMLActionMapping actionMapping, WebElementEntity createdTestObject)
             throws Exception {
-        String methodName = generateWebUiMethodNameFromHTMLAction(action.getActionName(), action.getActionData(),
-                action.getTargetElement());
+        String methodName = actionMapping.getAction().getMappedKeywordMethod();
+        // generateWebUiMethodNameFromHTMLAction(action.getActionName(), action.getActionData(),
+        // action.getTargetElement());
+        Class<?> keywordClass = Class.forName(actionMapping.getAction().getMappedKeywordClass());
         Method method = null;
-        for (Method declareMethod : WebUiBuiltInKeywords.class.getDeclaredMethods()) {
+        for (Method declareMethod : keywordClass.getDeclaredMethods()) {
             if (declareMethod.getName().equals(methodName)) {
                 method = declareMethod;
                 break;
@@ -173,7 +199,7 @@ public class HTMLActionUtil {
                     if (clazz.getName().equals(TestObject.class.getName())) {
                         data = createdTestObject;
                     } else {
-                        data = action.getActionData();
+                        data = actionMapping.getData();
                     }
                     Expression generatedExression = generateArgumentForWebUiMethod(clazz, data);
                     if (generatedExression != null) {
@@ -221,51 +247,12 @@ public class HTMLActionUtil {
                 TestCasePreferenceDefaultValueInitializer.getDefaultFailureHandling().name());
     }
 
-    private static String generateWebUiMethodNameFromHTMLAction(String action, String actionData,
-            HTMLElement htmlElement) {
-        switch (action) {
-            case NAVIGATE_ACTION_KEY:
-                return NAVIGATE_KEYWORD_NAME;
-            case INPUT_CHANGE_ACTION_KEY:
-                switch (htmlElement.getType().toLowerCase()) {
-                    case ELEMENT_TYPE_INPUT:
-                        if (htmlElement.getTypeAttribute() != null) {
-                            switch (htmlElement.getTypeAttribute().toLowerCase()) {
-                                case ELEMENT_TYPE_INPUT_CHECKBOX:
-                                    if (actionData.toLowerCase().equals(Boolean.TRUE.toString().toLowerCase())) {
-                                        return CHECK_KEYWORD_NAME;
-                                    } else if (actionData.toLowerCase().equals(Boolean.FALSE.toString().toLowerCase())) {
-                                        return UNCHECK_KEYWORD_NAME;
-                                    }
-                            }
-                        }
-                        return SET_TEXT_KEYWORD_NAME;
-                    case ELEMENT_TYPE_TEXTAREA:
-                        return SET_TEXT_KEYWORD_NAME;
-                }
-            case SELECT_ACTION_KEY:
-                return SELECT_OPTION_BY_VALUE_KEYWORD_NAME;
-            case DESELECT_ACTION_KEY:
-                return DESELECT_OPTION_BY_VALUE_KEYWORD_NAME;
-            case MOUSE_CLICK_ACTION_KEY:
-                switch (actionData) {
-                    case MOUSE_CLICK_ACTION_DATA_LEFT_CLICK:
-                        return LEFT_CLICK_KEYWORD_NAME;
-                    case MOUSE_CLICK_ACTION_DATA_RIGHT_CLICK:
-                        return RIGHT_CLICK_KEYWORD_NAME;
-                }
-            case DOUBLE_CLICK_ACTION_KEY:
-                return DOUBLE_CLICK_KEYWORD_NAME;
-            case SUBMIT_ACTION_KEY:
-                return SUBMIT_KEYWORD_NAME;
-            case SWITCH_TO_WINDOW_ACTION_KEY:
-                return SWITCH_TO_WINDOW_KEYWORD_NAME;
+    public static boolean verifyActionMapping(HTMLActionMapping actionMapping,
+            List<HTMLActionMapping> existingActionMappings) {
+        if (actionMapping == null || actionMapping.getAction() == null) {
+            return false;
         }
-        return StringUtils.EMPTY;
-    }
-
-    public static boolean verifyAction(HTMLAction action, List<HTMLAction> existingActions) {
-        if (action.getActionName().equals(NAVIGATE_ACTION_KEY) && existingActions.size() > 0) {
+        if (actionMapping.getAction() == HTMLAction.Navigate && existingActionMappings.size() > 0) {
             // for (int i = existingActions.size() - 1; i >= 0; i--) {
             // HTMLAction previousAction = existingActions.get(i);
             // if
@@ -281,27 +268,27 @@ public class HTMLActionUtil {
             // return false;
             return false;
         }
-        if (action.getActionName().equals(DOUBLE_CLICK_ACTION_KEY) && existingActions.size() >= 2) {
-            HTMLAction actionOffset_1 = existingActions.get(existingActions.size() - 1);
-            HTMLAction actionOffset_2 = existingActions.get(existingActions.size() - 2);
-            if (actionOffset_1.getActionName().equals(MOUSE_CLICK_ACTION_KEY)
-                    && actionOffset_2.getActionName().equals(MOUSE_CLICK_ACTION_KEY)
-                    && actionOffset_1.getTargetElement().equals(action.getTargetElement())
-                    && actionOffset_2.getTargetElement().equals(action.getTargetElement())) {
-                existingActions.remove(actionOffset_1);
-                existingActions.remove(actionOffset_2);
+        if (actionMapping.getAction().getName().equals(DOUBLE_CLICK_ACTION_KEY) && existingActionMappings.size() >= 2) {
+            HTMLActionMapping actionOffset_1 = existingActionMappings.get(existingActionMappings.size() - 1);
+            HTMLActionMapping actionOffset_2 = existingActionMappings.get(existingActionMappings.size() - 2);
+            if (actionOffset_1.getAction().getName().equals(MOUSE_CLICK_ACTION_KEY)
+                    && actionOffset_2.getAction().getName().equals(MOUSE_CLICK_ACTION_KEY)
+                    && actionOffset_1.getTargetElement().equals(actionMapping.getTargetElement())
+                    && actionOffset_2.getTargetElement().equals(actionMapping.getTargetElement())) {
+                existingActionMappings.remove(actionOffset_1);
+                existingActionMappings.remove(actionOffset_2);
             }
         }
         return true;
     }
 
-    public static HTMLAction createNewSwitchToWindowAction(String data) {
-        return new HTMLAction(SWITCH_TO_WINDOW_ACTION_KEY, null, data);
+    public static HTMLActionMapping createNewSwitchToWindowAction(String data) {
+        return new HTMLActionMapping(HTMLAction.SwitchToWindow, data, null);
 
     }
 
-    public static String getPageTitleForAction(HTMLAction action) {
-        HTMLElement element = action.getTargetElement();
+    public static String getPageTitleForAction(HTMLActionMapping actionMapping) {
+        HTMLElement element = actionMapping.getTargetElement();
         while (!(element == null) && !(element instanceof HTMLPageElement)) {
             element = element.getParentElement();
         }
@@ -309,5 +296,35 @@ public class HTMLActionUtil {
             return ((HTMLPageElement) element).getAttributes().get(HTMLElementUtil.PAGE_TITLE_KEY);
         }
         return null;
+    }
+
+    public static List<IHTMLAction> getAllHTMLActions() {
+        List<IHTMLAction> result = new ArrayList<IHTMLAction>();
+        for (HTMLAction htmlAction : HTMLAction.values()) {
+            result.add(htmlAction);
+        }
+        return result;
+    }
+
+    public static List<HTMLValidationAction> getAllHTMLValidationActions() {
+        List<HTMLValidationAction> result = new ArrayList<HTMLValidationAction>();
+        for (Method method : WebUiBuiltInKeywords.class.getDeclaredMethods()) {
+            if (method.getName().startsWith(HTMLValidationAction.VALIDATION_ACTION_PREFIX)) {
+                result.add(new HTMLValidationAction(method.getName(), WebUiBuiltInKeywords.class.getName(), method
+                        .getName()));
+            }
+        }
+        return result;
+    }
+
+    public static List<HTMLSynchronizeAction> getAllHTMLSynchronizeActions() {
+        List<HTMLSynchronizeAction> result = new ArrayList<HTMLSynchronizeAction>();
+        for (Method method : WebUiBuiltInKeywords.class.getDeclaredMethods()) {
+            if (method.getName().startsWith(HTMLSynchronizeAction.SYNCHRONIZE_ACTION_PREFIX)) {
+                result.add(new HTMLSynchronizeAction(method.getName(), WebUiBuiltInKeywords.class.getName(), method
+                        .getName()));
+            }
+        }
+        return result;
     }
 }

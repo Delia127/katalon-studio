@@ -45,19 +45,21 @@ import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class ConsoleLauncher extends AbstractLauncher {
     private int rerunMaxNumber;
+    private boolean isRerunFailedTestCaseOnly;
 
     public ConsoleLauncher(IRunConfiguration runConfig) {
         super(runConfig);
     }
 
     public void launch(TestSuiteEntity testSuite, TestSuiteExecutedEntity testSuiteExecutedEntity, int reRunTime,
-            int rerunMaxNumber, List<String> passedTestCaseIds) throws Exception {
+            int rerunMaxNumber, boolean isRerunFailedTestCaseOnly, List<String> passedTestCaseIds) throws Exception {
         if (testSuite != null) {
             executedEntity = testSuite;
             this.testSuiteExecutedEntity = testSuiteExecutedEntity;
             ExecutionUtil.writeRunConfigToFile(getRunConfiguration());
             scriptFile = generateTempTestSuiteScript(testSuite, runConfig, testSuiteExecutedEntity);
             this.reRunTime = reRunTime;
+            this.isRerunFailedTestCaseOnly = isRerunFailedTestCaseOnly;
             this.rerunMaxNumber = rerunMaxNumber;
             this.passedTestCaseIds = passedTestCaseIds;
             LauncherManager.getInstance().addLauncher(this);
@@ -185,7 +187,7 @@ public class ConsoleLauncher extends AbstractLauncher {
             final AbstractRunConfiguration abstractRunConfiguration = (AbstractRunConfiguration) runConfig;
             abstractRunConfiguration.generateLogFolder(testSuite);
             abstractRunConfiguration.generateLogFilePath(testSuite);
-            if (testSuite.isRerunFailedTestCasesOnly()) {
+            if (isRerunFailedTestCaseOnly) {
                 collectPassedTestCaseIds(suiteLog, passedTestCaseIds);
             }
             Display.getDefault().syncExec(new Runnable() {
@@ -193,7 +195,7 @@ public class ConsoleLauncher extends AbstractLauncher {
                     try {
                         ConsoleMain.launchTestSuite(testSuite, abstractRunConfiguration,
                                 testSuiteExecutedEntity.getReportLocationSetting(), reRunTime + 1, rerunMaxNumber,
-                                passedTestCaseIds);
+                                isRerunFailedTestCaseOnly, passedTestCaseIds);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -241,8 +243,7 @@ public class ConsoleLauncher extends AbstractLauncher {
                         }
 
                         if (reportLocSetting.isReportFileNameSet()
-                                && (fileExtension.equals("csv") || fileExtension
-                                        .equals("html"))) {
+                                && (fileExtension.equals("csv") || fileExtension.equals("html"))) {
                             fileName = reportLocSetting.getReportFileName();
                         }
 

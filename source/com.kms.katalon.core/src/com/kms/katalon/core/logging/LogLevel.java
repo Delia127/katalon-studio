@@ -1,5 +1,7 @@
 package com.kms.katalon.core.logging;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.logging.Level;
 
 import com.kms.katalon.core.constants.StringConstants;
@@ -50,5 +52,15 @@ public class LogLevel extends Level {
             return RUN_DATA;
 		}
 		return null;
+	}
+	
+	public static Set<LogLevel> getResultLogs() {
+	    Set<LogLevel> resultLogs = new LinkedHashSet<LogLevel>();
+	    resultLogs.add(LogLevel.PASSED);
+	    resultLogs.add(LogLevel.FAILED);
+	    resultLogs.add(LogLevel.ERROR);
+	    resultLogs.add(LogLevel.INCOMPLETE);
+	    
+	    return resultLogs;
 	}
 }
