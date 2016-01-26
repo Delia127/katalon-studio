@@ -1,5 +1,7 @@
 package com.kms.katalon.constants;
 
+import java.io.File;
+
 /**
  * This interface will do the job as a language file does
  * 
@@ -134,5 +136,18 @@ public class GlobalStringConstants {
     public static final String ROOT_FOLDER_NAME_OBJECT_REPOSITORY = "Object Repository";
     public static final String ROOT_FOLDER_NAME_KEYWORD = "Keywords";
     public static final String ROOT_FOLDER_NAME_REPORT = "Reports";
+    public static final String ROOT_FOLDER_NAME_SETTINGS = "settings";
+    public static final String ROOT_FOLDER_NAME_SETTINGS_INTERNAL = ROOT_FOLDER_NAME_SETTINGS + File.separator + "internal";
+    public static final String ROOT_FOLDER_NAME_SETTINGS_EXTERNAL = ROOT_FOLDER_NAME_SETTINGS + File.separator + "external";
     public static final String FILE_NAME_GLOBAL_VARIABLE = "GlobalVariables";
+    public static final String GROOVY_FILE_EXENSION = ".groovy";
+    public static final String PROPERTY_FILE_EXENSION = ".properties";
+
+    // Entity keyword
+    public static final String ENTITY_KW_TEST_CASE = "tc";
+    public static final String ENTITY_KW_TEST_SUITE = "ts";
+    public static final String ENTITY_KW_TEST_OBJECT = "ob";
+    public static final String ENTITY_KW_TEST_DATA = "td";
+    public static final String ENTITY_KW_REPORT = "rp";
+    public static final String ENTITY_KW_KEYWORD = "kw";
 }

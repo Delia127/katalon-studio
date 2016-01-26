@@ -7,8 +7,7 @@
    </configIni>
 
    <launcherArgs>
-      <programArgs>-clearPersistedState
--data config
+      <programArgs>-data config
       </programArgs>
       <vmArgs>-Xms256m
 -Xmx1024m
@@ -20,7 +19,6 @@
    </launcherArgs>
 
    <windowImages i16="icons/branding_16.png" i32="icons/branding_32.png" i48="icons/branding_48.png" i64="icons/branding_64.png" i128="icons/branding_128.png" i256="icons/branding_256.png"/>
-
 
    <launcher name="katalon">
       <linux icon="icons/icon.xpm"/>

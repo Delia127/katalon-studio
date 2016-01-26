@@ -64,6 +64,7 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.report.constants.ImageConstants;
 import com.kms.katalon.composer.report.constants.StringConstants;
@@ -87,7 +88,7 @@ import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.util.ExecutionUtil;
 
-public class ReportPart implements EventHandler {
+public class ReportPart implements EventHandler, IComposerPart {
 
     @Inject
     private IEventBroker eventBroker;
@@ -952,5 +953,15 @@ public class ReportPart implements EventHandler {
                 LoggerSingleton.logError(e);
             }
         }
+    }
+
+    @Override
+    public String getEntityId() {
+        return getReport().getIdForDisplay();
+    }
+
+    @Override
+    public String getEntityKw() {
+        return StringConstants.ENTITY_KW_REPORT;
     }
 }

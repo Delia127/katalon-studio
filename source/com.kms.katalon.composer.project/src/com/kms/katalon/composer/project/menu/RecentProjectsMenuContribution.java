@@ -36,10 +36,10 @@ public class RecentProjectsMenuContribution implements EventHandler {
 
     @Inject
     EModelService modelService;
-    
+
     @Inject
     private IEventBroker eventBroker;
-    
+
     private static List<ProjectEntity> recentProjects = new ArrayList<ProjectEntity>();
 
     @PostConstruct
@@ -49,7 +49,7 @@ public class RecentProjectsMenuContribution implements EventHandler {
         eventBroker.subscribe(EventConstants.PROJECT_OPENED, this);
         eventBroker.subscribe(EventConstants.PROJECT_UPDATED, this);
     }
-    
+
     @AboutToShow
     public void aboutToShow(List<MMenuElement> menuItems) {
         try {
@@ -58,7 +58,7 @@ public class RecentProjectsMenuContribution implements EventHandler {
                 MCommand command = MCommandsFactory.INSTANCE.createCommand();
                 command.setCommandName("Temp");
 
-                String labelName = project.getName() + "\t" + getLocationStringLabel(project.getLocation());
+                String labelName = project.getName() + "\t" + getLocationStringLabel(project.getFolderLocation());
 
                 // Create menu item
                 MHandledMenuItem recentProjectMenuItem = MMenuFactory.INSTANCE.createHandledMenuItem();
@@ -101,6 +101,5 @@ public class RecentProjectsMenuContribution implements EventHandler {
             LoggerSingleton.logError(e);
         }
     }
-    
-    
+
 }

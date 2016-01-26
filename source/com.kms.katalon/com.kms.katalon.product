@@ -14,8 +14,7 @@
    </configIni>
 
    <launcherArgs>
-      <programArgs>-clearPersistedState
--data config
+      <programArgs>-data config
       </programArgs>
       <vmArgs>-Xms256m
 -Xmx1024m
@@ -28,6 +27,7 @@
 
    <windowImages i16="icons/branding_16.png" i32="icons/branding_32.png" i48="icons/branding_48.png" i64="icons/branding_64.png" i128="icons/branding_128.png" i256="icons/branding_256.png"/>
 
+
    <launcher name="katalon">
       <linux icon="icons/icon.xpm"/>
       <macosx icon="icons/icon.icns"/>
@@ -38,14 +38,16 @@
       </win>
    </launcher>
 
+
    <vm>
       <windows include="true">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7</windows>
    </vm>
 
+
    <plugins>
       <plugin id="com.ibm.icu"/>
-      <plugin id="com.kms.katalon.composer.explorer"/>
       <plugin id="com.kms.katalon"/>
+      <plugin id="com.kms.katalon.composer.explorer"/>
       <plugin id="com.kms.katalon.entity"/>
       <plugin id="javax.annotation"/>
       <plugin id="javax.inject"/>

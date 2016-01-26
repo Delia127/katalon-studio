@@ -1,27 +1,74 @@
 package com.kms.katalon.composer.project.handlers;
 
 import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.internal.events.EventBroker;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.ui.PlatformUI;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.constants.PreferenceConstants;
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.project.ProjectEntity;
 
 @SuppressWarnings("restriction")
 public class RecentProjectHandler {
-	@Inject 
-	EventBroker eventBroker;
-	
-	@Execute
-	public void execute(@Optional @Named(IdConstants.OPEN_RECENT_PROJECT_COMMAND_PARAMETER_ID) String projectPk)
-			throws IOException {
-		if (projectPk != null) {
-        	eventBroker.post(EventConstants.PROJECT_OPEN, projectPk); 
+    @Inject
+    EventBroker eventBroker;
+
+    @Execute
+    public void execute(@Optional @Named(IdConstants.OPEN_RECENT_PROJECT_COMMAND_PARAMETER_ID) String projectPk)
+            throws IOException {
+        if (projectPk != null) {
+            if (ProjectController.getInstance().getCurrentProject() != null) {
+                // Send a notice of switching project
+                eventBroker.post(EventConstants.PROJECT_SWITCH, projectPk);
+            }
+            eventBroker.post(EventConstants.PROJECT_OPEN, projectPk);
         }
-	}
+    }
+
+    /**
+     * Open last recent project when application started by listening to
+     * {@link com.kms.katalon.constants.EventConstants.WORKSPACE_CREATED}
+     * 
+     * @param object Can be any. This Object is not important.
+     */
+    @Inject
+    @Optional
+    private void openLastRecentProject(@UIEventTopic(EventConstants.WORKSPACE_CREATED) Object object) {
+        if (ProjectController.getInstance().getCurrentProject() != null) return;
+        try {
+            List<ProjectEntity> recentProjects = ProjectController.getInstance().getRecentProjects();
+            if (recentProjects == null || recentProjects.isEmpty()) return;
+
+            boolean willOpen = true;
+            if (!PlatformUI.getPreferenceStore().getBoolean(
+                    PreferenceConstants.ProjectPreferenceConstants.RECENT_AUTO_RESTORE)) {
+                willOpen = MessageDialog.openQuestion(
+                        null,
+                        StringConstants.ADDON_TITLE_OPEN_PROJECT,
+                        MessageFormat.format(StringConstants.ADDON_MSG_RESTORE_LAST_OPENED_PROJECT,
+                                recentProjects.get(0).getName(), recentProjects.get(0).getFolderLocation()));
+            }
+
+            if (willOpen) {
+                String projectId = recentProjects.get(0).getId();
+                eventBroker.post(EventConstants.PROJECT_OPEN, projectId);
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
 }

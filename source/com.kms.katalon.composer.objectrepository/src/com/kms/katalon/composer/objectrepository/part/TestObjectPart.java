@@ -25,6 +25,7 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.objectrepository.constant.StringConstants;
 import com.kms.katalon.composer.objectrepository.view.ObjectPropertyView;
@@ -35,7 +36,7 @@ import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 
-public class TestObjectPart implements EventHandler {
+public class TestObjectPart implements EventHandler, IComposerPart {
     private static boolean isConfirmationDialogShowed = false;
 
     @Inject
@@ -184,5 +185,19 @@ public class TestObjectPart implements EventHandler {
             return null;
         }
         return new FolderTreeEntity(folderEntity, getParentFolderTreeEntity(folderEntity.getParentFolder(), rootFolder));
+    }
+
+    public WebElementEntity getTestObject() {
+        return originalTestObject;
+    }
+
+    @Override
+    public String getEntityId() {
+        return getTestObject().getIdForDisplay();
+    }
+
+    @Override
+    public String getEntityKw() {
+        return StringConstants.ENTITY_KW_TEST_OBJECT;
     }
 }

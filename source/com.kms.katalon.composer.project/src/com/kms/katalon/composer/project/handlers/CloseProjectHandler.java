@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.project.handlers;
 
+import java.io.File;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -13,9 +15,12 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
+import com.kms.katalon.composer.components.impl.util.PropertiesUtil;
 import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 
@@ -47,16 +52,18 @@ public class CloseProjectHandler {
 
     public static boolean closeCurrentProject(EPartService partService, EModelService modelService,
             MApplication application, IEventBroker eventBroker) {
-        if (ProjectController.getInstance().getCurrentProject() != null && partService.getActivePart() != null) {
+        final ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+        if (project != null && partService.getActivePart() != null) {
             if (partService.saveAll(true)) {
-                MPartStack composerStack = (MPartStack) modelService.find(
-                        IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
+                saveOpenedEntitiesState(partService, project);
+
+                MPartStack composerStack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID,
+                        application);
 
                 while (composerStack.getChildren().size() > 0) {
                     MPart mpart = (MPart) composerStack.getChildren().get(0);
                     partService.hidePart(mpart, true);
                 }
-                final ProjectEntity project = ProjectController.getInstance().getCurrentProject();
                 try {
                     if (project != null) {
                         ProjectController.getInstance().closeProject(project.getId(), null);
@@ -73,5 +80,20 @@ public class CloseProjectHandler {
         }
         return true;
 
+    }
+
+    /**
+     * Save all opened entities for next working session
+     * 
+     * @see com.kms.katalon.composer.explorer.parts.ExplorerPart#restoreOpenedEntitiesState()
+     * @param partService
+     * @param project
+     */
+    private static void saveOpenedEntitiesState(EPartService partService, ProjectEntity project) {
+        String ids = EntityPartUtil.getOpenedEntityIds(partService.getParts());
+        PropertiesUtil.update(project.getFolderLocation() + File.separator
+                + StringConstants.ROOT_FOLDER_NAME_SETTINGS_INTERNAL + File.separator
+                + PreferenceConstants.ProjectPreferenceConstants.QUALIFIER + StringConstants.PROPERTY_FILE_EXENSION,
+                PreferenceConstants.ProjectPreferenceConstants.RECENT_OPENED_ENTITIES, ids);
     }
 }

@@ -69,6 +69,7 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.control.ImageButton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.composer.testcase.ast.treetable.AstMethodTreeTableNode;
@@ -106,7 +107,7 @@ import com.kms.katalon.core.testobject.ObjectRepository;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 
-public class TestCasePart implements EventHandler {
+public class TestCasePart implements IComposerPart, EventHandler {
 
     private Text textTestCaseName;
 
@@ -1133,5 +1134,15 @@ public class TestCasePart implements EventHandler {
 
     public VariableEntity[] getVariables() {
         return parentTestCaseCompositePart.getVariables();
+    }
+
+    @Override
+    public String getEntityId() {
+        return getTestCase().getIdForDisplay();
+    }
+
+    @Override
+    public String getEntityKw() {
+        return StringConstants.ENTITY_KW_TEST_CASE;
     }
 }

@@ -41,6 +41,7 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
@@ -56,7 +57,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
-public abstract class RequestObjectPart implements EventHandler {
+public abstract class RequestObjectPart implements EventHandler, IComposerPart {
 
     @Inject
     protected MApplication application;
@@ -417,6 +418,20 @@ public abstract class RequestObjectPart implements EventHandler {
             MessageDialog
                     .openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, e1.getMessage());
         }
+    }
+
+    public WebServiceRequestEntity getWSRequestObject() {
+        return originalWsObject;
+    }
+
+    @Override
+    public String getEntityId() {
+        return getWSRequestObject().getIdForDisplay();
+    }
+
+    @Override
+    public String getEntityKw() {
+        return StringConstants.ENTITY_KW_TEST_OBJECT;
     }
 
 }
