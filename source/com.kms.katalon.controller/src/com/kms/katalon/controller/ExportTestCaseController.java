@@ -2,7 +2,7 @@ package com.kms.katalon.controller;
 
 import java.util.List;
 
-import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.controller.constants.StringConstants;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
