@@ -11,6 +11,7 @@ import org.eclipse.e4.ui.model.application.ui.menu.MMenu;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuFactory;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.StringConstants;
 
 /**
@@ -43,51 +44,50 @@ public class MenuProcessor {
     private MMenu initMainMenu() {
         // Main menu
         MMenu menu = MMenuFactory.INSTANCE.createMenu();
-        menu.setElementId(StringConstants.MAIN_MENU_ID);
+        menu.setElementId(IdConstants.MAIN_MENU_ID);
 
         // File menu
-        MMenu mFile = createMenu(StringConstants.MENU_ID_FILE, StringConstants.MENU_LBL_FILE);
-        mFile.getChildren().add(createMenu(StringConstants.MENU_ID_FILE_NEW, StringConstants.MENU_LBL_FILE_NEW));
+        MMenu mFile = createMenu(IdConstants.MENU_ID_FILE, StringConstants.MENU_LBL_FILE);
+        mFile.getChildren().add(createMenu(IdConstants.MENU_ID_FILE_NEW, StringConstants.MENU_LBL_FILE_NEW));
         mFile.getChildren().add(
-                createHanldedMenuItem(StringConstants.MENU_ID_FILE_SAVE, StringConstants.MENU_LBL_FILE_SAVE,
+                createHanldedMenuItem(IdConstants.MENU_ID_FILE_SAVE, StringConstants.MENU_LBL_FILE_SAVE,
                         StringConstants.MENU_ICON_URI_FILE_SAVE,
-                        createCommand(StringConstants.MENU_CMD_ID_FILE_SAVE, StringConstants.MENU_CMD_NAME_FILE_SAVE)));
+                        createCommand(IdConstants.SAVE_COMMAND_ID, StringConstants.MENU_CMD_NAME_FILE_SAVE)));
         mFile.getChildren().add(
                 createHanldedMenuItem(
-                        StringConstants.MENU_ID_FILE_SAVE_ALL,
+                        IdConstants.MENU_ID_FILE_SAVE_ALL,
                         StringConstants.MENU_LBL_FILE_SAVE_ALL,
                         StringConstants.MENU_ICON_URI_FILE_SAVE_ALL,
-                        createCommand(StringConstants.MENU_CMD_ID_FILE_SAVE_ALL,
+                        createCommand(IdConstants.MENU_CMD_ID_FILE_SAVE_ALL,
                                 StringConstants.MENU_CMD_NAME_FILE_SAVE_ALL)));
         mFile.getChildren().add(
-                createHanldedMenuItem(StringConstants.MENU_ID_FILE_QUIT, StringConstants.MENU_LBL_FILE_QUIT,
+                createHanldedMenuItem(IdConstants.MENU_ID_FILE_QUIT, StringConstants.MENU_LBL_FILE_QUIT,
                         StringConstants.MENU_ICON_URI_FILE_QUIT,
-                        createCommand(StringConstants.MENU_CMD_ID_FILE_QUIT, StringConstants.MENU_CMD_NAME_FILE_QUIT)));
+                        createCommand(IdConstants.QUIT_COMMAND_ID, StringConstants.MENU_CMD_NAME_FILE_QUIT)));
 
         // Edit menu
-        MMenu mEdit = createMenu(StringConstants.MENU_ID_EDIT, StringConstants.MENU_LBL_EDIT);
+        MMenu mEdit = createMenu(IdConstants.MENU_ID_EDIT, StringConstants.MENU_LBL_EDIT);
 
         // Report menu
-        MMenu mReport = createMenu(StringConstants.MENU_ID_REPORT, StringConstants.MENU_LBL_REPORT);
+        MMenu mReport = createMenu(IdConstants.MENU_ID_REPORT, StringConstants.MENU_LBL_REPORT);
 
         // Settings menu
-        MMenu mSettings = createMenu(StringConstants.MENU_ID_SETTINGS, StringConstants.MENU_LBL_SETTINGS);
+        MMenu mSettings = createMenu(IdConstants.MENU_ID_SETTINGS, StringConstants.MENU_LBL_SETTINGS);
 
         // Settings menu
-        MMenu mSearch = createMenu(StringConstants.MENU_ID_SEARCH, StringConstants.MENU_LBL_SEARCH);
+        MMenu mSearch = createMenu(IdConstants.MENU_ID_SEARCH, StringConstants.MENU_LBL_SEARCH);
         mSearch.getChildren().add(
-                createHanldedMenuItem(StringConstants.MENU_ID_SAERCH_, StringConstants.MENU_LBL_SEARCH_, null,
-                        createCommand(StringConstants.MENU_CMD_ID_SEARCH_, StringConstants.MENU_CMD_NAME_SEARCH_)));
+                createHanldedMenuItem(IdConstants.MENU_ID_SAERCH_, StringConstants.MENU_LBL_SEARCH_, null,
+                        createCommand(IdConstants.MENU_CMD_ID_SEARCH_, StringConstants.MENU_CMD_NAME_SEARCH_)));
 
         // Settings menu
-        MMenu mProject = createMenu(StringConstants.MENU_ID_PROJECT, StringConstants.MENU_LBL_PROJECT);
+        MMenu mProject = createMenu(IdConstants.MENU_ID_PROJECT, StringConstants.MENU_LBL_PROJECT);
 
         // Settings menu
-        MMenu mHelp = createMenu(StringConstants.MENU_ID_HELP, StringConstants.MENU_LBL_HELP);
-        mHelp.getChildren()
-                .add(createHanldedMenuItem(StringConstants.MENU_ID_HELP_ABOUT, StringConstants.MENU_LBL_HELP_ABOUT,
-                        null,
-                        createCommand(StringConstants.MENU_CMD_ID_HELP_ABOUT, StringConstants.MENU_CMD_NAME_HELP_ABOUT)));
+        MMenu mHelp = createMenu(IdConstants.MENU_ID_HELP, StringConstants.MENU_LBL_HELP);
+        mHelp.getChildren().add(
+                createHanldedMenuItem(IdConstants.MENU_ID_HELP_ABOUT, StringConstants.MENU_LBL_HELP_ABOUT, null,
+                        createCommand(IdConstants.MENU_CMD_ID_HELP_ABOUT, StringConstants.MENU_CMD_NAME_HELP_ABOUT)));
 
         menu.getChildren().add(mFile);
         menu.getChildren().add(mEdit);

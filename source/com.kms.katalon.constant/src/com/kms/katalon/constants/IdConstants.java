@@ -25,22 +25,30 @@ public interface IdConstants {
     public static final String CONSOLE_PARTSTACK_ID = "com.kms.katalon.partstack.console";
 
     public static final String SYSTEM_CONSOLE_PART_ID = "org.eclipse.ui.console.ConsoleView";
+
     public static final String IDE_CONSOLE_LOG_PART_ID = "com.kms.katalon.partstack.console.log";
+
     public static final String IDE_SEARCH_PART_ID = "org.eclipse.search.ui.views.SearchView";
 
     // Explorer part content
     public static final String EXPLORER_PART_ID = "com.kms.katalon.composer.part.explorer";
+
     public static final String EXPLORER_TOOL_ITEM_COLLAPSE_ALL = "com.kms.katalon.composer.explorer.handledtoolitem.collapseAll";
+
     public static final String EXPLORER_TOOL_ITEM_LINK_PART = "com.kms.katalon.composer.explorer.handledtoolitem.linkPart";
 
     // Test Case Part content
     public static final String TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".testcase";
 
     public static final String TEST_CASE_SUB_PART_STACK_ID_SUFFIX = ".partStack";
+
     public static final String TEST_CASE_EDITOR_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX + ".editor";
+
     public static final String TEST_CASE_VARIABLES_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX + ".variables";
+
     public static final String TEST_CASE_INTEGRATION_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX
             + ".integration";
+
     public static final String TEST_CASE_GENERAL_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX + ".testCasePart";
 
     // Test Object Part content
@@ -50,8 +58,10 @@ public interface IdConstants {
     public static final String TESTSUITE_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".testsuite";
 
     public static final String TEST_SUITE_SUB_PART_STACK_ID_SUFFIX = ".partStack";
+
     public static final String TEST_SUITE_INTEGRATION_PART_ID_SUFFIX = TEST_SUITE_SUB_PART_STACK_ID_SUFFIX
             + ".integration";
+
     public static final String TEST_SUITE_MAIN_PART_ID_SUFFIX = TEST_SUITE_SUB_PART_STACK_ID_SUFFIX + ".testSuitePart";
 
     // Test Data Part content
@@ -65,20 +75,29 @@ public interface IdConstants {
 
     // Command ID
     public static final String SAVE_COMMAND_ID = "com.kms.katalon.command.save";
+
     public static final String CLOSE_COMMAND_ID = "com.kms.katalon.command.close";
 
     // Open Recent Project Command id
     public static final String OPEN_RECENT_PROJECT_COMMAND_ID = "com.kms.katalon.composer.project.command.openrecentproject";
+
     public static final String OPEN_RECENT_PROJECT_COMMAND_PARAMETER_ID = "com.kms.katalon.composer.project.command.openrecentproject.parameters.project";
 
     // Bundle
     public static final String KATALON_CUSTOM_BUNDLE_ID = "com.kms.katalon.custom";
+
     public static final String KATALON_CORE_BUNDLE_ID = "com.kms.katalon.core";
+
     public static final String KATALON_WEB_UI_BUNDLE_ID = "com.kms.katalon.core.webui";
+
     public static final String KATALON_SELENIUM_BUNDLE_ID = "com.kms.katalon.selenium.server-standalone";
+
     public static final String KATALON_EXECUTION_BUNDLE_ID = "com.kms.katalon.execution";
+
     public static final String XERCES_BUNDLE_ID = "org.apache.xerces.impl";
+
     public static final String XML_APIS_BUNDLE_ID = "org.apache.xml.apis";
+
     public static final String COMPOSER_EXECUTION_BUNDLE_ID = "com.kms.katalon.composer.execution";
 
     // Groovy
@@ -86,21 +105,67 @@ public interface IdConstants {
 
     // Log viewer part
     public static final String LOG_VIEWER_TOOL_ITEM_ALL_ID = "com.kms.katalon.composer.execution.logviewer.all";
+
     public static final String LOG_VIEWER_TOOL_ITEM_INFO_ID = "com.kms.katalon.composer.execution.logviewer.info";
+
     public static final String LOG_VIEWER_TOOL_ITEM_PASSED_ID = "com.kms.katalon.composer.execution.logviewer.passed";
+
     public static final String LOG_VIEWER_TOOL_ITEM_FAILED_ID = "com.kms.katalon.composer.execution.logviewer.failed";
+
     public static final String LOG_VIEWER_TOOL_ITEM_ERROR_ID = "com.kms.katalon.composer.execution.logviewer.error";
 
     public static final String LOG_VIEWER_TOOL_ITEM_TREE_ID = "com.kms.katalon.composer.execution.directtoolitem.tree";
+
     public static final String LOG_VIEWER_TOOL_ITEM_PIN_ID = "com.kms.katalon.composer.execution.directtoolitem.pin";
 
     public static final String LOG_VIEWER_MENU_TREEVIEW = "com.kms.katalon.composer.execution.menu.treeview";
+
     public static final String LOG_VIEWER_MENU_ITEM_WORD_WRAP = "com.kms.katalon.composer.execution.handledmenuitem.wordWrap";
 
     // Outline Part Stack
     public static final String OUTLINE_PARTSTACK_ID = "com.kms.katalon.partstack.outline";
+
     public static final String JOBVIEWER_PART_ID = "com.kms.katalon.composer.execution.part.job";
+
     public static final String OUTLINE_TRIMSTACK_ID = "com.kms.katalon.partstack.outline(com.kms.katalon.composer.perspective.keyword)";
+
     public static final String TOOLBAR_TRIMSTACK_ID = "com.kms.katalon.trimbar";
+
     public static final String CONSOLE_TRIMSTACK_ID = "com.kms.katalon.partstack.console(com.kms.katalon.composer.perspective.keyword)";
+
+    // Menu IDs
+    public static final String MAIN_MENU_ID = "com.kms.katalon.composer.menu";
+
+    public static final String MENU_ID_FILE = "com.kms.katalon.composer.menu.file";
+
+    public static final String MENU_ID_FILE_NEW = "com.kms.katalon.menu.submenu.new";
+
+    public static final String MENU_ID_FILE_SAVE_ALL = "com.kms.katalon.composer.menu.file.save_all";
+
+    public static final String MENU_ID_FILE_SAVE = "com.kms.katalon.composer.menu.file.save";
+
+    public static final String MENU_ID_FILE_QUIT = "com.kms.katalon.composer.menu.file.quit";
+
+    public static final String MENU_ID_EDIT = "com.kms.katalon.composer.menu.edit";
+
+    public static final String MENU_ID_REPORT = "com.kms.katalon.composer.menu.report";
+
+    public static final String MENU_ID_SETTINGS = "com.kms.katalon.composer.menu.settings";
+
+    public static final String MENU_ID_SEARCH = "com.kms.katalon.menu.search";
+
+    public static final String MENU_ID_SAERCH_ = "com.kms.katalon.handledmenuitem.searchFile";
+
+    public static final String MENU_ID_PROJECT = "com.kms.katalon.composer.menu.project";
+
+    public static final String MENU_ID_HELP = "com.kms.katalon.composer.menu.help";
+
+    public static final String MENU_ID_HELP_ABOUT = "com.kms.katalon.composer.menu.help.about";
+
+    // Command IDs
+    public static final String MENU_CMD_ID_FILE_SAVE_ALL = "com.kms.katalon.command.saveAll";
+
+    public static final String MENU_CMD_ID_SEARCH_ = "com.kms.katalon.command.search";
+
+    public static final String MENU_CMD_ID_HELP_ABOUT = "org.eclipse.ui.help.aboutAction";
 }

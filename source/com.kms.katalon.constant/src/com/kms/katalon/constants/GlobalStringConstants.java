@@ -54,49 +54,6 @@ public class GlobalStringConstants {
     // Studio's name
     public static final String APP_NAME = "Katalon Studio";
 
-    // Menu IDs
-    public static final String MAIN_MENU_ID = "com.kms.katalon.composer.menu";
-
-    public static final String MENU_ID_FILE = "com.kms.katalon.composer.menu.file";
-
-    public static final String MENU_ID_FILE_NEW = "com.kms.katalon.menu.submenu.new";
-
-    public static final String MENU_ID_FILE_SAVE_ALL = "com.kms.katalon.composer.menu.file.save_all";
-
-    public static final String MENU_ID_FILE_SAVE = "com.kms.katalon.composer.menu.file.save";
-
-    public static final String MENU_ID_FILE_QUIT = "com.kms.katalon.composer.menu.file.quit";
-
-    public static final String MENU_ID_EDIT = "com.kms.katalon.composer.menu.edit";
-
-    public static final String MENU_ID_REPORT = "com.kms.katalon.composer.menu.report";
-
-    public static final String MENU_ID_SETTINGS = "com.kms.katalon.composer.menu.settings";
-
-    public static final String MENU_ID_SEARCH = "com.kms.katalon.menu.search";
-
-    public static final String MENU_ID_SAERCH_ = "com.kms.katalon.handledmenuitem.searchFile";
-
-    public static final String MENU_ID_PROJECT = "com.kms.katalon.composer.menu.project";
-
-    public static final String MENU_ID_HELP = "com.kms.katalon.composer.menu.help";
-
-    public static final String MENU_ID_HELP_ABOUT = "com.kms.katalon.composer.menu.help.about";
-
-    // Command IDs
-    public static final String MENU_CMD_ID_FILE_SAVE = "com.kms.katalon.command.save";
-
-    public static final String MENU_CMD_ID_FILE_SAVE_ALL = "com.kms.katalon.command.saveAll";
-
-    public static final String MENU_CMD_ID_FILE_QUIT = "com.kms.katalon.composer.quit";
-
-    public static final String MENU_CMD_ID_SEARCH_ = "com.kms.katalon.command.search";
-
-    public static final String MENU_CMD_ID_HELP_ABOUT = "org.eclipse.ui.help.aboutAction";
-
-    // Part IDs
-    public static final String PART_ID_TESTS_EXPLORER = "com.kms.katalon.composer.part.explorer";
-
     // Path
     public static final String ENTITY_ID_SEPERATOR = "/";
 

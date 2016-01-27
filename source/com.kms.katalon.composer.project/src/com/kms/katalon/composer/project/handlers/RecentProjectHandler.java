@@ -72,7 +72,7 @@ public class RecentProjectHandler {
             if (willOpen) {
                 // If the Tests Explorer part is minimized or hidden, we have to activate it.
                 // So that the tree entities can be loaded.
-                MPart explorerPart = partService.findPart(StringConstants.PART_ID_TESTS_EXPLORER);
+                MPart explorerPart = partService.findPart(IdConstants.EXPLORER_PART_ID);
                 if (explorerPart != null) partService.activate(explorerPart, true);
 
                 // Open project
