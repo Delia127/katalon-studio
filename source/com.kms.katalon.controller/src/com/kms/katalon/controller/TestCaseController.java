@@ -8,7 +8,7 @@ import java.util.List;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
-import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.controller.constants.StringConstants;
 import com.kms.katalon.dal.state.DataProviderState;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;

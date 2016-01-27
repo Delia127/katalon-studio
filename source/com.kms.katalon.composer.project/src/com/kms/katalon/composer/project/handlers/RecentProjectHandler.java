@@ -10,7 +10,9 @@ import javax.inject.Named;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.internal.events.EventBroker;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.PlatformUI;
 
@@ -27,6 +29,9 @@ public class RecentProjectHandler {
     @Inject
     EventBroker eventBroker;
 
+    @Inject
+    private EPartService partService;
+
     @Execute
     public void execute(@Optional @Named(IdConstants.OPEN_RECENT_PROJECT_COMMAND_PARAMETER_ID) String projectPk)
             throws IOException {
@@ -41,7 +46,7 @@ public class RecentProjectHandler {
 
     /**
      * Open last recent project when application started by listening to
-     * {@link com.kms.katalon.constants.EventConstants.WORKSPACE_CREATED}
+     * {@link com.kms.katalon.controller.constants.EventConstants.WORKSPACE_CREATED}
      * 
      * @param object Can be any. This Object is not important.
      */
@@ -49,6 +54,7 @@ public class RecentProjectHandler {
     @Optional
     private void openLastRecentProject(@UIEventTopic(EventConstants.WORKSPACE_CREATED) Object object) {
         if (ProjectController.getInstance().getCurrentProject() != null) return;
+
         try {
             List<ProjectEntity> recentProjects = ProjectController.getInstance().getRecentProjects();
             if (recentProjects == null || recentProjects.isEmpty()) return;
@@ -64,8 +70,13 @@ public class RecentProjectHandler {
             }
 
             if (willOpen) {
-                String projectId = recentProjects.get(0).getId();
-                eventBroker.post(EventConstants.PROJECT_OPEN, projectId);
+                // If the Tests Explorer part is minimized or hidden, we have to activate it.
+                // So that the tree entities can be loaded.
+                MPart explorerPart = partService.findPart(StringConstants.PART_ID_TESTS_EXPLORER);
+                if (explorerPart != null) partService.activate(explorerPart, true);
+
+                // Open project
+                eventBroker.post(EventConstants.PROJECT_OPEN, recentProjects.get(0).getId());
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);

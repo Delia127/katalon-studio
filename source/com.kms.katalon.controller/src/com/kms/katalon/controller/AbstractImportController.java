@@ -5,7 +5,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.controller.constants.StringConstants;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.util.ImportDuplicateEntityResult;
 

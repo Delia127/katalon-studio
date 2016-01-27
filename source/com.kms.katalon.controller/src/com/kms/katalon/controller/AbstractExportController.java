@@ -1,6 +1,6 @@
 package com.kms.katalon.controller;
 
-import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.controller.constants.StringConstants;
 import com.kms.katalon.entity.project.ProjectEntity;
 
 

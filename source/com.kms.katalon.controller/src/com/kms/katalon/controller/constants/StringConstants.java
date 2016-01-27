@@ -1,4 +1,4 @@
-package com.kms.katalon.constants;
+package com.kms.katalon.controller.constants;
 
 import com.kms.katalon.constants.GlobalStringConstants;
 
