@@ -22,6 +22,7 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
@@ -57,7 +58,10 @@ public class NewFolderHandler {
                 ITreeEntity parentTreeEntity = (ITreeEntity) selectedObjects[0];
                 Object selectedEntity = parentTreeEntity.getObject();
                 if (selectedEntity != null) {
-                    if (selectedEntity instanceof FolderEntity) {
+                    // Not allow creating Folder under Keywords and Reports
+                    if (selectedEntity instanceof FolderEntity
+                            && !(((FolderEntity) selectedEntity).getFolderType().equals(FolderType.KEYWORD) || ((FolderEntity) selectedEntity)
+                                    .getFolderType().equals(FolderType.REPORT))) {
                         parentFolder = (FolderEntity) selectedEntity;
                     } else if (selectedEntity instanceof TestCaseEntity) {
                         parentFolder = ((TestCaseEntity) selectedEntity).getParentFolder();
@@ -76,7 +80,7 @@ public class NewFolderHandler {
 
                 if (parentFolder != null) {
                     String newDefaultName = StringConstants.HAND_NEW_FOLDER;
-                    
+
                     String suggestedName = FolderController.getInstance().getAvailableFolderName(parentFolder,
                             newDefaultName);
 
