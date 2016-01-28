@@ -33,7 +33,8 @@ public class WebDriverPropertyUtil {
             CHROME_MINI_DUMP_PATH_PROPERTY_KEY, CHROME_MOBILE_EMULATION_PROPERTY_KEY,
             CHROME_PREF_LOGGING_PREFS_PROPERTY_KEY };
 
-    public static DesiredCapabilities toDesireCapabilities(Map<String, Object> propertyMap, WebUIDriverType webUIDriverType) {
+    public static DesiredCapabilities toDesireCapabilities(Map<String, Object> propertyMap,
+            WebUIDriverType webUIDriverType) {
         switch (webUIDriverType) {
         case CHROME_DRIVER:
             return getDesireCapabilitiesForChrome(propertyMap);
@@ -48,7 +49,8 @@ public class WebDriverPropertyUtil {
         return toDesireCapabilities(propertyMap, new DesiredCapabilities(), true);
     }
 
-    public static DesiredCapabilities toDesireCapabilities(Map<String, Object> propertyMap, DesiredCapabilities desireCapabilities, boolean isLog) {
+    public static DesiredCapabilities toDesireCapabilities(Map<String, Object> propertyMap,
+            DesiredCapabilities desireCapabilities, boolean isLog) {
         for (Entry<String, Object> property : propertyMap.entrySet()) {
             if (isLog) {
                 KeywordLogger.getInstance().logInfo(
@@ -59,7 +61,7 @@ public class WebDriverPropertyUtil {
         }
         return desireCapabilities;
     }
-    
+
     public static DesiredCapabilities getDesireCapabilitiesForFirefox(Map<String, Object> propertyMap) {
         DesiredCapabilities desireCapabilities = DesiredCapabilities.firefox();
         for (Entry<String, Object> property : propertyMap.entrySet()) {
@@ -72,19 +74,19 @@ public class WebDriverPropertyUtil {
                         if (entry.getKey() instanceof String) {
                             String entryKey = (String) entry.getKey();
                             boolean isSet = false;
-                            if (property.getValue() instanceof Integer) {
-                                firefoxProfile.setPreference(entryKey, (Integer) entry.getValue());
+                            if (entry.getValue() instanceof Number) {
+                                firefoxProfile.setPreference(entryKey, ((Number) entry.getValue()).intValue());
                                 isSet = true;
-                            } else if (property.getValue() instanceof Boolean) {
+                            } else if (entry.getValue() instanceof Boolean) {
                                 firefoxProfile.setPreference(entryKey, (Boolean) entry.getValue());
                                 isSet = true;
-                            } else if (property.getValue() instanceof String) {
+                            } else if (entry.getValue() instanceof String) {
                                 firefoxProfile.setPreference(entryKey, (String) entry.getValue());
                                 isSet = true;
                             }
                             if (isSet) {
                                 KeywordLogger.getInstance().logInfo(
-                                        MessageFormat.format(StringConstants.KW_LOG_WEB_UI_PROPERTY_SETTING, entryKey,
+                                        MessageFormat.format(StringConstants.KW_LOG_FIREFOX_PROPERTY_SETTING, entryKey,
                                                 entry.getValue()));
                             }
                         }

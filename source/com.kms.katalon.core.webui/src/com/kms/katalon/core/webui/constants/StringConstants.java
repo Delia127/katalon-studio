@@ -512,4 +512,5 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	// WebUiDriverPropertySettingStore
 	public static final String WEB_UI_PROPERTY_FILE_NAME = "com.kms.katalon.core.webui";
     public static final String KW_LOG_WEB_UI_PROPERTY_SETTING = "User set preference: [''{0}'', ''{1}'']";
+    public static final String KW_LOG_FIREFOX_PROPERTY_SETTING = "User set firefox profile preference: [''{0}'', ''{1}'']";
 }
