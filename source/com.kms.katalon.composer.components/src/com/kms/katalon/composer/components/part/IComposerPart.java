@@ -14,11 +14,4 @@ public interface IComposerPart {
      * @return Opened Entity ID
      */
     public String getEntityId();
-
-    /**
-     * Get entity keyword
-     * 
-     * @return Entity keyword
-     */
-    public String getEntityKw();
 }

@@ -1,41 +1,71 @@
 package com.kms.katalon.entity.project;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.kms.katalon.entity.file.IntegratedFileEntity;
 
 public class ProjectEntity extends IntegratedFileEntity {
-	private static final long serialVersionUID = 1L;
-	private short pageLoadTimeout;
-	private String folderLocation;
+    private static final long serialVersionUID = 1L;
 
-	public short getPageLoadTimeout() {
-		return this.pageLoadTimeout;
-	}
+    private short pageLoadTimeout;
 
-	public void setPageLoadTimeout(short pageLoadTimeout) {
-		this.pageLoadTimeout = pageLoadTimeout;
-	}
+    private String folderLocation;
 
-	@Override
-	public String getFileExtension() {
-		return getProjectFileExtension();
-	}
+    private List<String> recentExpandedTreeEntityIds;
 
-	public static String getProjectFileExtension() {
-		return ".prj";
-	}
+    private List<String> recentOpenedTreeEntityIds;
 
-	@Override
-	public String getLocation() {
-		return getFolderLocation() + File.separator + name + getFileExtension();
-	}
+    public short getPageLoadTimeout() {
+        return this.pageLoadTimeout;
+    }
 
-	public String getFolderLocation() {
-		return folderLocation;
-	}
+    public void setPageLoadTimeout(short pageLoadTimeout) {
+        this.pageLoadTimeout = pageLoadTimeout;
+    }
 
-	public void setFolderLocation(String folderLocation) {
-		this.folderLocation = folderLocation;
-	}
+    @Override
+    public String getFileExtension() {
+        return getProjectFileExtension();
+    }
+
+    public static String getProjectFileExtension() {
+        return ".prj";
+    }
+
+    @Override
+    public String getLocation() {
+        return getFolderLocation() + File.separator + name + getFileExtension();
+    }
+
+    public String getFolderLocation() {
+        return folderLocation;
+    }
+
+    public void setFolderLocation(String folderLocation) {
+        this.folderLocation = folderLocation;
+    }
+
+    public List<String> getRecentExpandedTreeEntityIds() {
+        if (recentExpandedTreeEntityIds == null) {
+            return new ArrayList<String>();
+        }
+        return recentExpandedTreeEntityIds;
+    }
+
+    public void setRecentExpandedTreeEntityIds(List<String> recentExpandedTreeEntityIds) {
+        this.recentExpandedTreeEntityIds = recentExpandedTreeEntityIds;
+    }
+
+    public List<String> getRecentOpenedTreeEntityIds() {
+        if (recentOpenedTreeEntityIds == null) {
+            return new ArrayList<String>();
+        }
+        return recentOpenedTreeEntityIds;
+    }
+
+    public void setRecentOpenedTreeEntityIds(List<String> recentOpenedTreeEntityIds) {
+        this.recentOpenedTreeEntityIds = recentOpenedTreeEntityIds;
+    }
 }

@@ -10,13 +10,8 @@ public interface PreferenceConstants {
         public static final String QUALIFIER = "com.kms.katalon.composer.project";
 
         // Recent projects preferences
-        public static final String RECENT_ENTITY_SEPARATOR = ";";
-        public static final String RECENT_ENTITY_KW_SEPARATOR = "|";
         public static final String RECENT_AUTO_RESTORE = "project.autoRestoreRecentProject";
         public static final String RECENT_PROJECTS = "project.recentProjects";
-        public static final String RECENT_OPENED_ENTITIES = "project.recentOpenedEntities";
-        public static final String RECENT_EXPANDED_TREE_ENTITIES = "project.recentExpandedTreeEntities";
-        public static final String RECENT_SELECTED_TREE_ENTITY = "project.recentSelectedTreeEntity";
     }
     
     public interface ExplorerPreferenceConstants extends IPluginPreferenceConstants {

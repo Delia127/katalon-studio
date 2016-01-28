@@ -412,9 +412,4 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
     public String getEntityId() {
         return getOriginalTestSuite().getIdForDisplay();
     }
-
-    @Override
-    public String getEntityKw() {
-        return StringConstants.ENTITY_KW_TEST_SUITE;
-    }
 }

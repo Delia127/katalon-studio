@@ -7,9 +7,9 @@ public class StringConstants {
 
 	// WSBuiltInKeywords
 	public static final String KW_LOG_FAILED_ELEMENT_COUNT_NOT_EQUAL = "Expected elements count {0} is not equal with actual count {1}";
-	public static final String KW_LOG_FAILED_ELEMENT_PROP_VAL_NOT_EQUAL = "Expected element property value '{0}' is not equal with actual property value '{1}'";
-	public static final String KW_LOG_FAILED_ACTUAL_ELEMENT_TEXT_IS = "Expected text is '{0}' but actual element text is: {1}";
-	public static final String KW_STR_NOT_FOUND_IN_RES = "Given string '{0}' not found in response text '{1}'";
+	public static final String KW_LOG_FAILED_ELEMENT_PROP_VAL_NOT_EQUAL = "Expected element property value ''{0}'' is not equal with actual property value ''{1}''";
+	public static final String KW_LOG_FAILED_ACTUAL_ELEMENT_TEXT_IS = "Expected text is ''{0}'' but actual element text is: {1}";
+	public static final String KW_STR_NOT_FOUND_IN_RES = "Given string ''{0}'' not found in response text ''{1}''";
 	public static final String KW_LOG_FAILED_CANNOT_SEND_REQUEST = "Unable to send request";
 	public static final String KW_LOG_PASSED_SEND_REQUEST_SUCCESS = "Send request successfully";
 	public static final String KW_LOG_FAILED_CANNOT_VERIFY_ELEMENT_COUNT = "Unable to verify element count";

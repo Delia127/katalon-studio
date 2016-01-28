@@ -959,9 +959,4 @@ public class ReportPart implements EventHandler, IComposerPart {
     public String getEntityId() {
         return getReport().getIdForDisplay();
     }
-
-    @Override
-    public String getEntityKw() {
-        return StringConstants.ENTITY_KW_REPORT;
-    }
 }
