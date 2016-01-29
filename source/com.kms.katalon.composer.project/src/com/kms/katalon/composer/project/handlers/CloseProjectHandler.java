@@ -1,6 +1,6 @@
 package com.kms.katalon.composer.project.handlers;
 
-import java.io.File;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -16,11 +16,10 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
-import com.kms.katalon.composer.components.impl.util.PropertiesUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 
@@ -90,10 +89,15 @@ public class CloseProjectHandler {
      * @param project
      */
     private static void saveOpenedEntitiesState(EPartService partService, ProjectEntity project) {
-        String ids = EntityPartUtil.getOpenedEntityIds(partService.getParts());
-        PropertiesUtil.update(project.getFolderLocation() + File.separator
-                + StringConstants.ROOT_FOLDER_NAME_SETTINGS_INTERNAL + File.separator
-                + PreferenceConstants.ProjectPreferenceConstants.QUALIFIER + StringConstants.PROPERTY_FILE_EXENSION,
-                PreferenceConstants.ProjectPreferenceConstants.RECENT_OPENED_ENTITIES, ids);
+        try {
+            List<ProjectEntity> recentProjects = ProjectController.getInstance().getRecentProjects();
+            if (recentProjects != null && !recentProjects.isEmpty()) {
+                recentProjects.get(0).setRecentOpenedTreeEntityIds(
+                        EntityPartUtil.getOpenedEntityIds(partService.getParts()));
+                ProjectController.getInstance().saveRecentProjects(recentProjects);
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
     }
 }

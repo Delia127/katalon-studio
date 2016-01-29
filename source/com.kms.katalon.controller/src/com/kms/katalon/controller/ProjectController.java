@@ -25,6 +25,7 @@ public class ProjectController extends EntityController {
 
     private static final String RECENT_PROJECT_FILE_LOCATION = Platform.getLocation().toString() + File.separator
             + "recent_projects";
+
     private static final int NUMBER_OF_RECENT_PROJECTS = 5;
 
     private ProjectController() {
@@ -49,8 +50,7 @@ public class ProjectController extends EntityController {
 
     public ProjectEntity openProjectForUI(String projectPk, IProgressMonitor monitor) throws Exception {
         try {
-            if (monitor == null)
-                monitor = new NullProgressMonitor();
+            if (monitor == null) monitor = new NullProgressMonitor();
 
             ProjectEntity project = dataProviderSetting.getProjectDataProvider().getProjectWithoutClasspath(projectPk);
 
@@ -113,12 +113,16 @@ public class ProjectController extends EntityController {
                 break;
             }
         }
+
         if (existedProjectIndex > -1 && existedProjectIndex < recentProjects.size()) {
+            project.setRecentExpandedTreeEntityIds(recentProjects.get(existedProjectIndex)
+                    .getRecentExpandedTreeEntityIds());
+            project.setRecentOpenedTreeEntityIds(recentProjects.get(existedProjectIndex).getRecentOpenedTreeEntityIds());
             recentProjects.remove(existedProjectIndex);
         }
+
         recentProjects.add(0, project);
         if (recentProjects.size() > NUMBER_OF_RECENT_PROJECTS) {
-
             recentProjects = recentProjects.subList(0, NUMBER_OF_RECENT_PROJECTS);
         }
         saveRecentProjects(new ArrayList<ProjectEntity>(recentProjects));
@@ -156,8 +160,7 @@ public class ProjectController extends EntityController {
         try {
             inputStream = new ObjectInputStream(new FileInputStream(RECENT_PROJECT_FILE_LOCATION));
             projects = (List<ProjectEntity>) inputStream.readObject();
-        } catch (FileNotFoundException fileNotFoundException) {
-        } catch (Exception e) {
+        } catch (FileNotFoundException fileNotFoundException) {} catch (Exception e) {
             throw e;
         } finally {
             if (inputStream != null) {

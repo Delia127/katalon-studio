@@ -1140,9 +1140,4 @@ public class TestCasePart implements IComposerPart, EventHandler {
     public String getEntityId() {
         return getTestCase().getIdForDisplay();
     }
-
-    @Override
-    public String getEntityKw() {
-        return StringConstants.ENTITY_KW_TEST_CASE;
-    }
 }

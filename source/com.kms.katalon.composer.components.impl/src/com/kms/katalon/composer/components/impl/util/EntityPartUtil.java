@@ -14,11 +14,9 @@ import org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor;
 import org.eclipse.ui.part.FileEditorInput;
 
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
-import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.components.services.ModelServiceSingleton;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestCaseController;
@@ -127,27 +125,24 @@ public class EntityPartUtil {
      * @param parts list of available parts
      * @return opened entity IDs
      */
-    public static String getOpenedEntityIds(Collection<MPart> parts) {
+    public static List<String> getOpenedEntityIds(Collection<MPart> parts) {
         List<String> ids = new ArrayList<String>();
         if (parts != null) {
             for (MPart part : parts) {
                 Object o = part.getObject();
                 if (o instanceof IComposerPart) {
-                    ids.add(((IComposerPart) o).getEntityId()
-                            + PreferenceConstants.ProjectPreferenceConstants.RECENT_ENTITY_KW_SEPARATOR
-                            + ((IComposerPart) o).getEntityKw());
+                    ids.add(((IComposerPart) o).getEntityId());
                 } else if (o instanceof CompatibilityEditor) {
                     String elementId = ((CompatibilityEditor) o).getModel().getElementId();
                     if (!elementId.startsWith(IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX)) {
                         GroovyEditor editor = (GroovyEditor) ((CompatibilityEditor) o).getEditor();
                         String kwFilePath = GroovyStringUtil.getKeywordsRelativeLocation(((FileEditorInput) editor
                                 .getEditorInput()).getPath());
-                        ids.add(kwFilePath + PreferenceConstants.ProjectPreferenceConstants.RECENT_ENTITY_KW_SEPARATOR
-                                + StringConstants.ENTITY_KW_KEYWORD);
+                        ids.add(kwFilePath);
                     }
                 }
             }
         }
-        return StringUtils.join(ids, PreferenceConstants.ProjectPreferenceConstants.RECENT_ENTITY_SEPARATOR);
+        return ids;
     }
 }

@@ -195,9 +195,4 @@ public class TestObjectPart implements EventHandler, IComposerPart {
     public String getEntityId() {
         return getTestObject().getIdForDisplay();
     }
-
-    @Override
-    public String getEntityKw() {
-        return StringConstants.ENTITY_KW_TEST_OBJECT;
-    }
 }

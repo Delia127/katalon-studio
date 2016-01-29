@@ -548,10 +548,4 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener, I
     public String getEntityId() {
         return getDataFile().getIdForDisplay();
     }
-
-    @Override
-    public String getEntityKw() {
-        return StringConstants.ENTITY_KW_TEST_DATA;
-    }
-
 }

@@ -428,10 +428,4 @@ public abstract class RequestObjectPart implements EventHandler, IComposerPart {
     public String getEntityId() {
         return getWSRequestObject().getIdForDisplay();
     }
-
-    @Override
-    public String getEntityKw() {
-        return StringConstants.ENTITY_KW_TEST_OBJECT;
-    }
-
 }

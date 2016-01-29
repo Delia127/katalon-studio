@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.search.view.provider;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -15,6 +16,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -64,6 +66,9 @@ public class SearchResultPageLabelProvider extends DecoratingFileSearchLabelProv
                 if (fileExtension.equals(TestCaseEntity.getTestCaseFileExtension())) {
                     return ImageConstants.IMG_16_TEST_CASE;
                 } else if (fileExtension.equals(WebElementEntity.getWebElementFileExtension())) {
+                    if (IOUtils.toString(file.getContents()).contains(WebServiceRequestEntity.class.getSimpleName())) {
+                        return ImageConstants.IMG_16_TEST_OBJECT_WS;
+                    }
                     return ImageConstants.IMG_16_TEST_OBJECT;
                 } else if (fileExtension.equals(TestSuiteEntity.getTestSuiteFileExtension())) {
                     return ImageConstants.IMG_16_TEST_SUITE;

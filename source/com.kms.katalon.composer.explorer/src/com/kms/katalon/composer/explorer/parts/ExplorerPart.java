@@ -1,9 +1,7 @@
 package com.kms.katalon.composer.explorer.parts;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -67,7 +65,6 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
-import com.kms.katalon.composer.components.impl.util.PropertiesUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
@@ -110,10 +107,6 @@ public class ExplorerPart {
     private static final int KEYWORD_SEARCH_ALL_INDEX = 0;
 
     public static final String KEYWORD_SEARCH_ALL = "all";
-
-    private static final String PROJECT_PROPERTY_FILE_PATH = File.separator
-            + StringConstants.ROOT_FOLDER_NAME_SETTINGS_INTERNAL + File.separator
-            + PreferenceConstants.ProjectPreferenceConstants.QUALIFIER + StringConstants.PROPERTY_FILE_EXENSION;
 
     private DragSource dragSource;
 
@@ -711,21 +704,9 @@ public class ExplorerPart {
             @Override
             public void handleEvent(org.osgi.service.event.Event event) {
                 try {
-                    // if (PlatformUI.getPreferenceStore().getBoolean(
-                    // PreferenceConstants.ProjectPreferenceConstants.RECENT_AUTO_RESTORE)) {
-                    ProjectEntity project = ProjectController.getInstance().getCurrentProject();
-                    Properties lastOpenedState = PropertiesUtil.read(project.getFolderLocation()
-                            + PROJECT_PROPERTY_FILE_PATH);
-                    String expandedTreeEntityIds = lastOpenedState
-                            .getProperty(PreferenceConstants.ProjectPreferenceConstants.RECENT_EXPANDED_TREE_ENTITIES);
-                    String selectedTreeEntity = lastOpenedState
-                            .getProperty(PreferenceConstants.ProjectPreferenceConstants.RECENT_SELECTED_TREE_ENTITY);
-                    String openedEntityIds = lastOpenedState
-                            .getProperty(PreferenceConstants.ProjectPreferenceConstants.RECENT_OPENED_ENTITIES);
-
-                    restoreOpenedEntitiesState(openedEntityIds);
-                    restoreExplorerState(expandedTreeEntityIds, selectedTreeEntity);
-                    // }
+                    ProjectEntity project = ProjectController.getInstance().getRecentProjects().get(0);
+                    restoreExplorerState(project.getRecentExpandedTreeEntityIds());
+                    restoreOpenedEntitiesState(project.getRecentOpenedTreeEntityIds());
                 } catch (Exception e) {
                     LoggerSingleton.logError(e);
                 }
@@ -738,12 +719,12 @@ public class ExplorerPart {
      * 
      * @see #saveExplorerState()
      * @param expandedTreeEntityIds
-     * @param selectedTreeEntityId
      * @throws Exception
      */
-    private void restoreExplorerState(String expandedTreeEntityIds, String selectedTreeEntityId) throws Exception {
-        getViewer().setExpandedElements(TreeEntityUtil.getTreeEntitiesFromIds(expandedTreeEntityIds));
-        getViewer().setSelection(new StructuredSelection(TreeEntityUtil.getTreeEntitiesFromIds(selectedTreeEntityId)));
+    private void restoreExplorerState(List<String> expandedTreeEntityIds) throws Exception {
+        getViewer().getControl().setRedraw(false);
+        getViewer().setExpandedElements(TreeEntityUtil.getExpandedTreeEntitiesFromIds(expandedTreeEntityIds).toArray());
+        getViewer().getControl().setRedraw(true);
     }
 
     /**
@@ -753,11 +734,11 @@ public class ExplorerPart {
      * @param openedEntityIds
      * @throws Exception
      */
-    private void restoreOpenedEntitiesState(String openedEntityIds) throws Exception {
+    private void restoreOpenedEntitiesState(List<String> openedEntityIds) throws Exception {
         // Need to activate ExplorerPart before open any entity
         partService.activate(part);
 
-        ITreeEntity[] treeEntities = TreeEntityUtil.getTreeEntitiesFromIds(openedEntityIds);
+        List<ITreeEntity> treeEntities = TreeEntityUtil.getOpenedTreeEntitiesFromIds(openedEntityIds);
         for (ITreeEntity entity : treeEntities) {
             if (entity != null && entity.getObject() != null) {
                 eventBroker.send(EventConstants.EXPLORER_OPEN_SELECTED_ITEM, entity.getObject());
@@ -773,17 +754,13 @@ public class ExplorerPart {
     @PersistState
     public void savePersistedState() {
         try {
-            ProjectEntity project = ProjectController.getInstance().getCurrentProject();
-            if (project != null) {
-                IStructuredSelection currentSelection = (IStructuredSelection) getViewer().getSelection();
-                String currentSelectionId = TreeEntityUtil.getTreeEntityIds(new Object[] { currentSelection
-                        .getFirstElement() });
-                String expandedTreeEntityIds = TreeEntityUtil.getTreeEntityIds(getViewer().getExpandedElements());
-                PropertiesUtil.update(project.getFolderLocation() + PROJECT_PROPERTY_FILE_PATH,
-                        PreferenceConstants.ProjectPreferenceConstants.RECENT_EXPANDED_TREE_ENTITIES,
-                        expandedTreeEntityIds);
-                PropertiesUtil.update(project.getFolderLocation() + PROJECT_PROPERTY_FILE_PATH,
-                        PreferenceConstants.ProjectPreferenceConstants.RECENT_SELECTED_TREE_ENTITY, currentSelectionId);
+            if (ProjectController.getInstance().getCurrentProject() != null) {
+                List<ProjectEntity> recentProjects = ProjectController.getInstance().getRecentProjects();
+                if (recentProjects != null && !recentProjects.isEmpty()) {
+                    recentProjects.get(0).setRecentExpandedTreeEntityIds(
+                            TreeEntityUtil.getTreeEntityIds(getViewer().getExpandedElements()));
+                    ProjectController.getInstance().saveRecentProjects(recentProjects);
+                }
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);

@@ -25,6 +25,7 @@ public class ImageConstants {
 	public static final Image IMG_16_TEST_CASE = ImageUtil.loadImage(currentBundle, "/icons/test_case_16.png");
 	public static final Image IMG_16_TEST_SUITE = ImageUtil.loadImage(currentBundle, "/icons/test_suite_16.png");
 	public static final Image IMG_16_TEST_OBJECT = ImageUtil.loadImage(currentBundle, "/icons/test_object_16.png");
+	public static final Image IMG_16_TEST_OBJECT_WS = ImageUtil.loadImage(currentBundle, "/icons/ws_test_object_16.png");
 	public static final Image IMG_16_TEST_DATA = ImageUtil.loadImage(currentBundle, "/icons/test_data_16.png");
 	public static final Image IMG_16_KEYWORD = ImageUtil.loadImage(currentBundle, "/icons/keyword_16.png");
 	
