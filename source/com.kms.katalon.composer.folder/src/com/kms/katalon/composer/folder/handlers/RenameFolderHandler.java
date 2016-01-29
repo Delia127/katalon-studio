@@ -148,8 +148,11 @@ public class RenameFolderHandler {
                             }
 
                             // refresh the explorer tree after successfully deleting
-                            eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, folderTreeEntity);
-                            eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, folderTreeEntity.getParent());
+                            // eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, folderTreeEntity);
+                            if (folderTreeEntity.getParent() != null) {
+                                eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
+                                        folderTreeEntity.getParent());
+                            }
 
                             partService.saveAll(false);
                         }

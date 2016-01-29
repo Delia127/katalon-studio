@@ -12,8 +12,11 @@
          point="org.eclipse.search.searchPages">
       <page
             class="com.kms.katalon.composer.search.view.QSearchPage"
+            enabled="true"
+            icon="icons/search_16.png"
             id="com.kms.katalon.composer.search.page"
-            label="Q Search">
+            label="Q Search"
+            tabPosition="0">
       </page>
    </extension>
    <extension
