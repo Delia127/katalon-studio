@@ -191,7 +191,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         GridLayout gl_objectComposite = new GridLayout();
         gl_objectComposite.marginLeft = 5;
         gl_objectComposite.marginWidth = 0;
-        gl_objectComposite.marginBottom = 5;
+        gl_objectComposite.marginBottom = 0;
         gl_objectComposite.marginHeight = 0;
         gl_objectComposite.verticalSpacing = 0;
         gl_objectComposite.horizontalSpacing = 0;
