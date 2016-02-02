@@ -51,13 +51,15 @@ public class TestStepTableDropListener extends TreeDropTargetEffect {
     public void dragOver(DropTargetEvent event) {
         event.feedback = DND.FEEDBACK_EXPAND | DND.FEEDBACK_SCROLL;
         if (event.item != null) {
-            Point pt = event.display.map(null, treeViewer.getTree(), event.x, event.y);
-            TreeItem item = (TreeItem) event.item;
-            event.feedback |= getFeedBackByLocation(pt, item);
+            event.feedback |= getFeedBackByLocation(event.display.map(null, treeViewer.getTree(), event.x, event.y),
+                    (TreeItem) event.item);
         }
     }
 
     private static int getFeedBackByLocation(Point point, TreeItem treeItem) {
+        if (treeItem == null || point == null) {
+            return 0;
+        }
         Rectangle bounds = treeItem.getBounds();
         if (point.y < bounds.y + bounds.height / 3) {
             return DND.FEEDBACK_INSERT_BEFORE;
@@ -174,10 +176,8 @@ public class TestStepTableDropListener extends TreeDropTargetEffect {
     }
 
     private NodeAddType getNodeAddType(DropTargetEvent event) throws Exception {
-        Point pt = event.display.map(null, treeViewer.getTree(), event.x, event.y);
-        TreeItem item = (TreeItem) event.item;
-        int feedBack = getFeedBackByLocation(pt, item);
-        switch (feedBack) {
+        switch (getFeedBackByLocation(event.display.map(null, treeViewer.getTree(), event.x, event.y),
+                (TreeItem) event.item)) {
         case DND.FEEDBACK_INSERT_BEFORE:
             return NodeAddType.InserBefore;
         case DND.FEEDBACK_INSERT_AFTER:

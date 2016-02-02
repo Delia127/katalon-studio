@@ -1,10 +1,10 @@
 package com.kms.katalon.composer.webui.recorder.util;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.ClassUtils;
 import org.codehaus.groovy.ast.expr.ArgumentListExpression;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.ast.expr.Expression;
@@ -17,6 +17,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
 import com.kms.katalon.composer.webui.recorder.action.HTMLAction;
@@ -24,6 +25,8 @@ import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
 import com.kms.katalon.composer.webui.recorder.action.HTMLSynchronizeAction;
 import com.kms.katalon.composer.webui.recorder.action.HTMLValidationAction;
 import com.kms.katalon.composer.webui.recorder.action.IHTMLAction;
+import com.kms.katalon.composer.webui.recorder.action.IHTMLAction.HTMLActionParam;
+import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testobject.ObjectRepository;
 import com.kms.katalon.core.testobject.TestObject;
@@ -179,37 +182,35 @@ public class HTMLActionUtil {
 
     public static Statement generateWebUiTestStep(HTMLActionMapping actionMapping, WebElementEntity createdTestObject)
             throws Exception {
-        String methodName = actionMapping.getAction().getMappedKeywordMethod();
-        // generateWebUiMethodNameFromHTMLAction(action.getActionName(), action.getActionData(),
-        // action.getTargetElement());
-        Class<?> keywordClass = Class.forName(actionMapping.getAction().getMappedKeywordClass());
+        Class<?> keywordClass = Class.forName(actionMapping.getAction().getMappedKeywordClassName());
         Method method = null;
-        for (Method declareMethod : keywordClass.getDeclaredMethods()) {
-            if (declareMethod.getName().equals(methodName)) {
+        for (Method declareMethod : keywordClass.getMethods()) {
+            if (declareMethod.getName().equals(actionMapping.getAction().getMappedKeywordMethod())) {
                 method = declareMethod;
                 break;
             }
         }
         if (method != null) {
+            int actionDataCount = 0;
             List<Expression> arguments = new ArrayList<Expression>();
-            for (Type parameterType : method.getGenericParameterTypes()) {
-                if (parameterType instanceof Class<?>) {
-                    Class<?> clazz = (Class<?>) parameterType;
-                    Object data = null;
-                    if (clazz.getName().equals(TestObject.class.getName())) {
-                        data = createdTestObject;
-                    } else {
-                        data = actionMapping.getData();
-                    }
-                    Expression generatedExression = generateArgumentForWebUiMethod(clazz, data);
-                    if (generatedExression != null) {
-                        arguments.add(generateArgumentForWebUiMethod(clazz, data));
-                    }
+            for (int i = 0; i < method.getParameterTypes().length; i++) {
+                Class<?> argumentClass = method.getParameterTypes()[i];
+                Expression generatedExression = null;
+                if (argumentClass.getName().equals(TestObject.class.getName())) {
+                    generatedExression = generateObjectMethodCall(createdTestObject.getIdForDisplay());
+                } else if (argumentClass.getName().equals(FailureHandling.class.getName())) {
+                    generatedExression = generateFailureHandlingExpression();
+                } else {
+                    Object data = actionMapping.getData()[actionDataCount];
+                    generatedExression = new ConstantExpression(data);
+                    actionDataCount++;
                 }
+                arguments.add(generatedExression);
             }
             ArgumentListExpression argumentListExpression = new ArgumentListExpression(arguments);
-            MethodCallExpression methodCallExpression = new MethodCallExpression(new VariableExpression(
-                    WebUiBuiltInKeywords.class.getSimpleName()), methodName, argumentListExpression);
+            MethodCallExpression methodCallExpression = new MethodCallExpression(new VariableExpression(actionMapping
+                    .getAction().getMappedKeywordClassSimpleName()),
+                    actionMapping.getAction().getMappedKeywordMethod(), argumentListExpression);
             return new ExpressionStatement(methodCallExpression);
         }
         return null;
@@ -222,24 +223,6 @@ public class HTMLActionUtil {
                 ObjectRepository.class.getSimpleName()), "find" + TestObject.class.getSimpleName(),
                 new ArgumentListExpression(expressionArguments));
         return objectMethodCall;
-    }
-
-    private static Expression generateArgumentForWebUiMethod(Class<?> argumentClass, Object data) throws Exception {
-        if (argumentClass.getName().equals(TestObject.class.getName()) && data instanceof WebElementEntity) {
-            return generateObjectMethodCall(((WebElementEntity) data).getIdForDisplay());
-        } else if (argumentClass.getName().equals(FailureHandling.class.getName())) {
-            return generateFailureHandlingExpression();
-        } else if (data != null && argumentClass.getName().equals(data.getClass().getName())) {
-            return new ConstantExpression(data);
-        } else {
-            if (argumentClass.getName().equals(String.class.getName())) {
-                return new ConstantExpression("");
-            } else if (argumentClass.getName().equals(Boolean.class.getName())
-                    || argumentClass.getName().equals(Boolean.TYPE.getName())) {
-                return new ConstantExpression(false);
-            }
-            return new ConstantExpression(null);
-        }
     }
 
     public static Expression generateFailureHandlingExpression() {
@@ -282,8 +265,8 @@ public class HTMLActionUtil {
         return true;
     }
 
-    public static HTMLActionMapping createNewSwitchToWindowAction(String data) {
-        return new HTMLActionMapping(HTMLAction.SwitchToWindow, data, null);
+    public static HTMLActionMapping createNewSwitchToWindowAction(String windowTitle) {
+        return new HTMLActionMapping(HTMLAction.SwitchToWindow, new String[] { windowTitle }, null);
 
     }
 
@@ -310,8 +293,8 @@ public class HTMLActionUtil {
         List<HTMLValidationAction> result = new ArrayList<HTMLValidationAction>();
         for (Method method : WebUiBuiltInKeywords.class.getDeclaredMethods()) {
             if (method.getName().startsWith(HTMLValidationAction.VALIDATION_ACTION_PREFIX)) {
-                result.add(new HTMLValidationAction(method.getName(), WebUiBuiltInKeywords.class.getName(), method
-                        .getName()));
+                result.add(new HTMLValidationAction(method.getName(), WebUiBuiltInKeywords.class.getName(),
+                        WebUiBuiltInKeywords.class.getSimpleName(), method.getName()));
             }
         }
         return result;
@@ -321,10 +304,114 @@ public class HTMLActionUtil {
         List<HTMLSynchronizeAction> result = new ArrayList<HTMLSynchronizeAction>();
         for (Method method : WebUiBuiltInKeywords.class.getDeclaredMethods()) {
             if (method.getName().startsWith(HTMLSynchronizeAction.SYNCHRONIZE_ACTION_PREFIX)) {
-                result.add(new HTMLSynchronizeAction(method.getName(), WebUiBuiltInKeywords.class.getName(), method
-                        .getName()));
+                result.add(new HTMLSynchronizeAction(method.getName(), WebUiBuiltInKeywords.class.getName(),
+                        WebUiBuiltInKeywords.class.getSimpleName(), method.getName()));
             }
         }
         return result;
+    }
+
+    public static HTMLSynchronizeAction getDefaultSynchronizeAction() {
+        List<HTMLSynchronizeAction> allActions = getAllHTMLSynchronizeActions();
+        if (allActions == null) {
+            return null;
+        }
+        for (HTMLSynchronizeAction action : allActions) {
+            if (action.getName().equals("waitForElementPresent")) {
+                return action;
+            }
+        }
+        return (allActions.size() > 0) ? allActions.get(allActions.size() - 1) : null;
+    }
+
+    public static HTMLValidationAction getDefaultValidationAction() {
+        List<HTMLValidationAction> allActions = getAllHTMLValidationActions();
+        if (allActions == null) {
+            return null;
+        }
+        for (HTMLValidationAction action : allActions) {
+            if (action.getName().equals("verifyElementPresent")) {
+                return action;
+            }
+        }
+        return (allActions.size() > 0) ? allActions.get(allActions.size() - 1) : null;
+    }
+
+    public static HTMLActionParam[] collectKeywordParam(String keywordClass, String keywordMethod) {
+        List<HTMLActionParam> paramList = new ArrayList<HTMLActionParam>();
+        try {
+            Method actionMethod = null;
+            for (Method method : Class.forName(keywordClass).getMethods()) {
+                if (method.getName().equals(keywordMethod)) {
+                    actionMethod = method;
+                    break;
+                }
+            }
+            if (actionMethod != null) {
+                List<String> paramNames = KeywordController.getInstance().getParameterName(actionMethod);
+                for (int i = 0; i < paramNames.size() && i < actionMethod.getParameterTypes().length; i++) {
+                    if (actionMethod.getParameterTypes()[i] == TestObject.class
+                            || actionMethod.getParameterTypes()[i] == FailureHandling.class) {
+                        continue;
+                    }
+                    paramList.add(new HTMLActionParam(paramNames.get(i), actionMethod.getParameterTypes()[i]));
+                }
+            }
+        } catch (Exception e) {
+            // Cannot find method
+            LoggerSingleton.logError(e);
+        }
+        return paramList.toArray(new HTMLActionParam[paramList.size()]);
+    }
+
+    public static boolean hasElement(String keywordClass, String keywordMethod) {
+        try {
+            Method actionMethod = null;
+            for (Method method : Class.forName(keywordClass).getMethods()) {
+                if (method.getName().equals(keywordMethod)) {
+                    actionMethod = method;
+                    break;
+                }
+            }
+            if (actionMethod != null) {
+                List<String> paramNames = KeywordController.getInstance().getParameterName(actionMethod);
+                for (int i = 0; i < paramNames.size() && i < actionMethod.getParameterTypes().length; i++) {
+                    if (actionMethod.getParameterTypes()[i] == TestObject.class) {
+                        return true;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // Cannot find method
+            LoggerSingleton.logError(e);
+        }
+        return false;
+    }
+
+    public static Object[] generateParamDatas(IHTMLAction action, Object[] existingParamDatas) {
+        if (action == null || action.getParams() == null) {
+            return new Object[] {};
+        }
+
+        Object[] newParamDatas = new Object[action.getParams().length];
+        for (int i = 0; i < action.getParams().length; i++) {
+            Object existingParamData = (existingParamDatas != null && i < existingParamDatas.length) ? existingParamDatas[i]
+                    : null;
+            if (existingParamData != null
+                    && action.getParams()[i].getClazz().isAssignableFrom(existingParamData.getClass())) {
+                newParamDatas[i] = existingParamData;
+            } else {
+                if (ClassUtils.isAssignable(action.getParams()[i].getClazz(), Number.class, true)) {
+                    newParamDatas[i] = 0;
+                } else if (ClassUtils.isAssignable(action.getParams()[i].getClazz(), Boolean.class, true)) {
+                    newParamDatas[i] = false;
+                } else if (ClassUtils.isAssignable(action.getParams()[i].getClazz(), String.class, true)) {
+                    newParamDatas[i] = "";
+                } else {
+                    newParamDatas[i] = null;
+                }
+            }
+        }
+        return newParamDatas;
     }
 }
