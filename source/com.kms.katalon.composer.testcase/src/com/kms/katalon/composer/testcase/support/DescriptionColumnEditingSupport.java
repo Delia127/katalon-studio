@@ -70,15 +70,24 @@ public class DescriptionColumnEditingSupport extends EditingSupport {
             AstStatementTreeTableNode statementNode = (AstStatementTreeTableNode) element;
             try {
                 TestCaseTreeTableInput treeTableInput = parentTestCasePart.getTreeTableInput();
+                String newDescriptionValue = (String) value;
                 if (!statementNode.hasDescription()) {
-                    ExpressionStatement commentStatement = new ExpressionStatement(new ConstantExpression(value));
-                    treeTableInput.addASTObjectBefore(commentStatement, statementNode);
-                    statementNode.setDescription(commentStatement);
+                    if (!newDescriptionValue.isEmpty()) {
+                        ExpressionStatement commentStatement = new ExpressionStatement(new ConstantExpression(newDescriptionValue));
+                        treeTableInput.addASTObjectBefore(commentStatement, statementNode);
+                        statementNode.setDescription(commentStatement);
+                        treeTableInput.setDirty(true);
+                        treeTableInput.refresh(statementNode.getParent());
+                    }
                 } else {
-                    statementNode.getDescription().setExpression(new ConstantExpression(value));
+                    if (newDescriptionValue.isEmpty()) {
+                        treeTableInput.removeDescription(statementNode.getParent(), statementNode);
+                    } else {
+                        statementNode.getDescription().setExpression(new ConstantExpression(newDescriptionValue));
+                    }
                     treeTableInput.setDirty(true);
+                    treeTableInput.refresh(statementNode.getParent());
                 }
-                treeTableInput.refresh(statementNode.getParent());
             } catch (Exception e) {
                 LoggerSingleton.logError(e);
                 MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
