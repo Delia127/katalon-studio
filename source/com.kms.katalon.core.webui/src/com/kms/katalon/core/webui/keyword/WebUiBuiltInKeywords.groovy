@@ -2666,7 +2666,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      *          true if the property is checked (used to find the test object); otherwise, false. 
      *          <p>In case the property already exists, input null to this argument to keep the old value.
      * @param flowControl
-     * @return
+     * @return the newly created TestObject
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)

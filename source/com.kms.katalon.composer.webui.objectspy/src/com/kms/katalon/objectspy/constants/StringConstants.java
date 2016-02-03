@@ -59,6 +59,10 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_LBL_HTML_DOM = "HTML DOM";
 
     public static final String DIA_TXT_SEARCH_PLACE_HOLDER = "Enter xpath expression to search...";
+    
+    public static final String WARNING_NO_ELEMENT_FOUND_FOR_XPATH = "No element found for given xpath";
+    
+    public static final String WARNING_NO_PAGE_LOADED = "No web page loaded";
 
     // CheckboxTreeSelectionHelper
     public static final String TREE_ERROR_MSG_CONTENT_PROVIDER_IS_REQUIRED = "Content provider is required";
