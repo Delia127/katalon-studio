@@ -27,7 +27,7 @@ import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class OptionalSettingWizardPage extends AbstractWizardPage {
 
-    private Button chckAutoSubmitTestRun;
+    private Button chckAutoSubmitTestRun, chckSubmitTestRunToLatestVersion;
     private Composite compositeOptions;
     private Group grpResultOptions;
     private Group grpAttachmentOptions;
@@ -60,9 +60,13 @@ public class OptionalSettingWizardPage extends AbstractWizardPage {
         settingComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
         chckAutoSubmitTestRun = new Button(settingComposite, SWT.CHECK);
-        chckAutoSubmitTestRun.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
+        chckAutoSubmitTestRun.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
         chckAutoSubmitTestRun.setText(StringConstants.DIA_TITLE_AUTO_SUBMIT_TEST_RESULT);
 
+        chckSubmitTestRunToLatestVersion = new Button(settingComposite, SWT.CHECK);
+        chckSubmitTestRunToLatestVersion.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+        chckSubmitTestRunToLatestVersion.setText(StringConstants.DIA_TITLE_SUBMIT_TEST_RESULT_TO_LATEST_VERSION);
+        
         compositeOptions = new Composite(mainComposite, SWT.NONE);
         GridData gd_compositeOptions = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
         gd_compositeOptions.verticalIndent = -5;
@@ -118,6 +122,11 @@ public class OptionalSettingWizardPage extends AbstractWizardPage {
         Object isEnableAutoSubmit = sharedData.get(QTestSettingStore.AUTO_SUBMIT_RESULT_PROPERTY);
         if (isEnableAutoSubmit != null && isEnableAutoSubmit instanceof Boolean) {
             chckAutoSubmitTestRun.setSelection((boolean) isEnableAutoSubmit);
+        }
+        
+        Object isSubmitToLatestVersion = sharedData.get(QTestSettingStore.SUBMIT_RESULT_TO_LATEST_VERSION);
+        if (isSubmitToLatestVersion != null && isSubmitToLatestVersion instanceof Boolean) {
+            chckSubmitTestRunToLatestVersion.setSelection((boolean) isSubmitToLatestVersion);
         }
 
         // set input for grpResults
@@ -196,7 +205,8 @@ public class OptionalSettingWizardPage extends AbstractWizardPage {
     public Map<String, Object> storeControlStates() {
         Map<String, Object> sharedData = new HashMap<String, Object>();
         sharedData.put(QTestSettingStore.AUTO_SUBMIT_RESULT_PROPERTY, chckAutoSubmitTestRun.getSelection());
-
+        sharedData.put(QTestSettingStore.SUBMIT_RESULT_TO_LATEST_VERSION, chckSubmitTestRunToLatestVersion.getSelection());
+        
         saveAttachmentSendingStatus(sharedData);
         saveResultSendingStatus(sharedData);
         saveReportFormatSettings(sharedData);
