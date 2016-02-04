@@ -1,7 +1,6 @@
 package com.kms.katalon.composer.testcase.ast.treetable;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;
@@ -9,6 +8,7 @@ import org.codehaus.groovy.ast.stmt.CaseStatement;
 import org.codehaus.groovy.ast.stmt.EmptyStatement;
 import org.codehaus.groovy.ast.stmt.SwitchStatement;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.util.AstTreeTableUtil;
 
@@ -31,22 +31,25 @@ public class AstSwitchStatementTreeTableNode extends AstStatementTreeTableNode {
 		return ((switchStatement.getCaseStatements() != null && switchStatement.getCaseStatements().size() > 0) || switchStatement
 				.getDefaultStatement() != null);
 	}
-
+	
 	@Override
-	public List<AstTreeTableNode> getChildren() throws Exception {
-		List<AstTreeTableNode> astTreeTableNodes = new ArrayList<AstTreeTableNode>();
-		for (CaseStatement caseStatement : switchStatement.getCaseStatements()) {
-			astTreeTableNodes.addAll(AstTreeTableUtil.parseAstObjectIntoTreeTableNode(caseStatement, this,
-					switchStatement, scriptClass));
-		}
-		if (switchStatement.getDefaultStatement() != null
-				&& !(switchStatement.getDefaultStatement() instanceof EmptyStatement)) {
-			astTreeTableNodes.add(new AstSwitchDefaultStatementTreeTableNode(switchStatement.getDefaultStatement(),
-					this, switchStatement, scriptClass));
-		}
-		return astTreeTableNodes;
-	}
-
+    public void reloadChildren() {
+        try {
+            children = new ArrayList<AstTreeTableNode>();
+            for (CaseStatement caseStatement : switchStatement.getCaseStatements()) {
+                children.addAll(AstTreeTableUtil.parseAstObjectIntoTreeTableNode(caseStatement, this,
+                        switchStatement, scriptClass));
+            }
+            if (switchStatement.getDefaultStatement() != null
+                    && !(switchStatement.getDefaultStatement() instanceof EmptyStatement)) {
+                children.add(new AstSwitchDefaultStatementTreeTableNode(switchStatement.getDefaultStatement(),
+                        this, switchStatement, scriptClass));
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
+	
 	@Override
 	public void addChildObject(ASTNode astObject, int index) {
 	}

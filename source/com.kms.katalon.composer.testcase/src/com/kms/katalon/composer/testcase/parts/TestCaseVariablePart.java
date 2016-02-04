@@ -328,6 +328,7 @@ public class TestCaseVariablePart {
     }
 
     public void addVariable(VariableEntity[] variablesArray) {
+        boolean isAdded = false;
         for (VariableEntity addedVariable : variablesArray) {
             boolean exists = false;
             for (VariableEntity currentVariable : variables) {
@@ -338,9 +339,12 @@ public class TestCaseVariablePart {
             }
             if (!exists) {
                 variables.add(addedVariable);
-                tableViewer.refresh();
-                setDirty(true);
+                isAdded = true;
             }
+        }
+        if (isAdded) {
+            tableViewer.refresh();
+            setDirty(true);
         }
     }
 

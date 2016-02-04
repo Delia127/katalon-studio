@@ -8,6 +8,7 @@ import org.codehaus.groovy.ast.stmt.CatchStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.ast.stmt.TryCatchStatement;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.util.AstTreeTableUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
@@ -33,10 +34,23 @@ public class AstCatchStatementTreeTableNode extends AstStatementTreeTableNode {
 		return catchStatement.getCode() != null;
 	}
 
-	@Override
-	public List<AstTreeTableNode> getChildren() throws Exception {
-		return AstTreeTableUtil.getChildren(catchStatement.getCode(), this, catchStatement.getCode(), scriptClass);
-	}
+    @Override
+    public List<AstTreeTableNode> getChildren() throws Exception {
+        if (children == null) {
+            reloadChildren();
+        }
+        return children;
+    }
+    
+    @Override
+    public void reloadChildren() {
+        try {
+            children = AstTreeTableUtil.getChildren(catchStatement.getCode(), this, catchStatement.getCode(), scriptClass);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
+
 
 	@Override
 	public void addChildObject(ASTNode astObject, int index) {

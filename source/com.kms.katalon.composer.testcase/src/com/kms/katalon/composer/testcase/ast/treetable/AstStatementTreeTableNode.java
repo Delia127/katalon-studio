@@ -1,8 +1,5 @@
 package com.kms.katalon.composer.testcase.ast.treetable;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
@@ -129,15 +126,14 @@ public class AstStatementTreeTableNode extends AstAbstractTreeTableNode {
         }
         return false;
     }
-
+    
     @Override
-    public List<AstTreeTableNode> getChildren() throws Exception {
+    public void reloadChildren() {
         try {
-            return AstTreeTableUtil.getChildren(statement, this, statement, scriptClass);
+            children = AstTreeTableUtil.getChildren(statement, this, statement, scriptClass);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
-        return Collections.emptyList();
     }
 
     @Override
