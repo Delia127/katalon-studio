@@ -35,14 +35,6 @@
                name="preferenceCustomization"
                value="plugin_customization.ini">
          </property>
-         <property
-               name="aboutImage"
-               value="icons/branding_128.png">
-         </property>
-         <property
-               name="aboutText"
-               value="%productBlurb">
-         </property>
       </product>
    </extension>
 
