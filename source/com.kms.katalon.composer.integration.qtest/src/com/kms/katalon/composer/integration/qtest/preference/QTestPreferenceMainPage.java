@@ -61,7 +61,7 @@ public class QTestPreferenceMainPage extends PreferencePage {
 
     // Controls
     private Text txtToken;
-    private Button chckAutoSubmitTestRun, chckEnableIntegration;
+    private Button chckAutoSubmitTestRun, chckEnableIntegration, chckSubmitTestRunToLatestVersion;
     private Button btnOpenGenerateTokenDialog;
     private Composite container, mainComposite, optionsComposite, enablerComposite;
     private GridData gdTxtToken;
@@ -146,9 +146,13 @@ public class QTestPreferenceMainPage extends PreferencePage {
         projectComposite.setLayout(glProjectComposite);
 
         chckAutoSubmitTestRun = new Button(projectComposite, SWT.CHECK);
-        chckAutoSubmitTestRun.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
+        chckAutoSubmitTestRun.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
         chckAutoSubmitTestRun.setText(StringConstants.DIA_TITLE_AUTO_SUBMIT_TEST_RESULT);
 
+        chckSubmitTestRunToLatestVersion = new Button(projectComposite, SWT.CHECK);
+        chckSubmitTestRunToLatestVersion.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+        chckSubmitTestRunToLatestVersion.setText(StringConstants.DIA_TITLE_SUBMIT_TEST_RESULT_TO_LATEST_VERSION);
+        
         optionsComposite = new Composite(mainComposite, SWT.NONE);
         GridData gdCompositeOptions = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
         gdCompositeOptions.verticalIndent = -5;
@@ -314,9 +318,11 @@ public class QTestPreferenceMainPage extends PreferencePage {
     private void initialize() {
         boolean autoSubmitResult = QTestSettingStore.isAutoSubmitResultActive(projectDir);
         boolean isIntegrationActive = QTestSettingStore.isIntegrationActive(projectDir);
-
+        boolean submitResultToLatestVersion = QTestSettingStore.isSubmitResultToLatestVersionActive(projectDir);
+        
         chckAutoSubmitTestRun.setSelection(autoSubmitResult);
         chckEnableIntegration.setSelection(isIntegrationActive);
+        chckSubmitTestRunToLatestVersion.setSelection(submitResultToLatestVersion);
 
         fCredential = getNewCredential(QTestSettingCredential.getCredential(projectDir));
         QTestVersion version = QTestVersion.getLastest();
@@ -384,6 +390,9 @@ public class QTestPreferenceMainPage extends PreferencePage {
             QTestSettingStore.saveUserProfile(fCredential, projectDir);
 
             QTestSettingStore.saveAutoSubmit(chckAutoSubmitTestRun.getSelection(), projectDir);
+            
+            QTestSettingStore.saveSubmitToLatestVersion(chckSubmitTestRunToLatestVersion.getSelection(), projectDir);
+            
             // Save sending result options
             saveAttachmentSendingStatus();
             saveResultSendingStatus();

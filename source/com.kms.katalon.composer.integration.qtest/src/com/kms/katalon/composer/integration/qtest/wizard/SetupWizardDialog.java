@@ -471,6 +471,8 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
             QTestSettingStore.saveUserProfile(getCredential(sharedData), projectDir);
             QTestSettingStore.saveAutoSubmit((boolean) sharedData.get(QTestSettingStore.AUTO_SUBMIT_RESULT_PROPERTY),
                     projectDir);
+            QTestSettingStore.saveSubmitToLatestVersion((boolean) sharedData.get(QTestSettingStore.SUBMIT_RESULT_TO_LATEST_VERSION),
+                    projectDir);
             QTestSettingStore.saveResultSendingType(
                     (List<QTestResultSendingType>) sharedData.get(QTestSettingStore.SEND_RESULT_PROPERTY), projectDir);
             QTestSettingStore.saveAttachmentSendingType(
