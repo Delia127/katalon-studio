@@ -197,7 +197,7 @@ public class HTMLActionUtil {
                 Class<?> argumentClass = method.getParameterTypes()[i];
                 Expression generatedExression = null;
                 if (argumentClass.getName().equals(TestObject.class.getName())) {
-                    generatedExression = generateObjectMethodCall(createdTestObject.getIdForDisplay());
+                    generatedExression = generateObjectMethodCall((createdTestObject != null) ? createdTestObject.getIdForDisplay() : null);
                 } else if (argumentClass.getName().equals(FailureHandling.class.getName())) {
                     generatedExression = generateFailureHandlingExpression();
                 } else {

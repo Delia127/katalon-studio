@@ -719,72 +719,107 @@ public class TestCaseTreeTableInput {
     }
 
     public void removeRow(AstTreeTableNode treeTableNode) throws Exception {
+        if (treeTableNode == null) {
+            return;
+        }
         if (treeTableNode instanceof AstElseStatementTreeTableNode
                 && treeTableNode.getParentASTObject() instanceof IfStatement) {
-            ((IfStatement) treeTableNode.getParentASTObject()).setElseBlock(new EmptyStatement());
-            refreshObjectWithoutReloading(treeTableNode.getParent());
-            setDirty(true);
+            removeElseStatement(treeTableNode);
         } else if (treeTableNode instanceof AstElseIfStatementTreeTableNode
                 && treeTableNode.getASTObject() instanceof IfStatement
                 && treeTableNode.getParentASTObject() instanceof IfStatement) {
-            ((IfStatement) treeTableNode.getParentASTObject())
-                    .setElseBlock(((IfStatement) treeTableNode.getASTObject()).getElseBlock());
-            refreshObjectWithoutReloading(treeTableNode.getParent());
-            setDirty(true);
+            removeElseIfStatement(treeTableNode);
         } else if (treeTableNode instanceof AstCatchStatementTreeTableNode
                 && treeTableNode.getParentASTObject() instanceof TryCatchStatement) {
-            TryCatchStatement tryCatchStatement = (TryCatchStatement) treeTableNode.getParentASTObject();
-            if ((tryCatchStatement.getFinallyStatement() == null || tryCatchStatement.getFinallyStatement() instanceof EmptyStatement)
-                    && tryCatchStatement.getCatchStatements().size() == 1) {
-                MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.WARN,
-                        StringConstants.WARN_TRY_STATEMENT_MUST_HAVE_CATCH_OR_FINALLY);
-                return;
-            }
-            tryCatchStatement.getCatchStatements().remove(treeTableNode.getASTObject());
-            refreshObjectWithoutReloading(treeTableNode.getParent());
-            setDirty(true);
+            removeCatchStatement(treeTableNode);
         } else if (treeTableNode instanceof AstSwitchDefaultStatementTreeTableNode
                 && treeTableNode.getParentASTObject() instanceof SwitchStatement) {
-            ((SwitchStatement) treeTableNode.getParentASTObject()).setDefaultStatement(new EmptyStatement());
-            refreshObjectWithoutReloading(treeTableNode.getParent());
-            setDirty(true);
+            removeSwitchStatement(treeTableNode);
         } else if (treeTableNode instanceof AstFinallyStatementTreeTableNode
                 && treeTableNode.getParentASTObject() instanceof TryCatchStatement) {
-            TryCatchStatement tryCatchStatement = (TryCatchStatement) treeTableNode.getParentASTObject();
-            if (tryCatchStatement.getCatchStatements().isEmpty()) {
-                MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.WARN,
-                        StringConstants.WARN_TRY_STATEMENT_MUST_HAVE_CATCH_OR_FINALLY);
-                return;
+            removeFinallyStatement(treeTableNode);
+        } else {
+            removeStatement(treeTableNode);
+        }
+    }
+
+    private void removeStatement(AstTreeTableNode treeTableNode) throws Exception {
+        if (treeTableNode.getParent() != null) {
+            AstTreeTableNode parentNode = treeTableNode.getParent();
+            if (treeTableNode instanceof AstStatementTreeTableNode) {
+                AstStatementTreeTableNode statementNode = (AstStatementTreeTableNode) treeTableNode;
+                removeDescription(parentNode, statementNode);
             }
-            ((TryCatchStatement) treeTableNode.getParentASTObject()).setFinallyStatement(new EmptyStatement());
-            refreshObjectWithoutReloading(treeTableNode.getParent());
+            parentNode.removeChildObject(treeTableNode.getASTObject());
+            refreshObjectWithoutReloading(parentNode);
             setDirty(true);
         } else {
-            if (treeTableNode.getParent() != null) {
-                AstTreeTableNode parentNode = treeTableNode.getParent();
-                if (treeTableNode instanceof AstStatementTreeTableNode) {
-                    AstStatementTreeTableNode statementNode = (AstStatementTreeTableNode) treeTableNode;
-                    if (statementNode.getDescription() != null) {
-                        parentNode.removeChildObject(statementNode.getDescription());
-                    }
+            if (treeTableNode.getASTObject() instanceof ClassNode && treeTableNode.getASTObject() != mainClassNode) {
+                if (astNodes.remove(treeTableNode.getASTObject())) {
+                    refreshObjectWithoutReloading(null);
+                    setDirty(true);
                 }
-                parentNode.removeChildObject(treeTableNode.getASTObject());
-                refreshObjectWithoutReloading(parentNode);
-                setDirty(true);
-            } else {
-                if (treeTableNode.getASTObject() instanceof ClassNode && treeTableNode.getASTObject() != mainClassNode) {
-                    if (astNodes.remove(treeTableNode.getASTObject())) {
-                        refreshObjectWithoutReloading(null);
-                        setDirty(true);
-                    }
-                } else if (treeTableNode.getASTObject() instanceof MethodNode) {
-                    if (mainClassNode.getMethods().remove(treeTableNode.getASTObject())) {
-                        refreshObjectWithoutReloading(null);
-                        setDirty(true);
-                    }
-                }
+            } else if (treeTableNode.getASTObject() instanceof MethodNode) {
+                removeMethodNode(treeTableNode);
             }
         }
+    }
+
+    public void removeDescription(AstTreeTableNode parentNode, AstStatementTreeTableNode statementNode) {
+        if (parentNode != null && statementNode != null && statementNode.getDescription() != null) {
+            parentNode.removeChildObject(statementNode.getDescription());
+        }
+    }
+
+    private void removeMethodNode(AstTreeTableNode treeTableNode) throws Exception {
+        if (mainClassNode.getMethods().remove(treeTableNode.getASTObject())) {
+            refreshObjectWithoutReloading(null);
+            setDirty(true);
+        }
+    }
+
+    private void removeFinallyStatement(AstTreeTableNode treeTableNode) throws Exception {
+        TryCatchStatement tryCatchStatement = (TryCatchStatement) treeTableNode.getParentASTObject();
+        if (tryCatchStatement.getCatchStatements().isEmpty()) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.WARN,
+                    StringConstants.WARN_TRY_STATEMENT_MUST_HAVE_CATCH_OR_FINALLY);
+            return;
+        }
+        ((TryCatchStatement) treeTableNode.getParentASTObject()).setFinallyStatement(new EmptyStatement());
+        refreshObjectWithoutReloading(treeTableNode.getParent());
+        setDirty(true);
+    }
+
+    private void removeSwitchStatement(AstTreeTableNode treeTableNode) throws Exception {
+        ((SwitchStatement) treeTableNode.getParentASTObject()).setDefaultStatement(new EmptyStatement());
+        refreshObjectWithoutReloading(treeTableNode.getParent());
+        setDirty(true);
+    }
+
+    private void removeCatchStatement(AstTreeTableNode treeTableNode) throws Exception {
+        TryCatchStatement tryCatchStatement = (TryCatchStatement) treeTableNode.getParentASTObject();
+        if ((tryCatchStatement.getFinallyStatement() == null || tryCatchStatement.getFinallyStatement() instanceof EmptyStatement)
+                && tryCatchStatement.getCatchStatements().size() == 1) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.WARN,
+                    StringConstants.WARN_TRY_STATEMENT_MUST_HAVE_CATCH_OR_FINALLY);
+            return;
+        }
+        tryCatchStatement.getCatchStatements().remove(treeTableNode.getASTObject());
+        refreshObjectWithoutReloading(treeTableNode.getParent());
+        setDirty(true);
+    }
+
+    private void removeElseIfStatement(AstTreeTableNode treeTableNode) throws Exception {
+        ((IfStatement) treeTableNode.getParentASTObject())
+                .setElseBlock(((IfStatement) treeTableNode.getASTObject()).getElseBlock());
+        refreshObjectWithoutReloading(treeTableNode.getParent());
+        setDirty(true);
+    }
+
+    private void removeElseStatement(AstTreeTableNode treeTableNode) throws Exception {
+        ((IfStatement) treeTableNode.getParentASTObject()).setElseBlock(new EmptyStatement());
+        refreshObjectWithoutReloading(treeTableNode.getParent());
+        setDirty(true);
     }
 
     public void setDirty(boolean isDirty) {
