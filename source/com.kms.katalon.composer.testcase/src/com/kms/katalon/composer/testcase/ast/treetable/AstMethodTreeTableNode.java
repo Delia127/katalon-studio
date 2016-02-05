@@ -1,7 +1,5 @@
 package com.kms.katalon.composer.testcase.ast.treetable;
 
-import java.util.List;
-
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.MethodNode;
@@ -12,6 +10,7 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.ast.editors.MethodObjectBuilderCellEditor;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
@@ -65,12 +64,16 @@ public class AstMethodTreeTableNode extends AstAbstractTreeTableNode {
         }
         return false;
     }
-
+    
     @Override
-    public List<AstTreeTableNode> getChildren() throws Exception {
-        return AstTreeTableUtil.getChildren(methodNode, this, parentClass);
+    public void reloadChildren() {
+        try {
+            children = AstTreeTableUtil.getChildren(methodNode, this, parentClass);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
     }
-
+    
     @Override
     public AstTreeTableNode getParent() {
         return parentNode;

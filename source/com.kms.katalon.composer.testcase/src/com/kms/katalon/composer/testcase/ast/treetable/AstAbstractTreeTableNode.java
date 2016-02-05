@@ -11,6 +11,8 @@ import org.eclipse.swt.widgets.Composite;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 
 public abstract class AstAbstractTreeTableNode implements AstTreeTableNode {
+    protected List<AstTreeTableNode> children;
+    
     @Override
     public boolean equals(Object object) {
         if (!(object instanceof AstTreeTableNode)) {
@@ -126,12 +128,23 @@ public abstract class AstAbstractTreeTableNode implements AstTreeTableNode {
 
 	@Override
 	public List<AstTreeTableNode> getChildren() throws Exception {
+		if (hasChildren()) {
+		    if (children == null) {
+                reloadChildren();
+            }
+            return children;
+		}
 		return null;
 	}
 
 	@Override
 	public boolean hasChildren() {
 		return false;
+	}
+	
+	@Override
+	public void reloadChildren() {
+	    // do nothing
 	}
 
 	@Override

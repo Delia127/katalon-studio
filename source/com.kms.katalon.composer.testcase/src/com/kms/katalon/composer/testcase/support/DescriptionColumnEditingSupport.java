@@ -18,6 +18,7 @@ import com.kms.katalon.composer.testcase.ast.treetable.AstFinallyStatementTreeTa
 import com.kms.katalon.composer.testcase.ast.treetable.AstStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
+import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
 
@@ -74,7 +75,7 @@ public class DescriptionColumnEditingSupport extends EditingSupport {
                 if (!statementNode.hasDescription()) {
                     if (!newDescriptionValue.isEmpty()) {
                         ExpressionStatement commentStatement = new ExpressionStatement(new ConstantExpression(newDescriptionValue));
-                        treeTableInput.addASTObjectBefore(commentStatement, statementNode);
+                        treeTableInput.addNewAstObject(commentStatement, statementNode, NodeAddType.InserBefore);
                         statementNode.setDescription(commentStatement);
                         treeTableInput.setDirty(true);
                         treeTableInput.refresh(statementNode.getParent());

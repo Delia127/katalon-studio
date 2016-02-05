@@ -62,7 +62,7 @@ public class StringConstants extends GlobalStringConstants {
     
     public static final String WARNING_NO_ELEMENT_FOUND_FOR_XPATH = "No element found for given xpath";
     
-    public static final String WARNING_NO_PAGE_LOADED = "No web page loaded";
+    public static final String WARNING_NO_PAGE_LOADED = "No web page loaded. Please start your desired browser and navigate to the web page";
 
     // CheckboxTreeSelectionHelper
     public static final String TREE_ERROR_MSG_CONTENT_PROVIDER_IS_REQUIRED = "Content provider is required";
