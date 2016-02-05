@@ -213,6 +213,8 @@ public class StringConstants extends GlobalStringConstants {
 
     // VariableValueEditingSupport
     public static final String SUP_WARN_MSG_TEST_DATA_NOT_FOUND = "Test data: {0} not found.";
+    
+    public static final String SUP_WARN_MSG_TEST_DATA_NO_HEADER = "Test data: {0} does not have header row.";
 
     public static final String SUP_WARN_MSG_TEST_DATA_NOT_AVAILABLE = "Please set data source for test data: {0}.";
 

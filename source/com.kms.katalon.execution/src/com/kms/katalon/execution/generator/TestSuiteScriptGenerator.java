@@ -123,7 +123,7 @@ public class TestSuiteScriptGenerator {
                             variableLink);
                     if (variableEntity != null) {
                         String variableValue = variableLink.getValue();
-                        if (variableLink.getType() == VariableType.DATA_COLUMN) {
+                        if (variableLink.getType() == VariableType.DATA_COLUMN_NAME || variableLink.getType() == VariableType.DATA_COLUMN_INDEX) {
 
                             if (StringUtils.isBlank(variableLink.getTestDataLinkId())) {
                                 syntaxErrorCollector.append("Wrong syntax at [Test case ID: "
@@ -149,8 +149,13 @@ public class TestSuiteScriptGenerator {
                                 }
 
                                 try {
-                                    variableValue = GroovyStringUtil.escapeGroovy(testData.getValue(variableValue,
-                                            testDataExecutedEntity.getRowIndexes()[rowIndex]));
+                                	if(variableLink.getType() == VariableType.DATA_COLUMN_NAME){
+                                		variableValue = GroovyStringUtil.escapeGroovy(testData.getValue(variableValue, testDataExecutedEntity.getRowIndexes()[rowIndex]));	
+                                	}
+                                	else if(variableLink.getType() == VariableType.DATA_COLUMN_INDEX){
+                                		variableValue = GroovyStringUtil.escapeGroovy(testData.getValue(Integer.parseInt(variableValue), testDataExecutedEntity.getRowIndexes()[rowIndex]));	
+                                	}
+                                    
                                     if (variableValue != null) {
                                         variableValue = "'" + variableValue + "'";
                                     } else {

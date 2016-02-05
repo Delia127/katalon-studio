@@ -29,7 +29,17 @@ public class VariableTypeEditingSupport extends EditingSupport {
 
     @Override
     protected boolean canEdit(Object element) {
-        return true;
+    	/*if (element != null && element instanceof VariableLink) {
+    		VariableLink variableLink = (VariableLink) element;
+    		if (variableLink.getTestDataLinkId() == null || variableLink.getTestDataLinkId().isEmpty()) {
+                MessageDialog.openInformation(null, StringConstants.INFORMATION_TITLE, StringConstants.SUP_INFORMATION_MSG_CHOOSE_TEST_DATA);
+                return false;
+            }
+    		return true;
+    	}
+        return false;
+        */
+    	return true;
     }
 
     @Override
@@ -48,7 +58,9 @@ public class VariableTypeEditingSupport extends EditingSupport {
             int chosenIndex = (int) value;
             VariableType variableType = VariableType.fromValue(variableTypes.get(chosenIndex));
             if (variableType != link.getType()) {
-                link.setTestDataLinkId(StringUtils.EMPTY);
+            	if(variableType == VariableType.SCRIPT){
+            		link.setTestDataLinkId(StringUtils.EMPTY);
+            	}
                 link.setType(variableType);
                 link.setValue("");
                 getViewer().update(element, null);

@@ -148,7 +148,11 @@ public abstract class AbstractLauncher {
             // Collect result and send mail here
             CSVReader csvReader = new CSVReader(file, CSVSeperator.COMMA, true);
             Deque<String[]> datas = new ArrayDeque<String[]>();
-            datas.addAll(csvReader.getData());
+            //datas.addAll(csvReader.getData());
+            //Skip first array, it is header
+            for(int i=1; i < csvReader.getData().size(); i++){
+            	datas.add(csvReader.getData().get(i));
+            }
             String[] suiteRow = datas.pollFirst();
             String suiteName = (suiteIndex + 1) + "." + suiteRow[0];
             String browser = suiteRow[1];
