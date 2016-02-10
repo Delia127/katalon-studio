@@ -57,7 +57,7 @@ public class VariableLink implements Serializable {
     }
 
     public enum VariableType {
-        DATA_COLUMN("Data Column"), SCRIPT("Script");
+        DATA_COLUMN_NAME("Data Column Name"), DATA_COLUMN_INDEX("Data Column Index"), SCRIPT("Script Variable");
 
         private final String text;
 
@@ -71,7 +71,8 @@ public class VariableLink implements Serializable {
         }
 
         public static VariableType fromValue(String v) {
-            if (v.equals(DATA_COLUMN.toString())) return DATA_COLUMN;
+            if (v.equals(DATA_COLUMN_NAME.toString())) return DATA_COLUMN_NAME;
+            if (v.equals(DATA_COLUMN_INDEX.toString())) return DATA_COLUMN_INDEX;
             if (v.equals(SCRIPT.toString())) return SCRIPT;
             return valueOf(v);
         }

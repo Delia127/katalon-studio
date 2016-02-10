@@ -33,20 +33,29 @@ public class CSVReader {
                 listReader = new CsvListReader(reader, CsvPreference.TAB_PREFERENCE);
                 break;
             }
-            if (containHeader) {
-                columnNames = listReader.getHeader(containHeader);
-            }
+            //if (containHeader) {
+            //    columnNames = listReader.getHeader(containHeader);
+            //}
             data = new ArrayList<String[]>();
             List<String> rowValues;
             while ((rowValues =  listReader.read()) != null) {
                 data.add(rowValues.toArray(new String[rowValues.size()]));
             }
             
-            if (!containHeader) {
+            /*if (!containHeader) {
                 if (data.size() > 0) {
                     columnNames = new String[data.get(0).length];
                 } else {
                     columnNames = new String[0];
+                }
+            }
+            */
+            if (data.size() > 0) {
+                if(containHeader){
+                	columnNames = data.get(0);
+                }
+                else{
+                	columnNames = new String[data.get(0).length];
                 }
             }
         } finally {
@@ -61,6 +70,10 @@ public class CSVReader {
         return columnNames;
     }
     
+    /**
+     * Get all available data, include header row, care should be taken when call this method  
+     * @return
+     */
     public List<String[]> getData() {
         return data;
     }

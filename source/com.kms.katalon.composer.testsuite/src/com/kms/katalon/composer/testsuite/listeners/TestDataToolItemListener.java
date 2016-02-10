@@ -249,7 +249,7 @@ public class TestDataToolItemListener extends SelectionAdapter {
 
             for (VariableLink variableLink : view.getVariableLinks()) {
 
-                if (variableLink.getType() == VariableType.DATA_COLUMN
+                if ((variableLink.getType() == VariableType.DATA_COLUMN_NAME || variableLink.getType() == VariableType.DATA_COLUMN_INDEX) 
                         && variableLink.getTestDataLinkId().equals(linkNode.getId())) {
                     variableLink.setTestDataLinkId("");
                     variableLink.setValue("");
@@ -395,7 +395,7 @@ public class TestDataToolItemListener extends SelectionAdapter {
                         if (variable.getName().equalsIgnoreCase(columnName)) {
                             TestCaseTestDataLink dataLink = dataLinkHashMap.get(entry.getKey());
 
-                            variableLink.setType(VariableType.DATA_COLUMN);
+                            variableLink.setType(VariableType.DATA_COLUMN_NAME);
                             variableLink.setTestDataLinkId(dataLink.getId());
                             variableLink.setValue(columnName);
                             matches++;
