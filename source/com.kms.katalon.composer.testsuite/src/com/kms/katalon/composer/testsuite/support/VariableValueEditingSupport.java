@@ -43,7 +43,7 @@ public class VariableValueEditingSupport extends EditingSupport {
             switch (variableLink.getType()) {
                 case SCRIPT:
                     return new TextCellEditor((Composite) getViewer().getControl());
-                case DATA_COLUMN_NAME:
+                case DATA_COLUMN:
                     return new DataColumnChooserEditor((Composite) getViewer().getControl(), testData,
                             variableLink.getValue());
                 case DATA_COLUMN_INDEX:
@@ -59,7 +59,7 @@ public class VariableValueEditingSupport extends EditingSupport {
     protected boolean canEdit(Object element) {
         if (element != null && element instanceof VariableLink) {
             VariableLink variableLink = (VariableLink) element;
-            if (variableLink.getType() == VariableType.DATA_COLUMN_NAME || variableLink.getType() == VariableType.DATA_COLUMN_INDEX) {
+            if (variableLink.getType() == VariableType.DATA_COLUMN || variableLink.getType() == VariableType.DATA_COLUMN_INDEX) {
                 
                 testData = null;
                 
@@ -90,7 +90,7 @@ public class VariableValueEditingSupport extends EditingSupport {
                                     StringConstants.SUP_WARN_MSG_TEST_DATA_NOT_FOUND, testDataId));
                             return false;
                         }
-                        if(!dataFileEntity.isContainsHeaders() && variableLink.getType() == VariableType.DATA_COLUMN_NAME){
+                        if(!dataFileEntity.isContainsHeaders() && variableLink.getType() == VariableType.DATA_COLUMN){
                         	MessageDialog.openWarning(null, StringConstants.WARN_TITLE, MessageFormat.format(StringConstants.SUP_WARN_MSG_TEST_DATA_NO_HEADER, testDataId));
                             return false;
                         }
@@ -142,7 +142,7 @@ public class VariableValueEditingSupport extends EditingSupport {
         if (element != null && element instanceof VariableLink) {
             VariableLink link = (VariableLink) element;
             /*switch (link.getType()) {
-                case DATA_COLUMN_NAME:
+                case DATA_COLUMN:
                     return link.getValue();
                 case DATA_COLUMN_INDEX:
                     return link.getValue();

@@ -45,7 +45,7 @@ public class VariableTestDataLinkColumnEditingSupport extends EditingSupport {
     protected boolean canEdit(Object element) {
         if (element == null || !(element instanceof VariableLink)) return false;
         VariableLink variableLink = (VariableLink) element;
-        return (variableLink.getType() == VariableType.DATA_COLUMN_NAME || variableLink.getType() == VariableType.DATA_COLUMN_INDEX);
+        return (variableLink.getType() == VariableType.DATA_COLUMN || variableLink.getType() == VariableType.DATA_COLUMN_INDEX);
     }
 
     @Override

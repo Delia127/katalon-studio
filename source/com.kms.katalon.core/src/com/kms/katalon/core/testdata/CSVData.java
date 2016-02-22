@@ -19,7 +19,8 @@ public class CSVData extends AbstractTestData {
     public String getValue(String columnName, int rowIndex) {
     	verifyColumnName(columnName);
     	verifyRowIndex(rowIndex);
-        return reader.getData().get(rowIndex - 1)[reader.getColumnIndex(columnName)];
+        //return reader.getData().get(rowIndex - 1)[reader.getColumnIndex(columnName)];
+    	return reader.getData().get(rowIndex)[reader.getColumnIndex(columnName)];
     }
     
 	@Override

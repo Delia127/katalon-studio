@@ -74,7 +74,7 @@ public class TestDataIDColumnEditingSupport extends EditingSupport {
     private void refreshVariableLink(String testDataLinkId) {
         if (mpart.getSelectedTestCaseLink() == null) return;
         for (VariableLink variableLink : mpart.getSelectedTestCaseLink().getVariableLinks()) {
-            if ((variableLink.getType() == VariableType.DATA_COLUMN_NAME || variableLink.getType() == VariableType.DATA_COLUMN_INDEX)
+            if ((variableLink.getType() == VariableType.DATA_COLUMN || variableLink.getType() == VariableType.DATA_COLUMN_INDEX)
                     && testDataLinkId.equals(variableLink.getTestDataLinkId())) {
 
                 variableLink.setValue(StringUtils.EMPTY);
