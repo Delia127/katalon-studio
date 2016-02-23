@@ -49,6 +49,7 @@ import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
 import com.kms.katalon.integration.qtest.helper.QTestAPIRequestHelper;
 import com.kms.katalon.integration.qtest.helper.QTestHttpRequestHelper;
+import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 /**
@@ -368,16 +369,22 @@ public class QTestIntegrationTestSuiteManager {
             QTestProject project, IQTestCredential credential) throws QTestException {
         String url = QTestIntegrationProjectManager.getProjectAPIPrefix(credential, project) + "/test-runs?parentId="
                 + Long.toString(testSuite.getId()) + "&parentType=test-suite";
+        
         Map<String, Object> bodyMap = new HashMap<String, Object>();
         JsonObject testCaseInfoJsonArray = new JsonObject();
         try {
             testCaseInfoJsonArray.put(QTestEntity.ID_FIELD, testCase.getId());
+            
+            if(QTestSettingStore.isSubmitResultToLatestVersionActive(((QTestSettingCredential)credential).getProjectDir()) == false){
+            	testCaseInfoJsonArray.put("test_case_version_id", testCase.getVersionId());	
+            }
         } catch (JsonException e) {
             throw QTestInvalidFormatException.createInvalidJsonFormatException(e.getMessage());
         }
 
         bodyMap.put(QTestEntity.NAME_FIELD, testCase.getName());
         bodyMap.put("test_case", testCaseInfoJsonArray);
+        
         String result = QTestAPIRequestHelper.sendPostRequestViaAPI(url, credential.getToken(),
                 new JsonObject(bodyMap).toString());
 
