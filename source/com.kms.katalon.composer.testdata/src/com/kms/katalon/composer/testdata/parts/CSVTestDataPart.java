@@ -453,7 +453,7 @@ public class CSVTestDataPart extends TestDataMainPart {
                     column.setText(header);
                 }
 
-                if (numEmptyHeader > 0) {
+                if (numEmptyHeader > 0 && chckEnableHeader.getSelection()) {
                     lblFileInfoStatus.setText(MessageFormat.format(StringConstants.PA_LBL_WARNING_COLUMN_HEADER,
                             numEmptyHeader, columnNumbers));
                 }

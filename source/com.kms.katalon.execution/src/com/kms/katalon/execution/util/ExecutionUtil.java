@@ -256,11 +256,11 @@ public class ExecutionUtil {
         testDataExecutedEntity.setType(testDataLink.getCombinationType());
 
         int rowCount = 0; 
-        int totalRowCount = 0;
+        int totalRowCount = (dataFile.isContainsHeaders()? testData.getRowNumbers()-1 : testData.getRowNumbers());
 
         switch (testDataLink.getIterationEntity().getIterationType()) {
         case ALL: {
-            rowCount = totalRowCount = (dataFile.isContainsHeaders()? testData.getRowNumbers()-1 : testData.getRowNumbers());
+            rowCount = (dataFile.isContainsHeaders()? testData.getRowNumbers()-1 : testData.getRowNumbers());
 
             if (rowCount <= 0) {
                 throw new IllegalArgumentException(MessageFormat.format(
@@ -296,7 +296,7 @@ public class ExecutionUtil {
 
             int[] rowIndexes = new int[rowCount];
             for (int index = 0; index < rowCount; index++) {
-                rowIndexes[index] = index + rowStart;
+                rowIndexes[index] = index + rowStart - (dataFile.isContainsHeaders()? 0 : 1);
             }
             testDataExecutedEntity.setRowIndexes(rowIndexes);
 
@@ -329,7 +329,12 @@ public class ExecutionUtil {
                                 testCaseLink.getTestCaseId(), Integer.toString(rowEnd)));
                     }
                     for (int rowIndex = rowStart; rowIndex <= rowEnd; rowIndex++) {
-                        rowIndexArray.add(rowIndex);
+                        if(dataFile.isContainsHeaders()){
+                        	rowIndexArray.add(rowIndex);
+                        }
+                        else{
+                        	rowIndexArray.add(rowIndex-1);	
+                        }
                     }
 
                 } else {
@@ -340,8 +345,12 @@ public class ExecutionUtil {
                                 StringConstants.UTIL_EXC_IDX_X_INVALID_TC_Y_TD_Z, rowIndexesString[index],
                                 testCaseLink.getTestCaseId(), testDataLink.getTestDataId()));
                     }
-
-                    rowIndexArray.add(rowIndex);
+                    if(dataFile.isContainsHeaders()){
+                    	rowIndexArray.add(rowIndex);
+                    }
+                    else{
+                    	rowIndexArray.add(rowIndex-1);	
+                    }
                 }
             }
             testDataExecutedEntity.setRowIndexes(ArrayUtils.toPrimitive(rowIndexArray.toArray(new Integer[rowIndexArray
