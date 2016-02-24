@@ -169,6 +169,9 @@ public class QTestIntegrationReportManager {
         }
         
         String message = (qTestLog != null) ? qTestLog.getMessage() : testCaseLogRecord.getMessage();
+        if(testSuiteLogRecord.getRunData() != null && testSuiteLogRecord.getRunData().containsKey("browser")){
+        	message += "\nBrowser: " + testSuiteLogRecord.getRunData().get("browser");	
+        }
 
         IQTestCredential credential = QTestSettingCredential.getCredential(projectDir);;
 
