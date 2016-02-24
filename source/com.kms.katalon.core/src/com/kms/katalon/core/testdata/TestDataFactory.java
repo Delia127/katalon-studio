@@ -123,6 +123,9 @@ public class TestDataFactory {
 			columnNames.add(internalDataColumnElement.element(INTERNAL_DATA_COLUMN_NAME_ATTRIBUTE).getText());
 		}
 
+		//Column names also included into data, for consistent with other test data types
+		data.add(columnNames.toArray(new String[columnNames.size()]));
+		
 		for (Object dataElementObject : testDataElement.elements(DATA_NODE)) {
 			Element dataElement = (Element) dataElementObject;
 			String[] rowRawData = dataElement.getText().split(" ");
