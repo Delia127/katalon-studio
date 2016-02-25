@@ -22,6 +22,7 @@ public class EventConstants {
     public static final String ECLIPSE_EDITOR_SAVED = "EDITORS_SAVED";
 
     // Explorer Events
+    public static final String EXPLORER_RELOAD_DATA = "EXPLORER/RELOAD_DATA";
     public static final String EXPLORER_RELOAD_INPUT = "EXPLORER/RELOAD_INPUT";
     public static final String EXPLORER_SET_SELECTED_ITEM = "EXPLORER/SET_SELECTED_ITEM";
     public static final String EXPLORER_SHOW_ITEM = "EXPLORER/SHOW_ITEM";

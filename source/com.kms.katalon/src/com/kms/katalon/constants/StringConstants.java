@@ -38,6 +38,12 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String MENU_LBL_PROJECT = "Project";
 
+    public static final String MENU_LBL_WINDOW = "Window";
+
+    public static final String MENU_LBL_WINDOW_RESET_PERSPECTIVE = "Reset Perspective...";
+
+    public static final String MENU_CMD_NAME_WINDOW_RESET_PERSPECTIVE = "resetPerspectiveCommand";
+
     public static final String MENU_LBL_HELP = "Help";
 
     public static final String MENU_LBL_HELP_ABOUT = "About";
