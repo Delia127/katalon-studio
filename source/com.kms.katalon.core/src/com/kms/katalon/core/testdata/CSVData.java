@@ -11,7 +11,7 @@ public class CSVData extends AbstractTestData {
     private String sourceUrl;
 
     public CSVData(String sourceUrl, boolean containHeader, CSVSeperator seperator) throws Exception {
-        reader = new CSVReader(sourceUrl, seperator, true);
+        reader = new CSVReader(sourceUrl, seperator, containHeader);
         this.sourceUrl = sourceUrl;
     }
 
@@ -19,14 +19,16 @@ public class CSVData extends AbstractTestData {
     public String getValue(String columnName, int rowIndex) {
     	verifyColumnName(columnName);
     	verifyRowIndex(rowIndex);
-        return reader.getData().get(rowIndex - 1)[reader.getColumnIndex(columnName)];
+        //return reader.getData().get(rowIndex - 1)[reader.getColumnIndex(columnName)];
+    	return reader.getData().get(rowIndex)[reader.getColumnIndex(columnName)];
     }
     
 	@Override
 	public String getValue(int columnIndex, int rowIndex) throws IllegalArgumentException {
 		verifyColumnIndex(columnIndex);
 		verifyRowIndex(rowIndex);
-		return reader.getData().get(rowIndex - 1)[columnIndex - 1];
+		//return reader.getData().get(rowIndex - 1)[columnIndex - 1];
+		return reader.getData().get(rowIndex)[columnIndex - 1];
 	}
 
     @Override

@@ -1,8 +1,10 @@
 package com.kms.katalon.composer.webui.recorder.dialog;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EventObject;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IStatus;
@@ -30,12 +32,20 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TableViewerEditor;
 import org.eclipse.jface.viewers.TableViewerFocusCellManager;
-import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DragSourceListener;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.TableDropTargetEffect;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
@@ -51,7 +61,9 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
@@ -68,9 +80,12 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.components.dialogs.AbstractDialogCellEditor;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.testcase.components.FocusCellOwnerDrawHighlighterForMultiSelection;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
+import com.kms.katalon.composer.webui.recorder.action.HTMLSynchronizeAction;
+import com.kms.katalon.composer.webui.recorder.action.HTMLValidationAction;
 import com.kms.katalon.composer.webui.recorder.action.IHTMLAction;
 import com.kms.katalon.composer.webui.recorder.constants.ImageConstants;
 import com.kms.katalon.composer.webui.recorder.constants.StringConstants;
@@ -221,7 +236,7 @@ public class RecorderDialog extends Dialog implements EventHandler {
         GridLayout gl_objectComposite = new GridLayout();
         gl_objectComposite.marginLeft = 5;
         gl_objectComposite.marginWidth = 0;
-        gl_objectComposite.marginBottom = 5;
+        gl_objectComposite.marginBottom = 0;
         gl_objectComposite.marginHeight = 0;
         gl_objectComposite.verticalSpacing = 0;
         gl_objectComposite.horizontalSpacing = 0;
@@ -279,77 +294,293 @@ public class RecorderDialog extends Dialog implements EventHandler {
                         menu = new Menu(treeViewer.getTree());
                     }
 
-                    MenuItem deleteMenuItem = new MenuItem(menu, SWT.PUSH);
-                    deleteMenuItem.setText(StringConstants.DELETE);
-                    deleteMenuItem.addSelectionListener(new SelectionAdapter() {
-                        @Override
-                        public void widgetSelected(SelectionEvent e) {
-                            if (treeViewer.getSelection() instanceof ITreeSelection) {
-                                ITreeSelection selection = (ITreeSelection) treeViewer.getSelection();
-                                for (TreePath treePath : selection.getPaths()) {
-                                    if (treePath.getLastSegment() instanceof HTMLElement) {
-                                        HTMLElement element = (HTMLElement) treePath.getLastSegment();
-                                        HTMLFrameElement frameElement = element.getParentElement();
-                                        if (frameElement != null) {
-                                            frameElement.getChildElements().remove(element);
-                                            capturedObjectComposite.refreshElementTree(frameElement);
-                                        } else if (element instanceof HTMLPageElement) {
-                                            elements.remove(element);
-                                            capturedObjectComposite.refreshElementTree(null);
-                                        }
-                                        removeDeletedElementsFromAction(element);
-                                        if (capturedObjectComposite.getSelectedElement().equals(element)) {
-                                            capturedObjectComposite.refreshAttributesTable(null);
-                                        }
+                    createDeleteMenu(menu);
+                    createAddValidationPointContextMenu(menu);
+                    createAddSynchronizePointContextMenu(menu);
+
+                    treeViewer.getTree().setMenu(menu);
+                }
+
+            }
+
+            private void createDeleteMenu(Menu menu) {
+                MenuItem deleteMenuItem = new MenuItem(menu, SWT.PUSH);
+                deleteMenuItem.setText(StringConstants.DELETE);
+                deleteMenuItem.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        if (treeViewer.getSelection() instanceof ITreeSelection) {
+                            ITreeSelection selection = (ITreeSelection) treeViewer.getSelection();
+                            for (TreePath treePath : selection.getPaths()) {
+                                if (treePath.getLastSegment() instanceof HTMLElement) {
+                                    HTMLElement element = (HTMLElement) treePath.getLastSegment();
+                                    HTMLFrameElement frameElement = element.getParentElement();
+                                    if (frameElement != null) {
+                                        frameElement.getChildElements().remove(element);
+                                        capturedObjectComposite.refreshElementTree(frameElement);
+                                    } else if (element instanceof HTMLPageElement) {
+                                        elements.remove(element);
+                                        capturedObjectComposite.refreshElementTree(null);
+                                    }
+                                    removeDeletedElementsFromAction(element);
+                                    if (capturedObjectComposite.getSelectedElement().equals(element)) {
+                                        capturedObjectComposite.refreshAttributesTable(null);
                                     }
                                 }
                             }
                         }
-                    });
-                    treeViewer.getTree().setMenu(menu);
-                }
+                    }
+                });
+            }
+
+            private void createAddValidationPointContextMenu(Menu menu) {
+                MenuItem addValidationPointMenuItem = new MenuItem(menu, SWT.PUSH);
+                addValidationPointMenuItem.setText(StringConstants.DIA_MENU_ADD_VALIDATION_POINT);
+                addValidationPointMenuItem.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        if (treeViewer.getSelection() instanceof ITreeSelection) {
+                            ITreeSelection selection = (ITreeSelection) treeViewer.getSelection();
+                            if (selection.getFirstElement() instanceof HTMLElement
+                                    && !(selection.getFirstElement() instanceof HTMLPageElement)) {
+                                addValidationPoint((HTMLElement) selection.getFirstElement());
+                            }
+                        }
+                    }
+                });
+            }
+
+            private void createAddSynchronizePointContextMenu(Menu menu) {
+                MenuItem addValidationPointMenuItem = new MenuItem(menu, SWT.PUSH);
+                addValidationPointMenuItem.setText(StringConstants.DIA_MENU_ADD_SYNCHRONIZE_POINT);
+                addValidationPointMenuItem.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        if (treeViewer.getSelection() instanceof ITreeSelection) {
+                            ITreeSelection selection = (ITreeSelection) treeViewer.getSelection();
+                            if (selection.getFirstElement() instanceof HTMLElement
+                                    && !(selection.getFirstElement() instanceof HTMLPageElement)) {
+                                addSynchonizationPoint((HTMLElement) selection.getFirstElement());
+                            }
+                        }
+                    }
+                });
             }
         });
     }
 
     protected void addContextMenuForActionTable() {
-        actionTableViewer.getTable().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseDown(MouseEvent event) {
-                if (event.button == 3) {
-                    Menu menu = actionTableViewer.getTable().getMenu();
-                    if (menu != null) {
-                        menu.dispose();
-                    }
-                    final TableItem tableItem = actionTableViewer.getTable().getItem(new Point(event.x, event.y));
-                    if (tableItem == null) {
-                        return;
-                    } else {
-                        menu = new Menu(actionTableViewer.getTable());
-                    }
+        actionTableViewer.getTable().addListener(SWT.MenuDetect, new Listener() {
+            public void handleEvent(org.eclipse.swt.widgets.Event event) {
+                Menu menu = actionTableViewer.getTable().getMenu();
+                if (menu != null) {
+                    menu.dispose();
+                }
 
-                    MenuItem deleteMenuItem = new MenuItem(menu, SWT.PUSH);
-                    deleteMenuItem.setText(StringConstants.DELETE);
-                    deleteMenuItem.addSelectionListener(new SelectionAdapter() {
-                        @Override
-                        public void widgetSelected(SelectionEvent e) {
-                            if (actionTableViewer.getSelection() instanceof IStructuredSelection) {
-                                IStructuredSelection selection = (IStructuredSelection) actionTableViewer
-                                        .getSelection();
-                                for (Object selectedObject : selection.toArray()) {
-                                    if (selectedObject instanceof HTMLActionMapping) {
-                                        HTMLActionMapping selectedActionMapping = (HTMLActionMapping) selectedObject;
-                                        recordedActions.remove(selectedActionMapping);
-                                    }
+                Point point = Display.getCurrent().map(null, actionTableViewer.getTable(), event.x, event.y);
+                final TableItem tableItem = actionTableViewer.getTable().getItem(point);
+                if (tableItem == null) {
+                    return;
+                } else {
+                    menu = new Menu(actionTableViewer.getTable());
+                }
+
+                createDeleteActionContextMenu(menu);
+                createAddValidationPointContextMenu(menu);
+                createAddSynchronizePointContextMenu(menu);
+                actionTableViewer.getTable().setMenu(menu);
+            }
+
+            private void createDeleteActionContextMenu(Menu menu) {
+                MenuItem deleteMenuItem = new MenuItem(menu, SWT.PUSH);
+                deleteMenuItem.setText(StringConstants.DELETE);
+                deleteMenuItem.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        if (actionTableViewer.getSelection() instanceof IStructuredSelection) {
+                            IStructuredSelection selection = (IStructuredSelection) actionTableViewer.getSelection();
+                            for (Object selectedObject : selection.toArray()) {
+                                if (selectedObject instanceof HTMLActionMapping) {
+                                    HTMLActionMapping selectedActionMapping = (HTMLActionMapping) selectedObject;
+                                    recordedActions.remove(selectedActionMapping);
                                 }
-                                actionTableViewer.refresh();
+                            }
+                            actionTableViewer.refresh();
+                        }
+                    }
+                });
+            }
+
+            private void createAddValidationPointContextMenu(Menu menu) {
+                MenuItem addValidationPointMenuItem = new MenuItem(menu, SWT.PUSH);
+                addValidationPointMenuItem.setText(StringConstants.DIA_MENU_ADD_VALIDATION_POINT);
+                addValidationPointMenuItem.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        if (actionTableViewer.getSelection() instanceof IStructuredSelection) {
+                            IStructuredSelection selection = (IStructuredSelection) actionTableViewer.getSelection();
+                            if (selection.getFirstElement() instanceof HTMLActionMapping) {
+                                addValidationPoint((HTMLActionMapping) selection.getFirstElement());
                             }
                         }
-                    });
-                    actionTableViewer.getTable().setMenu(menu);
-                }
+                    }
+                });
+            }
+
+            private void createAddSynchronizePointContextMenu(Menu menu) {
+                MenuItem addValidationPointMenuItem = new MenuItem(menu, SWT.PUSH);
+                addValidationPointMenuItem.setText(StringConstants.DIA_MENU_ADD_SYNCHRONIZE_POINT);
+                addValidationPointMenuItem.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        if (actionTableViewer.getSelection() instanceof IStructuredSelection) {
+                            IStructuredSelection selection = (IStructuredSelection) actionTableViewer.getSelection();
+                            if (selection.getFirstElement() instanceof HTMLActionMapping) {
+                                addSynchonizationPoint((HTMLActionMapping) selection.getFirstElement());
+                            }
+                        }
+                    }
+                });
             }
         });
+    }
+
+    private void hookDragEvent() {
+        int operations = DND.DROP_MOVE;
+
+        DragSource dragSource = new DragSource(actionTableViewer.getTable(), operations);
+        dragSource.setTransfer(new Transfer[] { TextTransfer.getInstance() });
+
+        dragSource.addDragListener(new DragSourceListener() {
+            public void dragStart(DragSourceEvent event) {
+                if (actionTableViewer.getSelection() instanceof IStructuredSelection) {
+                    IStructuredSelection selection = (IStructuredSelection) actionTableViewer.getSelection();
+                    if (selection.size() == 1 && selection.getFirstElement() instanceof HTMLActionMapping) {
+                        event.doit = true;
+                        return;
+                    }
+                }
+                event.doit = false;
+            }
+
+            public void dragSetData(DragSourceEvent event) {
+                IStructuredSelection selection = (IStructuredSelection) actionTableViewer.getSelection();
+                HTMLActionMapping actionMapping = (HTMLActionMapping) selection.getFirstElement();
+                int actionMappingIndex = recordedActions.indexOf(actionMapping);
+                if (actionMappingIndex >= 0 && actionMappingIndex < recordedActions.size()) {
+                    event.data = String.valueOf(actionMappingIndex);
+                }
+            }
+
+            public void dragFinished(DragSourceEvent event) {
+                // do nothing
+            }
+
+        });
+    }
+
+    private void hookDropEvent() {
+        DropTarget dt = new DropTarget(actionTableViewer.getTable(), DND.DROP_MOVE);
+        dt.setTransfer(new Transfer[] { TextTransfer.getInstance() });
+        dt.addDropListener(new TableDropTargetEffect(actionTableViewer.getTable()) {
+            @Override
+            public void drop(DropTargetEvent event) {
+                if (event.data instanceof String) {
+                    try {
+                        int actionMappingIndex = Integer.valueOf((String) event.data);
+                        if (actionMappingIndex < 0 && actionMappingIndex > recordedActions.size()) {
+                            return;
+                        }
+                        HTMLActionMapping sourceActionMapping = recordedActions.get(actionMappingIndex);
+                        HTMLActionMapping destinationActionMapping = getHoveredActionMapping(event);
+                        if (destinationActionMapping == null && recordedActions.indexOf(destinationActionMapping) < 0) {
+                            return;
+                        }
+                        recordedActions.remove(actionMappingIndex);
+                        int destinationIndex = recordedActions.indexOf(destinationActionMapping);
+                        if (getFeedBackByLocation(event) != DND.FEEDBACK_INSERT_BEFORE) {
+                            destinationIndex++;
+                        }
+                        recordedActions.add(destinationIndex, sourceActionMapping);
+                        actionTableViewer.refresh();
+                    } catch (NumberFormatException e) {
+                        LoggerSingleton.logError(e);
+                    }
+                }
+            }
+
+            @Override
+            public void dragOver(DropTargetEvent event) {
+                event.feedback = DND.FEEDBACK_EXPAND | DND.FEEDBACK_SCROLL;
+                event.feedback |= getFeedBackByLocation(event);
+            }
+
+            private int getFeedBackByLocation(DropTargetEvent event) {
+                Point point = Display.getCurrent().map(null, actionTableViewer.getTable(), event.x, event.y);
+                TableItem tableItem = actionTableViewer.getTable().getItem(point);
+                if (tableItem != null) {
+                    Rectangle bounds = tableItem.getBounds();
+                    if (point.y < bounds.y + bounds.height / 3) {
+                        return DND.FEEDBACK_INSERT_BEFORE;
+                    } else if (point.y > bounds.y + 2 * bounds.height / 3) {
+                        return DND.FEEDBACK_INSERT_AFTER;
+                    }
+                }
+                return DND.FEEDBACK_SELECT;
+            }
+
+            private HTMLActionMapping getHoveredActionMapping(DropTargetEvent event) {
+                Point point = Display.getCurrent().map(null, actionTableViewer.getTable(), event.x, event.y);
+                TableItem treeItem = actionTableViewer.getTable().getItem(point);
+                return (treeItem != null && treeItem.getData() instanceof HTMLActionMapping) ? (HTMLActionMapping) treeItem
+                        .getData() : null;
+            }
+        });
+    }
+
+    private void addValidationPoint(HTMLElement element, HTMLActionMapping selectedHTMLActionMapping) {
+        String windowId = (selectedHTMLActionMapping != null) ? selectedHTMLActionMapping.getWindowId() : null;
+        int addIndex = (selectedHTMLActionMapping != null) ? recordedActions.indexOf(selectedHTMLActionMapping) + 1
+                : recordedActions.size();
+        addAction(HTMLActionUtil.getDefaultValidationAction(), element, windowId, addIndex);
+    }
+
+    private void addValidationPoint(HTMLActionMapping selectedHTMLActionMapping) {
+        addValidationPoint(selectedHTMLActionMapping.getTargetElement(), selectedHTMLActionMapping);
+    }
+
+    private void addValidationPoint(HTMLElement element) {
+        addValidationPoint(element, recordedActions.size() > 0 ? recordedActions.get(recordedActions.size() - 1) : null);
+    }
+
+    private void addSynchonizationPoint(HTMLElement element, HTMLActionMapping selectedHTMLActionMapping) {
+        String windowId = (selectedHTMLActionMapping != null) ? selectedHTMLActionMapping.getWindowId() : null;
+        int addIndex = (selectedHTMLActionMapping != null) ? recordedActions.indexOf(selectedHTMLActionMapping) + 1
+                : recordedActions.size();
+        addAction(HTMLActionUtil.getDefaultSynchronizeAction(), element, windowId, addIndex);
+    }
+
+    private void addSynchonizationPoint(HTMLActionMapping selectedHTMLActionMapping) {
+        addSynchonizationPoint(selectedHTMLActionMapping.getTargetElement(), selectedHTMLActionMapping);
+    }
+
+    private void addSynchonizationPoint(HTMLElement element) {
+        addSynchonizationPoint(element, recordedActions.size() > 0 ? recordedActions.get(recordedActions.size() - 1)
+                : null);
+    }
+
+    private void addAction(IHTMLAction newAction, HTMLElement element, String windowId, int selectedActionIndex) {
+        if (newAction == null) {
+            return;
+        }
+        HTMLActionMapping newActionMapping = new HTMLActionMapping(newAction, (newAction.hasElement()) ? element : null);
+        newActionMapping.setWindowId(windowId);
+        if (selectedActionIndex >= 0 && selectedActionIndex < recordedActions.size()) {
+            recordedActions.add(selectedActionIndex, newActionMapping);
+        } else {
+            recordedActions.add(newActionMapping);
+        }
+        actionTableViewer.refresh();
     }
 
     private void removeDeletedElementsFromAction(HTMLElement element) {
@@ -416,8 +647,8 @@ public class RecorderDialog extends Dialog implements EventHandler {
         TableColumnLayout tableLayout = new TableColumnLayout();
         tableLayout.setColumnData(tableViewerNo, new ColumnWeightData(0, 40));
         tableLayout.setColumnData(tableColumnAction, new ColumnWeightData(20, 100));
-        tableLayout.setColumnData(tableColumnActionData, new ColumnWeightData(20, 100));
-        tableLayout.setColumnData(tableColumnElement, new ColumnWeightData(60, 100));
+        tableLayout.setColumnData(tableColumnActionData, new ColumnWeightData(40, 100));
+        tableLayout.setColumnData(tableColumnElement, new ColumnWeightData(40, 100));
 
         tableComposite.setLayout(tableLayout);
 
@@ -474,7 +705,14 @@ public class RecorderDialog extends Dialog implements EventHandler {
             protected CellEditor getCellEditor(Object element) {
                 actionNames.clear();
                 htmlActions.clear();
-                htmlActions.addAll(HTMLActionUtil.getAllHTMLActions());
+                IHTMLAction action = ((HTMLActionMapping) element).getAction();
+                if (action instanceof HTMLSynchronizeAction) {
+                    htmlActions.addAll(HTMLActionUtil.getAllHTMLSynchronizeActions());
+                } else if (action instanceof HTMLValidationAction) {
+                    htmlActions.addAll(HTMLActionUtil.getAllHTMLValidationActions());
+                } else {
+                    htmlActions.addAll(HTMLActionUtil.getAllHTMLActions());
+                }
                 for (IHTMLAction htmlAction : htmlActions) {
                     actionNames.add(TreeEntityUtil.getReadableKeywordName(htmlAction.getName()));
                 }
@@ -491,8 +729,24 @@ public class RecorderDialog extends Dialog implements EventHandler {
         tableViewerColumnActionData.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                if (element instanceof HTMLActionMapping) {
-                    return String.valueOf(((HTMLActionMapping) element).getData());
+                if (element instanceof HTMLActionMapping && ((HTMLActionMapping) element).getAction() != null) {
+                    HTMLActionMapping actionMapping = (HTMLActionMapping) element;
+                    if (actionMapping.getAction() != null && actionMapping.getAction().hasInput()
+                            && actionMapping.getData() != null) {
+                        StringBuilder displayString = new StringBuilder("[");
+                        boolean isFirst = true;
+                        for (Object dataObject : actionMapping.getData()) {
+                            if (!isFirst) {
+                                displayString.append(", ");
+                            } else {
+                                isFirst = false;
+                            }
+                            displayString.append((dataObject instanceof String) ? "'" + (String) dataObject + "'"
+                                    : String.valueOf(dataObject));
+                        }
+                        displayString.append("]");
+                        return displayString.toString();
+                    }
                 }
                 return StringUtils.EMPTY;
             }
@@ -501,8 +755,9 @@ public class RecorderDialog extends Dialog implements EventHandler {
         tableViewerColumnActionData.setEditingSupport(new EditingSupport(actionTableViewer) {
             @Override
             protected void setValue(Object element, Object value) {
-                if (value instanceof String && !value.equals(((HTMLActionMapping) element).getData())) {
-                    ((HTMLActionMapping) element).setData(value);
+                if (value instanceof Object[]
+                        && !Arrays.equals(((HTMLActionMapping) element).getData(), (Object[]) value)) {
+                    ((HTMLActionMapping) element).setData((Object[]) value);
                     actionTableViewer.refresh(element);
                 }
             }
@@ -514,13 +769,41 @@ public class RecorderDialog extends Dialog implements EventHandler {
 
             @Override
             protected CellEditor getCellEditor(Object element) {
-                return new TextCellEditor((Composite) getViewer().getControl(), SWT.NONE);
+                // if (((HTMLActionMapping) element).getAction() instanceof HTMLAction) {
+                // return new TextCellEditor(actionTableViewer.getTable());
+                // } else {
+                final List<String> propertyList = new ArrayList<String>();
+                final HTMLActionMapping actionMapping = (HTMLActionMapping) element;
+                HTMLElement targetElement = actionMapping.getTargetElement();
+                if (targetElement != null && targetElement.getAttributes() != null
+                        && !targetElement.getAttributes().isEmpty()) {
+                    for (Entry<String, String> entry : targetElement.getAttributes().entrySet()) {
+                        propertyList.add(entry.getKey());
+                    }
+                }
+                return new AbstractDialogCellEditor(actionTableViewer.getTable(),
+                        actionMapping.getData() instanceof Object[] ? Arrays.toString(actionMapping.getData()) : "") {
+                    @Override
+                    protected Object openDialogBox(Control cellEditorWindow) {
+                        HTMLActionDataBuilderDialog dialog = new HTMLActionDataBuilderDialog(getParentShell(),
+                                actionMapping.getAction().getParams(), actionMapping.getData(), propertyList);
+                        int returnCode = dialog.open();
+                        if (returnCode == Window.OK) {
+                            return dialog.getActionData();
+                        }
+                        return null;
+                    }
+                };
+                // }
             }
 
             @Override
             protected boolean canEdit(Object element) {
-                if (element instanceof HTMLActionMapping) {
-                    return true;
+                if (element instanceof HTMLActionMapping && ((HTMLActionMapping) element).getAction() != null) {
+                    HTMLActionMapping actionMapping = (HTMLActionMapping) element;
+                    if (actionMapping.getAction() != null && actionMapping.getAction().hasInput()) {
+                        return true;
+                    }
                 }
                 return false;
             }
@@ -529,10 +812,11 @@ public class RecorderDialog extends Dialog implements EventHandler {
         tableViewerColumnElement.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                if (element instanceof HTMLActionMapping) {
-                    HTMLElement targetElement = ((HTMLActionMapping) element).getTargetElement();
-                    if (targetElement != null) {
-                        return targetElement.getName();
+                if (element instanceof HTMLActionMapping && ((HTMLActionMapping) element).getAction() != null) {
+                    HTMLActionMapping actionMapping = (HTMLActionMapping) element;
+                    if (actionMapping.getAction() != null && actionMapping.getAction().hasElement()
+                            && actionMapping.getTargetElement() != null) {
+                        return actionMapping.getTargetElement().getName();
                     }
                 }
                 return StringUtils.EMPTY;
@@ -592,8 +876,11 @@ public class RecorderDialog extends Dialog implements EventHandler {
 
             @Override
             protected boolean canEdit(Object element) {
-                if (element instanceof HTMLActionMapping) {
-                    return true;
+                if (element instanceof HTMLActionMapping && ((HTMLActionMapping) element).getAction() != null) {
+                    HTMLActionMapping actionMapping = (HTMLActionMapping) element;
+                    if (actionMapping.getAction() != null && actionMapping.getAction().hasElement()) {
+                        return true;
+                    }
                 }
                 return false;
             }
@@ -601,6 +888,8 @@ public class RecorderDialog extends Dialog implements EventHandler {
 
         actionTableViewer.setInput(recordedActions);
         addContextMenuForActionTable();
+        hookDragEvent();
+        hookDropEvent();
     }
 
     private void createToolbar(Composite parent) {

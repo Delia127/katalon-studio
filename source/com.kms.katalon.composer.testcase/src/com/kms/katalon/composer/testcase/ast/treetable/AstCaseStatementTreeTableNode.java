@@ -1,12 +1,11 @@
 package com.kms.katalon.composer.testcase.ast.treetable;
 
-import java.util.List;
-
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.stmt.CaseStatement;
 import org.codehaus.groovy.ast.stmt.SwitchStatement;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.util.AstTreeTableUtil;
 
@@ -28,11 +27,15 @@ public class AstCaseStatementTreeTableNode extends AstStatementTreeTableNode {
 	public boolean hasChildren() {
 		return caseStatement.getCode() != null;
 	}
-
-	@Override
-	public List<AstTreeTableNode> getChildren() throws Exception {
-		return AstTreeTableUtil.getChildren(caseStatement.getCode(), this, caseStatement.getCode(), scriptClass);
-	}
+	
+    @Override
+    public void reloadChildren() {
+        try {
+            children = AstTreeTableUtil.getChildren(caseStatement.getCode(), this, caseStatement.getCode(), scriptClass);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
 
 	@Override
 	public void addChildObject(ASTNode astObject, int index) {

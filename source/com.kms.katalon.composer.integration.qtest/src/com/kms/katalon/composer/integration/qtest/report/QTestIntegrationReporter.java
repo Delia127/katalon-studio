@@ -90,8 +90,8 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
                 QTestIntegrationUtil.addNewTestRunToTestSuite(testSuiteEntity, testSuiteIntegratedEntity,
                         selectedQTestSuite, qTestRun, qTestSuiteCollection);
             }
-            qTestRun.setTestCaseVersionId(qTestCase.getVersionId());
 
+            qTestRun.setTestCaseVersionId(qTestCase.getVersionId());
             int testLogIndex = Arrays.asList(suiteLog.getChildRecords()).indexOf(testLogEntity);
 
             QTestLogUploadedPreview uploadedPreview = new QTestLogUploadedPreview();

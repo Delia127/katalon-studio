@@ -191,7 +191,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         GridLayout gl_objectComposite = new GridLayout();
         gl_objectComposite.marginLeft = 5;
         gl_objectComposite.marginWidth = 0;
-        gl_objectComposite.marginBottom = 5;
+        gl_objectComposite.marginBottom = 0;
         gl_objectComposite.marginHeight = 0;
         gl_objectComposite.verticalSpacing = 0;
         gl_objectComposite.horizontalSpacing = 0;
@@ -248,7 +248,12 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR) {
-                    if (txtXpathInput == null || txtXpathInput.isDisposed() || currentHTMLDocument == null) {
+                    if (txtXpathInput == null || txtXpathInput.isDisposed()) {
+                        return;
+                    }
+                    if (currentHTMLDocument == null) {
+                        MessageDialog.openWarning(Display.getCurrent().getActiveShell(), StringConstants.WARN,
+                                StringConstants.WARNING_NO_PAGE_LOADED);
                         return;
                     }
                     setDomTreeXpath(txtXpathInput.getText());
@@ -391,6 +396,16 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                         final List<DomElementXpath> selectedDOMElementXpaths = new ArrayList<DomElementXpath>();
                         for (int i = 0; i < nodeList.getLength(); i++) {
                             selectedDOMElementXpaths.add(DOMUtils.getDOMElementXpathForNode(nodeList.item(i)));
+                        }
+                        if (selectedDOMElementXpaths.isEmpty()) {
+                            Display.getDefault().syncExec(new Runnable() {
+                                @Override
+                                public void run() {
+                                    MessageDialog.openWarning(Display.getCurrent().getActiveShell(),
+                                            StringConstants.WARN, StringConstants.WARNING_NO_ELEMENT_FOUND_FOR_XPATH);
+                                }
+                            });
+                            return Status.OK_STATUS;
                         }
                         Display.getDefault().syncExec(new Runnable() {
                             @Override

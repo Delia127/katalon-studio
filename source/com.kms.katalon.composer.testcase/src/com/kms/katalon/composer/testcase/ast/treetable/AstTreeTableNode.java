@@ -40,6 +40,7 @@ public interface AstTreeTableNode {
 	public AstTreeTableNode clone();
 	public boolean hasChildren();
 	public List<AstTreeTableNode> getChildren() throws Exception;
+	public void reloadChildren();
 	public void addChildObject(ASTNode astObject, int index);
 	public void removeChildObject(ASTNode astObject);
 	public int getChildObjectIndex(ASTNode astObject);

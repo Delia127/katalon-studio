@@ -20,6 +20,7 @@ public class QTestSettingStore {
     public static final String PASSWORD_PROPERTY = "password";
     public static final String SERVER_URL_PROPERTY = "serverUrl";
     public static final String AUTO_SUBMIT_RESULT_PROPERTY = "autoSubmitResult";
+    public static final String SUBMIT_RESULT_TO_LATEST_VERSION = "submitResultToLatestVersion";
     public static final String ENABLE_INTEGRATION_PROPERTY = "enableIntegration";
     public static final String SEND_ATTACHMENTS_PROPERTY = "sendAttachments";
     public static final String SEND_RESULT_PROPERTY = "sendResult";
@@ -119,6 +120,15 @@ public class QTestSettingStore {
         }
     }
 
+    public static boolean isSubmitResultToLatestVersionActive(String projectDir) {
+        try {
+            return Boolean.parseBoolean(PropertySettingStoreUtil.getPropertyValue(SUBMIT_RESULT_TO_LATEST_VERSION,
+                    getPropertyFile(projectDir)));
+        } catch (IOException e) {
+            return false;
+        }
+    }
+    
     public static boolean isIntegrationActive(String projectDir) {
         try {
             return Boolean.parseBoolean(PropertySettingStoreUtil.getPropertyValue(ENABLE_INTEGRATION_PROPERTY,
@@ -133,6 +143,11 @@ public class QTestSettingStore {
                 getPropertyFile(projectDir));
     }
 
+    public static void saveSubmitToLatestVersion(boolean submitToLatest, String projectDir) throws IOException {
+        PropertySettingStoreUtil.addNewProperty(SUBMIT_RESULT_TO_LATEST_VERSION, Boolean.toString(submitToLatest),
+                getPropertyFile(projectDir));
+    }
+    
     public static void saveEnableIntegration(boolean isIntegration, String projectDir) throws IOException {
         PropertySettingStoreUtil.addNewProperty(ENABLE_INTEGRATION_PROPERTY, Boolean.toString(isIntegration),
                 getPropertyFile(projectDir));

@@ -162,8 +162,16 @@ public class QTestIntegrationReportManager {
         SimpleDateFormat sdf = new SimpleDateFormat(DateUtil.DATE_FORMAT);
         String startDate = sdf.format(testCaseLogRecord.getStartTime());
         String endDate = sdf.format(testCaseLogRecord.getEndTime());
-        Long testLongVersionId = qTestCase.getVersionId();
+        //Should report for latest version? If not, submit to the current version kept by Katalon
+        Long testLongVersionId = null;
+        if(QTestSettingStore.isSubmitResultToLatestVersionActive(projectDir) == false){
+        	testLongVersionId = qTestCase.getVersionId();	
+        }
+        
         String message = (qTestLog != null) ? qTestLog.getMessage() : testCaseLogRecord.getMessage();
+        if(testSuiteLogRecord.getRunData() != null && testSuiteLogRecord.getRunData().containsKey("browser")){
+        	message += "\nBrowser: " + testSuiteLogRecord.getRunData().get("browser");	
+        }
 
         IQTestCredential credential = QTestSettingCredential.getCredential(projectDir);;
 
@@ -183,7 +191,7 @@ public class QTestIntegrationReportManager {
         bodyProperties.put("exe_start_date", startDate);
         bodyProperties.put("exe_end_date", endDate);
         bodyProperties.put("status", new JsonObject(statusProperties));
-        bodyProperties.put("test_case_version_id", testLongVersionId);
+        bodyProperties.put("test_case_version_id", testLongVersionId != null ? testLongVersionId : "");
         bodyProperties.put("note", QTestIntegrationTestCaseManager.getUploadedDescription(message));
 
         boolean attachmentIncluded = false;

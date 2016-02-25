@@ -516,7 +516,8 @@ public class TestCasePart implements IComposerPart, EventHandler {
             protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
                 if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION) {
                     EventObject source = event.sourceEvent;
-                    if (source instanceof MouseEvent && ((MouseEvent) source).button == 3) return false;
+                    if (source instanceof MouseEvent && ((MouseEvent) source).button == 3)
+                        return false;
 
                     return true;
                 } else if (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && event.keyCode == SWT.CR) {
@@ -922,59 +923,49 @@ public class TestCasePart implements IComposerPart, EventHandler {
         Object value = menuItem.getData(TreeTableMenuItemConstants.MENU_ITEM_ACTION_KEY);
         if (value instanceof AddAction) {
             switch ((AddAction) value) {
-                case Add:
-                    addType = NodeAddType.Add;
-                    break;
-                case InsertAfter:
-                    addType = NodeAddType.InserAfter;
-                    break;
-                case InsertBefore:
-                    addType = NodeAddType.InserBefore;
-                    break;
+            case Add:
+                addType = NodeAddType.Add;
+                break;
+            case InsertAfter:
+                addType = NodeAddType.InserAfter;
+                break;
+            case InsertBefore:
+                addType = NodeAddType.InserBefore;
+                break;
 
             }
         }
         switch (menuItem.getID()) {
-            case TreeTableMenuItemConstants.CHANGE_FAILURE_HANDLING_MENU_ITEM_ID:
-                Object failureHandlingValue = menuItem.getData(TreeTableMenuItemConstants.FAILURE_HANDLING_KEY);
-                if (failureHandlingValue instanceof FailureHandling) {
-                    changeKeywordFailureHandling((FailureHandling) failureHandlingValue);
-                }
-                break;
-            case TreeTableMenuItemConstants.COPY_MENU_ITEM_ID:
-                copyTestStep();
-                break;
-            case TreeTableMenuItemConstants.CUT_MENU_ITEM_ID:
-                cutTestStep();
-                break;
-            case TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID:
-                pasteTestStep();
-                break;
-            case TreeTableMenuItemConstants.REMOVE_MENU_ITEM_ID:
-                removeTestStep();
-            default:
-                treeTableInput.addNewAstObject(menuItem.getID(), addType);
-                break;
+        case TreeTableMenuItemConstants.CHANGE_FAILURE_HANDLING_MENU_ITEM_ID:
+            Object failureHandlingValue = menuItem.getData(TreeTableMenuItemConstants.FAILURE_HANDLING_KEY);
+            if (failureHandlingValue instanceof FailureHandling) {
+                changeKeywordFailureHandling((FailureHandling) failureHandlingValue);
+            }
+            break;
+        case TreeTableMenuItemConstants.COPY_MENU_ITEM_ID:
+            copyTestStep();
+            break;
+        case TreeTableMenuItemConstants.CUT_MENU_ITEM_ID:
+            cutTestStep();
+            break;
+        case TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID:
+            pasteTestStep();
+            break;
+        case TreeTableMenuItemConstants.REMOVE_MENU_ITEM_ID:
+            removeTestStep();
+        default:
+            treeTableInput.addNewAstObject(menuItem.getID(), treeTableInput.getSelectedNode(), addType);
+            break;
         }
     }
 
     public void addStatements(List<Statement> statements, NodeAddType addType) {
         try {
-            treeTableInput.addNewAstObjects(statements, addType);
+            treeTableInput.addNewAstObjects(statements, treeTableInput.getSelectedNode(), addType);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
                     StringConstants.PA_ERROR_MSG_CANNOT_ADD_STATEMENTS);
-        }
-    }
-
-    public void addStatement(Statement statement, NodeAddType addType) {
-        try {
-            treeTableInput.addNewAstObject(statement, addType);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_CANNOT_ADD_STATEMENT);
         }
     }
 
@@ -990,7 +981,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
             treeTableInput.addImport(FailureHandling.class);
             treeTableInput.addNewAstObject(AstTreeTableInputUtil.createBuiltInKeywordMethodCall(
                     defaultBuiltinKeywordContributor.getKeywordClass().getSimpleName(), defaultSettingKeywordName),
-                    addType);
+                    treeTableInput.getSelectedNode(), addType);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_CANNOT_ADD_KEYWORD);
@@ -1047,7 +1038,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
     private void copyTestStep() {
         try {
-            treeTableInput.copy();
+            treeTableInput.copy(treeTableInput.getSelectedNodes());
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_CANNOT_COPY);
@@ -1056,7 +1047,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
     private void cutTestStep() {
         try {
-            treeTableInput.cut();
+            treeTableInput.cut(treeTableInput.getSelectedNodes());
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_CANNOT_CUT);
@@ -1065,7 +1056,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
     private void pasteTestStep() {
         try {
-            treeTableInput.paste();
+            treeTableInput.paste(treeTableInput.getSelectedNode(), NodeAddType.Add);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_CANNOT_PASTE);

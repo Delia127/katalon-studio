@@ -71,6 +71,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
     private Combo cbbSheets;
     private TableViewer tableViewer;
     private Label lblSheetName;
+    private Button ckcbEnableHeader;
     private Button ckcbUseRelativePath;
     private Button btnBrowse;
     private ImageButton btnExpandFileInfo;
@@ -210,6 +211,9 @@ public class ExcelTestDataPart extends TestDataMainPart {
         glCompositeCheckBoxes.marginWidth = 0;
         compositeCheckBoxes.setLayout(glCompositeCheckBoxes);
 
+        ckcbEnableHeader = new Button(compositeCheckBoxes, SWT.CHECK);
+		ckcbEnableHeader.setText(StringConstants.PA_CHKBOX_USE_FIRST_ROW_AS_HEADER);
+        
         ckcbUseRelativePath = new Button(compositeCheckBoxes, SWT.CHECK);
         ckcbUseRelativePath.setText(StringConstants.PA_CHKBOX_USE_RELATIVE_PATH);
         new Label(compositeCheckBoxes, SWT.NONE);
@@ -244,7 +248,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
         tableViewer = new TableViewer(compositeTable, SWT.VIRTUAL | SWT.FULL_SELECTION);
         tableViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-        tableViewer.getTable().setHeaderVisible(true);
+        //tableViewer.getTable().setHeaderVisible(true);
         tableViewer.getTable().setLinesVisible(true);
 
         TableViewerColumn tbviewerClmnNo = new TableViewerColumn(tableViewer, SWT.NONE);
@@ -270,6 +274,8 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
         txtFileName.setText(fCurrentPath);
 
+        ckcbEnableHeader.setSelection(dataFile.isContainsHeaders());
+        
         ckcbUseRelativePath.setSelection(dataFile.getIsInternalPath());
 
         fCurrentSheetName = dataFile.getSheetName();
@@ -357,6 +363,14 @@ public class ExcelTestDataPart extends TestDataMainPart {
             }
         });
 
+        ckcbEnableHeader.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				loadExcelDataToTable();
+				dirtyable.setDirty(true);
+			}
+		});
+        
         ckcbUseRelativePath.addSelectionListener(new SelectionAdapter() {
 
             @Override
@@ -441,12 +455,19 @@ public class ExcelTestDataPart extends TestDataMainPart {
             }
 
             final ExcelData excelData = new ExcelData(cbbSheets.getText(), getSourceUrlAbsolutePath());
-            headers = excelData.getColumnNames();
-            if (headers.length <= 0) {
-                return;
+            
+            if(ckcbEnableHeader.getSelection()){
+            	headers = excelData.getColumnNames();
+                if (headers.length <= 0) {
+                    return;
+                }	
             }
 
             int rowNumbers = excelData.getRowNumbers();
+            if(ckcbEnableHeader.getSelection()){
+            	rowNumbers -= 1;
+            }
+            
             int columnNumbers = excelData.getColumnNumbers();
 
             if (columnNumbers > MAX_COLUMN_COUNT) {
@@ -464,7 +485,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 final int idx = i;
                 if (idx >= tableViewer.getTable().getColumnCount() - 1) {
                     TableViewerColumn columnViewer = new TableViewerColumn(tableViewer, SWT.NONE);
-                    String header = headers[i];
+                    String header = (headers == null ? "" : headers[i]);
                     if (!StringUtils.isBlank(header)) {
                         columnViewer.getColumn().setText(header);
                     } else {
@@ -490,7 +511,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
                                         return;
                                     }
                                     if (fData[rowIndex][columnIndex] == null) {
-                                        final String text = excelData.getValue(columnIndex + 1, rowIndex + 1);
+                                        String text = excelData.getValue(columnIndex + 1, rowIndex + (ckcbEnableHeader.getSelection() ? 1 : 0));
                                         if (text == null) {
                                             fData[rowIndex][columnIndex] = "";
                                         } else {
@@ -507,13 +528,14 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 }
             }
 
-            if (numEmptyHeader > 0) {
+            if (numEmptyHeader > 0 && ckcbEnableHeader.getSelection()) {
                 lblFileInfoStatus.setText(MessageFormat.format(StringConstants.PA_LBL_WARNING_COLUMN_HEADER,
                         numEmptyHeader, columnNumbers));
             }
 
             tableViewer.setInput(fData);
-
+            tableViewer.getTable().setHeaderVisible(ckcbEnableHeader.getSelection());
+            
         } catch (IllegalArgumentException ex) {
             fData = null;
         } catch (Exception e) {
@@ -533,7 +555,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
             String oldIdForDisplay = originalDataFile.getIdForDisplay();
             originalDataFile = updateDataFileProperty(originalDataFile.getLocation(), txtName.getText(),
                     txtDesc.getText(), DataFileDriverType.ExcelFile, txtFileName.getText(), cbbSheets.getText(),
-                    ckcbUseRelativePath.getSelection(), true);
+                    ckcbUseRelativePath.getSelection(), ckcbEnableHeader.getSelection());
             updateDataFile(originalDataFile);
             dirtyable.setDirty(false);
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);

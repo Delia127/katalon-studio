@@ -60,7 +60,7 @@ public class CSVTestDataPart extends TestDataMainPart {
 
     private TableViewer tableViewer;
     private Text txtFileName;
-    private Button chckIsRelativePath;
+    private Button chckIsRelativePath, chckEnableHeader;
     private Button btnBrowse;
     private Label lblSeperator;
     private Combo cbSeperator;
@@ -188,6 +188,9 @@ public class CSVTestDataPart extends TestDataMainPart {
         glCompositeCheckBoxes.horizontalSpacing = 15;
         compositeCheckBoxes.setLayout(glCompositeCheckBoxes);
 
+        chckEnableHeader = new Button(compositeCheckBoxes, SWT.CHECK);
+        chckEnableHeader.setText(StringConstants.PA_CHKBOX_USE_FIRST_ROW_AS_HEADER);
+
         chckIsRelativePath = new Button(compositeCheckBoxes, SWT.CHECK);
         chckIsRelativePath.setText(StringConstants.PA_CHKBOX_USE_RELATIVE_PATH);
         new Label(compositeCheckBoxes, SWT.NONE);
@@ -283,6 +286,15 @@ public class CSVTestDataPart extends TestDataMainPart {
             }
         });
 
+        chckEnableHeader.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+            	loadCSVDataToTable();
+                dirtyable.setDirty(true);
+            }
+        });
+
         chckIsRelativePath.addSelectionListener(new SelectionAdapter() {
 
             @Override
@@ -349,6 +361,8 @@ public class CSVTestDataPart extends TestDataMainPart {
             cbSeperator.setText(fSelectedSeperator);
         }
 
+        chckEnableHeader.setSelection(dataFile.isContainsHeaders());
+        
         chckIsRelativePath.setSelection(dataFile.getIsInternalPath());
 
         if (cbSeperator.getText() != null && !cbSeperator.getText().isEmpty()) {
@@ -400,9 +414,7 @@ public class CSVTestDataPart extends TestDataMainPart {
             if (validateTestDataInfo()) {
                 String fileName = getSourceUrlAbsolutePath();
                 CSVSeperator seperator = CSVSeperator.fromValue(cbSeperator.getText());
-                final CSVReader reader = new CSVReader(fileName, seperator, true);
-
-                List<String[]> data = reader.getData();
+                final CSVReader reader = new CSVReader(fileName, seperator, chckEnableHeader.getSelection());
 
                 int columnNumbers = reader.getColumnCount();
                 if (columnNumbers > MAX_COLUMN_COUNT) {
@@ -441,13 +453,19 @@ public class CSVTestDataPart extends TestDataMainPart {
                     column.setText(header);
                 }
 
-                if (numEmptyHeader > 0) {
+                if (numEmptyHeader > 0 && chckEnableHeader.getSelection()) {
                     lblFileInfoStatus.setText(MessageFormat.format(StringConstants.PA_LBL_WARNING_COLUMN_HEADER,
                             numEmptyHeader, columnNumbers));
                 }
-                tableViewer.setInput(data);
+                
+                List<String[]> allData = reader.getData();
+                
+                if(chckEnableHeader.getSelection()){
+                	allData.remove(0);
+                }
+                tableViewer.setInput(allData);
             }
-            tableViewer.getTable().setHeaderVisible(true);
+            tableViewer.getTable().setHeaderVisible(chckEnableHeader.getSelection());
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         } finally {
@@ -463,8 +481,8 @@ public class CSVTestDataPart extends TestDataMainPart {
             String oldName = originalDataFile.getName();
             String oldIdForDisplay = originalDataFile.getIdForDisplay();
             originalDataFile = updateDataFileProperty(originalDataFile.getLocation(), txtName.getText(),
-                    txtDesc.getText(), DataFileDriverType.CSV, txtFileName.getText(), cbSeperator.getText(),
-                    chckIsRelativePath.getSelection());
+                    txtDesc.getText(), DataFileDriverType.CSV, txtFileName.getText(), chckEnableHeader.getSelection(), 
+                    cbSeperator.getText(), chckIsRelativePath.getSelection());
 
             updateDataFile(originalDataFile);
             dirtyable.setDirty(false);
@@ -487,7 +505,7 @@ public class CSVTestDataPart extends TestDataMainPart {
     }
 
     public DataFileEntity updateDataFileProperty(String pk, String name, String description,
-            DataFileDriverType dataFileDriver, String dataSourceURL, String csvSeperator, boolean isInternalPath)
+            DataFileDriverType dataFileDriver, String dataSourceURL, boolean hasHeaders, String csvSeperator, boolean isInternalPath)
             throws Exception {
 
         DataFilePropertyInputEntity dataFileInputPro = new DataFilePropertyInputEntity();
@@ -497,7 +515,7 @@ public class CSVTestDataPart extends TestDataMainPart {
         dataFileInputPro.setDescription(description);
         dataFileInputPro.setDataFileDriver(dataFileDriver.name());
         dataFileInputPro.setdataSourceURL(dataSourceURL);
-        dataFileInputPro.setEnableHeader(true);
+        dataFileInputPro.setEnableHeader(hasHeaders);
         dataFileInputPro.setCsvSeperator(csvSeperator);
         dataFileInputPro.setIsInternalPath(isInternalPath);
 

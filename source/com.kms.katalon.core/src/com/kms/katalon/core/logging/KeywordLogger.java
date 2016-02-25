@@ -8,6 +8,8 @@ import java.util.Stack;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
 
@@ -77,7 +79,7 @@ public class KeywordLogger {
             logger.setUseParentHandlers(false);
         }
 
-        if (logger.getHandlers().length == 0 && getLogFilePath() != null) {
+        if (logger.getHandlers().length == 0 && StringUtils.isNotEmpty(getLogFilePath())) {
             try {
                 String logFolder = new File(getLogFilePath()).getParent();
 

@@ -54,7 +54,8 @@ public class ExcelData extends AbstractTestData {
 
     @Override
     public int getRowNumbers() {
-        return sheetPoi.getMaxRow();
+    	//POI max row is 0-based, getRowNumbers should return 1-based row count
+        return sheetPoi.getMaxRow() + 1;
     }
 
     @Override

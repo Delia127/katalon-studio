@@ -6,6 +6,7 @@ import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.eclipse.swt.graphics.Image;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.util.AstTreeTableUtil;
@@ -47,10 +48,22 @@ public class AstClassTreeTableNode extends AstAbstractTreeTableNode {
 		return false;
 	}
 
-	@Override
-	public List<AstTreeTableNode> getChildren() throws Exception {
-		return AstTreeTableUtil.getChildren(classNode, this);
-	}
+    @Override
+    public List<AstTreeTableNode> getChildren() throws Exception {
+        if (children == null) {
+            reloadChildren();
+        }
+        return children;
+    }
+    
+    @Override
+    public void reloadChildren() {
+        try {
+            children = AstTreeTableUtil.getChildren(classNode, this);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
 
 	@Override
 	public AstTreeTableNode getParent() {

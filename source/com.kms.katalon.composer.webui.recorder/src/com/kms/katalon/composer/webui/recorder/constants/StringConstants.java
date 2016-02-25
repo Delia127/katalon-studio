@@ -27,9 +27,19 @@ public class StringConstants extends GlobalStringConstants {
     public static final String JOB_GENERATE_SCRIPT_MESSAGE = "Generating scripts";
     public static final String JOB_ADDING_OBJECT = "Adding html elements into object repository";
     public static final String JOB_GENERATE_STATEMENT_MESSAGE = "Generating statements";
+    
+    public static final String DIA_MENU_ADD_VALIDATION_POINT = "Add Validation Point";
+    public static final String DIA_MENU_ADD_SYNCHRONIZE_POINT = "Add Synchronization Point";
 
 	// RecordHandler
 	public static final String HAND_ERROR_MSG_CANNOT_GEN_TEST_STEPS = "Cannot generate test steps.";
 	public static final String HAND_ERROR_MSG_PLS_SAVE_TEST_CASE = "Selected Test Case has unsaved changes. Please save the Test Case before proceeding.";
 	public static final String HAND_ERROR_MSG_PLS_FIX_TEST_CASE = "Selected Test Case has errors. Please fix them before proceeding.";
+	
+	//HTMLActionDataBuilderDialog
+	public static final String DIA_ACTION_DATA_LBL = "Action Data Builder";
+	public static final String COLUMN_DATA_PARAM_NAME = "Param Name";
+	public static final String COLUMN_DATA_PARAM_TYPE = "Param Type";
+	public static final String COLUMN_DATA_VALUE_TYPE = "Value Type";
+	public static final String COLUMN_DATA_VALUE = "Value";
 }

@@ -18,14 +18,16 @@ public class InternalData extends AbstractTestData {
 	public String getValue(String columnName, int rowIndex) {
 		verifyColumnName(columnName);
 		verifyRowIndex(rowIndex);
-		return data.get(rowIndex - 1)[getColumnIndex(columnName)];
+		//return data.get(rowIndex - 1)[getColumnIndex(columnName)];
+		return data.get(rowIndex)[getColumnIndex(columnName)];
 	}
 
 	@Override
 	public String getValue(int columnIndex, int rowIndex) throws IllegalArgumentException {
 		verifyColumnIndex(columnIndex);
 		verifyRowIndex(rowIndex);
-		return data.get(rowIndex - 1)[columnIndex - 1];
+		//return data.get(rowIndex - 1)[columnIndex - 1];
+		return data.get(rowIndex)[columnIndex - 1];
 	}
 
 	private int getColumnIndex(String columnName) {

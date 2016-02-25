@@ -249,7 +249,7 @@ public class TestDataToolItemListener extends SelectionAdapter {
 
             for (VariableLink variableLink : view.getVariableLinks()) {
 
-                if (variableLink.getType() == VariableType.DATA_COLUMN
+                if ((variableLink.getType() == VariableType.DATA_COLUMN || variableLink.getType() == VariableType.DATA_COLUMN_INDEX) 
                         && variableLink.getTestDataLinkId().equals(linkNode.getId())) {
                     variableLink.setTestDataLinkId("");
                     variableLink.setValue("");

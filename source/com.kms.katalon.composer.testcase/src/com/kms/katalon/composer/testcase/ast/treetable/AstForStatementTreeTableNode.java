@@ -1,12 +1,11 @@
 package com.kms.katalon.composer.testcase.ast.treetable;
 
-import java.util.List;
-
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.stmt.ForStatement;
 import org.eclipse.swt.graphics.Image;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
@@ -31,11 +30,15 @@ public class AstForStatementTreeTableNode extends AstStatementTreeTableNode {
 	public boolean hasChildren() {
 		return forStatement.getLoopBlock() != null;
 	}
-
+	
 	@Override
-	public List<AstTreeTableNode> getChildren() throws Exception {
-		return AstTreeTableUtil.getChildren(forStatement.getLoopBlock(), this, forStatement.getLoopBlock(), scriptClass);
-	}
+    public void reloadChildren() {
+	    try {
+            children = AstTreeTableUtil.getChildren(forStatement.getLoopBlock(), this, forStatement.getLoopBlock(), scriptClass);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
 
 	@Override
 	public void addChildObject(ASTNode astObject, int index) {

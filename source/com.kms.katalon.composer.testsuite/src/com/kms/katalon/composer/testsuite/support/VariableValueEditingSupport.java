@@ -46,6 +46,8 @@ public class VariableValueEditingSupport extends EditingSupport {
                 case DATA_COLUMN:
                     return new DataColumnChooserEditor((Composite) getViewer().getControl(), testData,
                             variableLink.getValue());
+                case DATA_COLUMN_INDEX:
+                	return new TextCellEditor((Composite) getViewer().getControl());                    
                 default:
                     break;
             }
@@ -57,7 +59,7 @@ public class VariableValueEditingSupport extends EditingSupport {
     protected boolean canEdit(Object element) {
         if (element != null && element instanceof VariableLink) {
             VariableLink variableLink = (VariableLink) element;
-            if (variableLink.getType() == VariableType.DATA_COLUMN) {
+            if (variableLink.getType() == VariableType.DATA_COLUMN || variableLink.getType() == VariableType.DATA_COLUMN_INDEX) {
                 
                 testData = null;
                 
@@ -81,12 +83,15 @@ public class VariableValueEditingSupport extends EditingSupport {
                     ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
                     String testDataId = testDataLink.getTestDataId();
                     try {
-                        DataFileEntity dataFileEntity = TestDataController.getInstance().getTestDataByDisplayId(
-                                testDataId);
+                        DataFileEntity dataFileEntity = TestDataController.getInstance().getTestDataByDisplayId(testDataId);
                         if (dataFileEntity == null) {
                             //Show Test data not found dialog
                             MessageDialog.openWarning(null, StringConstants.WARN_TITLE, MessageFormat.format(
                                     StringConstants.SUP_WARN_MSG_TEST_DATA_NOT_FOUND, testDataId));
+                            return false;
+                        }
+                        if(!dataFileEntity.isContainsHeaders() && variableLink.getType() == VariableType.DATA_COLUMN){
+                        	MessageDialog.openWarning(null, StringConstants.WARN_TITLE, MessageFormat.format(StringConstants.SUP_WARN_MSG_TEST_DATA_NO_HEADER, testDataId));
                             return false;
                         }
                     } catch (Exception e) {
@@ -136,15 +141,20 @@ public class VariableValueEditingSupport extends EditingSupport {
     protected Object getValue(Object element) {
         if (element != null && element instanceof VariableLink) {
             VariableLink link = (VariableLink) element;
-            switch (link.getType()) {
+            /*switch (link.getType()) {
                 case DATA_COLUMN:
+                    return link.getValue();
+                case DATA_COLUMN_INDEX:
                     return link.getValue();
                 case SCRIPT:
                     return link.getValue();
                 default:
                     break;
             }
-
+            */
+            if(link != null){
+            	return link.getValue();
+            }
         }
         return StringUtils.EMPTY;
     }
