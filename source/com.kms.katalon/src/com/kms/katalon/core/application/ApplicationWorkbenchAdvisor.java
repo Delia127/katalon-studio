@@ -6,15 +6,15 @@ import org.eclipse.ui.application.WorkbenchAdvisor;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.eclipse.ui.ide.IDE;
 
-public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
-    private static final String PERSPECTIVE_ID = "com.kms.katalon.composer.perspective.keyword";
+import com.kms.katalon.constants.IdConstants;
 
+public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
     public WorkbenchWindowAdvisor createWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {
         return new ApplicationWorkbenchWindowAdvisor(configurer);
     }
 
     public String getInitialWindowPerspectiveId() {
-        return PERSPECTIVE_ID;
+        return IdConstants.KEYWORD_PERSPECTIVE_ID;
     }
 
     @Override

@@ -1,5 +1,11 @@
 package com.kms.katalon.core.application;
 
+import java.util.List;
+
+import org.eclipse.e4.ui.model.application.ui.MElementContainer;
+import org.eclipse.e4.ui.model.application.ui.MUIElement;
+import org.eclipse.e4.ui.model.application.ui.advanced.MArea;
+import org.eclipse.e4.ui.model.application.ui.basic.MBasicFactory;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
@@ -16,9 +22,9 @@ import com.kms.katalon.composer.components.services.ModelServiceSingleton;
 import com.kms.katalon.constants.IdConstants;
 
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
-    
+
     private IWorkbenchWindowConfigurer fConfigurer;
-    
+
     public ApplicationWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {
         super(configurer);
         fConfigurer = configurer;
@@ -27,9 +33,35 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
     public ActionBarAdvisor createActionBarAdvisor(IActionBarConfigurer configurer) {
         return new ApplicationActionBarAdvisor(configurer);
     }
-    
+
+    @Override
     public void preWindowOpen() {
         fConfigurer.setShowProgressIndicator(true);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void postWindowClose() {
+        // Clear Memento state
+        if (ApplicationSingleton.getInstance().getApplication().getPersistedState().containsKey("memento")) {
+            ApplicationSingleton.getInstance().getApplication().getPersistedState().remove("memento");
+        }
+
+        // Re-shape Editor Area
+        List<MUIElement> sharedElements = ApplicationSingleton.getInstance().getApplication().getChildren().get(0)
+                .getSharedElements();
+        for (MUIElement element : sharedElements) {
+            if (IdConstants.SHARE_AREA_ID.equals(element.getElementId())) {
+                ((MArea) element).getChildren().clear();
+                MPartStack contentPartStack = MBasicFactory.INSTANCE.createPartStack();
+                contentPartStack.setElementId(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID);
+                contentPartStack.setParent((MElementContainer<MUIElement>) element);
+                contentPartStack.setContainerData("100");
+                contentPartStack.getTags().add("NoAutoCollapse");
+                ((MArea) element).setSelectedElement(contentPartStack);
+                break;
+            }
+        }
     }
 
     @Override

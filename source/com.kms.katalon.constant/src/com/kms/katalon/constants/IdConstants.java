@@ -7,6 +7,15 @@ public interface IdConstants {
     // Main Window
     public static final String MAIN_WINDOW_ID = "com.kms.katalon.composer.window.main";
 
+    // Main Perspective Stack
+    public static final String MAIN_PERSPECTIVE_STACK_ID = "com.kms.katalon.composer.perspectiveStack";
+
+    // Keyword Perspective
+    public static final String KEYWORD_PERSPECTIVE_ID = "com.kms.katalon.composer.perspective.keyword";
+
+    // Debug Perspective
+    public static final String DEBUG_PERSPECTIVE_ID = "org.eclipse.debug.ui.DebugPerspective";
+
     // Eclipse Shared Area
     public static final String SHARE_AREA_ID = "org.eclipse.ui.editorss";
 
@@ -77,6 +86,10 @@ public interface IdConstants {
     public static final String SAVE_COMMAND_ID = "com.kms.katalon.command.save";
 
     public static final String CLOSE_COMMAND_ID = "com.kms.katalon.command.close";
+
+    public static final String SEARCH_COMMAND_ID = "org.eclipse.search.ui.openSearchDialog";
+
+    public static final String RESET_PERSPECTIVE_HANDLER_ID = "com.kms.katalon.composer.menu.handler.resetPerspective";
 
     // Open Recent Project Command id
     public static final String OPEN_RECENT_PROJECT_COMMAND_ID = "com.kms.katalon.composer.project.command.openrecentproject";
@@ -154,9 +167,13 @@ public interface IdConstants {
 
     public static final String MENU_ID_SEARCH = "com.kms.katalon.menu.search";
 
-    public static final String MENU_ID_SAERCH_ = "com.kms.katalon.handledmenuitem.searchFile";
+    public static final String MENU_ID_SEARCH_ = "com.kms.katalon.handledmenuitem.searchFile";
 
     public static final String MENU_ID_PROJECT = "com.kms.katalon.composer.menu.project";
+
+    public static final String MENU_ID_WINDOW = "com.kms.katalon.composer.menu.window";
+
+    public static final String MENU_ID_WINDOW_RESET_PERSPECTIVE = "com.kms.katalon.composer.menu.window.resetPerspective";
 
     public static final String MENU_ID_HELP = "com.kms.katalon.composer.menu.help";
 
@@ -167,5 +184,12 @@ public interface IdConstants {
 
     public static final String MENU_CMD_ID_SEARCH_ = "com.kms.katalon.command.search";
 
+    public static final String MENU_CMD_ID_WINDOW_RESET_PERSPECTIVE = "com.kms.katalon.composer.command.window.resetPerspective";
+
     public static final String MENU_CMD_ID_HELP_ABOUT = "org.eclipse.ui.help.aboutAction";
+
+    // Left Part Stack
+    public static final String COMPOSER_PARTSTACK_EXPLORER_ID = "com.kms.katalon.composer.partstack.explorer";
+
+    public static final String COMPOSER_PARTSTACK_LEFT_OUTLINE_ID = "com.kms.katalon.partstack.left.outline";
 }

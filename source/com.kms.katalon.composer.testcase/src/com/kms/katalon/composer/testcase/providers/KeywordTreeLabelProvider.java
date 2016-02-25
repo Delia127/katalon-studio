@@ -21,31 +21,10 @@ import com.kms.katalon.composer.testcase.keywords.KeywordBrowserControlTreeEntit
 import com.kms.katalon.composer.testcase.keywords.KeywordBrowserTreeEntity;
 
 public class KeywordTreeLabelProvider extends StyledCellLabelProvider implements IEntityLabelProvider {
-    private static Image KEYWORD_ICON = null;
-
-    private static Image FOLDER_ICON = null;
-
     private String searchString = null;
 
     public KeywordTreeLabelProvider() {
         super();
-        if (KEYWORD_ICON == null || KEYWORD_ICON.isDisposed()) {
-            KEYWORD_ICON = ImageConstants.IMG_16_KEYWORD;
-        }
-        if (FOLDER_ICON == null || FOLDER_ICON.isDisposed()) {
-            FOLDER_ICON = ImageConstants.IMG_16_FOLDER;
-        }
-    }
-
-    @Override
-    public void dispose() {
-        if (KEYWORD_ICON != null && !KEYWORD_ICON.isDisposed()) {
-            KEYWORD_ICON.dispose();
-        }
-        if (FOLDER_ICON != null && !FOLDER_ICON.isDisposed()) {
-            FOLDER_ICON.dispose();
-        }
-        super.dispose();
     }
 
     @Override
@@ -71,9 +50,9 @@ public class KeywordTreeLabelProvider extends StyledCellLabelProvider implements
     @Override
     public Image getImage(Object element) {
         if (element instanceof KeywordBrowserTreeEntity || element instanceof KeywordBrowserControlTreeEntity) {
-            return KEYWORD_ICON;
+            return ImageConstants.IMG_16_KEYWORD;
         }
-        return FOLDER_ICON;
+        return ImageConstants.IMG_16_FOLDER;
     }
 
     @Override

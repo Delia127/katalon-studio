@@ -142,12 +142,12 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
     }
 
     @PostConstruct
-    public void init(Composite parent, MCompositePart compositePart, TestCaseEntity testCase) {
+    public void init(Composite parent, MCompositePart compositePart) {
         this.compositePart = compositePart;
         dirty.setDirty(false);
         isInitialized = false;
         isScriptChanged = false;
-        changeOriginalTestCase(testCase);
+        changeOriginalTestCase((TestCaseEntity) compositePart.getObject());
         initListeners();
     }
 

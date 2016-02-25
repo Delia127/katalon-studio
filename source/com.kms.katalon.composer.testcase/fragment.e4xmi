@@ -21,7 +21,7 @@
     <elements xsi:type="application:Addon" xmi:id="_nBBuIB7UEeSM__-V6-Nc3Q" elementId="com.kms.katalon.composer.testcase.addon.inject" contributionURI="bundleclass://com.kms.katalon.composer.testcase/com.kms.katalon.composer.testcase.addons.TestCaseInjectionManagerAddon"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_M2QRgCYLEeWJ99-mW6KHQg" featurename="children" parentElementId="com.kms.katalon.partstack.left.outline">
-    <elements xsi:type="basic:Part" xmi:id="_ZljOoCYLEeWJ99-mW6KHQg" elementId="com.kms.katalon.composer.testcase.part.keywordsBrowser" contributionURI="bundleclass://com.kms.katalon.composer.testcase/com.kms.katalon.composer.testcase.parts.KeywordBrowserPart" label="Keywords Browser" iconURI="platform:/plugin/com.kms.katalon.composer.testcase/icons/folder_keyword_16.png" closeable="true">
+    <elements xsi:type="basic:Part" xmi:id="_ZljOoCYLEeWJ99-mW6KHQg" elementId="com.kms.katalon.composer.testcase.part.keywordsBrowser" contributionURI="bundleclass://com.kms.katalon.composer.testcase/com.kms.katalon.composer.testcase.parts.KeywordBrowserPart" label="Keywords Browser" iconURI="platform:/plugin/com.kms.katalon.composer.testcase/icons/folder_keyword_16.png">
       <tags>active</tags>
     </elements>
   </fragments>

@@ -8,7 +8,6 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -19,7 +18,6 @@ import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 
@@ -56,13 +54,16 @@ public class CloseProjectHandler {
             if (partService.saveAll(true)) {
                 saveOpenedEntitiesState(partService, project);
 
-                MPartStack composerStack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID,
-                        application);
-
-                while (composerStack.getChildren().size() > 0) {
-                    MPart mpart = (MPart) composerStack.getChildren().get(0);
-                    partService.hidePart(mpart, true);
+                // Find and close all opened editor parts which is managed by PartService
+                for (MPart p : partService.getParts()) {
+                    if (p.getElementId().startsWith("com.kms.katalon.composer.content.")
+                            && p.getElementId().endsWith(")")
+                            || "org.eclipse.e4.ui.compatibility.editor".equals(p.getElementId())) {
+                        p.getTags().add(EPartService.REMOVE_ON_HIDE_TAG);
+                        partService.hidePart(p, true);
+                    }
                 }
+
                 try {
                     if (project != null) {
                         ProjectController.getInstance().closeProject(project.getId(), null);

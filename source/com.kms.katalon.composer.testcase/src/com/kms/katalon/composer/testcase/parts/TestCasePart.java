@@ -161,7 +161,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
     private Label lblGeneralInformation;
 
     @PostConstruct
-    public void init(Composite parent, MPart mpart, TestCaseEntity testCase) {
+    public void init(Composite parent, MPart mpart) {
         this.mPart = mpart;
 
         if (mpart.getParent().getParent() instanceof MGenericTile

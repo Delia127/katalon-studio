@@ -25,11 +25,13 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.handlers.CloseHandler;
+import com.kms.katalon.composer.handlers.ResetPerspectiveHandler;
 import com.kms.katalon.composer.handlers.SaveHandler;
 import com.kms.katalon.composer.handlers.SearchHandler;
 import com.kms.katalon.composer.handlers.WorkbenchSaveHandler;
-import com.kms.katalon.core.application.ApplicationRunningMode.RunningMode;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.core.application.ApplicationRunningMode.RunningMode;
 import com.kms.katalon.execution.launcher.manager.ConsoleMain;
 
 @SuppressWarnings("restriction")
@@ -46,7 +48,8 @@ public class LifeCycleManager {
                 .getService(IHandlerService.class);
         handlerService.activateHandler(IWorkbenchCommandConstants.FILE_SAVE, new SaveHandler());
         handlerService.activateHandler(IWorkbenchCommandConstants.FILE_CLOSE, new CloseHandler());
-        handlerService.activateHandler("org.eclipse.search.ui.openSearchDialog", new SearchHandler());
+        handlerService.activateHandler(IdConstants.SEARCH_COMMAND_ID, new SearchHandler());
+        handlerService.activateHandler(IdConstants.RESET_PERSPECTIVE_HANDLER_ID, new ResetPerspectiveHandler());
 
         MTrimmedWindow model = (MTrimmedWindow) PlatformUI.getWorkbench().getActiveWorkbenchWindow()
                 .getService(MTrimmedWindow.class);

@@ -55,7 +55,7 @@
       </application>
    </extension>
  <extension
-       id="id1"
+       id="model"
        point="org.eclipse.e4.workbench.model">
     <processor
           apply="always"
