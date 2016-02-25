@@ -28,7 +28,7 @@
     <elements xsi:type="menu:ToolBarSeparator" xmi:id="_ZdBPYLRCEeWoHIU1pZChOg" elementId="com.kms.katalon.composer.objectrepository.toolbarseparator.1"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_6k2kYEPGEeSL9MJI7TlYNw" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="after:com.kms.katalon.composer.objectrepository.toolbarseparator.1">
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_OkY08EPHEeSL9MJI7TlYNw" elementId="com.kms.katalon.composer.objectrepository.handledtoolitem.objectSpy" label="" iconURI="platform:/plugin/com.kms.katalon.composer.objectrepository/icons/object_spy_28.png" tooltip="Spy Object" command="_qx_Y8DcrEeSiAqu25cXbFw">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_OkY08EPHEeSL9MJI7TlYNw" elementId="com.kms.katalon.composer.objectrepository.handledtoolitem.objectSpy" label="" iconURI="platform:/plugin/com.kms.katalon.composer.objectrepository/icons/object_spy_28.png" tooltip="Web Object Spy" command="_qx_Y8DcrEeSiAqu25cXbFw">
       <tags>FORCE_TEXT</tags>
     </elements>
   </fragments>

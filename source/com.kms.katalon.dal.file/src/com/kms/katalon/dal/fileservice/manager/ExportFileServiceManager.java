@@ -206,14 +206,14 @@ public class ExportFileServiceManager {
 
     private String getDefaultDriver() {
         IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
-        return store.getString(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_CONFIGURATION);
+                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
+        return store.getString(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION);
     }
 
     public static int getDefaultPageLoadTimeout() {
         IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
-        return store.getInt(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_TIMEOUT);
+                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
+        return store.getInt(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_DEFAULT_TIMEOUT);
     }
 
     public void convertScriptFile(File file, File exportProjectFolder) throws IOException, Exception {

@@ -20,6 +20,7 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.handlers.EvaluateDriverConnectorEditorContributionsHandler;
 import com.kms.katalon.composer.execution.menu.CustomExecutionMenuContribution;
+import com.kms.katalon.composer.execution.util.ComposerExecutionUtil;
 import com.kms.katalon.constants.EventConstants;
 
 public class TestExecutionAddon implements EventHandler {
@@ -50,7 +51,7 @@ public class TestExecutionAddon implements EventHandler {
         ContextInjectionFactory.make(EvaluateDriverConnectorEditorContributionsHandler.class, context);
         eventBroker.subscribe(EventConstants.WORKSPACE_CREATED, this);
         initCustomRunConfigurationSubMenu();
-
+        ComposerExecutionUtil.updateDefaultLabelForRunDropDownItem(null);
     }
 
     private void initCustomRunConfigurationSubMenu() {

@@ -91,7 +91,7 @@ import com.kms.katalon.composer.execution.tree.ILogTreeNode;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants;
-import com.kms.katalon.constants.PreferenceConstants.ExecutionPreferenceConstans;
+import com.kms.katalon.constants.PreferenceConstants.ExecutionPreferenceConstants;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XMLLoggerParser;
 import com.kms.katalon.core.logging.XmlLogRecord;
@@ -153,11 +153,11 @@ public class LogViewerPart implements EventHandler {
             switch (toolItem.getElementId()) {
                 case IdConstants.LOG_VIEWER_TOOL_ITEM_TREE_ID:
                     toolItem.setSelected(preferenceStore
-                            .getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_LOGS_AS_TREE));
+                            .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE));
                     break;
                 case IdConstants.LOG_VIEWER_TOOL_ITEM_PIN_ID:
                     toolItem.setSelected(preferenceStore
-                            .getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_PIN_LOG));
+                            .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_PIN_LOG));
                     break;
             }
         }
@@ -165,7 +165,7 @@ public class LogViewerPart implements EventHandler {
 
     private void updateMenuStatus(MPart mpart) {
         boolean isShowLogAsTree = preferenceStore
-                .getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_LOGS_AS_TREE);
+                .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
         for (MMenu menu : mpart.getMenus()) {
             if (!IdConstants.LOG_VIEWER_MENU_TREEVIEW.equals(menu.getElementId())) {
                 continue;
@@ -178,7 +178,7 @@ public class LogViewerPart implements EventHandler {
                             && IdConstants.LOG_VIEWER_MENU_ITEM_WORD_WRAP.equals(childElement.getElementId())) {
                         MDirectMenuItem wordWrapElement = (MDirectMenuItem) childElement;
                         wordWrapElement.setSelected(preferenceStore
-                                .getBoolean(ExecutionPreferenceConstans.EXECUTION_ENABLE_WORD_WRAP));
+                                .getBoolean(ExecutionPreferenceConstants.EXECUTION_ENABLE_WORD_WRAP));
                     }
                 }
             } else {
@@ -190,7 +190,7 @@ public class LogViewerPart implements EventHandler {
     @PostConstruct
     public void init(Composite parent, MPart mpart) {
         preferenceStore = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
+                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
         fMPart = mpart;
         logNavigator = new LogExceptionNavigator();
         launcherWatched = null;
@@ -211,10 +211,10 @@ public class LogViewerPart implements EventHandler {
         }
 
         IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
+                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
 
         boolean showLogsAsTree = store
-                .getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_LOGS_AS_TREE);
+                .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
 
         if (showLogsAsTree) {
             createTreeCompositeContainer(parent);
@@ -694,21 +694,21 @@ public class LogViewerPart implements EventHandler {
     private void performFilterTableLogs(ToolItem button) {
         try {
             ScopedPreferenceStore store = new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                    PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
+                    PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
             if (button == btnShowAllLogs) {
-                store.setValue(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_ALL_LOGS,
+                store.setValue(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_ALL_LOGS,
                         button.getSelection());
             } else if (button == btnShowInfoLogs) {
-                store.setValue(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_INFO_LOGS,
+                store.setValue(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_INFO_LOGS,
                         button.getSelection());
             } else if (button == btnShowPassedLogs) {
-                store.setValue(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_PASSED_LOGS,
+                store.setValue(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_PASSED_LOGS,
                         button.getSelection());
             } else if (button == btnShowFailedLogs) {
-                store.setValue(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_FAILED_LOGS,
+                store.setValue(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_FAILED_LOGS,
                         button.getSelection());
             } else if (button == btnShowErrorLogs) {
-                store.setValue(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_ERROR_LOGS,
+                store.setValue(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_ERROR_LOGS,
                         button.getSelection());
             }
 
@@ -721,17 +721,17 @@ public class LogViewerPart implements EventHandler {
 
     private void updateTableButtons() {
         IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
+                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
         btnShowAllLogs.setSelection(store
-                .getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_ALL_LOGS));
+                .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_ALL_LOGS));
         btnShowInfoLogs.setSelection(store
-                .getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_INFO_LOGS));
+                .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_INFO_LOGS));
         btnShowPassedLogs.setSelection(store
-                .getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_PASSED_LOGS));
+                .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_PASSED_LOGS));
         btnShowFailedLogs.setSelection(store
-                .getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_FAILED_LOGS));
+                .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_FAILED_LOGS));
         btnShowErrorLogs.setSelection(store
-                .getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_ERROR_LOGS));
+                .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_ERROR_LOGS));
     }
 
     private void createTableCompositeDetails(Composite container) {
@@ -922,10 +922,10 @@ public class LogViewerPart implements EventHandler {
 
         isBusy = true;
         IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
+                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
 
         boolean showLogsAsTree = store
-                .getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_LOGS_AS_TREE);
+                .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
 
         if (showLogsAsTree) {
             treeViewer.addRecords(records);
@@ -1019,7 +1019,7 @@ public class LogViewerPart implements EventHandler {
     }
 
     private void setWrapTxtMessage() {
-        boolean wrap = preferenceStore.getBoolean(ExecutionPreferenceConstans.EXECUTION_ENABLE_WORD_WRAP);
+        boolean wrap = preferenceStore.getBoolean(ExecutionPreferenceConstants.EXECUTION_ENABLE_WORD_WRAP);
         if (txtMessage.getListeners(SWT.Modify).length == 0) {
             txtMessage.addListener(SWT.Modify, ControlUtils.getAutoHideStyledTextScrollbarListener);
             txtMessage.addListener(SWT.Resize, ControlUtils.getAutoHideStyledTextScrollbarListener);

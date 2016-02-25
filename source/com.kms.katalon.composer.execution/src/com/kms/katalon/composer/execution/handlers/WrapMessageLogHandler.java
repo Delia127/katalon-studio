@@ -24,10 +24,10 @@ public class WrapMessageLogHandler {
     public void execute(@Optional MDirectMenuItem item) {
         try {
             ScopedPreferenceStore store = new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                    PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
+                    PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
             switch (item.getElementId()) {
                 case IdConstants.LOG_VIEWER_MENU_ITEM_WORD_WRAP: {
-                    store.setValue(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_ENABLE_WORD_WRAP,
+                    store.setValue(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_ENABLE_WORD_WRAP,
                             item.isSelected());
                     break;
                 }

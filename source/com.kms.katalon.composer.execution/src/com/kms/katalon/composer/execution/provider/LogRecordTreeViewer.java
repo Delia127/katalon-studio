@@ -33,7 +33,7 @@ public class LogRecordTreeViewer extends TreeViewer {
         rootNodes = new ArrayList<ILogParentTreeNode>();
         this.eventBroker = eventBroker;
         store = new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
+                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
     }
 
     public void reset(List<XmlLogRecord> records) {
@@ -289,7 +289,7 @@ public class LogRecordTreeViewer extends TreeViewer {
     }
 
     private boolean isScrollLogEnable() {
-        return !store.getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_PIN_LOG);
+        return !store.getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_PIN_LOG);
     }
 
 }

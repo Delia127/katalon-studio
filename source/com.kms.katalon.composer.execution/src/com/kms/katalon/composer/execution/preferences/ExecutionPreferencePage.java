@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.execution.constants.StringConstants;
+import com.kms.katalon.composer.execution.util.ComposerExecutionUtil;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.TestEnvironmentController;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
@@ -100,13 +101,13 @@ public class ExecutionPreferencePage extends PreferencePage {
 
     private void initialize() {
         chckNotifyMe.setSelection(getPreferenceStore().getBoolean(
-                PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_NOTIFY_AFTER_EXECUTING));
+                PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_NOTIFY_AFTER_EXECUTING));
         chckOpenReport.setSelection(getPreferenceStore().getBoolean(
-                PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_OPEN_REPORT_AFTER_EXECUTING));
+                PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING));
         txtPageLoadTimeout.setText(Integer.toString(getPreferenceStore().getInt(
-                PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_TIMEOUT)));
+                PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_DEFAULT_TIMEOUT)));
         String selectedExecutionConfiguration = getPreferenceStore().getString(
-                PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_CONFIGURATION);
+                PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION);
         runConfigs = RunConfigurationCollector.getInstance().getAllBuiltinRunConfigurationContributors();
         String[] runConfigIdList = new String[runConfigs.length];
         int selectedIndex = 0;
@@ -143,13 +144,13 @@ public class ExecutionPreferencePage extends PreferencePage {
         }
 
         chckNotifyMe.setSelection(getPreferenceStore().getDefaultBoolean(
-                PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_NOTIFY_AFTER_EXECUTING));
+                PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_NOTIFY_AFTER_EXECUTING));
         chckOpenReport.setSelection(getPreferenceStore().getDefaultBoolean(
-                PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_OPEN_REPORT_AFTER_EXECUTING));
+                PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING));
         txtPageLoadTimeout.setText(Integer.toString(getPreferenceStore().getDefaultInt(
-                PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_TIMEOUT)));
+                PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_DEFAULT_TIMEOUT)));
         String selectedExecutionConfiguration = getPreferenceStore().getDefaultString(
-                PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_CONFIGURATION);
+                PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION);
         runConfigs = RunConfigurationCollector.getInstance().getAllBuiltinRunConfigurationContributors();
         int selectedIndex = 0;
         if (runConfigs.length > 0) {
@@ -179,25 +180,26 @@ public class ExecutionPreferencePage extends PreferencePage {
 
         if (chckNotifyMe != null) {
             getPreferenceStore().setValue(
-                    PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_NOTIFY_AFTER_EXECUTING,
+                    PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_NOTIFY_AFTER_EXECUTING,
                     chckNotifyMe.getSelection());
         }
 
         if (chckOpenReport != null) {
             getPreferenceStore().setValue(
-                    PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_OPEN_REPORT_AFTER_EXECUTING,
+                    PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING,
                     chckOpenReport.getSelection());
         }
 
         if (txtPageLoadTimeout != null) {
-            getPreferenceStore().setValue(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_TIMEOUT,
+            getPreferenceStore().setValue(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_DEFAULT_TIMEOUT,
                     Integer.parseInt(txtPageLoadTimeout.getText()));
         }
 
         if (executionOptionCombo != null && runConfigs != null && runConfigs.length > 0) {
             getPreferenceStore().setValue(
-                    PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_CONFIGURATION,
+                    PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION,
                     executionOptionCombo.getText());
+            ComposerExecutionUtil.updateDefaultLabelForRunDropDownItem(executionOptionCombo.getText());
         }
     }
 

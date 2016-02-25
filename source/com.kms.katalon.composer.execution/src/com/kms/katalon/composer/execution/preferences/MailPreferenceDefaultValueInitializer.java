@@ -21,19 +21,19 @@ public class MailPreferenceDefaultValueInitializer extends AbstractPreferenceIni
     @Override
     public void initializeDefaultPreferences() {
         IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
+                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
 
-        store.setDefault(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_HOST,
+        store.setDefault(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_HOST,
                 MAIL_CONFIG_HOST_DEFAULT_VALUE);
-        store.setDefault(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_SECURITY_PROTOCOL,
+        store.setDefault(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_SECURITY_PROTOCOL,
                 MAIL_CONFIG_SECURITY_PROTOCOL_DEFAULT_VALUE);
-        store.setDefault(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_PORT,
+        store.setDefault(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_PORT,
                 MAIL_CONFIG_PORT_DEFAULT_VALUE);
-        store.setDefault(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_USERNAME,
+        store.setDefault(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_USERNAME,
                 MAIL_CONFIG_USERNAME_DEFAULT_VALUE);
-        store.setDefault(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_PASSWORD,
+        store.setDefault(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_PASSWORD,
                 MAIL_CONFIG_PASSWORD_DEFAULT_VALUE);
-        store.setDefault(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_ATTACHMENT,
+        store.setDefault(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_ATTACHMENT,
                 MAIL_CONFIG_ATTACHMENT_DEFAULT_VALUE);
 
     }

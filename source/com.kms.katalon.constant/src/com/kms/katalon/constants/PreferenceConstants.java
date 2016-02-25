@@ -18,7 +18,7 @@ public interface PreferenceConstants {
         public static final String EXPLORER_LINK_WITH_PART = "explorer.linkPart";
     }
 
-    public interface ExecutionPreferenceConstans extends IPluginPreferenceConstants {
+    public interface ExecutionPreferenceConstants extends IPluginPreferenceConstants {
         public static final String QUALIFIER = "com.kms.katalon.composer.execution";
 
         // Setting

@@ -80,6 +80,9 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
         for (ITreeEntity treeEntity : treeEntities) {
             validateMovingAcrossArea(treeEntity, targetFolder);
 
+            // Prevent inside-duplicated itself
+            if (targetFolder.equals(treeEntity.getObject())) continue;
+
             if (treeEntity.getParent() == null || targetFolder.equals(treeEntity.getParent().getObject())) {
                 lastMovedTreeEntity = treeEntity;
                 continue;

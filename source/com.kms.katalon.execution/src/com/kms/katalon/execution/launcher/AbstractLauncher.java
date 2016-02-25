@@ -89,22 +89,22 @@ public abstract class AbstractLauncher {
     public static void sendReportEmail(TestSuiteEntity testSuite, File csvFile, File logFile,
             List<Object[]> suitesSummaryForEmail) throws Exception {
         IPreferenceStore prefs = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
+                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
         String[] mailRecipients = getRecipients(testSuite.getMailRecipient(),
-                prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_REPORT_RECIPIENTS));
+                prefs.getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_REPORT_RECIPIENTS));
         if (mailRecipients.length > 0) {
             EmailConfig conf = new EmailConfig();
             conf.tos = mailRecipients;
-            conf.host = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_HOST);
-            conf.port = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_PORT);
-            conf.from = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_USERNAME);
+            conf.host = prefs.getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_HOST);
+            conf.port = prefs.getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_PORT);
+            conf.from = prefs.getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_USERNAME);
             conf.securityProtocol = MailSecurityProtocolType.valueOf(prefs
-                    .getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_SECURITY_PROTOCOL));
-            conf.username = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_USERNAME);
-            conf.password = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_PASSWORD);
-            conf.signature = prefs.getString(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_SIGNATURE);
+                    .getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_SECURITY_PROTOCOL));
+            conf.username = prefs.getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_USERNAME);
+            conf.password = prefs.getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_PASSWORD);
+            conf.signature = prefs.getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_SIGNATURE);
             conf.sendAttachment = prefs
-                    .getBoolean(PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_ATTACHMENT);
+                    .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_ATTACHMENT);
             conf.suitePath = testSuite.getRelativePathForUI();
             conf.logFile = logFile;
             // Send report email
