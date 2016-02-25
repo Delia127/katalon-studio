@@ -17,7 +17,6 @@ import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
@@ -52,7 +51,6 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
                 eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, lastMovedTreeEntity);
             }
         } catch (Exception e) {
-            LoggerSingleton.logError(e);
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR,
                     MessageFormat.format(StringConstants.LIS_ERROR_MSG_CANNOT_MOVE_THE_SELECTION, e.getMessage()));
         }
@@ -82,7 +80,7 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
         for (ITreeEntity treeEntity : treeEntities) {
             validateMovingAcrossArea(treeEntity, targetFolder);
 
-            if (targetFolder.equals(treeEntity.getParent().getObject())) {
+            if (treeEntity.getParent() == null || targetFolder.equals(treeEntity.getParent().getObject())) {
                 lastMovedTreeEntity = treeEntity;
                 continue;
             }
