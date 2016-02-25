@@ -50,7 +50,7 @@ public class CloseProjectHandler {
     public static boolean closeCurrentProject(EPartService partService, EModelService modelService,
             MApplication application, IEventBroker eventBroker) {
         final ProjectEntity project = ProjectController.getInstance().getCurrentProject();
-        if (project != null && partService.getActivePart() != null) {
+        if (project != null) {
             if (partService.saveAll(true)) {
                 saveOpenedEntitiesState(partService, project);
 
@@ -59,7 +59,6 @@ public class CloseProjectHandler {
                     if (p.getElementId().startsWith("com.kms.katalon.composer.content.")
                             && p.getElementId().endsWith(")")
                             || "org.eclipse.e4.ui.compatibility.editor".equals(p.getElementId())) {
-                        p.getTags().add(EPartService.REMOVE_ON_HIDE_TAG);
                         partService.hidePart(p, true);
                     }
                 }
