@@ -18,21 +18,24 @@ import org.eclipse.swt.events.MouseEvent;
 import com.kms.katalon.composer.components.viewer.FocusCellOwnerDrawHighlighterForMultiSelection;
 
 public class ColumnViewerUtil {
+    private static final int ACTIVATION_BIT_MASK = ColumnViewerEditor.TABBING_HORIZONTAL
+            | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR | ColumnViewerEditor.KEYBOARD_ACTIVATION;
     /**
      * SWT MouseEvent constant for right ( third ) mouse button
+     * 
      * @see {@link org.eclipse.swt.events.MouseEvent#button}
      */
     private static final int RIGHT_MOUSE = 3;
 
     /**
      * Set the activation strategy for the table cells to be double click or enter key
+     * 
      * @param tableViewer
      */
     public static void setTableActivation(TableViewer tableViewer) {
         TableViewerEditor.create(tableViewer, new TableViewerFocusCellManager(tableViewer,
-                new FocusCellOwnerDrawHighlighterForMultiSelection(tableViewer)), getColumViewerActivationStrategy(tableViewer),
-                ColumnViewerEditor.TABBING_HORIZONTAL | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
-                        | ColumnViewerEditor.KEYBOARD_ACTIVATION);
+                new FocusCellOwnerDrawHighlighterForMultiSelection(tableViewer)),
+                getColumViewerActivationStrategy(tableViewer), ACTIVATION_BIT_MASK);
     }
 
     private static ColumnViewerEditorActivationStrategy getColumViewerActivationStrategy(ColumnViewer columnViewer) {
@@ -52,15 +55,15 @@ public class ColumnViewerUtil {
         };
         return activationSupport;
     }
-    
+
     /**
      * Set the activation strategy for the tree table cells to be double click or enter key
+     * 
      * @param treeTable
      */
     public static void setTreeTableActivation(TreeViewer treeTable) {
         TreeViewerEditor.create(treeTable, new TreeViewerFocusCellManager(treeTable,
-                new FocusCellOwnerDrawHighlighterForMultiSelection(treeTable)), getColumViewerActivationStrategy(treeTable),
-                ColumnViewerEditor.TABBING_HORIZONTAL | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
-                        | ColumnViewerEditor.KEYBOARD_ACTIVATION);
+                new FocusCellOwnerDrawHighlighterForMultiSelection(treeTable)),
+                getColumViewerActivationStrategy(treeTable), ACTIVATION_BIT_MASK);
     }
 }
