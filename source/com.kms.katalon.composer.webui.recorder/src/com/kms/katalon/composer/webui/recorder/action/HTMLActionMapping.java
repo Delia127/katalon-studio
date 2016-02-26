@@ -56,6 +56,9 @@ public class HTMLActionMapping {
     public void setAction(IHTMLAction action) {
         this.action = action;
         paramDatas = HTMLActionUtil.generateParamDatas(action, paramDatas);
+        if (!action.hasElement()) {
+            targetElement = null;
+        }
     }
 
     public String getWindowId() {

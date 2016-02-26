@@ -1,7 +1,6 @@
 package com.kms.katalon.composer.testcase.parts;
 
 import java.util.ArrayList;
-import java.util.EventObject;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -21,16 +20,11 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.CellLabelProvider;
-import org.eclipse.jface.viewers.ColumnViewerEditor;
-import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
-import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
-import org.eclipse.jface.viewers.TreeViewerEditor;
-import org.eclipse.jface.viewers.TreeViewerFocusCellManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
@@ -43,7 +37,6 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -71,11 +64,11 @@ import com.kms.katalon.composer.components.impl.control.ImageButton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.composer.testcase.ast.treetable.AstMethodTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
-import com.kms.katalon.composer.testcase.components.FocusCellOwnerDrawHighlighterForMultiSelection;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.constants.TestCaseEventConstant;
@@ -129,8 +122,6 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
     private boolean isInfoExpanded, isVisualExpanded;
 
-    // private Table table;
-    // private TestStepTableViewer checkboxTableViewer;
     TreeViewer treeTable;
 
     private MPart mPart;
@@ -509,29 +500,9 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
         treeTable.setContentProvider(new AstTreeTableContentProvider());
 
-        TreeViewerFocusCellManager focusCellManager = new TreeViewerFocusCellManager(treeTable,
-                new FocusCellOwnerDrawHighlighterForMultiSelection(treeTable));
-
-        ColumnViewerEditorActivationStrategy activationSupport = new ColumnViewerEditorActivationStrategy(treeTable) {
-            protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
-                if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION) {
-                    EventObject source = event.sourceEvent;
-                    if (source instanceof MouseEvent && ((MouseEvent) source).button == 3)
-                        return false;
-
-                    return true;
-                } else if (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && event.keyCode == SWT.CR) {
-                    return true;
-                }
-                return false;
-            }
-        };
-
-        TreeViewerEditor.create(treeTable, focusCellManager, activationSupport, ColumnViewerEditor.TABBING_HORIZONTAL
-                | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR | ColumnViewerEditor.KEYBOARD_ACTIVATION);
+        ColumnViewerUtil.setTreeTableActivation(treeTable);
 
         treeTable.getControl().addListener(SWT.MeasureItem, new Listener() {
-
             @Override
             public void handleEvent(org.eclipse.swt.widgets.Event event) {
                 // do nothing to prevent double click to expand tree items

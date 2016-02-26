@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 
+import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.testcase.editors.NumberCellEditor;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionDataType;
 import com.kms.katalon.composer.webui.recorder.action.HTMLElementProperty;
@@ -108,6 +109,9 @@ public class HTMLActionDataBuilderDialog extends Dialog {
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+
+        ColumnViewerUtil.setTableActivation(tableViewer);
+        
         TableColumnLayout tableColumnLayout = new TableColumnLayout();
         tableComposite.setLayout(tableColumnLayout);
 
@@ -146,7 +150,7 @@ public class HTMLActionDataBuilderDialog extends Dialog {
                                     .fromValue(((HTMLActionParamMapping) element).getActionData());
                             HTMLActionDataType newType = HTMLActionDataType.valueOf(HTMLActionDataType.stringValues()[(Integer) value]);
                             if (valueType != newType) {
-                                if (newType == HTMLActionDataType.Property) {
+                                if (newType == HTMLActionDataType.Property && !propertyNameList.isEmpty()) {
                                     ((HTMLActionParamMapping) element).setActionData(new HTMLElementProperty(
                                             propertyNameList.get(0)));
                                 } else {
@@ -173,7 +177,7 @@ public class HTMLActionDataBuilderDialog extends Dialog {
                         return new TextCellEditor(tableViewer.getTable());
                     } else if (ClassUtils.isAssignable(paramClass, Boolean.class, true)) {
                         return new ComboBoxCellEditor(tableViewer.getTable(), new String[] {
-                            Boolean.TRUE.toString().toLowerCase(), Boolean.FALSE.toString().toLowerCase() });
+                                Boolean.TRUE.toString().toLowerCase(), Boolean.FALSE.toString().toLowerCase() });
                     }
                 case Property:
                     return new ComboBoxCellEditor(tableViewer.getTable(), propertyNameList
