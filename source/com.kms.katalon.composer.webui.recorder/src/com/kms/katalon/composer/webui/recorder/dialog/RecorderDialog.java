@@ -2,7 +2,6 @@ package com.kms.katalon.composer.webui.recorder.dialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.EventObject;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -20,9 +19,6 @@ import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnViewerEditor;
-import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
-import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
@@ -30,8 +26,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.TableViewerEditor;
-import org.eclipse.jface.viewers.TableViewerFocusCellManager;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
@@ -82,7 +76,7 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
-import com.kms.katalon.composer.testcase.components.FocusCellOwnerDrawHighlighterForMultiSelection;
+import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
 import com.kms.katalon.composer.webui.recorder.action.HTMLSynchronizeAction;
 import com.kms.katalon.composer.webui.recorder.action.HTMLValidationAction;
@@ -607,26 +601,7 @@ public class RecorderDialog extends Dialog implements EventHandler {
         actionTableViewer.getTable().setHeaderVisible(true);
         actionTableViewer.getTable().setLinesVisible(true);
 
-        ColumnViewerEditorActivationStrategy activationSupport = new ColumnViewerEditorActivationStrategy(
-                actionTableViewer) {
-            protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
-                if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION) {
-                    EventObject source = event.sourceEvent;
-                    if (source instanceof MouseEvent && ((MouseEvent) source).button == 3)
-                        return false;
-
-                    return true;
-                } else if (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && event.keyCode == SWT.CR) {
-                    return true;
-                }
-                return false;
-            }
-        };
-
-        TableViewerEditor.create(actionTableViewer, new TableViewerFocusCellManager(actionTableViewer,
-                new FocusCellOwnerDrawHighlighterForMultiSelection(actionTableViewer)), activationSupport,
-                ColumnViewerEditor.TABBING_HORIZONTAL | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
-                        | ColumnViewerEditor.KEYBOARD_ACTIVATION);
+        ColumnViewerUtil.setTableActivation(actionTableViewer);
 
         TableViewerColumn tableViewerColumnNo = new TableViewerColumn(actionTableViewer, SWT.NONE);
         TableColumn tableViewerNo = tableViewerColumnNo.getColumn();
@@ -769,9 +744,6 @@ public class RecorderDialog extends Dialog implements EventHandler {
 
             @Override
             protected CellEditor getCellEditor(Object element) {
-                // if (((HTMLActionMapping) element).getAction() instanceof HTMLAction) {
-                // return new TextCellEditor(actionTableViewer.getTable());
-                // } else {
                 final List<String> propertyList = new ArrayList<String>();
                 final HTMLActionMapping actionMapping = (HTMLActionMapping) element;
                 HTMLElement targetElement = actionMapping.getTargetElement();
@@ -812,19 +784,19 @@ public class RecorderDialog extends Dialog implements EventHandler {
         tableViewerColumnElement.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                if (element instanceof HTMLActionMapping && ((HTMLActionMapping) element).getAction() != null) {
-                    HTMLActionMapping actionMapping = (HTMLActionMapping) element;
-                    if (actionMapping.getAction() != null && actionMapping.getAction().hasElement()
-                            && actionMapping.getTargetElement() != null) {
-                        return actionMapping.getTargetElement().getName();
-                    }
+                if (!(element instanceof HTMLActionMapping) || ((HTMLActionMapping) element).getAction() == null
+                        || !((HTMLActionMapping) element).getAction().hasElement()) {
+                    return StringUtils.EMPTY;
                 }
-                return StringUtils.EMPTY;
+                HTMLActionMapping actionMapping = (HTMLActionMapping) element;
+                if (actionMapping.getTargetElement() != null) {
+                    return actionMapping.getTargetElement().getName();
+                }
+                return StringConstants.NULL;
             }
         });
 
         tableViewerColumnElement.setEditingSupport(new EditingSupport(actionTableViewer) {
-
             @Override
             protected void setValue(Object element, Object value) {
                 if (value instanceof HTMLElement) {
@@ -846,7 +818,7 @@ public class RecorderDialog extends Dialog implements EventHandler {
             protected CellEditor getCellEditor(Object element) {
                 HTMLElement htmlElement = ((HTMLActionMapping) element).getTargetElement();
                 return new AbstractDialogCellEditor(actionTableViewer.getTable(), htmlElement != null ? htmlElement
-                        .getName() : "") {
+                        .getName() : StringConstants.NULL) {
                     @Override
                     protected Object openDialogBox(Control cellEditorWindow) {
                         ElementTreeSelectionDialog treeDialog = new ElementTreeSelectionDialog(getParentShell(),
