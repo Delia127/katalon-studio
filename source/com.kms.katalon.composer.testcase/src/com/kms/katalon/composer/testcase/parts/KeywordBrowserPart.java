@@ -48,7 +48,7 @@ import com.kms.katalon.composer.testcase.providers.KeywordTreeContentProvider;
 import com.kms.katalon.composer.testcase.providers.KeywordTreeLabelProvider;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.KeywordController;
-import com.kms.katalon.core.keyword.IKeywordContributor;
+import com.kms.katalon.custom.keyword.KeywordClass;
 
 public class KeywordBrowserPart implements EventHandler {
     private static final String SEARCH_TEXT_DEFAULT_VALUE = "Enter text to search...";
@@ -91,8 +91,7 @@ public class KeywordBrowserPart implements EventHandler {
                     return;
                 }
 
-                KeywordTreeContentProvider contentProvider = (KeywordTreeContentProvider) treeViewer
-                        .getContentProvider();
+                KeywordTreeContentProvider contentProvider = (KeywordTreeContentProvider) treeViewer.getContentProvider();
                 if (contentProvider.hasChildren(selectedElement)) {
                     treeViewer.setExpandedState(selectedElement, !treeViewer.getExpandedState(selectedElement));
                 }
@@ -246,11 +245,10 @@ public class KeywordBrowserPart implements EventHandler {
         List<IKeywordBrowserTreeEntity> keywordTreeEntities = new ArrayList<IKeywordBrowserTreeEntity>();
         KeywordBrowserFolderTreeEntity builtinKeywordRootFolder = new KeywordBrowserFolderTreeEntity(
                 StringConstants.KEYWORD_BROWSER_BUILTIN_KEYWORD_ROOT_TREE_ITEM_LABEL, null, keywordTreeEntities);
-        for (IKeywordContributor builtInKeywordContributor : KeywordController.getInstance()
-                .getBuiltInKeywordContributors()) {
-            keywordTreeEntities.add(new BuiltinKeywordFolderBrowserTreeEntity(builtInKeywordContributor
-                    .getKeywordClass().getName(), builtInKeywordContributor.getKeywordClass().getSimpleName(),
-                    builtInKeywordContributor.getLabelName(), builtinKeywordRootFolder));
+        for (KeywordClass builtInKeywordContributor : KeywordController.getInstance().getBuiltInKeywordClasses()) {
+            keywordTreeEntities
+                    .add(new BuiltinKeywordFolderBrowserTreeEntity(builtInKeywordContributor.getName(), builtInKeywordContributor
+                            .getSimpleName(), builtInKeywordContributor.getLabelName(), builtinKeywordRootFolder));
         }
         return builtinKeywordRootFolder;
     }
@@ -260,8 +258,7 @@ public class KeywordBrowserPart implements EventHandler {
         KeywordBrowserFolderTreeEntity controlKeywordFolderTreeEntity = new KeywordBrowserFolderTreeEntity(
                 StringConstants.KEYWORD_BROWSER_CONTROL_KEYWORD_ROOT_TREE_ITEM_LABEL, null, controlKeywordFolders);
 
-        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
-                TreeTableMenuItemConstants.CALL_TEST_CASE_MENU_ITEM_ID,
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(TreeTableMenuItemConstants.CALL_TEST_CASE_MENU_ITEM_ID,
                 TreeTableMenuItemConstants.CALL_TEST_CASE_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
 
         controlKeywordFolders.add(loadDecisionMakingControlKeywordFolderTreeEntity(controlKeywordFolderTreeEntity));
@@ -269,12 +266,10 @@ public class KeywordBrowserPart implements EventHandler {
         controlKeywordFolders.add(loadBranchingControlKeywordFolderTreeEntity(controlKeywordFolderTreeEntity));
         controlKeywordFolders.add(loadExceptionHandlingControlKeywordFolderTreeEntity(controlKeywordFolderTreeEntity));
 
-        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
-                TreeTableMenuItemConstants.BINARY_STATEMENT_MENU_ITEM_ID,
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(TreeTableMenuItemConstants.BINARY_STATEMENT_MENU_ITEM_ID,
                 TreeTableMenuItemConstants.BINARY_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
 
-        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
-                TreeTableMenuItemConstants.ASSERT_STATEMENT_MENU_ITEM_ID,
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(TreeTableMenuItemConstants.ASSERT_STATEMENT_MENU_ITEM_ID,
                 TreeTableMenuItemConstants.ASSERT_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
 
         controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
@@ -293,23 +288,17 @@ public class KeywordBrowserPart implements EventHandler {
         KeywordBrowserFolderTreeEntity controlKeywordFolderTreeEntity = new KeywordBrowserFolderTreeEntity(
                 TreeTableMenuItemConstants.DECISION_MAKING_STATEMENT_MENU_ITEM_LABEL, parentFolderTreeEntity,
                 controlKeywordFolders);
-        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
-                TreeTableMenuItemConstants.IF_STATEMENT_MENU_ITEM_ID,
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(TreeTableMenuItemConstants.IF_STATEMENT_MENU_ITEM_ID,
                 TreeTableMenuItemConstants.IF_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
-        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
-                TreeTableMenuItemConstants.ELSE_STATEMENT_MENU_ITEM_ID,
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(TreeTableMenuItemConstants.ELSE_STATEMENT_MENU_ITEM_ID,
                 TreeTableMenuItemConstants.ELSE_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
-        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
-                TreeTableMenuItemConstants.ELSE_IF_STATEMENT_MENU_ITEM_ID,
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(TreeTableMenuItemConstants.ELSE_IF_STATEMENT_MENU_ITEM_ID,
                 TreeTableMenuItemConstants.ELSE_IF_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
-        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
-                TreeTableMenuItemConstants.SWITCH_STATMENT_MENU_ITEM_ID,
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(TreeTableMenuItemConstants.SWITCH_STATMENT_MENU_ITEM_ID,
                 TreeTableMenuItemConstants.SWITCH_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
-        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
-                TreeTableMenuItemConstants.CASE_STATMENT_MENU_ITEM_ID,
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(TreeTableMenuItemConstants.CASE_STATMENT_MENU_ITEM_ID,
                 TreeTableMenuItemConstants.CASE_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
-        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
-                TreeTableMenuItemConstants.DEFAULT_STATMENT_MENU_ITEM_ID,
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(TreeTableMenuItemConstants.DEFAULT_STATMENT_MENU_ITEM_ID,
                 TreeTableMenuItemConstants.DEFAULT_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
         return controlKeywordFolderTreeEntity;
     }
@@ -318,13 +307,10 @@ public class KeywordBrowserPart implements EventHandler {
             KeywordBrowserFolderTreeEntity parentFolderTreeEntity) {
         List<IKeywordBrowserTreeEntity> controlKeywordFolders = new ArrayList<IKeywordBrowserTreeEntity>();
         KeywordBrowserFolderTreeEntity controlKeywordFolderTreeEntity = new KeywordBrowserFolderTreeEntity(
-                TreeTableMenuItemConstants.LOOPING_STATEMENT_MENU_ITEM_LABEL, parentFolderTreeEntity,
-                controlKeywordFolders);
-        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
-                TreeTableMenuItemConstants.FOR_STATEMENT_MENU_ITEM_ID,
+                TreeTableMenuItemConstants.LOOPING_STATEMENT_MENU_ITEM_LABEL, parentFolderTreeEntity, controlKeywordFolders);
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(TreeTableMenuItemConstants.FOR_STATEMENT_MENU_ITEM_ID,
                 TreeTableMenuItemConstants.FOR_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
-        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
-                TreeTableMenuItemConstants.WHILE_STATEMENT_MENU_ITEM_ID,
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(TreeTableMenuItemConstants.WHILE_STATEMENT_MENU_ITEM_ID,
                 TreeTableMenuItemConstants.WHILE_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
         return controlKeywordFolderTreeEntity;
     }
@@ -333,16 +319,12 @@ public class KeywordBrowserPart implements EventHandler {
             KeywordBrowserFolderTreeEntity parentFolderTreeEntity) {
         List<IKeywordBrowserTreeEntity> controlKeywordFolders = new ArrayList<IKeywordBrowserTreeEntity>();
         KeywordBrowserFolderTreeEntity controlKeywordFolderTreeEntity = new KeywordBrowserFolderTreeEntity(
-                TreeTableMenuItemConstants.BRANCHING_STATEMENT_MENU_ITEM_LABEL, parentFolderTreeEntity,
-                controlKeywordFolders);
-        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
-                TreeTableMenuItemConstants.BREAK_STATMENT_MENU_ITEM_ID,
+                TreeTableMenuItemConstants.BRANCHING_STATEMENT_MENU_ITEM_LABEL, parentFolderTreeEntity, controlKeywordFolders);
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(TreeTableMenuItemConstants.BREAK_STATMENT_MENU_ITEM_ID,
                 TreeTableMenuItemConstants.BREAK_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
-        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
-                TreeTableMenuItemConstants.CONTINUE_STATMENT_MENU_ITEM_ID,
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(TreeTableMenuItemConstants.CONTINUE_STATMENT_MENU_ITEM_ID,
                 TreeTableMenuItemConstants.CONTINUE_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
-        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
-                TreeTableMenuItemConstants.RETURN_STATMENT_MENU_ITEM_ID,
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(TreeTableMenuItemConstants.RETURN_STATMENT_MENU_ITEM_ID,
                 TreeTableMenuItemConstants.RETURN_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
 
         return controlKeywordFolderTreeEntity;
@@ -354,17 +336,13 @@ public class KeywordBrowserPart implements EventHandler {
         KeywordBrowserFolderTreeEntity controlKeywordFolderTreeEntity = new KeywordBrowserFolderTreeEntity(
                 TreeTableMenuItemConstants.EXCEPTION_HANDLING_STATEMENT_MENU_ITEM_LABEL, parentFolderTreeEntity,
                 controlKeywordFolders);
-        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
-                TreeTableMenuItemConstants.TRY_STATEMENT_MENU_ITEM_ID,
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(TreeTableMenuItemConstants.TRY_STATEMENT_MENU_ITEM_ID,
                 TreeTableMenuItemConstants.TRY_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
-        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
-                TreeTableMenuItemConstants.CATCH_STATMENT_MENU_ITEM_ID,
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(TreeTableMenuItemConstants.CATCH_STATMENT_MENU_ITEM_ID,
                 TreeTableMenuItemConstants.CATCH_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
-        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
-                TreeTableMenuItemConstants.FINALLY_STATMENT_MENU_ITEM_ID,
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(TreeTableMenuItemConstants.FINALLY_STATMENT_MENU_ITEM_ID,
                 TreeTableMenuItemConstants.FINALLY_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
-        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(
-                TreeTableMenuItemConstants.THROW_STATMENT_MENU_ITEM_ID,
+        controlKeywordFolders.add(new KeywordBrowserControlTreeEntity(TreeTableMenuItemConstants.THROW_STATMENT_MENU_ITEM_ID,
                 TreeTableMenuItemConstants.THROW_STATEMENT_MENU_ITEM_LABEL, controlKeywordFolderTreeEntity));
 
         return controlKeywordFolderTreeEntity;

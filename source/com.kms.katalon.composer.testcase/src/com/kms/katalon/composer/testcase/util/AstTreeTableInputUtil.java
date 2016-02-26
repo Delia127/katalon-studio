@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.testcase.util;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -11,557 +12,194 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.FieldNode;
-import org.codehaus.groovy.ast.ImportNode;
 import org.codehaus.groovy.ast.MethodNode;
-import org.codehaus.groovy.ast.Parameter;
-import org.codehaus.groovy.ast.expr.ArgumentListExpression;
-import org.codehaus.groovy.ast.expr.ArrayExpression;
-import org.codehaus.groovy.ast.expr.BinaryExpression;
-import org.codehaus.groovy.ast.expr.BooleanExpression;
-import org.codehaus.groovy.ast.expr.CastExpression;
-import org.codehaus.groovy.ast.expr.ClassExpression;
-import org.codehaus.groovy.ast.expr.ClosureListExpression;
-import org.codehaus.groovy.ast.expr.ConstantExpression;
-import org.codehaus.groovy.ast.expr.ConstructorCallExpression;
-import org.codehaus.groovy.ast.expr.Expression;
-import org.codehaus.groovy.ast.expr.ListExpression;
-import org.codehaus.groovy.ast.expr.MapEntryExpression;
-import org.codehaus.groovy.ast.expr.MapExpression;
-import org.codehaus.groovy.ast.expr.MethodCallExpression;
-import org.codehaus.groovy.ast.expr.PropertyExpression;
-import org.codehaus.groovy.ast.expr.RangeExpression;
-import org.codehaus.groovy.ast.expr.VariableExpression;
-import org.codehaus.groovy.ast.stmt.AssertStatement;
-import org.codehaus.groovy.ast.stmt.CaseStatement;
-import org.codehaus.groovy.ast.stmt.CatchStatement;
-import org.codehaus.groovy.ast.stmt.ExpressionStatement;
-import org.codehaus.groovy.ast.stmt.ForStatement;
-import org.codehaus.groovy.ast.stmt.IfStatement;
-import org.codehaus.groovy.ast.stmt.Statement;
-import org.codehaus.groovy.ast.stmt.SwitchStatement;
-import org.codehaus.groovy.ast.stmt.ThrowStatement;
-import org.codehaus.groovy.ast.stmt.WhileStatement;
-import org.codehaus.groovy.syntax.Token;
-import org.codehaus.groovy.syntax.Types;
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.ComboBoxCellEditor;
-import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.swt.widgets.Composite;
 
-import com.kms.katalon.composer.components.impl.editors.StringComboBoxCellEditor;
-import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.testcase.ast.editors.BinaryCellEditor;
-import com.kms.katalon.composer.testcase.ast.editors.BooleanCellEditor;
-import com.kms.katalon.composer.testcase.ast.editors.CaseCellEditor;
-import com.kms.katalon.composer.testcase.ast.editors.CatchCellEditor;
-import com.kms.katalon.composer.testcase.ast.editors.ClosureListInputCellEditor;
-import com.kms.katalon.composer.testcase.ast.editors.ForInputCellEditor;
-import com.kms.katalon.composer.testcase.ast.editors.ListInputCellEditor;
-import com.kms.katalon.composer.testcase.ast.editors.MapInputCellEditor;
-import com.kms.katalon.composer.testcase.ast.editors.MethodCallInputCellEditor;
-import com.kms.katalon.composer.testcase.ast.editors.PropertyInputCellEditor;
-import com.kms.katalon.composer.testcase.ast.editors.RangeInputCellEditor;
-import com.kms.katalon.composer.testcase.ast.editors.SwitchCellEditor;
-import com.kms.katalon.composer.testcase.ast.editors.TestDataValueCellEditor;
-import com.kms.katalon.composer.testcase.ast.editors.TestObjectCellEditor;
-import com.kms.katalon.composer.testcase.ast.editors.ThrowInputCellEditor;
-import com.kms.katalon.composer.testcase.ast.editors.ThrowableInputCellEditor;
-import com.kms.katalon.composer.testcase.ast.editors.TypeInputCellEditor;
-import com.kms.katalon.composer.testcase.editors.CallTestCaseCellEditor;
-import com.kms.katalon.composer.testcase.editors.NumberCellEditor;
-import com.kms.katalon.composer.testcase.model.CustomInputValueTypeCollector;
-import com.kms.katalon.composer.testcase.model.ICustomInputValueType;
-import com.kms.katalon.composer.testcase.model.IInputValueType;
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.ImportNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.MethodNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.ParameterWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArrayExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.BinaryExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.CastExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ListExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MapExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.PropertyExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.VariableExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.model.InputParameter;
 import com.kms.katalon.composer.testcase.model.InputParameterClass;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
-import com.kms.katalon.composer.testsuite.editors.TestDataCellEditor;
-import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.ast.GroovyParser;
-import com.kms.katalon.core.keyword.IKeywordContributor;
 import com.kms.katalon.core.model.FailureHandling;
-import com.kms.katalon.core.testcase.TestCase;
-import com.kms.katalon.core.testcase.TestCaseFactory;
-import com.kms.katalon.core.testdata.TestDataFactory;
-import com.kms.katalon.core.testobject.ObjectRepository;
 import com.kms.katalon.core.testobject.TestObject;
-import com.kms.katalon.custom.factory.BuiltInMethodNodeFactory;
-import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.entity.variable.VariableEntity;
+import com.kms.katalon.custom.keyword.KeywordClass;
+import com.kms.katalon.custom.keyword.KeywordMethod;
+import com.kms.katalon.custom.keyword.KeywordParameter;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
+/**
+ * Utility class to process ast input classes for keywords
+ *
+ */
 public class AstTreeTableInputUtil {
-    public static CellEditor getCellEditorForAstObject(Composite parent, Object astObject, ClassNode scriptClass) {
-        CellEditor customCellEditor = getCellEditorFromCustomCollector(parent, astObject, scriptClass);
-        if (customCellEditor != null) {
-            return customCellEditor;
-        }
-        if (astObject instanceof Expression) {
-            return getCellEditorForExpression(parent, (Expression) astObject, scriptClass);
-        } else if (astObject instanceof Statement) {
-            return getCellEditorForStatement(parent, (Statement) astObject, scriptClass);
-        } else if (astObject instanceof Token) {
-            return getCellEditorForToken(parent, (Token) astObject);
-        } else if (astObject instanceof Parameter) {
-            return getCellEditorForParameter(parent, (Parameter) astObject);
-        } else if (astObject instanceof ClassNode) {
-            return new TypeInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(astObject));
-        }
-        return null;
-    }
+    private static final String CUSTOM_KEYWORDS_CLASS_NAME = "CustomKeywords";
+    public static final String BUILT_IN_KEYWORDS_CLASS_NAME = "BuiltInKeywords";
 
-    public static CellEditor getCellEditorFromCustomCollector(Composite parent, Object astObject, ClassNode scriptClass) {
-        for (IInputValueType customValueType : CustomInputValueTypeCollector.getInstance()
-                .getAllCustomInputValueTypes()) {
-            if (customValueType.isEditable(astObject, scriptClass)) {
-                return customValueType.getCellEditorForValue(parent, astObject, scriptClass);
-            }
+    public static boolean isBuiltInKeywordMethodCall(MethodCallExpressionWrapper methodCallExpression) {
+        if (methodCallExpression == null || methodCallExpression.getObjectExpression() == null) {
+            return false;
         }
-        return null;
-    }
-
-    public static CellEditor getCellEditorForParameter(Composite parent, Parameter parameter) {
-        return new TextCellEditor(parent);
-    }
-
-    public static CellEditor getCellEditorForToken(Composite parent, Token token) {
-        String[] names = new String[AstTreeTableValueUtil.OPERATION_CODES.length];
-
-        for (int i = 0; i < AstTreeTableValueUtil.OPERATION_CODES.length; i++) {
-            names[i] = Types.getText(AstTreeTableValueUtil.OPERATION_CODES[i]);
-        }
-        return new ComboBoxCellEditor(parent, names);
-    }
-
-    public static CellEditor getCellEditorForStatement(Composite parent, Statement statement, ClassNode scriptClass) {
-        if (statement instanceof AssertStatement) {
-            return new BooleanCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(
-                    ((AssertStatement) statement).getBooleanExpression()), scriptClass);
-        } else if (statement instanceof ExpressionStatement) {
-            return getCellEditorForExpression(parent, ((ExpressionStatement) statement).getExpression(), scriptClass);
-        } else if (statement instanceof IfStatement) {
-            return new BooleanCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(
-                    ((IfStatement) statement).getBooleanExpression()), scriptClass);
-        } else if (statement instanceof ForStatement) {
-            return new ForInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getInputTextValue(
-                    (ForStatement) statement), scriptClass);
-        } else if (statement instanceof WhileStatement) {
-            return new BooleanCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(
-                    ((WhileStatement) statement).getBooleanExpression()), scriptClass);
-        } else if (statement instanceof SwitchStatement) {
-            return new SwitchCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(
-                    ((SwitchStatement) statement).getExpression()), scriptClass);
-        } else if (statement instanceof CaseStatement) {
-            return new CaseCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(
-                    ((CaseStatement) statement).getExpression()), scriptClass);
-        } else if (statement instanceof CatchStatement) {
-            return new CatchCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(
-                    ((CatchStatement) statement).getVariable()), scriptClass);
-        } else if (statement instanceof ThrowStatement) {
-            return new ThrowInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(
-                    ((ThrowStatement) statement).getExpression()), scriptClass);
-        }
-        return null;
-    }
-
-    public static CellEditor getCellEditorForExpression(Composite parent, Expression expression, ClassNode scriptClass) {
-        if (expression instanceof BinaryExpression) {
-            return getCellEditorForBinaryExpression(parent, (BinaryExpression) expression, scriptClass);
-        } else if (expression instanceof MethodCallExpression) {
-            return getCellEditorForMethodCallExpression(parent, (MethodCallExpression) expression, scriptClass);
-        } else if (expression instanceof BooleanExpression) {
-            return getCellEditorForBooleanExpression(parent, (BooleanExpression) expression, scriptClass);
-        } else if (expression instanceof ConstantExpression) {
-            return getCellEditorForConstantExpression(parent, (ConstantExpression) expression);
-        } else if (expression instanceof VariableExpression) {
-            return getCellEditorForVariableExpression(parent, (VariableExpression) expression, scriptClass);
-        } else if (expression instanceof RangeExpression) {
-            return getCellEditorForRangeExpression(parent, (RangeExpression) expression, scriptClass);
-        } else if (expression instanceof ClosureListExpression) {
-            return getCellEditorForClosureListExpression(parent, (ClosureListExpression) expression, scriptClass);
-        } else if (expression instanceof ListExpression) {
-            return getCellEditorForListExpression(parent, (ListExpression) expression, scriptClass);
-        } else if (expression instanceof MapExpression) {
-            return getCellEditorForMapExpression(parent, (MapExpression) expression, scriptClass);
-        } else if (expression instanceof PropertyExpression) {
-            return getCellEditorForPropertyExpression(parent, (PropertyExpression) expression, scriptClass);
-        } else if (expression instanceof ClassExpression) {
-            return getCellEditorForClassExpression(parent, (ClassExpression) expression, scriptClass);
-        } else if (expression instanceof ConstructorCallExpression) {
-            return getCellEditorForConstructorCallExpression(parent, (ConstructorCallExpression) expression,
-                    scriptClass);
-        }
-        return null;
-    }
-
-    private static CellEditor getCellEditorForConstructorCallExpression(Composite parent,
-            ConstructorCallExpression contructorCallExpression, ClassNode scriptClass) {
-        Class<?> throwableClass = AstTreeTableInputUtil.loadType(contructorCallExpression.getType().getName(),
-                scriptClass);
-        if (Throwable.class.isAssignableFrom(throwableClass)) {
-            return new ThrowableInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(
-                    contructorCallExpression), scriptClass);
-        }
-        return null;
-    }
-
-    private static CellEditor getCellEditorForClassExpression(Composite parent, ClassExpression classExpression,
-            ClassNode scriptClass) {
-        return new TypeInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(classExpression));
-    }
-
-    protected static CellEditor getCellEditorForPropertyExpression(Composite parent,
-            PropertyExpression propertyExpression, ClassNode scriptClass) {
-        if (isGlobalVariablePropertyExpression(propertyExpression)) {
-            return getCellEditorForGlobalVariableExpression(parent);
-        }
-        Class<?> type = loadType(propertyExpression.getObjectExpression().getText(), scriptClass);
-        if (type != null && type.isEnum() && type.getName().equals(FailureHandling.class.getName())) {
-            List<String> enumValues = new ArrayList<String>();
-            for (Object enumObject : type.getEnumConstants()) {
-                enumValues.add(enumObject.toString());
-            }
-            return new ComboBoxCellEditor(parent, enumValues.toArray(new String[enumValues.size()]));
-        }
-        type = loadType(propertyExpression.getText(), scriptClass);
-        if (type != null) {
-            return new TypeInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(
-                    propertyExpression));
-        }
-        return new PropertyInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(
-                propertyExpression), scriptClass);
-    }
-
-    private static CellEditor getCellEditorForBinaryExpression(Composite parent, BinaryExpression binaryExpression,
-            ClassNode scriptClass) {
-        return new BinaryCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(binaryExpression),
-                scriptClass);
-    }
-
-    private static CellEditor getCellEditorForMethodCallExpression(Composite parent,
-            MethodCallExpression methodCallExpression, ClassNode scriptClass) {
-        if (isCallTestCaseArgument(methodCallExpression)) {
-            return getCellEditorForCallTestCase(parent, methodCallExpression);
-        }
-        if (isObjectArgument(methodCallExpression)) {
-            return getCellEditorForTestObject(parent, methodCallExpression, scriptClass);
-        }
-        if (isTestDataArgument(methodCallExpression)) {
-            return getCellEditorForTestData(parent, methodCallExpression);
-        }
-        if (isTestDataValueArgument(methodCallExpression)) {
-            return new TestDataValueCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(
-                    methodCallExpression), scriptClass);
-        }
-        return new MethodCallInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(
-                methodCallExpression), scriptClass);
-    }
-
-    private static CellEditor getCellEditorForTestData(Composite parent, MethodCallExpression methodCallExpression) {
-        ArgumentListExpression argumentListExpression = (ArgumentListExpression) methodCallExpression.getArguments();
-        if (!argumentListExpression.getExpressions().isEmpty()) {
-            String pk = argumentListExpression.getExpressions().get(0).getText();
-            return new TestDataCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(
-                    methodCallExpression), pk);
-        }
-        return null;
-    }
-
-    private static CellEditor getCellEditorForBooleanExpression(Composite parent, BooleanExpression booleanExpression,
-            ClassNode scriptClass) {
-        return new BooleanCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(booleanExpression),
-                scriptClass);
-    }
-
-    private static CellEditor getCellEditorForRangeExpression(Composite parent, RangeExpression rangeExpression,
-            ClassNode scriptClass) {
-        return new RangeInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(rangeExpression),
-                scriptClass);
-    }
-
-    private static CellEditor getCellEditorForClosureListExpression(Composite parent,
-            ClosureListExpression closureListExpression, ClassNode scriptClass) {
-        return new ClosureListInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(
-                closureListExpression), scriptClass);
-    }
-
-    private static CellEditor getCellEditorForConstantExpression(Composite parent, ConstantExpression constantExpression) {
-        if (constantExpression.getValue() instanceof Boolean) {
-            return new ComboBoxCellEditor(parent, new String[] { Boolean.TRUE.toString(), Boolean.FALSE.toString() });
-        }
-        if (constantExpression.getValue() instanceof Number) {
-            return new NumberCellEditor(parent);
-        }
-        return new TextCellEditor(parent);
-    }
-
-    private static CellEditor getCellEditorForVariableExpression(Composite parent,
-            VariableExpression variableExpression, ClassNode scriptClass) {
-        if (variableExpression.getText().equals("this")) {
-            return null;
-        }
-        Type type = loadType(variableExpression.getText(), scriptClass);
-        if (type != null) {
-            return new TypeInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(
-                    variableExpression));
-        }
-        List<String> variableStringList = new ArrayList<String>();
-        for (FieldNode field : scriptClass.getFields()) {
-            variableStringList.add(field.getName());
-        }
-        return new StringComboBoxCellEditor(parent, variableStringList.toArray(new String[variableStringList.size()]));
-    }
-
-    private static CellEditor getCellEditorForListExpression(Composite parent, ListExpression listExpression,
-            ClassNode scriptClass) {
-        return new ListInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(listExpression),
-                scriptClass);
-    }
-
-    private static CellEditor getCellEditorForMapExpression(Composite parent, MapExpression mapExpression,
-            ClassNode scriptClass) {
-        return new MapInputCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(mapExpression),
-                scriptClass);
-    }
-
-    private static CellEditor getCellEditorForCallTestCase(Composite parent, MethodCallExpression methodCallExpression) {
-        String testCasePk = null;
-        Expression callTestCaseValueExpression = AstTreeTableInputUtil.getCallTestCaseParam(methodCallExpression);
-        if (callTestCaseValueExpression instanceof ConstantExpression
-                && ((ConstantExpression) callTestCaseValueExpression).getValue() instanceof String) {
-            testCasePk = (String) ((ConstantExpression) callTestCaseValueExpression).getValue();
-        }
-        return new CallTestCaseCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(
-                methodCallExpression), testCasePk);
-    }
-
-    private static CellEditor getCellEditorForTestObject(Composite parent, MethodCallExpression methodCallExpression,
-            ClassNode scriptClass) {
-        return new TestObjectCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(
-                methodCallExpression), scriptClass, false);
-    }
-
-    private static CellEditor getCellEditorForGlobalVariableExpression(Composite parent) {
-        try {
-            String[] names = GlobalVariableController.getInstance().getAllGlobalVariableNames(
-                    ProjectController.getInstance().getCurrentProject());
-            return new ComboBoxCellEditor(parent, names);
-        } catch (Exception e) {
-            return new ComboBoxCellEditor(parent, new String[0]);
-        }
-    }
-
-    public static List<IInputValueType> getInputValueTypeList(IInputValueType[] defaultInputValueTypes, String customTag) {
-        List<IInputValueType> inputValueTypeList = new ArrayList<IInputValueType>();
-        for (IInputValueType builtinValueType : defaultInputValueTypes) {
-            inputValueTypeList.add(builtinValueType);
-        }
-        for (ICustomInputValueType customInputValueType : CustomInputValueTypeCollector.getInstance()
-                .getAllCustomInputValueTypes()) {
-            if (containsTag(customInputValueType, customTag)) {
-                inputValueTypeList.add(customInputValueType);
-            }
-        }
-        return inputValueTypeList;
-    }
-
-    public static List<String> getInputValueTypeStringList(IInputValueType[] defaultInputValueTypes, String customTag) {
-        List<String> inputValueTypeStringList = new ArrayList<String>();
-        for (IInputValueType builtinValueType : defaultInputValueTypes) {
-            inputValueTypeStringList.add(builtinValueType.getName());
-        }
-        for (ICustomInputValueType customInputValueType : CustomInputValueTypeCollector.getInstance()
-                .getAllCustomInputValueTypes()) {
-            if (containsTag(customInputValueType, customTag)) {
-                inputValueTypeStringList.add(customInputValueType.getName());
-            }
-        }
-        return inputValueTypeStringList;
-    }
-
-    public static List<String> getReadableInputValueTypeStringList(IInputValueType[] defaultInputValueTypes,
-            String customTag) {
-        List<String> inputValueTypeStringList = new ArrayList<String>();
-        for (IInputValueType builtinValueType : defaultInputValueTypes) {
-            inputValueTypeStringList.add(TreeEntityUtil.getReadableKeywordName(builtinValueType.getName()));
-        }
-        for (ICustomInputValueType customInputValueType : CustomInputValueTypeCollector.getInstance()
-                .getAllCustomInputValueTypes()) {
-            if (containsTag(customInputValueType, customTag)) {
-                inputValueTypeStringList.add(customInputValueType.getName());
-            }
-        }
-        return inputValueTypeStringList;
-    }
-
-    private static boolean containsTag(ICustomInputValueType valueType, String tag) {
-        if (tag.equalsIgnoreCase(ICustomInputValueType.TAG_ALL)) {
-            return true;
-        }
-        for (String valueTypeTag : valueType.getTags()) {
-            if (valueTypeTag.equalsIgnoreCase(ICustomInputValueType.TAG_ALL) || tag.equalsIgnoreCase(valueTypeTag)) {
+        for (KeywordClass keywordClass : KeywordController.getInstance().getBuiltInKeywordClasses()) {
+            if (methodCallExpression.isObjectExpressionOfClass(keywordClass.getType())) {
                 return true;
             }
         }
         return false;
     }
 
-    public static IInputValueType getInputValueTypeFromString(String inputValueTypeName) {
-        for (IInputValueType customInputValueType : CustomInputValueTypeCollector.getInstance()
-                .getAllCustomInputValueTypes()) {
-            if (customInputValueType.getName().equals(inputValueTypeName)) {
-                return customInputValueType;
-            }
-        }
-        for (IInputValueType builtinValueType : InputValueType.values()) {
-            if (builtinValueType.getName().equals(inputValueTypeName)) {
-                return builtinValueType;
-            }
-        }
-        return null;
+    public static boolean isCustomKeywordMethodCall(MethodCallExpressionWrapper methodCallExpression) {
+        return methodCallExpression != null && methodCallExpression.getObjectExpression() != null
+                && methodCallExpression.getObjectExpressionAsString().equals(CUSTOM_KEYWORDS_CLASS_NAME);
     }
 
-    public static ExpressionStatement createBuiltInKeywordMethodCall(String classSimpleName, String keyword)
-            throws Exception {
-        List<Expression> expressionArguments = new ArrayList<Expression>();
-        MethodCallExpression keywordMethodCallExpression = new MethodCallExpression(new VariableExpression(
-                classSimpleName), keyword, new ArgumentListExpression(expressionArguments));
+    public static ExpressionStatementWrapper getNewCustomKeyword(ASTNodeWrapper parentNode) throws Exception {
+        List<MethodNode> customKeywords = KeywordController.getInstance().getCustomKeywords(
+                ProjectController.getInstance().getCurrentProject());
+        if (customKeywords == null || customKeywords.isEmpty()) {
+            return null;
+        }
+        String rawKeywordName = customKeywords.get(0).getName();
+        return AstTreeTableInputUtil.createCustomKeywordMethodCall(customKeywords.get(0).getDeclaringClass().getName(),
+                KeywordController.getInstance().getCustomKeywordName(rawKeywordName), parentNode);
+    }
+
+    public static ExpressionStatementWrapper createBuiltInKeywordMethodCall(String classSimpleName, String keyword,
+            ASTNodeWrapper parentNode) {
+        MethodCallExpressionWrapper keywordMethodCallExpression = new MethodCallExpressionWrapper(classSimpleName,
+                keyword, null);
         generateBuiltInKeywordArguments(keywordMethodCallExpression);
-        return new ExpressionStatement(keywordMethodCallExpression);
+        return new ExpressionStatementWrapper(keywordMethodCallExpression, parentNode);
     }
 
-    public static ExpressionStatement createCustomKeywordMethodCall(String keywordClass, String keywordName)
-            throws Exception {
-        List<Expression> expressionArguments = new ArrayList<Expression>();
-        MethodCallExpression keywordMethodCallExpression = new MethodCallExpression(
-                new VariableExpression(keywordClass), keywordName, new ArgumentListExpression(expressionArguments));
+    public static ExpressionStatementWrapper createCustomKeywordMethodCall(String keywordClass, String keywordName,
+            ASTNodeWrapper parentNode) throws Exception {
+        MethodCallExpressionWrapper keywordMethodCallExpression = new MethodCallExpressionWrapper(keywordClass,
+                keywordName, null);
         generateCustomKeywordArguments(keywordMethodCallExpression);
-        return new ExpressionStatement(keywordMethodCallExpression);
+        return new ExpressionStatementWrapper(keywordMethodCallExpression, parentNode);
     }
 
-    public static List<InputParameter> getBuiltInKeywordInputParameters(String buitInKWClassSimpleName, String keyword,
-            ArgumentListExpression argumentListExpression) throws Exception {
-        if (argumentListExpression != null) {
-            Method keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(buitInKWClassSimpleName,
-                    keyword);
-            return generateInputParameters(argumentListExpression, keywordMethod, KeywordController.getInstance()
-                    .getParameterName(keywordMethod));
+    public static List<InputParameter> generateBuiltInKeywordInputParameters(String buitInKWClassSimpleName,
+            String keyword, ArgumentListExpressionWrapper argumentListExpression) throws IOException {
+        if (argumentListExpression == null) {
+            return null;
         }
-        return null;
-    }
-
-    public static List<InputParameter> getCustomKeywordInputParameters(String className, String keywordName,
-            ArgumentListExpression argumentListExpression) throws Exception {
-        if (argumentListExpression != null) {
-            MethodNode keywordMethod = KeywordController.getInstance().getCustomKeywordByName(className, keywordName,
-                    ProjectController.getInstance().getCurrentProject());
-            return generateInputParameters(argumentListExpression, keywordMethod);
+        KeywordMethod keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(buitInKWClassSimpleName,
+                keyword);
+        if (keywordMethod == null || keywordMethod.getParameters().length == 0) {
+            return Collections.emptyList();
         }
-        return null;
+        return generateBuiltInKeywordInputParameters(keywordMethod, argumentListExpression);
     }
 
-    public static List<InputParameter> generateInputParameters(ArgumentListExpression argumentListExpression,
-            Method method) throws Exception {
-        if (method != null) {
-            List<String> paramNames = KeywordController.getInstance().getParameterName(method);
-            return generateInputParameters(argumentListExpression, method, paramNames);
-        }
-        return null;
-    }
-
-    public static List<InputParameter> generateInputParameters(ArgumentListExpression argumentListExpression,
-            Method method, List<String> paramNames) {
-        List<Type> paramTypes = getParamTypes(method);
-        if (paramNames != null && paramNames.size() == paramTypes.size()) {
-            List<InputParameter> inputParameters = new ArrayList<InputParameter>();
-            for (int i = 0; i < paramTypes.size(); i++) {
-                InputParameterClass inputParameterClass = convertToInputParameterClass(paramTypes.get(i));
-                if (argumentListExpression.getExpressions().size() > i) {
-                    inputParameters.add(getInputParameter(paramNames.get(i), inputParameterClass,
-                            argumentListExpression.getExpression(i)));
-                } else {
-                    inputParameters.add(getDefaultInputParameter(paramNames.get(i), inputParameterClass));
-                }
+    public static List<InputParameter> generateBuiltInKeywordInputParameters(KeywordMethod keywordMethod,
+            ArgumentListExpressionWrapper argumentListExpression) {
+        List<InputParameter> inputParameters = new ArrayList<InputParameter>();
+        for (int i = 0; i < keywordMethod.getParameters().length; i++) {
+            KeywordParameter keywordParam = keywordMethod.getParameters()[i];
+            InputParameterClass inputParameterClass = convertToInputParameterClass(keywordParam.getType());
+            if (argumentListExpression.getExpressions().size() > i) {
+                inputParameters.add(getInputParameter(keywordParam.getName(), inputParameterClass,
+                        argumentListExpression.getExpression(i)));
+            } else {
+                inputParameters.add(getDefaultInputParameter(keywordParam.getName(), inputParameterClass));
             }
-            return inputParameters;
         }
-        return null;
+        return inputParameters;
     }
 
-    public static List<InputParameter> generateInputParameters(ArgumentListExpression argumentListExpression,
-            MethodNode method) {
-        if (method != null) {
-            List<InputParameter> inputParameters = new ArrayList<InputParameter>();
-            for (int i = 0; i < method.getParameters().length; i++) {
-                InputParameterClass inputParameterClass = convertToInputParameterClass(method.getParameters()[i]
-                        .getType());
-                if (argumentListExpression.getExpressions().size() > i) {
-                    inputParameters.add(getInputParameter(method.getParameters()[i].getName(), inputParameterClass,
-                            argumentListExpression.getExpression(i)));
-                } else {
-                    inputParameters.add(getDefaultInputParameter(method.getParameters()[i].getName(),
-                            inputParameterClass));
-                }
-            }
-            return inputParameters;
+    public static List<InputParameter> generateCustomKeywordInputParameters(String className, String keywordName,
+            ArgumentListExpressionWrapper argumentListExpression) throws Exception {
+        if (argumentListExpression == null) {
+            return null;
         }
-        return null;
+        MethodNode keywordMethod = KeywordController.getInstance().getCustomKeywordByName(className, keywordName,
+                ProjectController.getInstance().getCurrentProject());
+        return generateInputParameters(argumentListExpression, new MethodNodeWrapper(keywordMethod, null));
+    }
+
+    public static List<InputParameter> generateInputParameters(ArgumentListExpressionWrapper argumentListExpression,
+            MethodNodeWrapper method) {
+        if (method == null || argumentListExpression == null || method.getParameters().length == 0) {
+            return Collections.emptyList();
+        }
+        List<InputParameter> inputParameters = new ArrayList<InputParameter>();
+        for (int i = 0; i < method.getParameters().length; i++) {
+            InputParameterClass inputParameterClass = convertToInputParameterClass(method.getParameters()[i].getType());
+            if (argumentListExpression.getExpressions().size() > i) {
+                inputParameters.add(getInputParameter(method.getParameters()[i].getName(), inputParameterClass,
+                        argumentListExpression.getExpression(i)));
+            } else {
+                inputParameters.add(getDefaultInputParameter(method.getParameters()[i].getName(), inputParameterClass));
+            }
+        }
+        return inputParameters;
+    }
+
+    public static List<InputParameter> generateInputParameters(ArgumentListExpressionWrapper argumentListExpression,
+            Method method) {
+        if (method == null || argumentListExpression == null || method.getParameterTypes().length == 0) {
+            return Collections.emptyList();
+        }
+        List<InputParameter> inputParameters = new ArrayList<InputParameter>();
+        for (int i = 0; i < method.getParameterTypes().length; i++) {
+            InputParameterClass inputParameterClass = convertToInputParameterClass(method.getParameterTypes()[i]);
+            if (argumentListExpression.getExpressions().size() > i) {
+                inputParameters.add(getInputParameter(method.getParameterTypes()[i].getSimpleName(),
+                        inputParameterClass, argumentListExpression.getExpression(i)));
+            } else {
+                inputParameters.add(getDefaultInputParameter(method.getParameterTypes()[i].getSimpleName(),
+                        inputParameterClass));
+            }
+        }
+        return inputParameters;
     }
 
     public static List<Class<?>> getParamClasses(Method method) {
-        if (method != null) {
-            List<Class<?>> parameterClasses = new ArrayList<Class<?>>();
-            for (Type type : method.getGenericParameterTypes()) {
-                if (type instanceof Class<?>) {
-                    parameterClasses.add(((Class<?>) type));
-                } else if (type instanceof ParameterizedType
-                        && ((ParameterizedType) type).getRawType() instanceof Class<?>) {
-                    Class<?> clazz = (Class<?>) ((ParameterizedType) type).getRawType();
-                    if (clazz.getName().equals(Map.class.getName())) {
-                        parameterClasses.add(clazz);
-                    }
-                }
-            }
-            return parameterClasses;
+        if (method == null) {
+            return Collections.emptyList();
         }
-        return Collections.emptyList();
+        List<Class<?>> parameterClasses = new ArrayList<Class<?>>();
+        for (Type type : method.getGenericParameterTypes()) {
+            if (type instanceof Class<?>
+                    || (type instanceof ParameterizedType
+                            && ((ParameterizedType) type).getRawType() instanceof Class<?> && ((Class<?>) ((ParameterizedType) type)
+                                .getRawType()).getName().equals(Map.class.getName()))) {
+                parameterClasses.add(((Class<?>) type));
+            }
+        }
+        return parameterClasses;
     }
 
-    public static List<Class<?>> getParamClasses(MethodNode method) {
-        if (method != null) {
-            List<Class<?>> parameterClasses = new ArrayList<Class<?>>();
-            for (Parameter param : method.getParameters()) {
-                parameterClasses.add(param.getType().getTypeClass());
-            }
-            return parameterClasses;
+    public static List<Class<?>> getParamClasses(MethodNodeWrapper method) {
+        if (method == null) {
+            return Collections.emptyList();
         }
-        return Collections.emptyList();
-    }
-
-    public static List<Type> getParamTypes(Method method) {
-        if (method != null) {
-            List<Type> parameterTypes = new ArrayList<Type>();
-            for (Type type : method.getGenericParameterTypes()) {
-                if (type instanceof Class<?>) {
-                    parameterTypes.add(type);
-                } else if (type instanceof ParameterizedType
-                        && ((ParameterizedType) type).getRawType() instanceof Class<?>) {
-                    Class<?> clazz = (Class<?>) ((ParameterizedType) type).getRawType();
-                    if (clazz.getName().equals(Map.class.getName())) {
-                        parameterTypes.add(type);
-                    }
-                }
-            }
-            return parameterTypes;
+        List<Class<?>> parameterClasses = new ArrayList<Class<?>>();
+        for (ParameterWrapper param : method.getParameters()) {
+            parameterClasses.add(param.getType().getTypeClass());
         }
-        return Collections.emptyList();
+        return parameterClasses;
     }
 
     public static InputParameterClass convertToInputParameterClass(Type type) {
@@ -571,58 +209,57 @@ public class AstTreeTableInputUtil {
         } else if (type instanceof ParameterizedType && ((ParameterizedType) type).getRawType() instanceof Class<?>) {
             clazz = (Class<?>) ((ParameterizedType) type).getRawType();
         }
-        if (clazz != null) {
-            InputParameterClass inputParameterClass = new InputParameterClass(clazz.getName(), clazz.getSimpleName());
-            inputParameterClass.setModifiers(clazz.getModifiers());
-            if (clazz.isArray() && clazz.getComponentType() != null) {
-                inputParameterClass.setArray(true);
-                Class<?> componentType = clazz.getComponentType();
-                inputParameterClass.setComponentType(new InputParameterClass(componentType.getName(), componentType
-                        .getSimpleName()));
-            }
-            if (clazz.isEnum()) {
-                inputParameterClass.setEnum(true);
-                inputParameterClass.setEnumConstants(clazz.getEnumConstants());
-            }
-            List<InputParameterClass> typeList = new ArrayList<InputParameterClass>();
-            if (type instanceof ParameterizedType) {
-                for (Type actualTypeArgument : ((ParameterizedType) type).getActualTypeArguments()) {
-                    if (actualTypeArgument instanceof Class<?>) {
-                        typeList.add(convertToInputParameterClass(actualTypeArgument));
-                    }
-                }
-            } else {
-                typeList.add(new InputParameterClass(Object.class.getName(), Object.class.getSimpleName()));
-                typeList.add(new InputParameterClass(Object.class.getName(), Object.class.getSimpleName()));
-            }
-            inputParameterClass.setActualTypeArguments(typeList);
-            return inputParameterClass;
+        if (clazz == null) {
+            return null;
         }
-        return null;
+
+        InputParameterClass inputParameterClass = new InputParameterClass(clazz.getName(), clazz.getSimpleName());
+        inputParameterClass.setModifiers(clazz.getModifiers());
+        if (clazz.isArray() && clazz.getComponentType() != null) {
+            inputParameterClass.setArray(true);
+            Class<?> componentType = clazz.getComponentType();
+            inputParameterClass.setComponentType(new InputParameterClass(componentType.getName(), componentType
+                    .getSimpleName()));
+        }
+        if (clazz.isEnum()) {
+            inputParameterClass.setEnum(true);
+            inputParameterClass.setEnumConstants(clazz.getEnumConstants());
+        }
+        List<InputParameterClass> typeList = new ArrayList<InputParameterClass>();
+        if (type instanceof ParameterizedType) {
+            for (Type actualTypeArgument : ((ParameterizedType) type).getActualTypeArguments()) {
+                if (actualTypeArgument instanceof Class<?>) {
+                    typeList.add(convertToInputParameterClass(actualTypeArgument));
+                }
+            }
+        } else {
+            typeList.add(new InputParameterClass(Object.class.getName(), Object.class.getSimpleName()));
+        }
+        inputParameterClass.setActualTypeArguments(typeList);
+        return inputParameterClass;
     }
 
-    public static InputParameterClass convertToInputParameterClass(ClassNode classNode) {
-        if (classNode != null) {
-            InputParameterClass inputParameterClass = new InputParameterClass(classNode.getName(),
-                    classNode.getNameWithoutPackage());
-            inputParameterClass.setModifiers(classNode.getModifiers());
-            if (classNode.isArray() && classNode.getComponentType() != null) {
-                inputParameterClass.setArray(true);
-                ClassNode componentType = classNode.getComponentType();
-                inputParameterClass.setComponentType(new InputParameterClass(componentType.getName(), componentType
-                        .getNameWithoutPackage()));
-            }
-            if (classNode.isEnum()) {
-                inputParameterClass.setEnum(true);
-                inputParameterClass.setEnumConstants(classNode.getTypeClass().getEnumConstants());
-            }
-            List<InputParameterClass> typeList = new ArrayList<InputParameterClass>();
-            typeList.add(new InputParameterClass(Object.class.getName(), Object.class.getSimpleName()));
-            typeList.add(new InputParameterClass(Object.class.getName(), Object.class.getSimpleName()));
-            inputParameterClass.setActualTypeArguments(typeList);
-            return inputParameterClass;
+    public static InputParameterClass convertToInputParameterClass(ClassNodeWrapper classNode) {
+        if (classNode == null) {
+            return null;
         }
-        return null;
+        InputParameterClass inputParameterClass = new InputParameterClass(classNode.getName(),
+                classNode.getNameWithoutPackage());
+        inputParameterClass.setModifiers(classNode.getModifiers());
+        if (classNode.isArray()) {
+            inputParameterClass.setArray(true);
+            inputParameterClass.setComponentType(new InputParameterClass(classNode.getComponentType().getName(),
+                    classNode.getComponentType().getNameWithoutPackage()));
+        }
+        if (classNode.isEnum()) {
+            inputParameterClass.setEnum(true);
+            inputParameterClass.setEnumConstants(classNode.getTypeClass().getEnumConstants());
+        }
+        List<InputParameterClass> typeList = new ArrayList<InputParameterClass>();
+        typeList.add(new InputParameterClass(Object.class.getName(), Object.class.getSimpleName()));
+        typeList.add(new InputParameterClass(Object.class.getName(), Object.class.getSimpleName()));
+        inputParameterClass.setActualTypeArguments(typeList);
+        return inputParameterClass;
     }
 
     public static InputParameter getDefaultInputParameter(String paramName, InputParameterClass parameterClass) {
@@ -630,12 +267,12 @@ public class AstTreeTableInputUtil {
     }
 
     public static InputParameter getInputParameter(String paramName, InputParameterClass paramClass,
-            Expression expression) {
-        if (expression instanceof CastExpression) {
-            return getInputParameter(paramName, paramClass, (CastExpression) expression);
+            ExpressionWrapper expression) {
+        if (expression instanceof CastExpressionWrapper) {
+            return getInputParameter(paramName, paramClass, (CastExpressionWrapper) expression);
         }
-        if (expression instanceof ArrayExpression) {
-            return getInputParameter(paramName, paramClass, (ArrayExpression) expression);
+        if (expression instanceof ArrayExpressionWrapper) {
+            return getInputParameter(paramName, paramClass, (ArrayExpressionWrapper) expression);
         } else if (expression != null) {
             return new InputParameter(paramName, paramClass, expression);
         }
@@ -643,232 +280,141 @@ public class AstTreeTableInputUtil {
     }
 
     public static InputParameter getInputParameter(String paramName, InputParameterClass paramClass,
-            CastExpression castExpression) {
+            CastExpressionWrapper castExpression) {
         return getInputParameter(paramName, paramClass, castExpression.getExpression());
     }
 
     public static InputParameter getInputParameter(String paramName, InputParameterClass paramClass,
-            ArrayExpression arrayExpression) {
-        return new InputParameter(paramName, paramClass, new ArrayList<Expression>(arrayExpression.getExpressions()));
+            ArrayExpressionWrapper arrayExpression) {
+        return new InputParameter(paramName, paramClass, new ArrayList<ExpressionWrapper>(
+                arrayExpression.getExpressions()));
     }
 
-    public static Expression createPropertyExpressionForClass(String className) {
+    public static PropertyExpressionWrapper createPropertyExpressionForClass(String className, ASTNodeWrapper parentNode) {
         if (className.equals(FailureHandling.class.getName())
                 || className.equals(FailureHandling.class.getSimpleName())) {
-            return AstTreeTableInputUtil.createPropertyExpressionForClass(FailureHandling.class.getSimpleName(),
-                    TestCasePreferenceDefaultValueInitializer.getDefaultFailureHandling().name());
+            return getNewFailureHandlingPropertyExpression(parentNode);
         }
-        return createPropertyExpressionForClass(className, null);
+        return createPropertyExpressionForClassFromPath(className, null);
     }
 
-    public static Expression createPropertyExpressionForClass(String parentPath, String childName) {
+    public static PropertyExpressionWrapper getNewFailureHandlingPropertyExpression(ASTNodeWrapper parentNode) {
+        return new PropertyExpressionWrapper(FailureHandling.class.getSimpleName(),
+                TestCasePreferenceDefaultValueInitializer.getDefaultFailureHandling().name(), parentNode);
+    }
+
+    // recursively creating property expression
+    public static PropertyExpressionWrapper createPropertyExpressionForClassFromPath(String parentPath, String childName) {
         if (parentPath.contains(".")) {
-            return new PropertyExpression(createPropertyExpressionForClass(
+            PropertyExpressionWrapper childPropertyExpression = createPropertyExpressionForClassFromPath(
                     parentPath.substring(0, parentPath.lastIndexOf(".")),
-                    parentPath.substring(parentPath.lastIndexOf(".") + 1)), childName);
+                    parentPath.substring(parentPath.lastIndexOf(".") + 1));
+            if (childName != null) {
+                PropertyExpressionWrapper newPropertyExpression = new PropertyExpressionWrapper(null);
+                newPropertyExpression.setObjectExpression(childPropertyExpression);
+                newPropertyExpression.setProperty(new ConstantExpressionWrapper(childName, newPropertyExpression));
+                childPropertyExpression.setParent(newPropertyExpression);
+                return newPropertyExpression;
+            }
+            return childPropertyExpression;
         } else {
-            return new PropertyExpression(new VariableExpression(parentPath), childName);
+            return new PropertyExpressionWrapper(parentPath, childName, null);
         }
     }
 
-    public static Expression getArgumentExpression(InputParameter inputParameter) {
-        if (inputParameter != null) {
-            InputParameterClass paramClass = inputParameter.getParamType();
-            if (inputParameter.getValue() instanceof ListExpression) {
-                if (paramClass.isArray() && paramClass.getComponentType() != null) {
-                    return new CastExpression(new ClassNode(new ClassNode(paramClass.getComponentType().getFullName(),
-                            paramClass.getModifiers(), new ClassNode(Object.class))),
-                            (ListExpression) inputParameter.getValue());
-                }
-            }
-            if (inputParameter.getValue() instanceof Expression) {
-                return (Expression) inputParameter.getValue();
-            }
+    public static ExpressionWrapper getArgumentExpression(InputParameter inputParameter, ASTNodeWrapper parent) {
+        if (inputParameter == null) {
+            return new ConstantExpressionWrapper(parent);
         }
-        return new ConstantExpression(null);
+        if (inputParameter.getValue() instanceof ExpressionWrapper) {
+            return (ExpressionWrapper) inputParameter.getValue();
+        }
+        InputParameterClass paramClass = inputParameter.getParamType();
+        if (inputParameter.getValue() instanceof ListExpressionWrapper && paramClass.isArray()) {
+            return new CastExpressionWrapper(new ClassNode(new ClassNode(paramClass.getComponentType().getFullName(),
+                    paramClass.getModifiers(), new ClassNode(Object.class))),
+                    (ListExpressionWrapper) inputParameter.getValue(), parent);
+        }
+        return new ConstantExpressionWrapper(parent);
     }
 
-    public static boolean isObjectArgument(MethodCallExpression objectMethodCallExpression) {
-        if ((objectMethodCallExpression.getObjectExpression().getText().equals(ObjectRepository.class.getName()) || objectMethodCallExpression
-                .getObjectExpression().getText().equals(ObjectRepository.class.getSimpleName()))
-                && objectMethodCallExpression.getArguments() instanceof ArgumentListExpression) {
-            return true;
+    public static void generateBuiltInKeywordArguments(MethodCallExpressionWrapper keywordCallExpression) {
+        if (keywordCallExpression == null || keywordCallExpression.getMethod() == null) {
+            return;
         }
-        return false;
-    }
-
-    public static boolean isTestDataArgument(MethodCallExpression objectMethodCallExpression) {
-        if ((objectMethodCallExpression.getObjectExpression().getText().equals(TestDataFactory.class.getName()) || objectMethodCallExpression
-                .getObjectExpression().getText().equals(TestDataFactory.class.getSimpleName()))
-                && objectMethodCallExpression.getMethodAsString().equals("findTestData")
-                && objectMethodCallExpression.getArguments() instanceof ArgumentListExpression) {
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean isTestDataValueArgument(MethodCallExpression objectMethodCallExpression) {
-        if (objectMethodCallExpression.getObjectExpression() instanceof MethodCallExpression
-                && isTestDataArgument((MethodCallExpression) objectMethodCallExpression.getObjectExpression())
-                && objectMethodCallExpression.getMethodAsString().equals("getValue")) {
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean isCallTestCaseMethod(MethodCallExpression methodCallExpression) {
-        if (methodCallExpression.getObjectExpression().getText().contains("BuiltInKeywords")
-                && methodCallExpression.getMethod().getText().equals("callTestCase")
-                && methodCallExpression.getArguments() instanceof ArgumentListExpression) {
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean isCallTestCaseArgument(MethodCallExpression callTestCaseMethodCallExpression) {
-        if (callTestCaseMethodCallExpression != null
-                && (callTestCaseMethodCallExpression.getObjectExpression().getText()
-                        .equals(TestCaseFactory.class.getName()) || callTestCaseMethodCallExpression
-                        .getObjectExpression().getText().equals(TestCaseFactory.class.getSimpleName()))
-                && callTestCaseMethodCallExpression.getMethodAsString().equals("findTestCase")
-                && callTestCaseMethodCallExpression.getArguments() instanceof ArgumentListExpression) {
-            return true;
-        }
-        return false;
-    }
-
-    private static ArgumentListExpression getCallTestCaseArgumentList(MethodCallExpression methodCallExpression) {
-        if (isCallTestCaseArgument(methodCallExpression)) {
-            return (ArgumentListExpression) methodCallExpression.getArguments();
-        }
-        return null;
-    }
-
-    public static Expression getCallTestCaseParam(MethodCallExpression methodCallExpression) {
-        ArgumentListExpression objectArguments = getCallTestCaseArgumentList(methodCallExpression);
-        if (objectArguments != null && objectArguments.getExpressions() != null
-                && objectArguments.getExpressions().size() > 0) {
-            return objectArguments.getExpression(0);
-        }
-        return null;
-    }
-
-    public static Expression getObjectParam(MethodCallExpression methodCallExpression) {
-        if (isObjectArgument(methodCallExpression)) {
-            ArgumentListExpression argumentList = (ArgumentListExpression) methodCallExpression.getArguments();
-            if (argumentList.getExpressions() != null && !argumentList.getExpressions().isEmpty()) {
-                return argumentList.getExpression(0);
-            }
-        }
-        return null;
-    }
-
-    public static Expression getTestDataObject(MethodCallExpression methodCallExpression) {
-        if (isTestDataArgument(methodCallExpression)) {
-            ArgumentListExpression argumentList = (ArgumentListExpression) methodCallExpression.getArguments();
-            if (argumentList.getExpressions() != null && !argumentList.getExpressions().isEmpty()) {
-                return argumentList.getExpression(0);
-            }
-        }
-        return null;
-    }
-
-    public static ArgumentListExpression getTestDataValueArgument(MethodCallExpression methodCallExpression) {
-        if (isTestDataValueArgument(methodCallExpression)
-                && methodCallExpression.getArguments() instanceof ArgumentListExpression) {
-            return (ArgumentListExpression) methodCallExpression.getArguments();
-        }
-        return null;
-    }
-
-    public static Expression getTestDataValueObject(MethodCallExpression methodCallExpression) {
-        if (isTestDataValueArgument(methodCallExpression)
-                && methodCallExpression.getObjectExpression() instanceof MethodCallExpression) {
-            return getTestDataObject((MethodCallExpression) methodCallExpression.getObjectExpression());
-        }
-        return null;
-    }
-
-    public static void generateBuiltInKeywordArguments(MethodCallExpression keywordCallExpression) throws Exception {
-        if (keywordCallExpression != null && keywordCallExpression.getMethod() != null) {
-            String className = keywordCallExpression.getObjectExpression().getText();
-            Method keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(className,
-                    keywordCallExpression.getMethod().getText());
-            if (keywordMethod != null) {
-                generateMethodCallArguments(keywordCallExpression, keywordMethod);
-            }
+        KeywordMethod keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
+                keywordCallExpression.getObjectExpressionAsString(), keywordCallExpression.getMethodAsString());
+        if (keywordMethod != null) {
+            generateMethodCallArguments(keywordCallExpression, keywordMethod);
         }
     }
 
-    public static void generateMethodCallArguments(MethodCallExpression keywordCallExpression, Method keywordMethod)
+    public static void generateMethodCallArguments(MethodCallExpressionWrapper keywordCallExpression,
+            KeywordMethod keywordMethod) {
+        List<ExpressionWrapper> exisitingArgumentList = ((ArgumentListExpressionWrapper) keywordCallExpression
+                .getArguments()).getExpressions();
+        List<ExpressionWrapper> newArgumentList = new ArrayList<ExpressionWrapper>();
+        for (int i = 0; i < keywordMethod.getParameters().length; i++) {
+            KeywordParameter keywordParam = keywordMethod.getParameters()[i];
+            newArgumentList.add(generateArgument((i < exisitingArgumentList.size()) ? exisitingArgumentList.get(i)
+                    : null, keywordMethod.getName(), keywordParam.getName(), keywordParam.getType().getSimpleName(),
+                    keywordParam.getType().getName(), keywordParam.getType().isArray(),
+                    keywordParam.getType().isEnum(), keywordCallExpression.getArguments()));
+        }
+        ((ArgumentListExpressionWrapper) keywordCallExpression.getArguments()).setExpressions(newArgumentList);
+    }
+
+    public static void generateMethodCallArguments(MethodCallExpressionWrapper keywordCallExpression, Method method) {
+        List<ExpressionWrapper> exisitingArgumentList = ((ArgumentListExpressionWrapper) keywordCallExpression
+                .getArguments()).getExpressions();
+        List<ExpressionWrapper> newArgumentList = new ArrayList<ExpressionWrapper>();
+        for (int i = 0; i < method.getParameterTypes().length; i++) {
+            Class<?> keywordParam = method.getParameterTypes()[i];
+            newArgumentList.add(generateArgument((i < exisitingArgumentList.size()) ? exisitingArgumentList.get(i)
+                    : null, method.getName(), keywordParam.getName(), keywordParam.getSimpleName(), keywordParam
+                    .getName(), keywordParam.isArray(), keywordParam.isEnum(), keywordCallExpression.getArguments()));
+        }
+        ((ArgumentListExpressionWrapper) keywordCallExpression.getArguments()).setExpressions(newArgumentList);
+    }
+
+    public static void generateCustomKeywordArguments(MethodCallExpressionWrapper keywordCallExpression)
             throws Exception {
-        List<Expression> exisitingArgumentList = ((ArgumentListExpression) keywordCallExpression.getArguments())
-                .getExpressions();
-        List<Expression> newArgumentList = new ArrayList<Expression>();
-        List<Class<?>> paramClasses = getParamClasses(keywordMethod);
-        List<String> paramNames = KeywordController.getInstance().getParameterName(keywordMethod);
-        for (int i = 0; i < paramClasses.size(); i++) {
-            Class<?> paramClass = paramClasses.get(i);
-            if (paramClass != null) {
-                newArgumentList.add(generateArgument((i < exisitingArgumentList.size()) ? exisitingArgumentList.get(i)
-                        : null, keywordMethod.getName(), paramNames.get(i), paramClass.getSimpleName(), paramClass
-                        .getName(), paramClass.isArray(), paramClass.isEnum()));
-            }
+        if (keywordCallExpression == null || keywordCallExpression.getMethod() == null
+                || !(keywordCallExpression.getArguments() instanceof ArgumentListExpressionWrapper)) {
+            return;
         }
-        keywordCallExpression.setArguments(new ArgumentListExpression(newArgumentList));
+        MethodNode keywordMethod = KeywordController.getInstance().getCustomKeywordByName(
+                keywordCallExpression.getObjectExpressionAsString(), keywordCallExpression.getMethodAsString(),
+                ProjectController.getInstance().getCurrentProject());
+        if (keywordMethod == null) {
+            return;
+        }
+        List<ExpressionWrapper> exisitingArgumentList = ((ArgumentListExpressionWrapper) keywordCallExpression
+                .getArguments()).getExpressions();
+        List<ExpressionWrapper> newArgumentList = new ArrayList<ExpressionWrapper>();
+        for (int i = 0; i < keywordMethod.getParameters().length; i++) {
+            if (keywordMethod.getParameters()[i].getType() == null) {
+                return;
+            }
+            ClassNode classNode = keywordMethod.getParameters()[i].getType();
+            newArgumentList.add(generateArgument((i < exisitingArgumentList.size()) ? exisitingArgumentList.get(i)
+                    : null, keywordMethod.getName(), null, classNode.getNameWithoutPackage(), classNode.getName(),
+                    classNode.isArray(), classNode.isEnum(), keywordCallExpression.getArguments()));
+        }
+        ((ArgumentListExpressionWrapper) keywordCallExpression.getArguments()).setExpressions(newArgumentList);
     }
 
-    public static void generateMethodCallArguments(MethodCallExpression keywordCallExpression, MethodNode keywordMethod) {
-        List<Expression> exisitingArgumentList = ((ArgumentListExpression) keywordCallExpression.getArguments())
-                .getExpressions();
-        List<Expression> newArgumentList = new ArrayList<Expression>();
-        List<Class<?>> paramClasses = getParamClasses(keywordMethod);
-        for (int i = 0; i < paramClasses.size(); i++) {
-            Class<?> paramClass = paramClasses.get(i);
-            if (paramClass != null) {
-                newArgumentList.add(generateArgument((i < exisitingArgumentList.size()) ? exisitingArgumentList.get(i)
-                        : null, keywordMethod.getName(), null, paramClass.getSimpleName(), paramClass.getName(),
-                        paramClass.isArray(), paramClass.isEnum()));
-            }
-        }
-        keywordCallExpression.setArguments(new ArgumentListExpression(newArgumentList));
-    }
-
-    //
-    public static void generateCustomKeywordArguments(MethodCallExpression keywordCallExpression) throws Exception {
-        if (keywordCallExpression != null && keywordCallExpression.getMethod() != null) {
-            MethodNode keywordMethod = KeywordController.getInstance().getCustomKeywordByName(
-                    keywordCallExpression.getObjectExpression().getText(), keywordCallExpression.getMethod().getText(),
-                    ProjectController.getInstance().getCurrentProject());
-            if (keywordMethod != null) {
-                List<Expression> exisitingArgumentList = ((ArgumentListExpression) keywordCallExpression.getArguments())
-                        .getExpressions();
-                List<Expression> newArgumentList = new ArrayList<Expression>();
-                for (int i = 0; i < keywordMethod.getParameters().length; i++) {
-                    ClassNode classNode = keywordMethod.getParameters()[i].getType();
-                    if (classNode != null) {
-                        newArgumentList.add(generateArgument(
-                                (i < exisitingArgumentList.size()) ? exisitingArgumentList.get(i) : null,
-                                keywordMethod.getName(), null, classNode.getNameWithoutPackage(), classNode.getName(),
-                                classNode.isArray(), classNode.isEnum()));
-                    }
-                }
-                keywordCallExpression.setArguments(new ArgumentListExpression(newArgumentList));
-            }
-        }
-    }
-
-    public static Expression generateArgument(Expression existingParam, String methodName, String paramName,
-            String classSimpleName, String classFullName, boolean isArray, boolean isEnum) {
+    public static ExpressionWrapper generateArgument(ExpressionWrapper existingParam, String methodName,
+            String paramName, String classSimpleName, String classFullName, boolean isArray, boolean isEnum,
+            ASTNodeWrapper parentNode) {
         if (isEnum) {
-            if (existingParam instanceof PropertyExpression) {
-                String valueClassName = ((PropertyExpression) existingParam).getObjectExpression().getText();
+            if (existingParam instanceof PropertyExpressionWrapper) {
+                String valueClassName = ((PropertyExpressionWrapper) existingParam).getObjectExpressionAsString();
                 if (classSimpleName.equals(valueClassName) || classFullName.equals(valueClassName)) {
                     return existingParam;
                 }
             } else if (classFullName.equals(FailureHandling.class.getName())) {
-                return createPropertyExpressionForClass(FailureHandling.class.getSimpleName(),
-                        TestCasePreferenceDefaultValueInitializer.getDefaultFailureHandling().name());
+                return getNewFailureHandlingPropertyExpression(parentNode);
             }
         }
         Class<?> objectClass = null;
@@ -877,28 +423,29 @@ public class AstTreeTableInputUtil {
         } catch (ClassNotFoundException e) {
             // Class not found, do nothing
         }
-        if (existingParam instanceof VariableExpression || existingParam instanceof MapExpression
-                || existingParam instanceof CastExpression || existingParam instanceof BinaryExpression) {
+        if (existingParam instanceof VariableExpressionWrapper || existingParam instanceof MapExpressionWrapper
+                || existingParam instanceof CastExpressionWrapper || existingParam instanceof BinaryExpressionWrapper) {
             return existingParam;
         }
         if (objectClass != null && TestObject.class.isAssignableFrom(objectClass)) {
-            if (existingParam instanceof MethodCallExpression && isObjectArgument((MethodCallExpression) existingParam)) {
+            if (existingParam instanceof MethodCallExpressionWrapper
+                    && AstEntityInputUtil.isObjectArgument((MethodCallExpressionWrapper) existingParam)) {
                 return existingParam;
             } else {
-                return generateObjectMethodCall(null);
+                return AstEntityInputUtil.generateObjectMethodCall(null, parentNode);
             }
         }
         if (classFullName.equals(List.class.getName()) || isArray) {
-            if (existingParam instanceof ListExpression) {
+            if (existingParam instanceof ListExpressionWrapper) {
                 return existingParam;
-            } else if (existingParam instanceof CastExpression
-                    && ((CastExpression) existingParam).getExpression() instanceof ListExpression) {
+            } else if (existingParam instanceof CastExpressionWrapper
+                    && ((CastExpressionWrapper) existingParam).getExpression() instanceof ListExpressionWrapper) {
                 return existingParam;
             }
         }
 
-        if (existingParam instanceof PropertyExpression) {
-            String valueClassName = ((PropertyExpression) existingParam).getObjectExpression().getText();
+        if (existingParam instanceof PropertyExpressionWrapper) {
+            String valueClassName = ((PropertyExpressionWrapper) existingParam).getObjectExpressionAsString();
             if (valueClassName.equals(InputValueType.GlobalVariable.name())) {
                 return existingParam;
             }
@@ -921,8 +468,8 @@ public class AstTreeTableInputUtil {
             if (existingParamClassName.equals(Boolean.class.getName())
                     || existingParamClassName.equals(Boolean.TYPE.getName())) {
                 return existingParam;
-            } else if (existingParam instanceof ConstantExpression) {
-                return new ConstantExpression(Boolean.FALSE);
+            } else if (existingParam instanceof ConstantExpressionWrapper) {
+                return new ConstantExpressionWrapper(Boolean.FALSE, parentNode);
             }
         } else if (paramClassName.equals(Character.class.getName()) || paramClassName.equals(String.class.getName())
                 || paramClassName.equals(Character.TYPE.getName())) {
@@ -930,8 +477,8 @@ public class AstTreeTableInputUtil {
                     || existingParamClassName.equals(String.class.getName())
                     || existingParamClassName.equals(Character.TYPE.getName())) {
                 return existingParam;
-            } else if (existingParam instanceof ConstantExpression) {
-                return new ConstantExpression("");
+            } else if (existingParam instanceof ConstantExpressionWrapper) {
+                return new ConstantExpressionWrapper("", parentNode);
             }
         } else if (paramClassName.equals(Byte.class.getName()) || paramClassName.equals(Byte.TYPE.getName())
                 || paramClassName.equals(Short.class.getName()) || paramClassName.equals(Short.TYPE.getName())
@@ -956,92 +503,36 @@ public class AstTreeTableInputUtil {
                     || existingParamClassName.equals(BigInteger.class.getName())
                     || existingParamClassName.equals(BigDecimal.class.getName())) {
                 return existingParam;
-            } else if (existingParam instanceof ConstantExpression) {
-                return new ConstantExpression(0);
+            } else if (existingParam instanceof ConstantExpressionWrapper) {
+                return new ConstantExpressionWrapper(0, parentNode);
             }
         }
         if (methodName.equals("delay") && paramName.equals("second")) {
             if (existingParam == null) {
-                return new ConstantExpression(0);
+                return new ConstantExpressionWrapper(0, parentNode);
             }
             try {
                 Integer.parseInt(existingParam.getText());
             } catch (NumberFormatException e) {
                 // if parse into number fail then return 0
-                return new ConstantExpression(0);
+                return new ConstantExpressionWrapper(0, parentNode);
             }
         }
-        if (existingParam instanceof Expression) {
+        if (existingParam instanceof ExpressionWrapper) {
             return existingParam;
         }
-        return new ConstantExpression(null);
+        return new ConstantExpressionWrapper(parentNode);
     }
 
-    public static MethodCallExpression generateObjectMethodCall(String objectPk) {
-        List<Expression> expressionArguments = new ArrayList<Expression>();
-        expressionArguments.add(new ConstantExpression(objectPk));
-        MethodCallExpression objectMethodCall = new MethodCallExpression(new VariableExpression(
-                ObjectRepository.class.getSimpleName()), "findTestObject", new ArgumentListExpression(
-                expressionArguments));
-        return objectMethodCall;
+    public static boolean isVoidClass(Class<?> clazz) {
+        return (clazz.getName().equals(Void.class.getName()) || clazz.getName().equals(Void.class.getSimpleName()) || clazz
+                .getName().equals(Void.TYPE.getName()));
     }
 
-    public static ExpressionStatement generateCallTestCaseExpresionStatement(TestCaseEntity testCase) throws Exception {
-        IKeywordContributor defaultBuiltinKeywordContributor = TestCasePreferenceDefaultValueInitializer
-                .getDefaultKeywordType();
-
-        List<Expression> expressionArguments = new ArrayList<Expression>();
-        MethodCallExpression keywordMethodCallExpression = new MethodCallExpression(new VariableExpression(
-                defaultBuiltinKeywordContributor.getKeywordClass().getSimpleName()),
-                BuiltInMethodNodeFactory.CALL_TEST_CASE_METHOD_NAME, new ArgumentListExpression(expressionArguments));
-        generateBuiltInKeywordArguments(keywordMethodCallExpression);
-
-        ExpressionStatement statement = new ExpressionStatement(keywordMethodCallExpression);
-
-        ArgumentListExpression argumentList = (ArgumentListExpression) keywordMethodCallExpression.getArguments();
-
-        MethodCallExpression testCaseMethodCallEprs = generateTestCaseMethodCall(testCase.getIdForDisplay());
-        MapExpression mapExpression = generateTestCaseVariableBindingExpression(testCase);
-        PropertyExpression propertyExprs = (PropertyExpression) argumentList.getExpression(argumentList
-                .getExpressions().size() - 1);
-        argumentList = new ArgumentListExpression(testCaseMethodCallEprs, mapExpression, propertyExprs);
-        keywordMethodCallExpression.setArguments(argumentList);
-        return statement;
-    }
-
-    public static MethodCallExpression generateTestCaseMethodCall(String testCasePk) {
-        List<Expression> expressionArguments = new ArrayList<Expression>();
-        expressionArguments.add(new ConstantExpression(testCasePk));
-        MethodCallExpression objectMethodCall = new MethodCallExpression(new VariableExpression(
-                TestCaseFactory.class.getSimpleName()), "findTestCase", new ArgumentListExpression(expressionArguments));
-        return objectMethodCall;
-    }
-
-    public static MapExpression generateTestCaseVariableBindingExpression(TestCaseEntity testCase) {
-        boolean generateDefaultValue = TestCasePreferenceDefaultValueInitializer.isSetGenerateVariableDefaultValue();
-        List<MapEntryExpression> variableExpressions = new ArrayList<MapEntryExpression>();
-        for (VariableEntity variableEntity : testCase.getVariables()) {
-            ConstantExpression keyExpression = new ConstantExpression(variableEntity.getName());
-            String variableValue = variableEntity.getDefaultValue();
-            if (!generateDefaultValue) {
-                variableValue = variableEntity.getName();
-            }
-            Expression valueExpression = (variableValue == null || variableValue.isEmpty()) ? new ConstantExpression(
-                    null) : new VariableExpression(variableValue);
-            variableExpressions.add(new MapEntryExpression(keyExpression, valueExpression));
-        }
-        return new MapExpression(variableExpressions);
-    }
-
-    public static boolean isObjectClass(ClassNode classNode) {
-        return (TestObject.class.getName().equals(classNode.getTypeClass().getName())
-                || TestObject.class.getSimpleName().equals(classNode.getTypeClass().getSimpleName()) || TestObject.class
-                    .isAssignableFrom(classNode.getTypeClass()));
-    }
-
-    public static boolean isCallTestCaseClass(ClassNode classNode) {
-        return (classNode.getName().equals(TestCase.class.getName()) || classNode.getName().equals(
-                TestCase.class.getSimpleName()));
+    public static boolean isVoidClass(ClassNodeWrapper classNode) {
+        return (classNode.getName().equals(Void.class.getName())
+                || classNode.getName().equals(Void.class.getSimpleName()) || classNode.getName().equals(
+                Void.TYPE.getName()));
     }
 
     public static boolean isVoidClass(ClassNode classNode) {
@@ -1050,50 +541,7 @@ public class AstTreeTableInputUtil {
                 Void.TYPE.getName()));
     }
 
-    public static boolean isGlobalVariablePropertyExpression(PropertyExpression propertyExprs) {
-        if (!(propertyExprs.getObjectExpression() instanceof VariableExpression))
-            return false;
-        if (propertyExprs.getObjectExpression().getText().equals(InputValueType.GlobalVariable.name())) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public static String getGlobalVariableNameFromPropertyExpression(PropertyExpression propertyExprs) {
-        if (isGlobalVariablePropertyExpression(propertyExprs)) {
-            return propertyExprs.getPropertyAsString();
-        }
-        return "";
-    }
-
-    public static int getGlobalVariableIndex(PropertyExpression propertyExpression) {
-        try {
-            String[] names = GlobalVariableController.getInstance().getAllGlobalVariableNames(
-                    ProjectController.getInstance().getCurrentProject());
-            String variableName = getGlobalVariableNameFromPropertyExpression(propertyExpression);
-            return Math.max(ArrayUtils.indexOf(names, variableName), 0);
-        } catch (Exception e) {
-            return 0;
-        }
-    }
-
-    public static PropertyExpression getGlobalVariableExpression(int variableIndex) {
-        try {
-            String[] names = GlobalVariableController.getInstance().getAllGlobalVariableNames(
-                    ProjectController.getInstance().getCurrentProject());
-            if (variableIndex >= 0 && variableIndex < names.length) {
-                return new PropertyExpression(new VariableExpression(InputValueType.GlobalVariable.name()),
-                        new ConstantExpression(names[variableIndex]));
-            }
-        } catch (Exception e) {
-            // Do nothing
-        }
-        return new PropertyExpression(new VariableExpression(InputValueType.GlobalVariable.name()),
-                new ConstantExpression(null));
-    }
-
-    public static Class<?> loadType(String typeName, ClassNode scriptClass) {
+    public static Class<?> loadType(String typeName, ClassNodeWrapper classNode) {
         Class<?> type = null;
         try {
             type = Class.forName(typeName);
@@ -1106,6 +554,7 @@ public class AstTreeTableInputUtil {
             classLoader = GroovyUtil.getProjectClasLoader(ProjectController.getInstance().getCurrentProject());
         } catch (Exception e) {
             LoggerSingleton.logError(e);
+            // find nothing, continue
         }
         if (classLoader == null) {
             return null;
@@ -1123,17 +572,34 @@ public class AstTreeTableInputUtil {
                 }
             }
         }
-        if (scriptClass != null) {
-            for (ImportNode importNode : scriptClass.getModule().getImports()) {
-                if (importNode.getClassName().endsWith("." + typeName)) {
-                    try {
-                        type = classLoader.loadClass(importNode.getClassName());
-                    } catch (ClassNotFoundException ex) {
-                        continue;
-                    }
-                }
+        if (classNode == null) {
+            return type;
+        }
+        for (ImportNodeWrapper importNode : classNode.getImports()) {
+            if (!importNode.getClassName().endsWith("." + typeName)) {
+                continue;
+            }
+            try {
+                type = classLoader.loadClass(importNode.getClassName());
+                return type;
+            } catch (ClassNotFoundException ex) {
+                // cannot find class, continue
             }
         }
         return type;
     }
+
+    public static boolean isGlobalVariablePropertyExpression(PropertyExpressionWrapper propertyExprs) {
+        if (!(propertyExprs.getObjectExpression() instanceof VariableExpressionWrapper))
+            return false;
+        return (propertyExprs.getObjectExpressionAsString().equals(InputValueType.GlobalVariable.name()) && propertyExprs
+                .getProperty() instanceof ConstantExpressionWrapper);
+    }
+
+    public static boolean isFailureHandlingPropertyExpression(PropertyExpressionWrapper propertyExprs) {
+        if (!(propertyExprs.getObjectExpression() instanceof VariableExpressionWrapper))
+            return false;
+        return (propertyExprs.isObjectExpressionOfClass(FailureHandling.class) && propertyExprs.getProperty() instanceof ConstantExpressionWrapper);
+    }
+
 }

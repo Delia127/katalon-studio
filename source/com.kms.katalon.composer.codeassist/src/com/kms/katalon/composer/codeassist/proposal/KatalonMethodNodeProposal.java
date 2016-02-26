@@ -1,8 +1,5 @@
 package com.kms.katalon.composer.codeassist.proposal;
 
-import java.lang.reflect.Method;
-import java.util.List;
-
 import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.groovy.ast.Parameter;
 import org.codehaus.groovy.eclipse.codeassist.ProposalUtils;
@@ -22,6 +19,8 @@ import org.eclipse.jface.text.BadLocationException;
 
 import com.kms.katalon.composer.codeassist.proposal.completion.KatalonMethodCompletionProposal;
 import com.kms.katalon.controller.KeywordController;
+import com.kms.katalon.custom.keyword.KeywordMethod;
+import com.kms.katalon.custom.keyword.KeywordParameter;
 
 @SuppressWarnings("restriction")
 public class KatalonMethodNodeProposal extends GroovyMethodProposal {
@@ -125,7 +124,7 @@ public class KatalonMethodNodeProposal extends GroovyMethodProposal {
     @Override
     protected char[][] createAllParameterNames(ICompilationUnit unit) {
         try {
-            Method methodNode = KeywordController.getInstance().getBuiltInKeywordByName(
+            KeywordMethod methodNode = KeywordController.getInstance().getBuiltInKeywordByName(
                     method.getDeclaringClass().getName(), method.getName());
 
             Parameter[] params = method.getParameters();
@@ -135,11 +134,10 @@ public class KatalonMethodNodeProposal extends GroovyMethodProposal {
             if (numParams == 0) {
                 return new char[0][];
             }
-
+            KeywordParameter[] keywordParams = methodNode.getParameters();
             char[][] paramNames = new char[numParams][];
-            List<String> paramNameStrings = KeywordController.getInstance().getParameterName(methodNode);
-            for (int index = 0; index < paramNameStrings.size(); index++) {
-                paramNames[index] = paramNameStrings.get(index).toCharArray();
+            for (int index = 0; index < keywordParams.length; index++) {
+                paramNames[index] = keywordParams[index].getName().toCharArray();
             }
 
             return paramNames;

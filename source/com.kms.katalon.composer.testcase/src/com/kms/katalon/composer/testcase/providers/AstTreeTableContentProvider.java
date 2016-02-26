@@ -7,46 +7,36 @@ import java.util.List;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.testcase.ast.treetable.AstScriptMainBlockStatmentTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstScriptTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 
 public class AstTreeTableContentProvider implements ITreeContentProvider {
-
     @Override
     public Object[] getElements(Object inputElement) {
-        if (inputElement instanceof List<?>) {
-            List<AstTreeTableNode> treeTableNodes = new ArrayList<AstTreeTableNode>();
-            for (Object object : ((List<?>) inputElement)) {
-                if (object instanceof AstScriptMainBlockStatmentTreeTableNode) {
-                    AstScriptMainBlockStatmentTreeTableNode mainBlockNode = (AstScriptMainBlockStatmentTreeTableNode) object;
-                    try {
-                        mainBlockNode.reloadChildren();
-                        treeTableNodes.addAll(mainBlockNode.getChildren());
-                    } catch (Exception e) {
-                        LoggerSingleton.logError(e);
-                    }
-                } else if (object instanceof AstTreeTableNode) {
-                    treeTableNodes.add((AstTreeTableNode) object);
-                }
-            }
-            return treeTableNodes.toArray();
+        if (!(inputElement instanceof List<?>)) {
+            return Collections.emptyList().toArray();
         }
-        return Collections.emptyList().toArray();
+        List<AstTreeTableNode> treeTableNodes = new ArrayList<AstTreeTableNode>();
+        for (Object object : ((List<?>) inputElement)) {
+            if (object instanceof AstScriptTreeTableNode) {
+                AstScriptTreeTableNode mainBlockNode = (AstScriptTreeTableNode) object;
+                mainBlockNode.reloadChildren();
+                treeTableNodes.addAll(mainBlockNode.getChildren());
+            } else if (object instanceof AstTreeTableNode) {
+                treeTableNodes.add((AstTreeTableNode) object);
+            }
+        }
+        return treeTableNodes.toArray();
     }
 
     @Override
     public Object[] getChildren(Object parentElement) {
-        if (parentElement instanceof AstTreeTableNode && ((AstTreeTableNode) parentElement).hasChildren()) {
-            try {
-                AstTreeTableNode treeTableNode = (AstTreeTableNode) parentElement;
-                treeTableNode.reloadChildren();
-                return treeTableNode.getChildren().toArray();
-            } catch (Exception e) {
-                LoggerSingleton.logError(e);
-            }
+        if (!(parentElement instanceof AstTreeTableNode)) {
+            return null;
         }
-        return null;
+        AstTreeTableNode parentNode = (AstTreeTableNode) parentElement;
+        parentNode.reloadChildren();
+        return parentNode.getChildren().toArray();
     }
 
     @Override
@@ -67,10 +57,7 @@ public class AstTreeTableContentProvider implements ITreeContentProvider {
 
     @Override
     public boolean hasChildren(Object element) {
-        if (element instanceof AstTreeTableNode) {
-            return ((AstTreeTableNode) element).hasChildren();
-        }
-        return false;
+        return (element instanceof AstTreeTableNode && ((AstTreeTableNode) element).hasChildren());
     }
 
 }

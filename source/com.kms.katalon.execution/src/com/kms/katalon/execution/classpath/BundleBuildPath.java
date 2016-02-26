@@ -46,7 +46,7 @@ public class BundleBuildPath implements IBuildPath {
     }
 
     public static boolean isCoreBundle(Bundle bundle) {
-        for (IKeywordContributor contributor : KeywordContributorCollection.getInstance().getKeywordContributors()) {
+        for (IKeywordContributor contributor : KeywordContributorCollection.getKeywordContributors()) {
             Bundle coreBundle = FrameworkUtil.getBundle(contributor.getKeywordClass());
             if (bundle.getBundleId() == coreBundle.getBundleId()) {
                 return true;

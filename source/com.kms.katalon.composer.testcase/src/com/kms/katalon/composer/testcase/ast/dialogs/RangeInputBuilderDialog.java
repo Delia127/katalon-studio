@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.expr.Expression;
-import org.codehaus.groovy.ast.expr.RangeExpression;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -14,68 +11,64 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.testcase.constants.StringConstants;
-import com.kms.katalon.composer.testcase.model.ICustomInputValueType;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.RangeExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
-import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
-import com.kms.katalon.core.ast.GroovyParser;
 
 public class RangeInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
+    private static final String TO_EXPRESSION = "To Expression";
+
+    private static final String FROM_EXPRESSION = "From Expression";
+
     private final InputValueType[] defaultInputValueTypes = { InputValueType.String, InputValueType.Number,
             InputValueType.Boolean, InputValueType.Null, InputValueType.Variable, InputValueType.GlobalVariable,
             InputValueType.TestDataValue, InputValueType.MethodCall, InputValueType.Binary, InputValueType.Property };
 
-    private static final String DIALOG_TITLE = StringConstants.DIA_TITLE_RANGE_INPUT;
+    private RangeExpressionWrapper rangeExpression;
 
-    private RangeExpression rangeExpression;
-    private Expression fromExpression;
-    private Expression toExpression;
-
-    public RangeInputBuilderDialog(Shell parentShell, RangeExpression rangeExpression, ClassNode scriptClass) {
-        super(parentShell, scriptClass);
-        if (rangeExpression != null) {
-            this.rangeExpression = GroovyParser.cloneRangeExpression(rangeExpression);
-        } else {
-            this.rangeExpression = AstTreeTableEntityUtil.getNewRangeExpression();
+    public RangeInputBuilderDialog(Shell parentShell, RangeExpressionWrapper rangeExpression) {
+        super(parentShell);
+        if (rangeExpression == null) {
+            throw new IllegalArgumentException();
         }
-        fromExpression = this.rangeExpression.getFrom();
-        toExpression = this.rangeExpression.getTo();
+        this.rangeExpression = rangeExpression.clone();
     }
 
     @Override
     public void refresh() {
         List<Object> expressionList = new ArrayList<Object>();
-        expressionList.add(fromExpression);
-        expressionList.add(toExpression);
-        rangeExpression = new RangeExpression(fromExpression, toExpression, true);
+        expressionList.add(rangeExpression.getFrom());
+        expressionList.add(rangeExpression.getTo());
         tableViewer.setContentProvider(new ArrayContentProvider());
         tableViewer.setInput(expressionList);
     }
 
     @Override
-    public RangeExpression getReturnValue() {
+    public RangeExpressionWrapper getReturnValue() {
         return rangeExpression;
     }
 
     @Override
-    public void changeObject(Object originalObject, Object newObject) {
-        if (newObject instanceof Expression) {
-            if (originalObject == fromExpression) {
-                fromExpression = (Expression) newObject;
-                refresh();
-            } else if (originalObject == toExpression) {
-                toExpression = (Expression) newObject;
-                refresh();
-            }
+    public void replaceObject(Object originalObject, Object newObject) {
+        if (!(newObject instanceof ExpressionWrapper)) {
+            return;
+        }
+        if (originalObject == rangeExpression.getFrom()) {
+            rangeExpression.setFrom((ExpressionWrapper) newObject);
+            refresh();
+        } else if (originalObject == rangeExpression.getTo()) {
+            rangeExpression.setTo((ExpressionWrapper) newObject);
+            refresh();
         }
     }
 
     @Override
     public String getDialogTitle() {
-        return DIALOG_TITLE;
+        return StringConstants.DIA_TITLE_RANGE_INPUT;
     }
 
     @Override
@@ -86,10 +79,10 @@ public class RangeInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
         tableViewerColumnObject.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                if (element == fromExpression) {
-                    return "From Expression";
-                } else if (element == toExpression) {
-                    return "To Expression";
+                if (element == rangeExpression.getFrom()) {
+                    return FROM_EXPRESSION;
+                } else if (element == rangeExpression.getTo()) {
+                    return TO_EXPRESSION;
                 }
                 return StringUtils.EMPTY;
             }
@@ -98,15 +91,15 @@ public class RangeInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
         TableViewerColumn tableViewerColumnValueType = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnValueType.getColumn().setText(StringConstants.DIA_COL_VALUE_TYPE);
         tableViewerColumnValueType.getColumn().setWidth(100);
-        tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider(scriptClass));
+        tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider());
         tableViewerColumnValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer,
-                defaultInputValueTypes, ICustomInputValueType.TAG_RANGE, this, scriptClass));
+                defaultInputValueTypes, this));
 
         TableViewerColumn tableViewerColumnValue = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnValue.getColumn().setText(StringConstants.DIA_COL_VALUE);
         tableViewerColumnValue.getColumn().setWidth(300);
-        tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider(scriptClass));
-        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this, scriptClass));
+        tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider());
+        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this));
 
     }
 }

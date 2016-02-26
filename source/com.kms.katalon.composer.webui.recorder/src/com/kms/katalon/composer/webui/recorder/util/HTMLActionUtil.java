@@ -5,16 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.ClassUtils;
-import org.codehaus.groovy.ast.expr.ArgumentListExpression;
-import org.codehaus.groovy.ast.expr.ConstantExpression;
-import org.codehaus.groovy.ast.expr.Expression;
-import org.codehaus.groovy.ast.expr.MethodCallExpression;
-import org.codehaus.groovy.ast.expr.VariableExpression;
-import org.codehaus.groovy.ast.stmt.ExpressionStatement;
-import org.codehaus.groovy.ast.stmt.Statement;
 
-import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
+import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
 import com.kms.katalon.composer.webui.recorder.action.HTMLAction;
@@ -26,9 +24,9 @@ import com.kms.katalon.composer.webui.recorder.action.IHTMLAction.HTMLActionPara
 import com.kms.katalon.composer.webui.recorder.util.HTMLActionJsonParser.HTMLActionJson;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.core.model.FailureHandling;
-import com.kms.katalon.core.testobject.ObjectRepository;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords;
+import com.kms.katalon.custom.keyword.KeywordMethod;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.objectspy.element.HTMLElement;
 import com.kms.katalon.objectspy.element.HTMLPageElement;
@@ -38,7 +36,7 @@ public class HTMLActionUtil {
     private static List<HTMLSynchronizeAction> synchronizeActions = null;
     private static List<HTMLValidationAction> validationActions = null;
 
-    public static Statement generateWebUiTestStep(HTMLActionMapping actionMapping, WebElementEntity createdTestObject)
+    public static StatementWrapper generateWebUiTestStep(HTMLActionMapping actionMapping, WebElementEntity createdTestObject)
             throws Exception {
         Class<?> keywordClass = Class.forName(actionMapping.getAction().getMappedKeywordClassName());
         Method method = null;
@@ -48,49 +46,35 @@ public class HTMLActionUtil {
                 break;
             }
         }
-        if (method != null) {
-            int actionDataCount = 0;
-            List<Expression> arguments = new ArrayList<Expression>();
-            for (int i = 0; i < method.getParameterTypes().length; i++) {
-                Class<?> argumentClass = method.getParameterTypes()[i];
-                Expression generatedExression = null;
-                if (argumentClass.getName().equals(TestObject.class.getName())) {
-                    generatedExression = generateObjectMethodCall((createdTestObject != null) ? createdTestObject
-                            .getIdForDisplay() : null);
-                } else if (argumentClass.getName().equals(FailureHandling.class.getName())) {
-                    generatedExression = generateFailureHandlingExpression();
-                } else {
-                    Object data = actionMapping.getData()[actionDataCount];
-                    generatedExression = new ConstantExpression(data);
-                    actionDataCount++;
-                }
-                arguments.add(generatedExression);
-            }
-            ArgumentListExpression argumentListExpression = new ArgumentListExpression(arguments);
-            MethodCallExpression methodCallExpression = new MethodCallExpression(new VariableExpression(actionMapping
-                    .getAction().getMappedKeywordClassSimpleName()),
-                    actionMapping.getAction().getMappedKeywordMethod(), argumentListExpression);
-            return new ExpressionStatement(methodCallExpression);
+        if (method == null) {
+            return null;
         }
-        return null;
+        int actionDataCount = 0;
+
+        MethodCallExpressionWrapper methodCallExpressionWrapper = new MethodCallExpressionWrapper(actionMapping.getAction()
+                .getMappedKeywordClassSimpleName(), actionMapping.getAction().getMappedKeywordMethod(), null);
+        ArgumentListExpressionWrapper argumentListExpressionWrapper = (ArgumentListExpressionWrapper) methodCallExpressionWrapper
+                .getArguments();
+        List<ExpressionWrapper> arguments = argumentListExpressionWrapper.getExpressions();
+        for (int i = 0; i < method.getParameterTypes().length; i++) {
+            Class<?> argumentClass = method.getParameterTypes()[i];
+            ExpressionWrapper generatedExression = null;
+            if (argumentClass.getName().equals(TestObject.class.getName())) {
+                generatedExression = AstEntityInputUtil.generateObjectMethodCall(
+                        (createdTestObject != null) ? createdTestObject.getIdForDisplay() : null, null);
+            } else if (argumentClass.getName().equals(FailureHandling.class.getName())) {
+                generatedExression = AstTreeTableInputUtil.getNewFailureHandlingPropertyExpression(null);
+            } else {
+                Object data = actionMapping.getData()[actionDataCount];
+                generatedExression = new ConstantExpressionWrapper(data, argumentListExpressionWrapper);
+                actionDataCount++;
+            }
+            arguments.add(generatedExression);
+        }
+        return new ExpressionStatementWrapper(methodCallExpressionWrapper, null);
     }
 
-    private static MethodCallExpression generateObjectMethodCall(String objectPk) {
-        List<Expression> expressionArguments = new ArrayList<Expression>();
-        expressionArguments.add(new ConstantExpression(objectPk));
-        MethodCallExpression objectMethodCall = new MethodCallExpression(new VariableExpression(
-                ObjectRepository.class.getSimpleName()), "find" + TestObject.class.getSimpleName(),
-                new ArgumentListExpression(expressionArguments));
-        return objectMethodCall;
-    }
-
-    public static Expression generateFailureHandlingExpression() {
-        return AstTreeTableInputUtil.createPropertyExpressionForClass(FailureHandling.class.getSimpleName(),
-                TestCasePreferenceDefaultValueInitializer.getDefaultFailureHandling().name());
-    }
-
-    public static boolean verifyActionMapping(HTMLActionMapping actionMapping,
-            List<HTMLActionMapping> existingActionMappings) {
+    public static boolean verifyActionMapping(HTMLActionMapping actionMapping, List<HTMLActionMapping> existingActionMappings) {
         if (actionMapping == null || actionMapping.getAction() == null) {
             return false;
         }
@@ -194,53 +178,32 @@ public class HTMLActionUtil {
         return (allActions.size() > 0) ? allActions.get(allActions.size() - 1) : null;
     }
 
-    public static HTMLActionParam[] collectKeywordParam(String keywordClass, String keywordMethod) {
+    public static HTMLActionParam[] collectKeywordParam(String keywordClass, String keywordMethodName) {
         List<HTMLActionParam> paramList = new ArrayList<HTMLActionParam>();
-        try {
-            Method actionMethod = null;
-            for (Method method : Class.forName(keywordClass).getMethods()) {
-                if (method.getName().equals(keywordMethod)) {
-                    actionMethod = method;
-                    break;
-                }
+        KeywordMethod keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(keywordClass, keywordMethodName);
+        if (keywordMethod == null) {
+            return paramList.toArray(new HTMLActionParam[paramList.size()]);
+        }
+        for (int i = 0; i < keywordMethod.getParameters().length; i++) {
+            if (keywordMethod.getParameters()[i].getType().getName().equals(TestObject.class.getName())
+                    || keywordMethod.getParameters()[i].getType().getName().equals(FailureHandling.class.getName())) {
+                continue;
             }
-            if (actionMethod != null) {
-                List<String> paramNames = KeywordController.getInstance().getParameterName(actionMethod);
-                for (int i = 0; i < paramNames.size() && i < actionMethod.getParameterTypes().length; i++) {
-                    if (actionMethod.getParameterTypes()[i] == TestObject.class
-                            || actionMethod.getParameterTypes()[i] == FailureHandling.class) {
-                        continue;
-                    }
-                    paramList.add(new HTMLActionParam(paramNames.get(i), actionMethod.getParameterTypes()[i]));
-                }
-            }
-        } catch (Exception e) {
-            // Cannot find method
-            LoggerSingleton.logError(e);
+            paramList.add(new HTMLActionParam(keywordMethod.getParameters()[i].getName(), keywordMethod.getParameters()[i]
+                    .getType()));
         }
         return paramList.toArray(new HTMLActionParam[paramList.size()]);
     }
 
-    public static boolean hasElement(String keywordClass, String keywordMethod) {
-        try {
-            Method actionMethod = null;
-            for (Method method : Class.forName(keywordClass).getMethods()) {
-                if (method.getName().equals(keywordMethod)) {
-                    actionMethod = method;
-                    break;
-                }
+    public static boolean hasElement(String keywordClass, String keywordMethodName) {
+        KeywordMethod keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(keywordClass, keywordMethodName);
+        if (keywordMethod == null) {
+            return false;
+        }
+        for (int i = 0; i < keywordMethod.getParameters().length; i++) {
+            if (keywordMethod.getParameters()[i].getType().getName().equals(TestObject.class.getName())) {
+                return true;
             }
-            if (actionMethod != null) {
-                List<String> paramNames = KeywordController.getInstance().getParameterName(actionMethod);
-                for (int i = 0; i < paramNames.size() && i < actionMethod.getParameterTypes().length; i++) {
-                    if (actionMethod.getParameterTypes()[i] == TestObject.class) {
-                        return true;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            // Cannot find method
-            LoggerSingleton.logError(e);
         }
         return false;
     }
@@ -254,8 +217,7 @@ public class HTMLActionUtil {
         for (int i = 0; i < action.getParams().length; i++) {
             Object existingParamData = (existingParamDatas != null && i < existingParamDatas.length) ? existingParamDatas[i]
                     : null;
-            if (existingParamData != null
-                    && action.getParams()[i].getClazz().isAssignableFrom(existingParamData.getClass())) {
+            if (existingParamData != null && action.getParams()[i].getClazz().isAssignableFrom(existingParamData.getClass())) {
                 newParamDatas[i] = existingParamData;
             } else {
                 if (ClassUtils.isAssignable(action.getParams()[i].getClazz(), Number.class, true)) {

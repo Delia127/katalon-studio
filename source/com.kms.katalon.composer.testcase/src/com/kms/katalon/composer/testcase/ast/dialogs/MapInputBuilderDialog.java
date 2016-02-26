@@ -1,64 +1,50 @@
 package com.kms.katalon.composer.testcase.ast.dialogs;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.groovy.ast.ASTNode;
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.expr.Expression;
-import org.codehaus.groovy.ast.expr.MapEntryExpression;
-import org.codehaus.groovy.ast.expr.MapExpression;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableColumn;
 
 import com.kms.katalon.composer.testcase.constants.StringConstants;
-import com.kms.katalon.composer.testcase.model.ICustomInputValueType;
-import com.kms.katalon.composer.testcase.model.IInputValueType;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MapEntryExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MapExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
-import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
-import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
-import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
-import com.kms.katalon.core.ast.GroovyParser;
 
 public class MapInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
     private final InputValueType[] defaultInputValueTypes = { InputValueType.String, InputValueType.Number,
             InputValueType.Boolean, InputValueType.Null, InputValueType.Variable, InputValueType.GlobalVariable,
             InputValueType.TestDataValue, InputValueType.MethodCall, InputValueType.Property };
-    private static final String DIALOG_TITLE = StringConstants.DIA_TITLE_MAP_INPUT;
-    private static final String BUTTON_INSERT_LABEL = StringConstants.DIA_BTN_INSERT;
-    private static final String BUTTON_REMOVE_LABEL = StringConstants.DIA_BTN_REMOVE;
 
-    private MapExpression mapExpression;
+    private MapExpressionWrapper mapExpression;
 
-    public MapInputBuilderDialog(Shell parentShell, MapExpression mapExpression, ClassNode scriptClass) {
-        super(parentShell, scriptClass);
+    public MapInputBuilderDialog(Shell parentShell, MapExpressionWrapper mapExpression) {
+        super(parentShell);
         if (mapExpression == null) {
-            this.mapExpression = AstTreeTableEntityUtil.getNewMapExpression();
-        } else {
-            this.mapExpression = GroovyParser.cloneMapExpression(mapExpression);
+            throw new IllegalArgumentException();
         }
+        this.mapExpression = mapExpression.clone();
     }
 
     protected void createButtonsForButtonBar(Composite parent) {
-        Button btnInsert = createButton(parent, 100, BUTTON_INSERT_LABEL, true);
-        btnInsert.addSelectionListener(new SelectionListener() {
-
+        Button btnInsert = createButton(parent, 100, StringConstants.DIA_BTN_INSERT, true);
+        btnInsert.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 int selectionIndex = tableViewer.getTable().getSelectionIndex();
-                MapEntryExpression mapEntryExpression = AstTreeTableEntityUtil.getNewMapEntryExpression();
-
+                MapEntryExpressionWrapper mapEntryExpression = new MapEntryExpressionWrapper(mapExpression);
                 if (selectionIndex < 0 || selectionIndex >= mapExpression.getMapEntryExpressions().size()) {
                     mapExpression.getMapEntryExpressions().add(mapEntryExpression);
                 } else {
@@ -67,15 +53,10 @@ public class MapInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
                 tableViewer.refresh();
                 tableViewer.getTable().setSelection(selectionIndex + 1);
             }
-
-            @Override
-            public void widgetDefaultSelected(SelectionEvent e) {
-            }
         });
 
-        Button btnRemove = createButton(parent, 200, BUTTON_REMOVE_LABEL, false);
-        btnRemove.addSelectionListener(new SelectionListener() {
-
+        Button btnRemove = createButton(parent, 200, StringConstants.DIA_BTN_REMOVE, false);
+        btnRemove.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 int index = tableViewer.getTable().getSelectionIndex();
@@ -84,28 +65,39 @@ public class MapInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
                     tableViewer.refresh();
                 }
             }
-
-            @Override
-            public void widgetDefaultSelected(SelectionEvent e) {
-            }
         });
 
         super.createButtonsForButtonBar(parent);
     }
 
     @Override
-    public MapExpression getReturnValue() {
+    public MapExpressionWrapper getReturnValue() {
         return mapExpression;
     }
 
     @Override
-    public void changeObject(Object originalObject, Object newObject) {
-        // Do nothing
+    public void replaceObject(Object originalObject, Object newObject) {
+        if (!(newObject instanceof ExpressionWrapper) || !(originalObject instanceof ExpressionWrapper)) {
+            return;
+        }
+        ExpressionWrapper originalExpression = (ExpressionWrapper) originalObject;
+        ExpressionWrapper newExpression = (ExpressionWrapper) newObject;
+        for (MapEntryExpressionWrapper mapEntry : mapExpression.getMapEntryExpressions()) {
+            if (mapEntry.getKeyExpression() == originalExpression) {
+                mapEntry.setKeyExpression(newExpression);
+                tableViewer.refresh();
+                break;
+            } else if (mapEntry.getValueExpression() == originalExpression) {
+                mapEntry.setValueExpression(newExpression);
+                tableViewer.refresh();
+                break;
+            }
+        }
     }
 
     @Override
     public String getDialogTitle() {
-        return DIALOG_TITLE;
+        return StringConstants.DIA_TITLE_MAP_INPUT;
     }
 
     @Override
@@ -117,7 +109,7 @@ public class MapInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
         tableViewerColumnNo.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                if (element instanceof MapEntryExpression) {
+                if (element instanceof MapEntryExpressionWrapper) {
                     return String.valueOf(mapExpression.getMapEntryExpressions().indexOf(element) + 1);
                 }
                 return StringUtils.EMPTY;
@@ -127,51 +119,39 @@ public class MapInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
         TableViewerColumn tableViewerColumnKeyType = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnKeyType.getColumn().setText(StringConstants.DIA_COL_KEY_TYPE);
         tableViewerColumnKeyType.getColumn().setWidth(100);
-        tableViewerColumnKeyType.setLabelProvider(new AstInputTypeLabelProvider(scriptClass) {
+        tableViewerColumnKeyType.setLabelProvider(new AstInputTypeLabelProvider() {
             @Override
             public String getText(Object element) {
-                if (element instanceof MapEntryExpression) {
-                    return super.getText(((MapEntryExpression) element).getKeyExpression());
+                if (element instanceof MapEntryExpressionWrapper) {
+                    return super.getText(((MapEntryExpressionWrapper) element).getKeyExpression());
                 }
                 return StringUtils.EMPTY;
             }
         });
 
         tableViewerColumnKeyType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer,
-                defaultInputValueTypes, ICustomInputValueType.TAG_MAP, this, scriptClass) {
+                defaultInputValueTypes, this) {
             @Override
             protected void setValue(Object element, Object value) {
-                if (element instanceof ASTNode && value instanceof Integer && (int) value > -1
-                        && (int) value < inputValueTypeNames.size()) {
-                    String newValueTypeString = inputValueTypeNames.get((int) value);
-                    IInputValueType newValueType = AstTreeTableInputUtil
-                            .getInputValueTypeFromString(newValueTypeString);
-                    IInputValueType oldValueType = AstTreeTableValueUtil.getTypeValue(
-                            ((MapEntryExpression) element).getKeyExpression(), scriptClass);
-                    if (newValueType != oldValueType) {
-                        ASTNode astNode = (ASTNode) newValueType.getNewValue(element);
-                        if (astNode instanceof Expression) {
-                            ((MapEntryExpression) element).setKeyExpression((Expression) astNode);
-                            tableViewer.refresh();
-                        }
-                    }
-                }
+                super.setValue(((MapEntryExpressionWrapper) element).getKeyExpression(), value);
             }
 
             @Override
             protected Object getValue(Object element) {
-                if (element instanceof MapEntryExpression) {
-                    return super.getValue(((MapEntryExpression) element).getKeyExpression());
-                }
-                return 0;
+                return super.getValue(((MapEntryExpressionWrapper) element).getKeyExpression());
             }
 
             @Override
             protected boolean canEdit(Object element) {
-                if (element instanceof MapEntryExpression) {
-                    return super.canEdit(((MapEntryExpression) element).getKeyExpression());
+                if (element instanceof MapEntryExpressionWrapper) {
+                    return super.canEdit(((MapEntryExpressionWrapper) element).getKeyExpression());
                 }
                 return false;
+            }
+
+            @Override
+            protected CellEditor getCellEditor(Object element) {
+                return super.getCellEditor(((MapEntryExpressionWrapper) element).getKeyExpression());
             }
         });
 
@@ -179,97 +159,77 @@ public class MapInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
         TableColumn tblclmnNewColumnKeyValue = tableViewerColumnKeyValue.getColumn();
         tblclmnNewColumnKeyValue.setText(StringConstants.DIA_COL_KEY);
         tblclmnNewColumnKeyValue.setWidth(170);
-        tableViewerColumnKeyValue.setLabelProvider(new AstInputValueLabelProvider(scriptClass) {
+        tableViewerColumnKeyValue.setLabelProvider(new AstInputValueLabelProvider() {
             @Override
             public String getText(Object element) {
-                if (element instanceof MapEntryExpression) {
-                    return super.getText(((MapEntryExpression) element).getKeyExpression());
+                if (element instanceof MapEntryExpressionWrapper) {
+                    return super.getText(((MapEntryExpressionWrapper) element).getKeyExpression());
                 }
                 return StringUtils.EMPTY;
             }
         });
 
-        tableViewerColumnKeyValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this,
-                scriptClass) {
+        tableViewerColumnKeyValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this) {
+            @Override
+            protected boolean canEdit(Object element) {
+                if (element instanceof MapEntryExpressionWrapper) {
+                    return super.canEdit(((MapEntryExpressionWrapper) element).getKeyExpression());
+                }
+                return false;
+            }
 
             @Override
             protected void setValue(Object element, Object value) {
-                if (element instanceof MapEntryExpression) {
-                    MapEntryExpression mapEntryExpression = ((MapEntryExpression) element);
-                    Object object = AstTreeTableValueUtil.setValue(mapEntryExpression.getKeyExpression(), value,
-                            scriptClass);
-                    if (object instanceof Expression) {
-                        mapEntryExpression.setKeyExpression((Expression) object);
-                        tableViewer.refresh();
-                    }
-                }
+                super.setValue(((MapEntryExpressionWrapper) element).getKeyExpression(), value);
             }
 
             @Override
             protected Object getValue(Object element) {
-                if (element instanceof MapEntryExpression) {
-                    return super.getValue(((MapEntryExpression) element).getKeyExpression());
-                }
-                return StringUtils.EMPTY;
+                return super.getValue(((MapEntryExpressionWrapper) element).getKeyExpression());
             }
 
             @Override
             protected CellEditor getCellEditor(Object element) {
-                if (element instanceof MapEntryExpression) {
-                    return super.getCellEditor(((MapEntryExpression) element).getKeyExpression());
-                }
-                return null;
+                return super.getCellEditor(((MapEntryExpressionWrapper) element).getKeyExpression());
             }
         });
 
         TableViewerColumn tableViewerColumnValueType = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnValueType.getColumn().setText(StringConstants.DIA_COL_VALUE_TYPE);
         tableViewerColumnValueType.getColumn().setWidth(100);
-        tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider(scriptClass) {
+        tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider() {
             @Override
             public String getText(Object element) {
-                if (element instanceof MapEntryExpression) {
-                    return super.getText(((MapEntryExpression) element).getValueExpression());
+                if (element instanceof MapEntryExpressionWrapper) {
+                    return super.getText(((MapEntryExpressionWrapper) element).getValueExpression());
                 }
                 return StringUtils.EMPTY;
             }
         });
 
         tableViewerColumnValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer,
-                defaultInputValueTypes, ICustomInputValueType.TAG_MAP, this, scriptClass) {
+                defaultInputValueTypes, this) {
             @Override
             protected void setValue(Object element, Object value) {
-                if (element instanceof ASTNode && value instanceof Integer && (int) value > -1
-                        && (int) value < inputValueTypeNames.size()) {
-                    String newValueTypeString = inputValueTypeNames.get((int) value);
-                    IInputValueType newValueType = AstTreeTableInputUtil
-                            .getInputValueTypeFromString(newValueTypeString);
-                    IInputValueType oldValueType = AstTreeTableValueUtil.getTypeValue(
-                            ((MapEntryExpression) element).getValueExpression(), scriptClass);
-                    if (newValueType != oldValueType) {
-                        ASTNode astNode = (ASTNode) newValueType.getNewValue(element);
-                        if (astNode instanceof Expression) {
-                            ((MapEntryExpression) element).setValueExpression((Expression) astNode);
-                            tableViewer.refresh();
-                        }
-                    }
-                }
+                super.setValue(((MapEntryExpressionWrapper) element).getValueExpression(), value);
             }
 
             @Override
             protected Object getValue(Object element) {
-                if (element instanceof MapEntryExpression) {
-                    return super.getValue(((MapEntryExpression) element).getValueExpression());
-                }
-                return 0;
+                return super.getValue(((MapEntryExpressionWrapper) element).getValueExpression());
             }
 
             @Override
             protected boolean canEdit(Object element) {
-                if (element instanceof MapEntryExpression) {
-                    return super.canEdit(((MapEntryExpression) element).getValueExpression());
+                if (element instanceof MapEntryExpressionWrapper) {
+                    return super.canEdit(((MapEntryExpressionWrapper) element).getValueExpression());
                 }
                 return false;
+            }
+
+            @Override
+            protected CellEditor getCellEditor(Object element) {
+                return super.getCellEditor(((MapEntryExpressionWrapper) element).getValueExpression());
             }
         });
 
@@ -277,44 +237,38 @@ public class MapInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
         TableColumn tblclmnNewColumnValue = tableViewerColumnValue.getColumn();
         tblclmnNewColumnValue.setText(StringConstants.DIA_COL_VALUE);
         tblclmnNewColumnValue.setWidth(170);
-        tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider(scriptClass) {
+        tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider() {
             @Override
             public String getText(Object element) {
-                if (element instanceof MapEntryExpression) {
-                    return super.getText(((MapEntryExpression) element).getValueExpression());
+                if (element instanceof MapEntryExpressionWrapper) {
+                    return super.getText(((MapEntryExpressionWrapper) element).getValueExpression());
                 }
                 return StringUtils.EMPTY;
             }
         });
 
-        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this, scriptClass) {
+        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this) {
             @Override
             protected void setValue(Object element, Object value) {
-                if (element instanceof MapEntryExpression) {
-                    MapEntryExpression mapEntryExpression = ((MapEntryExpression) element);
-                    Object object = AstTreeTableValueUtil.setValue(mapEntryExpression.getValueExpression(), value,
-                            scriptClass);
-                    if (object instanceof Expression) {
-                        mapEntryExpression.setValueExpression((Expression) object);
-                        tableViewer.refresh();
-                    }
-                }
+                super.setValue(((MapEntryExpressionWrapper) element).getValueExpression(), value);
             }
 
             @Override
             protected Object getValue(Object element) {
-                if (element instanceof MapEntryExpression) {
-                    return super.getValue(((MapEntryExpression) element).getValueExpression());
+                return super.getValue(((MapEntryExpressionWrapper) element).getValueExpression());
+            }
+
+            @Override
+            protected boolean canEdit(Object element) {
+                if (element instanceof MapEntryExpressionWrapper) {
+                    return super.canEdit(((MapEntryExpressionWrapper) element).getValueExpression());
                 }
-                return StringUtils.EMPTY;
+                return false;
             }
 
             @Override
             protected CellEditor getCellEditor(Object element) {
-                if (element instanceof MapEntryExpression) {
-                    return super.getCellEditor(((MapEntryExpression) element).getValueExpression());
-                }
-                return null;
+                return super.getCellEditor(((MapEntryExpressionWrapper) element).getValueExpression());
             }
         });
     }

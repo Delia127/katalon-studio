@@ -3,56 +3,46 @@ package com.kms.katalon.composer.testcase.ast.treetable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.groovy.ast.ASTNode;
-import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.MethodNode;
-import org.codehaus.groovy.ast.expr.ArgumentListExpression;
-import org.codehaus.groovy.ast.expr.ConstantExpression;
-import org.codehaus.groovy.ast.expr.Expression;
-import org.codehaus.groovy.ast.expr.VariableExpression;
-import org.codehaus.groovy.ast.stmt.ExpressionStatement;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.testcase.editors.ComboBoxCellEditorWithContentProposal;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.model.InputParameter;
+import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
-import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 
 public class AstCustomKeywordTreeTableNode extends AstAbstractKeywordTreeTableNode {
+    private List<MethodNode> customKeywordMethods;
 
-    public AstCustomKeywordTreeTableNode(ExpressionStatement methodCallStatement, AstTreeTableNode parentNode,
-            ASTNode parentObject, ClassNode scriptClass) {
-        super(methodCallStatement, parentNode, parentObject, scriptClass);
-        if (methodCall.getMethod() instanceof ConstantExpression) {
-            methodCall.setMethod(new ConstantExpression(KeywordController.getInstance().getCustomKeywordName(
-                    methodCall.getMethod().getText())));
+    public AstCustomKeywordTreeTableNode(ExpressionStatementWrapper methodCallStatement, AstTreeTableNode parentNode) {
+        super(methodCallStatement, parentNode);
+        if (methodCall.getMethod() instanceof ConstantExpressionWrapper) {
+            methodCall.setMethod(KeywordController.getInstance().getCustomKeywordName(methodCall.getMethodAsString()));
         }
-    }
-
-    @Override
-    public Object getItem() {
         try {
-            List<MethodNode> customKeywordMethods = KeywordController.getInstance().getCustomKeywords(
-                    ProjectController.getInstance().getCurrentProject());
-            for (MethodNode keywordMethodNode : customKeywordMethods) {
-                if (keywordMethodNode.getName().equals(
-                        KeywordController.getInstance().getRawCustomKeywordName(getKeyword()))) {
-                    return customKeywordMethods.indexOf(keywordMethodNode);
-                }
-            }
+            AstTreeTableInputUtil.generateCustomKeywordArguments(methodCall);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
-        return -1;
+        try {
+            customKeywordMethods = KeywordController.getInstance().getCustomKeywords(
+                    ProjectController.getInstance().getCurrentProject());
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
     }
 
-    @Override
-    protected List<String> getKeywordNames() {
+    private List<String> getKeywordNames() {
         List<String> keywordNames = new ArrayList<String>();
         try {
-            List<MethodNode> customKeywordMethods = KeywordController.getInstance().getCustomKeywords(
-                    ProjectController.getInstance().getCurrentProject());
             for (MethodNode keywordMethodNode : customKeywordMethods) {
                 keywordNames.add(keywordMethodNode.getName());
             }
@@ -61,182 +51,194 @@ public class AstCustomKeywordTreeTableNode extends AstAbstractKeywordTreeTableNo
         }
         return keywordNames;
     }
-    
+
     @Override
-    protected List<String> getKeywordToolTips() {
-        return getKeywordNames();
+    public String getItemText() {
+        return KeywordController.getInstance().getRawCustomKeywordName(methodCall.getMethodAsString());
+    }
+
+    @Override
+    public Object getItem() {
+        for (MethodNode keywordMethodNode : customKeywordMethods) {
+            if (keywordMethodNode.getName().equals(getKeywordName())) {
+                return customKeywordMethods.indexOf(keywordMethodNode);
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public CellEditor getCellEditorForItem(Composite parent) {
+        List<String> keywordNames = getKeywordNames();
+        return new ComboBoxCellEditorWithContentProposal(parent, keywordNames.toArray(new String[keywordNames.size()]),
+                keywordNames.toArray(new String[keywordNames.size()]));
     }
 
     @Override
     public boolean setItem(Object item) {
-        if (item instanceof Integer) {
-            try {
-                int keywordIndex = (int) item;
-                List<MethodNode> customKeywordMethods = KeywordController.getInstance().getCustomKeywords(
-                        ProjectController.getInstance().getCurrentProject());
-                if (keywordIndex >= 0 && keywordIndex < customKeywordMethods.size()) {
-                    String newKeyword = KeywordController.getInstance().getCustomKeywordName(
-                            customKeywordMethods.get(keywordIndex).getName());
-                    if (!getKeyword().equals(newKeyword)) {
-                        setKeyword(newKeyword);
-                        return true;
-                    }
-                }
-            } catch (Exception e) {
-                LoggerSingleton.logError(e);
-            }
+        if (!(item instanceof Integer) || (int) item < 0 || (int) item >= customKeywordMethods.size()
+                || getKeywordName().equals(customKeywordMethods.get((int) item).getName())) {
+            return false;
         }
-        return false;
-    }
-
-    @Override
-    public void generateArguments() {
+        methodCall.setMethod(customKeywordMethods.get((int) item).getName());
         try {
             AstTreeTableInputUtil.generateCustomKeywordArguments(methodCall);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
+        if (!canEditOutput()) {
+            setOutput(null);
+        }
+        return true;
     }
 
     @Override
-    public boolean isInputEditable() {
+    public boolean canEditInput() {
+        MethodNode keywordMethodNode = null;
         try {
-            MethodNode keywordMethodNode = KeywordController.getInstance().getCustomKeywordByName(
-                    methodCall.getObjectExpression().getText(), getItemText(),
+            keywordMethodNode = KeywordController.getInstance().getCustomKeywordByName(
+                    methodCall.getObjectExpressionAsString(), getItemText(),
                     ProjectController.getInstance().getCurrentProject());
-
-            if (keywordMethodNode != null) {
-                int count = 0;
-                for (int i = 0; i < keywordMethodNode.getParameters().length; i++) {
-                    if (!AstTreeTableInputUtil.isObjectClass(keywordMethodNode.getParameters()[i].getType())) {
-                        count++;
-                    }
-                }
-                return count > 0;
-            }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
-        return false;
+        if (keywordMethodNode == null) {
+            return false;
+        }
+        int count = 0;
+        for (int i = 0; i < keywordMethodNode.getParameters().length; i++) {
+            if (!AstEntityInputUtil.isObjectClass(keywordMethodNode.getParameters()[i].getType())) {
+                count++;
+            }
+        }
+        return count > 0;
     }
 
     @Override
     public String getInputText() {
-        ArgumentListExpression arguments = (ArgumentListExpression) methodCall.getArguments();
-        if (arguments.getExpressions().size() > 0) {
-            try {
-                StringBuilder displayString = new StringBuilder();
-                MethodNode keywordMethodNode = KeywordController.getInstance().getCustomKeywordByName(
-                        methodCall.getObjectExpression().getText(), getItemText(),
-                        ProjectController.getInstance().getCurrentProject());
-                if (keywordMethodNode != null) {
-                    int count = 0;
-                    for (int i = 0; i < keywordMethodNode.getParameters().length; i++) {
-                        if (!AstTreeTableInputUtil.isObjectClass(keywordMethodNode.getParameters()[i].getType())) {
-                            if (i < arguments.getExpressions().size()) {
-                                if (count > 0) {
-                                    displayString.append("; ");
-                                }
-                                Expression inputExpression = arguments.getExpression(i);
-                                displayString.append(AstTreeTableTextValueUtil.getInstance().getTextValue(
-                                        inputExpression));
-                                count++;
-                            }
-                        }
-                    }
-                }
-                return displayString.toString();
-            } catch (Exception e) {
-                LoggerSingleton.logError(e);
-            }
+        ArgumentListExpressionWrapper arguments = (ArgumentListExpressionWrapper) methodCall.getArguments();
+        if (arguments == null || arguments.getExpressions() == null || arguments.getExpressions().isEmpty()) {
+            return "";
         }
-        return "";
+        MethodNode keywordMethodNode = null;
+        try {
+            keywordMethodNode = KeywordController.getInstance().getCustomKeywordByName(
+                    methodCall.getObjectExpressionAsString(), getItemText(),
+                    ProjectController.getInstance().getCurrentProject());
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        if (keywordMethodNode == null) {
+            return "";
+        }
+        StringBuilder displayString = new StringBuilder();
+        int count = 0;
+        for (int i = 0; i < keywordMethodNode.getParameters().length && i < arguments.getExpressions().size(); i++) {
+            if (AstEntityInputUtil.isObjectClass(keywordMethodNode.getParameters()[i].getType())) {
+                continue;
+            }
+            if (count > 0) {
+                displayString.append("; ");
+            }
+            ExpressionWrapper inputExpressionWrapper = arguments.getExpression(i);
+            displayString.append(inputExpressionWrapper.getText());
+            count++;
+        }
+        return displayString.toString();
     }
 
     @Override
     public Object getInput() {
-        ArgumentListExpression argumentList = (ArgumentListExpression) methodCall.getArguments();
-        if (argumentList != null) {
-            try {
-                return AstTreeTableInputUtil
-                        .getCustomKeywordInputParameters(getClassName(), getKeyword(), argumentList);
-            } catch (Exception e) {
-                LoggerSingleton.logError(e);
-            }
+        ArgumentListExpressionWrapper argumentList = (ArgumentListExpressionWrapper) methodCall.getArguments();
+        if (argumentList == null) {
+            return null;
+        }
+        try {
+            return AstTreeTableInputUtil.generateCustomKeywordInputParameters(getClassName(), getKeywordName(),
+                    argumentList.clone());
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
         }
         return null;
     }
 
     @Override
     public boolean setInput(Object input) {
-        if (input instanceof List<?>) {
-            try {
-                MethodNode keywordMethod = KeywordController.getInstance().getCustomKeywordByName(getClassName(),
-                        getKeyword(), ProjectController.getInstance().getCurrentProject());
-                if (keywordMethod != null) {
-                    List<?> inputParameters = (List<?>) input;
-                    ArgumentListExpression argumentListExpression = new ArgumentListExpression();
-                    for (int i = 0; i < inputParameters.size(); i++) {
-                        argumentListExpression.addExpression(AstTreeTableInputUtil
-                                .getArgumentExpression((InputParameter) inputParameters.get(i)));
-                    }
-                    methodCall.setArguments(argumentListExpression);
-                    return true;
-                }
-            } catch (Exception e) {
-                LoggerSingleton.logError(e);
-            }
+        if (!(input instanceof List<?>)) {
+            return false;
         }
-        return false;
+        MethodNode keywordMethodNode = null;
+        try {
+            keywordMethodNode = KeywordController.getInstance().getCustomKeywordByName(
+                    methodCall.getObjectExpressionAsString(), getItemText(),
+                    ProjectController.getInstance().getCurrentProject());
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        if (keywordMethodNode == null) {
+            return false;
+        }
+        List<?> inputParameters = (List<?>) input;
+        ArgumentListExpressionWrapper argumentListExpressionWrapper = new ArgumentListExpressionWrapper(methodCall);
+        for (int i = 0; i < inputParameters.size(); i++) {
+            argumentListExpressionWrapper.addExpression(AstTreeTableInputUtil.getArgumentExpression(
+                    (InputParameter) inputParameters.get(i), argumentListExpressionWrapper));
+        }
+        methodCall.setArguments(argumentListExpressionWrapper);
+        return true;
     }
 
     @Override
-    protected int getObjectArgumentIndex() throws Exception {
-        MethodNode keywordMethodNode = KeywordController.getInstance().getCustomKeywordByName(
-                methodCall.getObjectExpression().getText(), getItemText(),
-                ProjectController.getInstance().getCurrentProject());
-        if (keywordMethodNode != null) {
-            for (int i = 0; i < keywordMethodNode.getParameters().length; i++) {
-                if (AstTreeTableInputUtil.isObjectClass(keywordMethodNode.getParameters()[i].getType())) {
-                    return i;
-                }
+    protected int getObjectArgumentIndex() {
+        MethodNode keywordMethodNode = null;
+        try {
+            keywordMethodNode = KeywordController.getInstance().getCustomKeywordByName(
+                    methodCall.getObjectExpressionAsString(), getItemText(),
+                    ProjectController.getInstance().getCurrentProject());
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        if (keywordMethodNode == null) {
+            return -1;
+        }
+        for (int i = 0; i < keywordMethodNode.getParameters().length; i++) {
+            if (AstEntityInputUtil.isObjectClass(keywordMethodNode.getParameters()[i].getType())) {
+                return i;
             }
         }
         return -1;
     }
 
     @Override
-    public boolean isOutputEditatble() {
+    public boolean canEditOutput() {
+        MethodNode keywordMethodNode = null;
         try {
-            MethodNode keywordMethodNode = KeywordController.getInstance().getCustomKeywordByName(
-                    methodCall.getObjectExpression().getText(), getItemText(),
+            keywordMethodNode = KeywordController.getInstance().getCustomKeywordByName(
+                    methodCall.getObjectExpressionAsString(), getItemText(),
                     ProjectController.getInstance().getCurrentProject());
-            if (keywordMethodNode != null && !AstTreeTableInputUtil.isVoidClass(keywordMethodNode.getReturnType())) {
-                return true;
-            }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
-        return false;
-    }
-
-    @Override
-    protected VariableExpression createNewOutput(String output) throws Exception {
-        MethodNode keywordMethodNode = KeywordController.getInstance().getCustomKeywordByName(
-                methodCall.getObjectExpression().getText(), getItemText(),
-                ProjectController.getInstance().getCurrentProject());
-        if (!AstTreeTableInputUtil.isVoidClass(keywordMethodNode.getReturnType())) {
-            return new VariableExpression(output, new ClassNode(keywordMethodNode.getReturnType()));
-        }
-        return null;
+        return (keywordMethodNode != null && !AstTreeTableInputUtil.isVoidClass(keywordMethodNode.getReturnType()));
     }
 
     private String getClassName() {
-        return methodCall.getObjectExpression().getText();
+        return methodCall.getObjectExpressionAsString();
     }
 
     @Override
-    public String getItemTextForDisplay() {
-        return super.getItemText();
+    protected Class<?> getOutputReturnType() {
+        MethodNode keywordMethodNode = null;
+        try {
+            keywordMethodNode = KeywordController.getInstance().getCustomKeywordByName(
+                    methodCall.getObjectExpressionAsString(), getItemText(),
+                    ProjectController.getInstance().getCurrentProject());
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        if (keywordMethodNode != null && !AstTreeTableInputUtil.isVoidClass(keywordMethodNode.getReturnType())) {
+            return keywordMethodNode.getReturnType().getTypeClass();
+        }
+        return null;
     }
 }

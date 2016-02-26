@@ -6,10 +6,12 @@ import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.graphics.Image;
 
+import com.kms.katalon.composer.testcase.ast.treetable.AstInputEditableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstMethodTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstObjectEditableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstOutputEditableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
-import com.kms.katalon.composer.testcase.constants.StringConstants;
-import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
 
 public class AstTreeLabelProvider extends StyledCellLabelProvider {
 
@@ -32,48 +34,58 @@ public class AstTreeLabelProvider extends StyledCellLabelProvider {
         AstTreeTableNode treeTableNode = (AstTreeTableNode) element;
 
         switch (columnIndex) {
-            case CLMN_ITEM_IDX:
-                return treeTableNode.getNodeIcon();
-            default:
-                return null;
+        case CLMN_ITEM_IDX:
+            return treeTableNode.getIcon();
+        default:
+            return null;
         }
     }
 
     public String getText(Object element) {
         if (element == null || !(element instanceof AstTreeTableNode)) {
-            return StringConstants.EMPTY;
+            return "";
         }
         AstTreeTableNode treeTableNode = (AstTreeTableNode) element;
         switch (columnIndex) {
-            case CLMN_ITEM_IDX:
-                return ((treeTableNode instanceof AstStatementTreeTableNode) ? (treeTableNode.getIndex() + " - ") : "")
-                        + treeTableNode.getItemTextForDisplay();
-            case CLMN_OBJECT_IDX:
-                return treeTableNode.getTestObjectText();
-            case CLMN_INPUT_IDX:
-                return treeTableNode.getInputText();
-            case CLMN_OUTPUT_IDX:
-                return treeTableNode.getOutputText();
-            case CLMN_DESCRIPTION_IDX:
-                return getDescriptionText(treeTableNode);
-            default:
-                return StringConstants.EMPTY;
+        case CLMN_ITEM_IDX:
+            return ((treeTableNode instanceof AstStatementTreeTableNode) ? (getStringIndex(treeTableNode) + " - ") : "")
+                    + treeTableNode.getItemText();
+        case CLMN_OBJECT_IDX:
+            if (treeTableNode instanceof AstObjectEditableNode) {
+                return ((AstObjectEditableNode) treeTableNode).getTestObjectText();
+            }
+            return "";
+        case CLMN_INPUT_IDX:
+            if (treeTableNode instanceof AstInputEditableNode) {
+                return ((AstInputEditableNode) treeTableNode).getInputText();
+            }
+            return "";
+        case CLMN_OUTPUT_IDX:
+            if (treeTableNode instanceof AstOutputEditableNode) {
+                return ((AstOutputEditableNode) treeTableNode).getOutputText();
+            }
+            return "";
+        case CLMN_DESCRIPTION_IDX:
+            if (!(treeTableNode instanceof AstStatementTreeTableNode)) {
+                return "";
+            }
+            return StringEscapeUtils.escapeJava(((AstStatementTreeTableNode) treeTableNode).getDescription());
+        default:
+            return "";
         }
     }
 
-    private String getDescriptionText(AstTreeTableNode treeTableNode) {
-        if (treeTableNode instanceof AstStatementTreeTableNode
-                && ((AstStatementTreeTableNode) treeTableNode).hasDescription()) {
-            AstStatementTreeTableNode statementNode = ((AstStatementTreeTableNode) treeTableNode);
-            Object descriptionValue = AstTreeTableValueUtil.getValue(statementNode.getDescription(),
-                    statementNode.getScriptClass());
-            if (descriptionValue instanceof String) {
-                String description = (String) descriptionValue;
-                return StringEscapeUtils.escapeJava(description);
-            }
+    private String getStringIndex(AstTreeTableNode node) {
+        if (node == null || node.getParent() == null || !(node.getParent().canHaveChildren())
+                || node instanceof AstMethodTreeTableNode) {
+            return "";
         }
-
-        return StringConstants.EMPTY;
+        String parentIndex = getStringIndex(node.getParent());
+        String thisIndex = String.valueOf(node.getParent().getChildren().indexOf(node) + 1);
+        if (!parentIndex.isEmpty()) {
+            return parentIndex + "." + thisIndex;
+        }
+        return thisIndex;
     }
 
     @Override
@@ -88,22 +100,31 @@ public class AstTreeLabelProvider extends StyledCellLabelProvider {
     @Override
     public String getToolTipText(Object element) {
         if (element == null || !(element instanceof AstTreeTableNode)) {
-            return StringConstants.EMPTY;
+            return "";
         }
         AstTreeTableNode treeTableNode = (AstTreeTableNode) element;
         switch (columnIndex) {
-            case CLMN_ITEM_IDX:
-                return treeTableNode.getItemTooltipText();
-            case CLMN_OBJECT_IDX:
-                return treeTableNode.getTestObjectTooltipText();
-            case CLMN_INPUT_IDX:
-                return treeTableNode.getInputTooltipText();
-            case CLMN_OUTPUT_IDX:
-                return treeTableNode.getOutputTooltipText();
-            case CLMN_DESCRIPTION_IDX:
-                return getDescriptionText(treeTableNode);
-            default:
-                return StringConstants.EMPTY;
+        case CLMN_ITEM_IDX:
+            return treeTableNode.getItemTooltipText();
+        case CLMN_OBJECT_IDX:
+            if (treeTableNode instanceof AstObjectEditableNode) {
+                return ((AstObjectEditableNode) treeTableNode).getTestObjectTooltipText();
+            }
+            return "";
+        case CLMN_INPUT_IDX:
+            if (treeTableNode instanceof AstInputEditableNode) {
+                return ((AstInputEditableNode) treeTableNode).getInputTooltipText();
+            }
+            return "";
+        case CLMN_OUTPUT_IDX:
+            if (treeTableNode instanceof AstOutputEditableNode) {
+                return ((AstOutputEditableNode) treeTableNode).getOutputTooltipText();
+            }
+            return "";
+        case CLMN_DESCRIPTION_IDX:
+            return StringEscapeUtils.escapeJava(((AstStatementTreeTableNode) treeTableNode).getDescription());
+        default:
+            return "";
         }
     }
 

@@ -1,83 +1,62 @@
 package com.kms.katalon.composer.testcase.support;
 
-import java.util.ArrayList;
-
-import org.codehaus.groovy.ast.ASTNode;
 import org.eclipse.jface.viewers.ColumnViewer;
 
-import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.testcase.model.IInputValueType;
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
+import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.parts.TestCaseVariablePart;
-import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
-import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.entity.variable.VariableEntity;
 
 public class VariableDefaultValueTypeEditingSupport extends AstInputBuilderValueTypeColumnSupport {
-    private static final String CUSTOM_TAG = "Test Case Variable";
     private TestCaseVariablePart variablesPart;
-
+    private ExpressionWrapper expression;
 
     public VariableDefaultValueTypeEditingSupport(ColumnViewer viewer, TestCaseVariablePart variablesPart,
-            IInputValueType[] defaultInputValueTypes) {
-        super(viewer, defaultInputValueTypes, CUSTOM_TAG, null, null);
+            InputValueType[] defaultInputValueTypes) {
+        super(viewer, defaultInputValueTypes);
         this.variablesPart = variablesPart;
-        this.defaultInputValueTypes = defaultInputValueTypes;
-        inputValueTypeNames = new ArrayList<String>();
-        readableValueTypeNames = new ArrayList<String>();
     }
 
     @Override
     protected boolean canEdit(Object element) {
-        if (element instanceof VariableEntity) {
-            return true;
-        }
-        return false;
+        return (element instanceof VariableEntity);
     }
 
     @Override
     protected Object getValue(Object element) {
-        if (element instanceof VariableEntity) {
-            try {
-                ASTNode astNode = GroovyParser.parseGroovyScriptAndGetFirstItem(((VariableEntity) element)
-                        .getDefaultValue());
-                IInputValueType valueType = AstTreeTableValueUtil
-                        .getTypeValue(astNode, variablesPart.getParentTestCaseCompositePart().getChildTestCasePart()
-                                .getTreeTableInput().getMainClassNode());
-                return inputValueTypeNames.indexOf(valueType.getName());
-            } catch (Exception e) {
-                LoggerSingleton.logError(e);
-            }
+        expression = GroovyWrapperParser.parseGroovyScriptAndGetFirstExpression(((VariableEntity) element)
+                .getDefaultValue());
+        if (expression == null) {
+            return 0;
         }
-        return 0;
+        return super.getValue(GroovyWrapperParser.parseGroovyScriptAndGetFirstExpression(((VariableEntity) element)
+                .getDefaultValue()));
     }
 
     @Override
     protected void setValue(Object element, Object value) {
-        if (element instanceof VariableEntity && value instanceof Integer && (int) value > -1
-                && (int) value < inputValueTypeNames.size()) {
-            try {
-                ASTNode astNode = GroovyParser.parseGroovyScriptAndGetFirstItem(((VariableEntity) element)
-                        .getDefaultValue());
-                String newValueTypeString = inputValueTypeNames.get((int) value);
-                IInputValueType newValueType = AstTreeTableInputUtil.getInputValueTypeFromString(newValueTypeString);
-                IInputValueType oldValueType = AstTreeTableValueUtil
-                        .getTypeValue(astNode, variablesPart.getParentTestCaseCompositePart().getChildTestCasePart()
-                                .getTreeTableInput().getMainClassNode());
-                if (newValueType != oldValueType) {
-                    ASTNode newAstNode = (ASTNode) newValueType.getNewValue(astNode);
-                    StringBuilder stringBuilder = new StringBuilder();
-                    GroovyParser groovyParser = new GroovyParser(stringBuilder);
-                    groovyParser.parse(newAstNode);
-                    ((VariableEntity) element).setDefaultValue(stringBuilder.toString());
-                    variablesPart.setDirty(true);
-                    this.getViewer().update(element, null);
-                }
-            } catch (Exception e) {
-                LoggerSingleton.logError(e);
-            }
-
+        if (!(value instanceof Integer) || (int) value < 0 || (int) value >= inputValueTypes.length) {
+            return;
         }
+        InputValueType newValueType = inputValueTypes[(int) value];
+        InputValueType oldValueType = AstTreeTableValueUtil.getTypeValue(expression);
+        if (newValueType == oldValueType) {
+            return;
+        }
+        ASTNodeWrapper newAstNode = (ASTNodeWrapper) newValueType.getNewValue(expression != null ? expression
+                .getParent() : null);
+        if (newAstNode == null) {
+            return;
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        GroovyWrapperParser groovyParser = new GroovyWrapperParser(stringBuilder);
+        groovyParser.parse(newAstNode);
+        ((VariableEntity) element).setDefaultValue(stringBuilder.toString());
+        variablesPart.setDirty(true);
+        getViewer().update(element, null);
     }
 
 }

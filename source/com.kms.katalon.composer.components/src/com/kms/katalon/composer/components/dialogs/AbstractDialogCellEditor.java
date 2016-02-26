@@ -14,139 +14,107 @@ import org.eclipse.swt.widgets.Listener;
 import com.kms.katalon.composer.components.constants.StringConstants;
 
 public abstract class AbstractDialogCellEditor extends DialogCellEditor {
-	protected String defaultContent;
-	protected Composite editor;
-	protected boolean isEditorClosed;
+    protected String defaultContent;
+    protected Composite editor;
+    protected boolean isEditorClosed;
 
-	public AbstractDialogCellEditor(Composite parent, String defaultContent) {
-		super(parent, SWT.NONE);
-		this.isEditorClosed = false;
-		this.defaultContent = defaultContent;
-	}
+    public AbstractDialogCellEditor(Composite parent, String defaultContent) {
+        super(parent, SWT.NONE);
+        this.isEditorClosed = false;
+        this.defaultContent = defaultContent;
+    }
 
-	@Override
-	protected void updateContents(Object value) {
-		if (defaultContent != null) {
-			super.updateContents(defaultContent.replace("&", "&&"));
-		} else {
-			super.updateContents(value);
-		}
-	}
+    @Override
+    protected void updateContents(Object value) {
+        if (defaultContent != null) {
+            super.updateContents(defaultContent.replace("&", "&&"));
+        } else {
+            super.updateContents(value);
+        }
+    }
 
-	protected String getValidatorMessage(String className) {
-		return MessageFormat.format(StringConstants.EDI_MSG_VALIDATOR_REQUIRE_MESSAGE, className);
-	}
-	
-	@Override
-	protected Button createButton(Composite parent) {
-		Button button = super.createButton(parent);
-		button.addListener(SWT.Traverse, new Listener() {
-			public void handleEvent(Event e) {
-				getControl().notifyListeners(SWT.Traverse, e);
-			}
-		});
-		return button;
-	}
+    protected String getValidatorMessage(String className) {
+        return MessageFormat.format(StringConstants.EDI_MSG_VALIDATOR_REQUIRE_MESSAGE, className);
+    }
 
-	@Override
-	protected boolean dependsOnExternalFocusListener() {
-		return false;
-	}
-	@Override
-	public void activate(ColumnViewerEditorActivationEvent activationEvent) {
-		super.activate(activationEvent);
-		doShowDialog();
-	}
-	
-	@Override
-	public void deactivate() {
-		super.deactivate();
-		isEditorClosed = true;
-	}
-	
-	protected void waitTofireApplyEditorValue() {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				while (!isEditorClosed) {
-					try {
-						Thread.sleep(200);
-					} catch (InterruptedException e) {
-						// interrupted, do nothing
-					}
-				}
-				fireApplyEditorValue();
-			}
-		}).start();
-	}
-	
-	protected void waitTofireCancelEditor() {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				while (!isEditorClosed) {
-					try {
-						Thread.sleep(200);
-					} catch (InterruptedException e) {
-						// interrupted, do nothing
-					}
-				}
-				fireCancelEditor();
-			}
-		}).start();
-	}
+    @Override
+    protected Button createButton(Composite parent) {
+        Button button = super.createButton(parent);
+        button.addListener(SWT.Traverse, new Listener() {
+            public void handleEvent(Event e) {
+                getControl().notifyListeners(SWT.Traverse, e);
+            }
+        });
+        return button;
+    }
 
-	protected void doShowDialog() {
-		Object newValue = openDialogBox(editor);
+    @Override
+    protected boolean dependsOnExternalFocusListener() {
+        return false;
+    }
 
-		if (newValue != null) {
-			boolean newValidState = isCorrect(newValue);
-			if (newValidState) {
-				markDirty();
-				doSetValue(newValue);
-				fireApplyEditorValue();
-				// doSetValue(newValue); cause recursive call
-				// is it neccessary for some reason?
-			} else {
-				// try to insert the current value into the error message.
-				setErrorMessage(MessageFormat.format(getErrorMessage(), new Object[] { newValue.toString() }));
-			}
-		} else {
-			fireCancelEditor();
-		}
-	}
+    @Override
+    public void activate(ColumnViewerEditorActivationEvent activationEvent) {
+        super.activate(activationEvent);
+        doShowDialog();
+    }
 
-	@Override
-	protected final Control createControl(Composite parent) {
-		return null;
-	}
-	
-	// @Override
-	// protected Control createControl(Composite parent) {
-	// Font font = parent.getFont();
-	// Color bg = parent.getBackground();
-	//
-	// Composite editor = new Composite(parent, getStyle());
-	// editor.setFont(font);
-	// editor.setBackground(bg);
-	//
-	// Object newValue = openDialogBox(editor);
-	//
-	// if (newValue != null) {
-	// boolean newValidState = isCorrect(newValue);
-	// if (newValidState) {
-	// markDirty();
-	// doSetValue(newValue);
-	// } else {
-	// // try to insert the current value into the error message.
-	// setErrorMessage(MessageFormat.format(getErrorMessage(), new Object[] {
-	// newValue.toString() }));
-	// }
-	// fireApplyEditorValue();
-	// }
-	// setValueValid(true);
-	// focusLost();
-	// return editor;
-	// }
+    @Override
+    public void deactivate() {
+        super.deactivate();
+        isEditorClosed = true;
+    }
+
+    protected void waitTofireApplyEditorValue() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (!isEditorClosed) {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        // interrupted, do nothing
+                    }
+                }
+                fireApplyEditorValue();
+            }
+        }).start();
+    }
+
+    protected void waitTofireCancelEditor() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (!isEditorClosed) {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        // interrupted, do nothing
+                    }
+                }
+                fireCancelEditor();
+            }
+        }).start();
+    }
+
+    protected void doShowDialog() {
+        Object newValue = openDialogBox(editor);
+        if (newValue == null) {
+            fireCancelEditor();
+            return;
+        }
+        if (!isCorrect(newValue)) {
+            setErrorMessage(MessageFormat.format(getErrorMessage(), new Object[] { newValue.toString() }));
+            return;
+        }
+        markDirty();
+        doSetValue(newValue);
+        fireApplyEditorValue();
+    }
+
+    @Override
+    protected final Control createControl(Composite parent) {
+        return null;
+    }
 
 }

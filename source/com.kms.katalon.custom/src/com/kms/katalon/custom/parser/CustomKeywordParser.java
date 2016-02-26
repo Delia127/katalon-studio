@@ -191,7 +191,7 @@ public class CustomKeywordParser {
         classNode = unit.getModuleNode().getClasses().get(0);
     }
 
-    public List<MethodNode> getAllMethodNodes(IFolder libFolder) throws Exception {
+    public List<MethodNode> getAllMethodNodes(IFolder libFolder) {
         if (classNode != null && classNode.getModule() != null && classNode.getModule().getMethods() != null) {
             List<MethodNode> methodNodes = classNode.getModule().getMethods();
 

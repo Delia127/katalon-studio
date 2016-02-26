@@ -66,7 +66,7 @@ public class ProjectBuildPath {
 
         bundlePaths.add(new BundleBuildPath(Platform.getBundle(IdConstants.KATALON_CORE_BUNDLE_ID)));
 
-        for (IKeywordContributor contributor : KeywordContributorCollection.getInstance().getKeywordContributors()) {
+        for (IKeywordContributor contributor : KeywordContributorCollection.getKeywordContributors()) {
             bundlePaths.add(new BundleBuildPath(FrameworkUtil.getBundle(contributor.getClass())));
         }
         return bundlePaths;

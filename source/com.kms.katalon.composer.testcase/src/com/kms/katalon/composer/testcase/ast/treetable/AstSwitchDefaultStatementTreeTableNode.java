@@ -1,20 +1,11 @@
 package com.kms.katalon.composer.testcase.ast.treetable;
 
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.stmt.Statement;
-import org.codehaus.groovy.ast.stmt.SwitchStatement;
-
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.BlockStatementWrapper;
 
-public class AstSwitchDefaultStatementTreeTableNode extends AstStatementTreeTableNode {
-
-	public AstSwitchDefaultStatementTreeTableNode(Statement statement, AstTreeTableNode parentNode,
-			SwitchStatement parentSwitchStatement, ClassNode scriptClass) {
-		super(statement, parentNode, parentSwitchStatement, scriptClass);
-	}
-
-	@Override
-	public String getItemText() {
-		return StringConstants.TREE_DEFAULT_STATEMENT;
-	}
+public class AstSwitchDefaultStatementTreeTableNode extends AstCompositeStatementTreeTableNode {
+    public AstSwitchDefaultStatementTreeTableNode(BlockStatementWrapper blockStatement, AstTreeTableNode parentNode) {
+        super(blockStatement, parentNode, StringConstants.TREE_DEFAULT_STATEMENT);
+        reloadChildren();
+    }
 }

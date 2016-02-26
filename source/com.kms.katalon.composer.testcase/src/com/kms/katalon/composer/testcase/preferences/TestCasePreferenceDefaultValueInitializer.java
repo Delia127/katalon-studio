@@ -13,16 +13,17 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.TestCasePreferenceConstants;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.core.keyword.IKeywordContributor;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenceInitializer {
-
+    private static final String CALL_TEST_CASE = "callTestCase";
+    
     private static ScopedPreferenceStore getStore() {
         return getPreferenceStore(TestCasePreferenceDefaultValueInitializer.class);
     }
@@ -39,16 +40,12 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
         store.setDefault(TestCasePreferenceConstants.TESTCASE_AUTO_EXPORT_VARIABLE, false);
 
         // Default Added Keyword
-        store.setDefault(TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE, KeywordController.getInstance()
-                .getBuiltInKeywordContributors()[0].getKeywordClass().getName());
+        store.setDefault(TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE,
+                KeywordController.getInstance().getBuiltInKeywordClasses().get(0).getName());
         Map<String, String> defaultKeywords = new HashMap<String, String>();
-        for (IKeywordContributor keywordContributor : KeywordController.getInstance().getBuiltInKeywordContributors()) {
-            try {
-                defaultKeywords.put(keywordContributor.getKeywordClass().getName(), KeywordController.getInstance()
-                        .getBuiltInKeywords(keywordContributor.getKeywordClass().getName()).get(0).getName());
-            } catch (Exception e) {
-                LoggerSingleton.logError(e);
-            }
+        for (KeywordClass keywordClass : KeywordController.getInstance().getBuiltInKeywordClasses()) {
+            defaultKeywords.put(keywordClass.getName(),
+                    KeywordController.getInstance().getBuiltInKeywords(keywordClass.getName()).get(0).getName());
         }
 
         store.setDefault(TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORDS,
@@ -68,7 +65,7 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
     }
 
     protected static String callTestCaseMethodName() {
-        return "callTestCase";
+        return CALL_TEST_CASE;
     }
 
     public static Map<String, String> getDefaultKeywords() {
@@ -86,11 +83,11 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
         return defaultKeywords;
     }
 
-    public static IKeywordContributor getDefaultKeywordType() throws Exception {
+    public static KeywordClass getDefaultKeywordType() throws Exception {
         String keywordType = getStore().getString(TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE);
-        IKeywordContributor contributor = KeywordController.getInstance().getBuiltInKeywordContributor(keywordType);
+        KeywordClass contributor = KeywordController.getInstance().getBuiltInKeywordClassByName(keywordType);
         if (contributor == null) {
-            contributor = KeywordController.getInstance().getBuiltInKeywordContributors()[0];
+            contributor = KeywordController.getInstance().getBuiltInKeywordClasses().get(0);
         }
         return contributor;
     }

@@ -38,7 +38,7 @@ public class KatalonContextUtil {
                 return true;
             }
         }
-        
+
         if ((GroovyConstants.CUSTOM_KEYWORD_LIB_FILE_NAME + ".").equals(context.fullCompletionExpression)) {
             return true;
         }
@@ -52,16 +52,15 @@ public class KatalonContextUtil {
             if (className == null) {
                 return false;
             }
-
             if (KeywordController.getInstance().isBuiltinKeywordClassName(className)) {
                 return true;
             }
         }
-        
+
         String fullCompletion = context.fullCompletionExpression;
         if (fullCompletion.endsWith(".")) {
             String classNamePotential = fullCompletion.substring(0, fullCompletion.lastIndexOf("."));
-            if (KeywordController.getInstance().getBuiltInKeywordClass(classNamePotential) != null) {
+            if (KeywordController.getInstance().getBuiltInKeywordClassByName(classNamePotential) != null) {
                 return true;
             }
         }
@@ -85,7 +84,8 @@ public class KatalonContextUtil {
     }
 
     public static List<String> getTestCaseVariableStrings(TestCaseEntity testCaseEntity) {
-        if (testCaseEntity == null) return Collections.emptyList();
+        if (testCaseEntity == null)
+            return Collections.emptyList();
         List<String> testCaseVariableStrings = new ArrayList<String>();
         for (VariableEntity variableEntity : testCaseEntity.getVariables()) {
             testCaseVariableStrings.add(variableEntity.getName());

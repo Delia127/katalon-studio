@@ -2,12 +2,6 @@ package com.kms.katalon.composer.testcase.providers;
 
 import java.util.List;
 
-import org.codehaus.groovy.ast.ASTNode;
-import org.codehaus.groovy.ast.expr.ArgumentListExpression;
-import org.codehaus.groovy.ast.expr.MethodCallExpression;
-import org.codehaus.groovy.ast.stmt.BlockStatement;
-import org.codehaus.groovy.ast.stmt.ExpressionStatement;
-import org.codehaus.groovy.ast.stmt.Statement;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.dnd.DND;
@@ -23,6 +17,12 @@ import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
+import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 import com.kms.katalon.composer.testcase.keywords.IKeywordBrowserTreeEntity;
 import com.kms.katalon.composer.testcase.keywords.KeywordBrowserControlTreeEntity;
 import com.kms.katalon.composer.testcase.keywords.KeywordBrowserTreeEntity;
@@ -30,9 +30,9 @@ import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransferData;
+import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
-import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 
@@ -101,13 +101,11 @@ public class TestStepTableDropListener extends TreeDropTargetEffect {
         } else if (event.data instanceof ScriptTransferData[]) {
             snippet = ((ScriptTransferData[]) event.data)[0].getScriptSnippet();
         }
-        List<ASTNode> astNodes = GroovyParser.parseGroovyScriptIntoAstNodes(snippet);
-        for (ASTNode astNode : astNodes) {
-            if (astNode instanceof BlockStatement) {
-                List<Statement> childStatements = ((BlockStatement) astNode).getStatements();
-                addNewStatementsToTreeTable(event, childStatements);
-            }
+        ScriptNodeWrapper scriptNode = GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(snippet);
+        if (scriptNode == null) {
+            return;
         }
+        addNewStatementWrappersToTreeTable(event, scriptNode.getBlock().getStatements());
 
     }
 
@@ -116,24 +114,24 @@ public class TestStepTableDropListener extends TreeDropTargetEffect {
         for (int i = 0; i < treeEntities.length; i++) {
             if (treeEntities[i] instanceof KeywordBrowserTreeEntity) {
                 KeywordBrowserTreeEntity keywordBrowserTreeEntity = (KeywordBrowserTreeEntity) treeEntities[i];
-                ExpressionStatement newStatement = null;
+                ExpressionStatementWrapper newStatementWrapper = null;
                 if (keywordBrowserTreeEntity.isCustom()) {
-                    newStatement = AstTreeTableInputUtil.createCustomKeywordMethodCall(
-                            keywordBrowserTreeEntity.getClassName(), keywordBrowserTreeEntity.getName());
+                    newStatementWrapper = AstTreeTableInputUtil.createCustomKeywordMethodCall(
+                            keywordBrowserTreeEntity.getClassName(), keywordBrowserTreeEntity.getName(), null);
                 } else {
-                    newStatement = AstTreeTableInputUtil.createBuiltInKeywordMethodCall(
-                            keywordBrowserTreeEntity.getClassName(), keywordBrowserTreeEntity.getName());
+                    newStatementWrapper = AstTreeTableInputUtil.createBuiltInKeywordMethodCall(
+                            keywordBrowserTreeEntity.getClassName(), keywordBrowserTreeEntity.getName(), null);
                 }
-                if (newStatement != null) {
-                    addNewStatementToTreeTable(event, newStatement);
+                if (newStatementWrapper != null) {
+                    addNewStatementWrapperToTreeTable(event, newStatementWrapper);
                 }
 
             } else if (treeEntities[i] instanceof KeywordBrowserControlTreeEntity) {
                 KeywordBrowserControlTreeEntity keywordBrowserControlTreeEntity = (KeywordBrowserControlTreeEntity) treeEntities[i];
                 AstTreeTableNode node = getHoveredTreeTableNode(event);
                 NodeAddType addType = getNodeAddType(event);
-                getTestCaseTreeTableInput().addNewAstObject(keywordBrowserControlTreeEntity.getControlStatementId(),
-                        node, addType);
+                getTestCaseTreeTableInput().addNewAstObject(keywordBrowserControlTreeEntity.getControlStatementId(), node,
+                        addType);
             }
         }
     }
@@ -158,26 +156,22 @@ public class TestStepTableDropListener extends TreeDropTargetEffect {
         if (!testCasePart.getTreeTableInput().qualify(dropedTestCase))
             return;
 
-        ExpressionStatement statement = AstTreeTableInputUtil.generateCallTestCaseExpresionStatement(dropedTestCase);
-
-        MethodCallExpression methodCallExpression = (MethodCallExpression) statement.getExpression();
-        ArgumentListExpression argumentList = (ArgumentListExpression) methodCallExpression.getArguments();
-
-        List<VariableEntity> variableEntities = TestCaseEntityUtil.getCallTestCaseVariables(argumentList);
+        ExpressionStatementWrapper statement = AstEntityInputUtil.generateCallTestCaseExpresionStatement(dropedTestCase, null);
+        List<VariableEntity> variableEntities = TestCaseTreeTableInput
+                .getCallTestCaseVariables((ArgumentListExpressionWrapper) ((MethodCallExpressionWrapper) statement
+                        .getExpression()).getArguments());
         testCasePart.addVariables(variableEntities.toArray(new VariableEntity[0]));
-
-        addNewStatementToTreeTable(event, statement);
+        addNewStatementWrapperToTreeTable(event, statement);
     }
 
-    protected void addNewStatementToTreeTable(DropTargetEvent event, Statement statement) throws Exception {
+    protected void addNewStatementWrapperToTreeTable(DropTargetEvent event, StatementWrapper statement) throws Exception {
         AstTreeTableNode node = getHoveredTreeTableNode(event);
         NodeAddType addType = getNodeAddType(event);
         getTestCaseTreeTableInput().addNewAstObject(statement, node, addType);
     }
 
     private NodeAddType getNodeAddType(DropTargetEvent event) throws Exception {
-        switch (getFeedBackByLocation(event.display.map(null, treeViewer.getTree(), event.x, event.y),
-                (TreeItem) event.item)) {
+        switch (getFeedBackByLocation(event.display.map(null, treeViewer.getTree(), event.x, event.y), (TreeItem) event.item)) {
         case DND.FEEDBACK_INSERT_BEFORE:
             return NodeAddType.InserBefore;
         case DND.FEEDBACK_INSERT_AFTER:
@@ -197,7 +191,7 @@ public class TestStepTableDropListener extends TreeDropTargetEffect {
         return testCasePart.getTreeTableInput();
     }
 
-    protected void addNewStatementsToTreeTable(DropTargetEvent event, List<Statement> statements) throws Exception {
+    protected void addNewStatementWrappersToTreeTable(DropTargetEvent event, List<StatementWrapper> statements) throws Exception {
         AstTreeTableNode node = getHoveredTreeTableNode(event);
         NodeAddType addType = getNodeAddType(event);
         getTestCaseTreeTableInput().addNewAstObjects(statements, node, addType);

@@ -1,504 +1,145 @@
 package com.kms.katalon.composer.testcase.util;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.Parameter;
-import org.codehaus.groovy.ast.expr.BinaryExpression;
-import org.codehaus.groovy.ast.expr.BooleanExpression;
-import org.codehaus.groovy.ast.expr.ClassExpression;
-import org.codehaus.groovy.ast.expr.ClosureListExpression;
-import org.codehaus.groovy.ast.expr.ConstantExpression;
-import org.codehaus.groovy.ast.expr.ConstructorCallExpression;
-import org.codehaus.groovy.ast.expr.Expression;
-import org.codehaus.groovy.ast.expr.ListExpression;
-import org.codehaus.groovy.ast.expr.MapExpression;
-import org.codehaus.groovy.ast.expr.MethodCallExpression;
-import org.codehaus.groovy.ast.expr.NotExpression;
-import org.codehaus.groovy.ast.expr.PropertyExpression;
-import org.codehaus.groovy.ast.expr.RangeExpression;
-import org.codehaus.groovy.ast.expr.VariableExpression;
-import org.codehaus.groovy.ast.stmt.AssertStatement;
-import org.codehaus.groovy.ast.stmt.CaseStatement;
-import org.codehaus.groovy.ast.stmt.CatchStatement;
-import org.codehaus.groovy.ast.stmt.ExpressionStatement;
-import org.codehaus.groovy.ast.stmt.ForStatement;
-import org.codehaus.groovy.ast.stmt.IfStatement;
-import org.codehaus.groovy.ast.stmt.Statement;
-import org.codehaus.groovy.ast.stmt.SwitchStatement;
-import org.codehaus.groovy.ast.stmt.ThrowStatement;
-import org.codehaus.groovy.ast.stmt.WhileStatement;
-import org.codehaus.groovy.syntax.Numbers;
-import org.codehaus.groovy.syntax.Token;
-import org.codehaus.groovy.syntax.Types;
-import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.internal.core.BinaryType;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.swt.widgets.Composite;
+import org.openqa.selenium.Keys;
 
-import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
-import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
-import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.testcase.model.CustomInputValueTypeCollector;
-import com.kms.katalon.composer.testcase.model.IInputValueType;
+import com.kms.katalon.composer.testcase.ast.editors.BinaryCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.BooleanCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.BooleanConstantComboBoxCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.ClosureListInputCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.EnumPropertyComboBoxCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.GlobalVariablePropertyComboBoxCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.KeyInputComboBoxCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.KeysInputCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.ListInputCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.MapInputCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.MethodCallInputCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.NumberConstantCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.PropertyInputCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.PropertyTypeSelectionDialogCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.RangeInputCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.StringConstantCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.TestCaseSelectionMethodDialogCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.TestDataSelectionMethodDialogCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.TestDataValueCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.TestObjectCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.ThrowableInputCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.TypeSelectionDialogCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.VariableComboBoxCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.VariableTypeSelectionDialogCellEditor;
+import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.FieldNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.BinaryExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.BooleanExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ClassExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ClosureListExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstructorCallExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ListExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MapExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.PropertyExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.RangeExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.VariableExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.model.InputValueType;
-import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.core.model.FailureHandling;
-import com.kms.katalon.entity.repository.WebElementEntity;
-import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.entity.testdata.DataFileEntity;
 
-@SuppressWarnings("restriction")
+/**
+ * Utility class to handle changing value for ast nodes
+ *
+ */
 public class AstTreeTableValueUtil {
+    public static final String KEYS_CHORDS_METHOD_NAME = "chord";
 
-    public static final int[] OPERATION_CODES = new int[] { Types.COMPARE_EQUAL, Types.COMPARE_GREATER_THAN,
-            Types.COMPARE_LESS_THAN, Types.COMPARE_GREATER_THAN_EQUAL, Types.COMPARE_LESS_THAN_EQUAL,
-            Types.COMPARE_NOT_EQUAL, Types.LOGICAL_AND, Types.LOGICAL_OR, Types.EQUALS, Types.PLUS, Types.MINUS,
-            Types.MULTIPLY, Types.DIVIDE, Types.PLUS_EQUAL, Types.MINUS_EQUAL, Types.MULTIPLY_EQUAL,
-            Types.DIVIDE_EQUAL, Types.LOGICAL_AND_EQUAL, Types.LOGICAL_OR_EQUAL, Types.INTDIV, Types.MOD,
-            Types.STAR_STAR, Types.INTDIV_EQUAL, Types.MOD_EQUAL, Types.POWER_EQUAL, Types.COMPARE_IDENTICAL,
-            Types.COMPARE_NOT_IDENTICAL, Types.COMPARE_TO, Types.LEFT_SHIFT, Types.LEFT_SHIFT_EQUAL, Types.RIGHT_SHIFT,
-            Types.RIGHT_SHIFT_UNSIGNED, Types.RIGHT_SHIFT_EQUAL, Types.RIGHT_SHIFT_UNSIGNED_EQUAL };
-
-    public static Object getValue(Object object, ClassNode scriptClass) {
-        if (object instanceof Expression) {
-            return getValue((Expression) object, scriptClass);
-        } else if (object instanceof Statement) {
-            return getValue((Statement) object, scriptClass);
-        } else if (object instanceof Token) {
-            return getValue((Token) object);
-        } else if (object instanceof Parameter) {
-            return getValue((Parameter) object);
-        }
-        return StringUtils.EMPTY;
-    }
-
-    private static Object getValue(Parameter parameter) {
-        if (parameter != ForStatement.FOR_LOOP_DUMMY) {
-            return parameter.getName();
-        }
-        return null;
-    }
-
-    private static Object getValue(Token token) {
-        for (int index = 0; index < OPERATION_CODES.length; index++) {
-            if (OPERATION_CODES[index] == token.getType()) {
-                return index;
-            }
-        }
-        return null;
-    }
-
-    private static Object getValue(Expression expression, ClassNode scriptClass) {
-        if (expression instanceof VariableExpression) {
-            return getValue((VariableExpression) expression);
-        } else if (expression instanceof ConstantExpression) {
-            return getValue((ConstantExpression) expression);
-        } else if (expression instanceof PropertyExpression) {
-            return getValue((PropertyExpression) expression, scriptClass);
-        }
-        return expression;
-    }
-
-    private static Object getValue(PropertyExpression propertyExpression, ClassNode scriptClass) {
-        if (AstTreeTableInputUtil.isGlobalVariablePropertyExpression(propertyExpression)) {
-            return AstTreeTableInputUtil.getGlobalVariableIndex(propertyExpression);
-        }
-        Class<?> type = AstTreeTableInputUtil.loadType(propertyExpression.getObjectExpression().getText(), scriptClass);
-        if (type != null && type.getName().equals(FailureHandling.class.getName())) {
-            for (int i = 0; i < type.getEnumConstants().length; i++) {
-                if (propertyExpression.getPropertyAsString().equals(type.getEnumConstants()[i].toString())) {
-                    return i;
-                }
-            }
-            return 0;
-        }
-        return propertyExpression;
-    }
-
-    private static Object getValue(ConstantExpression constantExpression) {
-        if (constantExpression.getValue() instanceof Boolean) {
-            if (((Boolean) constantExpression.getValue())) {
-                return 0;
-            } else {
-                return 1;
-            }
-        } else if (constantExpression.getValue() != null) {
-            return constantExpression.getText();
-        }
-        return "";
-    }
-
-    private static Object getValue(VariableExpression variableExpression) {
-        return variableExpression.getText();
-    }
-
-    private static Object getValue(Statement statement, ClassNode scriptClass) {
-        if (statement instanceof AssertStatement) {
-            return ((AssertStatement) statement).getBooleanExpression();
-        } else if (statement instanceof ExpressionStatement) {
-            return getValue(((ExpressionStatement) statement).getExpression(), scriptClass);
-        } else if (statement instanceof IfStatement) {
-            return getValue((IfStatement) statement);
-        } else if (statement instanceof ForStatement) {
-            return statement;
-        } else if (statement instanceof WhileStatement) {
-            return ((WhileStatement) statement).getBooleanExpression();
-        } else if (statement instanceof SwitchStatement) {
-            return statement;
-        } else if (statement instanceof CaseStatement) {
-            return statement;
-        } else if (statement instanceof CatchStatement) {
-            return statement;
-        } else if (statement instanceof ThrowStatement) {
-            return statement;
-        }
-        return null;
-    }
-
-    private static Object getValue(IfStatement ifStatement) {
-        BooleanExpression booleanExpression = null;
-        if (ifStatement.getBooleanExpression() != null) {
-            if (ifStatement.getBooleanExpression().getExpression() instanceof NotExpression) {
-                booleanExpression = (NotExpression) ifStatement.getBooleanExpression().getExpression();
-            } else {
-                booleanExpression = ifStatement.getBooleanExpression();
-            }
-        }
-        return booleanExpression;
-    }
-
-    public static Object setValue(Object object, Object value, ClassNode scriptClass) {
-        if (object instanceof Expression) {
-            return setValue((Expression) object, value, scriptClass);
-        } else if (object instanceof Statement) {
-            return setValue((Statement) object, value, scriptClass);
-        } else if (object instanceof Token) {
-            return setValue((Token) object, value);
-        } else if (object instanceof Parameter) {
-            return setValue((Parameter) object, value);
-        } else if (object instanceof ClassNode) {
-            return setValue((ClassNode) object, value, scriptClass);
-        }
-        return null;
-    }
-
-    private static Object setValue(ClassNode classNode, Object value, ClassNode scriptClass) {
-        if (value instanceof BinaryType) {
-            BinaryType binaryType = (BinaryType) value;
-            Class<?> valueClass = AstTreeTableInputUtil.loadType(binaryType.getFullyQualifiedName(), scriptClass);
-            return new ClassNode(valueClass);
-        }
-        return null;
-    }
-
-    private static Object setValue(Parameter parameter, Object value) {
-        if (value instanceof String) {
-            return new Parameter(new ClassNode(Object.class), (String) value);
-        }
-        return null;
-    }
-
-    private static Object setValue(Token token, Object value) {
-        if (value instanceof Integer) {
-            return Token.newSymbol(OPERATION_CODES[(int) value], -1, -1);
-        }
-        return null;
-    }
-
-    private static Expression setValue(Expression expression, Object value, ClassNode scriptClass) {
-        if (expression instanceof BooleanExpression) {
-            return setValue((BooleanExpression) expression, value, scriptClass);
-        } else if (expression instanceof VariableExpression) {
-            return setValue((VariableExpression) expression, value);
-        } else if (expression instanceof MethodCallExpression) {
-            return setValue((MethodCallExpression) expression, value);
-        } else if (expression instanceof ConstantExpression) {
-            return setValue((ConstantExpression) expression, value);
-        } else if (expression instanceof PropertyExpression) {
-            return setValue((PropertyExpression) expression, value, scriptClass);
-        } else if (expression instanceof ClassExpression) {
-            return setValue((ClassExpression) expression, value, scriptClass);
-        } else if (value instanceof Expression) {
-            return (Expression) value;
-        }
-        return null;
-    }
-
-    private static Expression setValue(ClassExpression expression, Object value, ClassNode scriptClass) {
-        if (value instanceof BinaryType) {
-            BinaryType binaryType = (BinaryType) value;
-            Class<?> valueClass = AstTreeTableInputUtil.loadType(binaryType.getFullyQualifiedName(), scriptClass);
-            expression.setType(new ClassNode(valueClass));
-            return expression;
-        }
-        return null;
-    }
-
-    private static Expression setValue(PropertyExpression propertyExpression, Object value, ClassNode scriptClass) {
-        if (value instanceof Integer) {
-            if (AstTreeTableInputUtil.isGlobalVariablePropertyExpression(propertyExpression)) {
-                return AstTreeTableInputUtil.getGlobalVariableExpression((int) value);
-            }
-            Class<?> type = AstTreeTableInputUtil.loadType(propertyExpression.getObjectExpression().getText(),
-                    scriptClass);
-            if (type != null && type.getName().equals(FailureHandling.class.getName()) && ((int) value) >= 0
-                    && ((int) value) < type.getEnumConstants().length) {
-                return new PropertyExpression(propertyExpression.getObjectExpression(), new ConstantExpression(
-                        type.getEnumConstants()[(int) value].toString()));
-            }
-        }
-        if (value instanceof PropertyExpression) {
-            return (PropertyExpression) value;
-        }
-        if (value instanceof IType) {
-            return AstTreeTableEntityUtil.createNewPropertyExpressionFromTypeName(((IType) value)
-                    .getFullyQualifiedName());
-        }
-        return null;
-    }
-
-    private static Expression setValue(VariableExpression variableExpression, Object value) {
-        if (value instanceof String) {
-            return new VariableExpression(String.valueOf(value));
-        }
-        if (value instanceof IType) {
-            return AstTreeTableEntityUtil.createNewPropertyExpressionFromTypeName(((IType) value)
-                    .getFullyQualifiedName());
-        }
-        return null;
-    }
-
-    private static Expression setValue(MethodCallExpression methodCallExpression, Object value) {
-        if (value instanceof MethodCallExpression) {
-            return (MethodCallExpression) value;
-        }
-        try {
-            if (value instanceof TestDataTreeEntity
-                    && ((TestDataTreeEntity) value).getObject() instanceof DataFileEntity) {
-                return setValueForTestData(value);
-            }
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-        }
-        try {
-            if (value instanceof WebElementTreeEntity
-                    && ((WebElementTreeEntity) value).getObject() instanceof WebElementEntity) {
-                return setValueForTestObject(value);
-            }
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-        }
-        try {
-            if (value instanceof TestCaseTreeEntity
-                    && ((TestCaseTreeEntity) value).getObject() instanceof TestCaseEntity) {
-                return setValueForCallTestCase(value);
-            }
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-        }
-        if (value instanceof VariableExpression) {
-            return (Expression) value;
-        }
-        return null;
-    }
-
-    private static Expression setValueForTestData(Object value) {
-        try {
-            String testDataPk = ((DataFileEntity) ((TestDataTreeEntity) value).getObject()).getIdForDisplay();
-            return AstTreeTableEntityUtil.getNewTestDataExpression(new ConstantExpression(testDataPk));
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-        }
-        return null;
-    }
-
-    private static Expression setValueForTestObject(Object value) {
-        try {
-            String objectPk = ((WebElementEntity) ((WebElementTreeEntity) value).getObject()).getIdForDisplay();
-            return AstTreeTableInputUtil.generateObjectMethodCall(objectPk);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-        }
-        return null;
-    }
-
-    private static Expression setValueForCallTestCase(Object value) {
-        try {
-            return AstTreeTableInputUtil.generateTestCaseMethodCall(((TestCaseEntity) ((TestCaseTreeEntity) value)
-                    .getObject()).getIdForDisplay());
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-        }
-        return null;
-    }
-
-    private static Expression setValue(BooleanExpression booleanExpression, Object value, ClassNode scriptClass) {
-        if (value instanceof BooleanExpression) {
-            return (BooleanExpression) value;
-        } else {
-            Object newExpression = setValue(booleanExpression.getExpression(), value, scriptClass);
-            if (newExpression instanceof Expression) {
-                if (booleanExpression instanceof NotExpression) {
-                    return new NotExpression((Expression) newExpression);
-                } else {
-                    return new BooleanExpression((Expression) newExpression);
-                }
-            }
-        }
-        return null;
-    }
-
-    private static Expression setValue(ConstantExpression constantExpression, Object value) {
-        Expression newExpression = null;
-        if (constantExpression.getValue() instanceof Number) {
-            if (value instanceof String && !((String) value).isEmpty()) {
-                Number numValue = 0;
-                try {
-                    numValue = Numbers.parseInteger((String) value);
-                } catch (NumberFormatException e) {
-                    numValue = Numbers.parseDecimal((String) value);
-                }
-                newExpression = new ConstantExpression(numValue);
-            }
-        } else if (constantExpression.getValue() instanceof Boolean) {
-            if (value instanceof String) {
-                newExpression = new ConstantExpression(Boolean.parseBoolean((String) value));
-            } else if (value instanceof Integer) {
-                if (((int) value) == 0) {
-                    newExpression = new ConstantExpression(true);
-                } else {
-                    newExpression = new ConstantExpression(false);
-                }
-            }
-        } else {
-            newExpression = new ConstantExpression(value);
-        }
-        return newExpression;
-    }
-
-    public static boolean setValue(Statement statement, Object value, ClassNode scriptClass) {
-        if (statement instanceof ExpressionStatement) {
-            ExpressionStatement expressionStatement = (ExpressionStatement) statement;
-            Expression newExpression = setValue(expressionStatement.getExpression(), value, scriptClass);
-            if (!compareAstNode(newExpression, expressionStatement.getExpression())) {
-                expressionStatement.setExpression(newExpression);
-                return true;
-            }
-        } else if (statement instanceof AssertStatement && value instanceof BooleanExpression
-                && !compareAstNode(((AssertStatement) statement).getBooleanExpression(), value)) {
-            ((AssertStatement) statement).setBooleanExpression((BooleanExpression) value);
-            return true;
-        } else if (statement instanceof IfStatement && value instanceof BooleanExpression
-                && !compareAstNode(((IfStatement) statement).getBooleanExpression(), value)) {
-            if (value instanceof NotExpression) {
-                ((IfStatement) statement).setBooleanExpression(new BooleanExpression((NotExpression) value));
-            } else {
-                ((IfStatement) statement).setBooleanExpression((BooleanExpression) value);
-            }
-            return true;
-        } else if (statement instanceof WhileStatement && value instanceof BooleanExpression
-                && !compareAstNode(((WhileStatement) statement).getBooleanExpression(), value)) {
-            ((WhileStatement) statement).setBooleanExpression((BooleanExpression) value);
-            return true;
-        } else if (statement instanceof SwitchStatement && value instanceof SwitchStatement
-                && !compareAstNode(statement, value)) {
-            ((SwitchStatement) statement).setExpression(((SwitchStatement) value).getExpression());
-            return true;
-        } else if (statement instanceof CaseStatement && value instanceof CaseStatement
-                && !compareAstNode(statement, value)) {
-            ((CaseStatement) statement).setExpression(((CaseStatement) value).getExpression());
-            return true;
-        } else if (statement instanceof ThrowStatement && value instanceof ThrowStatement
-                && !compareAstNode(statement, value)) {
-            ((ThrowStatement) statement).setExpression(((ThrowStatement) value).getExpression());
-            return true;
-        }
-        return false;
-    }
-
-    public static IInputValueType getTypeValue(Object object, ClassNode scriptClass) {
-        for (IInputValueType customInputValueType : CustomInputValueTypeCollector.getInstance()
-                .getAllCustomInputValueTypes()) {
-            if (customInputValueType.isEditable(object, scriptClass)) {
-                return customInputValueType;
-            }
-        }
-        if (object instanceof ExpressionStatement) {
-            return getInputValueTypeForExpression(((ExpressionStatement) object).getExpression(), scriptClass);
-        } else if (object instanceof Expression) {
-            return getInputValueTypeForExpression((Expression) object, scriptClass);
-        } else if (object instanceof ClassNode) {
+    public static InputValueType getTypeValue(Object object) {
+        if (object instanceof ExpressionWrapper) {
+            return getInputValueTypeForExpressionWrapper((ExpressionWrapper) object);
+        } else if (object instanceof ClassNodeWrapper) {
             return InputValueType.Class;
         }
         return null;
     }
 
-    private static InputValueType getInputValueTypeForExpression(Expression expression, ClassNode scriptClass) {
-        if (expression instanceof ConstantExpression) {
-            ConstantExpression constantExpression = (ConstantExpression) expression;
-            if (constantExpression.isFalseExpression() || constantExpression.isTrueExpression()) {
+    private static InputValueType getInputValueTypeForExpressionWrapper(ExpressionWrapper expressionWrapper) {
+        if (expressionWrapper instanceof ConstantExpressionWrapper) {
+            ConstantExpressionWrapper constantExpressionWrapper = (ConstantExpressionWrapper) expressionWrapper;
+            if (constantExpressionWrapper.isFalseExpression() || constantExpressionWrapper.isTrueExpression()) {
                 return InputValueType.Boolean;
-            } else if (constantExpression.getValue() instanceof Number) {
+            } else if (constantExpressionWrapper.isNumberExpression()) {
                 return InputValueType.Number;
-            } else if (constantExpression.getValue() == null) {
+            } else if (constantExpressionWrapper.isNullExpression()) {
                 return InputValueType.Null;
             }
             return InputValueType.String;
-        } else if (expression instanceof VariableExpression) {
-            if (expression.getText().equals("this")) {
+        } else if (expressionWrapper instanceof VariableExpressionWrapper) {
+            if (expressionWrapper.getText().equals("this")) {
                 return InputValueType.This;
             }
-            Type type = AstTreeTableInputUtil.loadType(expression.getText(), scriptClass);
+            Type type = AstTreeTableInputUtil.loadType(expressionWrapper.getText(), expressionWrapper.getScriptClass());
             if (type != null) {
                 return InputValueType.Class;
             }
             return InputValueType.Variable;
-        } else if (expression instanceof BinaryExpression) {
+        } else if (expressionWrapper instanceof BinaryExpressionWrapper) {
             return InputValueType.Binary;
-        } else if (expression instanceof MethodCallExpression) {
-            MethodCallExpression methodCallExpression = (MethodCallExpression) expression;
-            if (AstTreeTableInputUtil.isCallTestCaseArgument(methodCallExpression)) {
+        } else if (expressionWrapper instanceof MethodCallExpressionWrapper) {
+            MethodCallExpressionWrapper methodCallExpressionWrapper = (MethodCallExpressionWrapper) expressionWrapper;
+            if (AstEntityInputUtil.isCallTestCaseArgument(methodCallExpressionWrapper)) {
                 return InputValueType.TestCase;
             }
-            if (AstTreeTableInputUtil.isObjectArgument(methodCallExpression)) {
+            if (AstEntityInputUtil.isObjectArgument(methodCallExpressionWrapper)) {
                 return InputValueType.TestObject;
             }
-            if (AstTreeTableInputUtil.isTestDataArgument(methodCallExpression)) {
+            if (AstEntityInputUtil.isTestDataArgument(methodCallExpressionWrapper)) {
                 return InputValueType.TestData;
             }
-            if (AstTreeTableInputUtil.isTestDataValueArgument(methodCallExpression)) {
+            if (AstEntityInputUtil.isTestDataValueArgument(methodCallExpressionWrapper)) {
                 return InputValueType.TestDataValue;
             }
-            return InputValueType.MethodCall;
-        } else if (expression instanceof BooleanExpression) {
-            return InputValueType.Condition;
-        } else if (expression instanceof ClosureListExpression) {
-            return InputValueType.ClosureList;
-        } else if (expression instanceof ListExpression) {
-            return InputValueType.List;
-        } else if (expression instanceof MapExpression) {
-            return InputValueType.Map;
-        } else if (expression instanceof RangeExpression) {
-            return InputValueType.Range;
-        } else if (expression instanceof PropertyExpression) {
-            PropertyExpression propertyExprs = (PropertyExpression) expression;
-            if (propertyExprs.getObjectExpression() instanceof VariableExpression) {
-                if (propertyExprs.getObjectExpression().getText().equals(InputValueType.GlobalVariable.name())) {
-                    return InputValueType.GlobalVariable;
-                }
+            if (isKeysArgumentExpression(methodCallExpressionWrapper)) {
+                return InputValueType.Keys;
             }
-            Type type = AstTreeTableInputUtil.loadType(propertyExprs.getText(), scriptClass);
+            return InputValueType.MethodCall;
+        } else if (expressionWrapper instanceof BooleanExpressionWrapper) {
+            return InputValueType.Condition;
+        } else if (expressionWrapper instanceof ClosureListExpressionWrapper) {
+            return InputValueType.ClosureList;
+        } else if (expressionWrapper instanceof ListExpressionWrapper) {
+            return InputValueType.List;
+        } else if (expressionWrapper instanceof MapExpressionWrapper) {
+            return InputValueType.Map;
+        } else if (expressionWrapper instanceof RangeExpressionWrapper) {
+            return InputValueType.Range;
+        } else if (expressionWrapper instanceof PropertyExpressionWrapper) {
+            PropertyExpressionWrapper propertyExprs = (PropertyExpressionWrapper) expressionWrapper;
+            if (propertyExprs.getObjectExpression() instanceof VariableExpressionWrapper
+                    && propertyExprs.getObjectExpressionAsString().equals(InputValueType.GlobalVariable.name())) {
+                return InputValueType.GlobalVariable;
+            }
+            if (propertyExprs.isObjectExpressionOfClass(Keys.class)) {
+                return InputValueType.Key;
+            }
+            Type type = AstTreeTableInputUtil.loadType(propertyExprs.getText(), propertyExprs.getScriptClass());
             if (type != null) {
                 return InputValueType.Class;
             }
             return InputValueType.Property;
-        } else if (expression instanceof ClassExpression) {
+        } else if (expressionWrapper instanceof ClassExpressionWrapper) {
             return InputValueType.Class;
-        } else if (expression instanceof ConstructorCallExpression) {
-            ConstructorCallExpression contructorCallExpression = (ConstructorCallExpression) expression;
-            Class<?> throwableClass = AstTreeTableInputUtil.loadType(contructorCallExpression.getType().getName(),
-                    scriptClass);
+        } else if (expressionWrapper instanceof ConstructorCallExpressionWrapper) {
+            ConstructorCallExpressionWrapper contructorCallExpressionWrapper = (ConstructorCallExpressionWrapper) expressionWrapper;
+            Class<?> throwableClass = AstTreeTableInputUtil.loadType(contructorCallExpressionWrapper.getType()
+                    .getName(), contructorCallExpressionWrapper.getScriptClass());
             if (Throwable.class.isAssignableFrom(throwableClass)) {
                 return InputValueType.Throwable;
             }
@@ -507,17 +148,239 @@ public class AstTreeTableValueUtil {
     }
 
     public static boolean compareAstNode(Object astNode, Object anotherAstNode) {
-        if ((astNode instanceof Expression && anotherAstNode instanceof Expression)
-                || (astNode instanceof Statement && anotherAstNode instanceof Statement)) {
-            StringBuilder stringBuilder = new StringBuilder();
-            new GroovyParser(stringBuilder).parse(astNode);
-            String expressionValue = stringBuilder.toString();
+        StringBuilder stringBuilder = new StringBuilder();
+        new GroovyWrapperParser(stringBuilder).parse(astNode);
+        String scriptValue = stringBuilder.toString();
 
-            stringBuilder = new StringBuilder();
-            new GroovyParser(stringBuilder).parse(anotherAstNode);
-            String anotherExpressionValue = stringBuilder.toString();
-            return expressionValue.equals(anotherExpressionValue);
+        stringBuilder = new StringBuilder();
+        new GroovyWrapperParser(stringBuilder).parse(anotherAstNode);
+        String anotherScriptValue = stringBuilder.toString();
+        return scriptValue.equals(anotherScriptValue);
+    }
+
+    public static CellEditor getCellEditorForExpression(Composite parent, ExpressionWrapper expression) {
+        if (expression instanceof BinaryExpressionWrapper) {
+            return getCellEditorForBinaryExpression(parent, (BinaryExpressionWrapper) expression);
+        } else if (expression instanceof MethodCallExpressionWrapper) {
+            MethodCallExpressionWrapper methodCallExpressionWrapper = (MethodCallExpressionWrapper) expression;
+            if (AstEntityInputUtil.isCallTestCaseArgument(methodCallExpressionWrapper)) {
+                return getCellEditorForCallTestCase(parent, methodCallExpressionWrapper);
+            }
+            if (AstEntityInputUtil.isObjectArgument(methodCallExpressionWrapper)) {
+                return getCellEditorForTestObject(parent, methodCallExpressionWrapper);
+            }
+            if (AstEntityInputUtil.isTestDataArgument(methodCallExpressionWrapper)) {
+                return getCellEditorForTestData(parent, methodCallExpressionWrapper);
+            }
+            if (AstEntityInputUtil.isTestDataValueArgument(methodCallExpressionWrapper)) {
+                return getCellEditorForTestDataValue(parent, methodCallExpressionWrapper);
+            }
+            if (isKeysArgumentExpression(methodCallExpressionWrapper)) {
+                return getCellEditorForKeysExpression(parent, methodCallExpressionWrapper);
+            }
+            return getCellEditorForMethodCallExpression(parent, methodCallExpressionWrapper);
+        } else if (expression instanceof BooleanExpressionWrapper) {
+            return getCellEditorForBooleanExpression(parent, (BooleanExpressionWrapper) expression);
+        } else if (expression instanceof ConstantExpressionWrapper) {
+            return getCellEditorForConstantExpression(parent, (ConstantExpressionWrapper) expression);
+        } else if (expression instanceof VariableExpressionWrapper) {
+            VariableExpressionWrapper variableExpressionWrapper = (VariableExpressionWrapper) expression;
+            if (variableExpressionWrapper.getText().equals("this")) {
+                return null;
+            }
+            Type type = AstTreeTableInputUtil.loadType(variableExpressionWrapper.getText(),
+                    variableExpressionWrapper.getScriptClass());
+            if (type != null) {
+                return new VariableTypeSelectionDialogCellEditor(parent, variableExpressionWrapper.getText());
+            }
+            return getCellEditorForVariableExpression(parent, variableExpressionWrapper);
+        } else if (expression instanceof RangeExpressionWrapper) {
+            return getCellEditorForRangeExpression(parent, (RangeExpressionWrapper) expression);
+        } else if (expression instanceof ClosureListExpressionWrapper) {
+            return getCellEditorForClosureListExpression(parent, (ClosureListExpressionWrapper) expression);
+        } else if (expression instanceof ListExpressionWrapper) {
+            return getCellEditorForListExpression(parent, (ListExpressionWrapper) expression);
+        } else if (expression instanceof MapExpressionWrapper) {
+            return getCellEditorForMapExpression(parent, (MapExpressionWrapper) expression);
+        } else if (expression instanceof PropertyExpressionWrapper) {
+            PropertyExpressionWrapper propertyExpressionWrapper = (PropertyExpressionWrapper) expression;
+            if (AstTreeTableInputUtil.isGlobalVariablePropertyExpression(propertyExpressionWrapper)) {
+                return getCellEditorForGlobalVariableExpression(parent);
+            }
+            Class<?> type = AstTreeTableInputUtil.loadType(propertyExpressionWrapper.getObjectExpressionAsString(),
+                    propertyExpressionWrapper.getScriptClass());
+            if (type != null && type.isEnum() && type.getName().equals(FailureHandling.class.getName())) {
+                return getNewCellEditorForFailureHandling(parent);
+            }
+            if (propertyExpressionWrapper.isObjectExpressionOfClass(Keys.class)) {
+                return getCellEditorForKeyExpression(parent);
+            }
+            type = AstTreeTableInputUtil.loadType(propertyExpressionWrapper.getText(),
+                    propertyExpressionWrapper.getScriptClass());
+            if (type != null) {
+                return new PropertyTypeSelectionDialogCellEditor(parent, propertyExpressionWrapper.getText());
+            }
+            return getCellEditorForPropertyExpression(parent, propertyExpressionWrapper);
+        } else if (expression instanceof ClassExpressionWrapper) {
+            return getCellEditorForClassExpression(parent, (ClassExpressionWrapper) expression);
+        } else if (expression instanceof ConstructorCallExpressionWrapper) {
+            return getCellEditorForConstructorCallExpression(parent, (ConstructorCallExpressionWrapper) expression);
         }
-        return false;
+        return null;
+    }
+
+    public static CellEditor getCellEditorForKeysExpression(Composite parent,
+            MethodCallExpressionWrapper methodCallExpressionWrapper) {
+        return new KeysInputCellEditor(parent, methodCallExpressionWrapper.getObjectExpressionAsString());
+    }
+
+    public static boolean isKeysArgumentExpression(MethodCallExpressionWrapper methodCallExpressionWrapper) {
+        return (methodCallExpressionWrapper.isObjectExpressionOfClass(Keys.class)
+                && methodCallExpressionWrapper.getMethodAsString().equals(KEYS_CHORDS_METHOD_NAME));
+    }
+
+    public static CellEditor getCellEditorForKeyExpression(Composite parent) {
+        return new KeyInputComboBoxCellEditor(parent);
+    }
+
+    public static CellEditor getCellEditorForConstructorCallExpression(Composite parent,
+            ConstructorCallExpressionWrapper contructorCallExpressionWrapper) {
+        Class<?> throwableClass = AstTreeTableInputUtil.loadType(contructorCallExpressionWrapper.getType().getName(),
+                contructorCallExpressionWrapper.getScriptClass());
+        if (Throwable.class.isAssignableFrom(throwableClass)) {
+            return getCellEditorForThrowable(parent, contructorCallExpressionWrapper);
+        }
+        return null;
+    }
+
+    public static CellEditor getCellEditorForThrowable(Composite parent,
+            ConstructorCallExpressionWrapper contructorCallExpressionWrapper) {
+        return new ThrowableInputCellEditor(parent, contructorCallExpressionWrapper.getText());
+    }
+
+    public static CellEditor getCellEditorForClassExpression(Composite parent,
+            ClassExpressionWrapper classExpressionWrapper) {
+        return new TypeSelectionDialogCellEditor(parent, classExpressionWrapper.getText());
+    }
+
+    public static CellEditor getCellEditorForPropertyExpression(Composite parent,
+            PropertyExpressionWrapper propertyExpressionWrapper) {
+        return new PropertyInputCellEditor(parent, propertyExpressionWrapper.getText());
+    }
+
+    public static CellEditor getNewCellEditorForFailureHandling(Composite parent) {
+        return new EnumPropertyComboBoxCellEditor(parent, FailureHandling.class);
+    }
+
+    public static CellEditor getCellEditorForBinaryExpression(Composite parent,
+            BinaryExpressionWrapper binaryExpressionWrapper) {
+        return new BinaryCellEditor(parent, binaryExpressionWrapper.getText());
+    }
+
+    public static CellEditor getCellEditorForMethodCallExpression(Composite parent,
+            MethodCallExpressionWrapper methodCallExpressionWrapper) {
+        return new MethodCallInputCellEditor(parent, methodCallExpressionWrapper.getText());
+    }
+
+    public static CellEditor getCellEditorForTestDataValue(Composite parent,
+            MethodCallExpressionWrapper methodCallExpressionWrapper) {
+        return new TestDataValueCellEditor(parent, methodCallExpressionWrapper.getText());
+    }
+
+    public static CellEditor getCellEditorForTestData(Composite parent,
+            MethodCallExpressionWrapper methodCallExpressionWrapper) {
+        ArgumentListExpressionWrapper argumentListExpressionWrapper = (ArgumentListExpressionWrapper) methodCallExpressionWrapper
+                .getArguments();
+        if (argumentListExpressionWrapper.getExpressions().isEmpty()) {
+            return null;
+        }
+        String pk = argumentListExpressionWrapper.getExpressions().get(0).getText();
+        return new TestDataSelectionMethodDialogCellEditor(parent, pk);
+    }
+
+    public static CellEditor getCellEditorForBooleanExpression(Composite parent,
+            BooleanExpressionWrapper booleanExpressionWrapper) {
+        return new BooleanCellEditor(parent, booleanExpressionWrapper.getText());
+    }
+
+    public static CellEditor getCellEditorForRangeExpression(Composite parent,
+            RangeExpressionWrapper rangeExpressionWrapper) {
+        return new RangeInputCellEditor(parent, rangeExpressionWrapper.getText());
+    }
+
+    public static CellEditor getCellEditorForClosureListExpression(Composite parent,
+            ClosureListExpressionWrapper closureListExpressionWrapper) {
+        return new ClosureListInputCellEditor(parent, closureListExpressionWrapper.getText());
+    }
+
+    public static CellEditor getCellEditorForConstantExpression(Composite parent,
+            ConstantExpressionWrapper constantExpressionWrapper) {
+        if (constantExpressionWrapper.isFalseExpression() || constantExpressionWrapper.isTrueExpression()) {
+            return getCellEditorForBooleanConstantExpression(parent);
+        }
+        if (constantExpressionWrapper.getValue() instanceof Number) {
+            return getCellEditorForNumberConstantExpression(parent);
+        }
+        return getCellEditorForStringConstantExpression(parent);
+    }
+
+    public static CellEditor getCellEditorForStringConstantExpression(Composite parent) {
+        return new StringConstantCellEditor(parent);
+    }
+
+    public static CellEditor getCellEditorForNumberConstantExpression(Composite parent) {
+        return new NumberConstantCellEditor(parent);
+    }
+
+    public static CellEditor getCellEditorForBooleanConstantExpression(Composite parent) {
+        return new BooleanConstantComboBoxCellEditor(parent);
+    }
+
+    public static CellEditor getCellEditorForVariableExpression(Composite parent,
+            VariableExpressionWrapper variableExpressionWrapper) {
+        List<String> variableStringList = new ArrayList<String>();
+        ScriptNodeWrapper scriptClass = variableExpressionWrapper.getScriptClass();
+        if (scriptClass != null) {
+            for (FieldNodeWrapper field : scriptClass.getFields()) {
+                variableStringList.add(field.getName());
+            }
+            return new VariableComboBoxCellEditor(parent, variableStringList);
+        }
+        return new VariableComboBoxCellEditor(parent, variableStringList);
+    }
+
+    public static CellEditor getCellEditorForListExpression(Composite parent,
+            ListExpressionWrapper listExpressionWrapper) {
+        return new ListInputCellEditor(parent, listExpressionWrapper.getText());
+    }
+
+    public static CellEditor getCellEditorForMapExpression(Composite parent, MapExpressionWrapper mapExpressionWrapper) {
+        return new MapInputCellEditor(parent, mapExpressionWrapper.getText());
+    }
+
+    public static CellEditor getCellEditorForCallTestCase(Composite parent,
+            MethodCallExpressionWrapper methodCallExpressionWrapper) {
+        String testCasePk = null;
+        ExpressionWrapper callTestCaseValueExpressionWrapper = AstEntityInputUtil
+                .getCallTestCaseParam(methodCallExpressionWrapper);
+        if (callTestCaseValueExpressionWrapper instanceof ConstantExpressionWrapper
+                && ((ConstantExpressionWrapper) callTestCaseValueExpressionWrapper).getValue() instanceof String) {
+            testCasePk = (String) ((ConstantExpressionWrapper) callTestCaseValueExpressionWrapper).getValue();
+        }
+        return new TestCaseSelectionMethodDialogCellEditor(parent, testCasePk);
+    }
+
+    public static CellEditor getCellEditorForTestObject(Composite parent,
+            MethodCallExpressionWrapper methodCallExpressionWrapper) {
+        return new TestObjectCellEditor(parent, methodCallExpressionWrapper.getText(), false);
+    }
+
+    public static CellEditor getCellEditorForGlobalVariableExpression(Composite parent) {
+        try {
+            return new GlobalVariablePropertyComboBoxCellEditor(parent);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        return null;
     }
 }

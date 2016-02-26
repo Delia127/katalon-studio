@@ -3,9 +3,6 @@ package com.kms.katalon.composer.testcase.ast.dialogs;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.expr.Expression;
-import org.codehaus.groovy.ast.stmt.CaseStatement;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -18,32 +15,31 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 
 import com.kms.katalon.composer.testcase.constants.StringConstants;
-import com.kms.katalon.composer.testcase.model.ICustomInputValueType;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.CaseStatementWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
-import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
-import com.kms.katalon.core.ast.GroovyParser;
 
 public class CaseInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
+    private static final String EXPRESSION_LABEL = "Expression";
+
     private final InputValueType[] defaultInputValueTypes = { InputValueType.Variable, InputValueType.GlobalVariable,
             InputValueType.TestDataValue, InputValueType.MethodCall, InputValueType.Condition, InputValueType.Binary,
-            InputValueType.Property, InputValueType.List, InputValueType.Map, InputValueType.Range, InputValueType.Class,
-            InputValueType.String, InputValueType.Number, InputValueType.Boolean, InputValueType.Null };
+            InputValueType.Property, InputValueType.List, InputValueType.Map, InputValueType.Range,
+            InputValueType.Class, InputValueType.String, InputValueType.Number, InputValueType.Boolean,
+            InputValueType.Null };
 
-    private static final String DIALOG_TITLE = StringConstants.DIA_TITLE_CASE_INPUT;
+    private CaseStatementWrapper caseStatement;
 
-    private CaseStatement caseStatement;
-
-    public CaseInputBuilderDialog(Shell parentShell, CaseStatement caseStatement, ClassNode scriptClass) {
-        super(parentShell, scriptClass);
-        if (caseStatement != null) {
-            this.caseStatement = GroovyParser.cloneCaseStatement(caseStatement);
-        } else {
-            this.caseStatement = AstTreeTableEntityUtil.getNewCaseStatement();
+    public CaseInputBuilderDialog(Shell parentShell, CaseStatementWrapper caseStatement) {
+        super(parentShell);
+        if (caseStatement == null) {
+            throw new IllegalArgumentException();
         }
+        this.caseStatement = caseStatement.clone();
     }
 
     @Override
@@ -60,28 +56,28 @@ public class CaseInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
 
     @Override
     public void refresh() {
-        List<Expression> expressionList = new ArrayList<Expression>();
+        List<ExpressionWrapper> expressionList = new ArrayList<ExpressionWrapper>();
         expressionList.add(caseStatement.getExpression());
         tableViewer.setContentProvider(new ArrayContentProvider());
         tableViewer.setInput(expressionList);
     }
 
     @Override
-    public CaseStatement getReturnValue() {
+    public CaseStatementWrapper getReturnValue() {
         return caseStatement;
     }
 
     @Override
-    public void changeObject(Object orginalObject, Object newObject) {
-        if (orginalObject == caseStatement.getExpression() && newObject instanceof Expression) {
-            caseStatement.setExpression((Expression) newObject);
+    public void replaceObject(Object orginalObject, Object newObject) {
+        if (orginalObject == caseStatement.getExpression() && newObject instanceof ExpressionWrapper) {
+            caseStatement.setExpression((ExpressionWrapper) newObject);
             refresh();
         }
     }
 
     @Override
     public String getDialogTitle() {
-        return DIALOG_TITLE;
+        return StringConstants.DIA_TITLE_CASE_INPUT;
     }
 
     @Override
@@ -93,7 +89,7 @@ public class CaseInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
             @Override
             public String getText(Object element) {
                 if (element == caseStatement.getExpression()) {
-                    return "Expression";
+                    return EXPRESSION_LABEL;
                 }
                 return "";
             }
@@ -102,15 +98,15 @@ public class CaseInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
         TableViewerColumn tableViewerColumnValueType = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnValueType.getColumn().setText(StringConstants.DIA_COL_VALUE_TYPE);
         tableViewerColumnValueType.getColumn().setWidth(100);
-        tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider(scriptClass));
+        tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider());
         tableViewerColumnValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer,
-                defaultInputValueTypes, ICustomInputValueType.TAG_CASE, this, scriptClass));
+                defaultInputValueTypes, this));
 
         TableViewerColumn tableViewerColumnValue = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnValue.getColumn().setText(StringConstants.DIA_COL_VALUE);
         tableViewerColumnValue.getColumn().setWidth(300);
-        tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider(scriptClass));
-        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this, scriptClass));
+        tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider());
+        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this));
 
     }
 }

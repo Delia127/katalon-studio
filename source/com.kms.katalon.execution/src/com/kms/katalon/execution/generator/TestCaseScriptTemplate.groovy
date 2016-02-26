@@ -6,11 +6,11 @@ import groovy.transform.CompileStatic
 import com.kms.katalon.core.configuration.RunConfiguration
 import com.kms.katalon.core.driver.DriverCleanerCollector
 import com.kms.katalon.core.keyword.IKeywordContributor
+import com.kms.katalon.core.keyword.KeywordContributorCollection
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.main.TestCaseMain
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testcase.TestCaseBinding
-import com.kms.katalon.custom.factory.BuiltInMethodNodeFactory
 import com.kms.katalon.entity.testcase.TestCaseEntity
 import com.kms.katalon.execution.configuration.IRunConfiguration
 import com.kms.katalon.groovy.util.GroovyStringUtil;
@@ -50,7 +50,7 @@ DriverCleanerCollector.getInstance().cleanDriversAfterRunningTestCase()
 
 
         def driverCleaners = []
-        for (IKeywordContributor contributor in BuiltInMethodNodeFactory.getInstance().getKeywordContributors()) {
+        for (IKeywordContributor contributor in KeywordContributorCollection.getKeywordContributors()) {
             if (contributor.getDriverCleaner() != null) {
                 driverCleaners.add(contributor.getDriverCleaner().getName())
             }

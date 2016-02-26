@@ -1,20 +1,10 @@
 package com.kms.katalon.composer.testcase.ast.treetable;
 
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.stmt.Statement;
-import org.codehaus.groovy.ast.stmt.TryCatchStatement;
-
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.BlockStatementWrapper;
 
-public class AstFinallyStatementTreeTableNode extends AstStatementTreeTableNode {
-
-	public AstFinallyStatementTreeTableNode(Statement statement, AstTreeTableNode parentNode,
-			TryCatchStatement parentTryCatchStatement, ClassNode scriptClass) {
-		super(statement, parentNode, parentTryCatchStatement, scriptClass);
-	}
-
-	@Override
-	public String getItemText() {
-		return StringConstants.TREE_FINALLY_STATEMENT;
+public class AstFinallyStatementTreeTableNode extends AstCompositeStatementTreeTableNode {
+	public AstFinallyStatementTreeTableNode(BlockStatementWrapper statement, AstTreeTableNode parentNode) {
+		super(statement, parentNode, StringConstants.TREE_FINALLY_STATEMENT);
 	}
 }

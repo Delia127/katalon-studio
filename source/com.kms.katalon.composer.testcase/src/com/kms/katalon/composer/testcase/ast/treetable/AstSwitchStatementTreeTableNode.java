@@ -1,67 +1,21 @@
 package com.kms.katalon.composer.testcase.ast.treetable;
 
-import java.util.ArrayList;
-
-import org.codehaus.groovy.ast.ASTNode;
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.stmt.CaseStatement;
-import org.codehaus.groovy.ast.stmt.EmptyStatement;
-import org.codehaus.groovy.ast.stmt.SwitchStatement;
-
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
-import com.kms.katalon.composer.testcase.util.AstTreeTableUtil;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.SwitchStatementWrapper;
+import com.kms.katalon.composer.testcase.util.WrapperToAstTreeConverter;
 
-public class AstSwitchStatementTreeTableNode extends AstStatementTreeTableNode {
-	private SwitchStatement switchStatement;
+public class AstSwitchStatementTreeTableNode extends AstCompositeEditableInputStatementTreeTableNode {
+    public AstSwitchStatementTreeTableNode(SwitchStatementWrapper statement, AstTreeTableNode parentNode) {
+        super(statement, parentNode, StringConstants.TREE_SWITCH_STATEMENT);
+    }
 
-	public AstSwitchStatementTreeTableNode(SwitchStatement statement, AstTreeTableNode parentNode,
-			ASTNode parentObject, ClassNode scriptClass) {
-		super(statement, parentNode, parentObject, scriptClass);
-		switchStatement = statement;
-	}
-
-	@Override
-	public String getItemText() {
-		return StringConstants.TREE_SWITCH_STATEMENT;
-	}
-
-	@Override
-	public boolean hasChildren() {
-		return ((switchStatement.getCaseStatements() != null && switchStatement.getCaseStatements().size() > 0) || switchStatement
-				.getDefaultStatement() != null);
-	}
-	
-	@Override
+    @Override
     public void reloadChildren() {
-        try {
-            children = new ArrayList<AstTreeTableNode>();
-            for (CaseStatement caseStatement : switchStatement.getCaseStatements()) {
-                children.addAll(AstTreeTableUtil.parseAstObjectIntoTreeTableNode(caseStatement, this,
-                        switchStatement, scriptClass));
-            }
-            if (switchStatement.getDefaultStatement() != null
-                    && !(switchStatement.getDefaultStatement() instanceof EmptyStatement)) {
-                children.add(new AstSwitchDefaultStatementTreeTableNode(switchStatement.getDefaultStatement(),
-                        this, switchStatement, scriptClass));
-            }
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
+        SwitchStatementWrapper switchStatement = (SwitchStatementWrapper) statement;
+        childNodes.clear();
+        childNodes.addAll(WrapperToAstTreeConverter.getInstance().convert(switchStatement.getCaseStatements(), this));
+        if (switchStatement.getDefaultStatement() != null) {
+            childNodes.add(new AstDefaultStatementTreeTableNode(switchStatement.getDefaultStatement(), this));
         }
     }
-	
-	@Override
-	public void addChildObject(ASTNode astObject, int index) {
-	}
-
-	@Override
-	public void removeChildObject(ASTNode astObject) {
-		AstTreeTableUtil.removeChild(switchStatement, astObject);
-	}
-
-	@Override
-	public int getChildObjectIndex(ASTNode astObject) {
-		return -1;
-	}
-	
 }

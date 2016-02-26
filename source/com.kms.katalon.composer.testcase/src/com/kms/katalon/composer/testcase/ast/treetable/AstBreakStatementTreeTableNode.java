@@ -1,20 +1,11 @@
 package com.kms.katalon.composer.testcase.ast.treetable;
 
-import org.codehaus.groovy.ast.ASTNode;
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.stmt.BreakStatement;
-
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.BreakStatementWrapper;
 
 public class AstBreakStatementTreeTableNode extends AstStatementTreeTableNode {
-
-    public AstBreakStatementTreeTableNode(BreakStatement statement, AstTreeTableNode parentNode, ASTNode parentObject,
-            ClassNode scriptClass) {
-        super(statement, parentNode, parentObject, scriptClass);
+    public AstBreakStatementTreeTableNode(BreakStatementWrapper breakStatement, AstTreeTableNode parentNode) {
+        super(breakStatement, parentNode, StringConstants.TREE_BREAK_STATEMENT);
     }
 
-    @Override
-    public String getItemText() {
-        return StringConstants.TREE_BREAK_STATEMENT;
-    }
 }

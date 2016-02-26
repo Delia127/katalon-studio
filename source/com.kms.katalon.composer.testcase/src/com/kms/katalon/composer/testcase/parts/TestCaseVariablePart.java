@@ -8,8 +8,6 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang.StringUtils;
-import org.codehaus.groovy.ast.ASTNode;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MGenericTile;
 import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
@@ -45,17 +43,17 @@ import org.eclipse.swt.widgets.ToolItem;
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
-import com.kms.katalon.composer.testcase.model.IInputValueType;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.support.VariableDefaultValueEditingSupport;
 import com.kms.katalon.composer.testcase.support.VariableDefaultValueTypeEditingSupport;
 import com.kms.katalon.composer.testcase.support.VariableDescriptionEditingSupport;
 import com.kms.katalon.composer.testcase.support.VariableNameEditingSupport;
-import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
-import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.util.SyntaxUtil;
@@ -169,6 +167,8 @@ public class TestCaseVariablePart {
         compositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
         tableViewer = new TableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+        ColumnViewerUtil.setTableActivation(tableViewer);
+        
 
         tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
 
@@ -230,7 +230,7 @@ public class TestCaseVariablePart {
                 if (element != null && element instanceof VariableEntity) {
                     return Integer.toString(variables.indexOf(element) + 1);
                 }
-                return StringUtils.EMPTY;
+                return "";
             }
         });
 
@@ -242,7 +242,7 @@ public class TestCaseVariablePart {
                 if (element != null && element instanceof VariableEntity) {
                     return ((VariableEntity) element).getName();
                 }
-                return StringUtils.EMPTY;
+                return "";
             }
         });
         TableColumn tblclmnName = tableViewerColumnName.getColumn();
@@ -258,22 +258,23 @@ public class TestCaseVariablePart {
         tableViewerColumnDefaultValueType.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                if (element != null && element instanceof VariableEntity) {
-                    if (element instanceof VariableEntity) {
-                        try {
-                            IInputValueType valueType = AstTreeTableValueUtil.getTypeValue(GroovyParser
-                                    .parseGroovyScriptAndGetFirstItem(((VariableEntity) element).getDefaultValue()),
-                                    parentTestCaseCompositePart.getChildTestCasePart().getTreeTableInput()
-                                            .getMainClassNode());
-                            if (valueType != null) {
-                                return TreeEntityUtil.getReadableKeywordName(valueType.getName());
-                            }
-                        } catch (Exception e) {
-                            LoggerSingleton.logError(e);
-                        }
-                    }
+                if (!(element instanceof VariableEntity)) {
+                    return "";
                 }
-                return StringUtils.EMPTY;
+                try {
+                    ExpressionWrapper expression = GroovyWrapperParser
+                            .parseGroovyScriptAndGetFirstExpression(((VariableEntity) element).getDefaultValue());
+                    if (expression == null) {
+                        return null;
+                    }
+                    InputValueType valueType = AstTreeTableValueUtil.getTypeValue(expression);
+                    if (valueType != null) {
+                        return TreeEntityUtil.getReadableKeywordName(valueType.getName());
+                    }
+                } catch (Exception e) {
+                    LoggerSingleton.logError(e);
+                }
+                return "";
             }
         });
 
@@ -285,16 +286,15 @@ public class TestCaseVariablePart {
         tableViewerColumnDefaultValue.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                if (element != null && element instanceof VariableEntity) {
-                    try {
-                        ASTNode astNode = GroovyParser.parseGroovyScriptAndGetFirstItem(((VariableEntity) element)
-                                .getDefaultValue());
-                        return AstTreeTableTextValueUtil.getInstance().getTextValue(astNode);
-                    } catch (Exception e) {
-                        LoggerSingleton.logError(e);
-                    }
+                if (!(element instanceof VariableEntity) || ((VariableEntity) element).getDefaultValue() == null) {
+                    return "";
                 }
-                return StringUtils.EMPTY;
+                ExpressionWrapper expression = GroovyWrapperParser
+                        .parseGroovyScriptAndGetFirstExpression(((VariableEntity) element).getDefaultValue());
+                if (expression == null) {
+                    return "";
+                }
+                return expression.getText();
             }
         });
 
@@ -306,7 +306,7 @@ public class TestCaseVariablePart {
                 if (element != null && element instanceof VariableEntity) {
                     return ((VariableEntity) element).getDescription();
                 }
-                return StringUtils.EMPTY;
+                return "";
             }
         });
         TableColumn tblColumnDescription = tableViewerColumnDescription.getColumn();
