@@ -786,7 +786,7 @@ public class RecorderDialog extends Dialog implements EventHandler {
             public String getText(Object element) {
                 if (element instanceof HTMLActionMapping && ((HTMLActionMapping) element).getAction() != null) {
                     HTMLActionMapping actionMapping = (HTMLActionMapping) element;
-                    if (actionMapping.getAction() != null && actionMapping.getAction().hasElement()) {
+                    if (actionMapping.getAction().hasElement()) {
                         if (actionMapping.getTargetElement() != null) {
                             return actionMapping.getTargetElement().getName();
                         } else {
