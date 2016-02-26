@@ -19,6 +19,12 @@ import com.kms.katalon.composer.components.viewer.FocusCellOwnerDrawHighlighterF
 
 public class ColumnViewerUtil {
     /**
+     * SWT MouseEvent constant for right ( third ) mouse button
+     * @see {@link org.eclipse.swt.events.MouseEvent#button}
+     */
+    private static final int RIGHT_MOUSE = 3;
+
+    /**
      * Set the activation strategy for the table cells to be double click or enter key
      * @param tableViewer
      */
@@ -34,7 +40,7 @@ public class ColumnViewerUtil {
             protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
                 if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION) {
                     EventObject source = event.sourceEvent;
-                    if (source instanceof MouseEvent && ((MouseEvent) source).button == 3)
+                    if (source instanceof MouseEvent && ((MouseEvent) source).button == RIGHT_MOUSE)
                         return false;
 
                     return true;
