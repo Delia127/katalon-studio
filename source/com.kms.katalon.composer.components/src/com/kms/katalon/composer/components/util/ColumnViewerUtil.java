@@ -41,14 +41,18 @@ public class ColumnViewerUtil {
     private static ColumnViewerEditorActivationStrategy getColumViewerActivationStrategy(ColumnViewer columnViewer) {
         ColumnViewerEditorActivationStrategy activationSupport = new ColumnViewerEditorActivationStrategy(columnViewer) {
             protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
-                if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION) {
+                switch (event.eventType) {
+                case ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION:
                     EventObject source = event.sourceEvent;
-                    if (source instanceof MouseEvent && ((MouseEvent) source).button == RIGHT_MOUSE)
+                    if (source instanceof MouseEvent && ((MouseEvent) source).button == RIGHT_MOUSE) {
                         return false;
-
+                    }
                     return true;
-                } else if (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && event.keyCode == SWT.CR) {
-                    return true;
+                case ColumnViewerEditorActivationEvent.KEY_PRESSED:
+                    if (event.keyCode == SWT.CR) {
+                        return true;
+                    }
+                    break;
                 }
                 return false;
             }
