@@ -784,17 +784,15 @@ public class RecorderDialog extends Dialog implements EventHandler {
         tableViewerColumnElement.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                if (element instanceof HTMLActionMapping && ((HTMLActionMapping) element).getAction() != null) {
-                    HTMLActionMapping actionMapping = (HTMLActionMapping) element;
-                    if (actionMapping.getAction().hasElement()) {
-                        if (actionMapping.getTargetElement() != null) {
-                            return actionMapping.getTargetElement().getName();
-                        } else {
-                            return StringConstants.NULL;
-                        }
-                    }
+                if (!(element instanceof HTMLActionMapping) || ((HTMLActionMapping) element).getAction() == null
+                        || !((HTMLActionMapping) element).getAction().hasElement()) {
+                    return StringUtils.EMPTY;
                 }
-                return StringUtils.EMPTY;
+                HTMLActionMapping actionMapping = (HTMLActionMapping) element;
+                if (actionMapping.getTargetElement() != null) {
+                    return actionMapping.getTargetElement().getName();
+                }
+                return StringConstants.NULL;
             }
         });
 
