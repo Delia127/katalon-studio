@@ -42,7 +42,7 @@ public class ExecuteHandler extends AbstractExecutionHandler {
         for (MMenuElement menuItem : toolItem.getMenu().getChildren()) {
             if (menuItem instanceof MHandledMenuItem) {
                 MHandledMenuItem handledMenuItem = (MHandledMenuItem) menuItem;
-                if (handledMenuItem.getLabel().equals(defaultRunContributor.getId())
+                if (handledMenuItem.getLabel().contains(defaultRunContributor.getId())
                         && handledMenuItem.getCommand() != null) {
                     ParameterizedCommand executionCommand = commandService.createCommand(handledMenuItem.getCommand().getElementId(), null);
                     handlerService.executeHandler(executionCommand);

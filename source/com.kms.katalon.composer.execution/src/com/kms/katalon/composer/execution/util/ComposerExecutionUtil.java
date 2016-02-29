@@ -10,6 +10,7 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.composer.components.services.ModelServiceSingleton;
+import com.kms.katalon.composer.execution.menu.ExecutionHandledMenuItem;
 import com.kms.katalon.composer.execution.preferences.ExecutionPreferenceDefaultValueInitializer;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants.ExecutionPreferenceConstants;
@@ -18,40 +19,37 @@ public class ComposerExecutionUtil {
 
     /**
      * Update default label for Run drop-down item
+     */
+    public static void updateDefaultLabelForRunDropDownItem() {
+        String defaultItemLabel = ((IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
+                ExecutionPreferenceConstants.QUALIFIER))
+                .getString(ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION);
+        if (defaultItemLabel.isEmpty()) {
+            defaultItemLabel = ExecutionPreferenceDefaultValueInitializer.EXECUTION_DEFAULT_RUN_CONFIGURATION;
+        }
+
+        updateDefaultLabelForRunDropDownItem(defaultItemLabel);
+    }
+
+    /**
+     * Update default label for Run drop-down item
      * 
-     * @param defaultItemLabel Menu Item label. If null, value will be get from execution preference
+     * @param defaultItemLabel Menu Item label
      */
     public static void updateDefaultLabelForRunDropDownItem(String defaultItemLabel) {
         MToolItem runToolItem = (MToolItem) ModelServiceSingleton.getInstance().getModelService()
                 .find(IdConstants.EXECUTION_TOOL_ITEM_ID, ApplicationSingleton.getInstance().getApplication());
         if (runToolItem == null) return;
 
-        MMenu menu = runToolItem.getMenu();
+        final MMenu menu = runToolItem.getMenu();
         if (menu == null || menu.getChildren() == null || menu.getChildren().isEmpty()) return;
 
-        String defaultLabel = " (default)";
-
-        if (defaultItemLabel == null) {
-            defaultItemLabel = ((IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                    ExecutionPreferenceConstants.QUALIFIER))
-                    .getString(ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION);
-            if (defaultItemLabel.isEmpty()) {
-                defaultItemLabel = ExecutionPreferenceDefaultValueInitializer.EXECUTION_DEFAULT_RUN_CONFIGURATION;
-            }
-        }
-
-        // Remove previous default label
-        for (MMenuElement item : menu.getChildren()) {
-            if (StringUtils.contains(item.getLabel(), defaultLabel)) {
-                item.setLabel(StringUtils.removeEnd(item.getLabel(), defaultLabel));
-                break;
-            }
-        }
+        if (StringUtils.isBlank(defaultItemLabel)) return;
 
         // Set new default label
         for (MMenuElement item : menu.getChildren()) {
-            if (StringUtils.equals(item.getLabel(), defaultItemLabel)) {
-                item.setLabel(item.getLabel() + defaultLabel);
+            if (item instanceof ExecutionHandledMenuItem && StringUtils.contains(item.getLabel(), defaultItemLabel)) {
+                ((ExecutionHandledMenuItem) item).setDefault(true);
                 break;
             }
         }
