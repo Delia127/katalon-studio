@@ -19,9 +19,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String ADAP_MENU_CONTEXT_CONTINUE_ON_FAILURE = "Continue On Failure";
     public static final String ADAP_MENU_CONTEXT_OPTIONAL = "Optional";
 
-    // FocusCellOwnerDrawHighlighterForMultiSelection
-    public static final String COMP_MSG_INVALID_INTERNAL_STRUCTURE = "Internal structure invalid. Item without associated row is not possible.";
-
     // TreeTableMenuItemConstants
     public static final String CONS_MENU_CONTEXT_DECISION_MAKING_STATEMENT = "Decision-making Statements";
     public static final String CONS_MENU_CONTEXT_LOOPING_STATEMENT = "Looping Statements";

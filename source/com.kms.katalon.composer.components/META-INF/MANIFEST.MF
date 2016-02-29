@@ -15,6 +15,7 @@ Export-Package: com.kms.katalon.composer.components.adapter,
  com.kms.katalon.composer.components.transfer,
  com.kms.katalon.composer.components.tree,
  com.kms.katalon.composer.components.util,
+ com.kms.katalon.composer.components.viewer,
  com.kms.katalon.composer.components.wizard
 Require-Bundle: org.eclipse.jface,
  org.eclipse.e4.core.services,

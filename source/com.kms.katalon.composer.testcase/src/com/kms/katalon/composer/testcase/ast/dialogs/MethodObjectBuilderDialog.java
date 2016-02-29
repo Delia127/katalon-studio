@@ -4,7 +4,6 @@ import java.text.Collator;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.EventObject;
 import java.util.List;
 import java.util.Locale;
 
@@ -25,21 +24,14 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnViewerEditor;
-import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
-import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.EditingSupport;
-import org.eclipse.jface.viewers.FocusCellOwnerDrawHighlighter;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.TableViewerEditor;
-import org.eclipse.jface.viewers.TableViewerFocusCellManager;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -55,6 +47,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 
+import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.testcase.ast.editors.TypeInputCellEditor;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.core.annotation.SetUp;
@@ -280,26 +273,7 @@ public class MethodObjectBuilderDialog extends Dialog implements AstBuilderDialo
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 
-		TableViewerFocusCellManager focusCellManager = new TableViewerFocusCellManager(tableViewer,
-				new FocusCellOwnerDrawHighlighter(tableViewer));
-
-		ColumnViewerEditorActivationStrategy activationSupport = new ColumnViewerEditorActivationStrategy(tableViewer) {
-			protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
-				if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION) {
-					EventObject source = event.sourceEvent;
-					if (source instanceof MouseEvent && ((MouseEvent) source).button == 3) return false;
-
-					return true;
-				} else if (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && event.keyCode == SWT.CR) {
-					return true;
-				}
-				return false;
-			}
-		};
-
-		TableViewerEditor.create(tableViewer, focusCellManager, activationSupport,
-				ColumnViewerEditor.TABBING_HORIZONTAL | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
-						| ColumnViewerEditor.KEYBOARD_ACTIVATION);
+		ColumnViewerUtil.setTableActivation(tableViewer);
 
 		TableViewerColumn tableViewerColumnParamType = new TableViewerColumn(tableViewer, SWT.NONE);
 		tableViewerColumnParamType.getColumn().setText(StringConstants.DIA_COL_PARAM_TYPE);

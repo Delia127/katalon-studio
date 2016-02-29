@@ -223,4 +223,7 @@ public class GlobalStringConstants {
     public static final String ENTITY_KW_REPORT = "rp";
 
     public static final String ENTITY_KW_KEYWORD = "kw";
+    
+    // Common value
+    public static final String NULL = "null";
 }
