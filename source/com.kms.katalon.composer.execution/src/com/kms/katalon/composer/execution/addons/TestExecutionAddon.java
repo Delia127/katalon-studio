@@ -99,11 +99,11 @@ public class TestExecutionAddon implements EventHandler {
 
         List<MMenuElement> menuItems = new ArrayList<MMenuElement>();
         for (MMenuElement item : menu.getChildren()) {
+            MMenuElement wrappedItem = item;
             if (item instanceof MHandledMenuItem) {
-                menuItems.add(new ExecutionHandledMenuItem((MHandledMenuItem) item));
-                continue;
+                wrappedItem = new ExecutionHandledMenuItem((MHandledMenuItem) item);
             }
-            menuItems.add(item);
+            menuItems.add(wrappedItem);
         }
         menu.getChildren().clear();
         menu.getChildren().addAll(menuItems);
