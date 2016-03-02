@@ -202,14 +202,13 @@ public class ExecutionPreferencePage extends PreferencePage {
                     Integer.parseInt(txtPageLoadTimeout.getText()));
         }
 
-        if (executionOptionCombo != null && runConfigs != null && runConfigs.length > 0) {
-            if (!StringUtils.equals(executionOptionCombo.getText(), selectedExecutionConfiguration)) {
-                selectedExecutionConfiguration = executionOptionCombo.getText();
-                getPreferenceStore().setValue(
-                        PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION,
-                        selectedExecutionConfiguration);
-                ComposerExecutionUtil.updateDefaultLabelForRunDropDownItem(executionOptionCombo.getText());
-            }
+        if (executionOptionCombo != null && runConfigs != null && runConfigs.length > 0
+                && !StringUtils.equals(executionOptionCombo.getText(), selectedExecutionConfiguration)) {
+            selectedExecutionConfiguration = executionOptionCombo.getText();
+            getPreferenceStore().setValue(
+                    PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION,
+                    selectedExecutionConfiguration);
+            ComposerExecutionUtil.updateDefaultLabelForRunDropDownItem(executionOptionCombo.getText());
         }
     }
 
