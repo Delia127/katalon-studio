@@ -1,7 +1,6 @@
 package com.kms.katalon.composer.project.handlers;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -13,14 +12,12 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.internal.events.EventBroker;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.PlatformUI;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.constants.PreferenceConstants;
+import com.kms.katalon.constants.PreferenceConstants.IPluginPreferenceConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 
@@ -59,17 +56,8 @@ public class RecentProjectHandler {
             List<ProjectEntity> recentProjects = ProjectController.getInstance().getRecentProjects();
             if (recentProjects == null || recentProjects.isEmpty()) return;
 
-            boolean willOpen = true;
-            if (!PlatformUI.getPreferenceStore().getBoolean(
-                    PreferenceConstants.ProjectPreferenceConstants.RECENT_AUTO_RESTORE)) {
-                willOpen = MessageDialog.openQuestion(
-                        null,
-                        StringConstants.ADDON_TITLE_OPEN_PROJECT,
-                        MessageFormat.format(StringConstants.ADDON_MSG_RESTORE_LAST_OPENED_PROJECT,
-                                recentProjects.get(0).getName(), recentProjects.get(0).getFolderLocation()));
-            }
-
-            if (willOpen) {
+            if (PlatformUI.getPreferenceStore().getBoolean(
+                    IPluginPreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION)) {
                 // If the Tests Explorer part is minimized or hidden, we have to activate it.
                 // So that the tree entities can be loaded.
                 MPart explorerPart = partService.findPart(IdConstants.EXPLORER_PART_ID);

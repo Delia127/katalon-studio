@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.constants.PreferenceConstants;
+import com.kms.katalon.constants.PreferenceConstants.IPluginPreferenceConstants;
 import com.kms.katalon.constants.StringConstants;
 
 public class QuitHandler {
@@ -27,11 +27,11 @@ public class QuitHandler {
         MessageDialogWithToggle confirm = MessageDialogWithToggle.open(MessageDialogWithToggle.CONFIRM, shell,
                 StringConstants.HAND_QUIT_DIA_TITLE, StringConstants.HAND_QUIT_DIA_MSG,
                 StringConstants.HAND_QUIT_DIA_MSG_AUTO_RESTORE_SESSION,
-                prefs.getBoolean(PreferenceConstants.ProjectPreferenceConstants.RECENT_AUTO_RESTORE), prefs,
-                PreferenceConstants.ProjectPreferenceConstants.RECENT_AUTO_RESTORE, SWT.NONE);
+                prefs.getBoolean(IPluginPreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION), prefs,
+                IPluginPreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION, SWT.NONE);
         if (confirm.getReturnCode() == Window.OK) {
             if (partService.saveAll(true)) {
-                prefs.setValue(PreferenceConstants.ProjectPreferenceConstants.RECENT_AUTO_RESTORE,
+                prefs.setValue(IPluginPreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION,
                         confirm.getToggleState());
                 eventBroker.send(EventConstants.PROJECT_CLOSE, null);
                 workbench.close();

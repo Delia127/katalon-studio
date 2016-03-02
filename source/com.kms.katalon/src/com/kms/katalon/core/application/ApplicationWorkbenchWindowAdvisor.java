@@ -20,6 +20,7 @@ import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.ModelServiceSingleton;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.constants.PreferenceConstants.IPluginPreferenceConstants;
 
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
@@ -42,24 +43,27 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
     @SuppressWarnings("unchecked")
     @Override
     public void postWindowClose() {
-        // Clear Memento state
-        if (ApplicationSingleton.getInstance().getApplication().getPersistedState().containsKey("memento")) {
-            ApplicationSingleton.getInstance().getApplication().getPersistedState().remove("memento");
-        }
+        if (PlatformUI.getPreferenceStore()
+                .getBoolean(IPluginPreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION)) {
+            // Clear Memento state
+            if (ApplicationSingleton.getInstance().getApplication().getPersistedState().containsKey("memento")) {
+                ApplicationSingleton.getInstance().getApplication().getPersistedState().remove("memento");
+            }
 
-        // Re-shape Editor Area
-        List<MUIElement> sharedElements = ApplicationSingleton.getInstance().getApplication().getChildren().get(0)
-                .getSharedElements();
-        for (MUIElement element : sharedElements) {
-            if (IdConstants.SHARE_AREA_ID.equals(element.getElementId())) {
-                ((MArea) element).getChildren().clear();
-                MPartStack contentPartStack = MBasicFactory.INSTANCE.createPartStack();
-                contentPartStack.setElementId(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID);
-                contentPartStack.setParent((MElementContainer<MUIElement>) element);
-                contentPartStack.setContainerData("100");
-                contentPartStack.getTags().add("NoAutoCollapse");
-                ((MArea) element).setSelectedElement(contentPartStack);
-                break;
+            // Re-shape Editor Area
+            List<MUIElement> sharedElements = ApplicationSingleton.getInstance().getApplication().getChildren().get(0)
+                    .getSharedElements();
+            for (MUIElement element : sharedElements) {
+                if (IdConstants.SHARE_AREA_ID.equals(element.getElementId())) {
+                    ((MArea) element).getChildren().clear();
+                    MPartStack contentPartStack = MBasicFactory.INSTANCE.createPartStack();
+                    contentPartStack.setElementId(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID);
+                    contentPartStack.setParent((MElementContainer<MUIElement>) element);
+                    contentPartStack.setContainerData("100");
+                    contentPartStack.getTags().add("NoAutoCollapse");
+                    ((MArea) element).setSelectedElement(contentPartStack);
+                    break;
+                }
             }
         }
     }

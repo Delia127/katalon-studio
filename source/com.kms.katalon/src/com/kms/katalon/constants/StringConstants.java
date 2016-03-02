@@ -61,4 +61,11 @@ public class StringConstants extends GlobalStringConstants {
     public static final String ERROR_TITLE = ERROR;
 
     public static final String HAND_SAVE_DIA_MSG = "Unable to save part.";
+
+    // GeneralPreferencePage
+    public static final String PAGE_GRP_ON_NEXT_STARTING_APP = "On next starting application";
+
+    public static final String PAGE_RADIO_AUTO_RESTORE_PREV_SESSION = "Auto restore the previous session";
+
+    public static final String PAGE_RADIO_AUTO_CLEAN_PREV_SESSION = "Open a clean session";
 }

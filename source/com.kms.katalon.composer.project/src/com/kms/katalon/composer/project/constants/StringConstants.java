@@ -68,9 +68,4 @@ public class StringConstants extends GlobalStringConstants {
     public static final String VIEW_ERROR_MSG_PROJ_NAME_EXISTED_IN_LOC = "A project with the same name already exists in the selected location.";
 
     public static final String VIEW_ERROR_MSG_PROJ_LOC_DOES_NOT_EXIST = "Project's location does not exist.";
-
-    // RecentProjectHandler
-    public static final String ADDON_TITLE_OPEN_PROJECT = "Open Project";
-
-    public static final String ADDON_MSG_RESTORE_LAST_OPENED_PROJECT = "Do you want to continue on last opened project?\n{0} ({1})";
 }
