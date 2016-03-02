@@ -83,29 +83,24 @@ public class TestExecutionAddon implements EventHandler {
         if (event.getTopic().equals(EventConstants.WORKSPACE_CREATED)) {
             try {
                 Platform.getBundle(KATALON_COMPOSER_EXECUTION_ID).start();
-
-                if (executionMenuItemsProcessor()) {
-                    ComposerExecutionUtil.updateDefaultLabelForRunDropDownItem();
-                }
+                wrapExecutionMenuItemsProcessor();
             } catch (BundleException e) {
                 LoggerSingleton.logError(e);
             }
         }
     }
 
-    private boolean executionMenuItemsProcessor() {
-        boolean wrapped = false;
+    private void wrapExecutionMenuItemsProcessor() {
         MToolItem runToolItem = (MToolItem) modelService.find(IdConstants.EXECUTION_TOOL_ITEM_ID, application);
-        if (runToolItem == null) return wrapped;
+        if (runToolItem == null) return;
 
         MMenu menu = runToolItem.getMenu();
-        if (menu == null || menu.getChildren() == null || menu.getChildren().isEmpty()) return wrapped;
+        if (menu == null || menu.getChildren() == null || menu.getChildren().isEmpty()) return;
 
         List<MMenuElement> menuItems = new ArrayList<MMenuElement>();
         for (MMenuElement item : menu.getChildren()) {
             if (item instanceof MHandledMenuItem) {
                 menuItems.add(new ExecutionHandledMenuItem((MHandledMenuItem) item));
-                wrapped = true;
                 continue;
             }
             menuItems.add(item);
@@ -113,6 +108,6 @@ public class TestExecutionAddon implements EventHandler {
         menu.getChildren().clear();
         menu.getChildren().addAll(menuItems);
 
-        return wrapped;
+        ComposerExecutionUtil.updateDefaultLabelForRunDropDownItem();
     }
 }

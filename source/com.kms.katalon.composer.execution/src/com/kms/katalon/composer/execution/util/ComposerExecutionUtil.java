@@ -1,6 +1,8 @@
 package com.kms.katalon.composer.execution.util;
 
-import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.contains;
+import static org.apache.commons.lang.StringUtils.isBlank;
+
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenu;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
@@ -24,7 +26,7 @@ public class ComposerExecutionUtil {
         String defaultItemLabel = ((IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
                 ExecutionPreferenceConstants.QUALIFIER))
                 .getString(ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION);
-        if (defaultItemLabel.isEmpty()) {
+        if (isBlank(defaultItemLabel)) {
             defaultItemLabel = ExecutionPreferenceDefaultValueInitializer.EXECUTION_DEFAULT_RUN_CONFIGURATION;
         }
 
@@ -44,13 +46,17 @@ public class ComposerExecutionUtil {
         final MMenu menu = runToolItem.getMenu();
         if (menu == null || menu.getChildren() == null || menu.getChildren().isEmpty()) return;
 
-        if (StringUtils.isBlank(defaultItemLabel)) return;
+        if (isBlank(defaultItemLabel)) return;
 
         // Set new default label
         for (MMenuElement item : menu.getChildren()) {
-            if (item instanceof ExecutionHandledMenuItem && StringUtils.contains(item.getLabel(), defaultItemLabel)) {
-                ((ExecutionHandledMenuItem) item).setDefault(true);
-                break;
+            if (item instanceof ExecutionHandledMenuItem) {
+                ExecutionHandledMenuItem wrappedItem = (ExecutionHandledMenuItem) item;
+                if (contains(item.getLabel(), defaultItemLabel)) {
+                    wrappedItem.setDefault(true);
+                    continue;
+                }
+                wrappedItem.setDefault(false);
             }
         }
     }

@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.execution.menu;
 
-import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.model.application.ui.menu.MHandledMenuItem;
 import org.eclipse.e4.ui.model.application.ui.menu.impl.HandledMenuItemImpl;
 
@@ -38,20 +37,6 @@ public class ExecutionHandledMenuItem extends HandledMenuItemImpl {
     }
 
     public void setDefault(boolean isDefault) {
-        if (isDefault() && isDefault) return;
-
-        if (isDefault) {
-            if (getParent() != null) {
-                for (MUIElement item : getParent().getChildren()) {
-                    if (item instanceof ExecutionHandledMenuItem && ((ExecutionHandledMenuItem) item).isDefault()) {
-                        ((ExecutionHandledMenuItem) item).setDefault(false);
-                        break;
-                    }
-                }
-            }
-        }
-
         this.isDefault = isDefault;
-        this.setToBeRendered(true);
     }
 }

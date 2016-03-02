@@ -2,6 +2,7 @@ package com.kms.katalon.composer.execution.preferences;
 
 import java.text.MessageFormat;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -25,10 +26,16 @@ import com.kms.katalon.execution.configuration.contributor.IRunConfigurationCont
 
 public class ExecutionPreferencePage extends PreferencePage {
     private Button chckNotifyMe, chckOpenReport;
+
     private Text txtPageLoadTimeout;
+
     private Composite fieldEditorParent;
+
     private Combo executionOptionCombo;
+
     private IRunConfigurationContributor[] runConfigs;
+
+    private String selectedExecutionConfiguration;
 
     public ExecutionPreferencePage() {
     }
@@ -106,7 +113,7 @@ public class ExecutionPreferencePage extends PreferencePage {
                 PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING));
         txtPageLoadTimeout.setText(Integer.toString(getPreferenceStore().getInt(
                 PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_DEFAULT_TIMEOUT)));
-        String selectedExecutionConfiguration = getPreferenceStore().getString(
+        selectedExecutionConfiguration = getPreferenceStore().getString(
                 PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION);
         runConfigs = RunConfigurationCollector.getInstance().getAllBuiltinRunConfigurationContributors();
         String[] runConfigIdList = new String[runConfigs.length];
@@ -196,20 +203,18 @@ public class ExecutionPreferencePage extends PreferencePage {
         }
 
         if (executionOptionCombo != null && runConfigs != null && runConfigs.length > 0) {
-            getPreferenceStore().setValue(
-                    PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION,
-                    executionOptionCombo.getText());
-            ComposerExecutionUtil.updateDefaultLabelForRunDropDownItem(executionOptionCombo.getText());
+            if (!StringUtils.equals(executionOptionCombo.getText(), selectedExecutionConfiguration)) {
+                selectedExecutionConfiguration = executionOptionCombo.getText();
+                getPreferenceStore().setValue(
+                        PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION,
+                        selectedExecutionConfiguration);
+                ComposerExecutionUtil.updateDefaultLabelForRunDropDownItem(executionOptionCombo.getText());
+            }
         }
     }
 
     public boolean performOk() {
-        boolean result = super.performOk();
-        if (result) {
-            if (isValid()) {
-                performApply();
-            }
-        }
-        return true;
+        if (isValid()) performApply();
+        return super.performOk();
     }
 }
