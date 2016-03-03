@@ -18,10 +18,10 @@ public class PinLogViewHander {
     public void execute(@Optional MDirectToolItem item) {
         try {
             ScopedPreferenceStore store = new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                    PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
+                    PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
             switch (item.getElementId()) {
                 case IdConstants.LOG_VIEWER_TOOL_ITEM_PIN_ID:
-                    store.setValue(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_PIN_LOG, item.isSelected());
+                    store.setValue(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_PIN_LOG, item.isSelected());
                     break;
                 default:
                     break;

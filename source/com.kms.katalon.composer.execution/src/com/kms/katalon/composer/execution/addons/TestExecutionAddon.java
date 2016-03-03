@@ -1,5 +1,8 @@
 package com.kms.katalon.composer.execution.addons;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -9,7 +12,9 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.menu.MDynamicMenuContribution;
+import org.eclipse.e4.ui.model.application.ui.menu.MHandledMenuItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenu;
+import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuFactory;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolItem;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
@@ -20,7 +25,10 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.handlers.EvaluateDriverConnectorEditorContributionsHandler;
 import com.kms.katalon.composer.execution.menu.CustomExecutionMenuContribution;
+import com.kms.katalon.composer.execution.menu.ExecutionHandledMenuItem;
+import com.kms.katalon.composer.execution.util.ComposerExecutionUtil;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.IdConstants;
 
 public class TestExecutionAddon implements EventHandler {
 
@@ -50,7 +58,6 @@ public class TestExecutionAddon implements EventHandler {
         ContextInjectionFactory.make(EvaluateDriverConnectorEditorContributionsHandler.class, context);
         eventBroker.subscribe(EventConstants.WORKSPACE_CREATED, this);
         initCustomRunConfigurationSubMenu();
-
     }
 
     private void initCustomRunConfigurationSubMenu() {
@@ -76,9 +83,31 @@ public class TestExecutionAddon implements EventHandler {
         if (event.getTopic().equals(EventConstants.WORKSPACE_CREATED)) {
             try {
                 Platform.getBundle(KATALON_COMPOSER_EXECUTION_ID).start();
+                wrapExecutionMenuItemsProcessor();
             } catch (BundleException e) {
                 LoggerSingleton.logError(e);
             }
         }
+    }
+
+    private void wrapExecutionMenuItemsProcessor() {
+        MToolItem runToolItem = (MToolItem) modelService.find(IdConstants.EXECUTION_TOOL_ITEM_ID, application);
+        if (runToolItem == null) return;
+
+        MMenu menu = runToolItem.getMenu();
+        if (menu == null || menu.getChildren() == null || menu.getChildren().isEmpty()) return;
+
+        List<MMenuElement> menuItems = new ArrayList<MMenuElement>();
+        for (MMenuElement item : menu.getChildren()) {
+            MMenuElement wrappedItem = item;
+            if (item instanceof MHandledMenuItem) {
+                wrappedItem = new ExecutionHandledMenuItem((MHandledMenuItem) item);
+            }
+            menuItems.add(wrappedItem);
+        }
+        menu.getChildren().clear();
+        menu.getChildren().addAll(menuItems);
+
+        ComposerExecutionUtil.updateDefaultLabelForRunDropDownItem();
     }
 }

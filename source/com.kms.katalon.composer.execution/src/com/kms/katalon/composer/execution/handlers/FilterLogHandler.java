@@ -25,26 +25,26 @@ public class FilterLogHandler {
     public void execute(@Optional MDirectToolItem item) {
         try {
             ScopedPreferenceStore store = new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                    PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
+                    PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
             switch (item.getElementId()) {
             case IdConstants.LOG_VIEWER_TOOL_ITEM_ALL_ID:
-                store.setValue(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_ALL_LOGS,
+                store.setValue(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_ALL_LOGS,
                         item.isSelected());
                 break;
             case IdConstants.LOG_VIEWER_TOOL_ITEM_INFO_ID:
-                store.setValue(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_INFO_LOGS,
+                store.setValue(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_INFO_LOGS,
                         item.isSelected());
                 break;
             case IdConstants.LOG_VIEWER_TOOL_ITEM_PASSED_ID:
-                store.setValue(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_PASSED_LOGS,
+                store.setValue(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_PASSED_LOGS,
                         item.isSelected());
                 break;
             case IdConstants.LOG_VIEWER_TOOL_ITEM_FAILED_ID:
-                store.setValue(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_FAILED_LOGS,
+                store.setValue(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_FAILED_LOGS,
                         item.isSelected());
                 break;
             case IdConstants.LOG_VIEWER_TOOL_ITEM_ERROR_ID:
-                store.setValue(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_ERROR_LOGS,
+                store.setValue(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_ERROR_LOGS,
                         item.isSelected());
                 break;
             }

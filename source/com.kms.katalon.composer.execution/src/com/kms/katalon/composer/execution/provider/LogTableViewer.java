@@ -39,7 +39,7 @@ public class LogTableViewer extends TableViewer {
         this.eventBroker = eventBroker;
         this.setContentProvider(new ArrayContentProvider());
         store = new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
+                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
         clearAll();
     }
 
@@ -110,7 +110,7 @@ public class LogTableViewer extends TableViewer {
     }
 
     private boolean isScrollLogEnable() {
-        return !store.getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_PIN_LOG);
+        return !store.getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_PIN_LOG);
     }
 
     public List<XmlLogRecord> getRecords() {

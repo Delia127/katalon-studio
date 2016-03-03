@@ -26,12 +26,12 @@ public class LogTableViewerFilter extends ViewerFilter {
     
     private int getPreferenceShowedValue() {
         IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
-        int showAllLogs = store.getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_ALL_LOGS) ? ALL : 0;
-        int showInfoLogs = store.getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_INFO_LOGS) ? INFO : 0;
-        int showPassedLogs = store.getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_PASSED_LOGS) ? PASSED : 0;
-        int showFailedLogs = store.getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_FAILED_LOGS) ? FAILED : 0;
-        int showIncompleteLogs = store.getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_ERROR_LOGS) ? ERROR : 0;
+                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
+        int showAllLogs = store.getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_ALL_LOGS) ? ALL : 0;
+        int showInfoLogs = store.getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_INFO_LOGS) ? INFO : 0;
+        int showPassedLogs = store.getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_PASSED_LOGS) ? PASSED : 0;
+        int showFailedLogs = store.getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_FAILED_LOGS) ? FAILED : 0;
+        int showIncompleteLogs = store.getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_ERROR_LOGS) ? ERROR : 0;
         
         return    (showAllLogs & ALL) 
                 | (showInfoLogs & INFO) 

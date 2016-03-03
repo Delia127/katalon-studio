@@ -68,9 +68,9 @@ public class ExecutionUtil {
 
     public static IRunConfigurationContributor getDefaultExecutionConfiguration() {
         IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
+                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
         String selectedRunConfiguration = store
-                .getString(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_CONFIGURATION);
+                .getString(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION);
         IRunConfigurationContributor[] allBuiltinRunConfigurationContributor = RunConfigurationCollector.getInstance()
                 .getAllBuiltinRunConfigurationContributors();
         for (IRunConfigurationContributor runConfigurationContributor : allBuiltinRunConfigurationContributor) {
@@ -83,14 +83,14 @@ public class ExecutionUtil {
 
     public static int getDefaultPageLoadTimeout() {
         IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
-        return store.getInt(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_TIMEOUT);
+                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
+        return store.getInt(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_DEFAULT_TIMEOUT);
     }
 
     public static boolean openReportAfterExecuting() {
         IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
-        return store.getBoolean(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_OPEN_REPORT_AFTER_EXECUTING);
+                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
+        return store.getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING);
     }
 
     public static Map<String, Object> escapeGroovy(Map<String, Object> propertiesMap) {

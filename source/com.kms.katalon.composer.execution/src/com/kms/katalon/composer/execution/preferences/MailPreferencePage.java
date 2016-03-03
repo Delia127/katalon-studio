@@ -44,7 +44,7 @@ public class MailPreferencePage extends FieldEditorPreferencePage {
     public MailPreferencePage() {
         super();
         setPreferenceStore((IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER));
+                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER));
     }
 
     @Override
@@ -54,21 +54,21 @@ public class MailPreferencePage extends FieldEditorPreferencePage {
         Group group = SWTFactory.createGroup(comp, StringConstants.PREF_GROUP_LBL_MAIL_SERVER, 2, 2,
                 GridData.FILL_HORIZONTAL);
 
-        hostFieldEditor = addStringFieldEditor(group, PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_HOST,
+        hostFieldEditor = addStringFieldEditor(group, PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_HOST,
                 StringConstants.PREF_LBL_HOST, 1, false);
-        portFieldEditor = addStringFieldEditor(group, PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_PORT,
+        portFieldEditor = addStringFieldEditor(group, PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_PORT,
                 StringConstants.PREF_LBL_PORT, 1, false);
         userNameFieldEditor = addStringFieldEditor(group,
-                PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_USERNAME,
+                PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_USERNAME,
                 StringConstants.PREF_LBL_USERNAME, 1, false);
         passwordFieldEditor = addStringFieldEditor(group,
-                PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_PASSWORD,
+                PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_PASSWORD,
                 StringConstants.PREF_LBL_PASSWORD, 1, false);
 
         Composite spacer = SWTFactory.createComposite(group, 2, 2, GridData.FILL_HORIZONTAL);
 
         protocolFieldEditor = new ComboFieldEditor(
-                PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_SECURITY_PROTOCOL,
+                PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_SECURITY_PROTOCOL,
                 StringConstants.PREF_LBL_SECURITY_PROTOCOL, MailUtil.getMailSecurityProtocolTypeArrayValues(), spacer);
         protocolFieldEditor.fillIntoGrid(spacer, protocolFieldEditor.getNumberOfControls());
         addField(protocolFieldEditor);
@@ -76,16 +76,16 @@ public class MailPreferencePage extends FieldEditorPreferencePage {
         group = SWTFactory.createGroup(comp, StringConstants.PREF_GROUP_LBL_EXECUTION_MAIL, 2, 2, GridData.FILL_BOTH);
 
         recipientFieldEditor = addStringFieldEditor(group,
-                PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_REPORT_RECIPIENTS,
+                PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_REPORT_RECIPIENTS,
                 StringConstants.PREF_LBL_REPORT_RECIPIENTS, 2, false);
-        addStringFieldEditor(group, PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_SIGNATURE,
+        addStringFieldEditor(group, PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_SIGNATURE,
                 StringConstants.PREF_LBL_SIGNATURE, 2, true);
         spacer = SWTFactory.createComposite(group, 2, 2, GridData.FILL_HORIZONTAL);
         
         Composite subSpacer = SWTFactory.createComposite(spacer, 2, 1, GridData.FILL_HORIZONTAL);
 
         FieldEditor fieldEditor = new BooleanFieldEditor(
-                PreferenceConstants.ExecutionPreferenceConstans.MAIL_CONFIG_ATTACHMENT,
+                PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_ATTACHMENT,
                 StringConstants.PREF_LBL_SEND_ATTACHMENT, subSpacer);
         fieldEditor.fillIntoGrid(subSpacer, fieldEditor.getNumberOfControls());
         addField(fieldEditor);

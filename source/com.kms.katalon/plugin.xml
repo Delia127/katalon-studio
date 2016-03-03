@@ -63,4 +63,18 @@
           class="com.kms.katalon.processors.MenuProcessor">
     </processor>
  </extension>
+ <extension
+       point="org.eclipse.core.runtime.preferences">
+    <initializer
+          class="com.kms.katalon.composer.preferences.GeneralPreferenceDefaultValueInitializer">
+    </initializer>
+ </extension>
+ <extension
+       point="com.kms.katalon.preferences.PreferencePages">
+    <page
+          class="com.kms.katalon.composer.preferences.GeneralPreferencePage"
+          id="com.kms.katalon.composer.preferences.GeneralPreferencePage"
+          name="General">
+    </page>
+ </extension>
 </plugin>

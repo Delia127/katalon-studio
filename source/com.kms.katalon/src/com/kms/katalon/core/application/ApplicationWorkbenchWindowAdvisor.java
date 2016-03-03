@@ -1,7 +1,9 @@
 package com.kms.katalon.core.application;
 
 import java.util.List;
+import java.util.Map;
 
+import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MElementContainer;
 import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.model.application.ui.advanced.MArea;
@@ -20,14 +22,18 @@ import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.ModelServiceSingleton;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.constants.PreferenceConstants.IPluginPreferenceConstants;
 
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
     private IWorkbenchWindowConfigurer fConfigurer;
 
+    private MApplication application;
+
     public ApplicationWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {
         super(configurer);
         fConfigurer = configurer;
+        application = ApplicationSingleton.getInstance().getApplication();
     }
 
     public ActionBarAdvisor createActionBarAdvisor(IActionBarConfigurer configurer) {
@@ -42,24 +48,28 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
     @SuppressWarnings("unchecked")
     @Override
     public void postWindowClose() {
-        // Clear Memento state
-        if (ApplicationSingleton.getInstance().getApplication().getPersistedState().containsKey("memento")) {
-            ApplicationSingleton.getInstance().getApplication().getPersistedState().remove("memento");
-        }
+        if (PlatformUI.getPreferenceStore()
+                .getBoolean(IPluginPreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION)) {
 
-        // Re-shape Editor Area
-        List<MUIElement> sharedElements = ApplicationSingleton.getInstance().getApplication().getChildren().get(0)
-                .getSharedElements();
-        for (MUIElement element : sharedElements) {
-            if (IdConstants.SHARE_AREA_ID.equals(element.getElementId())) {
-                ((MArea) element).getChildren().clear();
-                MPartStack contentPartStack = MBasicFactory.INSTANCE.createPartStack();
-                contentPartStack.setElementId(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID);
-                contentPartStack.setParent((MElementContainer<MUIElement>) element);
-                contentPartStack.setContainerData("100");
-                contentPartStack.getTags().add("NoAutoCollapse");
-                ((MArea) element).setSelectedElement(contentPartStack);
-                break;
+            // Clear Memento state
+            Map<String, String> appPersistedState = application.getPersistedState();
+            if (appPersistedState != null) {
+                appPersistedState.remove("memento");
+            }
+
+            // Re-shape Editor Area
+            List<MUIElement> sharedElements = application.getChildren().get(0).getSharedElements();
+            for (MUIElement element : sharedElements) {
+                if (IdConstants.SHARE_AREA_ID.equals(element.getElementId())) {
+                    ((MArea) element).getChildren().clear();
+                    MPartStack contentPartStack = MBasicFactory.INSTANCE.createPartStack();
+                    contentPartStack.setElementId(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID);
+                    contentPartStack.setParent((MElementContainer<MUIElement>) element);
+                    contentPartStack.setContainerData("100");
+                    contentPartStack.getTags().add("NoAutoCollapse");
+                    ((MArea) element).setSelectedElement(contentPartStack);
+                    break;
+                }
             }
         }
     }
@@ -88,7 +98,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
         // active the first tab of the rightPartStack.
         MPartStack rightPartStack = (MPartStack) ModelServiceSingleton.getInstance().getModelService()
-                .find(IdConstants.OUTLINE_PARTSTACK_ID, ApplicationSingleton.getInstance().getApplication());
+                .find(IdConstants.OUTLINE_PARTSTACK_ID, application);
 
         if (rightPartStack != null && rightPartStack.getChildren() != null && !rightPartStack.getChildren().isEmpty()) {
             MPart globalPart = (MPart) rightPartStack.getChildren().get(0);

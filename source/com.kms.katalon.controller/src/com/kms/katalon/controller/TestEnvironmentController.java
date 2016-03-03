@@ -38,8 +38,8 @@ public class TestEnvironmentController extends EntityController {
 
 	public short getPageLoadTimeOutDefaultValue() {
 		IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-				PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
-		return (short) store.getInt(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_TIMEOUT);
+				PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
+		return (short) store.getInt(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_DEFAULT_TIMEOUT);
 	}
 
 	public short getPageLoadTimeOutMinimumValue() {

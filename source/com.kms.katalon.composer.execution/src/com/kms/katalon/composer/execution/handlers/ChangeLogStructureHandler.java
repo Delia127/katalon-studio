@@ -25,10 +25,10 @@ public class ChangeLogStructureHandler {
     public void execute(@Optional MDirectToolItem item) {
         try {
             ScopedPreferenceStore store = new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                    PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
+                    PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
             switch (item.getElementId()) {
                 case IdConstants.LOG_VIEWER_TOOL_ITEM_TREE_ID:
-                    store.setValue(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_LOGS_AS_TREE,
+                    store.setValue(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE,
                             item.isSelected());
                     break;
                 default:

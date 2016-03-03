@@ -26,30 +26,30 @@ public class ExecutionPreferenceDefaultValueInitializer extends AbstractPreferen
     @Override
     public void initializeDefaultPreferences() {
         IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstans.QUALIFIER);
-        store.setDefault(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_CONFIGURATION,
+                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
+        store.setDefault(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION,
                 EXECUTION_DEFAULT_RUN_CONFIGURATION);
-        store.setDefault(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_DEFAULT_TIMEOUT,
+        store.setDefault(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_DEFAULT_TIMEOUT,
                 EXECUTION_DEFAULT_TIMEOUT_VALUE);
-        store.setDefault(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_NOTIFY_AFTER_EXECUTING,
+        store.setDefault(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_NOTIFY_AFTER_EXECUTING,
                 EXECUTION_DEFAULT_IS_NOTIFY_ALLOWED_VALUE);
-        store.setDefault(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_OPEN_REPORT_AFTER_EXECUTING,
+        store.setDefault(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING,
                 EXECUTION_DEFAULT_OPEN_REPORT_REPORT_VALUE);
 
-        store.setDefault(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_ALL_LOGS,
+        store.setDefault(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_ALL_LOGS,
                 EXECUTION_DEFAULT_SHOW_ALL_LOGS_VALUE);
-        store.setDefault(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_INFO_LOGS,
+        store.setDefault(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_INFO_LOGS,
                 EXECUTION_DEFAULT_SHOW_INFO_LOGS_VALUE);
-        store.setDefault(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_PASSED_LOGS,
+        store.setDefault(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_PASSED_LOGS,
                 EXECUTION_DEFAULT_SHOW_PASSED_LOGS_VALUE);
-        store.setDefault(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_FAILED_LOGS,
+        store.setDefault(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_FAILED_LOGS,
                 EXECUTION_DEFAULT_SHOW_FAILED_LOGS_VALUE);
-        store.setDefault(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_ERROR_LOGS,
+        store.setDefault(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_ERROR_LOGS,
                 EXECUTION_DEFAULT_SHOW_ERROR_LOGS_VALUE);
-        store.setDefault(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_SHOW_LOGS_AS_TREE,
+        store.setDefault(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE,
                 EXECUTION_DEFAULT_SHOW_LOGS_AS_TREE);
-        store.setDefault(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_PIN_LOG, EXECUTION_DEFAULT_PIN_LOG);
-        store.setDefault(PreferenceConstants.ExecutionPreferenceConstans.EXECUTION_ENABLE_WORD_WRAP,
+        store.setDefault(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_PIN_LOG, EXECUTION_DEFAULT_PIN_LOG);
+        store.setDefault(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_ENABLE_WORD_WRAP,
                 EXECUTION_DEFAULT_ENABLE_WORD_WRAP);
     }
 }
