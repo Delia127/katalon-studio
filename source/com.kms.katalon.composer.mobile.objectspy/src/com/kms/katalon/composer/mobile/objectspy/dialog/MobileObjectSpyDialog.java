@@ -228,7 +228,7 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
 		cbbAppType = new Combo(contentComposite, SWT.READ_ONLY);
 		cbbAppType.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		cbbAppType.setItems(new String[] { StringConstants.DIA_APP_TYPE_NATIVE_APP, StringConstants.DIA_APP_TYPE_MOBILE_WEB });
+		cbbAppType.setItems(new String[] { StringConstants.DIA_APP_TYPE_MOBILE_WEB });
 		
 		Label appFileLabel = new Label(contentComposite, SWT.NONE);
 		appFileLabel.setText(StringConstants.DIA_LBL_APP_FILE);
@@ -238,8 +238,16 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 		txtAppFile.addModifyListener(new ModifyListener() {
 			@Override
 			public void modifyText(ModifyEvent e) {
-				if (selectedElement != null) {
-					selectedElement.setType(txtAppFile.getText());
+				if(!txtAppFile.getText().trim().equals("")){
+					if(cbbDevices.getSelectionIndex() >= 0 && cbbAppType.getSelectionIndex() >= 0){
+						btnStart.setEnabled(true);	
+					}
+					if (selectedElement != null) {
+						selectedElement.setType(txtAppFile.getText());
+					}
+				}
+				else{
+					btnStart.setEnabled(false);
 				}
 			}
 		});
@@ -302,10 +310,14 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 		btnStart.setImage(ImageConstants.IMG_24_START_DEVICE);
 		btnStart.setText(StringConstants.DIA_TIP_START_APP);
 		btnStart.setToolTipText(StringConstants.DIA_TIP_START_APP);
+		btnStart.setEnabled(false);
 		btnStart.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				startObjectInspectorAction();
+				//Validate all required informations are filled
+		    	if (validateData()) {                
+		    		startObjectInspectorAction();                   
+		        }
 			}
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {}
@@ -564,40 +576,37 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 	}
 
     private void startObjectInspectorAction() {
-    	//Validate all required informations are filled
-    	if (validateData()) {                
-            if(cbbAppType.getSelectionIndex() == 0){
-                lblStatus.setText(StringConstants.DIA_LBL_STATUS_APP_STARTING);
-                btnStart.setEnabled(false);
-                this.getShell().getDisplay().asyncExec(new Runnable() {						
-					@Override
-					public void run() {
-						try {
-	                        //Start application using MobileDriver
-	                    	String deviceName = cbbDevices.getItem(cbbDevices.getSelectionIndex());
-	                        boolean result = inspectorController.startMobileApp(inspectorController.getDeviceId(deviceName), txtAppFile.getText(), false);
-	                        if (result) {
-	                            //Enable more feature if start application successful
-	                            btnAdd.setEnabled(true);
-	                            btnCapture.setEnabled(true);
-	                            btnStop.setEnabled(true);
-	                            lblStatus.setText(StringConstants.DIA_LBL_STATUS_APP_STARTED);
-	                        } else {
-	                            //Enable start button and show error dialog if application cannot start
-	                            btnStart.setEnabled(true);
-	                            lblStatus.setText("");
-	                            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, 
-	                            		StringConstants.DIA_ERROR_MSG_CANNOT_START_APP_ON_CURRENT_DEVICE);
-	                        }
-	                    } catch (Exception ex) {
-	                        btnStart.setEnabled(true);
-	                        lblStatus.setText("");
-	                        MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, ex.getMessage());
-	                        logger.error(ex);
-	                    }							
-					}
-				});                   
-            }                
+    	if(cbbAppType.getSelectionIndex() == 0){
+            lblStatus.setText(StringConstants.DIA_LBL_STATUS_APP_STARTING);
+            btnStart.setEnabled(false);
+            this.getShell().getDisplay().asyncExec(new Runnable() {						
+				@Override
+				public void run() {
+					try {
+                        //Start application using MobileDriver
+                    	String deviceName = cbbDevices.getItem(cbbDevices.getSelectionIndex());
+                        boolean result = inspectorController.startMobileApp(inspectorController.getDeviceId(deviceName), txtAppFile.getText(), false);
+                        if (result) {
+                            //Enable more feature if start application successful
+                            btnAdd.setEnabled(true);
+                            btnCapture.setEnabled(true);
+                            btnStop.setEnabled(true);
+                            lblStatus.setText(StringConstants.DIA_LBL_STATUS_APP_STARTED);
+                        } else {
+                            //Enable start button and show error dialog if application cannot start
+                            btnStart.setEnabled(true);
+                            lblStatus.setText("");
+                            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, 
+                            		StringConstants.DIA_ERROR_MSG_CANNOT_START_APP_ON_CURRENT_DEVICE);
+                        }
+                    } catch (Exception ex) {
+                        btnStart.setEnabled(true);
+                        lblStatus.setText("");
+                        MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, ex.getMessage());
+                        logger.error(ex);
+                    }							
+				}
+			});                   
         }
     }
     
@@ -633,14 +642,21 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
         			StringConstants.DIA_ERROR_MSG_PLS_CONNECT_AND_SELECT_DEVICE);
             return false;
         }
+        
         if (cbbAppType.getSelectionIndex() < 0) {
         	MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, 
         			StringConstants.DIA_ERROR_MSG_PLS_SELECT_APP_TYPE);
             return false;
         }
-        else if(cbbAppType.getSelectionIndex() == 1){
+        
+        if(txtAppFile.getText().trim().equals("")){
         	MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, 
-        			StringConstants.DIA_ERROR_MSG_HAVE_NOT_SUPPORT_MOBILE_WEB);
+        			StringConstants.DIA_ERROR_MSG_PLS_SELECT_APP_FILE);
+            return false;
+        }
+        else if(new File(txtAppFile.getText().trim()).isFile() == false){
+        	MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, 
+        			StringConstants.DIA_ERROR_MSG_APP_FILE_NOT_EXIST);
             return false;
         }
         return true;

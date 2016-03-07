@@ -2,6 +2,7 @@ package com.kms.katalon.composer.mobile.objectspy.dialog;
 
 import java.io.File;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -93,7 +94,10 @@ public class MobileInspectorController {
     }
 
     public List<String> getDevices() throws Exception {
-        return MobileDriverFactory.getDevices();
+    	List<String> devices = new ArrayList<String>();
+        devices.addAll(MobileDriverFactory.getAndroidDevices().values());
+        devices.addAll(MobileDriverFactory.getIosDevices().values());
+        return devices;
     }
 
     public String getDeviceId(String deviceName) throws Exception {
