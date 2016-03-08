@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.mobile.objectspy.dialog;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -79,6 +81,7 @@ import com.kms.katalon.core.mobile.keyword.GUIObject;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
+
 
 @SuppressWarnings("restriction")
 public class MobileObjectSpyDialog extends Dialog implements EventHandler {
@@ -238,17 +241,21 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 		txtAppFile.addModifyListener(new ModifyListener() {
 			@Override
 			public void modifyText(ModifyEvent e) {
-				if(!txtAppFile.getText().trim().equals("")){
-					if(cbbDevices.getSelectionIndex() >= 0 && cbbAppType.getSelectionIndex() >= 0){
-						btnStart.setEnabled(true);	
-					}
-					if (selectedElement != null) {
-						selectedElement.setType(txtAppFile.getText());
-					}
-				}
-				else{
-					btnStart.setEnabled(false);
-				}
+			    btnStart.setEnabled(false);
+			    String appFile = txtAppFile.getText();
+			    if(isBlank(appFile)){
+			        return;
+			    }
+
+			    if(cbbDevices.getSelectionIndex() < 0 || cbbAppType.getSelectionIndex() < 0){
+			        return;
+			    }
+
+			    if (selectedElement != null) {
+			        selectedElement.setType(txtAppFile.getText());
+			    }
+
+			    btnStart.setEnabled(true);
 			}
 		});
 
@@ -576,38 +583,41 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 	}
 
     private void startObjectInspectorAction() {
-    	if(cbbAppType.getSelectionIndex() == 0){
-            lblStatus.setText(StringConstants.DIA_LBL_STATUS_APP_STARTING);
-            btnStart.setEnabled(false);
-            this.getShell().getDisplay().asyncExec(new Runnable() {						
-				@Override
-				public void run() {
-					try {
-                        //Start application using MobileDriver
-                    	String deviceName = cbbDevices.getItem(cbbDevices.getSelectionIndex());
-                        boolean result = inspectorController.startMobileApp(inspectorController.getDeviceId(deviceName), txtAppFile.getText(), false);
-                        if (result) {
-                            //Enable more feature if start application successful
-                            btnAdd.setEnabled(true);
-                            btnCapture.setEnabled(true);
-                            btnStop.setEnabled(true);
-                            lblStatus.setText(StringConstants.DIA_LBL_STATUS_APP_STARTED);
-                        } else {
-                            //Enable start button and show error dialog if application cannot start
-                            btnStart.setEnabled(true);
-                            lblStatus.setText("");
-                            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, 
-                            		StringConstants.DIA_ERROR_MSG_CANNOT_START_APP_ON_CURRENT_DEVICE);
-                        }
-                    } catch (Exception ex) {
+    	boolean isValid = validateData();
+    	if(!isValid){
+    		return;
+    	}
+    	lblStatus.setText(StringConstants.DIA_LBL_STATUS_APP_STARTING);
+    	//Temporary disable Start button while launching app
+        btnStart.setEnabled(false);
+        this.getShell().getDisplay().asyncExec(new Runnable() {						
+			@Override
+			public void run() {
+				try {
+                    //Start application using MobileDriver
+                	String deviceName = cbbDevices.getItem(cbbDevices.getSelectionIndex());
+                    boolean result = inspectorController.startMobileApp(inspectorController.getDeviceId(deviceName), txtAppFile.getText(), false);
+                    if (result) {
+                        //Enable more feature if start application successful
+                        btnAdd.setEnabled(true);
+                        btnCapture.setEnabled(true);
+                        btnStop.setEnabled(true);
+                        lblStatus.setText(StringConstants.DIA_LBL_STATUS_APP_STARTED);
+                    } else {
+                        //Enable start button and show error dialog if application cannot start
                         btnStart.setEnabled(true);
                         lblStatus.setText("");
-                        MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, ex.getMessage());
-                        logger.error(ex);
-                    }							
-				}
-			});                   
-        }
+                        MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, 
+                        		StringConstants.DIA_ERROR_MSG_CANNOT_START_APP_ON_CURRENT_DEVICE);
+                    }
+                } catch (Exception ex) {
+                    btnStart.setEnabled(true);
+                    lblStatus.setText("");
+                    MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, ex.getMessage());
+                    logger.error(ex);
+                }							
+			}
+		});    	
     }
     
     private void stopObjectInspectorAction() {
@@ -649,12 +659,14 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
             return false;
         }
         
-        if(txtAppFile.getText().trim().equals("")){
+        String appFile = txtAppFile.getText().trim();
+        
+        if(appFile.equals("")){
         	MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, 
         			StringConstants.DIA_ERROR_MSG_PLS_SELECT_APP_FILE);
             return false;
         }
-        else if(new File(txtAppFile.getText().trim()).isFile() == false){
+        else if(new File(appFile).isFile() == false){
         	MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, 
         			StringConstants.DIA_ERROR_MSG_APP_FILE_NOT_EXIST);
             return false;
