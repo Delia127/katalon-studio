@@ -583,8 +583,8 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 	}
 
     private void startObjectInspectorAction() {
-    	boolean isValid = validateData();
-    	if(!isValid){
+    	
+    	if(!validateData()){
     		return;
     	}
     	lblStatus.setText(StringConstants.DIA_LBL_STATUS_APP_STARTING);
@@ -666,7 +666,7 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
         			StringConstants.DIA_ERROR_MSG_PLS_SELECT_APP_FILE);
             return false;
         }
-        else if(new File(appFile).isFile() == false){
+        if(new File(appFile).isFile() == false){
         	MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, 
         			StringConstants.DIA_ERROR_MSG_APP_FILE_NOT_EXIST);
             return false;
