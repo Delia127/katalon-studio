@@ -287,7 +287,7 @@ public class MobileDriverFactory {
         return devices;
     }
 
-    private static Map<String, String> getIosDevices() throws Exception {
+    public static Map<String, String> getIosDevices() throws Exception {
         Map<String, String> iosDevices = new LinkedHashMap<String, String>();
         if (System.getProperty("os.name").toLowerCase().contains("mac")) {
             List<String> deviceIds = new ArrayList<String>();
@@ -329,7 +329,7 @@ public class MobileDriverFactory {
         return iosDevices;
     }
 
-    private static Map<String, String> getAndroidDevices() throws Exception {
+    public static Map<String, String> getAndroidDevices() throws Exception {
         Map<String, String> androidDevices = new LinkedHashMap<String, String>();
 
         String adbPath = System.getenv("ANDROID_HOME");
