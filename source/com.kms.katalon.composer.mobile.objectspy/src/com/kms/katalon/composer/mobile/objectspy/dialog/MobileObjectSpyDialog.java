@@ -3,6 +3,7 @@ package com.kms.katalon.composer.mobile.objectspy.dialog;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,13 +11,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.io.FilenameUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
@@ -93,7 +97,6 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 	private Button btnBrowse;
 	private TableViewer attributesTableViewer;
 	private CheckboxTreeViewer elementTreeViewer;
-	private Label lblStatus;
 	
 	private Logger logger;
 	private ToolItem btnStart, btnCapture, btnAdd, btnStop;
@@ -231,7 +234,7 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
 		cbbAppType = new Combo(contentComposite, SWT.READ_ONLY);
 		cbbAppType.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		cbbAppType.setItems(new String[] { StringConstants.DIA_APP_TYPE_MOBILE_WEB });
+		cbbAppType.setItems(new String[] { StringConstants.DIA_APP_TYPE_NATIVE_APP });
 		
 		Label appFileLabel = new Label(contentComposite, SWT.NONE);
 		appFileLabel.setText(StringConstants.DIA_LBL_APP_FILE);
@@ -279,10 +282,6 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 		
 		Composite attributesTableComposite = new Composite(contentComposite, SWT.NONE);
 		
-		lblStatus = new Label(contentComposite, SWT.FLAT);
-		lblStatus.setLayoutData(new GridData(SWT.END, SWT.LEFT, true, false, 2, 1));
-		lblStatus.setText("\t\t\t");
-
 		TableColumnLayout tableColumnLayout = new TableColumnLayout();
 		attributesTableComposite.setLayout(tableColumnLayout);
 
@@ -584,40 +583,66 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
     private void startObjectInspectorAction() {
     	
-    	if(!validateData()){
-    		return;
-    	}
-    	lblStatus.setText(StringConstants.DIA_LBL_STATUS_APP_STARTING);
     	//Temporary disable Start button while launching app
         btnStart.setEnabled(false);
-        this.getShell().getDisplay().asyncExec(new Runnable() {						
-			@Override
-			public void run() {
-				try {
-                    //Start application using MobileDriver
-                	String deviceName = cbbDevices.getItem(cbbDevices.getSelectionIndex());
-                    boolean result = inspectorController.startMobileApp(inspectorController.getDeviceId(deviceName), txtAppFile.getText(), false);
-                    if (result) {
-                        //Enable more feature if start application successful
-                        btnAdd.setEnabled(true);
-                        btnCapture.setEnabled(true);
-                        btnStop.setEnabled(true);
-                        lblStatus.setText(StringConstants.DIA_LBL_STATUS_APP_STARTED);
-                    } else {
-                        //Enable start button and show error dialog if application cannot start
-                        btnStart.setEnabled(true);
-                        lblStatus.setText("");
-                        MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, 
-                        		StringConstants.DIA_ERROR_MSG_CANNOT_START_APP_ON_CURRENT_DEVICE);
-                    }
-                } catch (Exception ex) {
-                    btnStart.setEnabled(true);
-                    lblStatus.setText("");
-                    MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, ex.getMessage());
-                    logger.error(ex);
-                }							
-			}
-		});    	
+        
+        try {
+        	
+        	final String deviceName = cbbDevices.getItem(cbbDevices.getSelectionIndex());
+        	final String deviceId = inspectorController.getDeviceId(deviceName);
+        	final String appFile = txtAppFile.getText();
+        	
+        	ProgressMonitorDialog progressDlg = new ProgressMonitorDialog(Display.getCurrent().getActiveShell()){
+        		@Override
+				public void cancelPressed() {
+        			super.cancelPressed();
+        			finishedRun();
+        			getProgressMonitor().done();
+        			btnStart.setEnabled(true);
+                    btnStop.setEnabled(false);
+                    btnCapture.setEnabled(false);
+                    btnAdd.setEnabled(false);
+        		}
+        	};
+        	
+        	IRunnableWithProgress processToRun = new IRunnableWithProgress() {
+				@Override
+				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+					monitor.beginTask(StringConstants.DIA_LBL_STATUS_APP_STARTING, IProgressMonitor.UNKNOWN);
+					try {
+	                    //Start application using MobileDriver
+						inspectorController.startMobileApp(deviceId, appFile, false);
+					} catch (Exception ex) {
+	                    logger.error(ex);
+	                    throw new InvocationTargetException(ex, ex.getMessage());
+	                }	
+					if(monitor.isCanceled()){
+						throw new InterruptedException(StringConstants.DIA_ERROR_MSG_OPERATION_CANCELED);
+					}
+					monitor.done();
+				}
+			}; 
+        	
+        	progressDlg.run(true, true, processToRun); 
+			
+			//If no exception, application has been successful started, enable more features  
+			btnAdd.setEnabled(true);
+            btnCapture.setEnabled(true);
+            btnStop.setEnabled(true);
+		} 
+        catch(Exception ex){
+        	//If user intentionally cancel the progress, don't need to show error message
+            if(!StringConstants.DIA_ERROR_MSG_OPERATION_CANCELED.equals(ex.getMessage())){
+            	MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, 
+                		StringConstants.DIA_ERROR_MSG_CANNOT_START_APP_ON_CURRENT_DEVICE + ": " + ex.getMessage());
+                //Enable start button and show error dialog if application cannot start
+                btnStart.setEnabled(true);
+                btnStop.setEnabled(false);
+                btnCapture.setEnabled(false);
+                btnAdd.setEnabled(false);
+            }
+            
+        }
     }
     
     private void stopObjectInspectorAction() {
@@ -632,7 +657,6 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
         thread.start();
 
         // Update UI
-        lblStatus.setText("");
         btnStart.setEnabled(true);
         btnStop.setEnabled(false);
         btnCapture.setEnabled(false);

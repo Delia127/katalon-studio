@@ -17,8 +17,8 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String DIA_DIALOG_TITLE_MOBILE_OBJ_INSPECTOR = "Mobile Object Inspector";
 	public static final String DIA_LBL_DEVICE_NAME = "Device Name";
 	public static final String DIA_LBL_APP_TYPE = "Application Type";
-	//public static final String DIA_APP_TYPE_NATIVE_APP = "Native Application";
-	public static final String DIA_APP_TYPE_MOBILE_WEB = "Mobile Web";
+	public static final String DIA_APP_TYPE_NATIVE_APP = "Native Application";
+	//public static final String DIA_APP_TYPE_MOBILE_WEB = "Mobile Web";
 	public static final String DIA_LBL_APP_FILE = "Application File";
 	public static final String DIA_BTN_BROWSE = BROWSE;
 	public static final String DIA_TIP_START_APP = "Start application";
@@ -32,8 +32,10 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String DIA_ERROR_MSG_CANNOT_START_APP_ON_CURRENT_DEVICE = "Cannot start application on this device";
 	public static final String DIA_ERROR_MSG_PLS_CONNECT_AND_SELECT_DEVICE = "Please connect and select device";
 	public static final String DIA_ERROR_MSG_PLS_SELECT_APP_TYPE = "Please select application type";
-	public static final String DIA_ERROR_MSG_PLS_SELECT_APP_FILE = "Please select an application .apk file";
+	public static final String DIA_ERROR_MSG_PLS_SELECT_APP_FILE = "Please select an application file";
 	public static final String DIA_ERROR_MSG_APP_FILE_NOT_EXIST = "Application file not found, please check it";
 	// CheckboxTreeSelectionHelper
 	public static final String TREE_EXC_MSG_REQUIRE_CONTENT_PROVIDER = "Content provider is required";
+	public static final String DIA_ERROR_MSG_OS_NOT_SUPPORT = "OS type has not been support";
+	public static final String DIA_ERROR_MSG_OPERATION_CANCELED = "Operation was canceled";
 }

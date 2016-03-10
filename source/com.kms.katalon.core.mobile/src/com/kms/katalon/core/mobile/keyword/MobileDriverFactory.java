@@ -243,7 +243,11 @@ public class MobileDriverFactory {
     }
 
     private static void startAppiumServer() throws Exception {
-        String appium = System.getenv("APPIUM_HOME") + "/bin/appium.js";
+    	String appiumHome = System.getenv("APPIUM_HOME"); 
+    	if(appiumHome == null){
+    		throw new Exception("APPIUM_HOME environment variable is not set");
+    	}
+        String appium = appiumHome + "/bin/appium.js";
         String appiumTemp = System.getProperty("java.io.tmpdir") + File.separator + "Katalon" + File.separator
                 + "Appium" + File.separator + "Temp" + System.currentTimeMillis();
         localStorageAppiumPort.set(getFreePort());
