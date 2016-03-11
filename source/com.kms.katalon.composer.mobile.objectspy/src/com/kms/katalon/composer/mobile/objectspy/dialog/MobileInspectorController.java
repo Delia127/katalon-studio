@@ -75,42 +75,6 @@ public class MobileInspectorController {
             driver = MobileDriverFactory.getDriver();
     }
 
-    public boolean startMobileApp1(String deviceId, String appFile, boolean uninstallAfterCloseApp) {
-        try {
-            if (driver != null) {
-                driver.quit();
-                Thread.sleep(2000);
-            }
-            IDriverConnector mobileDriverConnector = null;
-            if (MobileDriverFactory.getDeviceOs(deviceId) == OsType.IOS) {
-                mobileDriverConnector = MobileExecutionUtil.getMobileDriverConnector(MobileDriverType.IOS_DRIVER,
-                        ProjectController.getInstance().getCurrentProject().getFolderLocation());
-                Map<String, Object> confs = mobileDriverConnector.getExecutionSettingPropertyMap();
-                confs.put(RunConfiguration.TIMEOUT_PROPERTY, 60);
-                RunConfiguration.setExecutionSetting(confs);
-                RunConfiguration.setLogFile(ProjectController.getInstance().getCurrentProject().getFolderLocation()
-                        + File.separator + "appium.log");
-                MobileDriverFactory.startIosDriver(deviceId, appFile, uninstallAfterCloseApp);
-            } else if (MobileDriverFactory.getDeviceOs(deviceId) == OsType.ANDROID) {
-                mobileDriverConnector = MobileExecutionUtil.getMobileDriverConnector(MobileDriverType.ANDROID_DRIVER,
-                        ProjectController.getInstance().getCurrentProject().getFolderLocation());
-                Map<String, Object> confs = mobileDriverConnector.getExecutionSettingPropertyMap();
-                confs.put(RunConfiguration.TIMEOUT_PROPERTY, 60);
-                RunConfiguration.setExecutionSetting(confs);
-                RunConfiguration.setLogFile(ProjectController.getInstance().getCurrentProject().getFolderLocation()
-                        + File.separator + "appium.log");
-                MobileDriverFactory.startAndroidDriver(deviceId, appFile, uninstallAfterCloseApp);
-            } else {
-            	throw new Exception(StringConstants.DIA_ERROR_MSG_OS_NOT_SUPPORT);
-            }
-
-            driver = MobileDriverFactory.getDriver();
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
-    }
-    
     public boolean closeApp() {
         try {
             if (driver == null) {
