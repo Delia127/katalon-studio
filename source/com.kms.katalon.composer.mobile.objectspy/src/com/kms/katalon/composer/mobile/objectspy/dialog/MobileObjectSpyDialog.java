@@ -3,6 +3,7 @@ package com.kms.katalon.composer.mobile.objectspy.dialog;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,12 +11,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.io.FilenameUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
@@ -252,7 +256,7 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
         cbbAppType = new Combo(contentComposite, SWT.READ_ONLY);
         cbbAppType.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        cbbAppType.setItems(new String[] { StringConstants.DIA_APP_TYPE_MOBILE_WEB });
+        cbbAppType.setItems(new String[] { StringConstants.DIA_APP_TYPE_NATIVE_APP });
 
         // Application File location
         Label appFileLabel = new Label(contentComposite, SWT.NONE);
@@ -430,7 +434,10 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
         btnStart.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                startObjectInspectorAction();
+                //Validate all required informations are filled
+                if (validateData()) {                
+                	startObjectInspectorAction();                   
+                }
             }
         });
 
@@ -627,38 +634,66 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
     private void startObjectInspectorAction() {
 
-        if (!validateData()) {
-            return;
-        }
         // Temporary disable Start button while launching app
         btnStart.setEnabled(false);
-        this.getShell().getDisplay().asyncExec(new Runnable() {
+        
+        try {
+        	
+        	final String deviceName = cbbDevices.getItem(cbbDevices.getSelectionIndex());
+        	final String deviceId = inspectorController.getDeviceId(deviceName);
+        	final String appFile = txtAppFile.getText();
+        	
+        	ProgressMonitorDialog progressDlg = new ProgressMonitorDialog(Display.getCurrent().getActiveShell()){
             @Override
-            public void run() {
-                try {
+				public void cancelPressed() {
+        			super.cancelPressed();
+        			finishedRun();
+        			getProgressMonitor().done();
+        			btnStart.setEnabled(true);
+                    btnStop.setEnabled(false);
+                    btnCapture.setEnabled(false);
+                    btnAdd.setEnabled(false);
+        		}
+        	};
+        	
+        	IRunnableWithProgress processToRun = new IRunnableWithProgress() {
+				@Override
+				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+					monitor.beginTask(StringConstants.DIA_LBL_STATUS_APP_STARTING, IProgressMonitor.UNKNOWN);
+					try {
                     // Start application using MobileDriver
-                    String deviceName = cbbDevices.getItem(cbbDevices.getSelectionIndex());
-                    boolean result = inspectorController.startMobileApp(inspectorController.getDeviceId(deviceName),
-                            txtAppFile.getText(), false);
-                    if (result) {
-                        // Enable more feature if start application successful
-                        btnAdd.setEnabled(true);
-                        btnCapture.setEnabled(true);
-                        btnStop.setEnabled(true);
-                    } else {
-                        // Enable start button and show error dialog if application cannot start
-                        btnStart.setEnabled(true);
-                        MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
-                                StringConstants.DIA_ERROR_MSG_CANNOT_START_APP_ON_CURRENT_DEVICE);
-                    }
-                } catch (Exception ex) {
-                    btnStart.setEnabled(true);
-                    MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
-                            ex.getMessage());
-                    logger.error(ex);
-                }
+						inspectorController.startMobileApp(deviceId, appFile, false);
+					} catch (Exception ex) {
+	                    logger.error(ex);
+	                    throw new InvocationTargetException(ex, ex.getMessage());
+	                }	
+					if(monitor.isCanceled()){
+						throw new InterruptedException(StringConstants.DIA_ERROR_MSG_OPERATION_CANCELED);
+					}
+					monitor.done();
+				}
+			}; 
+        	
+        	progressDlg.run(true, true, processToRun); 
+			
+			//If no exception, application has been successful started, enable more features  
+            btnAdd.setEnabled(true);
+            btnCapture.setEnabled(true);
+            btnStop.setEnabled(true);
+		} 
+        catch(Exception ex){
+        	//If user intentionally cancel the progress, don't need to show error message
+            if(!StringConstants.DIA_ERROR_MSG_OPERATION_CANCELED.equals(ex.getMessage())){
+            	MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, 
+                		StringConstants.DIA_ERROR_MSG_CANNOT_START_APP_ON_CURRENT_DEVICE + ": " + ex.getMessage());
+                // Enable start button and show error dialog if application cannot start
+                btnStart.setEnabled(true);
+                btnStop.setEnabled(false);
+                btnCapture.setEnabled(false);
+                btnAdd.setEnabled(false);
             }
-        });
+            
+        }
     }
 
     private void stopObjectInspectorAction() {

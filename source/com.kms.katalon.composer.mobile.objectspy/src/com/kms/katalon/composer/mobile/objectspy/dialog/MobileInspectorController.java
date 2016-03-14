@@ -44,8 +44,7 @@ public class MobileInspectorController {
     public MobileInspectorController() throws Exception {
     }
 
-    public boolean startMobileApp(String deviceId, String appFile, boolean uninstallAfterCloseApp) {
-        try {
+    public void startMobileApp(String deviceId, String appFile, boolean uninstallAfterCloseApp) throws Exception{
             if (driver != null) {
                 driver.quit();
                 Thread.sleep(2000);
@@ -70,14 +69,10 @@ public class MobileInspectorController {
                         + File.separator + "appium.log");
                 MobileDriverFactory.startAndroidDriver(deviceId, appFile, uninstallAfterCloseApp);
             } else {
-                return false;
+            	throw new Exception(StringConstants.DIA_ERROR_MSG_OS_NOT_SUPPORT);
             }
 
             driver = MobileDriverFactory.getDriver();
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
     }
 
     public boolean closeApp() {
