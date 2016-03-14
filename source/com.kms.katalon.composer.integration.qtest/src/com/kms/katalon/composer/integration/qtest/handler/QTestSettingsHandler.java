@@ -2,7 +2,6 @@ package com.kms.katalon.composer.integration.qtest.handler;
 
 import javax.inject.Named;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.services.IServiceConstants;
@@ -22,12 +21,9 @@ public class QTestSettingsHandler {
         if (ProjectController.getInstance().getCurrentProject() == null) {
             return false;
         }
-        try {
-            if (!LauncherManager.getInstance().isAnyLauncherRunning()) {
-                return true;
-            }
-        } catch (CoreException e) {
-
+        
+        if (!LauncherManager.getInstance().isAnyLauncherRunning()) {
+            return true;
         }
         return false;
     }

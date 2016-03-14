@@ -5,6 +5,7 @@ import io.appium.java_client.ios.IOSDriver;
 import java.io.File;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -35,6 +36,10 @@ import com.kms.katalon.core.webui.exception.BrowserNotOpenedException;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
 
 public class DriverFactory {
+    public static final String WEB_UI_DRIVER_PROPERTY = StringConstants.CONF_PROPERTY_WEBUI_DRIVER;
+    public static final String MOBILE_DRIVER_PROPERTY = StringConstants.CONF_PROPERTY_MOBILE_DRIVER;
+    
+    public static final String APPIUM_LOG_PROPERTY = StringConstants.CONF_APPIUM_LOG_FILE;
     private static final String APPIUM_CAPABILITY_PLATFORM_NAME_ADROID = "android";
     private static final String APPIUM_CAPABILITY_PLATFORM_NAME_IOS = "ios";
     private static final String APPIUM_CAPABILITY_PLATFORM_NAME = "platformName";
@@ -53,7 +58,7 @@ public class DriverFactory {
     public static final String REMOTE_WEB_DRIVER_URL = StringConstants.CONF_PROPERTY_REMOTE_WEB_DRIVER_URL;
     public static final String REMOTE_WEB_DRIVER_TYPE = StringConstants.CONF_PROPERTY_REMOTE_WEB_DRIVER_TYPE;
     public static final String EXECUTED_MOBILE_PLATFORM = StringConstants.CONF_EXECUTED_PLATFORM;
-    public static final String EXECUTED_MOBILE_DEVICE_NAME = StringConstants.CONF_EXECUTED_DEVICE_NAME;
+    public static final String EXECUTED_MOBILE_DEVICE_ID = StringConstants.CONF_EXECUTED_DEVICE_ID;
 
     private static final ThreadLocal<WebDriver> localWebServerStorage = new ThreadLocal<WebDriver>() {
         @Override
@@ -72,6 +77,7 @@ public class DriverFactory {
 
     /**
      * Open a new web driver based on the execution configuration
+     * 
      * @return the created WebDriver
      * @throws Exception
      */
@@ -83,14 +89,21 @@ public class DriverFactory {
                 KeywordLogger.getInstance().logWarning(StringConstants.DRI_LOG_WARNING_BROWSER_ALREADY_OPENED);
                 closeWebDriver();
             }
+
             WebUIDriverType driver = (WebUIDriverType) getExecutedBrowser();
             if (driver == null) {
                 throw new StepFailedException(StringConstants.DRI_ERROR_MSG_NO_BROWSER_SET);
             }
+
             KeywordLogger.getInstance().logInfo(
                     MessageFormat.format(StringConstants.XML_LOG_STARTING_DRIVER_X, driver.toString()));
-            DesiredCapabilities desireCapibilities = WebDriverPropertyUtil.toDesireCapabilities(
-                    RunConfiguration.getExecutionProperties(), driver);
+
+            Map<String, Object> driverPreferenceProps = RunConfiguration
+                    .getDriverPreferencesProperties(WEB_UI_DRIVER_PROPERTY);
+            DesiredCapabilities desireCapibilities = null;
+            if (driverPreferenceProps != null) {
+                desireCapibilities = WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps, driver);
+            }
             WebDriver webDriver = null;
             switch (driver) {
             case FIREFOX_DRIVER:
@@ -126,13 +139,11 @@ public class DriverFactory {
                     if (platformName instanceof String) {
                         if (APPIUM_CAPABILITY_PLATFORM_NAME_ADROID.equalsIgnoreCase((String) platformName)) {
                             webDriver = new SwipeableAndroidDriver(new URL(remoteWebServerUrl),
-                                    WebDriverPropertyUtil.toDesireCapabilities(
-                                            RunConfiguration.getExecutionProperties(),
+                                    WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps,
                                             DesiredCapabilities.android(), false));
                         } else if (APPIUM_CAPABILITY_PLATFORM_NAME_IOS.equalsIgnoreCase((String) platformName)) {
                             webDriver = new IOSDriver(new URL(remoteWebServerUrl),
-                                    WebDriverPropertyUtil.toDesireCapabilities(
-                                            RunConfiguration.getExecutionProperties(),
+                                    WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps,
                                             DesiredCapabilities.iphone(), false));
                         } else {
                             throw new StepFailedException(MessageFormat.format(
@@ -156,7 +167,7 @@ public class DriverFactory {
                     edgeService.start();
                 }
                 webDriver = new EdgeDriver(edgeService, WebDriverPropertyUtil.toDesireCapabilities(
-                        RunConfiguration.getExecutionProperties(), DesiredCapabilities.edge(), false));
+                        driverPreferenceProps, DesiredCapabilities.edge(), false));
                 break;
             default:
                 throw new StepFailedException(MessageFormat.format(StringConstants.DRI_ERROR_DRIVER_X_NOT_IMPLEMENTED,
@@ -236,8 +247,8 @@ public class DriverFactory {
 
     /**
      * Get the current active web driver
-     * @return
-     *      the current active WebDriver
+     * 
+     * @return the current active WebDriver
      * @throws StepFailedException
      * @throws WebDriverException
      */
@@ -416,7 +427,7 @@ public class DriverFactory {
             }
         }
     }
-    
+
     public static int getCurrentWindowIndex() {
         verifyWebDriverIsOpen();
         String currentWindowHandle = localWebServerStorage.get().getWindowHandle();
@@ -432,49 +443,55 @@ public class DriverFactory {
     }
 
     private static String getIEDriverPath() {
-        return RunConfiguration.getStringProperty(IE_DRIVER_PATH_PROPERTY);
+        return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, IE_DRIVER_PATH_PROPERTY);
     }
 
     private static String getEdgeDriverPath() {
-        return RunConfiguration.getStringProperty(EDGE_DRIVER_PATH_PROPERTY);
+        return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, EDGE_DRIVER_PATH_PROPERTY);
     }
 
     private static String getChromeDriverPath() {
-        return RunConfiguration.getStringProperty(CHROME_DRIVER_PATH_PROPERTY);
+        return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, CHROME_DRIVER_PATH_PROPERTY);
     }
 
     private static int getWaitForIEHanging() {
         if (getExecutedBrowser() != WebUIDriverType.IE_DRIVER) {
             throw new IllegalArgumentException(StringConstants.XML_LOG_ERROR_BROWSER_NOT_IE);
         }
-        return Integer.parseInt(RunConfiguration.getStringProperty(WAIT_FOR_IE_HANGING_PROPERTY));
+        return Integer.parseInt(RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY,
+                WAIT_FOR_IE_HANGING_PROPERTY));
     }
 
     public static DriverType getExecutedBrowser() {
         DriverType webDriverType = null;
-        if (RunConfiguration.getProperty(EXECUTED_BROWSER_PROPERTY) != null) {
-            webDriverType = WebUIDriverType.valueOf(RunConfiguration.getStringProperty(EXECUTED_BROWSER_PROPERTY));
+        String driverTypeString = RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY,
+                EXECUTED_BROWSER_PROPERTY);
+        if (driverTypeString != null) {
+            webDriverType = WebUIDriverType.valueOf(driverTypeString);
         }
-        if (webDriverType == null && RunConfiguration.getProperty(EXECUTED_MOBILE_PLATFORM) != null) {
-            webDriverType = WebUIDriverType.valueOf(RunConfiguration.getStringProperty(EXECUTED_MOBILE_PLATFORM));
+
+        if (webDriverType == null
+                && RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY, EXECUTED_MOBILE_PLATFORM) != null) {
+            webDriverType = WebUIDriverType.valueOf(RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY,
+                    EXECUTED_MOBILE_PLATFORM));
         }
         return webDriverType;
     }
 
     public static String getRemoteWebDriverServerUrl() {
-        return RunConfiguration.getStringProperty(REMOTE_WEB_DRIVER_URL);
+        return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, REMOTE_WEB_DRIVER_URL);
     }
 
     public static String getRemoteWebDriverServerType() {
-        return RunConfiguration.getStringProperty(REMOTE_WEB_DRIVER_TYPE);
+        return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, REMOTE_WEB_DRIVER_TYPE);
     }
 
     public static String getMobilePlatform() {
-        return RunConfiguration.getStringProperty(EXECUTED_MOBILE_PLATFORM);
+        return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, EXECUTED_MOBILE_PLATFORM);
     }
 
     public static String getMobileDeviceName() {
-        return RunConfiguration.getStringProperty(EXECUTED_MOBILE_DEVICE_NAME);
+        return RunConfiguration.getDriverPreferencesProperty(MOBILE_DRIVER_PROPERTY, EXECUTED_MOBILE_DEVICE_ID);
     }
 
     public static void closeWebDriver() {

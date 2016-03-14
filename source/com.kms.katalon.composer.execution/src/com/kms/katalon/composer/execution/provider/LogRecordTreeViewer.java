@@ -18,6 +18,7 @@ import com.kms.katalon.composer.execution.tree.LogParentTreeNode;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.PreferenceConstants;
+import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XmlLogRecord;
 
@@ -57,7 +58,13 @@ public class LogRecordTreeViewer extends TreeViewer {
     }
 
     public void addRecord(XmlLogRecord record) {
-        if (record.getLevel() == LogLevel.START) {
+        LogLevel logLevel = LogLevel.valueOf(record.getLevel());
+        if (logLevel == null) {
+            return;
+        }
+
+        switch (logLevel) {
+        case START: {
             LogParentTreeNode newParentTreeNode = new LogParentTreeNode(currentParentTreeNode, record);
 
             if (currentParentTreeNode == null) {
@@ -69,8 +76,9 @@ public class LogRecordTreeViewer extends TreeViewer {
             }
             currentParentTreeNode = newParentTreeNode;
             select(new StructuredSelection(newParentTreeNode));
-
-        } else if (record.getLevel() == LogLevel.END) {
+            break;
+        }
+        case END: {
             currentParentTreeNode.setRecordEnd(record);
             LogParentTreeNode currentParentNodeImpl = (LogParentTreeNode) currentParentTreeNode;
             refresh(currentParentNodeImpl);
@@ -78,7 +86,7 @@ public class LogRecordTreeViewer extends TreeViewer {
             // if a node is passed, collapse it, otherwise keep its current
             // state.
             if (currentParentNodeImpl.getResult() == null
-                    || currentParentNodeImpl.getResult().getLevel() == LogLevel.PASSED) {
+                    || LogLevel.valueOf(currentParentNodeImpl.getResult().getLevel()) == LogLevel.PASSED) {
                 if (isScrollLogEnable()) {
                     setExpandedState(currentParentNodeImpl, false);
                 }
@@ -90,15 +98,17 @@ public class LogRecordTreeViewer extends TreeViewer {
             // test case) completed.
             if (((currentParentNodeImpl.getParent() == null || ((LogParentTreeNode) currentParentNodeImpl.getParent())
                     .getParent() == null))
-                    && record.getSourceMethodName().equals(
-                            com.kms.katalon.core.constants.StringConstants.LOG_END_TEST_METHOD)) {
+                    && record.getSourceMethodName().equals(StringConstants.LOG_END_TEST_METHOD)) {
                 eventBroker.post(EventConstants.CONSOLE_LOG_UPDATE_PROGRESS_BAR, currentParentNodeImpl.getResult());
             }
 
             // switch to parent node
             currentParentTreeNode = currentParentNodeImpl.getParent();
-        } else if (record.getLevel() == LogLevel.PASSED || record.getLevel() == LogLevel.FAILED
-                || record.getLevel() == LogLevel.ERROR) {
+            break;
+        }
+        case PASSED:
+        case FAILED:
+        case ERROR: {
             currentParentTreeNode.setResult(record);
             refresh(currentParentTreeNode);
 
@@ -106,25 +116,28 @@ public class LogRecordTreeViewer extends TreeViewer {
 
             // update progress bar if error occurs if a test case has invalid
             // variables
-            if (record.getLevel() == LogLevel.ERROR
+            if (logLevel == LogLevel.ERROR
                     && currentParentNodeImpl.getParent() == null
                     && currentParentNodeImpl.getRecordStart().getMessage()
-                            .startsWith(com.kms.katalon.core.constants.StringConstants.LOG_START_SUITE_METHOD)) {
+                            .startsWith(StringConstants.LOG_START_SUITE_METHOD)) {
                 eventBroker.post(EventConstants.CONSOLE_LOG_UPDATE_PROGRESS_BAR, currentParentNodeImpl.getResult());
             }
-
-        } else {
+            break;
+        }
+        default: {
             ILogTreeNode newChildTreeNode = new LogChildTreeNode(currentParentTreeNode, record);
             currentParentTreeNode.addChild(newChildTreeNode);
             refresh(currentParentTreeNode);
             setExpandedState(currentParentTreeNode, true);
             select(new StructuredSelection(newChildTreeNode));
+            break;
+        }
         }
     }
 
     private boolean isFailureNode(ILogParentTreeNode treeNode) {
         if (treeNode.getResult() != null && !treeNode.getElapsedTime().isEmpty()) {
-            LogLevel logLevel = (LogLevel) treeNode.getResult().getLevel();
+            LogLevel logLevel = LogLevel.valueOf(treeNode.getResult().getLevel());
             return (logLevel == LogLevel.FAILED || logLevel == LogLevel.ERROR);
         }
         return false;
@@ -269,7 +282,6 @@ public class LogRecordTreeViewer extends TreeViewer {
     }
 
     private void expandParentFailureRecursively(ILogParentTreeNode parentNode) {
-
         if ((parentNode.getResult() == null && !parentNode.getElapsedTime().isEmpty()) || isFailureNode(parentNode)) {
             setExpandedState(parentNode, true);
 

@@ -40,7 +40,7 @@ public class TestSuiteFolderSelectionWizardPage extends AbstractWizardPage {
 
     @Override
     public boolean canFlipToNextPage() {
-        return (treeViewer != null && treeViewer.getSelection() != null && !treeViewer.getSelection().isEmpty());
+        return treeViewer != null && treeViewer.getSelection() != null && !treeViewer.getSelection().isEmpty();
     }
 
     /**

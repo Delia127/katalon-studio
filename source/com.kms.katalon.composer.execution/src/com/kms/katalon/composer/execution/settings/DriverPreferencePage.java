@@ -38,9 +38,15 @@ public abstract class DriverPreferencePage extends PreferencePage {
         container.setLayout(layout);
         container.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-        driverPreferenceComposite = new DriverPreferenceComposite(container, SWT.NONE, driverConnector);
-        driverPreferenceComposite.setInput(driverConnector.getDriverProperties());
+        driverPreferenceComposite = new DriverPreferenceComposite(container, SWT.NONE, driverConnector);    
+        
+        updateInput();
+        
         return container;
+    }
+    
+    protected void updateInput() {
+        driverPreferenceComposite.setInput(driverConnector.getUserConfigProperties());
     }
 
     protected void initilize() {
@@ -59,7 +65,8 @@ public abstract class DriverPreferencePage extends PreferencePage {
                     || driverConnector == null) {
                 return true;
             }
-            driverConnector.saveDriverProperties();
+            driverConnector = driverPreferenceComposite.getResult();
+            driverConnector.saveUserConfigProperties();
             return true;
         } catch (Exception e) {
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
@@ -71,7 +78,7 @@ public abstract class DriverPreferencePage extends PreferencePage {
     @Override
     protected void performDefaults() {
         initilize();
-        driverPreferenceComposite.setInput(driverConnector.getDriverProperties());
+        updateInput();
         super.performDefaults();
     }
 }

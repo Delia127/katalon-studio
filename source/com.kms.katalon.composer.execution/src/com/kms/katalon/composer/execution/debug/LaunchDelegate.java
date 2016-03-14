@@ -15,17 +15,11 @@ import org.eclipse.jdt.launching.JavaLaunchDelegate;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
 
-import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.execution.constants.StringConstants;
-import com.kms.katalon.execution.launcher.AbstractLauncher;
-import com.kms.katalon.execution.launcher.IDELauncher;
-import com.kms.katalon.execution.launcher.manager.LauncherManager;
-import com.kms.katalon.execution.launcher.model.LaunchMode;
-
 @SuppressWarnings("restriction")
 public class LaunchDelegate extends JavaLaunchDelegate implements IExecutionListener {
 
-	private ILaunch launch;
+	@SuppressWarnings("unused")
+    private ILaunch launch;
 
 	
 	public LaunchDelegate() {
@@ -55,28 +49,28 @@ public class LaunchDelegate extends JavaLaunchDelegate implements IExecutionList
 
 	@Override
 	public void postExecuteSuccess(String commandId, Object returnValue) {
-		try {
-			if (launch == null || !LaunchMode.DEBUG.toString().equals(launch.getLaunchMode())) return;
-			if (commandId.equals(StringConstants.DBG_COMMAND_RESUME)) {
-				for (AbstractLauncher launcher : LauncherManager.getInstance().getIDELaunchers()) {
-					if (launch.equals(launcher.getLaunch())) {
-						IDELauncher ideLauncher = (IDELauncher) launcher;
-						ideLauncher.resume();
-						return;
-					}
-				}
-			} else if (commandId.equals(StringConstants.DBG_COMMAND_SUSPEND)) {
-				for (AbstractLauncher launcher : LauncherManager.getInstance().getIDELaunchers()) {
-					if (launch.equals(launcher.getLaunch())) {
-						IDELauncher ideLauncher = (IDELauncher) launcher;
-						ideLauncher.suspend();
-						return;
-					}
-				}
-			}
-		} catch (Exception ex) {
-			LoggerSingleton.getInstance().getLogger().error(ex);
-		}
+//		try {
+//			if (launch == null || !LaunchMode.DEBUG.toString().equals(launch.getLaunchMode())) return;
+//			if (commandId.equals(StringConstants.DBG_COMMAND_RESUME)) {
+//				for (AbstractLauncher launcher : LauncherManager.getInstance().getIDELaunchers()) {
+//					if (launch.equals(launcher.getLaunch())) {
+//						IDELauncher ideLauncher = (IDELauncher) launcher;
+//						ideLauncher.resume();
+//						return;
+//					}
+//				}
+//			} else if (commandId.equals(StringConstants.DBG_COMMAND_SUSPEND)) {
+//				for (AbstractLauncher launcher : LauncherManager.getInstance().getIDELaunchers()) {
+//					if (launch.equals(launcher.getLaunch())) {
+//						IDELauncher ideLauncher = (IDELauncher) launcher;
+//						ideLauncher.suspend();
+//						return;
+//					}
+//				}
+//			}
+//		} catch (Exception ex) {
+//			LoggerSingleton.getInstance().getLogger().error(ex);
+//		}
 	}
 
 	@Override

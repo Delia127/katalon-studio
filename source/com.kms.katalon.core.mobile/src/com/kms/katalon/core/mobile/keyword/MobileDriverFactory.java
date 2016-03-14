@@ -33,9 +33,13 @@ public class MobileDriverFactory {
 
     private static final String APPIUM_SERVER_URL_PREFIX = "http://127.0.0.1:";
 
+    public static final String MOBILE_DRIVER_PROPERTY = StringConstants.CONF_PROPERTY_MOBILE_DRIVER;
+
     public static final String EXECUTED_PLATFORM = StringConstants.CONF_EXECUTED_PLATFORM;
 
-    public static final String EXECUTED_DEVICE_NAME = StringConstants.CONF_EXECUTED_DEVICE_NAME;
+    public static final String EXECUTED_DEVICE_ID = StringConstants.CONF_EXECUTED_DEVICE_ID;
+
+    public static final String APPIUM_LOG_PROPERTY = StringConstants.CONF_APPIUM_LOG_FILE;
 
     private static Process webProxyServer;
 
@@ -117,8 +121,15 @@ public class MobileDriverFactory {
         if (!isServerStarted()) {
             startAppiumServer();
         }
-        DesiredCapabilities capabilities = MobileDriverPropertyUtil.toDesireCapabilities(
-                RunConfiguration.getExecutionProperties(), MobileDriverType.ANDROID_DRIVER);
+
+        Map<String, Object> driverPreferences = RunConfiguration
+                .getDriverPreferencesProperties(MOBILE_DRIVER_PROPERTY);
+        
+        DesiredCapabilities capabilities = new DesiredCapabilities();        
+        if (driverPreferences != null) {
+            MobileDriverPropertyUtil.toDesireCapabilities(driverPreferences, MobileDriverType.ANDROID_DRIVER);
+        }
+
         capabilities.setPlatform(Platform.ANDROID);
         capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceId);
         capabilities.setCapability("udid", deviceId);
@@ -126,6 +137,7 @@ public class MobileDriverFactory {
         capabilities.setCapability("fullReset", uninstallAfterCloseApp);
         capabilities.setCapability("noReset", !uninstallAfterCloseApp);
         capabilities.setCapability("newCommandTimeout", 1800);
+
         int time = 0;
         long currentMilis = System.currentTimeMillis();
         while (time < RunConfiguration.getTimeOut()) {
@@ -159,8 +171,14 @@ public class MobileDriverFactory {
         if (!isServerStarted()) {
             startAppiumServer();
         }
-        DesiredCapabilities capabilities = MobileDriverPropertyUtil.toDesireCapabilities(
-                RunConfiguration.getExecutionProperties(), MobileDriverType.IOS_DRIVER);
+
+        Map<String, Object> driverPreferences = RunConfiguration
+                .getDriverPreferencesProperties(MOBILE_DRIVER_PROPERTY);
+        
+        DesiredCapabilities capabilities = new DesiredCapabilities();        
+        if (driverPreferences != null) {
+            MobileDriverPropertyUtil.toDesireCapabilities(driverPreferences, MobileDriverType.IOS_DRIVER);
+        }
         capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceId);
         capabilities.setCapability(MobileCapabilityType.APP, appFile);
         capabilities.setCapability("udid", deviceId);
@@ -199,8 +217,9 @@ public class MobileDriverFactory {
             } catch (Exception e) {
                 // LOGGER.warn(e.getMessage(), e);
                 try {
-                    String logContent = FileUtils.readFileToString(new File(new File(RunConfiguration.getLogFilePath())
-                            .getParent() + File.separator + "appium.log"));
+                    File appiumLogFile = new File(RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY,
+                            APPIUM_LOG_PROPERTY));
+                    String logContent = FileUtils.readFileToString(appiumLogFile.getAbsoluteFile());
                     if (logContent.contains("Console LogLevel: debug")) {
                         return true;
                     }
@@ -254,10 +273,10 @@ public class MobileDriverFactory {
         String[] cmd = { "node", appium, "--command-timeout", "3600", "--tmp", appiumTemp, "-p",
                 String.valueOf(localStorageAppiumPort.get()), "--chromedriver-port", String.valueOf(getFreePort()) };
         ProcessBuilder pb = new ProcessBuilder(cmd);
-        pb.redirectOutput(new File(new File(RunConfiguration.getLogFilePath()).getParent() + File.separator
-                + "appium.log"));
+        pb.redirectOutput(new File(RunConfiguration.getAppiumLogFilePath()));
         localStorageAppiumServer.set(pb.start());
-        while (!isServerStarted()) {}
+        while (!isServerStarted()) {
+        }
         KeywordLogger.getInstance().logInfo("Appium server started on port " + localStorageAppiumPort.get());
     }
 
@@ -266,10 +285,11 @@ public class MobileDriverFactory {
         int webProxyPort = 27753;
         String[] webProxyServerCmd = { webProxyServerLocation, "-c", deviceId + ":" + webProxyPort };
         ProcessBuilder webProxyServerProcessBuilder = new ProcessBuilder(webProxyServerCmd);
-        webProxyServerProcessBuilder.redirectOutput(new File(new File(RunConfiguration.getLogFilePath()).getParent()
-                + File.separator + "appium-proxy-server.log"));
+        webProxyServerProcessBuilder.redirectOutput(new File(new File(RunConfiguration.getAppiumLogFilePath())
+                .getParent() + File.separator + "appium-proxy-server.log"));
         webProxyServer = webProxyServerProcessBuilder.start();
-        while (!isWebProxyServerStarted()) {}
+        while (!isWebProxyServerStarted()) {
+        }
         KeywordLogger.getInstance().logInfo("ios_webkit_debug_proxy server started on port " + webProxyPort);
     }
 
@@ -418,7 +438,7 @@ public class MobileDriverFactory {
     }
 
     public static String getDeviceName() {
-        return RunConfiguration.getStringProperty(EXECUTED_DEVICE_NAME);
+        return RunConfiguration.getStringProperty(EXECUTED_DEVICE_ID);
     }
 
     public static AppiumDriver<?> getDriver() throws StepFailedException {

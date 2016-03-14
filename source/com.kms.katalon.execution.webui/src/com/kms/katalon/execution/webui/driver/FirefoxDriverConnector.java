@@ -22,7 +22,7 @@ public class FirefoxDriverConnector extends WebUiDriverConnector {
     public IDriverConnector clone() {
         try {
             FirefoxDriverConnector firefoxDriverConnector = new FirefoxDriverConnector(getParentFolderPath());
-            firefoxDriverConnector.driverProperties = (Map<String, Object>) cloneDriverPropertyValue(getDriverProperties());
+            firefoxDriverConnector.driverProperties = (Map<String, Object>) cloneDriverPropertyValue(getUserConfigProperties());
             return firefoxDriverConnector;
         } catch (IOException e) {
             // do nothing

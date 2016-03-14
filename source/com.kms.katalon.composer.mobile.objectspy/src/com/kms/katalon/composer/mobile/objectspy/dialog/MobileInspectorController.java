@@ -1,9 +1,13 @@
 package com.kms.katalon.composer.mobile.objectspy.dialog;
 
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.ios.IOSDriver;
+
 import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,10 +36,10 @@ import com.kms.katalon.core.mobile.keyword.IOSProperties;
 import com.kms.katalon.core.mobile.keyword.MobileDriverFactory;
 import com.kms.katalon.core.mobile.keyword.MobileDriverFactory.OsType;
 import com.kms.katalon.execution.configuration.IDriverConnector;
+import com.kms.katalon.execution.configuration.impl.DefaultExecutionSetting;
+import com.kms.katalon.execution.mobile.driver.MobileDriverConnector;
 import com.kms.katalon.execution.mobile.util.MobileExecutionUtil;
-
-import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.ios.IOSDriver;
+import com.kms.katalon.execution.util.ExecutionUtil;
 
 public class MobileInspectorController {
 
@@ -44,32 +48,47 @@ public class MobileInspectorController {
     public MobileInspectorController() throws Exception {
     }
 
-    public void startMobileApp(String deviceId, String appFile, boolean uninstallAfterCloseApp) throws Exception{
+    public void startMobileApp(String deviceId, String appFile, boolean uninstallAfterCloseApp) throws Exception {
             if (driver != null) {
                 driver.quit();
                 Thread.sleep(2000);
             }
-            IDriverConnector mobileDriverConnector = null;
-            if (MobileDriverFactory.getDeviceOs(deviceId) == OsType.IOS) {
-                mobileDriverConnector = MobileExecutionUtil.getMobileDriverConnector(MobileDriverType.IOS_DRIVER,
-                        ProjectController.getInstance().getCurrentProject().getFolderLocation());
-                Map<String, Object> confs = mobileDriverConnector.getExecutionSettingPropertyMap();
-                confs.put(RunConfiguration.TIMEOUT_PROPERTY, 60);
-                RunConfiguration.setExecutionSetting(confs);
-                RunConfiguration.setLogFile(ProjectController.getInstance().getCurrentProject().getFolderLocation()
-                        + File.separator + "appium.log");
-                MobileDriverFactory.startIosDriver(deviceId, appFile, uninstallAfterCloseApp);
-            } else if (MobileDriverFactory.getDeviceOs(deviceId) == OsType.ANDROID) {
-                mobileDriverConnector = MobileExecutionUtil.getMobileDriverConnector(MobileDriverType.ANDROID_DRIVER,
-                        ProjectController.getInstance().getCurrentProject().getFolderLocation());
-                Map<String, Object> confs = mobileDriverConnector.getExecutionSettingPropertyMap();
-                confs.put(RunConfiguration.TIMEOUT_PROPERTY, 60);
-                RunConfiguration.setExecutionSetting(confs);
-                RunConfiguration.setLogFile(ProjectController.getInstance().getCurrentProject().getFolderLocation()
-                        + File.separator + "appium.log");
+            String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+
+            OsType os = MobileDriverFactory.getDeviceOs(deviceId);
+
+            if (os == null) {
+                throw new Exception(StringConstants.DIA_ERROR_MSG_OS_NOT_SUPPORT);
+            }
+
+            MobileDriverConnector mobileDriverConnector = MobileExecutionUtil.getMobileDriverConnector(
+                    MobileDriverType.fromOsType(os), projectDir);
+            
+            if (mobileDriverConnector == null) {
+                throw new Exception(StringConstants.DIA_ERROR_MSG_OS_NOT_SUPPORT);        
+            }
+            
+            mobileDriverConnector = (MobileDriverConnector) mobileDriverConnector.clone();
+            
+            //Only use system properties in inspecting mode.
+            mobileDriverConnector.getUserConfigProperties().clear();
+
+            Map<String, IDriverConnector> driverConnectors = new HashMap<String, IDriverConnector>(1);
+            driverConnectors.put(MobileDriverFactory.MOBILE_DRIVER_PROPERTY, mobileDriverConnector);
+            DefaultExecutionSetting generalExecutionSetting = new DefaultExecutionSetting();
+            generalExecutionSetting.setTimeout(60);
+
+            RunConfiguration.setExecutionSetting(ExecutionUtil.getExecutionProperties(generalExecutionSetting,
+                    driverConnectors));
+            RunConfiguration.setAppiumLogFilePath(projectDir + File.separator + "appium.log");
+
+            switch (os) {
+            case ANDROID:
                 MobileDriverFactory.startAndroidDriver(deviceId, appFile, uninstallAfterCloseApp);
-            } else {
-            	throw new Exception(StringConstants.DIA_ERROR_MSG_OS_NOT_SUPPORT);
+                break;
+            case IOS:
+                MobileDriverFactory.startIosDriver(deviceId, appFile, uninstallAfterCloseApp);
+                break;
             }
 
             driver = MobileDriverFactory.getDriver();

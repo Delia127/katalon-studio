@@ -36,11 +36,14 @@ import com.kms.katalon.integration.qtest.credential.QTestTokenManager;
 import com.kms.katalon.integration.qtest.exception.QTestAPIConnectionException;
 import com.kms.katalon.integration.qtest.exception.QTestException;
 import com.kms.katalon.integration.qtest.exception.QTestIOException;
-import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 import com.kms.katalon.integration.qtest.setting.QTestVersion;
 
 public class QTestHttpRequestHelper {
 
+    private QTestHttpRequestHelper() {
+        //Disable default constructor
+    }
+    
     public static String getV7Token(IQTestCredential credential, String url) throws QTestException {
         HttpResponseResult reponseResult = internallyGetV7Token(credential, url);
         int statusCode =  reponseResult.getStatusLine().getStatusCode() ;
@@ -108,7 +111,7 @@ public class QTestHttpRequestHelper {
     }
 
     public static String sendPostRequest(IQTestCredential credential, String url, List<NameValuePair> postParams)
-            throws QTestInvalidFormatException, QTestException {
+            throws QTestException {
         CloseableHttpClient client = null;
         try {
             client = HttpClientBuilder.create().build();
@@ -124,8 +127,7 @@ public class QTestHttpRequestHelper {
         }
     }
 
-    public static String sendGetRequest(IQTestCredential credential, String url) throws QTestInvalidFormatException,
-            QTestException {
+    public static String sendGetRequest(IQTestCredential credential, String url) throws QTestException {
         CloseableHttpClient client = null;
         try {
             client = HttpClientBuilder.create().build();
@@ -152,12 +154,11 @@ public class QTestHttpRequestHelper {
         StringBuilder builder = new StringBuilder("[{");
         int index = 0;
         for (Entry<String, Object> entry : mapProperties.entrySet()) {
-            if (index > 0)
+            if (index > 0) {
                 builder.append(",");
+            }
             builder.append("\"").append(entry.getKey()).append("\"").append(":");
-
-            if (useBrackets)
-                builder.append("[");
+            
             String value = String.valueOf(entry.getValue());
             if (entry.getValue() instanceof String) {
                 value = "\"" + value + "\"";
@@ -166,8 +167,9 @@ public class QTestHttpRequestHelper {
             }
             builder.append(value);
 
-            if (useBrackets)
-                builder.append("]");
+            if (useBrackets) {
+                builder.insert(0, "[").append("]");
+            }
 
             index++;
         }
@@ -182,7 +184,7 @@ public class QTestHttpRequestHelper {
     }
 
     public static void doLogin(IQTestCredential credential, CloseableHttpClient client, Map<String, String> cookies)
-            throws QTestInvalidFormatException, QTestException {
+            throws QTestException {
         doGet(client, credential.getServerUrl(), "/portal/loginform", cookies);
         List<NameValuePair> postParams = new ArrayList<NameValuePair>();
         postParams.add(new BasicNameValuePair("j_username", credential.getUsername()));
@@ -195,7 +197,7 @@ public class QTestHttpRequestHelper {
         // reached to limit.
         // We need to terminate all sessions except the whole of the current credential to successfully login.
         String contextToken = cookies.get("UserContextToken");
-        if ((StringUtils.isBlank(contextToken) || contextToken.equals("\"\""))
+        if ((StringUtils.isBlank(contextToken) || "\"\"".equals(contextToken))
                 && credential.getVersion() == QTestVersion.V7) {
 
             // Get path of the url to terminate sessions

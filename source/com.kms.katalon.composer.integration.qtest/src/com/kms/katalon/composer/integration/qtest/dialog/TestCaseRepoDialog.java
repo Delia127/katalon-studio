@@ -168,13 +168,18 @@ public class TestCaseRepoDialog extends Dialog {
 
         cbProjects.setItems(projectNames.toArray(new String[projectNames.size()]));
 
-        if (cbProjects.getItemCount() <= 0) return;
+        if (cbProjects.getItemCount() <= 0) {
+            return;
+        }
 
         if (selectedProjectName.isEmpty()) {
             cbProjects.select(0);
         } else {
             int index = projectNames.indexOf(selectedProjectName);
-            if (index >= 0) cbProjects.select(index);
+            
+            if (index >= 0) {
+                cbProjects.select(index);
+            }
         }
     }
 
@@ -237,7 +242,6 @@ public class TestCaseRepoDialog extends Dialog {
         } else {
             newShell.setText(StringConstants.DIA_TITLE_EDIT_TEST_CASE_REPO);
         }
-
     }
 
     public List<String> getFolderIds() {
@@ -283,8 +287,6 @@ public class TestCaseRepoDialog extends Dialog {
             String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
             QTestModule moduleRoot = QTestIntegrationFolderManager.getModuleRoot(
                     QTestSettingCredential.getCredential(projectDir), qTestProject.getId());
-            // moduleRoot = QTestIntegrationFolderManager.updateModuleViaAPI(projectDir, qTestProject.getId(),
-            // moduleRoot);
             TestCaseRootSelectionDialog testCaseRootSelectionDialog = new TestCaseRootSelectionDialog(Display
                     .getDefault().getActiveShell(), moduleRoot, true);
             testCaseRootSelectionDialog.setProjectDir(projectDir);
@@ -321,7 +323,9 @@ public class TestCaseRepoDialog extends Dialog {
             }
             if (dialog.open() == Dialog.OK) {
                 Object[] results = dialog.getResult();
-                if (results == null || results.length != 1) return;
+                if (results == null || results.length != 1) {
+                    return;
+                }
                 FolderTreeEntity folderTreeEntity = (FolderTreeEntity) results[0];
                 folderId = ((FolderEntity) folderTreeEntity.getObject()).getIdForDisplay();
                 txtKatalonFolder.setText(folderId);

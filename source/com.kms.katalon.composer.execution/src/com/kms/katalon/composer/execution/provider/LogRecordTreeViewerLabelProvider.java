@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.execution.provider;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.ui.ISharedImages;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
@@ -24,7 +25,7 @@ public class LogRecordTreeViewerLabelProvider extends StyledCellLabelProvider {
                 imageKey = ISharedImages.IMG_OBJS_DEFAULT;
             } else {
                 if (logParentNode.getResult() != null) {
-                    LogLevel resultLevel = (LogLevel) logParentNode.getResult().getLevel();
+                    LogLevel resultLevel = LogLevel.valueOf(logParentNode.getResult().getLevel());
                     if (resultLevel == LogLevel.PASSED) {
                         return ImageConstants.IMG_16_LOGVIEW_PASSED;
                     } else if (resultLevel == LogLevel.FAILED) {
@@ -47,19 +48,27 @@ public class LogRecordTreeViewerLabelProvider extends StyledCellLabelProvider {
     @Override
     public void update(ViewerCell cell) {
         StyledString styledString = new StyledString();
+        if (cell.getElement() == null) {
+            return;
+        }
 
-        if (cell.getElement() != null) {
-            if (cell.getElement() instanceof ILogTreeNode) {
-                ILogTreeNode logTreeNode = (ILogTreeNode) cell.getElement();
-                String indexString = logTreeNode.getIndexString();
-                styledString.append((indexString.isEmpty() ? "" : (indexString + " - ")) + logTreeNode.getMessage());
+        if (cell.getElement() instanceof ILogParentTreeNode) {
+            ILogParentTreeNode logParentNode = (ILogParentTreeNode) cell.getElement();
+            String indexString = logParentNode.getIndexString();
+            if (StringUtils.isNotBlank(indexString)) {
+                styledString.append(indexString + " - ");
             }
+        }
 
-            if (cell.getElement() instanceof ILogParentTreeNode) {
-                ILogParentTreeNode logParentNode = (ILogParentTreeNode) cell.getElement();
-                if (logParentNode.getElapsedTime() != null && !logParentNode.getElapsedTime().isEmpty()) {
-                    styledString.append(" (" + logParentNode.getElapsedTime() + ")", StyledString.COUNTER_STYLER);
-                }
+        if (cell.getElement() instanceof ILogTreeNode) {
+            ILogTreeNode logTreeNode = (ILogTreeNode) cell.getElement();
+            styledString.append(logTreeNode.getMessage());
+        }
+
+        if (cell.getElement() instanceof ILogParentTreeNode) {
+            ILogParentTreeNode logParentNode = (ILogParentTreeNode) cell.getElement();
+            if (logParentNode.getElapsedTime() != null && !logParentNode.getElapsedTime().isEmpty()) {
+                styledString.append(" (" + logParentNode.getElapsedTime() + ")", StyledString.COUNTER_STYLER);
             }
         }
 
@@ -71,19 +80,27 @@ public class LogRecordTreeViewerLabelProvider extends StyledCellLabelProvider {
 
     @Override
     public String getToolTipText(Object element) {
-        StringBuilder cellTextBuilder = new StringBuilder();
-        if (element != null) {
-            if (element instanceof ILogTreeNode) {
-                ILogTreeNode logTreeNode = (ILogTreeNode) element;
-                String indexString = logTreeNode.getIndexString();
-                cellTextBuilder.append((indexString.isEmpty() ? "" : (indexString + " - ")) + logTreeNode.getMessage());
-            }
+        if (!(element instanceof ILogTreeNode)) {
+            return "";
+        }
 
-            if (element instanceof ILogParentTreeNode) {
-                ILogParentTreeNode logParentNode = (ILogParentTreeNode) element;
-                if (logParentNode.getElapsedTime() != null && !logParentNode.getElapsedTime().isEmpty()) {
-                    cellTextBuilder.append(" (" + logParentNode.getElapsedTime() + ")");
-                }
+        StringBuilder cellTextBuilder = new StringBuilder();
+        ILogTreeNode logTreeNode = (ILogTreeNode) element;
+
+        if (element instanceof ILogParentTreeNode) {
+            ILogParentTreeNode logParentNode = (ILogParentTreeNode) element;
+            String indexString = logParentNode.getIndexString();
+            if (StringUtils.isNotBlank(indexString)) {
+                cellTextBuilder.append(indexString + " - ");
+            }
+        }
+
+        cellTextBuilder.append(logTreeNode.getMessage());
+
+        if (element instanceof ILogParentTreeNode) {
+            ILogParentTreeNode logParentNode = (ILogParentTreeNode) element;
+            if (logParentNode.getElapsedTime() != null && !logParentNode.getElapsedTime().isEmpty()) {
+                cellTextBuilder.append(" (" + logParentNode.getElapsedTime() + ")");
             }
         }
         return cellTextBuilder.toString();

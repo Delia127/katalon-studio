@@ -46,7 +46,10 @@ Require-Bundle: org.eclipse.e4.core.di,
  org.eclipse.e4.core.contexts,
  com.kms.katalon.composer.preferences,
  org.apache.commons.lang,
- org.eclipse.emf.ecore
+ org.eclipse.emf.ecore,
+ org.codehaus.groovy.eclipse,
+ org.eclipse.emf.ecore,
+ org.codehaus.groovy.eclipse.core
 Export-Package: com.kms.katalon.composer.execution.components,
  com.kms.katalon.composer.execution.components.contributor,
  com.kms.katalon.composer.execution.constants,

@@ -18,18 +18,27 @@ public class TestSuiteRepoTableLabelProvider extends LabelProvider implements IT
 
     @Override
     public String getColumnText(Object element, int columnIndex) {
-        if (columnIndex < 0 || columnIndex > CLMN_KATALON_FOLDER_IDX) return "";
-        if (element == null || !(element instanceof TestSuiteRepo)) return "";
+        if (columnIndex < 0 || columnIndex > CLMN_KATALON_FOLDER_IDX) {
+            return "";
+        }
+        
+        if (element == null || !(element instanceof TestSuiteRepo)) {
+            return "";
+        }
 
         TestSuiteRepo node = (TestSuiteRepo) element;
 
         switch (columnIndex) {
-            case CLMN_QTEST_PROJECT_IDX:
+            case CLMN_QTEST_PROJECT_IDX: {
                 return node.getQTestProject().getName();
-            case CLMN_KATALON_FOLDER_IDX:
+            }
+            case CLMN_KATALON_FOLDER_IDX: {
                 return node.getFolderId();
+            }
+            default: {
+                return "";
+            }
         }
-        return "";
     }
 
 }

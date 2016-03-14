@@ -48,15 +48,15 @@ public class ReportController extends EntityController {
     public String generateReportFolder(TestCaseEntity testCase) throws Exception {
         String testCaseRootLogFolder = dataProviderSetting.getReportDataProvider().getLogDirectory(
                 (TestCaseEntity) testCase);
-        return generateReportFolderAndLogFile(testCaseRootLogFolder);
+        return generateReportFolder(testCaseRootLogFolder);
     }
 
     public String generateReportFolder(TestSuiteEntity testSuite) throws Exception {
         String testSuiteRootLogFolder = dataProviderSetting.getReportDataProvider().getLogDirectory(testSuite);
-        return generateReportFolderAndLogFile(testSuiteRootLogFolder);
+        return generateReportFolder(testSuiteRootLogFolder);
     }
 
-    private String generateReportFolderAndLogFile(String reportRootFolderPath) throws Exception {
+    private String generateReportFolder(String reportRootFolderPath) throws Exception {
         // create report folder if it doesn't exist
         long current = Calendar.getInstance().getTimeInMillis();
         File reportFolderAtRuntime = new File(reportRootFolderPath, dateFormat.format(new Date()));
@@ -66,10 +66,7 @@ public class ReportController extends EntityController {
         }
         reportFolderAtRuntime.mkdir();
 
-        // create log file
-        (new File(reportFolderAtRuntime, LOG_FILE_NAME)).createNewFile();
-
-        return reportFolderAtRuntime.getName();
+        return reportFolderAtRuntime.getAbsolutePath();
     }
 
     public File getLogFile(TestCaseEntity testCase, String reportFolderName) throws Exception {

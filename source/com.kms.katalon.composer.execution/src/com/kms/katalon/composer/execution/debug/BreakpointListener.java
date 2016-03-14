@@ -9,21 +9,15 @@ import org.eclipse.jdt.debug.core.IJavaLineBreakpoint;
 import org.eclipse.jdt.debug.core.IJavaThread;
 import org.eclipse.jdt.debug.core.IJavaType;
 
-import com.kms.katalon.execution.launcher.AbstractLauncher;
-import com.kms.katalon.execution.launcher.IDELauncher;
-import com.kms.katalon.execution.launcher.manager.LauncherManager;
-
 public class BreakpointListener implements IJavaBreakpointListener {
 
 	@Override
 	public void addingBreakpoint(IJavaDebugTarget target, IJavaBreakpoint breakpoint) {
-		// TODO Auto-generated method stub
 		target.getDebugTarget();
 	}
 
 	@Override
 	public int installingBreakpoint(IJavaDebugTarget target, IJavaBreakpoint breakpoint, IJavaType type) {
-		// TODO Auto-generated method stub
 		return DONT_CARE;
 	}
 
@@ -35,17 +29,17 @@ public class BreakpointListener implements IJavaBreakpointListener {
 
 	@Override
 	public int breakpointHit(IJavaThread thread, IJavaBreakpoint breakpoint) {
-		try {
-			for (AbstractLauncher launcher : LauncherManager.getInstance().getIDELaunchers()) {
-				if (thread.getLaunch().equals(launcher.getLaunch())) {
-					IDELauncher ideLauncher = (IDELauncher) launcher;
-					ideLauncher.breakPointHit();
-					break;
-				}
-			}
-		} catch (Exception ex) {
-
-		}
+//		try {
+//			for (AbstractLauncher launcher : LauncherManager.getInstance().getIDELaunchers()) {
+//				if (thread.getLaunch().equals(launcher.getLaunch())) {
+//					IDELauncher ideLauncher = (IDELauncher) launcher;
+//					ideLauncher.breakPointHit();
+//					break;
+//				}
+//			}
+//		} catch (Exception ex) {
+//
+//		}
 		return DONT_CARE;
 	}
 

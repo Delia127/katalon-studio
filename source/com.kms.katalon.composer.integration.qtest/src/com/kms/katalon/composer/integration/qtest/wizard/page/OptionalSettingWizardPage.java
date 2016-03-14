@@ -54,9 +54,9 @@ public class OptionalSettingWizardPage extends AbstractWizardPage {
         lblNewLabel.setText(StringConstants.WZ_P_OPTIONAL_INFO);
 
         Composite settingComposite = new Composite(mainComposite, SWT.NONE);
-        GridLayout gl_settingComposite = new GridLayout(1, false);
-        gl_settingComposite.verticalSpacing = 10;
-        settingComposite.setLayout(gl_settingComposite);
+        GridLayout glSettingComposite = new GridLayout(1, false);
+        glSettingComposite.verticalSpacing = 10;
+        settingComposite.setLayout(glSettingComposite);
         settingComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
         chckAutoSubmitTestRun = new Button(settingComposite, SWT.CHECK);
@@ -68,9 +68,9 @@ public class OptionalSettingWizardPage extends AbstractWizardPage {
         chckSubmitTestRunToLatestVersion.setText(StringConstants.DIA_TITLE_SUBMIT_TEST_RESULT_TO_LATEST_VERSION);
         
         compositeOptions = new Composite(mainComposite, SWT.NONE);
-        GridData gd_compositeOptions = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-        gd_compositeOptions.verticalIndent = -5;
-        compositeOptions.setLayoutData(gd_compositeOptions);
+        GridData gdCompositeOptions = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        gdCompositeOptions.verticalIndent = -5;
+        compositeOptions.setLayoutData(gdCompositeOptions);
         GridLayout glComposite = new GridLayout(2, true);
         glComposite.marginLeft = 25;
         glComposite.marginWidth = 0;

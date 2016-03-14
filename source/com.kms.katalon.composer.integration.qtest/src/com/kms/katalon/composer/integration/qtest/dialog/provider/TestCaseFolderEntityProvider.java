@@ -25,7 +25,9 @@ public class TestCaseFolderEntityProvider extends EntityProvider {
 
             List<Object> validatedInput = new ArrayList<Object>();
             for (Object element : parentInput) {
-                if (!(element instanceof ITreeEntity)) continue;
+                if (!(element instanceof ITreeEntity)) {
+                    continue;
+                }
 
                 if (((ITreeEntity) element).getObject() instanceof FolderEntity) {
                     FolderEntity folderEntity = (FolderEntity) ((ITreeEntity) element).getObject();
@@ -44,7 +46,9 @@ public class TestCaseFolderEntityProvider extends EntityProvider {
     @Override
     public Object[] getChildren(Object parentElement) {
         try {
-            if (!(parentElement instanceof ITreeEntity)) return Collections.emptyList().toArray();
+            if (!(parentElement instanceof ITreeEntity)) {
+                return Collections.emptyList().toArray();
+            }
 
             List<Object> children = new ArrayList<Object>();
             for (Object childTreeEntity : ((ITreeEntity) parentElement).getChildren()) {
@@ -66,7 +70,9 @@ public class TestCaseFolderEntityProvider extends EntityProvider {
     private boolean isFolderQualified(FolderEntity folderEntity) {
         try {
             String folderId = folderEntity.getIdForDisplay();
-            if (folderId == null || folderId.isEmpty()) return false;
+            if (folderId == null || folderId.isEmpty()) {
+                return false;
+            }
 
             for (String existedFolderIds : registeredFolderIds) {
                 if (folderId.startsWith(existedFolderIds + "/") || folderId.equals(existedFolderIds)) {

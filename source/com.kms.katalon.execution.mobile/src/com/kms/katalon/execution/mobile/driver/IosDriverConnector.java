@@ -23,8 +23,8 @@ public class IosDriverConnector extends MobileDriverConnector {
     public IDriverConnector clone() {
         try {
             IosDriverConnector iosDriverConnector = new IosDriverConnector(getParentFolderPath());
-            iosDriverConnector.setDeviceName(getDeviceName());
-            iosDriverConnector.driverProperties = (Map<String, Object>) cloneDriverPropertyValue(getDriverProperties());
+            iosDriverConnector.setDevice(getDevice());
+            iosDriverConnector.driverProperties = (Map<String, Object>) cloneDriverPropertyValue(getUserConfigProperties());
             return iosDriverConnector;
         } catch (IOException e) {
             // do nothing

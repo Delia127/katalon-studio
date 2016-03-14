@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.integration.qtest.dialog.model;
 
+import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
@@ -43,24 +44,26 @@ public class TestCaseDownloadedPreviewTreeNode implements DownloadedPreviewTreeN
 
     @Override
     public String getStatus() {
-        FolderEntity parentFolderEntity = parent.getFolderEntity();
-        if (parentFolderEntity == null) return "New";
-
         try {
+            FolderEntity parentFolderEntity = parent.getFolderEntity();
+            if (parentFolderEntity == null) {
+                return StringConstants.CM_NEW;
+            }
+            
             if (getName().equalsIgnoreCase(
                     TestCaseController.getInstance().getAvailableTestCaseName(parentFolderEntity, getName()))) {
-                return "New";
+                return StringConstants.CM_NEW;
             } else {
-                return "New but Duplicated";
+                return StringConstants.CM_NEW_DUPLICATED;
             }
         } catch (Exception e) {
-            return "New";
+            return StringConstants.CM_NEW;
         }
     }
 
     @Override
     public String getType() {
-        return "Test Case";
+        return StringConstants.TEST_CASE;
     }
 
 }

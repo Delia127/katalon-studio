@@ -5,9 +5,9 @@ import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 
 public class QTestIntegrationContribution implements IntegrationContributor {
 
-	@Override
-	public String getProductName() {
-		return QTestStringConstants.PRODUCT_NAME;
-	}
+    @Override
+    public String getProductName() {
+        return QTestStringConstants.PRODUCT_NAME;
+    }
 
 }

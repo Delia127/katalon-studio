@@ -11,7 +11,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Text;
 
 public class ControlUtils {
     private ControlUtils() {
@@ -47,27 +46,6 @@ public class ControlUtils {
         ctrl.setFont(new Font(ctrl.getDisplay(), fD));
     }
 
-    public static Listener getAutoHideScrollbarListener = new Listener() {
-        @Override
-        public void handleEvent(final Event event) {
-            final  Text t = (Text) event.widget;
-            final Rectangle r1 = t.getClientArea();
-            final Rectangle r2 = t.computeTrim(r1.x, r1.y, r1.width, r1.height);
-            final Point p = t.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
-            t.getDisplay().timerExec(50, new Runnable() {
-                @Override
-                public void run() {
-                    t.getHorizontalBar().setVisible(r2.width <= p.x);
-                    t.getVerticalBar().setVisible(r2.height <= p.y);
-                    if (event.type == SWT.Modify) {
-                        t.getParent().layout(true);
-                        t.showSelection();
-                    }
-                }
-            });
-        }
-    };
-    
     public static Listener getAutoHideStyledTextScrollbarListener = new Listener() {
         @Override
         public void handleEvent(final Event event) {
@@ -78,16 +56,22 @@ public class ControlUtils {
             t.getDisplay().timerExec(50, new Runnable() {
                 @Override
                 public void run() {
+                    if (t.isDisposed()) {
+                        return;
+                    }
+                    t.setRedraw(false);
+
                     if (!t.getWordWrap()) {
-                        t.getHorizontalBar().setVisible(r2.width <= p.x);
+                        t.getHorizontalBar().setVisible(r2.width < p.x);
                     } else {
                         t.getHorizontalBar().setVisible(false);
                     }
-                    t.getVerticalBar().setVisible(r2.height <= p.y);
+                    t.getVerticalBar().setVisible(r2.height < p.y);
                     if (event.type == SWT.Modify) {
                         t.getParent().layout(true);
                         t.showSelection();
                     }
+                    t.setRedraw(true);
                 }
             });
         }

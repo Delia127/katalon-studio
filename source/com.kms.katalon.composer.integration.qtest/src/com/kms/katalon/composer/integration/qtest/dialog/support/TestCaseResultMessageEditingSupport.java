@@ -26,7 +26,7 @@ public class TestCaseResultMessageEditingSupport extends EditingSupport {
 
     @Override
     protected CellEditor getCellEditor(Object element) {
-        if (element == null && !(element instanceof QTestLogUploadedPreview)) {
+        if (!(element instanceof QTestLogUploadedPreview)) {
             return null;
         }
 
@@ -37,7 +37,7 @@ public class TestCaseResultMessageEditingSupport extends EditingSupport {
 
     @Override
     protected boolean canEdit(Object element) {
-        if (element == null && !(element instanceof QTestLogUploadedPreview)) {
+        if (!(element instanceof QTestLogUploadedPreview)) {
             return false;
         }
 
@@ -53,7 +53,7 @@ public class TestCaseResultMessageEditingSupport extends EditingSupport {
 
     @Override
     protected void setValue(Object element, Object value) {
-        if (element == null || !(element instanceof QTestLogUploadedPreview) || !(value instanceof String)) {
+        if (!(element instanceof QTestLogUploadedPreview) || !(value instanceof String)) {
             return;
         }
 

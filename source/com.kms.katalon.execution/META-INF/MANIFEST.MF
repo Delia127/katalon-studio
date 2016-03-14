@@ -8,6 +8,7 @@ Bundle-Vendor: KMS
 Export-Package: com.kms.katalon.execution.collector,
  com.kms.katalon.execution.configuration,
  com.kms.katalon.execution.configuration.contributor,
+ com.kms.katalon.execution.configuration.impl,
  com.kms.katalon.execution.constants,
  com.kms.katalon.execution.entity,
  com.kms.katalon.execution.exception,
@@ -16,6 +17,7 @@ Export-Package: com.kms.katalon.execution.collector,
  com.kms.katalon.execution.launcher,
  com.kms.katalon.execution.launcher.manager,
  com.kms.katalon.execution.launcher.model,
+ com.kms.katalon.execution.launcher.process,
  com.kms.katalon.execution.logging,
  com.kms.katalon.execution.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7

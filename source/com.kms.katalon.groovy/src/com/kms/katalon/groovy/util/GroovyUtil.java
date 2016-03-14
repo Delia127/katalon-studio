@@ -309,7 +309,7 @@ public class GroovyUtil {
     /**
      * @return Returns resources folder of the current Katalon installed folder.
      */
-    private static File getPlatformResourcesDir() {
+    private static File getPlatformResourcesDir() {       
         File eclipseDir = Platform.getLocation().toFile().getParentFile();
 
         if (Platform.getOS().equals(Platform.OS_MACOSX)) {

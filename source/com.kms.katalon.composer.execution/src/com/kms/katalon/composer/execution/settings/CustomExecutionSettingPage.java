@@ -31,11 +31,13 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
+import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.components.DriverConnectorListCellEditor;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.execution.collector.DriverConnectorCollector;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.configuration.CustomRunConfiguration;
 import com.kms.katalon.execution.configuration.IDriverConnector;
@@ -55,10 +57,12 @@ public class CustomExecutionSettingPage extends PreferencePage {
 
     public CustomExecutionSettingPage() {
         customRunConfigurationList = new ArrayList<CustomRunConfiguration>();
+        String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
         for (CustomRunConfigurationContributor customRunConfigurationContributor : RunConfigurationCollector
                 .getInstance().getAllCustomRunConfigurationContributors()) {
             try {
-                customRunConfigurationList.add(new CustomRunConfiguration(customRunConfigurationContributor.getId()));
+                customRunConfigurationList.add(new CustomRunConfiguration(projectDir, customRunConfigurationContributor
+                        .getId()));
             } catch (IOException | ExecutionException e) {
                 LoggerSingleton.logError(e);
             }
@@ -193,7 +197,7 @@ public class CustomExecutionSettingPage extends PreferencePage {
                         if (element instanceof CustomRunConfiguration) {
                             CustomRunConfiguration runConfiguration = (CustomRunConfiguration) element;
                             List<IDriverConnector> driverConnectorList = new ArrayList<IDriverConnector>();
-                            for (IDriverConnector driverConnector : runConfiguration.getDriverConnectors()) {
+                            for (IDriverConnector driverConnector : runConfiguration.getDriverConnectors().values()) {
                                 driverConnectorList.add(driverConnector);
                             }
                             return driverConnectorList;
@@ -206,12 +210,24 @@ public class CustomExecutionSettingPage extends PreferencePage {
                     protected void setValue(Object element, Object value) {
                         if (element instanceof CustomRunConfiguration && value instanceof List) {
                             CustomRunConfiguration runConfiguration = (CustomRunConfiguration) element;
+                            String configFolderPath = runConfiguration.getConfigFolder().getAbsolutePath();
                             List<IDriverConnector> driverConnectorList = (List<IDriverConnector>) value;
                             runConfiguration.clearAllDriverConnectors();
-                            for (IDriverConnector driverConnector : driverConnectorList) {
-                                runConfiguration.addDriverConnector(driverConnector);
+                            try {
+                                for (IDriverConnector driverConnector : driverConnectorList) {
+
+                                    String name = DriverConnectorCollector.getInstance().getContributorName(
+                                            driverConnector, configFolderPath);
+
+                                    runConfiguration.addDriverConnector(name, driverConnector);
+                                }
+                                tableViewer.refresh();
+                            } catch (IOException e) {
+                                LoggerSingleton.logError(e);
+                                MultiStatusErrorDialog.showErrorDialog(e, "Unable to update custom configuration",
+                                        e.getMessage());
                             }
-                            tableViewer.refresh();
+
                         }
                     }
 
@@ -247,7 +263,8 @@ public class CustomExecutionSettingPage extends PreferencePage {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 try {
-                    customRunConfigurationList.add(new CustomRunConfiguration(generateNewCustomConfigurationName()));
+                    customRunConfigurationList.add(new CustomRunConfiguration(ProjectController.getInstance()
+                            .getCurrentProject().getFolderLocation(), generateNewCustomConfigurationName()));
                     tableViewer.refresh();
                 } catch (IOException | ExecutionException exception) {
                     LoggerSingleton.logError(exception);

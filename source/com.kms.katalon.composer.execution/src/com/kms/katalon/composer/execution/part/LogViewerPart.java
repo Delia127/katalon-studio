@@ -13,7 +13,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.debug.internal.ui.views.console.ProcessConsole;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -63,23 +62,23 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.console.ConsolePlugin;
-import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleConstants;
-import org.eclipse.ui.console.IConsoleManager;
-import org.eclipse.ui.internal.console.ConsoleView;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.execution.constants.ImageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.dialog.LogPropertyDialog;
+import com.kms.katalon.composer.execution.launcher.IDEConsoleManager;
+import com.kms.katalon.composer.execution.launcher.IDELaucherEvent;
+import com.kms.katalon.composer.execution.launcher.IDELauncherListener;
+import com.kms.katalon.composer.execution.launcher.IDELauncher;
 import com.kms.katalon.composer.execution.provider.LogRecordTreeViewer;
 import com.kms.katalon.composer.execution.provider.LogRecordTreeViewerContentProvider;
 import com.kms.katalon.composer.execution.provider.LogRecordTreeViewerLabelProvider;
@@ -97,13 +96,12 @@ import com.kms.katalon.core.logging.XMLLoggerParser;
 import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.core.logging.XmlLogRecordException;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.execution.launcher.AbstractLauncher;
+import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.logging.LogExceptionFilter;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
-@SuppressWarnings("restriction")
-public class LogViewerPart implements EventHandler {
+public class LogViewerPart implements EventHandler, IDELauncherListener {
 
     private static final int INCREMENT = 10;
 
@@ -125,7 +123,7 @@ public class LogViewerPart implements EventHandler {
 
     private Composite parentComposite;
 
-    private AbstractLauncher launcherWatched;
+    private IDELauncher launcherWatched;
 
     private boolean isBusy;
 
@@ -151,14 +149,14 @@ public class LogViewerPart implements EventHandler {
         for (MToolBarElement toolbarElement : mpart.getToolbar().getChildren()) {
             MDirectToolItem toolItem = (MDirectToolItem) toolbarElement;
             switch (toolItem.getElementId()) {
-                case IdConstants.LOG_VIEWER_TOOL_ITEM_TREE_ID:
-                    toolItem.setSelected(preferenceStore
-                            .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE));
-                    break;
-                case IdConstants.LOG_VIEWER_TOOL_ITEM_PIN_ID:
-                    toolItem.setSelected(preferenceStore
-                            .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_PIN_LOG));
-                    break;
+            case IdConstants.LOG_VIEWER_TOOL_ITEM_TREE_ID:
+                toolItem.setSelected(preferenceStore
+                        .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE));
+                break;
+            case IdConstants.LOG_VIEWER_TOOL_ITEM_PIN_ID:
+                toolItem.setSelected(preferenceStore
+                        .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_PIN_LOG));
+                break;
             }
         }
     }
@@ -170,10 +168,10 @@ public class LogViewerPart implements EventHandler {
             if (!IdConstants.LOG_VIEWER_MENU_TREEVIEW.equals(menu.getElementId())) {
                 continue;
             }
+
             if (isShowLogAsTree) {
                 menu.setVisible(true);
                 for (MMenuElement childElement : menu.getChildren()) {
-                    //
                     if (childElement instanceof MDirectMenuItem
                             && IdConstants.LOG_VIEWER_MENU_ITEM_WORD_WRAP.equals(childElement.getElementId())) {
                         MDirectMenuItem wordWrapElement = (MDirectMenuItem) childElement;
@@ -201,7 +199,7 @@ public class LogViewerPart implements EventHandler {
         updateToolItemsStatus(mpart);
         createControls(parent);
         createLogViewerControl(parent);
-        registerListeners();
+        registerEventListeners();
     }
 
     private void createLogViewerControl(Composite parent) {
@@ -225,7 +223,7 @@ public class LogViewerPart implements EventHandler {
         updateMenuStatus(fMPart);
     }
 
-    private void registerListeners() {
+    private void registerEventListeners() {
         eventBroker.subscribe(EventConstants.CONSOLE_LOG_RESET, this);
         eventBroker.subscribe(EventConstants.CONSOLE_LOG_ADD_ITEMS, this);
         eventBroker.subscribe(EventConstants.CONSOLE_LOG_REFRESH, this);
@@ -349,69 +347,70 @@ public class LogViewerPart implements EventHandler {
             }
         });
 
+        treeViewer.reset(new ArrayList<XmlLogRecord>());
         if (launcherWatched != null) {
-            treeViewer.reset(new ArrayList<XmlLogRecord>());
-            Job job = new Job(StringConstants.PA_LOADING_LOGS) {
-
-                @Override
-                protected IStatus run(final IProgressMonitor monitor) {
-                    final int logSize = currentRecords.size();
-                    monitor.beginTask(StringConstants.PA_LOADING_LOGS + "...", logSize + 1);
-                    sync.syncExec(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            compositeTreeContainer.setRedraw(false);
-                        }
-
-                    });
-                    for (int index = 0; index < logSize; index++) {
-                        final XmlLogRecord record = currentRecords.get(index);
-                        sync.syncExec(new Runnable() {
-                            public void run() {
-                                try {
-                                    treeViewer.addRecord(record);
-                                    Thread.sleep(0);
-                                } catch (InterruptedException e) {
-                                    LoggerSingleton.logError(e);
-                                    monitor.setCanceled(true);
-                                }
-                            }
-                        });
-
-                        if (record.getMessage() != null && !record.getMessage().isEmpty()) {
-                            monitor.subTask(StringConstants.PA_LOADING_LOG + " " + Integer.toString(index + 1) + " of "
-                                    + logSize + "...");
-                        }
-
-                        monitor.worked(1);
-                    }
-                    sync.syncExec(new Runnable() {
-                        @Override
-                        public void run() {
-                            compositeTreeContainer.setRedraw(true);
-                        }
-                    });
-
-                    stopAdding = false;
-                    isBusy = false;
-                    monitor.worked(1);
-                    return Status.OK_STATUS;
-                }
-            };
-            job.setUser(true);
-            job.schedule();
+            Job loadingJob = new LogLoadingJob();
+            loadingJob.setUser(true);
+            loadingJob.schedule();
         } else {
-            treeViewer.reset(new ArrayList<XmlLogRecord>());
             stopAdding = false;
             isBusy = false;
         }
     }
 
+    private class LogLoadingJob extends Job {
+
+        public LogLoadingJob() {
+            super(StringConstants.PA_LOADING_LOGS);
+        }
+
+        @Override
+        public IStatus run(IProgressMonitor monitor) {
+            try {
+                final int logSize = currentRecords.size();
+                monitor.beginTask(StringConstants.PA_LOADING_LOGS + "...", logSize + 1);
+                sync.syncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        compositeTreeContainer.setRedraw(false);
+                    }
+                });
+                for (int index = 0; index < logSize; index++) {
+                    final XmlLogRecord record = currentRecords.get(index);
+                    sync.syncExec(new Runnable() {
+                        public void run() {
+                            treeViewer.addRecord(record);
+                        }
+                    });
+
+                    if (record.getMessage() != null && !record.getMessage().isEmpty()) {
+                        monitor.subTask(StringConstants.PA_LOADING_LOG + " " + Integer.toString(index + 1) + " of "
+                                + logSize + "...");
+                    }
+
+                    monitor.worked(1);
+                }
+
+                monitor.done();
+                return Status.OK_STATUS;
+            } finally {
+                sync.syncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        compositeTreeContainer.setRedraw(true);
+                    }
+                });
+                stopAdding = false;
+                isBusy = false;
+            }
+        }
+
+    }
+
     private void showFailureTreeLogMessage(ILogParentTreeNode logParentTreeNode) throws Exception {
         if (logParentTreeNode.getResult() != null) {
             XmlLogRecord result = logParentTreeNode.getResult();
-            LogLevel resultLevel = (LogLevel) logParentTreeNode.getResult().getLevel();
+            LogLevel resultLevel = LogLevel.valueOf(logParentTreeNode.getResult().getLevel());
             if (resultLevel == LogLevel.FAILED || resultLevel == LogLevel.ERROR) {
                 StringBuilder messageBuilder = new StringBuilder(result.getMessage());
 
@@ -488,7 +487,9 @@ public class LogViewerPart implements EventHandler {
 
     private void showTreeLogProperties() throws Exception {
         StructuredSelection selection = (StructuredSelection) treeViewer.getSelection();
-        if (selection == null) return;
+        if (selection == null) {
+            return;
+        }
 
         if (selection.getFirstElement() instanceof ILogTreeNode) {
             ILogTreeNode logTreeNode = (ILogTreeNode) selection.getFirstElement();
@@ -822,7 +823,7 @@ public class LogViewerPart implements EventHandler {
         table.setMenu(popupMenu);
         tableViewer.setInput(new ArrayList<XmlLogRecord>());
         if (launcherWatched != null) {
-            for (XmlLogRecord record : launcherWatched.getAllRecords()) {
+            for (XmlLogRecord record : launcherWatched.getLogRecords()) {
                 tableViewer.add(record);
             }
         }
@@ -878,16 +879,25 @@ public class LogViewerPart implements EventHandler {
                 lblNumTestcases.setText(Integer.toString(progressBar.getSelection() / INCREMENT) + "/"
                         + Integer.toString(progressBar.getMaximum() / INCREMENT));
                 // update
-                if (testCaseResult.getLevel().equals(LogLevel.PASSED)) {
+                LogLevel logLevel = LogLevel.valueOf(testCaseResult.getLevel());
+                if (logLevel == null) {
+                    return;
+                }
+                
+                switch (logLevel) {
+                case PASSED:
                     lblNumPasses.setText(Integer.toString(Integer.valueOf(lblNumPasses.getText()) + 1));
-                } else if (testCaseResult.getLevel().equals(LogLevel.FAILED)) {
+                    break;
+                case FAILED:
                     lblNumFailures.setText(Integer.toString(Integer.valueOf(lblNumFailures.getText()) + 1));
-
                     lblNumFailures.setForeground(ColorUtil.getFailedLogBackgroundColor());
-                } else if (testCaseResult.getLevel().equals(LogLevel.ERROR)) {
+                    break;
+                case ERROR:
                     lblNumErrors.setText(Integer.toString(Integer.valueOf(lblNumErrors.getText()) + 1));
-
                     lblNumErrors.setForeground(ColorUtil.getFailedLogBackgroundColor());
+                    break;
+                default:
+                    return;
                 }
                 lblNumTestcases.getParent().getParent().layout();
             }
@@ -913,33 +923,43 @@ public class LogViewerPart implements EventHandler {
         });
     }
 
-    private void addRecords(List<XmlLogRecord> records) throws InterruptedException {
+    private void addRecords(final List<XmlLogRecord> records) throws InterruptedException {
         while (isBusy) {
-            if (stopAdding) return;
+            if (stopAdding) {
+                return;
+            }
             // wait for refreshing records completely.
             Thread.sleep(100);
         }
 
         isBusy = true;
-        IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
 
-        boolean showLogsAsTree = store
-                .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
+        try {
+            IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
+                    PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
 
-        if (showLogsAsTree) {
-            treeViewer.addRecords(records);
-        } else {
-            for (XmlLogRecord record : records) {
-                tableViewer.add(record);
+            boolean showLogsAsTree = store
+                    .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
+
+            if (showLogsAsTree) {
+                treeViewer.addRecords(records);
+            } else {
+                for (XmlLogRecord record : records) {
+                    tableViewer.add(record);
+                }
             }
+            currentRecords.addAll(records);
+
+        } finally {
+            isBusy = false;
         }
-        currentRecords.addAll(records);
-        isBusy = false;
     }
 
     private synchronized void changeObservedLauncher(Event event) throws Exception {
-        if (stopAdding) return;
+        if (stopAdding) {
+            return;
+        }
+
         stopAdding = true;
 
         while (isBusy) {
@@ -948,6 +968,8 @@ public class LogViewerPart implements EventHandler {
 
         if (launcherWatched != null) {
             launcherWatched.setObserved(false);
+            launcherWatched.removeListener(this);
+
             launcherWatched = null;
             currentRecords.clear();
         }
@@ -955,63 +977,80 @@ public class LogViewerPart implements EventHandler {
         Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
         if (object != null && object instanceof String) {
             String launcherId = (String) object;
-            for (AbstractLauncher launcher : LauncherManager.getInstance().getIDELaunchers()) {
+            for (ILauncher launcher : LauncherManager.getInstance().getAllLaunchers()) {
                 if (launcher.getId().equals(launcherId)) {
-                    launcherWatched = launcher;
+                    launcherWatched = (IDELauncher) launcher;
                     break;
                 }
             }
-            maxValue = launcherWatched.getTotalTestCase();
+            maxValue = launcherWatched.getResult().getTotalTestCases();
         }
+
         resetProgressBar();
         if (launcherWatched != null) {
-            currentRecords.addAll(launcherWatched.getAllRecords());
+            currentRecords.addAll(launcherWatched.getLogRecords());
             createLogViewerControl(parentComposite);
             launcherWatched.setObserved(true);
+            launcherWatched.addListener(this);
             setSelectedConsoleView();
         } else {
             createLogViewerControl(parentComposite);
         }
+
+        eventBroker.send(EventConstants.JOB_REFRESH, null);
     }
 
     @Override
-    public void handleEvent(Event event) {
+    public void handleEvent(final Event event) {
         try {
             String topic = event.getTopic();
             switch (topic) {
-                case EventConstants.CONSOLE_LOG_RESET: {
-                    changeObservedLauncher(event);
-                    break;
-                }
-                case EventConstants.CONSOLE_LOG_ADD_ITEMS: {
-                    if (!stopAdding && launcherWatched != null) {
-                        List<XmlLogRecord> logRecords = launcherWatched.getAllRecords();
-                        if (currentRecords.size() < logRecords.size()) {
-                            addRecords(logRecords.subList(currentRecords.size(), logRecords.size()));
+            case EventConstants.CONSOLE_LOG_RESET: {
+                UISynchronizeService.syncExec(new Runnable() {
+
+                    @Override
+                    public void run() {
+
+                        try {
+                            changeObservedLauncher(event);
+                        } catch (Exception e) {
                         }
                     }
-                    break;
-                }
-                case EventConstants.CONSOLE_LOG_UPDATE_PROGRESS_BAR: {
-                    Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-                    if (object != null && object instanceof XmlLogRecord) {
-                        updateProgressBar((XmlLogRecord) object);
+                });
+                break;
+            }
+            case EventConstants.CONSOLE_LOG_ADD_ITEMS: {
+                if (!stopAdding && launcherWatched != null) {
+                    List<XmlLogRecord> logRecords = launcherWatched.getLogRecords();
+                    if (currentRecords.size() < logRecords.size()) {
+                        addRecords(logRecords.subList(currentRecords.size(), logRecords.size()));
                     }
-                    break;
                 }
-                case EventConstants.CONSOLE_LOG_CHANGE_VIEW_TYPE: {
-                    if (stopAdding) {
-                        return;
-                    }
-                    stopAdding = true;
-                    resetProgressBar();
-                    createLogViewerControl(parentComposite);
-                    break;
+                break;
+            }
+            case EventConstants.CONSOLE_LOG_UPDATE_PROGRESS_BAR: {
+                Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+                if (object != null && object instanceof XmlLogRecord) {
+                    updateProgressBar((XmlLogRecord) object);
                 }
-                case EventConstants.CONSOLE_LOG_WORD_WRAP: {
-                    setWrapTxtMessage();
-                    break;
+                break;
+            }
+            case EventConstants.CONSOLE_LOG_CHANGE_VIEW_TYPE: {
+                if (stopAdding) {
+                    return;
                 }
+                stopAdding = true;
+                resetProgressBar();
+                createLogViewerControl(parentComposite);
+                break;
+            }
+            case EventConstants.CONSOLE_LOG_WORD_WRAP: {
+                setWrapTxtMessage();
+                break;
+            }
+            default: {
+                break;
+            }
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -1033,20 +1072,39 @@ public class LogViewerPart implements EventHandler {
             return;
         }
 
-        IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getPages()[0];
-        ConsoleView consoleView = (ConsoleView) workbenchPage.findView(IConsoleConstants.ID_CONSOLE_VIEW);
+        IDEConsoleManager.openLaunchConsole(launcherWatched.getLaunch());
+    }
 
-        IConsoleManager manager = ConsolePlugin.getDefault().getConsoleManager();
-        if (manager.getConsoles() == null) return;
+    @Override
+    public void handleLauncherEvent(IDELaucherEvent event, Object object) {
 
-        for (IConsole console : manager.getConsoles()) {
-            if (!(console instanceof ProcessConsole)) continue;
-            if (launcherWatched.getLaunch() == ((ProcessConsole) console).getProcess().getLaunch()) {
-                if (workbenchPage.isPartVisible(consoleView)) {
-                    manager.showConsoleView(console);
-                }
+        switch (event) {
+        case UPDATE_RECORD:
+            if (stopAdding || launcherWatched == null) {
                 return;
             }
+            UISynchronizeService.syncExec(new Runnable() {
+
+                @Override
+                public void run() {
+                    List<XmlLogRecord> logRecords = launcherWatched.getLogRecords();
+                    if (currentRecords.size() < logRecords.size()) {
+                        try {
+
+                            addRecords(logRecords.subList(currentRecords.size(), logRecords.size()));
+
+                        } catch (InterruptedException e) {
+                            LoggerSingleton.logError(e);
+                        }
+                    }
+                }
+            });
+            break;
+        case UPDATE_STATUS:
+            break;
+        default:
+            break;
+
         }
     }
 

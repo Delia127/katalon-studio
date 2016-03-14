@@ -65,7 +65,7 @@ public class RemoteWebDriverPreferenceComposite extends DriverPreferenceComposit
         cmbRemoteServerType.select(selectedIndex);
 
         driverPropertyMapComposite = new DriverPropertyMapComposite(this);
-        driverPropertyMapComposite.setInput(driverConnector.getDriverProperties());
+        driverPropertyMapComposite.setInput(driverConnector.getUserConfigProperties());
 
         txtRemoteServerUrl.addModifyListener(new ModifyListener() {
             @Override

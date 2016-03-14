@@ -1,31 +1,28 @@
 package com.kms.katalon.execution.configuration;
 
+import java.io.IOException;
 import java.util.Map;
 
-public interface IRunConfiguration {
-	public IDriverConnector[] getDriverConnectors();
+import com.kms.katalon.entity.file.FileEntity;
+import com.kms.katalon.execution.entity.IExecutedEntity;
+import com.kms.katalon.execution.exception.ExecutionException;
 
-	public String getLogFilePath();
-
-	public String getProjectFolderLocation();
+public interface IRunConfiguration {	
+    public String getName();
+    
+    public String getProjectFolderLocation();
+    
+    public Map<String, IDriverConnector> getDriverConnectors();
 	
-	public int getTimeOut();
+	public IExecutionSetting build(FileEntity fileEntity, IExecutedEntity entity) throws IOException;
 	
-	public String getHostName();
+	public IHostConfiguration getHostConfiguration();
 	
-	public String getOS();
+	public IExecutionSetting getExecutionSetting();
 	
-	public String getSource();
-	
-	public String getSourceName();
-
-	public String getSourceId();
-
-	public String getSourceDescription();
-
-	public Map<String, Object> getExecutionSettingMap();
-	
-	public String getName();
-	
-	public String getExecutionSettingFilePath();
+    public Map<String, Object> getProperties();
+    
+    public void generateExecutionProperties() throws IOException;
+    
+    public IRunConfiguration cloneConfig() throws IOException, ExecutionException;
 }

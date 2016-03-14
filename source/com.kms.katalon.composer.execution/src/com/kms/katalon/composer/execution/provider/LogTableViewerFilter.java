@@ -41,7 +41,7 @@ public class LogTableViewerFilter extends ViewerFilter {
     }
     
     private int evaluteLog(XmlLogRecord record) {
-        LogLevel level = (LogLevel) LogLevel.parse(record.getLevel().getName());
+        LogLevel level = LogLevel.valueOf(record.getLevel().getName());
         int value = ALL;
         if (level == LogLevel.INFO) {
             value |= INFO;

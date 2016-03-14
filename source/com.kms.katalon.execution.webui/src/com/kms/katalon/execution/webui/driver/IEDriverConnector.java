@@ -26,8 +26,8 @@ public class IEDriverConnector extends WebUiDriverConnector {
 	}
 
 	@Override
-	public Map<String, Object> getExecutionSettingPropertyMap() {
-		Map<String, Object> propertyMap = super.getExecutionSettingPropertyMap();
+	public Map<String, Object> getSystemProperties() {
+		Map<String, Object> propertyMap = super.getSystemProperties();
 		propertyMap.put(StringConstants.CONF_PROPERTY_IE_DRIVER_PATH, ieDriverPath);
 		propertyMap.put(DriverFactory.WAIT_FOR_IE_HANGING_PROPERTY, String.valueOf(waitForHang));
 		return propertyMap;
@@ -54,7 +54,7 @@ public class IEDriverConnector extends WebUiDriverConnector {
     public IDriverConnector clone() {
         try {
             IEDriverConnector ieDriverConnector = new IEDriverConnector(getParentFolderPath());
-            ieDriverConnector.driverProperties = (Map<String, Object>) cloneDriverPropertyValue(getDriverProperties());
+            ieDriverConnector.driverProperties = (Map<String, Object>) cloneDriverPropertyValue(getUserConfigProperties());
             return ieDriverConnector;
         } catch (IOException e) {
             // do nothing

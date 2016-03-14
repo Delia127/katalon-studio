@@ -131,7 +131,7 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
     @Override
     protected Control createDialogArea(Composite parent) {
         Composite dialogComposite = (Composite) super.createDialogArea(parent);
-        GridLayout glDialogComposite = ((GridLayout) dialogComposite.getLayout());
+        GridLayout glDialogComposite = (GridLayout) dialogComposite.getLayout();
         glDialogComposite.numColumns = 4;
         glDialogComposite.marginHeight = 0;
         glDialogComposite.marginWidth = 0;
@@ -375,7 +375,7 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
     private void backPressed() {
         Map<String, Object> pageSharedData = wizardManager.getCurrentPage().storeControlStates();
         if (pageSharedData != null) {
-            sharedData.putAll(pageSharedData);;
+            sharedData.putAll(pageSharedData);
         }
 
         showPage(wizardManager.backPage());
@@ -384,7 +384,7 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
     private void nextPressed() {
         Map<String, Object> pageSharedData = wizardManager.getCurrentPage().storeControlStates();
         if (pageSharedData != null) {
-            sharedData.putAll(pageSharedData);;
+            sharedData.putAll(pageSharedData);
         }
 
         showPage(wizardManager.nextPage());
@@ -514,7 +514,7 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
             job.doTask();
             job.join();
         } catch (InterruptedException ex) {
-
+            LoggerSingleton.logError(ex);
         }
     }
 

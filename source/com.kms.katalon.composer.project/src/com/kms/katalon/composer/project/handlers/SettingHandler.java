@@ -2,7 +2,6 @@ package com.kms.katalon.composer.project.handlers;
 
 import javax.inject.Named;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.services.IServiceConstants;
@@ -22,12 +21,8 @@ public class SettingHandler {
 
     @CanExecute
     public boolean canExecute() {
-        try {
-            return (ProjectController.getInstance().getCurrentProject() != null && !LauncherManager.getInstance()
-                    .isAnyLauncherRunning());
-        } catch (CoreException e) {
-            return false;
-        }
+        return (ProjectController.getInstance().getCurrentProject() != null && !LauncherManager.getInstance()
+                .isAnyLauncherRunning());
     }
 
     @Execute

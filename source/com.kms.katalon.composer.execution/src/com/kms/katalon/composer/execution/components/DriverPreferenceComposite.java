@@ -21,11 +21,11 @@ public class DriverPreferenceComposite extends Composite {
         this.driverConnector = driverConnector;
         createContents(driverConnector);
         if (driverConnector != null) {
-            driverProperties = driverConnector.getDriverProperties();
+            driverProperties = driverConnector.getUserConfigProperties();
         } else {
             driverProperties = new LinkedHashMap<String, Object>();
         }
-        driverPropertyMapComposite.setInput(driverProperties);
+        setInput(driverProperties);
     }
 
     protected void createContents(IDriverConnector driverConnector) {
@@ -40,6 +40,7 @@ public class DriverPreferenceComposite extends Composite {
     }
 
     public IDriverConnector getResult() {
+        driverConnector.setUserConfigProperties(driverProperties);
         return driverConnector;
     }
 
