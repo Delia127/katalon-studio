@@ -327,7 +327,7 @@ public class CustomExecutionSettingPage extends PreferencePage {
     @Override
     public boolean performOk() {
         File customConfigFolder = new File(ProjectController.getInstance().getCurrentProject().getFolderLocation()
-                + File.separator + RunConfigurationCollector.CUSTOM_EXECUTION_CONFIG_ROOT_FOLDLER_RELATIVE_PATH);
+                + File.separator + RunConfigurationCollector.CUSTOM_EXECUTION_CONFIG_ROOT_FOLDER_RELATIVE_PATH);
         if (customConfigFolder.exists() && customConfigFolder.isDirectory()) {
             try {
                 FileUtils.deleteDirectory(customConfigFolder);

@@ -148,6 +148,15 @@ public class RunConfiguration {
         return (properties != null) ? (String) properties.get(propertyName) : null;
     }
 
+    public static String getDriverSystemProperty(String driverConnectorId, String propertyName, String defaultValue) {
+        Map<String, Object> properties = getDriverSystemProperties(driverConnectorId);
+        if(properties != null && properties.get(propertyName) != null){
+        	return String.valueOf(properties.get(propertyName));
+        }
+        return defaultValue;
+    }
+
+    
     public static String getDriverPreferencesProperty(String driverConnectorId, String propertyName) {
         Map<String, Object> properties = getDriverPreferencesProperties(driverConnectorId);
 

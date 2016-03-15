@@ -34,7 +34,7 @@ public abstract class MobileDriverConnector extends AbstractDriverConnector {
     public Map<String, Object> getSystemProperties() {
        Map<String, Object> systemProperties = super.getSystemProperties();
        String projectDir = configurationFolder.replace(File.separator
-               + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME, "");
+               + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME, "");
        systemProperties.put(MobileDriverFactory.APPIUM_LOG_PROPERTY, projectDir + File.separator + "appium.log");
        return systemProperties;
     }

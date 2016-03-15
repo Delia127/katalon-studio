@@ -13,8 +13,8 @@ import java.util.Properties;
 
 public class PropertySettingStoreUtil {
     private static final String SETTING_ROOT_FOLDER_NAME = "settings";
-    public static final String INTERNAL_SETTING_ROOT_FOLDLER_NAME = SETTING_ROOT_FOLDER_NAME + File.separator + "internal";
-    public static final String EXTERNAL_SETTING_ROOT_FOLDLER_NAME = SETTING_ROOT_FOLDER_NAME + File.separator + "external";
+    public static final String INTERNAL_SETTING_ROOT_FOLDER_NAME = SETTING_ROOT_FOLDER_NAME + File.separator + "internal";
+    public static final String EXTERNAL_SETTING_ROOT_FOLDER_NAME = SETTING_ROOT_FOLDER_NAME + File.separator + "external";
     public static final String PROPERTY_FILE_EXENSION = ".properties";
 
     private static final String BOOLEAN_REGEX = "^(true|false)$";

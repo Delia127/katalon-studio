@@ -18,7 +18,7 @@ import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
 import com.kms.katalon.execution.exception.ExecutionException;
 
 public class RunConfigurationCollector {
-    public static final String CUSTOM_EXECUTION_CONFIG_ROOT_FOLDLER_RELATIVE_PATH = PropertySettingStoreUtil.EXTERNAL_SETTING_ROOT_FOLDLER_NAME
+    public static final String CUSTOM_EXECUTION_CONFIG_ROOT_FOLDER_RELATIVE_PATH = PropertySettingStoreUtil.EXTERNAL_SETTING_ROOT_FOLDER_NAME
             + File.separator + "execution";
     private static RunConfigurationCollector _instance;
     private List<IRunConfigurationContributor> runConfigurationContributors;
@@ -69,7 +69,7 @@ public class RunConfigurationCollector {
         }
 
         File customProfileSettingFolder = new File(currentProject.getFolderLocation() + File.separator
-                + CUSTOM_EXECUTION_CONFIG_ROOT_FOLDLER_RELATIVE_PATH);
+                + CUSTOM_EXECUTION_CONFIG_ROOT_FOLDER_RELATIVE_PATH);
         if (!customProfileSettingFolder.exists() || !customProfileSettingFolder.isDirectory()) {
             return new CustomRunConfigurationContributor[0];
         }

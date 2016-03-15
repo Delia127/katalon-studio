@@ -10,7 +10,7 @@ import com.kms.katalon.execution.mobile.driver.IosDriverConnector;
 public class IosRunConfiguration extends MobileRunConfiguration {
     public IosRunConfiguration(String projectDir) throws IOException {
         super(projectDir, new IosDriverConnector(projectDir + File.separator
-                + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME));
+                + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME));
     }
     
     @Override

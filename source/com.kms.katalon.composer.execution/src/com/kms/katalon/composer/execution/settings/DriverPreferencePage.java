@@ -52,7 +52,7 @@ public abstract class DriverPreferencePage extends PreferencePage {
     protected void initilize() {
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
         driverConnector = getDriverConnector(projectEntity.getFolderLocation() + File.separator
-                + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME);
+                + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME);
     }
 
     protected abstract IDriverConnector getDriverConnector(String configurationFolderPath);

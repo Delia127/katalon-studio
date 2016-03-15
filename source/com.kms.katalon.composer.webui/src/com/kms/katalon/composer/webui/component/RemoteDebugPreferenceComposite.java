@@ -18,7 +18,7 @@ import com.kms.katalon.execution.webui.driver.WebUiDriverConnector;
 
 public class RemoteDebugPreferenceComposite extends DriverPreferenceComposite {
 	
-    protected Text txtDebugPort;
+    protected Text txtDebugHost, txtDebugPort;
 
     public RemoteDebugPreferenceComposite(Composite parent, int style,
     		WebUiDriverConnector driverConnector) {
@@ -34,8 +34,16 @@ public class RemoteDebugPreferenceComposite extends DriverPreferenceComposite {
         remoteUrlComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         remoteUrlComposite.setLayout(new GridLayout(2, false));
 
+        Label lblRemoteDebugHost = new Label(remoteUrlComposite, SWT.NONE);
+        lblRemoteDebugHost.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+        lblRemoteDebugHost.setText(StringConstants.LBL_DEBUG_HOST);
+
+        txtDebugHost = new Text(remoteUrlComposite, SWT.BORDER);
+        txtDebugHost.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtDebugHost.setText(((RemoteDebugDriverConnector) driverConnector).getDebugHost());
+        
         Label lblRemoteDebugPort = new Label(remoteUrlComposite, SWT.NONE);
-        lblRemoteDebugPort.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+        lblRemoteDebugPort.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
         lblRemoteDebugPort.setText(StringConstants.LBL_DEBUG_PORT);
 
         txtDebugPort = new Text(remoteUrlComposite, SWT.BORDER);
@@ -59,7 +67,12 @@ public class RemoteDebugPreferenceComposite extends DriverPreferenceComposite {
                 ((RemoteDebugDriverConnector) driverConnector).setDebugPort(txtDebugPort.getText());
             }
         });
-
+        txtDebugHost.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+                ((RemoteDebugDriverConnector) driverConnector).setDebugHost(txtDebugHost.getText());
+            }
+        });
     }
 
     @Override
