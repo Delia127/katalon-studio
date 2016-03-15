@@ -92,7 +92,7 @@ public class MobileDriverFactory {
         }
     };
 
-    private static void cleanup() throws InterruptedException, IOException {
+    public static void cleanup() throws InterruptedException, IOException {
         String os = System.getProperty("os.name");
         if (os.toLowerCase().contains("win")) {
             killProcessOnWin("adb.exe");
@@ -159,7 +159,6 @@ public class MobileDriverFactory {
 
     @SuppressWarnings("rawtypes")
     public static void startIosDriver(String deviceId, String appFile, boolean uninstallAfterCloseApp) throws Exception {
-        cleanup();
         try {
             if (!isWebProxyServerStarted()) {
                 startWebProxyServer(deviceId);
