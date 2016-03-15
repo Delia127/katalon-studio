@@ -13,6 +13,8 @@ import com.kms.katalon.core.testcase.TestCaseBinding
 import com.kms.katalon.custom.factory.BuiltInMethodNodeFactory
 import com.kms.katalon.entity.testcase.TestCaseEntity
 import com.kms.katalon.execution.configuration.IRunConfiguration
+import com.kms.katalon.groovy.util.GroovyStringUtil;
+import com.kms.katalon.groovy.util.GroovyUtil;
 
 @CompileStatic
 class TestCaseScriptTemplate {
@@ -23,7 +25,6 @@ class TestCaseScriptTemplate {
 <% driverCleaners.each { %>DriverCleanerCollector.getInstance().addDriverCleaner(new <%= it %>())
 <% } %>
 
-RunConfiguration.setLogFile("<%= logFilePath %>")
 RunConfiguration.setExecutionSettingFile("<%= executionConfigFilePath %>")
 
 TestCaseMain.beforeStart()
@@ -31,7 +32,7 @@ try {
 	TestCaseMain.runTestCase('<%= testCaseId %>', 
 								<%= testCaseBinding %>, FailureHandling.STOP_ON_FAILURE)
 } catch (Exception e) {
-    TestCaseMain.logError('<%= testCaseId %>', e)
+    TestCaseMain.logError(e, '<%= testCaseId %>')
 }
 DriverCleanerCollector.getInstance().cleanDriversAfterRunningTestCase()
 '''
@@ -63,8 +64,7 @@ DriverCleanerCollector.getInstance().cleanDriversAfterRunningTestCase()
             "importNames"     : importNames,
             "testCaseId"      : testCaseId,
             "testCaseBinding" : testCaseBinding,
-            "executionConfigFilePath" : config.getExecutionSettingFilePath(),
-            "logFilePath" : config.getLogFilePath(),
+            "executionConfigFilePath" : GroovyStringUtil.escapeGroovy(config.getExecutionSetting().getSettingFilePath()),
             "driverCleaners" : driverCleaners
         ]
 

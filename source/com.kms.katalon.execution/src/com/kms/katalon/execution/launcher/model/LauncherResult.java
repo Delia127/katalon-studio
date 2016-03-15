@@ -1,10 +1,13 @@
 package com.kms.katalon.execution.launcher.model;
 
 import java.text.MessageFormat;
+import java.util.Arrays;
 
+import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.execution.constants.StringConstants;
+import com.kms.katalon.execution.launcher.ILauncherResult;
 
-public class LauncherResult {
+public class LauncherResult implements ILauncherResult {
     public static final int RETURN_CODE_PASSED = 0;
     public static final int RETURN_CODE_FAILED = 1;
     public static final int RETURN_CODE_ERROR = 2;
@@ -15,12 +18,19 @@ public class LauncherResult {
 	private int numPasses;
 	private int numFailures;
 	private int numErrors;
+	private int numIncomplete;
+	
+	private TestStatusValue[] statusValues;
 	
 	public LauncherResult(int totalTestCases) {
 		this.setTotalTestCases(totalTestCases);
 		setNumPasses(0);
 		setNumFailures(0);
 		setNumErrors(0);
+		setNumIncomplete(0);
+		
+		statusValues = new TestStatusValue[totalTestCases];
+		Arrays.fill(statusValues, TestStatusValue.INCOMPLETE);
 	}
 
 	public int getTotalTestCases() {
@@ -55,19 +65,26 @@ public class LauncherResult {
 		this.numErrors = numErrors;
 	}
 	
+	public void setNumIncomplete(int numIncomplete) {
+		this.numIncomplete = numIncomplete;
+	}
+	
 	public int getExecutedTestCases() {
 		return getNumPasses() + getNumFailures() + getNumErrors();
 	}
 	
 	public void increasePasses() {
+	    statusValues[getExecutedTestCases()] = TestStatusValue.PASSED;
 		numPasses++;
 	}
 	
 	public void increaseFailures() {
+	    statusValues[getExecutedTestCases()] = TestStatusValue.FAILED;
 		numFailures++;
 	}
 	
 	public void increaseErrors() {
+	    statusValues[getExecutedTestCases()] = TestStatusValue.ERROR;
 		numErrors++;
 	}
 	
@@ -105,4 +122,14 @@ public class LauncherResult {
 				Integer.toString(getNumFailures()),
 				Integer.toString(getNumErrors()));
 	}
+
+	@Override
+	public int getNumIncomplete() {
+		return numIncomplete;
+	}
+
+    @Override
+    public TestStatusValue[] getResultValues() {
+        return statusValues;
+    }
 }

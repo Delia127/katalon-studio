@@ -19,6 +19,7 @@ import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.entity.TestCaseExecutedEntity
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity
 import com.kms.katalon.execution.util.ExecutionUtil
+import com.kms.katalon.groovy.util.GroovyStringUtil
 
 @CompileStatic
 public class TestSuiteScriptTemplate {
@@ -41,8 +42,7 @@ suiteProperties.put('<%= k %>', '<%= v %>')
 <% } %>
 
 
-RunConfiguration.setLogFile("<%= logFilePath %>");
-RunConfiguration.setExecutionSettingFile("<%= executionConfigFilePath %>");
+RunConfiguration.setExecutionSettingFile("<%= executionConfigFilePath %>")
 
 TestCaseMain.beforeStart()
 
@@ -87,16 +87,13 @@ KeywordLogger.getInstance().endSuite('<%= testSuite.getName() %>', null)
             }
         }
 
-        String projectDir = testSuite.getProject().getFolderLocation().replace('\\', "/")
-
         def binding = [
             "importNames": importNames,
             "testSuite" : testSuite,
             "testCaseIds": testCaseIds,
             "testCaseBindings": testCaseBindings,
-            "configProperties" : ExecutionUtil.escapeGroovy(runConfig.getExecutionSettingMap()),
-            "executionConfigFilePath" : runConfig.getExecutionSettingFilePath(),
-            "logFilePath" : runConfig.getLogFilePath(),
+            "configProperties" : ExecutionUtil.escapeGroovy(testSuiteExecutedEntity.getAttributes()),
+            "executionConfigFilePath" : GroovyStringUtil.escapeGroovy(runConfig.getExecutionSetting().getSettingFilePath()),
             "driverCleaners" : driverCleaners,
             "trigger": 'runTestCase_${it}'
         ]

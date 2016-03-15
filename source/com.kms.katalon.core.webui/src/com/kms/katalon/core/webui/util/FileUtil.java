@@ -26,8 +26,8 @@ public class FileUtil {
 
 	public static String takesScreenshot() throws IOException, WebDriverException, StepFailedException {
 		String fileName = System.currentTimeMillis() + ".png";
-		FileUtils.copyFile(((TakesScreenshot) DriverFactory.getWebDriver()).getScreenshotAs(OutputType.FILE), new File(
-				new File(KeywordLogger.getInstance().getLogFilePath()).getParent() + File.separator + fileName), false);
+		FileUtils.copyFile(((TakesScreenshot) DriverFactory.getWebDriver()).getScreenshotAs(OutputType.FILE), 
+		        new File(KeywordLogger.getInstance().getLogFolderPath()), false);
 		return fileName;
 	}
 

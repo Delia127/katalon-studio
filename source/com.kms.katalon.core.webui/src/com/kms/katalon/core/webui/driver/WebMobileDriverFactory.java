@@ -17,6 +17,7 @@ import org.openqa.selenium.remote.UnreachableBrowserException;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
+import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
 
 public class WebMobileDriverFactory {
     private static final String APPIUM_SERVER_URL_SUFFIX = "/wd/hub";
@@ -75,11 +76,13 @@ public class WebMobileDriverFactory {
         if (!isServerStarted()) {
             startAppiumServer();
         }
-        DesiredCapabilities capabilities = new DesiredCapabilities();
+        DesiredCapabilities capabilities = WebDriverPropertyUtil.toDesireCapabilities(RunConfiguration
+                    .getDriverPreferencesProperties(DriverFactory.MOBILE_DRIVER_PROPERTY));
         capabilities.setPlatform(Platform.ANDROID);
         capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceName);
         capabilities.setCapability(MobileCapabilityType.BROWSER_NAME, "Chrome");
         capabilities.setCapability(MobileCapabilityType.UDID, deviceName);
+        
         int time = 0;
         long currentMilis = System.currentTimeMillis();
         AppiumDriver<?> appiumDriver = null;
@@ -108,7 +111,8 @@ public class WebMobileDriverFactory {
         if (!isServerStarted()) {
             startAppiumServer();
         }
-        DesiredCapabilities capabilities = new DesiredCapabilities();
+        DesiredCapabilities capabilities = WebDriverPropertyUtil.toDesireCapabilities(RunConfiguration
+                .getDriverPreferencesProperties(DriverFactory.MOBILE_DRIVER_PROPERTY));
         capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceName);
         capabilities.setCapability(MobileCapabilityType.BROWSER_NAME, "Safari");
         capabilities.setCapability(MobileCapabilityType.UDID, deviceName);
@@ -141,8 +145,8 @@ public class WebMobileDriverFactory {
             } catch (Exception e) {
                 // LOGGER.warn(e.getMessage(), e);
                 try {
-                    String logContent = FileUtils.readFileToString(new File(new File(RunConfiguration.getLogFilePath())
-                            .getParent() + File.separator + "appium.log"));
+                    File appiumLogFile = new File(RunConfiguration.getAppiumLogFilePath());
+                    String logContent = FileUtils.readFileToString(appiumLogFile.getAbsoluteFile());
                     if (logContent.contains("Console LogLevel: debug")) {
                         return true;
                     }
@@ -185,15 +189,14 @@ public class WebMobileDriverFactory {
     }
 
     private void startAppiumServer() throws Exception {
-        String appium = System.getenv("APPIUM_HOME") + "/bin/appium.js";
-        String appiumTemp = System.getProperty("java.io.tmpdir") + File.separator + "Katalon" + File.separator + "Appium"
-                + File.separator + "Temp" + System.currentTimeMillis();
+        String appium = System.getenv("APPIUM_HOME") + File.separator + "bin" + File.separator + "appium.js";
+        String appiumTemp = System.getProperty("java.io.tmpdir") + File.separator + "Katalon" + File.separator
+                + "Appium" + File.separator + "Temp" + System.currentTimeMillis();
         appiumPort = getFreePort();
         String[] cmd = { "node", appium, "--command-timeout", "3600", "--tmp", appiumTemp, "-p",
                 String.valueOf(appiumPort), "--chromedriver-port", String.valueOf(getFreePort()) };
         ProcessBuilder pb = new ProcessBuilder(cmd);
-        pb.redirectOutput(new File(new File(RunConfiguration.getLogFilePath()).getParent() + File.separator
-                + "appium.log"));
+        pb.redirectOutput(new File(RunConfiguration.getAppiumLogFilePath()));
         appiumServer = pb.start();
         while (!isServerStarted()) {
         }
@@ -205,7 +208,7 @@ public class WebMobileDriverFactory {
         int webProxyPort = 27753;
         String[] webProxyServerCmd = { webProxyServerLocation, "-c", deviceId + ":" + webProxyPort };
         ProcessBuilder webProxyServerProcessBuilder = new ProcessBuilder(webProxyServerCmd);
-        webProxyServerProcessBuilder.redirectOutput(new File(new File(RunConfiguration.getLogFilePath()).getParent()
+        webProxyServerProcessBuilder.redirectOutput(new File(new File(RunConfiguration.getAppiumLogFilePath()).getParent()
                 + File.separator + "appium-proxy-server.log"));
         webProxyServer = webProxyServerProcessBuilder.start();
         while (!isWebProxyServerStarted()) {

@@ -28,6 +28,7 @@ import org.apache.commons.io.output.StringBuilderWriter;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XMLLoggerParser;
+import com.kms.katalon.core.logging.XMLParserException;
 import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.MessageLogRecord;
@@ -200,7 +201,7 @@ public class ReportUtil {
         FileUtils.writeStringToFile(destFile, htmlSb.toString());
     }
 
-    public static TestSuiteLogRecord generate(String logFolder) throws Exception {
+    public static TestSuiteLogRecord generate(String logFolder) throws XMLParserException, IOException {
         File folder = new File(logFolder);
         File[] files = folder.listFiles(new FilenameFilter() {
             @Override
@@ -225,10 +226,11 @@ public class ReportUtil {
         for (File file : files) {
             StringBuilder sb = new StringBuilder();
             sb.append(FileUtils.readFileToString(file, "UTF-8"));
+            
             if (sb.toString().isEmpty()) return null;
             if (sb.indexOf(LOG_END_TAG) == -1) {
                 sb.append(LOG_END_TAG);
-            }
+            }            
             List<XmlLogRecord> xmlLogRecords = XMLLoggerParser.parseLogString(sb.toString());
             for (XmlLogRecord xmlLogRecord : xmlLogRecords) {
                 if (xmlLogRecord.getLevel().getName().equals(LogLevel.START.toString())) {
@@ -252,7 +254,7 @@ public class ReportUtil {
                             break;
                     }
                 } else if (xmlLogRecord.getLevel().getName().equals(LogLevel.RUN_DATA.toString())) {
-                    testSuiteLogRecord.addRunDatas(xmlLogRecord.getProperties());
+                    testSuiteLogRecord.addRunData(xmlLogRecord.getProperties());
                 } else {
                     Object object = stack.peekLast();
                     if (object instanceof ILogRecord) {
@@ -295,7 +297,7 @@ public class ReportUtil {
             messageLogRecord.setAttachment(xmlLogRecord.getProperties()
                     .get(StringConstants.XML_LOG_ATTACHMENT_PROPERTY));
         }
-        LogLevel logLevel = (LogLevel) LogLevel.parse(xmlLogRecord.getLevel().toString());
+        LogLevel logLevel = LogLevel.valueOf(xmlLogRecord.getLevel().toString());
         TestStatus testStatus = evalTestStatus(logRecord, logLevel);
         messageLogRecord.setStatus(testStatus);
         logRecord.addChildRecord(messageLogRecord);
@@ -374,23 +376,15 @@ public class ReportUtil {
                 ? xmlLogRecord.getProperties().get(StringConstants.XML_LOG_ID_PROPERTY) : "");
         testSuiteLogRecord.setSource(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_SOURCE_PROPERTY)
                 ? xmlLogRecord.getProperties().get(StringConstants.XML_LOG_SOURCE_PROPERTY) : "");
-        testSuiteLogRecord.setBrowser(xmlLogRecord.getProperties().containsKey(
-                StringConstants.XML_LOG_BROWSER_TYPE_PROPERTY) ? xmlLogRecord.getProperties().get(
-                StringConstants.XML_LOG_BROWSER_TYPE_PROPERTY) : "");
         testSuiteLogRecord.setDeviceName(xmlLogRecord.getProperties().containsKey(
-                StringConstants.XML_LOG_DEVICE_NAME_PROPERTY) ? xmlLogRecord.getProperties().get(
-                StringConstants.XML_LOG_DEVICE_NAME_PROPERTY) : "");
+                StringConstants.XML_LOG_DEVICE_ID_PROPERTY) ? xmlLogRecord.getProperties().get(
+                StringConstants.XML_LOG_DEVICE_ID_PROPERTY) : "");
         testSuiteLogRecord.setDevicePlatform(xmlLogRecord.getProperties().containsKey(
                 StringConstants.XML_LOG_DEVICE_PLATFORM_PROPERTY) ? xmlLogRecord.getProperties().get(
                 StringConstants.XML_LOG_DEVICE_PLATFORM_PROPERTY) : "");
         testSuiteLogRecord.setDescription(xmlLogRecord.getProperties().containsKey(
                 StringConstants.XML_LOG_DESCRIPTION_PROPERTY) ? xmlLogRecord.getProperties().get(
                 StringConstants.XML_LOG_DESCRIPTION_PROPERTY) : "");
-        testSuiteLogRecord.setOs(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_OS_PROPERTY)
-                ? xmlLogRecord.getProperties().get(StringConstants.XML_LOG_OS_PROPERTY) : "");
-        testSuiteLogRecord.setHostName(xmlLogRecord.getProperties().containsKey(
-                StringConstants.XML_LOG_HOST_NAME_PROPERTY) ? xmlLogRecord.getProperties().get(
-                StringConstants.XML_LOG_HOST_NAME_PROPERTY) : "");
         stack.add(testSuiteLogRecord);
         return testSuiteLogRecord;
     }

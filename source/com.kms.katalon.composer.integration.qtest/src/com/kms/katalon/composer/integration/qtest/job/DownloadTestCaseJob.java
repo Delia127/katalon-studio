@@ -124,13 +124,13 @@ public class DownloadTestCaseJob extends QTestJob {
                 monitor.beginTask(StringConstants.JOB_TASK_CREATE_TEST_CASE, selectedElements.length);
                 for (int index = 0; index < selectedElements.length; index++) {
                     try {
-                        if (monitor.isCanceled())
+                        if (monitor.isCanceled()) {
                             return Status.CANCEL_STATUS;
+                        }
 
                         doUpdateSelectedItem(qTestProject, selectedElements[index], monitor);
                     } catch (Exception e) {
                         LoggerSingleton.logError(e);
-                        continue;
                     }
                 }
 
@@ -275,8 +275,9 @@ public class DownloadTestCaseJob extends QTestJob {
         isMergeFolderConfirmed = false;
         isMergeTestCaseConfimed = false;
 
-        if (!(selectedItem instanceof DownloadedPreviewTreeNode))
+        if (!(selectedItem instanceof DownloadedPreviewTreeNode)) {
             return;
+        }
 
         DownloadedPreviewTreeNode treeItem = (DownloadedPreviewTreeNode) selectedItem;
 

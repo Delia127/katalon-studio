@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.e4.core.services.log.Logger;
@@ -24,6 +26,8 @@ import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.configuration.IDriverConnector;
+import com.kms.katalon.execution.configuration.impl.DefaultExecutionSetting;
+import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.webui.util.WebUIExecutionUtil;
 import com.kms.katalon.objectspy.exception.BrowserNotSupportedException;
 import com.kms.katalon.objectspy.exception.ExtensionNotFoundException;
@@ -98,8 +102,14 @@ public class InspectSession implements Runnable {
             ExtensionNotFoundException, BrowserNotSupportedException {
         projectDir = currentProject.getFolderLocation();
 
-        IDriverConnector driverConnector = WebUIExecutionUtil.getBrowserDriverConnector(webUIDriverType, projectDir);
-        RunConfiguration.setExecutionSetting(driverConnector.getExecutionSettingPropertyMap());
+        IDriverConnector webUIDriverConnector = WebUIExecutionUtil.getBrowserDriverConnector(webUIDriverType, projectDir);
+        DefaultExecutionSetting executionSetting = new DefaultExecutionSetting();
+        executionSetting.setTimeout(ExecutionUtil.getDefaultPageLoadTimeout());
+        
+        Map<String, IDriverConnector> driverConnectors = new HashMap<String, IDriverConnector>(1);
+        driverConnectors.put(DriverFactory.WEB_UI_DRIVER_PROPERTY, webUIDriverConnector);
+        
+        RunConfiguration.setExecutionSetting(ExecutionUtil.getExecutionProperties(executionSetting, driverConnectors));
         options = createDriverOptions(webUIDriverType);
     }
 

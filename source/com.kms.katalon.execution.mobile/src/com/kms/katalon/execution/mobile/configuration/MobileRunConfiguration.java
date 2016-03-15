@@ -1,43 +1,43 @@
 package com.kms.katalon.execution.mobile.configuration;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.configuration.IDriverConnector;
+import com.kms.katalon.execution.mobile.driver.MobileDevice;
 import com.kms.katalon.execution.mobile.driver.MobileDriverConnector;
 
 public abstract class MobileRunConfiguration extends AbstractRunConfiguration {
     protected MobileDriverConnector mobileDriverConnector;
-
-    public MobileRunConfiguration(TestCaseEntity testCaseEntity, MobileDriverConnector mobileDriverConnector)
+    protected String projectDir;    
+    
+    public MobileRunConfiguration(String projectDir, MobileDriverConnector mobileDriverConnector)
             throws IOException {
-        super(testCaseEntity);
+        super();
         this.mobileDriverConnector = mobileDriverConnector;
-    }
-
-    public MobileRunConfiguration(TestSuiteEntity testSuiteEntity, MobileDriverConnector mobileDriverConnector)
-            throws IOException {
-        super(testSuiteEntity);
-        this.mobileDriverConnector = mobileDriverConnector;
+        this.projectDir = projectDir;
     }
 
     @Override
-    public IDriverConnector[] getDriverConnectors() {
-        return new IDriverConnector[] { mobileDriverConnector };
+    public Map<String, IDriverConnector> getDriverConnectors() {
+        Map<String, IDriverConnector> driverCollector = new LinkedHashMap<String, IDriverConnector>();
+        driverCollector.put(DriverFactory.MOBILE_DRIVER_PROPERTY, mobileDriverConnector);
+        return driverCollector;
     }
 
     @Override
     public String getName() {
-        return super.getName() + " - " + mobileDriverConnector.getDeviceName();
+        return super.getName() + " - " + mobileDriverConnector.getDeviceId();
     }
 
-    public void setDeviceName(String deviceName) {
-        mobileDriverConnector.setDeviceName(deviceName);
+    public void setDevice(MobileDevice device) {
+        mobileDriverConnector.setDevice(device);
     }
     
-    public String getDeviceName() {
-        return mobileDriverConnector.getDeviceName();
+    public MobileDevice getDevice() {
+        return mobileDriverConnector.getDevice();
     }
 }

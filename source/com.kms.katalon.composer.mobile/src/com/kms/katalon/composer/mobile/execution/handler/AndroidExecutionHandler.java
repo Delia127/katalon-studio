@@ -1,36 +1,23 @@
 package com.kms.katalon.composer.mobile.execution.handler;
 
+import java.io.IOException;
+
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
-import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
+import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.mobile.configuration.AndroidRunConfiguration;
+import com.kms.katalon.execution.mobile.driver.MobileDevice;
 
 public class AndroidExecutionHandler extends MobileExecutionHandler {
 
-    protected IRunConfiguration getRunConfigurationForExecution(TestCaseEntity testCase) throws Exception {
-        if (testCase == null) {
+    protected IRunConfiguration getRunConfigurationForExecution(String projectDir) throws IOException,
+            ExecutionException, InterruptedException {
+        MobileDevice deviceName = getDeviceForExecution(projectDir, MobileDriverType.ANDROID_DRIVER);
+        if (deviceName == null) {
             return null;
         }
-        String deviceName = getDeviceNameForExecution(testCase, MobileDriverType.ANDROID_DRIVER);
-        if (deviceName == null || deviceName.isEmpty()) {
-            return null;
-        }
-        AndroidRunConfiguration runConfiguration = new AndroidRunConfiguration(testCase);
-        runConfiguration.setDeviceName(deviceName);
-        return runConfiguration;
-    }
-
-    protected IRunConfiguration getRunConfigurationForExecution(TestSuiteEntity testSuite) throws Exception {
-        if (testSuite == null) {
-            return null;
-        }
-        String deviceName = getDeviceNameForExecution(testSuite, MobileDriverType.ANDROID_DRIVER);
-        if (deviceName == null || deviceName.isEmpty()) {
-            return null;
-        }
-        AndroidRunConfiguration runConfiguration = new AndroidRunConfiguration(testSuite);
-        runConfiguration.setDeviceName(deviceName);
+        AndroidRunConfiguration runConfiguration = new AndroidRunConfiguration(projectDir);
+        runConfiguration.setDevice(deviceName);
         return runConfiguration;
     }
 }

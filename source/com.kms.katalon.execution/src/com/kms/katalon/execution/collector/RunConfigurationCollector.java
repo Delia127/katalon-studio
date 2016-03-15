@@ -11,8 +11,6 @@ import java.util.Map;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.CustomRunConfigurationContributor;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
@@ -39,31 +37,16 @@ public class RunConfigurationCollector {
         runConfigurationContributors.add(runConfigurationContributor);
     }
 
-    public IRunConfiguration getRunConfiguration(String id, TestCaseEntity testCase, Map<String, String> runInput)
-            throws IOException, ExecutionException {
+    public IRunConfiguration getRunConfiguration(String id, String projectDir, Map<String, String> runInput)
+            throws IOException, ExecutionException, InterruptedException {
         for (IRunConfigurationContributor runConfigurationContributor : runConfigurationContributors) {
             if (runConfigurationContributor.getId().equals(id)) {
-                return runConfigurationContributor.getRunConfiguration(testCase, runInput);
+                return runConfigurationContributor.getRunConfiguration(projectDir, runInput);
             }
         }
         for (IRunConfigurationContributor runConfigurationContributor : getAllCustomRunConfigurationContributors()) {
             if (runConfigurationContributor.getId().equals(id)) {
-                return runConfigurationContributor.getRunConfiguration(testCase, runInput);
-            }
-        }
-        return null;
-    }
-
-    public IRunConfiguration getRunConfiguration(String id, TestSuiteEntity testSuite, Map<String, String> runInput)
-            throws IOException, ExecutionException {
-        for (IRunConfigurationContributor runConfigurationContributor : runConfigurationContributors) {
-            if (runConfigurationContributor.getId().equals(id)) {
-                return runConfigurationContributor.getRunConfiguration(testSuite, runInput);
-            }
-        }
-        for (IRunConfigurationContributor runConfigurationContributor : getAllCustomRunConfigurationContributors()) {
-            if (runConfigurationContributor.getId().equals(id)) {
-                return runConfigurationContributor.getRunConfiguration(testSuite, runInput);
+                return runConfigurationContributor.getRunConfiguration(projectDir, runInput);
             }
         }
         return null;

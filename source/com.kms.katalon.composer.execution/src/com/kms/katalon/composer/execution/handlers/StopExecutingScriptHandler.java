@@ -13,7 +13,7 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 public class StopExecutingScriptHandler {
 
     @Inject
-    IEventBroker eventBroker;
+    private IEventBroker eventBroker;
 
     @CanExecute
     public boolean canExecute() {

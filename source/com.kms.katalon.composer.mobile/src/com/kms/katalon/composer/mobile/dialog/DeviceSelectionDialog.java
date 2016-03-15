@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.mobile.dialog;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
@@ -13,11 +14,12 @@ import org.eclipse.swt.widgets.Shell;
 import com.kms.katalon.composer.mobile.component.DeviceSelectionComposite;
 import com.kms.katalon.composer.mobile.constants.StringConstants;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
+import com.kms.katalon.execution.mobile.driver.MobileDevice;
 
 public class DeviceSelectionDialog extends TitleAreaDialog {
     private MobileDriverType platform;
     private DeviceSelectionComposite deviceSelectionComposite;
-    private String deviceName;
+    private MobileDevice device;
 
     public DeviceSelectionDialog(Shell parentShell, MobileDriverType platform) {
         super(parentShell);
@@ -39,11 +41,7 @@ public class DeviceSelectionDialog extends TitleAreaDialog {
     }
 
     private void updateStatus() {
-        if (deviceSelectionComposite.getDeviceUUID() == null) {
-            super.getButton(OK).setEnabled(false);
-        } else {
-            super.getButton(OK).setEnabled(true);
-        }
+        super.getButton(OK).setEnabled(!StringUtils.isBlank(deviceSelectionComposite.getSelectedDeviceId()));
     }
 
     @Override
@@ -66,11 +64,11 @@ public class DeviceSelectionDialog extends TitleAreaDialog {
 
     @Override
     protected void okPressed() {
-        deviceName = deviceSelectionComposite.getDeviceUUID();
+        device = deviceSelectionComposite.getSelectedDevice();
         super.okPressed();
     }
 
-    public String getDeviceName() {
-        return deviceName;
+    public MobileDevice getDevice() {
+        return device;
     }
 }

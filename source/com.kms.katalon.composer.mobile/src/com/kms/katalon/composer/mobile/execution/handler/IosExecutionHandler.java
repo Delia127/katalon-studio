@@ -1,36 +1,24 @@
 package com.kms.katalon.composer.mobile.execution.handler;
 
+import java.io.IOException;
+
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
-import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
+import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.mobile.configuration.IosRunConfiguration;
+import com.kms.katalon.execution.mobile.driver.MobileDevice;
 
 public class IosExecutionHandler extends MobileExecutionHandler {
 
-    protected IRunConfiguration getRunConfigurationForExecution(TestCaseEntity testCase) throws Exception {
-        if (testCase == null) {
+    protected IRunConfiguration getRunConfigurationForExecution(String projectDir) throws IOException,
+            ExecutionException, InterruptedException {
+        MobileDevice deviceName = getDeviceForExecution(projectDir, MobileDriverType.IOS_DRIVER);
+        if (deviceName == null) {
             return null;
         }
-        String deviceName = getDeviceNameForExecution(testCase, MobileDriverType.IOS_DRIVER);
-        if (deviceName == null || deviceName.isEmpty()) {
-            return null;
-        }
-        IosRunConfiguration runConfiguration = new IosRunConfiguration(testCase);
-        runConfiguration.setDeviceName(deviceName);
-        return runConfiguration;
-    }
-
-    protected IRunConfiguration getRunConfigurationForExecution(TestSuiteEntity testSuite) throws Exception {
-        if (testSuite == null) {
-            return null;
-        }
-        String deviceName = getDeviceNameForExecution(testSuite, MobileDriverType.IOS_DRIVER);
-        if (deviceName == null || deviceName.isEmpty()) {
-            return null;
-        }
-        IosRunConfiguration runConfiguration = new IosRunConfiguration(testSuite);
-        runConfiguration.setDeviceName(deviceName);
+        
+        IosRunConfiguration runConfiguration = new IosRunConfiguration(projectDir);
+        runConfiguration.setDevice(deviceName);
         return runConfiguration;
     }
 }

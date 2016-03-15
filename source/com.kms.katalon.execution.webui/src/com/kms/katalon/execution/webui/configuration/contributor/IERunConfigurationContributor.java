@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.Map;
 
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
-import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
 import com.kms.katalon.execution.exception.ExecutionException;
@@ -19,15 +17,9 @@ public class IERunConfigurationContributor implements IRunConfigurationContribut
     }
 
     @Override
-    public IRunConfiguration getRunConfiguration(TestCaseEntity testCase, Map<String, String> runInput)
+    public IRunConfiguration getRunConfiguration(String projectDir, Map<String, String> runInput)
             throws IOException, ExecutionException {
-        return new IERunConfiguration(testCase);
-    }
-
-    @Override
-    public IRunConfiguration getRunConfiguration(TestSuiteEntity testSuite, Map<String, String> runInput)
-            throws IOException, ExecutionException {
-        return new IERunConfiguration(testSuite);
+        return new IERunConfiguration(projectDir);
     }
     
     @Override

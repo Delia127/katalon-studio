@@ -112,7 +112,9 @@ public class KatalonMethodCompletionProposal extends ParameterGuessingProposal {
 
     @Override
     public Point getSelection(IDocument document) {
-        if (fSelectedRegion == null) return new Point(getReplacementOffset(), 0);
+        if (fSelectedRegion == null) {
+            return new Point(getReplacementOffset(), 0);
+        }
 
         return new Point(fSelectedRegion.getOffset(), fSelectedRegion.getLength());
     }
@@ -197,19 +199,18 @@ public class KatalonMethodCompletionProposal extends ParameterGuessingProposal {
                 fSelectedRegion = new Region(baseOffset + replacement.length(), 0);
             }
 
-        } catch (BadLocationException e) {
-            LoggerSingleton.getInstance().getLogger().error(e);
-        } catch (BadPositionCategoryException e) {
-            LoggerSingleton.getInstance().getLogger().error(e);
+        } catch (BadLocationException | BadPositionCategoryException e) {
+            LoggerSingleton.logError(e);
         }
     }
 
     private JavaEditor getJavaEditor() {
         IEditorPart part = JavaPlugin.getActivePage().getActiveEditor();
-        if (part instanceof JavaEditor)
+        if (part instanceof JavaEditor) {
             return (JavaEditor) part;
-        else
+        } else {
             return null;
+        }
     }
 
     private void ensurePositionCategoryInstalled(final IDocument document, LinkedModeModel model) {
@@ -240,9 +241,11 @@ public class KatalonMethodCompletionProposal extends ParameterGuessingProposal {
     @Override
     protected String computeReplacementString() {
         try {
-            if (!hasArgumentList() || !hasParameters()) return super.computeReplacementString();
+            if (!hasArgumentList() || !hasParameters()) {
+                return super.computeReplacementString();
+            }
             return computeGuessingCompletion();
-        } catch (Exception e) {
+        } catch (JavaModelException e) {
             return "";
         }
     }
@@ -255,7 +258,9 @@ public class KatalonMethodCompletionProposal extends ParameterGuessingProposal {
 
         setCursorPosition(buffer.length());
 
-        if (prefs.afterOpeningParen) buffer.append(SPACE);
+        if (prefs.afterOpeningParen) {
+            buffer.append(SPACE);
+        }
 
         char[][] parameterNames = fProposal.findParameterNames(null);
 
@@ -265,9 +270,15 @@ public class KatalonMethodCompletionProposal extends ParameterGuessingProposal {
 
         for (int i = 0; i < count; i++) {
             if (i != 0) {
-                if (prefs.beforeComma) buffer.append(SPACE);
+                if (prefs.beforeComma) {
+                    buffer.append(SPACE);
+                }
+                
                 buffer.append(COMMA);
-                if (prefs.afterComma) buffer.append(SPACE);
+                
+                if (prefs.afterComma) {
+                    buffer.append(SPACE);
+                }
             }
 
             ICompletionProposal proposal = null;
@@ -289,7 +300,9 @@ public class KatalonMethodCompletionProposal extends ParameterGuessingProposal {
             buffer.append(argument);
         }
 
-        if (prefs.beforeClosingParen) buffer.append(SPACE);
+        if (prefs.beforeClosingParen) {
+            buffer.append(SPACE);
+        }
 
         buffer.append(RPAREN);
 
@@ -320,7 +333,9 @@ public class KatalonMethodCompletionProposal extends ParameterGuessingProposal {
                 if (argumentProposals.length == 0) {
                     JavaCompletionProposal proposal = new JavaCompletionProposal(paramName, 0, paramName.length(),
                             null, paramName, 0);
-                    if (isLastParameter) proposal.setTriggerCharacters(new char[] { ',' });
+                    if (isLastParameter) {
+                        proposal.setTriggerCharacters(new char[] { ',' });
+                    }
                     argumentProposals = new ICompletionProposal[] { proposal };
                 }
             }
@@ -367,7 +382,10 @@ public class KatalonMethodCompletionProposal extends ParameterGuessingProposal {
     private ICompletionProposal getDefaultFailureHandlingProposal(ICompletionProposal[] guessingCompletionProposals) {
         FailureHandling defaultFailureHandling = TestCasePreferenceDefaultValueInitializer.getDefaultFailureHandling();
 
-        if (defaultFailureHandling == null) return guessingCompletionProposals[0];
+        if (defaultFailureHandling == null)  {
+            return guessingCompletionProposals[0];
+        }
+        
         String defaultFailureHandlingName = defaultFailureHandling.getDeclaringClass().getSimpleName() + "."
                 + defaultFailureHandling.name();
 
@@ -440,7 +458,7 @@ public class KatalonMethodCompletionProposal extends ParameterGuessingProposal {
         try {
             String className = methodNode.getDeclaringClass().getName();
             String methodName = methodNode.getName();
-            if (GroovyConstants.CUSTOM_KEYWORD_LIB_FILE_NAME.equals((methodNode.getDeclaringClass().getName()))
+            if (GroovyConstants.CUSTOM_KEYWORD_LIB_FILE_NAME.equals(methodNode.getDeclaringClass().getName())
                     || (KeywordController.getInstance().getBuiltInKeywordByName(className, methodName) != null)) {
                 return KatalonContextUtil.getKatalonSignature();
             }

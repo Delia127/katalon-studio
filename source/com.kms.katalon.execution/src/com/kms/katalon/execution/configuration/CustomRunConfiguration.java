@@ -2,57 +2,42 @@ package com.kms.katalon.execution.configuration;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 
-import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.collector.DriverConnectorCollector;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.exception.ExecutionException;
 
 public class CustomRunConfiguration extends AbstractRunConfiguration {
     private String name;
-    private List<IDriverConnector> driverConnectors;
+    private Map<String, IDriverConnector> driverConnectors;
     private File configFolder;
-
-    public CustomRunConfiguration(String name) throws IOException, ExecutionException {
+    protected String projectDir;
+    public CustomRunConfiguration(String projectDir, String name) throws IOException, ExecutionException {        
         this.name = name;
-        initConfigFolder(ProjectController.getInstance().getCurrentProject().getFolderLocation());
-    }
-
-    public CustomRunConfiguration(TestCaseEntity testCaseEntity, String name) throws IOException, ExecutionException {
-        super(testCaseEntity);
-        this.name = name;
-        initConfigFolder(testCaseEntity.getProject().getFolderLocation());
-    }
-
-    public CustomRunConfiguration(TestSuiteEntity testSuiteEntity, String name) throws IOException, ExecutionException {
-        super(testSuiteEntity);
-        this.name = name;
-        initConfigFolder(testSuiteEntity.getProject().getFolderLocation());
+        this.projectDir = projectDir;
+        initConfigFolder(projectDir);
     }
 
     private void initConfigFolder(String projectFolderLocation) throws IOException, ExecutionException {
         setConfigFolder(getConfigFolder(projectFolderLocation));
         initDriverConnectors();
     }
+    
+    @Override
+    public IRunConfiguration cloneConfig() throws IOException, ExecutionException {
+        return new CustomRunConfiguration(projectDir, name);
+    }
 
     private void initDriverConnectors() throws IOException, ExecutionException {
-        driverConnectors = new ArrayList<IDriverConnector>();
+        driverConnectors = new LinkedHashMap<String, IDriverConnector>();
         if (configFolder == null || !configFolder.exists()) {
             return;
         }
-        for (File file : configFolder.listFiles()) {
-            IDriverConnector driverConnector = DriverConnectorCollector.getInstance().getDriverConnector(
-                    file.getName(), configFolder.getAbsolutePath());
-            if (driverConnector != null) {
-                driverConnectors.add(driverConnector);
-            }
-        }
+        driverConnectors = DriverConnectorCollector.getInstance().getDriverConnectors(getConfigFolder());
     }
 
     private File getConfigFolder(String projectFolderLocation) {
@@ -61,19 +46,19 @@ public class CustomRunConfiguration extends AbstractRunConfiguration {
     }
 
     @Override
-    public IDriverConnector[] getDriverConnectors() {
-        return driverConnectors.toArray(new IDriverConnector[driverConnectors.size()]);
+    public Map<String, IDriverConnector> getDriverConnectors() {
+        return driverConnectors;
     }
 
     public void clearAllDriverConnectors() {
         driverConnectors.clear();
     }
 
-    public void addDriverConnector(IDriverConnector driverConnector) {
+    public void addDriverConnector(String contributorName, IDriverConnector driverConnector) {
         if (driverConnector == null) {
             return;
         }
-        driverConnectors.add(driverConnector);
+        driverConnectors.put(contributorName, driverConnector);
     }
 
     @Override
@@ -83,8 +68,8 @@ public class CustomRunConfiguration extends AbstractRunConfiguration {
 
     public void setName(String name) throws IOException, ExecutionException {
         this.name = name;
-        configFolder = getConfigFolder(projectFolderLocation);
-        for (IDriverConnector driverConnector : driverConnectors) {
+        configFolder = getConfigFolder(getProjectFolderLocation());
+        for (IDriverConnector driverConnector : driverConnectors.values()) {
             driverConnector.setParentFolderPath(configFolder.getAbsolutePath());
         }
     }
@@ -93,8 +78,9 @@ public class CustomRunConfiguration extends AbstractRunConfiguration {
         if (!configFolder.exists()) {
             configFolder.mkdirs();
         }
-        for (IDriverConnector driverConnector : driverConnectors) {
-            driverConnector.saveDriverProperties();
+
+        for (IDriverConnector driverConnector : driverConnectors.values()) {
+            driverConnector.saveUserConfigProperties();
         }
     }
 
@@ -116,7 +102,7 @@ public class CustomRunConfiguration extends AbstractRunConfiguration {
     public String toString() {
         StringBuilder valueString = new StringBuilder();
         boolean isFirst = true;
-        for (IDriverConnector driverConnector : getDriverConnectors()) {
+        for (IDriverConnector driverConnector : getDriverConnectors().values()) {
             if (!isFirst) {
                 valueString.append(" + ");
             } else {

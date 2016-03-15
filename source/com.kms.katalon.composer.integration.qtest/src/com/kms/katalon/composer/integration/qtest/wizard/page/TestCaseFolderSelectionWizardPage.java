@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Label;
 
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
@@ -45,7 +46,7 @@ public class TestCaseFolderSelectionWizardPage extends AbstractWizardPage {
 
     @Override
     public boolean canFlipToNextPage() {
-        return (treeViewer != null && treeViewer.getSelection() != null && !treeViewer.getSelection().isEmpty());
+        return treeViewer != null && treeViewer.getSelection() != null && !treeViewer.getSelection().isEmpty();
     }
 
     /**
@@ -96,6 +97,7 @@ public class TestCaseFolderSelectionWizardPage extends AbstractWizardPage {
 
             stepMainComposite.getParent().layout(true, true);
         } catch (Exception e) {
+            LoggerSingleton.logError(e);
         }
     }
 

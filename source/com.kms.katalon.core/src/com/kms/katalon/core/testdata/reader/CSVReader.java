@@ -18,7 +18,7 @@ public class CSVReader {
     private String[] columnNames;
     private boolean containsHeader;
 
-    public CSVReader(String sourceUrl, CSVSeperator seperator, boolean containHeader) throws IOException  {
+    public CSVReader(String sourceUrl, CSVSeperator seperator, boolean containHeader) throws IOException {
         try {
             this.containsHeader = containHeader;
             FileReader reader = new FileReader(new File(sourceUrl));
@@ -33,54 +33,54 @@ public class CSVReader {
                 listReader = new CsvListReader(reader, CsvPreference.TAB_PREFERENCE);
                 break;
             }
-            //if (containHeader) {
-            //    columnNames = listReader.getHeader(containHeader);
-            //}
+            if (containHeader) {
+                columnNames = listReader.getHeader(containHeader);
+            }
             data = new ArrayList<String[]>();
             List<String> rowValues;
-            while ((rowValues =  listReader.read()) != null) {
+            while ((rowValues = listReader.read()) != null) {
                 data.add(rowValues.toArray(new String[rowValues.size()]));
             }
-            
-            /*if (!containHeader) {
+
+            if (!containHeader) {
                 if (data.size() > 0) {
                     columnNames = new String[data.get(0).length];
                 } else {
                     columnNames = new String[0];
                 }
             }
-            */
+
             if (data.size() > 0) {
-                if(containHeader){
-                	columnNames = data.get(0);
-                }
-                else{
-                	columnNames = new String[data.get(0).length];
+                if (containHeader) {
+                    columnNames = data.get(0);
+                } else {
+                    columnNames = new String[data.get(0).length];
                 }
             }
         } finally {
             IOUtils.closeQuietly(listReader);
         }
     }
-    
+
     public String[] getColumnNames() {
         if (columnNames == null) {
             columnNames = ArrayUtils.EMPTY_STRING_ARRAY;
         }
         return columnNames;
     }
-    
+
     /**
-     * Get all available data, include header row, care should be taken when call this method  
+     * Get all available data, include header row, care should be taken when call this method
+     * 
      * @return
      */
     public List<String[]> getData() {
         return data;
     }
-    
+
     public int getColumnIndex(String columnName) {
         if (columnName != null && !columnName.isEmpty()) {
-            for (int i = 0;  i < getColumnNames().length; i++) {
+            for (int i = 0; i < getColumnNames().length; i++) {
                 if (columnNames[i] != null && getColumnNames()[i].equals(columnName)) {
                     return i;
                 }
@@ -88,7 +88,7 @@ public class CSVReader {
         }
         return -1;
     }
-    
+
     public int getColumnCount() throws IOException {
         if (containsHeader) {
             return getColumnNames().length;

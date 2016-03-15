@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -16,9 +17,10 @@ import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.core.constants.StringConstants;
 
 /**
- * Provide access to execution properties and settings
+ * Provides access to execution properties and settings
  *
  */
+@SuppressWarnings("unchecked")
 public class RunConfiguration {
     public static final String LOG_FILE_PATH_PROPERTY = StringConstants.CONF_PROPERTY_LOG_FILE_PATH;
 
@@ -26,9 +28,25 @@ public class RunConfiguration {
 
     public static final String PROJECT_DIR_PROPERTY = StringConstants.CONF_PROPERTY_PROJECT_DIR;
 
+    public static final String HOST = StringConstants.CONF_PROPERTY_HOST;
+
     public static final String HOST_NAME = StringConstants.CONF_PROPERTY_HOST_NAME;
 
     public static final String HOST_OS = StringConstants.CONF_PROPERTY_HOST_OS;
+
+    public static final String HOST_ADDRESS = StringConstants.CONF_PROPERTY_HOST_ADDRESS;
+
+    public static final String HOST_PORT = StringConstants.CONF_PROPERTY_HOST_PORT;
+    
+    public static final String EXECUTION_GENERAL_PROPERTY = StringConstants.CONF_PROPERTY_GENERAL;
+
+    public static final String EXECUTION_DRIVER_PROPERTY = StringConstants.CONF_PROPERTY_DRIVER;
+    
+    public static final String EXECUTION_SYSTEM_PROPERTY = StringConstants.CONF_PROPERTY_EXECUTION_SYSTEM_PROPERTY;
+
+    public static final String EXECUTION_PREFS_PROPERTY = StringConstants.CONF_PROPERTY_EXECUTION_PREFS_PROPERTY;
+
+    public static final String EXECUTION_PROPERTY = StringConstants.CONF_PROPERTY_EXEC;
 
     public static final String EXCUTION_SOURCE = StringConstants.CONF_PROPERTY_EXECUTION_SOURCE;
 
@@ -38,7 +56,7 @@ public class RunConfiguration {
 
     public static final String EXCUTION_SOURCE_DESCRIPTION = StringConstants.CONF_PROPERTY_EXECUTION_SOURCE_DESCRIPTION;
 
-    public static final String EXECUTION_DRIVER_PROPERTY = StringConstants.CONF_PROPERTY_EXECUTION_DRIVER_PROPERTY;
+    private static String settingFilePath;
 
     private static final ThreadLocal<Map<String, Object>> localExecutionSettingMapStorage = new ThreadLocal<Map<String, Object>>() {
         @Override
@@ -47,7 +65,7 @@ public class RunConfiguration {
         }
     };
 
-    private static final ThreadLocal<String> localLogFilePathStorage = new ThreadLocal<String>() {
+    private static final ThreadLocal<String> localAppiumDriverStores = new ThreadLocal<String>() {
         @Override
         protected String initialValue() {
             return new String();
@@ -61,23 +79,26 @@ public class RunConfiguration {
         }
     };
 
-    public static void setLogFile(String logFilePath) {
+    public static void setAppiumLogFilePath(String logFilePath) {
         if (logFilePath == null) {
             return;
         }
-        localLogFilePathStorage.set(logFilePath);
+        localAppiumDriverStores.set(logFilePath);
     }
 
     public static void setExecutionSettingFile(String executionSettingFilePath) {
         if (executionSettingFilePath == null) {
             return;
         }
+        settingFilePath = executionSettingFilePath;
+
         File executionSettingFile = new File(executionSettingFilePath);
         if (executionSettingFile.exists() && executionSettingFile.isFile()) {
             Gson gsonObj = new Gson();
             try {
                 String propertyConfigFileContent = FileUtils.readFileToString(executionSettingFile);
-                Type collectionType = new TypeToken<Map<String, Object>>() {}.getType();
+                Type collectionType = new TypeToken<Map<String, Object>>() {
+                }.getType();
                 Map<String, Object> result = gsonObj.fromJson(propertyConfigFileContent, collectionType);
                 if (result != null) {
                     localExecutionSettingMapStorage.set(result);
@@ -105,24 +126,72 @@ public class RunConfiguration {
         return String.valueOf(getProperty(propertyKey));
     }
 
-    public static String getLogFilePath() {
-        return localLogFilePathStorage.get();
+    public static String getStringProperty(String propertyKey, Map<String, Object> jsonObjProperties) {
+        return String.valueOf(jsonObjProperties.get(propertyKey));
+    }
+
+    public static int getIntProperty(String propertyKey, Map<String, Object> jsonObjProperties) {
+        Number doubleValue = (Number) jsonObjProperties.get(propertyKey);
+
+        return doubleValue.intValue();
+    }
+
+    public static Map<String, Object> getDriverExecutionProperties(String driverName) {
+        Map<String, Object> driverProps = (Map<String, Object>) getExecutionProperties().get(EXECUTION_DRIVER_PROPERTY);
+        
+        return (Map<String, Object>) driverProps.get(driverName);
+    }
+    
+    public static String getDriverSystemProperty(String driverConnectorId, String propertyName) {
+        Map<String, Object> properties = getDriverSystemProperties(driverConnectorId);
+
+        return (properties != null) ? (String) properties.get(propertyName) : null;
+    }
+
+    public static String getDriverPreferencesProperty(String driverConnectorId, String propertyName) {
+        Map<String, Object> properties = getDriverPreferencesProperties(driverConnectorId);
+
+        return (properties != null) ? (String) properties.get(propertyName) : null;
+    }
+    
+    public static Map<String, Object> getDriverSystemProperties(String driverConnectorId) {
+        return (Map<String, Object>) getDriverExecutionProperties(EXECUTION_SYSTEM_PROPERTY).get(driverConnectorId);
+    }
+    
+    public static Map<String, Object> getDriverPreferencesProperties(String driverConnectorId) {
+        return (Map<String, Object>) getDriverPreferencesProperties().get(driverConnectorId);
+    }
+    
+    public static Map<String, Object> getDriverPreferencesProperties() {
+        return (Map<String, Object>) getDriverExecutionProperties(EXECUTION_PREFS_PROPERTY);
+    }
+
+    public static Map<String, Object> getHostProperties() {
+        return (Map<String, Object>) localExecutionSettingMapStorage.get().get(HOST);
+    }
+
+    public static int getIntProperty(String propertyKey) {
+        return (int) getProperty(propertyKey);
+    }
+
+    public static String getSettingFilePath() {
+        return settingFilePath;
+    }
+    
+    public static String getAppiumLogFilePath() {
+        if (StringUtils.isBlank(localAppiumDriverStores.get())) {
+            localAppiumDriverStores.set(RunConfiguration.getDriverSystemProperty(
+                    StringConstants.CONF_PROPERTY_MOBILE_DRIVER, StringConstants.CONF_APPIUM_LOG_FILE));
+        }
+        return localAppiumDriverStores.get();
     }
 
     public static int getTimeOut() {
-        return Integer.parseInt(getStringProperty(TIMEOUT_PROPERTY));
+        return getIntProperty(TIMEOUT_PROPERTY, getExecutionGeneralProperties());
     }
 
     public static String getProjectDir() {
         return getStringProperty(PROJECT_DIR_PROPERTY);
-    }
-
-    public static String getHostName() {
-        return getStringProperty(HOST_NAME);
-    }
-
-    public static String getOS() {
-        return getStringProperty(HOST_OS);
     }
 
     public static String getExecutionSource() {
@@ -141,17 +210,28 @@ public class RunConfiguration {
         return getStringProperty(EXCUTION_SOURCE_DESCRIPTION);
     }
 
-    @SuppressWarnings("unchecked")
-    public static Map<String, Object> getExecutionProperties() {
-        return (Map<String, Object>) getProperty(EXECUTION_DRIVER_PROPERTY);
+    public static String getHostName() {
+        return getStringProperty(HOST_NAME, getHostProperties());
     }
 
-    public static Object getExecutionProperty(String propertyName) {
-        Map<String, Object> executionDriverProperty = getExecutionProperties();
-        if (executionDriverProperty != null) {
-            return executionDriverProperty.get(propertyName);
-        }
-        return null;
+    public static String getOS() {
+        return getStringProperty(HOST_OS, getHostProperties());
+    }
+
+    public static int getPort() {
+        return getIntProperty(HOST_PORT, getHostProperties());
+    }
+
+    public static String getHostAddress() {
+        return getStringProperty(HOST_ADDRESS, getHostProperties());
+    }
+
+    public static Map<String, Object> getExecutionProperties() {
+        return (Map<String, Object>) getProperty(EXECUTION_PROPERTY);
+    }
+
+    public static Map<String, Object> getExecutionGeneralProperties() {
+        return (Map<String, Object>) getExecutionProperties().get(EXECUTION_GENERAL_PROPERTY);
     }
 
     public static Object[] getStoredDrivers() {

@@ -44,8 +44,8 @@ public class RemoteWebDriverConnector extends WebUiDriverConnector {
     }
 
     @Override
-    public Map<String, Object> getExecutionSettingPropertyMap() {
-        Map<String, Object> propertyMap = super.getExecutionSettingPropertyMap();
+    public Map<String, Object> getSystemProperties() {
+        Map<String, Object> propertyMap = super.getSystemProperties();
         propertyMap.put(DriverFactory.REMOTE_WEB_DRIVER_URL, remoteServerUrl);
         propertyMap.put(DriverFactory.REMOTE_WEB_DRIVER_TYPE, remoteWebDriverConnectorType.name());
         return propertyMap;
@@ -64,15 +64,15 @@ public class RemoteWebDriverConnector extends WebUiDriverConnector {
     }
 
     @Override
-    public void saveDriverProperties() throws IOException {
+    public void saveUserConfigProperties() throws IOException {
         driverProperties.put(DriverFactory.REMOTE_WEB_DRIVER_URL, remoteServerUrl);
         driverProperties.put(DriverFactory.REMOTE_WEB_DRIVER_TYPE, remoteWebDriverConnectorType.name());
-        super.saveDriverProperties();
+        super.saveUserConfigProperties();
     }
 
     @Override
     public String toString() {
-        Map<String, Object> tempMap = new HashMap<String, Object>(getDriverProperties());
+        Map<String, Object> tempMap = new HashMap<String, Object>(getUserConfigProperties());
         tempMap.put(DriverFactory.REMOTE_WEB_DRIVER_URL, remoteServerUrl);
         tempMap.put(DriverFactory.REMOTE_WEB_DRIVER_TYPE, remoteWebDriverConnectorType.name());
         return tempMap.toString();
@@ -93,7 +93,7 @@ public class RemoteWebDriverConnector extends WebUiDriverConnector {
             RemoteWebDriverConnector remoteDriverConnector = new RemoteWebDriverConnector(getParentFolderPath());
             remoteDriverConnector.setRemoteServerUrl(getRemoteServerUrl());
             remoteDriverConnector.setRemoteWebDriverConnectorType(getRemoteWebDriverConnectorType());
-            remoteDriverConnector.driverProperties = (Map<String, Object>) cloneDriverPropertyValue(getDriverProperties());
+            remoteDriverConnector.driverProperties = (Map<String, Object>) cloneDriverPropertyValue(getUserConfigProperties());
             return remoteDriverConnector;
         } catch (IOException e) {
             // do nothing

@@ -3,6 +3,7 @@ package com.kms.katalon.composer.integration.qtest.dialog.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
@@ -57,7 +58,9 @@ public class ModuleDownloadedPreviewTreeNode implements DownloadedPreviewTreeNod
     }
 
     public List<TestCaseDownloadedPreviewTreeNode> getChildTestCaseTrees() {
-        if (childTestCaseTrees == null) childTestCaseTrees = new ArrayList<TestCaseDownloadedPreviewTreeNode>();
+        if (childTestCaseTrees == null) {
+            childTestCaseTrees = new ArrayList<TestCaseDownloadedPreviewTreeNode>();
+        }
         return childTestCaseTrees;
     }
 
@@ -66,7 +69,9 @@ public class ModuleDownloadedPreviewTreeNode implements DownloadedPreviewTreeNod
     }
 
     public List<ModuleDownloadedPreviewTreeNode> getChildModuleTrees() {
-        if (childModuleTrees == null) childModuleTrees = new ArrayList<ModuleDownloadedPreviewTreeNode>();
+        if (childModuleTrees == null) {
+            childModuleTrees = new ArrayList<ModuleDownloadedPreviewTreeNode>();
+        }
         return childModuleTrees;
     }
 
@@ -86,26 +91,27 @@ public class ModuleDownloadedPreviewTreeNode implements DownloadedPreviewTreeNod
 
     @Override
     public String getStatus() {
-        if (folderEntity != null) return "Created";
+        if (folderEntity != null) {
+            return StringConstants.CM_CREATED;
+        }
 
         FolderEntity parentFolderEntity = parent.getFolderEntity();
-        if (parentFolderEntity == null) return "New";
+        if (parentFolderEntity == null) {
+            return StringConstants.CM_NEW;
+        }
 
         try {
-            if (getName().equalsIgnoreCase(
-                    FolderController.getInstance().getAvailableFolderName(parentFolderEntity, getName()))) {
-                return "New";
-            } else {
-                return "New but Duplicated";
-            }
+            return getName().equalsIgnoreCase(
+                    FolderController.getInstance().getAvailableFolderName(parentFolderEntity, getName())) ? StringConstants.CM_NEW
+                    : StringConstants.CM_NEW_DUPLICATED;
         } catch (Exception e) {
-            return "New";
+            return StringConstants.CM_NEW;
         }
     }
 
     @Override
     public String getType() {
-        return "Module";
+        return StringConstants.CM_MODULE;
     }
 
     public FolderEntity getFolderEntity() {

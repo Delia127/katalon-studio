@@ -30,17 +30,18 @@ public class MobileDriverPreferenceComposite extends DriverPreferenceComposite {
         deviceSelectionCompositeContainer.setLayout(new GridLayout());
         deviceSelectionComposite = new DeviceSelectionComposite(deviceSelectionCompositeContainer, SWT.NONE,
                 (MobileDriverType) driverConnector.getDriverType());
+        driverPropertyMapComposite = new DriverPropertyMapComposite(this);
+        
 
-        deviceSelectionComposite.setDeviceName(((MobileDriverConnector) driverConnector).getDeviceName());
         deviceSelectionComposite.addDisposeListener(new DisposeListener() {
             @Override
             public void widgetDisposed(DisposeEvent e) {
                 if (driverConnector != null && deviceSelectionComposite != null) {
-                    ((MobileDriverConnector) driverConnector).setDeviceName(deviceSelectionComposite.getDeviceUUID());
+                    ((MobileDriverConnector) driverConnector).setDeviceId(deviceSelectionComposite
+                            .getSelectedDeviceId());
                 }
             }
         });
-        driverPropertyMapComposite = new DriverPropertyMapComposite(this);
     }
 
     @Override

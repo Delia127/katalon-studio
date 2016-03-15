@@ -22,8 +22,8 @@ public class EdgeDriverConnector extends WebUiDriverConnector {
 	}
 
 	@Override
-	public Map<String, Object> getExecutionSettingPropertyMap() {
-		Map<String, Object> propertyMap = super.getExecutionSettingPropertyMap();
+	public Map<String, Object> getSystemProperties() {
+		Map<String, Object> propertyMap = super.getSystemProperties();
 		propertyMap.put(StringConstants.CONF_PROPERTY_EDGE_DRIVER_PATH, edgeDriverPath);
 		return propertyMap;
 	}
@@ -41,7 +41,7 @@ public class EdgeDriverConnector extends WebUiDriverConnector {
     public IDriverConnector clone() {
         try {
             EdgeDriverConnector ieDriverConnector = new EdgeDriverConnector(getParentFolderPath());
-            ieDriverConnector.driverProperties = (Map<String, Object>) cloneDriverPropertyValue(getDriverProperties());
+            ieDriverConnector.driverProperties = (Map<String, Object>) cloneDriverPropertyValue(getUserConfigProperties());
             return ieDriverConnector;
         } catch (IOException e) {
             // do nothing

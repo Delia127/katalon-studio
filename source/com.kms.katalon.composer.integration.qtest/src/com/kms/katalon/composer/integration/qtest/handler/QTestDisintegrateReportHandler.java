@@ -159,7 +159,9 @@ public class QTestDisintegrateReportHandler extends AbstractQTestHandler {
             boolean needConfirmed) {
         if (needConfirmed
                 && !MessageDialog.openConfirm(null, StringConstants.CONFIRMATION,
-                        StringConstants.DIA_CONFIRM_DISINTEGRATE_TEST_LOGS)) return;
+                        StringConstants.DIA_CONFIRM_DISINTEGRATE_TEST_LOGS)) {
+            return;
+        }
         for (ReportTestCaseLogPair pair : testCaseLogPairs) {
             ReportEntity reportEntity = pair.getReportEntity();
             List<TestCaseLogRecord> testCasesCanBeDisintegrated = pair.getTestCaseLogs();

@@ -22,22 +22,4 @@ public class LogChildTreeNode implements ILogTreeNode {
         return parentTreeNode;
     }
 
-    @Override
-    public String getIndexString() {
-        if (!record.getMessage().startsWith(com.kms.katalon.core.constants.StringConstants.LOG_START_KEYWORD)) {
-            return "";
-        }
-        int stepIndex = record.getIndex();
-        if (stepIndex == -1) {
-            if (getParent() != null) {
-                stepIndex = getParent().getChildren().indexOf(this);
-            } else {
-                return "";
-            }
-        }
-        return (getParent() == null ? "" : (getParent().getIndexString().isEmpty() ? "" : getParent().getIndexString()
-                + "."))
-                + String.valueOf(stepIndex);
-    }
-
 }

@@ -1,23 +1,20 @@
 package com.kms.katalon.composer.webui.execution.handler;
 
+import java.io.IOException;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.composer.execution.handlers.AbstractExecutionHandler;
 import com.kms.katalon.composer.webui.constants.StringConstants;
-import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.webui.configuration.RemoteWebRunConfiguration;
 
 public class RemoteWebDriverExecutionHandler extends AbstractExecutionHandler {
 
-    protected IRunConfiguration getRunConfigurationForExecution(TestCaseEntity testCase) throws Exception {
-        if (testCase == null) {
-            return null;
-        }
-        RemoteWebRunConfiguration runConfiguration = new RemoteWebRunConfiguration(testCase);
+    protected IRunConfiguration getRunConfigurationForExecution(String projectDir) throws IOException {
+        RemoteWebRunConfiguration runConfiguration = new RemoteWebRunConfiguration(projectDir);
         if (runConfiguration.getRemoteServerUrl() == null || runConfiguration.getRemoteServerUrl().isEmpty()) {
             String remoteWebDriverServerUrl = getRemoteWebDriverServerUrl();
             if (remoteWebDriverServerUrl != null && !remoteWebDriverServerUrl.isEmpty()) {
@@ -39,23 +36,5 @@ public class RemoteWebDriverExecutionHandler extends AbstractExecutionHandler {
             return dialog.getValue();
         }
         return null;
-    }
-
-    protected IRunConfiguration getRunConfigurationForExecution(TestSuiteEntity testSuite) throws Exception {
-        if (testSuite == null) {
-            return null;
-        }
-        RemoteWebRunConfiguration runConfiguration = new RemoteWebRunConfiguration(testSuite);
-        if (runConfiguration.getRemoteServerUrl() == null || runConfiguration.getRemoteServerUrl().isEmpty()) {
-            String remoteWebDriverServerUrl = getRemoteWebDriverServerUrl();
-            if (remoteWebDriverServerUrl != null && !remoteWebDriverServerUrl.isEmpty()) {
-                runConfiguration.setRemoteServerUrl(remoteWebDriverServerUrl);
-                return runConfiguration;
-            } else {
-                return null;
-            }
-        } else {
-            return runConfiguration;
-        }
     }
 }

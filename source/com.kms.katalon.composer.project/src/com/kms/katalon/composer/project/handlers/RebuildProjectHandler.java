@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.project.handlers;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -10,7 +9,6 @@ import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.jface.dialogs.MessageDialog;
 
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
@@ -22,13 +20,8 @@ public class RebuildProjectHandler {
 
     @CanExecute
     public boolean canExecute() {
-        try {
-            return (ProjectController.getInstance().getCurrentProject() != null)
-                    && !LauncherManager.getInstance().isAnyLauncherRunning();
-        } catch (CoreException e) {
-            LoggerSingleton.logError(e);
-            return false;
-        }
+        return (ProjectController.getInstance().getCurrentProject() != null)
+                && !LauncherManager.getInstance().isAnyLauncherRunning();
     }
 
     @Execute

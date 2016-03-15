@@ -19,6 +19,7 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.PreferenceConstants;
+import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XmlLogRecord;
 
@@ -31,7 +32,7 @@ public class LogTableViewer extends TableViewer {
     private IEventBroker eventBroker;
     private IPreferenceStore store;
 
-    //Represents the latest test case's result record, used to update progress bar of table viewer 
+    // Represents the latest test case's result record, used to update progress bar of table viewer
     private LogRecord latestResultRecord;
 
     public LogTableViewer(Composite parent, int style, IEventBroker eventBroker) {
@@ -57,21 +58,25 @@ public class LogTableViewer extends TableViewer {
             records.add(record);
             super.add(record);
 
-            LogLevel logLevel = (LogLevel) record.getLevel();
-            if (logLevel.equals(LogLevel.END)) {
+            LogLevel logLevel = LogLevel.valueOf(record.getLevel());
+            switch (logLevel) {
+            case END:
                 logDepth--;
-                if (record.getSourceMethodName().equals(
-                        com.kms.katalon.core.constants.StringConstants.LOG_END_TEST_METHOD)
-                        && logDepth == DEPTH_OF_MAIN_TEST_CASE) {
+                if (StringConstants.LOG_END_TEST_METHOD.equals(record.getSourceMethodName())) {
                     eventBroker.send(EventConstants.CONSOLE_LOG_UPDATE_PROGRESS_BAR, latestResultRecord);
                 }
-            } else if (logLevel.equals(LogLevel.START)) {
+                break;
+            case START:
                 String startName = record.getSourceMethodName();
-                if (!startName.equals(com.kms.katalon.core.constants.StringConstants.LOG_START_SUITE_METHOD)) {
+                if (!StringConstants.LOG_START_SUITE_METHOD.equals(startName)) {
                     logDepth++;
                 }
-            } else if (LogLevel.getResultLogs().contains(logLevel) && logDepth == DEPTH_OF_MAIN_TEST_CASE + 1) {
-                latestResultRecord = record;
+                break;
+            default:
+                if (LogLevel.getResultLogs().contains(logLevel) && logDepth == DEPTH_OF_MAIN_TEST_CASE + 1) {
+                    latestResultRecord = record;
+                }
+                break;
             }
 
             updateTableBackgroundColor();
@@ -89,15 +94,26 @@ public class LogTableViewer extends TableViewer {
         Table table = this.getTable();
         for (TableItem item : table.getItems()) {
             XmlLogRecord record = (XmlLogRecord) item.getData();
-            if (record.getLevel().equals(LogLevel.PASSED)) {
+            LogLevel logLevel = LogLevel.valueOf(record.getLevel());
+            if (logLevel == null) {
+                continue;
+            }
+            
+            switch (logLevel) {
+            case PASSED:
                 item.setBackground(ColorUtil.getPassedLogBackgroundColor());
                 item.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
-            } else if (record.getLevel().equals(LogLevel.FAILED)) {
+                break;
+            case FAILED:
                 item.setBackground(ColorUtil.getFailedLogBackgroundColor());
                 item.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
-            } else if (record.getLevel().equals(LogLevel.ERROR) || record.getLevel().equals(LogLevel.WARNING)) {
+                break;
+            case ERROR:
                 item.setBackground(ColorUtil.getWarningLogBackgroundColor());
                 item.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
+                break;
+            default:
+                break;
             }
         }
 

@@ -28,7 +28,6 @@ public class KatalonMethodNodeProposal extends GroovyMethodProposal {
 
     public KatalonMethodNodeProposal(MethodNode method) {
         super(method);
-        // TODO Auto-generated constructor stub
     }
 
     @Override

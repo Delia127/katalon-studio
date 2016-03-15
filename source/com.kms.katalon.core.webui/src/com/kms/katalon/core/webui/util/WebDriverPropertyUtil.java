@@ -33,8 +33,10 @@ public class WebDriverPropertyUtil {
             CHROME_MINI_DUMP_PATH_PROPERTY_KEY, CHROME_MOBILE_EMULATION_PROPERTY_KEY,
             CHROME_PREF_LOGGING_PREFS_PROPERTY_KEY };
 
-    public static DesiredCapabilities toDesireCapabilities(Map<String, Object> propertyMap,
-            WebUIDriverType webUIDriverType) {
+    public static DesiredCapabilities toDesireCapabilities(Map<String, Object> propertyMap, WebUIDriverType webUIDriverType) {
+        if (propertyMap == null) {
+            return null;
+        }
         switch (webUIDriverType) {
         case CHROME_DRIVER:
             return getDesireCapabilitiesForChrome(propertyMap);
