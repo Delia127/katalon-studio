@@ -1,5 +1,7 @@
 package com.kms.katalon.core.application;
 
+import static org.eclipse.ui.PlatformUI.getPreferenceStore;
+
 import java.io.File;
 import java.util.Map;
 
@@ -11,6 +13,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 
 import com.kms.katalon.constants.PreferenceConstants.IPluginPreferenceConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.application.ApplicationRunningMode.RunningMode;
 import com.kms.katalon.execution.launcher.manager.ConsoleMain;
 
@@ -59,13 +62,17 @@ public class Application implements IApplication {
 
     private void clearSession(boolean isNotConsoleMode) {
         if (isNotConsoleMode
-                && !PlatformUI.getPreferenceStore().getBoolean(
+                && !getPreferenceStore().getBoolean(
                         IPluginPreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION)) {
+            // Clear workbench layout
             File workbenchXmi = new File(Platform.getLocation().toString()
                     + "/.metadata/.plugins/org.eclipse.e4.workbench/workbench.xmi");
             if (workbenchXmi.exists()) {
                 workbenchXmi.delete();
             }
+
+            // Clear working state of recent projects
+            ProjectController.getInstance().clearWorkingStateOfRecentProjects();
         }
     }
 
