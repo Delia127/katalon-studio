@@ -74,8 +74,8 @@ public class VariableDefaultValueEditingSupport extends EditingSupport {
     protected void setValue(Object element, Object value) {
         if (element != null && element instanceof VariableEntity && value != null) {
             try {
-                VariableEntity variableEntity = (VariableEntity) element;
-                ASTNode astNode = GroovyParser.parseGroovyScriptAndGetFirstItem(variableEntity.getDefaultValue());
+                ASTNode astNode = GroovyParser.parseGroovyScriptAndGetFirstItem(((VariableEntity) element)
+                        .getDefaultValue());
                 IInputValueType inputValueType = AstTreeTableValueUtil
                         .getTypeValue(astNode, variablesPart.getParentTestCaseCompositePart().getChildTestCasePart()
                                 .getTreeTableInput().getMainClassNode());
@@ -89,11 +89,9 @@ public class VariableDefaultValueEditingSupport extends EditingSupport {
                         StringBuilder stringBuilder = new StringBuilder();
                         GroovyParser groovyParser = new GroovyParser(stringBuilder);
                         groovyParser.parse(newAstNode);
-                        if (!StringUtils.equals(variableEntity.getDefaultValue(), stringBuilder.toString())) {
-                            variableEntity.setDefaultValue(stringBuilder.toString());
-                            variablesPart.setDirty(true);
-                            this.getViewer().update(variableEntity, null);
-                        }
+                        ((VariableEntity) element).setDefaultValue(stringBuilder.toString());
+                        variablesPart.setDirty(true);
+                        this.getViewer().update(element, null);
                     }
                 }
             } catch (Exception e) {

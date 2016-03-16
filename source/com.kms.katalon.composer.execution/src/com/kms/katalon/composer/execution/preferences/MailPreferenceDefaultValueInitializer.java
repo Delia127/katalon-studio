@@ -16,7 +16,7 @@ public class MailPreferenceDefaultValueInitializer extends AbstractPreferenceIni
     private static final String MAIL_CONFIG_HOST_DEFAULT_VALUE = "smtp.gmail.com";
     private static final String MAIL_CONFIG_SECURITY_PROTOCOL_DEFAULT_VALUE = MailUtil.MailSecurityProtocolType.SSL
             .toString();
-    private static final boolean MAIL_CONFIG_ATTACHMENT_DEFAULT_VALUE = false;
+    private static final boolean MAIL_CONFIG_ATTACHMENT_DEFAULT_VALUE = true;
 
     @Override
     public void initializeDefaultPreferences() {

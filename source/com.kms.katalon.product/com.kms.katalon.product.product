@@ -10,7 +10,7 @@
       <programArgs>-data config
       </programArgs>
       <vmArgs>-Xms256m
--Xmx2048m
+-Xmx1024m
 -XX:PermSize=128M
 -XX:MaxPermSize=512M
       </vmArgs>

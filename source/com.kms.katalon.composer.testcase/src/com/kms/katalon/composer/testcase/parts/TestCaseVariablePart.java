@@ -16,12 +16,9 @@ import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnViewerEditor;
-import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.TableViewerEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSourceAdapter;
@@ -116,7 +113,7 @@ public class TestCaseVariablePart {
         tltmAddVariable.setToolTipText(StringConstants.PA_BTN_TIP_ADD);
         tltmAddVariable.setImage(ImageConstants.IMG_24_ADD);
 
-        final ToolItem tltmRemove = new ToolItem(toolBar, SWT.NONE);
+        ToolItem tltmRemove = new ToolItem(toolBar, SWT.NONE);
         tltmRemove.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -126,7 +123,6 @@ public class TestCaseVariablePart {
         tltmRemove.setText(StringConstants.PA_BTN_TIP_REMOVE);
         tltmRemove.setToolTipText(StringConstants.PA_BTN_TIP_REMOVE);
         tltmRemove.setImage(ImageConstants.IMG_24_REMOVE);
-        tltmRemove.setEnabled(false);
 
         ToolItem tltmClear = new ToolItem(toolBar, SWT.NONE);
         tltmClear.setText(StringConstants.PA_BTN_TIP_CLEAR);
@@ -169,22 +165,6 @@ public class TestCaseVariablePart {
         compositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
         tableViewer = new TableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
-
-        tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                // Should disable Delete button if there is no selection
-                tltmRemove.setEnabled(!tableViewer.getSelection().isEmpty());
-            }
-
-        });
-
-        // Enable editing on Tab move
-        TableViewerEditor.create(tableViewer, new ColumnViewerEditorActivationStrategy(tableViewer),
-                ColumnViewerEditor.TABBING_HORIZONTAL | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
-                        | ColumnViewerEditor.KEYBOARD_ACTIVATION);
-
         tableViewer.addDragSupport(DND.DROP_MOVE, new Transfer[] { TextTransfer.getInstance() },
                 new DragSourceAdapter() {
 
@@ -322,8 +302,6 @@ public class TestCaseVariablePart {
         newVariable.setDefaultValue("''");
         variables.add(newVariable);
         tableViewer.refresh();
-        // Start editing the new record
-        tableViewer.editElement(newVariable, 1);
         setDirty(true);
     }
 
@@ -392,7 +370,8 @@ public class TestCaseVariablePart {
 
     private void upVariable() {
         StructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
-        if (isNoSelection(selection)) return;
+        if (selection == null || selection.getFirstElement() == null)
+            return;
         VariableEntity variable = (VariableEntity) selection.getFirstElement();
         int index = variables.indexOf(variable);
         if (index > 0) {
@@ -404,7 +383,8 @@ public class TestCaseVariablePart {
 
     private void downVariable() {
         StructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
-        if (isNoSelection(selection)) return;
+        if (selection == null || selection.getFirstElement() == null)
+            return;
         VariableEntity variable = (VariableEntity) selection.getFirstElement();
         int index = variables.indexOf(variable);
         if (index < variables.size() - 1) {
@@ -412,10 +392,6 @@ public class TestCaseVariablePart {
             tableViewer.refresh();
             setDirty(true);
         }
-    }
-
-    private boolean isNoSelection(StructuredSelection selection) {
-        return (selection == null || selection.getFirstElement() == null);
     }
 
     public void setDirty(boolean isDirty) {
@@ -451,7 +427,8 @@ public class TestCaseVariablePart {
             int index = variables.indexOf(variable) + 1;
             String variableName = variable.getName();
             String variableDefaultValue = variable.getDefaultValue();
-            if (variableDefaultValue == null || variableDefaultValue.isEmpty()) variableDefaultValue = null;
+            if (variableDefaultValue == null || variableDefaultValue.isEmpty())
+                variableDefaultValue = null;
 
             if (variableName == null || variableName.isEmpty()) {
                 errorCollector.append(MessageFormat.format(
