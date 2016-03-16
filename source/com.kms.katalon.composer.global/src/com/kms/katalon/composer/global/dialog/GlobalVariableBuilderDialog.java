@@ -1,15 +1,22 @@
 package com.kms.katalon.composer.global.dialog;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerEditor;
+import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.TableViewerEditor;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -41,6 +48,7 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
     private static final InputValueType[] defaultInputValueTypes = { InputValueType.String, InputValueType.Number,
             InputValueType.Boolean, InputValueType.Null, InputValueType.TestDataValue, InputValueType.TestObject,
             InputValueType.TestData, InputValueType.Property, InputValueType.List, InputValueType.Map };
+
     private static final String CUSTOM_TAG = "Global Variable";
 
     public enum DialogType {
@@ -48,31 +56,39 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
     }
 
     private String dialogTitle;
+
     private GlobalVariableEntity fVariableEntity;
+
     private Point location;
+
     private TableViewer tableViewer;
 
-    public GlobalVariableBuilderDialog(Shell parentShell, Point location) {
-        this(parentShell, new GlobalVariableEntity("", "''"), DialogType.NEW, location);
+    private List<String> globalVariableNames = new ArrayList<String>();
+
+    public GlobalVariableBuilderDialog(Shell parentShell, Point location, List<String> globalVariableNames) {
+        this(parentShell, new GlobalVariableEntity("", "''"), DialogType.NEW, location, globalVariableNames);
     }
 
-    public GlobalVariableBuilderDialog(Shell parentShell, GlobalVariableEntity variableEntity, Point location) {
-        this(parentShell, variableEntity, DialogType.EDIT, location);
+    public GlobalVariableBuilderDialog(Shell parentShell, GlobalVariableEntity variableEntity, Point location,
+            List<String> globalVariableNames) {
+        this(parentShell, variableEntity, DialogType.EDIT, location, globalVariableNames);
     }
 
     private GlobalVariableBuilderDialog(Shell parentShell, GlobalVariableEntity variableEntity, DialogType type,
-            Point location) {
+            Point location, List<String> globalVariableNames) {
         super(parentShell);
         this.fVariableEntity = variableEntity.clone();
         this.location = location;
         switch (type) {
-        case EDIT:
-            dialogTitle = StringConstants.DIA_TITLE_EDIT_VAR;
-            break;
-        case NEW:
-            dialogTitle = StringConstants.DIA_TITLE_NEW_VAR;
-            break;
+            case EDIT:
+                dialogTitle = StringConstants.DIA_TITLE_EDIT_VAR;
+                globalVariableNames.remove(variableEntity.getName());
+                break;
+            case NEW:
+                dialogTitle = StringConstants.DIA_TITLE_NEW_VAR;
+                break;
         }
+        this.globalVariableNames = globalVariableNames;
     }
 
     @Override
@@ -87,10 +103,14 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
         compositeTable.setLayout(new FillLayout(SWT.HORIZONTAL));
         compositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        tableViewer = new TableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+        tableViewer = new TableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION);
         Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
+
+        // Enable editing on Tab move
+        TableViewerEditor.create(tableViewer, new ColumnViewerEditorActivationStrategy(tableViewer),
+                ColumnViewerEditor.TABBING_HORIZONTAL | ColumnViewerEditor.KEYBOARD_ACTIVATION);
 
         ControlDecoration controlDecoration = new ControlDecoration(tableViewer.getTable(), SWT.LEFT | SWT.TOP);
         controlDecoration.setDescriptionText(StringConstants.DIA_CTRL_VAR_INFO);
@@ -270,8 +290,9 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
             protected void setValue(Object element, Object value) {
                 if (element != null && element instanceof GlobalVariableEntity && value != null) {
                     try {
-                        ASTNode astNode = GroovyParser
-                                .parseGroovyScriptAndGetFirstItem(((GlobalVariableEntity) element).getInitValue());
+                        GlobalVariableEntity globalVariableEntity = (GlobalVariableEntity) element;
+                        ASTNode astNode = GroovyParser.parseGroovyScriptAndGetFirstItem(globalVariableEntity
+                                .getInitValue());
                         IInputValueType inputValueType = AstTreeTableValueUtil.getTypeValue(astNode, null);
                         if (inputValueType != null) {
                             Object object = inputValueType.changeValue(
@@ -282,8 +303,8 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
                                 StringBuilder stringBuilder = new StringBuilder();
                                 GroovyParser groovyParser = new GroovyParser(stringBuilder);
                                 groovyParser.parse(newAstNode);
-                                ((GlobalVariableEntity) element).setInitValue(stringBuilder.toString());
-                                this.getViewer().update(element, null);
+                                globalVariableEntity.setInitValue(stringBuilder.toString());
+                                this.getViewer().update(globalVariableEntity, null);
                                 refresh();
                             }
                         }
@@ -308,7 +329,7 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
                         LoggerSingleton.logError(e);
                     }
                 }
-                return "";
+                return StringConstants.EMPTY;
             }
         });
 
@@ -332,7 +353,7 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
                 if (element instanceof GlobalVariableEntity) {
                     return ((GlobalVariableEntity) element).getDescription();
                 }
-                return "";
+                return StringConstants.EMPTY;
             }
 
             @Override
@@ -354,7 +375,7 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
                 if (element != null && element instanceof GlobalVariableEntity) {
                     return ((GlobalVariableEntity) element).getDescription();
                 }
-                return "";
+                return StringConstants.EMPTY;
             }
         });
         TableColumn tblColumnDescription = tableViewerColumnDescription.getColumn();
@@ -373,18 +394,19 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
 
     private void refresh() {
         tableViewer.setInput(new Object[] { fVariableEntity });
-        validate();
+        getButton(OK).setEnabled(validate());
     }
 
-    private void validate() {
-        boolean enable = true;
+    private boolean validate() {
         String newVariableName = fVariableEntity.getName();
         if (!GroovyConstants.VARIABLE_NAME_REGEX.matcher(newVariableName).find()) {
-            enable &= false;
-        } else {
-            enable &= true;
+            return false;
         }
-        getButton(OK).setEnabled(enable);
+        if (globalVariableNames.contains(newVariableName)) {
+            MessageDialog.openWarning(getShell(), getDialogTitle(), StringConstants.PA_MSG_VARIABLE_NAME_EXIST);
+            return false;
+        }
+        return true;
     }
 
     public String getDialogTitle() {
@@ -394,6 +416,7 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
     @Override
     protected final void setInput() {
         refresh();
+        tableViewer.editElement(tableViewer.getElementAt(0), 0);
     }
 
     public GlobalVariableEntity getVariableEntity() {
