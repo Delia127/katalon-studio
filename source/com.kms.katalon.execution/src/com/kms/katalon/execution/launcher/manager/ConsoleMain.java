@@ -43,22 +43,22 @@ public class ConsoleMain {
     private final static String CONF_FILE_NAME_OPTION = "confFile";
 
     // Mandatory
-    private static final String RUN_MODE_OPTION = "runMode";
-    private static final String PROJECT_PK_OPTION = "projectPath";
-    private final static String TESTSUITE_ID_OPTION = "testSuitePath";
-    private final static String BROWSER_TYPE_OPTION = "browserType";
+    public static final String RUN_MODE_OPTION = "runMode";
+    public static final String PROJECT_PK_OPTION = "projectPath";
+    public final static String TESTSUITE_ID_OPTION = "testSuitePath";
+    public final static String BROWSER_TYPE_OPTION = "browserType";
 
     // Optional
-    private final static String REPORT_FOLDER_OPTION = "reportFolder";
-    private final static String REPORT_FILE_NAME_OPTION = "reportFileName";
+    public final static String REPORT_FOLDER_OPTION = "reportFolder";
+    public final static String REPORT_FILE_NAME_OPTION = "reportFileName";
     private final static String CLEAN_REPORT_FOLDER = "cleanReportFolder";
     private final static String RETRY_OPTION = "retry";
     private final static String RETRY_FAIL_TEST_CASE_ONLY_OPTION = "retryFailedTestCases";
-    private final static String SHOW_STATUS_DELAY_OPTION = "statusDelay";
+    public final static String SHOW_STATUS_DELAY_OPTION = "statusDelay";
 
-    private static final String ARGUMENT_SPLITTER = "=";
-    private static final String ARGUMENT_PREFIX = "-";
-    private static final int DEFAULT_SHOW_PROGRESS_DELAY = 15;
+    public static final String ARGUMENT_SPLITTER = "=";
+    public static final String ARGUMENT_PREFIX = "-";
+    public static final int DEFAULT_SHOW_PROGRESS_DELAY = 15;
     private static final String DEFAULT_REPORT_FOLDER_NAME = "";
 
     private static int returnCode = 0;

@@ -137,4 +137,62 @@ public class StringConstants extends GlobalStringConstants {
     
     // CustomRunConfigurationHandler
     public static final String CUSTOM_RUN_CONFIG_ID_PREFIX = "com.kms.katalon.composer.execution.custom.";
+
+    // GenerateCommandDialog
+    public static final String DIA_TITLE_GENERATE_COMMAND_FOR_CONSOLE = "Generate Command for Console Mode";
+
+    public static final String DIA_GRP_EXECUTED_PLATFORM = "Executed Platform";
+
+    public static final String DIA_REMOTE_WEB_DRIVER_URL = "Remote Web Driver URL";
+
+    public static final String DIA_RADIO_BROWSER = "Browser";
+
+    public static final String DIA_RADIO_MOBILE_DEVICE = "Mobile Device";
+
+    public static final String DIA_GRP_REPORT_CONFIG = "Report Configuration";
+
+    public static final String DIA_OUTPUT_LOCATION = "Output Location";
+
+    public static final String DIA_CHK_USE_RELATIVE_PATH = "Use relative path to current project";
+
+    public static final String DIA_LBL_REPORT_NAME = "Report File Name";
+
+    public static final String DIA_TXT_DEFAULT_REPORT_NAME = "report";
+
+    public static final String DIA_LBL_POST_EXECUTION = "Post Execution";
+
+    public static final String DIA_CHK_SEND_SUMMARY_REPORT = "Send Summary Report to recipients below";
+
+    public static final String DIA_LBL_MAIL_RECIPIENTS = "Mail Recipients";
+
+    public static final String DIA_GRP_OTHER_OPTIONS = "Other Options";
+
+    public static final String DIA_CHK_DISPLAY_CONSOLE_LOG = "Display Console Log";
+
+    public static final String DIA_CHK_KEEP_CONSOLE_LOG = "Keep Console Log after execution completed";
+
+    public static final String DIA_LBL_UPDATE_EXECUTED_STATUS = "Update executed status of the Test Suite after";
+
+    public static final String DIA_LBL_SECONDS = "second(s)";
+
+    public static final String DIA_BTN_GEN_PROPERTY_FILE = "Generate Property File";
+
+    public static final String DIA_BTN_GEN_COMMAND = "Generate Command";
+
+    public static final String DIA_BTN_COPY_TO_CLIPBOARD = "Copy to Clipboard";
+
+    public static final String DIA_TITLE_GENERATED_COMMAND = "Generated Command";
+
+    public static final String DIA_LBL_GENERATED_COMMAND_MESSAGE = "Please copy the following text and use in command line:";
+
+    public static final String DIA_MSG_PLS_SPECIFY_TEST_SUITE = "Please specify Test Suite.";
+
+    public static final String DIA_MSG_PLS_SPECIFY_REMOTE_WEB_DRIVER_URL = "Please specify Remote Web Driver URL.";
+
+    public static final String DIA_MSG_PLS_SELECT_MOBILE_DEVICE = "Please select a Mobile Device.";
+
+    public static final String DIA_MSG_PLS_SPECIFY_FILE_LOCATION = "Please specify the file location.";
+
+    // TestSuiteSelectionDialog
+    public static final String DIA_TITLE_TEST_SUITE_BROWSER = "Test Suite Browser";
 }
