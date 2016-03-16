@@ -17,7 +17,7 @@
       <programArgs>-data config
       </programArgs>
       <vmArgs>-Xms256m
--Xmx1024m
+-Xmx2048m
 -XX:PermSize=128M
 -XX:MaxPermSize=512M
       </vmArgs>
@@ -26,7 +26,6 @@
    </launcherArgs>
 
    <windowImages i16="icons/branding_16.png" i32="icons/branding_32.png" i48="icons/branding_48.png" i64="icons/branding_64.png" i128="icons/branding_128.png" i256="icons/branding_256.png"/>
-
 
    <launcher name="katalon">
       <linux icon="icons/icon.xpm"/>
@@ -38,11 +37,9 @@
       </win>
    </launcher>
 
-
    <vm>
       <windows include="true">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7</windows>
    </vm>
-
 
    <plugins>
       <plugin id="com.ibm.icu"/>
