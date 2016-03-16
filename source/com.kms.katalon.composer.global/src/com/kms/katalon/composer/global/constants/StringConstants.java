@@ -22,7 +22,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_COL_DEFAULT_VALUE_TYPE = "Init Value Type";
     public static final String PA_COL_DEFAULT_VALUE = "Init Value";
     public static final String PA_COL_DESCRIPTION = DESCRIPTION;
-    public static final String PA_MSG_VARIABLE_NAME_EXIST = "This variable name is existed!";
 
 	// GlobalVariablePart
 	public static final String PA_BTN_TIP_ADD = ADD;
