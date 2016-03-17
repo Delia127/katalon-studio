@@ -1,10 +1,12 @@
 package com.kms.katalon.execution.configuration.contributor;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.Collections;
+import java.util.List;
 
 import com.kms.katalon.execution.configuration.CustomRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
+import com.kms.katalon.execution.entity.ConsoleOption;
 import com.kms.katalon.execution.exception.ExecutionException;
 
 public class CustomRunConfigurationContributor implements IRunConfigurationContributor {
@@ -20,15 +22,17 @@ public class CustomRunConfigurationContributor implements IRunConfigurationContr
     }
 
     @Override
-    public IRunConfiguration getRunConfiguration(String projectDir, Map<String, String> runInput)
-            throws IOException, ExecutionException {
-        return new CustomRunConfiguration(projectDir, name);       
+    public IRunConfiguration getRunConfiguration(String projectDir) throws IOException, ExecutionException {
+        return new CustomRunConfiguration(projectDir, name);
     }
 
     @Override
     public int getPreferredOrder() {
         return -1;
     }
-    
 
+    @Override
+    public List<ConsoleOption<?>> getRequiredArguments() {
+        return Collections.emptyList();
+    }
 }

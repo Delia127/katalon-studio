@@ -10,12 +10,9 @@ public class StringConstants extends GlobalStringConstants {
     public static final String MNG_PRT_INVALID_EXECUTION_ARG = "Invalid execution argument.";
     public static final String MNG_PRT_INVALID_DELAY_TIME_ARG = "Invalid delay time argument.";
     public static final String MNG_PRT_INVALID_FILE_NAME_ARG = "Invalid report file name argument.";
-    public static final String MNG_PRT_MISSING_EXECUTION_ARG = "Cannot find any execution argument. Please provide one with param '-execute'";
-    public static final String MNG_PRT_MISSING_TESTSUITE_ARG = "Cannot find any test suite id argument. Please provide one with param '-testSuiteID'";
-    public static final String MNG_PRT_MISSING_BROWSERTYPE_ARG = "Cannot find any browser type argument. Please provide one with param '-browserType'";
     public static final String MNG_PRT_CLOSING_WORKBENCH = "Closing workbench...";
     public static final String MNG_PRT_WORKBENCH_CLOSED = "Workbench closed.";
-    public static final String MNG_PRT_MISSING_PROJ_ARG = "Missing project argument. Please specify using the prefix \"{0}\".";
+    public static final String MNG_PRT_MISSING_REQUIRED_ARG = "Missing required argument \"-{0}\".";
     public static final String MNG_PRT_INVALID_ARG_CANNOT_FIND_PROJ_X = "Invalid argument: Cannot find project ''{0}''.";
     public static final String MNG_PRT_TEST_SUITE_X_NOT_FOUND = "Test suite ''{0}'' not found.";
     public static final String MNG_PRT_INVALID_BROWSER_X = "Invalid browser: ''{0}''";

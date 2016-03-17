@@ -1,15 +1,13 @@
 package com.kms.katalon.execution.webui.configuration.contributor;
 
 import java.io.IOException;
-import java.util.Map;
 
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
-import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.webui.configuration.EdgeRunConfiguration;
 
-public class EdgeRunConfigurationContributor implements IRunConfigurationContributor {
+public class EdgeRunConfigurationContributor extends WebUIRunConfigurationContributor {
 
     @Override
     public String getId() {
@@ -17,8 +15,7 @@ public class EdgeRunConfigurationContributor implements IRunConfigurationContrib
     }
 
     @Override
-    public IRunConfiguration getRunConfiguration(String projectDir, Map<String, String> runInput)
-            throws IOException, ExecutionException {
+    public IRunConfiguration getRunConfiguration(String projectDir) throws IOException, ExecutionException {
         return new EdgeRunConfiguration(projectDir);
     }
 
@@ -26,5 +23,4 @@ public class EdgeRunConfigurationContributor implements IRunConfigurationContrib
     public int getPreferredOrder() {
         return 4;
     }
-
 }

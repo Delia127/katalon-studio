@@ -136,6 +136,9 @@
 								<artifact>
 									<id>org.apache.httpcomponents:httpmime:4.5.1</id>
 								</artifact>
+								<artifact>
+									<id>net.sf.jopt-simple:jopt-simple:5.0</id>
+								</artifact>
 							</artifacts>
 						</configuration>
 					</execution>
