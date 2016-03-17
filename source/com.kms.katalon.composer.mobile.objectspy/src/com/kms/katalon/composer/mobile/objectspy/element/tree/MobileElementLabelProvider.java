@@ -22,8 +22,7 @@ public class MobileElementLabelProvider implements ILabelProvider {
 
 	@Override
 	public boolean isLabelProperty(Object element, String property) {
-		// TODO Auto-generated method stub
-		return false;
+		return element instanceof MobileElement && "name".equals(property);
 	}
 
 	@Override

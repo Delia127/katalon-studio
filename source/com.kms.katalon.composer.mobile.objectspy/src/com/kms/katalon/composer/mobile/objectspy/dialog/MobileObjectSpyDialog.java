@@ -32,18 +32,18 @@ import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.FocusCellOwnerDrawHighlighter;
 import org.eclipse.jface.viewers.ICellModifier;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewerEditor;
 import org.eclipse.jface.viewers.TreeViewerFocusCellManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -313,15 +313,26 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
         txtObjectName = new Text(contentComposite, SWT.BORDER);
         txtObjectName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        txtObjectName.addModifyListener(new ModifyListener() {
-            @Override
-            public void modifyText(ModifyEvent e) {
-                if (selectedElement == null) return;
-                selectedElement.setName(txtObjectName.getText());
-                refreshElementTreeViewer();
-            }
-        });
-
+        txtObjectName.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent e) {}
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if (selectedElement == null) return;
+				switch (e.keyCode) {
+			        case SWT.CR:
+			        	if(!txtObjectName.getText().trim().equals("") && !selectedElement.getName().equals(txtObjectName.getText())){
+			        		selectedElement.setName(txtObjectName.getText());
+			                elementTreeViewer.update(selectedElement, new String[]{"name"});
+			        	}
+			        	break;
+			        case SWT.ESC:
+			        	txtObjectName.setText(selectedElement.getName());
+		                break;
+				}
+			}
+    	});
+        
         Composite attributesTableComposite = new Composite(contentComposite, SWT.NONE);
 
         TableColumnLayout tableColumnLayout = new TableColumnLayout();
@@ -793,23 +804,5 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
             }
         }
         return null;
-    }
-
-    private void refreshElementTreeViewer() {
-        elementTreeViewer.getControl().setRedraw(false);
-
-        // backup state
-        ISelection selection = elementTreeViewer.getSelection();
-        TreePath[] expandedTreePaths = elementTreeViewer.getExpandedTreePaths();
-        Object[] checkedElements = elementTreeViewer.getCheckedElements();
-
-        // refresh tree
-        elementTreeViewer.refresh();
-
-        // restore state
-        elementTreeViewer.setExpandedTreePaths(expandedTreePaths);
-        elementTreeViewer.setCheckedElements(checkedElements);
-        if (selection != null) elementTreeViewer.setSelection(selection, true);
-        elementTreeViewer.getControl().setRedraw(true);
     }
 }
