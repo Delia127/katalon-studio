@@ -69,6 +69,10 @@ public class PreferencesHandler {
             if ("General".equals(name1) && getComparator().compare(name1, name2) > 0) {
                 return -1;
             }
+            if ("General".equals(name2) && getComparator().compare(name1, name2) < 0) {
+                return 1;
+            }
+
             // use the comparator to compare the strings
             return getComparator().compare(name1, name2);
         }
