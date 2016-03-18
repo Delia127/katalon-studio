@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.mobile.objectspy.dialog;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -11,7 +12,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
@@ -42,8 +45,8 @@ import org.eclipse.jface.viewers.TreeViewerEditor;
 import org.eclipse.jface.viewers.TreeViewerFocusCellManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -121,9 +124,13 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
     private boolean isDisposed;
 
-    private static final String[] FILTER_NAMES = { "Mobile Application Files (*.apk, *.ipa)" };
+    private String ANDROID_FILTER_NAMES = "Android Application (*.apk)";
 
-    private static final String[] FILTER_EXTS = { "*.apk; *.ipa" };
+    private String ANDROID_FILTER_EXTS = "*.apk";
+
+    private String IOS_FILTER_NAMES = "iOS Application (*.app, *.ipa)";
+
+    private String IOS_FILTER_EXTS = "*.app; *.ipa";
 
     private MobileInspectorController inspectorController;
 
@@ -292,8 +299,8 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 FileDialog dialog = new FileDialog(btnBrowse.getShell());
-                dialog.setFilterNames(FILTER_NAMES);
-                dialog.setFilterExtensions(FILTER_EXTS);
+                dialog.setFilterNames(getFilterNames());
+                dialog.setFilterExtensions(getFilterExtensions());
                 String absolutePath = dialog.open();
                 if (absolutePath == null) return;
                 txtAppFile.setText(absolutePath);
@@ -313,26 +320,27 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
         txtObjectName = new Text(contentComposite, SWT.BORDER);
         txtObjectName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        txtObjectName.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {}
-			@Override
-			public void keyReleased(KeyEvent e) {
-				if (selectedElement == null) return;
-				switch (e.keyCode) {
-			        case SWT.CR:
-			        	if(!txtObjectName.getText().trim().equals("") && !selectedElement.getName().equals(txtObjectName.getText())){
-			        		selectedElement.setName(txtObjectName.getText());
-			                elementTreeViewer.update(selectedElement, new String[]{"name"});
-			        	}
-			        	break;
-			        case SWT.ESC:
-			        	txtObjectName.setText(selectedElement.getName());
-		                break;
-				}
-			}
-    	});
-        
+        txtObjectName.setToolTipText(StringConstants.DIA_TOOLTIP_OBJECT_NAME);
+        txtObjectName.addKeyListener(new KeyAdapter() {
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (selectedElement == null) return;
+                switch (e.keyCode) {
+                    case SWT.CR:
+                        String objectName = txtObjectName.getText();
+                        if (isNotBlank(objectName) && !StringUtils.equals(selectedElement.getName(), objectName)) {
+                            selectedElement.setName(objectName);
+                            elementTreeViewer.update(selectedElement, new String[] { "name" });
+                        }
+                        break;
+                    case SWT.ESC:
+                        txtObjectName.setText(selectedElement.getName());
+                        break;
+                }
+            }
+        });
+
         Composite attributesTableComposite = new Composite(contentComposite, SWT.NONE);
 
         TableColumnLayout tableColumnLayout = new TableColumnLayout();
@@ -445,9 +453,9 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
         btnStart.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                //Validate all required informations are filled
-                if (validateData()) {                
-                	startObjectInspectorAction();                   
+                // Validate all required informations are filled
+                if (validateData()) {
+                    startObjectInspectorAction();
                 }
             }
         });
@@ -647,63 +655,62 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
         // Temporary disable Start button while launching app
         btnStart.setEnabled(false);
-        
+
         try {
-        	
-        	final String deviceName = cbbDevices.getItem(cbbDevices.getSelectionIndex());
-        	final String deviceId = inspectorController.getDeviceId(deviceName);
-        	final String appFile = txtAppFile.getText();
-        	
-        	ProgressMonitorDialog progressDlg = new ProgressMonitorDialog(Display.getCurrent().getActiveShell()){
-            @Override
-				public void cancelPressed() {
-        			super.cancelPressed();
-        			finishedRun();
-        			getProgressMonitor().done();
-        			btnStart.setEnabled(true);
+
+            final String deviceName = cbbDevices.getItem(cbbDevices.getSelectionIndex());
+            final String deviceId = inspectorController.getDeviceId(deviceName);
+            final String appFile = txtAppFile.getText();
+
+            ProgressMonitorDialog progressDlg = new ProgressMonitorDialog(Display.getCurrent().getActiveShell()) {
+                @Override
+                public void cancelPressed() {
+                    super.cancelPressed();
+                    finishedRun();
+                    getProgressMonitor().done();
+                    btnStart.setEnabled(true);
                     btnStop.setEnabled(false);
                     btnCapture.setEnabled(false);
                     btnAdd.setEnabled(false);
-        		}
-        	};
-        	
-        	IRunnableWithProgress processToRun = new IRunnableWithProgress() {
-				@Override
-				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-					monitor.beginTask(StringConstants.DIA_LBL_STATUS_APP_STARTING, IProgressMonitor.UNKNOWN);
-					try {
-                    // Start application using MobileDriver
-						inspectorController.startMobileApp(deviceId, appFile, false);
-					} catch (Exception ex) {
-	                    logger.error(ex);
-	                    throw new InvocationTargetException(ex, ex.getMessage());
-	                }	
-					if(monitor.isCanceled()){
-						throw new InterruptedException(StringConstants.DIA_ERROR_MSG_OPERATION_CANCELED);
-					}
-					monitor.done();
-				}
-			}; 
-        	
-        	progressDlg.run(true, true, processToRun); 
-			
-			//If no exception, application has been successful started, enable more features  
+                }
+            };
+
+            IRunnableWithProgress processToRun = new IRunnableWithProgress() {
+                @Override
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    monitor.beginTask(StringConstants.DIA_LBL_STATUS_APP_STARTING, IProgressMonitor.UNKNOWN);
+                    try {
+                        // Start application using MobileDriver
+                        inspectorController.startMobileApp(deviceId, appFile, false);
+                    } catch (Exception ex) {
+                        logger.error(ex);
+                        throw new InvocationTargetException(ex, ex.getMessage());
+                    }
+                    if (monitor.isCanceled()) {
+                        throw new InterruptedException(StringConstants.DIA_ERROR_MSG_OPERATION_CANCELED);
+                    }
+                    monitor.done();
+                }
+            };
+
+            progressDlg.run(true, true, processToRun);
+
+            // If no exception, application has been successful started, enable more features
             btnAdd.setEnabled(true);
             btnCapture.setEnabled(true);
             btnStop.setEnabled(true);
-		} 
-        catch(Exception ex){
-        	//If user intentionally cancel the progress, don't need to show error message
-            if(!StringConstants.DIA_ERROR_MSG_OPERATION_CANCELED.equals(ex.getMessage())){
-            	MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, 
-                		StringConstants.DIA_ERROR_MSG_CANNOT_START_APP_ON_CURRENT_DEVICE + ": " + ex.getMessage());
+        } catch (Exception ex) {
+            // If user intentionally cancel the progress, don't need to show error message
+            if (!StringConstants.DIA_ERROR_MSG_OPERATION_CANCELED.equals(ex.getMessage())) {
+                MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                        StringConstants.DIA_ERROR_MSG_CANNOT_START_APP_ON_CURRENT_DEVICE + ": " + ex.getMessage());
                 // Enable start button and show error dialog if application cannot start
                 btnStart.setEnabled(true);
                 btnStop.setEnabled(false);
                 btnCapture.setEnabled(false);
                 btnAdd.setEnabled(false);
             }
-            
+
         }
     }
 
@@ -804,5 +811,19 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
             }
         }
         return null;
+    }
+
+    private String[] getFilterNames() {
+        if (StringUtils.equals(Platform.getOS(), Platform.OS_MACOSX)) {
+            return new String[] { ANDROID_FILTER_NAMES, IOS_FILTER_NAMES };
+        }
+        return new String[] { ANDROID_FILTER_NAMES };
+    }
+
+    private String[] getFilterExtensions() {
+        if (StringUtils.equals(Platform.getOS(), Platform.OS_MACOSX)) {
+            return new String[] { ANDROID_FILTER_EXTS, IOS_FILTER_EXTS };
+        }
+        return new String[] { ANDROID_FILTER_EXTS };
     }
 }
