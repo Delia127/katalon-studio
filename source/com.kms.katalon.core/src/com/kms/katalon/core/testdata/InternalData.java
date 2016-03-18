@@ -1,67 +1,60 @@
 package com.kms.katalon.core.testdata;
 
+import java.io.IOException;
 import java.util.List;
 
 public class InternalData extends AbstractTestData {
 
-	private List<String[]> data;
-	private List<String> columnNames;
-	private String fileSource;
+    private List<String[]> data;
+    private List<String> columnNames;
 
-	public InternalData(String fileSource, List<String[]> data, List<String> columnNames) {
-		this.fileSource = fileSource;
-		this.data = data;
-		this.columnNames = columnNames;
-	}
+    public InternalData(String fileSource, List<String[]> data, List<String> columnNames) {
+        super(fileSource, true);
+        this.data = data;
+        this.columnNames = columnNames;
+    }
 
-	@Override
-	public String getValue(String columnName, int rowIndex) {
-		verifyColumnName(columnName);
-		verifyRowIndex(rowIndex);
-		//return data.get(rowIndex - 1)[getColumnIndex(columnName)];
-		return data.get(rowIndex)[getColumnIndex(columnName)];
-	}
+    @Override
+    public String internallyGetValue(String columnName, int rowIndex) throws IOException {
+        return data.get(rowIndex)[getColumnIndex(columnName)];
+    }
 
-	@Override
-	public String getValue(int columnIndex, int rowIndex) throws IllegalArgumentException {
-		verifyColumnIndex(columnIndex);
-		verifyRowIndex(rowIndex);
-		//return data.get(rowIndex - 1)[columnIndex - 1];
-		return data.get(rowIndex)[columnIndex - 1];
-	}
+    @Override
+    public String internallyGetValue(int columnIndex, int rowIndex) throws IOException {
+        return data.get(rowIndex)[columnIndex];
+    }
 
-	private int getColumnIndex(String columnName) {
-		String[] columnNames = getColumnNames();
-		for (int i = 0; i < columnNames.length; i++) {
-			if (columnNames[i].equals(columnName)) {
-				return i;
-			}
-		}
-		return -1;
-	}
+    private int getColumnIndex(String columnName) {
+        String[] columnNames = getColumnNames();
+        for (int i = 0; i < columnNames.length; i++) {
+            if (columnNames[i].equals(columnName)) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
-	@Override
-	public TestDataType getType() {
-		return TestDataType.INTERNAL_DATA;
-	}
+    @Override
+    public TestDataType getType() {
+        return TestDataType.INTERNAL_DATA;
+    }
 
-	@Override
-	public String getSourceUrl() {
-		return fileSource;
-	}
+    @Override
+    public String[] getColumnNames() {
+        return columnNames.toArray(new String[columnNames.size()]);
+    }
 
-	@Override
-	public String[] getColumnNames() {
-		return columnNames.toArray(new String[columnNames.size()]);
-	}
+    @Override
+    public int getRowNumbers() {
+        return data.size();
+    }
 
-	@Override
-	public int getRowNumbers() {
-		return data.size();
-	}
-
-	@Override
-	public int getColumnNumbers() {
-		return columnNames.size();
-	}
+    @Override
+    public int getColumnNumbers() {
+        return columnNames.size();
+    }
+    
+    public List<String[]> getData() {
+        return data;
+    }
 }

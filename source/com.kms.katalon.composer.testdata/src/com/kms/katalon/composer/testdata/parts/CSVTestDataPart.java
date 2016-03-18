@@ -2,7 +2,6 @@ package com.kms.katalon.composer.testdata.parts;
 
 import java.io.File;
 import java.text.MessageFormat;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -45,8 +44,8 @@ import com.kms.katalon.composer.testdata.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestDataController;
-import com.kms.katalon.core.testdata.reader.CSVReader;
-import com.kms.katalon.core.testdata.reader.CSVSeperator;
+import com.kms.katalon.core.testdata.CSVData;
+import com.kms.katalon.core.testdata.reader.CSVSeparator;
 import com.kms.katalon.core.util.PathUtil;
 import com.kms.katalon.entity.dal.exception.DuplicatedFileNameException;
 import com.kms.katalon.entity.testdata.DataFileEntity;
@@ -96,7 +95,7 @@ public class CSVTestDataPart extends TestDataMainPart {
     public void createControls(Composite parent, MPart mpart) {
         enableToReload = true;
         fCurrentFilePath = "";
-        fSelectedSeperator = CSVSeperator.COMMA.toString();
+        fSelectedSeperator = CSVSeparator.COMMA.toString();
 
         super.createControls(parent, mpart);
     }
@@ -178,7 +177,7 @@ public class CSVTestDataPart extends TestDataMainPart {
         lblSeperator.setText(StringConstants.PA_LBL_SEPARATOR);
 
         cbSeperator = new Combo(compositeSeperator, SWT.READ_ONLY);
-        cbSeperator.setItems(CSVSeperator.stringValues());
+        cbSeperator.setItems(CSVSeparator.stringValues());
         cbSeperator.select(0);
         cbSeperator.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
@@ -413,10 +412,10 @@ public class CSVTestDataPart extends TestDataMainPart {
             clearTable();
             if (validateTestDataInfo()) {
                 String fileName = getSourceUrlAbsolutePath();
-                CSVSeperator seperator = CSVSeperator.fromValue(cbSeperator.getText());
-                final CSVReader reader = new CSVReader(fileName, seperator, chckEnableHeader.getSelection());
+                CSVSeparator separator = CSVSeparator.fromValue(cbSeperator.getText());
+                final CSVData csvData = new CSVData(fileName, chckEnableHeader.getSelection(), separator);
 
-                int columnNumbers = reader.getColumnCount();
+                int columnNumbers = csvData.getColumnNumbers();
                 if (columnNumbers > MAX_COLUMN_COUNT) {
                     warnFileToLarge();
                     columnNumbers = MAX_COLUMN_COUNT;
@@ -441,9 +440,10 @@ public class CSVTestDataPart extends TestDataMainPart {
                 }
 
                 int numEmptyHeader = 0;
-                for (int i = 0; i < tableViewer.getTable().getColumnCount() - 1; i++) {
-                    TableColumn column = tableViewer.getTable().getColumns()[i + 1];
-                    String header = reader.getColumnNames()[i];
+                //The first column is No. column
+                for (int tableColumnIdx = 1; tableColumnIdx < tableViewer.getTable().getColumnCount(); tableColumnIdx++) {
+                    TableColumn column = tableViewer.getTable().getColumns()[tableColumnIdx];
+                    String header = csvData.getColumnNames()[tableColumnIdx - 1];
                     if (StringUtils.isBlank(header)) {
                         numEmptyHeader++;
                         header = StringUtils.EMPTY;
@@ -457,13 +457,7 @@ public class CSVTestDataPart extends TestDataMainPart {
                     lblFileInfoStatus.setText(MessageFormat.format(StringConstants.PA_LBL_WARNING_COLUMN_HEADER,
                             numEmptyHeader, columnNumbers));
                 }
-                
-                List<String[]> allData = reader.getData();
-                
-                if(chckEnableHeader.getSelection()){
-                	allData.remove(0);
-                }
-                tableViewer.setInput(allData);
+                tableViewer.setInput(csvData.getData());
             }
             tableViewer.getTable().setHeaderVisible(chckEnableHeader.getSelection());
         } catch (Exception e) {

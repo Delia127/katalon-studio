@@ -3,9 +3,11 @@ package com.kms.katalon.execution.generator;
 import groovy.lang.GroovyObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
@@ -125,7 +127,8 @@ public class TestSuiteScriptGenerator {
                             variableLink);
                     if (variableEntity != null) {
                         String variableValue = variableLink.getValue();
-                        if (variableLink.getType() == VariableType.DATA_COLUMN || variableLink.getType() == VariableType.DATA_COLUMN_INDEX) {
+                        if (variableLink.getType() == VariableType.DATA_COLUMN
+                                || variableLink.getType() == VariableType.DATA_COLUMN_INDEX) {
 
                             if (StringUtils.isBlank(variableLink.getTestDataLinkId())) {
                                 syntaxErrorCollector.append("Wrong syntax at [Test case ID: "
@@ -140,8 +143,9 @@ public class TestSuiteScriptGenerator {
 
                             TestData testData = testSuiteExecuted.getTestDataMap().get(
                                     testDataExecutedEntity.getTestDataId());
-                            
-                            DataFileEntity dataFileEntity = TestDataController.getInstance().getTestDataByDisplayId(testDataExecutedEntity.getTestDataId());
+
+                            DataFileEntity dataFileEntity = TestDataController.getInstance().getTestDataByDisplayId(
+                                    testDataExecutedEntity.getTestDataId());
 
                             if (!StringUtils.isBlank(variableValue)) {
                                 int rowIndex = 0;
@@ -153,13 +157,15 @@ public class TestSuiteScriptGenerator {
                                 }
 
                                 try {
-                                	if(variableLink.getType() == VariableType.DATA_COLUMN){
-                                		variableValue = GroovyStringUtil.escapeGroovy(testData.getValue(variableValue, testDataExecutedEntity.getRowIndexes()[rowIndex]));	
-                                	}
-                                	else if(variableLink.getType() == VariableType.DATA_COLUMN_INDEX){
-                                		variableValue = GroovyStringUtil.escapeGroovy(testData.getValue(Integer.parseInt(variableValue), testDataExecutedEntity.getRowIndexes()[rowIndex]));	
-                                	}
-                                    
+                                    if (variableLink.getType() == VariableType.DATA_COLUMN) {
+                                        variableValue = GroovyStringUtil.escapeGroovy(testData.getValue(variableValue,
+                                                testDataExecutedEntity.getRowIndexes()[rowIndex]));
+                                    } else if (variableLink.getType() == VariableType.DATA_COLUMN_INDEX) {
+                                        variableValue = GroovyStringUtil.escapeGroovy(testData.getValue(
+                                                Integer.parseInt(variableValue),
+                                                testDataExecutedEntity.getRowIndexes()[rowIndex]));
+                                    }
+
                                     if (variableValue != null) {
                                         variableValue = "'" + variableValue + "'";
                                     } else {
@@ -167,16 +173,16 @@ public class TestSuiteScriptGenerator {
                                     }
 
                                 } catch (IllegalArgumentException ex) {
-                                    syntaxErrorCollector.append(
-                                            "Wrong syntax at [Test case ID: " + testCaseLink.getTestCaseId()
-                                                    + ", Variale name: " + variableEntity.getName() + ", Test data: "
-                                                    + testDataExecutedEntity.getTestDataId() + ", Column name: "
-                                                    + variableValue + "]: ");
-                                    if(dataFileEntity != null && dataFileEntity.isContainsHeaders()){
-                                    	syntaxErrorCollector.append(getMessageForInvalidColumn(variableValue, testData));
-                                    }
-                                    else if(dataFileEntity != null && !dataFileEntity.isContainsHeaders()){
-                                    	syntaxErrorCollector.append("Test Data is using index not column name");
+                                    syntaxErrorCollector.append("Wrong syntax at [Test case ID: "
+                                            + testCaseLink.getTestCaseId() + ", Variale name: "
+                                            + variableEntity.getName() + ", Test data: "
+                                            + testDataExecutedEntity.getTestDataId() + ", Column name: "
+                                            + variableValue + "]: ");
+                                    if (dataFileEntity != null && dataFileEntity.isContainsHeaders()) {
+                                        syntaxErrorCollector
+                                                .append(getMessageForInvalidColumn(variableValue, testData));
+                                    } else if (dataFileEntity != null && !dataFileEntity.isContainsHeaders()) {
+                                        syntaxErrorCollector.append("Test Data is using index not column name");
                                     }
                                     syntaxErrorCollector.append(SyntaxUtil.LINE_SEPERATOR);
                                     needToBreak = true;
@@ -186,14 +192,13 @@ public class TestSuiteScriptGenerator {
                                 syntaxErrorCollector.append("Wrong syntax at [Test case ID: "
                                         + testCaseLink.getTestCaseId() + ", Variable name: " + variableEntity.getName()
                                         + ", Test data: " + testDataExecutedEntity.getTestDataId() + ", Column name: "
-                                        + variableValue + "<empty>]: Column name cannot be empty. ");                                
-                                if(dataFileEntity != null && dataFileEntity.isContainsHeaders()){
-                                	syntaxErrorCollector.append(getMessageForPossibleColumnName(testData));
+                                        + variableValue + "<empty>]: Column name cannot be empty. ");
+                                if (dataFileEntity != null && dataFileEntity.isContainsHeaders()) {
+                                    syntaxErrorCollector.append(getMessageForPossibleColumnName(testData));
+                                } else if (dataFileEntity != null && !dataFileEntity.isContainsHeaders()) {
+                                    syntaxErrorCollector.append("Test Data is using index not column name");
                                 }
-                                else if(dataFileEntity != null && !dataFileEntity.isContainsHeaders()){
-                                	syntaxErrorCollector.append("Test Data is using index not column name");
-                                }
-                                
+
                                 needToBreak = true;
                                 break;
                             }
@@ -223,7 +228,8 @@ public class TestSuiteScriptGenerator {
                 }
 
                 String variableMapBinding = variableBuilder.toString();
-                if (variableMapBinding.isEmpty()) variableMapBinding = ":";
+                if (variableMapBinding.isEmpty())
+                    variableMapBinding = ":";
 
                 testCaseBindingBuilder.append(variableMapBinding).append("])");
             }
@@ -233,14 +239,14 @@ public class TestSuiteScriptGenerator {
         return testCaseBindingStrings;
     }
 
-    private String getMessageForInvalidColumn(String columnName, TestData testData) {
+    private String getMessageForInvalidColumn(String columnName, TestData testData) throws IOException {
         StringBuilder messageBuilder = new StringBuilder("Invalid column name '");
         messageBuilder.append(columnName).append("'. ").append(getMessageForPossibleColumnName(testData));
 
         return messageBuilder.toString();
     }
 
-    private String getMessageForPossibleColumnName(TestData testData) {
+    private String getMessageForPossibleColumnName(TestData testData) throws IOException {
         StringBuilder messageBuilder = new StringBuilder("Possible values are '").append(
                 arrayToString(testData.getColumnNames())).append("'");
 
@@ -248,21 +254,22 @@ public class TestSuiteScriptGenerator {
     }
 
     private String arrayToString(String[] columnNames) {
+        if (ArrayUtils.isEmpty(columnNames)) {
+            return "[]";
+        }
         StringBuilder stringBuilder = new StringBuilder("[");
-        if (columnNames != null) {
-            int validNums = 0;
-            for (int i = 0; i < columnNames.length; i++) {
-                String columnName = columnNames[i];
-                if (!StringUtils.isBlank(columnName)) {
-
-                    if (validNums > 0) {
-                        stringBuilder.append(", ");
-                    }
-
-                    stringBuilder.append(columnName);
-                    validNums++;
-                }
+        int validColumns = 0;
+        for (int i = 0; i < columnNames.length; i++) {
+            String columnName = columnNames[i];
+            if (StringUtils.isBlank(columnName)) {
+                continue;
             }
+            
+            if (validColumns > 0) {
+                stringBuilder.append(", ");
+            }
+            stringBuilder.append(columnName);
+            validColumns++;
         }
         stringBuilder.append("]");
         return stringBuilder.toString();

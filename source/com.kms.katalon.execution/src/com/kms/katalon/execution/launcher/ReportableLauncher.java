@@ -27,7 +27,7 @@ import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.reporting.ReportUtil;
 import com.kms.katalon.core.testdata.reader.CSVReader;
-import com.kms.katalon.core.testdata.reader.CSVSeperator;
+import com.kms.katalon.core.testdata.reader.CSVSeparator;
 import com.kms.katalon.core.testdata.reader.CsvWriter;
 import com.kms.katalon.core.util.PathUtil;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -303,7 +303,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 continue;
             }
             // Collect result and send mail here
-            CSVReader csvReader = new CSVReader(file, CSVSeperator.COMMA, true);
+            CSVReader csvReader = new CSVReader(file, CSVSeparator.COMMA, true);
             Deque<String[]> datas = new ArrayDeque<String[]>();
             datas.addAll(csvReader.getData());
             String[] suiteRow = datas.pollFirst();

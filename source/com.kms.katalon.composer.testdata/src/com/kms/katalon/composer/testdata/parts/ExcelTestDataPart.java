@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.testdata.parts;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 
 import javax.annotation.PostConstruct;
@@ -50,6 +51,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.core.testdata.ExcelData;
+import com.kms.katalon.core.testdata.TestData;
 import com.kms.katalon.core.util.PathUtil;
 import com.kms.katalon.entity.dal.exception.DuplicatedFileNameException;
 import com.kms.katalon.entity.testdata.DataFileEntity;
@@ -90,6 +92,8 @@ public class ExcelTestDataPart extends TestDataMainPart {
     private String[][] fData;
 
     private LoadExcelFileJob loadFileJob;
+
+    private ExcelData excelData;
 
     private Listener layoutFileInfoCompositeListener = new Listener() {
 
@@ -212,8 +216,8 @@ public class ExcelTestDataPart extends TestDataMainPart {
         compositeCheckBoxes.setLayout(glCompositeCheckBoxes);
 
         ckcbEnableHeader = new Button(compositeCheckBoxes, SWT.CHECK);
-		ckcbEnableHeader.setText(StringConstants.PA_CHKBOX_USE_FIRST_ROW_AS_HEADER);
-        
+        ckcbEnableHeader.setText(StringConstants.PA_CHKBOX_USE_FIRST_ROW_AS_HEADER);
+
         ckcbUseRelativePath = new Button(compositeCheckBoxes, SWT.CHECK);
         ckcbUseRelativePath.setText(StringConstants.PA_CHKBOX_USE_RELATIVE_PATH);
         new Label(compositeCheckBoxes, SWT.NONE);
@@ -248,7 +252,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
         tableViewer = new TableViewer(compositeTable, SWT.VIRTUAL | SWT.FULL_SELECTION);
         tableViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-        //tableViewer.getTable().setHeaderVisible(true);
+        // tableViewer.getTable().setHeaderVisible(true);
         tableViewer.getTable().setLinesVisible(true);
 
         TableViewerColumn tbviewerClmnNo = new TableViewerColumn(tableViewer, SWT.NONE);
@@ -275,7 +279,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
         txtFileName.setText(fCurrentPath);
 
         ckcbEnableHeader.setSelection(dataFile.isContainsHeaders());
-        
+
         ckcbUseRelativePath.setSelection(dataFile.getIsInternalPath());
 
         fCurrentSheetName = dataFile.getSheetName();
@@ -290,7 +294,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 loadFileJob.removeJobChangeListener(readExcelJobListener);
             }
 
-            loadFileJob = new LoadExcelFileJob(getSourceUrlAbsolutePath());
+            loadFileJob = new LoadExcelFileJob(getSourceUrlAbsolutePath(), ckcbEnableHeader.getSelection());
             loadFileJob.setUser(true);
             loadFileJob.schedule();
 
@@ -306,7 +310,11 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 @Override
                 public void run() {
                     if (event.getResult() == Status.OK_STATUS) {
-                        loadSheetNames(loadFileJob.getSheetNames());
+                        excelData = loadFileJob.getExcelData();
+                        if (excelData == null) {
+                            return;
+                        }
+                        loadSheetNames(excelData.getSheetNames());
                         loadExcelDataToTable();
                     }
                 }
@@ -328,9 +336,9 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 if (absolutePath == null || absolutePath.equals(fCurrentPath)) {
                     return;
                 }
-                
+
                 lblFileInfoStatus.setText("");
-                    
+
                 fCurrentPath = absolutePath;
                 fCurrentSheetName = "";
 
@@ -356,7 +364,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
                     return;
                 }
                 lblFileInfoStatus.setText("");
-                
+
                 fCurrentSheetName = selectedSheetName;
                 loadExcelDataToTable();
                 dirtyable.setDirty(true);
@@ -364,13 +372,13 @@ public class ExcelTestDataPart extends TestDataMainPart {
         });
 
         ckcbEnableHeader.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				loadExcelDataToTable();
-				dirtyable.setDirty(true);
-			}
-		});
-        
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                loadExcelDataToTable();
+                dirtyable.setDirty(true);
+            }
+        });
+
         ckcbUseRelativePath.addSelectionListener(new SelectionAdapter() {
 
             @Override
@@ -454,20 +462,12 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 return;
             }
 
-            final ExcelData excelData = new ExcelData(cbbSheets.getText(), getSourceUrlAbsolutePath());
-            
-            if(ckcbEnableHeader.getSelection()){
-            	headers = excelData.getColumnNames();
-                if (headers.length <= 0) {
-                    return;
-                }	
-            }
+            excelData.changeSheet(cbbSheets.getText());
+            excelData.activeHeaders(ckcbEnableHeader.getSelection());
+
+            headers = excelData.getColumnNames();
 
             int rowNumbers = excelData.getRowNumbers();
-            if(ckcbEnableHeader.getSelection()){
-            	rowNumbers -= 1;
-            }
-            
             int columnNumbers = excelData.getColumnNumbers();
 
             if (columnNumbers > MAX_COLUMN_COUNT) {
@@ -482,50 +482,50 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
             int numEmptyHeader = 0;
             for (int i = 0; i < columnNumbers; i++) {
-                final int idx = i;
-                if (idx >= tableViewer.getTable().getColumnCount() - 1) {
-                    TableViewerColumn columnViewer = new TableViewerColumn(tableViewer, SWT.NONE);
-                    String header = (headers == null ? "" : headers[i]);
-                    if (!StringUtils.isBlank(header)) {
-                        columnViewer.getColumn().setText(header);
-                    } else {
-                        columnViewer.getColumn().setImage(ImageConstants.IMG_16_WARN_TABLE_ITEM);
-                        columnViewer.getColumn().setToolTipText(StringConstants.PA_TOOLTIP_WARNING_COLUMN_HEADER);
-                        columnViewer.getColumn().setText(StringUtils.EMPTY);
-                        numEmptyHeader++;
+                TableViewerColumn columnViewer = new TableViewerColumn(tableViewer, SWT.NONE);
+                String header = (headers == null ? "" : headers[i]);
+                if (!StringUtils.isBlank(header)) {
+                    columnViewer.getColumn().setText(header);
+                } else {
+                    columnViewer.getColumn().setImage(ImageConstants.IMG_16_WARN_TABLE_ITEM);
+                    columnViewer.getColumn().setToolTipText(StringConstants.PA_TOOLTIP_WARNING_COLUMN_HEADER);
+                    columnViewer.getColumn().setText(StringUtils.EMPTY);
+                    numEmptyHeader++;
+                }
+
+                columnViewer.getColumn().setWidth(COLUMN_WIDTH);
+                columnViewer.setLabelProvider(new ColumnLabelProvider() {
+                    private String getCellText(ExcelData excelData, int columnIndex, int rowIndex) {
+                        try {
+                            return excelData.getValue(columnIndex + TestData.BASE_INDEX, rowIndex + TestData.BASE_INDEX);
+                        } catch (IOException e) {
+                            return "";
+                        }
                     }
 
-                    columnViewer.getColumn().setWidth(COLUMN_WIDTH);
-                    columnViewer.setLabelProvider(new ColumnLabelProvider() {
-                        @Override
-                        public void update(final ViewerCell cell) {
-                            final int columnIndex = cell.getColumnIndex() - 1;
-                            final int rowIndex = tableViewer.getTable().indexOf((TableItem) cell.getItem());
-                            String text = "...";
-                            cell.setText(text);
+                    @Override
+                    public void update(final ViewerCell cell) {
+                        final int columnIndex = cell.getColumnIndex() - 1;
+                        final int rowIndex = tableViewer.getTable().indexOf((TableItem) cell.getItem());
+                        String text = "...";
+                        cell.setText(text);
 
-                            sync.asyncExec(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (fData == null) {
-                                        return;
-                                    }
-                                    if (fData[rowIndex][columnIndex] == null) {
-                                        String text = excelData.getValue(columnIndex + 1, rowIndex + (ckcbEnableHeader.getSelection() ? 1 : 0));
-                                        if (text == null) {
-                                            fData[rowIndex][columnIndex] = "";
-                                        } else {
-                                            fData[rowIndex][columnIndex] = text;
-                                        }
-                                        if (!cell.getItem().isDisposed()) {
-                                            cell.setText(text);
-                                        }
-                                    }
+                        sync.asyncExec(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (fData == null || cell.getItem().isDisposed()) {
+                                    return;
                                 }
-                            });
-                        }
-                    });
-                }
+
+                                if (fData[rowIndex][columnIndex] == null) {
+                                    fData[rowIndex][columnIndex] = getCellText(excelData, columnIndex, rowIndex);
+                                }
+
+                                cell.setText(fData[rowIndex][columnIndex]);
+                            }
+                        });
+                    }
+                });
             }
 
             if (numEmptyHeader > 0 && ckcbEnableHeader.getSelection()) {
@@ -535,7 +535,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
             tableViewer.setInput(fData);
             tableViewer.getTable().setHeaderVisible(ckcbEnableHeader.getSelection());
-            
+
         } catch (IllegalArgumentException ex) {
             fData = null;
         } catch (Exception e) {

@@ -1,14 +1,14 @@
 package com.kms.katalon.core.testdata.reader;
 
 
-public enum CSVSeperator {
+public enum CSVSeparator {
     COMMA("comma"),
     TAB("tab"),
     SEMICOLON("semicolon");
     
     private final String text;
 
-    private CSVSeperator(final String text) {
+    private CSVSeparator(final String text) {
         this.text = text;
     }
 
@@ -17,8 +17,8 @@ public enum CSVSeperator {
         return text;
     }
     
-    public static CSVSeperator fromValue(String value) {
-        for (CSVSeperator type : values()) {
+    public static CSVSeparator fromValue(String value) {
+        for (CSVSeparator type : values()) {
             if (type.toString().equals(value)) {
                 return type;
             }

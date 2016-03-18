@@ -15,7 +15,8 @@ import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
-import com.kms.katalon.core.testdata.reader.CSVSeperator;
+import com.kms.katalon.core.testdata.reader.ExcelFactory;
+import com.kms.katalon.core.testdata.reader.CSVSeparator;
 import com.kms.katalon.core.util.ExceptionsUtil;
 import com.kms.katalon.core.util.PathUtil;
 
@@ -99,6 +100,10 @@ public class TestDataFactory {
 			throw new IllegalArgumentException(MessageFormat.format(
 					StringConstants.XML_LOG_ERROR_TEST_DATA_MISSING_ELEMENT, SHEET_NAME_NODE));
 		}
+		boolean hasHeaders = true;
+		if (testDataElement.element(CONTAINS_HEADERS_NODE) != null) {
+		    hasHeaders = Boolean.parseBoolean(testDataElement.elementText(CONTAINS_HEADERS_NODE));
+        }
 		String sourceUrl = testDataElement.elementText(URL_NODE);
 		String sheetName = testDataElement.elementText(SHEET_NAME_NODE);
 		Boolean isRelativePath = false;
@@ -110,7 +115,7 @@ public class TestDataFactory {
 		}
 		logger.logInfo(MessageFormat.format(StringConstants.XML_LOG_TEST_DATA_READING_EXCEL_DATA_WITH_SOURCE_X_SHEET_Y,
 				sourceUrl, sheetName));
-		return new ExcelData(sheetName, sourceUrl);
+		return ExcelFactory.getExcelDataWithDefaultSheet(sourceUrl, sheetName, hasHeaders);
 	}
 
 	public static TestData readInternalData(Element testDataElement, String projectDir, File dataFile)
@@ -122,9 +127,6 @@ public class TestDataFactory {
 			// columnNames.add(internalDataColumnElement.attributeValue(INTERNAL_DATA_COLUMN_NAME_ATTRIBUTE));
 			columnNames.add(internalDataColumnElement.element(INTERNAL_DATA_COLUMN_NAME_ATTRIBUTE).getText());
 		}
-
-		//Column names also included into data, for consistent with other test data types
-		data.add(columnNames.toArray(new String[columnNames.size()]));
 		
 		for (Object dataElementObject : testDataElement.elements(DATA_NODE)) {
 			Element dataElement = (Element) dataElementObject;
@@ -158,7 +160,7 @@ public class TestDataFactory {
 		}
 		String sourceUrl = testDataElement.element(URL_NODE).getText();
 		boolean containsHeader = Boolean.valueOf(testDataElement.element(CONTAINS_HEADERS_NODE).getText());
-		CSVSeperator seperator = CSVSeperator.fromValue(testDataElement.element(CSV_SEPERATOR_NODE).getText());
+		CSVSeparator seperator = CSVSeparator.fromValue(testDataElement.element(CSV_SEPERATOR_NODE).getText());
 		Boolean isRelativePath = false;
 		if (testDataElement.element(IS_RELATIVE_PATH_NODE) != null) {
 			isRelativePath = Boolean.valueOf(testDataElement.elementText(IS_RELATIVE_PATH_NODE));
