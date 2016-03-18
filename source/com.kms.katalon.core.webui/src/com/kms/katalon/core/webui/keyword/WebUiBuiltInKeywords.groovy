@@ -1037,8 +1037,11 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
                 isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
                 WebElement webElement = findWebElement(to);
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SETTING_OBJ_TXT_TO_VAL, to.getObjectId(), text));
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CLEARING_OBJ_TXT, to.getObjectId()));
                 webElement.clear();
+
+                webElement = findWebElement(to);
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SETTING_OBJ_TXT_TO_VAL, to.getObjectId(), text));
                 webElement.sendKeys(text);
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TXT_IS_SET_ON_OBJ, text, to.getObjectId()));
             } finally {
