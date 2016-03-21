@@ -3,13 +3,15 @@ package com.kms.katalon.execution.entity;
 import org.apache.commons.lang.StringUtils;
 
 public class ReportLocationSetting {
+    public static final String DEFAULT_REPORT_FILE_NAME = "report";
+    public static final boolean DEFAULT_CLEAN_REPORT_FOLDER_FLAG = false;
     private String reportFolderPath;
     private String reportFileName;
     private boolean cleanReportFolderFlag;
     private boolean reportFileNameFlag;
 
     public ReportLocationSetting() {
-        cleanReportFolderFlag = false;
+        cleanReportFolderFlag = DEFAULT_CLEAN_REPORT_FOLDER_FLAG;
         reportFileNameFlag = false;
     }
     
@@ -23,7 +25,7 @@ public class ReportLocationSetting {
 
     public String getReportFileName() {
         if (reportFileName == null) {
-            reportFileName = "report";
+            reportFileName = DEFAULT_REPORT_FILE_NAME;
         }
         return reportFileName;
     }

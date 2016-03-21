@@ -23,4 +23,5 @@ Require-Bundle: org.eclipse.swt,
  com.kms.katalon.execution,
  com.kms.katalon.preferences,
  org.eclipse.equinox.preferences,
- org.eclipse.jface
+ org.eclipse.jface,
+ org.apache.commons.lang

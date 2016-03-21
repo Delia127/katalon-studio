@@ -1,18 +1,21 @@
 package com.kms.katalon.execution.launcher.manager;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
+import joptsimple.ArgumentAcceptingOptionSpec;
+import joptsimple.OptionException;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
@@ -24,12 +27,11 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.constants.StringConstants;
-import com.kms.katalon.execution.entity.ExecutionEntity;
-import com.kms.katalon.execution.entity.ReportLocationSetting;
+import com.kms.katalon.execution.entity.ConsoleOption;
 import com.kms.katalon.execution.entity.DefaultRerunSetting;
+import com.kms.katalon.execution.entity.ReportLocationSetting;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
-import com.kms.katalon.execution.exception.KatalonArgumentNotValidException;
-import com.kms.katalon.execution.integration.IntegrationCommand;
+import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.integration.ReportIntegrationFactory;
 import com.kms.katalon.execution.launcher.ConsoleLauncher;
 import com.kms.katalon.execution.launcher.ILauncher;
@@ -37,266 +39,232 @@ import com.kms.katalon.execution.launcher.model.LauncherResult;
 import com.kms.katalon.execution.util.ExecutionUtil;
 
 public class ConsoleMain {
+    // Optional but must be process first
+    private final static String CONF_FILE_NAME_OPTION = "confFile";
+
+    // Mandatory
+    private static final String RUN_MODE_OPTION = "runMode";
+    private static final String PROJECT_PK_OPTION = "projectPath";
+    private final static String TESTSUITE_ID_OPTION = "testSuitePath";
+    private final static String BROWSER_TYPE_OPTION = "browserType";
+
+    // Optional
+    private final static String REPORT_FOLDER_OPTION = "reportFolder";
+    private final static String REPORT_FILE_NAME_OPTION = "reportFileName";
+    private final static String CLEAN_REPORT_FOLDER = "cleanReportFolder";
+    private final static String RETRY_OPTION = "retry";
+    private final static String RETRY_FAIL_TEST_CASE_ONLY_OPTION = "retryFailedTestCases";
+    private final static String SHOW_STATUS_DELAY_OPTION = "statusDelay";
+
     private static final String ARGUMENT_SPLITTER = "=";
     private static final String ARGUMENT_PREFIX = "-";
-    private final static String PROJECT_PK_ARGUMENT = "-projectPk=";
-    private final static String START_REPORT_ARGUMENT = "-startSummaryReport";
-    private final static String END_REPORT_ARGUMENT = "-endSummaryReport";
-    private final static String SUMMARY_REPORT_ARGUMENT = "-summaryReport";
-    public final static String BATCH_RUNNING_FILE = "batch_run";
-    private final static String EXECUTE_ARGUMENT = "-execute";
-    private final static String TESTSUITE_ID_ARGUMENT = "-testSuiteID=";
-    private final static String BROWSER_TYPE_ARGUMENT = "-browserType=";
-    private final static String SHOW_STATUS_DELAY_ARGUMENT = "-statusDelay=";
-    private final static String REPORT_FOLDER_ARGUMENT = "-reportFolder=";
-    private final static String REPORT_FILE_NAME_ARGUMENT = "-reportFileName=";
-    private final static String CLEAN_REPORT_FOLDER = "-cleanReportFolder";
-    private final static String CONF_FILE_NAME_ARGUMENT = "-confFile=";
-    private final static String RETRY_ARGUMENT = "-retry=";
-    private final static String RETY_FAIL_TEST_CASE_ONLY_ARGUMENT = "-retryFailedTestCases=";
+    private static final int DEFAULT_SHOW_PROGRESS_DELAY = 15;
+    private static final String DEFAULT_REPORT_FOLDER_NAME = "";
 
-    public static boolean startSummaryReport = false;
-    public static boolean endSummaryReport = false;
-    public static boolean summaryReport = false;
-    private static int showProgressDelay = 15;
     private static int returnCode = 0;
 
-    public void launch(String[] arguments) throws Exception {
+    public static void launch(String[] arguments) {
+        OptionParser parser = new OptionParser(false);
+        parser.allowsUnrecognizedOptions();
 
-        if (arguments == null) {
-            System.out.println("Arguments cannot be null or empty");
-            closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
+        // Optional but must be process first
+        ArgumentAcceptingOptionSpec<String> configFileOptionSpec = acceptStringArgument(parser, CONF_FILE_NAME_OPTION);
+
+        // Mandatory
+        acceptStringArgument(parser, RUN_MODE_OPTION);
+        ArgumentAcceptingOptionSpec<String> projectPkOptionSpec = acceptStringArgument(parser, PROJECT_PK_OPTION);
+        ArgumentAcceptingOptionSpec<String> testSuiteIdOptionSpec = acceptStringArgument(parser, TESTSUITE_ID_OPTION);
+
+        // Optional
+        ArgumentAcceptingOptionSpec<String> browserTypeOptionSpec = acceptStringArgument(parser, BROWSER_TYPE_OPTION);
+        ArgumentAcceptingOptionSpec<Integer> showStatusDelayOptionSpec = acceptIntegerArgument(parser,
+                SHOW_STATUS_DELAY_OPTION).defaultsTo(DEFAULT_SHOW_PROGRESS_DELAY);
+        ArgumentAcceptingOptionSpec<String> reportFolderOptionSpec = acceptStringArgument(parser, REPORT_FOLDER_OPTION)
+                .defaultsTo(DEFAULT_REPORT_FOLDER_NAME);
+        ArgumentAcceptingOptionSpec<Boolean> cleanReportFolderOptionSpec = acceptBooleanArgument(parser,
+                CLEAN_REPORT_FOLDER).defaultsTo(ReportLocationSetting.DEFAULT_CLEAN_REPORT_FOLDER_FLAG);
+        ArgumentAcceptingOptionSpec<String> reportFileNameOptionSpec = acceptStringArgument(parser,
+                REPORT_FILE_NAME_OPTION).defaultsTo(ReportLocationSetting.DEFAULT_REPORT_FILE_NAME);
+        ArgumentAcceptingOptionSpec<Integer> retryOptionSpec = acceptIntegerArgument(parser, RETRY_OPTION);
+        ArgumentAcceptingOptionSpec<Boolean> retryFailedTestCaseOptionSpec = acceptBooleanArgument(parser,
+                RETRY_FAIL_TEST_CASE_ONLY_OPTION);
+
+        // Additional arguments for run configurations
+        acceptConsoleOptionList(parser, RunConfigurationCollector.getInstance().getAllAddionalRequiredArguments());
+
+        // Additional arguments for integration
+        acceptConsoleOptionList(parser, ReportIntegrationFactory.getInstance().getIntegrationCommands());
+
+        OptionSet options = parseOptions(arguments, parser);
+        if (options == null) {
+            return;
+        }
+        options = processConfigFileParam(parser, configFileOptionSpec, options);
+
+        if (!preCheckForRequiredArgument(options, projectPkOptionSpec,
+                MessageFormat.format(StringConstants.MNG_PRT_MISSING_REQUIRED_ARG, PROJECT_PK_OPTION))) {
+            return;
+        }
+        if (!preCheckForRequiredArgument(options, testSuiteIdOptionSpec,
+                MessageFormat.format(StringConstants.MNG_PRT_MISSING_REQUIRED_ARG, TESTSUITE_ID_OPTION))) {
+            return;
+        }
+        if (!preCheckForRequiredArgument(options, browserTypeOptionSpec,
+                MessageFormat.format(StringConstants.MNG_PRT_MISSING_REQUIRED_ARG, BROWSER_TYPE_OPTION))) {
+            return;
         }
 
-        // Process XML file which contains parameters (if user provide that file for simplifying the command line)
-        for (String arg : arguments) {
-            if (arg.startsWith(CONF_FILE_NAME_ARGUMENT)) {
-                String confFileName = arg.substring(CONF_FILE_NAME_ARGUMENT.length());
-                // Parse XML file and get parameters
-                List<String> params = parseXmlConfFile(confFileName);
-                if (params.size() > 0) {
-                    arguments = params.toArray(new String[params.size()]);
-                    break;
-                } else {
-                    System.out.println(StringConstants.MNG_INVALID_CONF_FILE_NAME_ARG);
-                    closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
-                }
-            }
+        ProjectEntity project = getProject(options.valueOf(projectPkOptionSpec));
+        if (project == null) {
+            return;
         }
 
-        List<ExecutionEntity> executionEntities = new ArrayList<ExecutionEntity>();
-        String projectPk = null;
-        int offset = 0;
-        Map<String, String> runInput = new HashMap<String, String>();
-        String testSuiteID = null;
-        String argBrowserType = null;
+        TestSuiteEntity testSuite = getTestSuite(project, testSuiteIdOptionSpec.value(options));
+        if (testSuite == null) {
+            return;
+        }
+
+        // Set the arguments back to run configurations
+        setArgumentToConsoleOptionList(options, RunConfigurationCollector.getInstance()
+                .getAllAddionalRequiredArguments());
+
+        IRunConfiguration runConfig = createRunConfiguration(project, testSuite, browserTypeOptionSpec.value(options),
+                options);
+        if (runConfig == null) {
+            return;
+        }
+
+        DefaultRerunSetting rerunSetting = new DefaultRerunSetting(0, testSuite.getNumberOfRerun(),
+                testSuite.isRerunFailedTestCasesOnly());
+        if (options.has(retryOptionSpec)) {
+            rerunSetting.setRemainingRerunTimes(retryOptionSpec.value(options));
+        }
+        if (options.has(retryFailedTestCaseOptionSpec)) {
+            rerunSetting.setRerunFailedTestCaseOnly(retryFailedTestCaseOptionSpec.value(options));
+        }
+
         ReportLocationSetting reportLocSetting = new ReportLocationSetting();
-        boolean foundExecutionArgument = false;
-        int rerunMaxNumber = -1;
-        Boolean isRerunFailedTestCaseOnly = null;
+        reportLocSetting.setCleanReportFolder(cleanReportFolderOptionSpec.value(options));
+        reportLocSetting.setReportFileName(reportFileNameOptionSpec.value(options));
+        reportLocSetting.setReportFolderPath(reportFolderOptionSpec.value(options));
 
-        List<IntegrationCommand> integrationCmds = ReportIntegrationFactory.getInstance().getIntegrationCommands();
-        Options opts = new Options();
-        for (IntegrationCommand integrationCmd : integrationCmds) {
-            opts.addOption(integrationCmd.getOption());
-        }
+        // Set the arguments back to integration services
+        setArgumentToConsoleOptionList(options, ReportIntegrationFactory.getInstance().getIntegrationCommands());
+
+        startExecutionStatusThread(showStatusDelayOptionSpec.value(options));
 
         try {
-            while (offset < arguments.length) {
-                if (arguments[offset].startsWith(PROJECT_PK_ARGUMENT)) {
-                    projectPk = arguments[offset].substring(PROJECT_PK_ARGUMENT.length());
-
-                    offset++;
-                } else if (arguments[offset].startsWith(START_REPORT_ARGUMENT)) {
-                    startSummaryReport = true;
-                    offset++;
-                } else if (arguments[offset].startsWith(END_REPORT_ARGUMENT)) {
-                    endSummaryReport = true;
-                    offset++;
-                } else if (arguments[offset].startsWith(SUMMARY_REPORT_ARGUMENT)) {
-                    summaryReport = true;
-                    offset++;
-                }
-                /*
-                 * else if (arguments[offset].startsWith(EXECUTE_ARGUMENT)) { foundExecutionArgument = true; if (offset
-                 * + 1 < arguments.length && arguments[offset + 1].startsWith(TESTSUITE_ID_ARGUMENT)) { testSuiteID =
-                 * arguments[offset + 1].substring(TESTSUITE_ID_ARGUMENT.length()); } if (offset + 2 < arguments.length
-                 * && arguments[offset + 2].startsWith(BROWSER_TYPE_ARGUMENT)) { argBrowserType = arguments[offset +
-                 * 2].substring(BROWSER_TYPE_ARGUMENT.length()); } offset += 3; testSuiteReportFolder = null; if
-                 * ((arguments.length > offset + 3) && arguments[offset + 3].startsWith(REPORT_FOLDER_ARGUMENT)) {
-                 * testSuiteReportFolder = arguments[offset + 3].substring(REPORT_FOLDER_ARGUMENT.length()); offset++; }
-                 * }
-                 */
-                else if (arguments[offset].startsWith(EXECUTE_ARGUMENT)) {
-                    foundExecutionArgument = true;
-                    offset++;
-                } else if (arguments[offset].startsWith(TESTSUITE_ID_ARGUMENT)) {
-                    testSuiteID = arguments[offset].substring(TESTSUITE_ID_ARGUMENT.length());
-                    offset++;
-                } else if (arguments[offset].startsWith(BROWSER_TYPE_ARGUMENT)) {
-                    argBrowserType = arguments[offset].substring(BROWSER_TYPE_ARGUMENT.length());
-                    offset++;
-                } else if (arguments[offset].startsWith(REPORT_FOLDER_ARGUMENT)) {
-                    reportLocSetting.setReportFolderPath(arguments[offset].substring(REPORT_FOLDER_ARGUMENT.length()));
-                    offset++;
-                } else if (arguments[offset].startsWith(RETRY_ARGUMENT)) {
-                    String stringValue = arguments[offset].substring(RETRY_ARGUMENT.length());
-                    try {
-                        rerunMaxNumber = Integer.valueOf(stringValue);
-                    } catch (NumberFormatException e) {
-                        System.out.println(MessageFormat.format(StringConstants.MNG_PRT_INVALID_RETRY_ARGUMENT,
-                                stringValue));
-                    }
-                    offset++;
-                } else if (arguments[offset].startsWith(RETY_FAIL_TEST_CASE_ONLY_ARGUMENT)) {
-                    String stringValue = arguments[offset].substring(RETY_FAIL_TEST_CASE_ONLY_ARGUMENT.length());
-                    isRerunFailedTestCaseOnly = Boolean.parseBoolean(stringValue);
-                    offset++;
-                } else if (arguments[offset].startsWith(SHOW_STATUS_DELAY_ARGUMENT)) {
-                    showProgressDelay = Integer.valueOf(arguments[offset]
-                            .substring(SHOW_STATUS_DELAY_ARGUMENT.length()).trim());
-                    if (showProgressDelay < 0) {
-                        System.out.println(StringConstants.MNG_PRT_INVALID_DELAY_TIME_ARG);
-                        closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
-                    }
-                    offset++;
-                } else if (arguments[offset].startsWith(REPORT_FILE_NAME_ARGUMENT)) {
-                    String reportFileName = arguments[offset].substring(REPORT_FILE_NAME_ARGUMENT.length());
-                    if (reportFileName != null && !reportFileName.isEmpty()) {
-                        reportLocSetting.setReportFileName(reportFileName);
-                    } else {
-                        System.out.println(StringConstants.MNG_PRT_INVALID_FILE_NAME_ARG);
-                        closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
-                    }
-                    offset++;
-                } else if (arguments[offset].equals(CLEAN_REPORT_FOLDER)) {
-                    reportLocSetting.setCleanReportFolder(true);
-                    offset++;
-                } else {
-                    int intIndx = processIntegrationArgs(opts, integrationCmds, arguments, offset);
-                    if (intIndx == offset) {
-                        String otherArgument = arguments[offset];
-                        if (otherArgument.startsWith(ARGUMENT_PREFIX)) {
-                            otherArgument = otherArgument.substring(1);
-                        }
-                        String[] argumentValues = otherArgument.split(ARGUMENT_SPLITTER);
-                        if (argumentValues.length == 2) {
-                            runInput.put(argumentValues[0], argumentValues[1]);
-                        }
-                        offset++;
-                    } else {
-                        offset = intIndx;
-                    }
-                }
-            }
-        } catch (KatalonArgumentNotValidException ex) {
-            System.out.println(ex.getMessage());
-            closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
+            launchTestSuite(testSuite, runConfig, rerunSetting, reportLocSetting);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            closeWorkbench(LauncherResult.RETURN_CODE_ERROR);
             return;
         }
-
-        System.out.println(StringConstants.MNG_PRT_LOADING_PROJ);
-        ProjectEntity projectEntity = getProject(projectPk);
-        if (projectEntity == null) {
-            return;
-        }
-
-        System.out.println(StringConstants.MNG_PRT_PROJ_LOADED);
-
-        if (!foundExecutionArgument) {
-            System.out.println(StringConstants.MNG_PRT_MISSING_EXECUTION_ARG);
-            closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
-            return;
-        }
-
-        ExecutionEntity executionEntity = addExecutionEntities(testSuiteID, argBrowserType, projectEntity, runInput);
-        if (executionEntity == null) {
-            return;
-        }
-        executionEntities.add(executionEntity);
-        startExecutionStatusThread();
-        DefaultRerunSetting rerunSetting = null;
-        if (rerunMaxNumber > 0 && isRerunFailedTestCaseOnly != null) {
-            rerunSetting = new DefaultRerunSetting(0, rerunMaxNumber, isRerunFailedTestCaseOnly);
-        }
-
-        launch(executionEntities.get(0), projectEntity, rerunSetting, reportLocSetting);
     }
 
-    private int processIntegrationArgs(Options opts, List<IntegrationCommand> integrationCmds, String[] arguments,
-            int currentOffset) throws KatalonArgumentNotValidException {
-        Option currentOpt = null;
-        List<String> tokens = new ArrayList<String>();
-        while (currentOffset < arguments.length) {
-            if (arguments[currentOffset].startsWith(ARGUMENT_PREFIX)) {
-                if (currentOpt != null) {
-                    break;
-                }
-                String optNameAndValue = arguments[currentOffset].substring(ARGUMENT_PREFIX.length(),
-                        arguments[currentOffset].length());
-
-                if (opts.hasOption(optNameAndValue)) {
-                    currentOpt = opts.getOption(optNameAndValue);
-                } else {
-                    if (optNameAndValue.indexOf(ARGUMENT_SPLITTER) != -1
-                            && opts.hasOption(optNameAndValue.substring(0, optNameAndValue.indexOf(ARGUMENT_SPLITTER)))) {
-                        currentOpt = opts.getOption(optNameAndValue.substring(0,
-                                optNameAndValue.indexOf(ARGUMENT_SPLITTER)));
-                        tokens.add(optNameAndValue.substring(optNameAndValue.indexOf(ARGUMENT_SPLITTER),
-                                optNameAndValue.length()));
-                    } else {
-                        return currentOffset;
-                    }
-                }
-                currentOffset++;
-            } else {
-                if (currentOpt != null) {
-                    if (tokens.size() < currentOpt.getArgs()) {
-                        tokens.add(arguments[currentOffset]);
-                        currentOffset++;
-                    }
-                } else {
-                    return currentOffset;
+    private static void setArgumentToConsoleOptionList(OptionSet options, List<ConsoleOption<?>> consoleOptionList) {
+        for (ConsoleOption<?> consoleOption : consoleOptionList) {
+            if (options.has(consoleOption.getOption())) {
+                consoleOption.setEnable();
+                if (consoleOption.hasArgument()) {
+                    consoleOption.setArgumentValue(String.valueOf(options.valueOf(consoleOption.getOption())));
                 }
             }
         }
-
-        if (currentOpt != null) {
-            for (IntegrationCommand integrationCmd : integrationCmds) {
-                if (currentOpt.equals(integrationCmd.getOption())) {
-                    integrationCmd.setValues(tokens.toArray(new String[tokens.size()]));
-                }
-            }
-        }
-        return currentOffset;
     }
 
-    private void startExecutionStatusThread() {
+    private static void acceptConsoleOptionList(OptionParser parser, List<ConsoleOption<?>> consoleOptionList) {
+        for (ConsoleOption<?> consoleOption : consoleOptionList) {
+            acceptArgument(parser, consoleOption.getOption(), consoleOption.getArgumentType());
+        }
+    }
+
+    private static ArgumentAcceptingOptionSpec<String> acceptStringArgument(OptionParser parser, String optionName) {
+        return parser.accepts(optionName).withRequiredArg().ofType(String.class);
+    }
+
+    private static ArgumentAcceptingOptionSpec<Integer> acceptIntegerArgument(OptionParser parser, String optionName) {
+        return parser.accepts(optionName).withRequiredArg().ofType(Integer.class);
+    }
+
+    private static ArgumentAcceptingOptionSpec<Boolean> acceptBooleanArgument(OptionParser parser, String optionName) {
+        return parser.accepts(optionName).withRequiredArg().ofType(Boolean.class);
+    }
+
+    private static ArgumentAcceptingOptionSpec<?> acceptArgument(OptionParser parser, String optionName,
+            Class<?> argumentType) {
+        return parser.accepts(optionName).withRequiredArg().ofType(argumentType);
+    }
+
+    private static OptionSet processConfigFileParam(OptionParser parser,
+            ArgumentAcceptingOptionSpec<String> configFileOptionSpec, OptionSet options) {
+        if (!options.has(configFileOptionSpec)) {
+            return options;
+        }
+        List<String> params = null;
+        try {
+            params = parseXmlConfFile(configFileOptionSpec.value(options));
+        } catch (DocumentException e) {
+            System.out.println(e.getMessage());
+            closeWorkbench(LauncherResult.RETURN_CODE_ERROR);
+            return null;
+        }
+        if (params == null || params.size() <= 0) {
+            System.out.println(StringConstants.MNG_INVALID_CONF_FILE_NAME_ARG);
+            closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
+            return null;
+        }
+
+        // parse again for confFile
+        options = parseOptions(params.toArray(new String[params.size()]), parser);
+        return options;
+    }
+
+    private static boolean preCheckForRequiredArgument(OptionSet options,
+            ArgumentAcceptingOptionSpec<?> argumentOptionSpec, String errorMessage) {
+        if (options == null || argumentOptionSpec == null) {
+            return false;
+        }
+        if (!options.has(argumentOptionSpec)) {
+            System.out.println(errorMessage);
+            closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
+            return false;
+        }
+        return true;
+    }
+
+    private static OptionSet parseOptions(String[] arguments, OptionParser parser) {
+        try {
+            return parser.parse(arguments);
+        } catch (OptionException optionException) {
+            System.out.println(optionException.getMessage());
+            closeWorkbench(LauncherResult.RETURN_CODE_ERROR);
+        }
+        return null;
+    }
+
+    private static void startExecutionStatusThread(final int showProgressDelay) {
+        final int progressDelayTimeInMiliseconds = ((showProgressDelay < 0) ? DEFAULT_SHOW_PROGRESS_DELAY
+                : showProgressDelay) * 1000;
         Thread launcherStatusThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    do {
-                        printStatus();
-                        Thread.sleep(showProgressDelay * 1000);
-                    } while (LauncherManager.getInstance().isAnyLauncherRunning());
-
+                do {
                     printStatus();
-
-                    // Exit code is 0 if the executed test suite is passed, 1 if
-                    // the executed test suite failed.
-                    List<ILauncher> consoleLaunchers = LauncherManager.getInstance().getSortedLaunchers();
-                    int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
-                    ConsoleMain.closeWorkbench(exitCode);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return;
-                }
+                    try {
+                        Thread.sleep(progressDelayTimeInMiliseconds);
+                    } catch (InterruptedException e) {
+                        // Thread interrupted, do nothing
+                    }
+                } while (LauncherManager.getInstance().isAnyLauncherRunning());
+                printStatus();
+                List<ILauncher> consoleLaunchers = LauncherManager.getInstance().getSortedLaunchers();
+                int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
+                ConsoleMain.closeWorkbench(exitCode);
 
             }
 
-            private void printStatus() throws CoreException, Exception {
+            private void printStatus() {
                 int consoleWidth = 80;
                 System.out.println();
                 for (int i = 0; i < consoleWidth; i++) {
@@ -305,15 +273,11 @@ public class ConsoleMain {
                 System.out.println();
 
                 for (ILauncher launcher : LauncherManager.getInstance().getSortedLaunchers()) {
-                    StringBuilder builder = new StringBuilder();
-                    builder.append(launcher.getName());
+                    StringBuilder builder = new StringBuilder(launcher.getName());
                     String launcherStatus = launcher.getResult().getExecutedTestCases() + "/"
                             + launcher.getResult().getTotalTestCases();
-                    int infoLength = builder.toString().length() + launcherStatus.length();
-                    for (int index = 80; index > infoLength % 80; index--) {
-                        builder.append(".");
-                    }
                     builder.append(launcherStatus);
+                    builder.insert(launcher.getName().length(), StringUtils.repeat(".", consoleWidth - builder.length() % consoleWidth));
                     System.out.println(wrap(builder.toString(), consoleWidth));
                 }
 
@@ -326,8 +290,17 @@ public class ConsoleMain {
         launcherStatusThread.start();
     }
 
-    public static void closeWorkbench(final int exitCode) throws InterruptedException, CoreException {
-        Thread.sleep(5000);
+    // For default, return error exit code
+    public static void closeWorkbench() {
+        closeWorkbench(LauncherResult.RETURN_CODE_ERROR);
+    }
+
+    public static void closeWorkbench(final int exitCode) {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            // Thread interrupted, do nothing
+        }
         LauncherManager.getInstance().removeAllTerminated();
 
         returnCode = exitCode;
@@ -336,11 +309,12 @@ public class ConsoleMain {
         final Display display = PlatformUI.getWorkbench().getDisplay();
         display.syncExec(new Runnable() {
             public void run() {
-                if (!display.isDisposed()) {
-                    System.out.println(StringConstants.MNG_PRT_CLOSING_WORKBENCH);
-                    workBench.close();
-                    System.out.println(StringConstants.MNG_PRT_WORKBENCH_CLOSED);
+                if (display.isDisposed()) {
+                    return;
                 }
+                System.out.println(StringConstants.MNG_PRT_CLOSING_WORKBENCH);
+                workBench.close();
+                System.out.println(StringConstants.MNG_PRT_WORKBENCH_CLOSED);
             }
         });
     }
@@ -349,30 +323,14 @@ public class ConsoleMain {
         return returnCode;
     }
 
-    /**
-     * Only accept to execute one test suite in a test run.
-     * 
-     * @author: Tuan Nguyen Manh.
-     * @param executionEntities
-     * @param project
-     * @throws Exception
-     */
-    public static void launch(ExecutionEntity executionEntity, ProjectEntity project, DefaultRerunSetting rerunSetting,
-            ReportLocationSetting reportLocation) throws Exception {
-        TestSuiteEntity testSuite = executionEntity.getTestSuite();
-        for (IRunConfiguration runConfig : executionEntity.getRunConfigurations()) {
-            launchTestSuite(testSuite, runConfig, rerunSetting, reportLocation);
-        }
-    }
-
     public static void launchTestSuite(TestSuiteEntity testSuite, IRunConfiguration runConfig,
             DefaultRerunSetting rerunSetting, ReportLocationSetting reportLocation) throws Exception,
             InterruptedException {
         TestSuiteExecutedEntity testSuiteExecutedEntity = ExecutionUtil.loadTestDataForTestSuite(testSuite,
                 testSuite.getProject());
         testSuiteExecutedEntity.setReportLocation(reportLocation);
-        
-        //if user didn't config rerun, use default rerun settings of test suite
+
+        // if user didn't config rerun, use default rerun settings of test suite
         if (rerunSetting != null) {
             testSuiteExecutedEntity.setRerunSetting(rerunSetting);
         }
@@ -384,15 +342,14 @@ public class ConsoleMain {
         Thread.sleep(1000);
     }
 
-    private ProjectEntity getProject(String projectPk) throws Exception {
-        if (projectPk == null) {
-            System.out.println(MessageFormat.format(StringConstants.MNG_PRT_MISSING_PROJ_ARG, PROJECT_PK_ARGUMENT));
-            closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
-            return null;
+    private static ProjectEntity getProject(String projectPk) {
+        ProjectEntity projectEntity = null;
+        try {
+            projectEntity = ProjectController.getInstance().openProject(projectPk);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            closeWorkbench(LauncherResult.RETURN_CODE_ERROR);
         }
-
-        ProjectEntity projectEntity = ProjectController.getInstance().openProject(projectPk);
-
         if (projectEntity == null) {
             System.out.println(MessageFormat.format(StringConstants.MNG_PRT_INVALID_ARG_CANNOT_FIND_PROJ_X, projectPk));
             closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
@@ -400,50 +357,44 @@ public class ConsoleMain {
         return projectEntity;
     }
 
-    private ExecutionEntity addExecutionEntities(String testSuiteID, String argBrowserType,
-            ProjectEntity projectEntity, Map<String, String> runInput) throws InterruptedException, CoreException {
+    private static TestSuiteEntity getTestSuite(ProjectEntity projectEntity, String testSuiteID) {
+        TestSuiteEntity testSuite = null;
         try {
-            if (testSuiteID == null) {
-                System.out.println(StringConstants.MNG_PRT_MISSING_TESTSUITE_ARG);
-                closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
-                return null;
-            }
-            if (argBrowserType == null) {
-                System.out.println(StringConstants.MNG_PRT_MISSING_BROWSERTYPE_ARG);
-                closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
-                return null;
-            }
-            TestSuiteEntity testSuite = TestSuiteController.getInstance().getTestSuiteByDisplayId(testSuiteID,
-                    projectEntity);
-
-            if (testSuite == null) {
-                System.out.println(MessageFormat.format(StringConstants.MNG_PRT_TEST_SUITE_X_NOT_FOUND, testSuiteID));
-                closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
-                return null;
-            }
-
-            ExecutionEntity executionEntity = new ExecutionEntity();
-            executionEntity.setTestSuite(testSuite);
-            for (String sBrowserType : argBrowserType.split(";")) {
-                IRunConfiguration runConfig = RunConfigurationCollector.getInstance().getRunConfiguration(sBrowserType,
-                        testSuite.getProject().getFolderLocation(), runInput);
-                if (runConfig != null) {
-                    executionEntity.getRunConfigurations().add(runConfig);
-                } else {
-                    System.out.println(MessageFormat.format(StringConstants.MNG_PRT_INVALID_BROWSER_X, sBrowserType));
-                    closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
-                    return null;
-                }
-            }
-            return executionEntity;
+            testSuite = TestSuiteController.getInstance().getTestSuiteByDisplayId(testSuiteID, projectEntity);
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            closeWorkbench(LauncherResult.RETURN_CODE_ERROR);
+            return null;
+        }
+        if (testSuite == null) {
+            System.out.println(MessageFormat.format(StringConstants.MNG_PRT_TEST_SUITE_X_NOT_FOUND, testSuiteID));
             closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
             return null;
         }
+        return testSuite;
     }
 
-    private String wrap(String longString, int maxWidth) {
+    private static IRunConfiguration createRunConfiguration(ProjectEntity projectEntity, TestSuiteEntity testSuite,
+            String browserType, OptionSet options) {
+        IRunConfiguration runConfig = null;
+        try {
+            runConfig = RunConfigurationCollector.getInstance().getRunConfiguration(browserType,
+                    testSuite.getProject().getFolderLocation());
+        } catch (IOException | ExecutionException | InterruptedException e) {
+            System.out.println(e.getMessage());
+            closeWorkbench(LauncherResult.RETURN_CODE_ERROR);
+            return null;
+        }
+
+        if (runConfig == null) {
+            System.out.println(MessageFormat.format(StringConstants.MNG_PRT_INVALID_BROWSER_X, browserType));
+            closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
+            return null;
+        }
+        return runConfig;
+    }
+
+    private static String wrap(String longString, int maxWidth) {
         List<String> childrenString = new ArrayList<String>();
         int multiplier = 1;
         while (longString.length() > maxWidth * multiplier) {
@@ -459,92 +410,55 @@ public class ConsoleMain {
         return builder.toString();
     }
 
-    /*
-     * private void sendReport(List<String> csvReports) throws Exception { List<Object[]> newDatas = new
-     * ArrayList<Object[]>(); // PASSED, FAILED, ERROR, NOT_RUN List<Object[]> suitesSummaryForEmail = new
-     * ArrayList<Object[]>(); for (int suiteIndex = 0; suiteIndex < csvReports.size(); suiteIndex++) { String line =
-     * csvReports.get(suiteIndex); File csvReportFile = new File(line); if (!csvReportFile.isFile()) { continue; } //
-     * Collect result and send mail here CSVReader csvReader = new CSVReader(line, CSVSeperator.COMMA, true);
-     * Deque<String[]> datas = new ArrayDeque<String[]>(); datas.addAll(csvReader.getData()); String[] suiteRow =
-     * datas.pollFirst(); String suiteName = (suiteIndex + 1) + "." + suiteRow[0]; String browser = suiteRow[1];
-     * 
-     * String hostName = "Unknown"; try { InetAddress addr; addr = InetAddress.getLocalHost(); hostName =
-     * addr.getCanonicalHostName(); } catch (UnknownHostException ex) { }
-     * 
-     * String os = System.getProperty("os.name") + " " + System.getProperty("sun.arch.data.model") + "bit";
-     * 
-     * Object[] arrSuitesSummaryForEmail = new Object[] { suiteRow[0], 0, 0, 0, 0, hostName, os, browser };
-     * suitesSummaryForEmail.add(arrSuitesSummaryForEmail);
-     * 
-     * int testIndex = 0; while (datas.size() > 0) { String[] row = datas.pollFirst(); // Check empty line boolean
-     * isEmptyLine = true; for (String col : row) { if (col != null && !col.trim().equals("")) { isEmptyLine = false;
-     * break; } } if (isEmptyLine && !datas.isEmpty()) { testIndex++; String[] testRow = datas.pollFirst(); String
-     * testName = testIndex + "." + testRow[0]; newDatas.add(ArrayUtils.addAll(new String[] { suiteName, testName,
-     * browser }, Arrays.copyOfRange(testRow, 2, testRow.length)));
-     * 
-     * String testStatus = testRow[5]; if (TestStatusValue.PASSED.toString().equals(testStatus)) {
-     * arrSuitesSummaryForEmail[1] = (Integer) arrSuitesSummaryForEmail[1] + 1; } else if
-     * (TestStatusValue.FAILED.toString().equals(testStatus)) { arrSuitesSummaryForEmail[2] = (Integer)
-     * arrSuitesSummaryForEmail[2] + 1; } else if (TestStatusValue.ERROR.toString().equals(testStatus)) {
-     * arrSuitesSummaryForEmail[3] = (Integer) arrSuitesSummaryForEmail[3] + 1; } else { arrSuitesSummaryForEmail[4] =
-     * (Integer) arrSuitesSummaryForEmail[4] + 1; } } } }
-     * 
-     * File csvSummaryFile = new File(System.getProperty("java.io.tmpdir") + "Summary.csv"); if
-     * (csvSummaryFile.exists()) { csvSummaryFile.delete(); } CsvWriter.writeArraysToCsv(newDatas, csvSummaryFile);
-     * 
-     * AbstractLauncher.sendSummaryEmail(csvSummaryFile, suitesSummaryForEmail);
-     * 
-     * }
-     */
-
-    private List<String> parseXmlConfFile(String filePath) throws Exception {
-        List<String> params = new ArrayList<String>();
+    private static List<String> parseXmlConfFile(String filePath) throws DocumentException {
         File confFile = new File(filePath);
         if (filePath == null || filePath.isEmpty() || !confFile.isFile()) {
             System.out.println(StringConstants.MNG_INVALID_CONF_FILE_NAME_ARG);
             closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
-        } else {
-            SAXReader reader = new SAXReader();
-            Document document = reader.read(confFile);
-            // Root element should be "parameters" with children nodes "parameter"
-            Element rootElement = document.getRootElement();
-            for (Object objElement : rootElement.elements("parameter")) {
-                Element pElement = (Element) objElement;
-                Element pElementName = pElement.element("name");
-                Element pElementValue = pElement.element("value");
-                if (pElementName == null) {
-                    System.out.println(StringConstants.MNG_INVALID_CONF_FILE_NAME_ARG);
-                    closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
-                } else {
-                    if (pElementValue == null || pElementValue.getText().equalsIgnoreCase("true")) {
-                        params.add(ARGUMENT_PREFIX + pElementName.getText());
-                        @SuppressWarnings("unchecked")
-                        List<Object> subParams = pElement.elements("sub-parameter");
-                        if (subParams.size() > 0) {
-                            for (Object subParam : subParams) {
-                                Element subParamName = ((Element) subParam).element("name");
-                                Element subParamValue = ((Element) subParam).element("value");
-                                if (subParamName == null) {
-                                    System.out.println(StringConstants.MNG_INVALID_CONF_FILE_NAME_ARG);
-                                    closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
-                                } else {
-                                    if (subParamValue == null || subParamValue.getText().equalsIgnoreCase("true")) {
-                                        params.add(subParamName.getText());
-                                    } else {
-                                        params.add(subParamName.getText() + ARGUMENT_SPLITTER + subParamValue.getText());
-                                    }
-                                }
-                            }
-                        }
-                    } else if (pElementValue.getText().equalsIgnoreCase("false")) {
-                        // Ignore this parameter
-                        continue;
-                    } else {
-                        params.add(ARGUMENT_PREFIX + pElementName.getText() + ARGUMENT_SPLITTER
-                                + pElementValue.getText());
-                    }
-                }
+            return null;
+        }
+        List<String> params = new ArrayList<String>();
+        SAXReader reader = new SAXReader();
+        Document document = reader.read(confFile);
+        // Root element should be "parameters" with children nodes "parameter"
+        Element rootElement = document.getRootElement();
+        for (Object objElement : rootElement.elements("parameter")) {
+            Element pElement = (Element) objElement;
+            Element pElementName = pElement.element("name");
+            Element pElementValue = pElement.element("value");
+            if (pElementName == null) {
+                System.out.println(StringConstants.MNG_INVALID_CONF_FILE_NAME_ARG);
+                closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
+                return null;
             }
+            if (pElementValue == null || pElementValue.getText().equalsIgnoreCase("true")) {
+                params.add(ARGUMENT_PREFIX + pElementName.getText());
+                @SuppressWarnings("unchecked")
+                List<Object> subParams = pElement.elements("sub-parameter");
+                if (subParams.isEmpty()) {
+                    continue;
+                }
+                for (Object subParam : subParams) {
+                    Element subParamName = ((Element) subParam).element("name");
+                    Element subParamValue = ((Element) subParam).element("value");
+                    if (subParamName == null) {
+                        System.out.println(StringConstants.MNG_INVALID_CONF_FILE_NAME_ARG);
+                        closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
+                        return null;
+                    }
+                    String paramName = subParamName.getText();
+                    if (subParamValue != null && !subParamValue.getText().equalsIgnoreCase("true")) {
+                        paramName += ARGUMENT_SPLITTER + subParamValue.getText();
+                    }
+                    params.add(paramName);
+                }
+                continue;
+            }
+            if (pElementValue.getText().equalsIgnoreCase("false")) {
+                // Ignore this parameter
+                continue;
+            }
+            params.add(ARGUMENT_PREFIX + pElementName.getText() + ARGUMENT_SPLITTER + pElementValue.getText());
         }
         return params;
     }
