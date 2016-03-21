@@ -54,6 +54,7 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String PA_TIP_PASSED = PASSED;
 	public static final String PA_TIP_FAILED = FAILED;
 	public static final String PA_TIP_ERROR = ERROR;
+	public static final String PA_TIP_WARNING = WARN;
 	public static final String PA_COL_LEVEL = LEVEL;
 	public static final String PA_COL_TIME = TIME;
 	public static final String PA_COL_MESSAGE = MESSAGE;

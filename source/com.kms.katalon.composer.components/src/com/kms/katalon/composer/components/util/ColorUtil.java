@@ -52,14 +52,21 @@ public class ColorUtil {
         return new Color(Display.getCurrent(), 91, 177, 53);
     }
 
+    // #ce2c2c
     public static Color getFailedLogBackgroundColor() {
-        return new Color(Display.getCurrent(), 205, 97, 97);
+        return new Color(Display.getCurrent(), 206, 44, 44);
     }
 
+    // #ec5c51
+    public static Color getErrorLogBackgroundColor() {
+        return new Color(Display.getCurrent(), 236, 92, 81);
+    }
+
+    // #fecc22
     public static Color getWarningLogBackgroundColor() {
         return new Color(Display.getCurrent(), 254, 204, 34);
     }
-    
+
     public static Color getIncompleteLogColor() {
         return new Color(Display.getCurrent(), 153, 117, 21);
     }
@@ -81,11 +88,11 @@ public class ColorUtil {
     public static Color getTextWhiteColor() {
         return new Color(Display.getCurrent(), 255, 255, 255);
     }
-    
+
     public static Color getTextErrorColor() {
         return Display.getCurrent().getSystemColor(SWT.COLOR_RED);
     }
-    
+
     public static Color getTextSuccessfulColor() {
         return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
     }
@@ -104,8 +111,8 @@ public class ColorUtil {
     public static Color getErrorTableItemForegroundColor() {
         return new Color(Display.getCurrent(), 189, 44, 0);
     }
-    
+
     public static Color getWarningForegroudColor() {
-        return new Color(Display.getCurrent(), 255, 128, 0); 
+        return new Color(Display.getCurrent(), 255, 128, 0);
     }
 }

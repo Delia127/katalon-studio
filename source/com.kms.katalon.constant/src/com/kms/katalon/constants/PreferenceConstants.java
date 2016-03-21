@@ -42,6 +42,8 @@ public interface PreferenceConstants {
 
         public static final String EXECUTION_SHOW_ERROR_LOGS = "log.showErrors";
 
+        public static final String EXECUTION_SHOW_WARNING_LOGS = "log.showWarning";
+
         public static final String EXECUTION_SHOW_LOGS_AS_TREE = "log.treeView";
 
         public static final String EXECUTION_PIN_LOG = "log.pinView";

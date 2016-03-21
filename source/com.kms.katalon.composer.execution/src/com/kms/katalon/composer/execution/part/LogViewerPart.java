@@ -1,6 +1,8 @@
 package com.kms.katalon.composer.execution.part;
 
-import java.io.IOException;
+import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
+import static org.apache.commons.lang.StringUtils.isBlank;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.LogRecord;
@@ -69,7 +71,6 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.execution.constants.ImageConstants;
@@ -77,8 +78,8 @@ import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.dialog.LogPropertyDialog;
 import com.kms.katalon.composer.execution.launcher.IDEConsoleManager;
 import com.kms.katalon.composer.execution.launcher.IDELaucherEvent;
-import com.kms.katalon.composer.execution.launcher.IDELauncherListener;
 import com.kms.katalon.composer.execution.launcher.IDELauncher;
+import com.kms.katalon.composer.execution.launcher.IDELauncherListener;
 import com.kms.katalon.composer.execution.provider.LogRecordTreeViewer;
 import com.kms.katalon.composer.execution.provider.LogRecordTreeViewerContentProvider;
 import com.kms.katalon.composer.execution.provider.LogRecordTreeViewerLabelProvider;
@@ -89,7 +90,6 @@ import com.kms.katalon.composer.execution.tree.ILogParentTreeNode;
 import com.kms.katalon.composer.execution.tree.ILogTreeNode;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.constants.PreferenceConstants.ExecutionPreferenceConstants;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XMLLoggerParser;
@@ -133,7 +133,8 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
 
     private StyledText txtStartTime, txtEndTime, txtEslapedTime, txtMessage;
 
-    private ToolItem btnShowAllLogs, btnShowInfoLogs, btnShowPassedLogs, btnShowFailedLogs, btnShowErrorLogs;
+    private ToolItem btnShowAllLogs, btnShowInfoLogs, btnShowPassedLogs, btnShowFailedLogs, btnShowErrorLogs,
+            btnShowWarningLogs;
 
     private List<XmlLogRecord> currentRecords;
 
@@ -149,21 +150,19 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
         for (MToolBarElement toolbarElement : mpart.getToolbar().getChildren()) {
             MDirectToolItem toolItem = (MDirectToolItem) toolbarElement;
             switch (toolItem.getElementId()) {
-            case IdConstants.LOG_VIEWER_TOOL_ITEM_TREE_ID:
-                toolItem.setSelected(preferenceStore
-                        .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE));
-                break;
-            case IdConstants.LOG_VIEWER_TOOL_ITEM_PIN_ID:
-                toolItem.setSelected(preferenceStore
-                        .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_PIN_LOG));
-                break;
+                case IdConstants.LOG_VIEWER_TOOL_ITEM_TREE_ID:
+                    toolItem.setSelected(preferenceStore
+                            .getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE));
+                    break;
+                case IdConstants.LOG_VIEWER_TOOL_ITEM_PIN_ID:
+                    toolItem.setSelected(preferenceStore.getBoolean(ExecutionPreferenceConstants.EXECUTION_PIN_LOG));
+                    break;
             }
         }
     }
 
     private void updateMenuStatus(MPart mpart) {
-        boolean isShowLogAsTree = preferenceStore
-                .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
+        boolean isShowLogAsTree = preferenceStore.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
         for (MMenu menu : mpart.getMenus()) {
             if (!IdConstants.LOG_VIEWER_MENU_TREEVIEW.equals(menu.getElementId())) {
                 continue;
@@ -187,8 +186,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
 
     @PostConstruct
     public void init(Composite parent, MPart mpart) {
-        preferenceStore = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
+        preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, ExecutionPreferenceConstants.QUALIFIER);
         fMPart = mpart;
         logNavigator = new LogExceptionNavigator();
         launcherWatched = null;
@@ -208,11 +206,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
             parent.getChildren()[1].dispose();
         }
 
-        IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
-
-        boolean showLogsAsTree = store
-                .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
+        boolean showLogsAsTree = preferenceStore.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
 
         if (showLogsAsTree) {
             createTreeCompositeContainer(parent);
@@ -305,7 +299,6 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
 
         treeViewer = new LogRecordTreeViewer(compositeTreeDetails, SWT.BORDER, eventBroker);
         treeViewer.setContentProvider(new LogRecordTreeViewerContentProvider());
-        treeViewer.getTree().setToolTipText("");
         ColumnViewerToolTipSupport.enableFor(treeViewer, ToolTip.NO_RECREATE);
 
         TreeViewerColumn treeViewerColumn = new TreeViewerColumn(treeViewer, SWT.NONE);
@@ -342,7 +335,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                 try {
                     showTreeLogProperties();
                 } catch (Exception e) {
-                    LoggerSingleton.logError(e);
+                    logError(e);
                 }
             }
         });
@@ -464,7 +457,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                 txtMessage.setText(result.getMessage());
             }
         } else {
-            txtMessage.setText("");
+            txtMessage.setText(StringConstants.EMPTY);
         }
     }
 
@@ -500,7 +493,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                 if (logParentTreeNode.getRecordEnd() != null) {
                     txtEndTime.setText(logParentTreeNode.getRecordEnd().toString());
                 } else {
-                    txtEndTime.setText("");
+                    txtEndTime.setText(StringConstants.EMPTY);
                 }
 
                 txtEslapedTime.setText(logParentTreeNode.getFullElapsedTime());
@@ -510,9 +503,9 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                 showFailureTreeLogMessage(logParentTreeNode);
 
             } else {
-                txtStartTime.setText("");
-                txtEndTime.setText("");
-                txtEslapedTime.setText("");
+                txtStartTime.setText(StringConstants.EMPTY);
+                txtEndTime.setText(StringConstants.EMPTY);
+                txtEslapedTime.setText(StringConstants.EMPTY);
                 txtMessage.setText(logTreeNode.getMessage());
             }
         }
@@ -630,109 +623,78 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
         toolBar.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true, 1, 1));
 
         btnShowAllLogs = new ToolItem(toolBar, SWT.CHECK);
+        btnShowAllLogs.setData(StringConstants.ID, ExecutionPreferenceConstants.EXECUTION_SHOW_ALL_LOGS);
         btnShowAllLogs.setText(StringConstants.PA_TIP_ALL);
         btnShowAllLogs.setToolTipText(StringConstants.PA_TIP_ALL);
         btnShowAllLogs.setImage(ImageConstants.IMG_16_LOGVIEW_ALL);
 
         btnShowInfoLogs = new ToolItem(toolBar, SWT.CHECK);
+        btnShowInfoLogs.setData(StringConstants.ID, ExecutionPreferenceConstants.EXECUTION_SHOW_INFO_LOGS);
         btnShowInfoLogs.setText(StringConstants.PA_TIP_INFO);
         btnShowInfoLogs.setToolTipText(StringConstants.PA_TIP_INFO);
         btnShowInfoLogs.setImage(ImageConstants.IMG_16_LOGVIEW_INFO);
 
         btnShowPassedLogs = new ToolItem(toolBar, SWT.CHECK);
+        btnShowPassedLogs.setData(StringConstants.ID, ExecutionPreferenceConstants.EXECUTION_SHOW_PASSED_LOGS);
         btnShowPassedLogs.setText(StringConstants.PA_TIP_PASSED);
         btnShowPassedLogs.setToolTipText(StringConstants.PA_TIP_PASSED);
         btnShowPassedLogs.setImage(ImageConstants.IMG_16_LOGVIEW_PASSED);
 
         btnShowFailedLogs = new ToolItem(toolBar, SWT.CHECK);
+        btnShowFailedLogs.setData(StringConstants.ID, ExecutionPreferenceConstants.EXECUTION_SHOW_FAILED_LOGS);
         btnShowFailedLogs.setText(StringConstants.PA_TIP_FAILED);
         btnShowFailedLogs.setToolTipText(StringConstants.PA_TIP_FAILED);
         btnShowFailedLogs.setImage(ImageConstants.IMG_16_LOGVIEW_FAILED);
 
         btnShowErrorLogs = new ToolItem(toolBar, SWT.CHECK);
+        btnShowErrorLogs.setData(StringConstants.ID, ExecutionPreferenceConstants.EXECUTION_SHOW_ERROR_LOGS);
         btnShowErrorLogs.setText(StringConstants.PA_TIP_ERROR);
         btnShowErrorLogs.setToolTipText(StringConstants.PA_TIP_ERROR);
         btnShowErrorLogs.setImage(ImageConstants.IMG_16_LOGVIEW_ERROR);
 
-        btnShowAllLogs.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                performFilterTableLogs((ToolItem) e.getSource());
-            }
-        });
+        btnShowWarningLogs = new ToolItem(toolBar, SWT.CHECK);
+        btnShowWarningLogs.setData(StringConstants.ID, ExecutionPreferenceConstants.EXECUTION_SHOW_WARNING_LOGS);
+        btnShowWarningLogs.setText(StringConstants.PA_TIP_WARNING);
+        btnShowWarningLogs.setToolTipText(StringConstants.PA_TIP_WARNING);
+        btnShowWarningLogs.setImage(ImageConstants.IMG_16_LOGVIEW_WARNING);
 
-        btnShowInfoLogs.addSelectionListener(new SelectionAdapter() {
+        SelectionAdapter logFilterSelectionAdapter = new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 performFilterTableLogs((ToolItem) e.getSource());
             }
-        });
+        };
 
-        btnShowPassedLogs.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                performFilterTableLogs((ToolItem) e.getSource());
-            }
-        });
-
-        btnShowFailedLogs.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                performFilterTableLogs((ToolItem) e.getSource());
-            }
-        });
-
-        btnShowErrorLogs.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                performFilterTableLogs((ToolItem) e.getSource());
-            }
-        });
+        btnShowAllLogs.addSelectionListener(logFilterSelectionAdapter);
+        btnShowInfoLogs.addSelectionListener(logFilterSelectionAdapter);
+        btnShowPassedLogs.addSelectionListener(logFilterSelectionAdapter);
+        btnShowFailedLogs.addSelectionListener(logFilterSelectionAdapter);
+        btnShowErrorLogs.addSelectionListener(logFilterSelectionAdapter);
+        btnShowWarningLogs.addSelectionListener(logFilterSelectionAdapter);
 
         updateTableButtons();
     }
 
     private void performFilterTableLogs(ToolItem button) {
-        try {
-            ScopedPreferenceStore store = new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                    PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
-            if (button == btnShowAllLogs) {
-                store.setValue(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_ALL_LOGS,
-                        button.getSelection());
-            } else if (button == btnShowInfoLogs) {
-                store.setValue(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_INFO_LOGS,
-                        button.getSelection());
-            } else if (button == btnShowPassedLogs) {
-                store.setValue(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_PASSED_LOGS,
-                        button.getSelection());
-            } else if (button == btnShowFailedLogs) {
-                store.setValue(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_FAILED_LOGS,
-                        button.getSelection());
-            } else if (button == btnShowErrorLogs) {
-                store.setValue(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_ERROR_LOGS,
-                        button.getSelection());
-            }
-
-            store.save();
-            tableViewer.refresh();
-        } catch (IOException e) {
-            LoggerSingleton.logError(e);
+        String prefId = (String) button.getData(StringConstants.ID);
+        if (isBlank(prefId)) {
+            return;
         }
+        preferenceStore.setValue(prefId, button.getSelection());
+        tableViewer.refresh();
     }
 
     private void updateTableButtons() {
-        IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
-        btnShowAllLogs.setSelection(store
-                .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_ALL_LOGS));
-        btnShowInfoLogs.setSelection(store
-                .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_INFO_LOGS));
-        btnShowPassedLogs.setSelection(store
-                .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_PASSED_LOGS));
-        btnShowFailedLogs.setSelection(store
-                .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_FAILED_LOGS));
-        btnShowErrorLogs.setSelection(store
-                .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_ERROR_LOGS));
+        btnShowAllLogs.setSelection(preferenceStore.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_ALL_LOGS));
+        btnShowInfoLogs.setSelection(preferenceStore.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_INFO_LOGS));
+        btnShowPassedLogs.setSelection(preferenceStore
+                .getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_PASSED_LOGS));
+        btnShowFailedLogs.setSelection(preferenceStore
+                .getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_FAILED_LOGS));
+        btnShowErrorLogs.setSelection(preferenceStore
+                .getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_ERROR_LOGS));
+        btnShowWarningLogs.setSelection(preferenceStore
+                .getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_WARNING_LOGS));
     }
 
     private void createTableCompositeDetails(Composite container) {
@@ -747,15 +709,15 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
 
         TableViewerColumn tbViewerColumnLevel = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnColumnLevel = tbViewerColumnLevel.getColumn();
-        tblclmnColumnLevel.setText("Level");
+        tblclmnColumnLevel.setText(StringConstants.PA_COL_LEVEL);
 
         TableViewerColumn tbViewerColumnTime = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnColumnTime = tbViewerColumnTime.getColumn();
-        tblclmnColumnTime.setText("Time");
+        tblclmnColumnTime.setText(StringConstants.TIME);
 
         TableViewerColumn tbViewerColumnMessage = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnColumnMessage = tbViewerColumnMessage.getColumn();
-        tblclmnColumnMessage.setText("Messages");
+        tblclmnColumnMessage.setText(StringConstants.MESSAGE);
 
         TableColumnLayout tableComColumnLayout = new TableColumnLayout();
         compositeTable.setLayout(tableComColumnLayout);
@@ -770,7 +732,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                 if (element != null && element instanceof XmlLogRecord) {
                     return XMLLoggerParser.getRecordDate((LogRecord) element);
                 }
-                return "";
+                return StringConstants.EMPTY;
             }
         });
 
@@ -780,7 +742,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                 if (element != null && element instanceof XmlLogRecord) {
                     return ((XmlLogRecord) element).getLevel().getName();
                 }
-                return "";
+                return StringConstants.EMPTY;
             }
         });
 
@@ -790,7 +752,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                 if (element != null && element instanceof XmlLogRecord) {
                     return ((XmlLogRecord) element).getMessage();
                 }
-                return "";
+                return StringConstants.EMPTY;
             }
         });
         tableViewer.addFilter(new LogTableViewerFilter());
@@ -873,7 +835,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                     try {
                         Thread.sleep(10);
                     } catch (InterruptedException e) {
-                        LoggerSingleton.logError(e);
+                        logError(e);
                     }
                 }
                 lblNumTestcases.setText(Integer.toString(progressBar.getSelection() / INCREMENT) + "/"
@@ -883,21 +845,21 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                 if (logLevel == null) {
                     return;
                 }
-                
+
                 switch (logLevel) {
-                case PASSED:
-                    lblNumPasses.setText(Integer.toString(Integer.valueOf(lblNumPasses.getText()) + 1));
-                    break;
-                case FAILED:
-                    lblNumFailures.setText(Integer.toString(Integer.valueOf(lblNumFailures.getText()) + 1));
-                    lblNumFailures.setForeground(ColorUtil.getFailedLogBackgroundColor());
-                    break;
-                case ERROR:
-                    lblNumErrors.setText(Integer.toString(Integer.valueOf(lblNumErrors.getText()) + 1));
-                    lblNumErrors.setForeground(ColorUtil.getFailedLogBackgroundColor());
-                    break;
-                default:
-                    return;
+                    case PASSED:
+                        lblNumPasses.setText(Integer.toString(Integer.valueOf(lblNumPasses.getText()) + 1));
+                        break;
+                    case FAILED:
+                        lblNumFailures.setText(Integer.toString(Integer.valueOf(lblNumFailures.getText()) + 1));
+                        lblNumFailures.setForeground(ColorUtil.getFailedLogBackgroundColor());
+                        break;
+                    case ERROR:
+                        lblNumErrors.setText(Integer.toString(Integer.valueOf(lblNumErrors.getText()) + 1));
+                        lblNumErrors.setForeground(ColorUtil.getErrorLogBackgroundColor());
+                        break;
+                    default:
+                        return;
                 }
                 lblNumTestcases.getParent().getParent().layout();
             }
@@ -935,11 +897,9 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
         isBusy = true;
 
         try {
-            IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                    PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
 
-            boolean showLogsAsTree = store
-                    .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
+            boolean showLogsAsTree = preferenceStore
+                    .getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
 
             if (showLogsAsTree) {
                 treeViewer.addRecords(records);
@@ -1005,55 +965,54 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
         try {
             String topic = event.getTopic();
             switch (topic) {
-            case EventConstants.CONSOLE_LOG_RESET: {
-                UISynchronizeService.syncExec(new Runnable() {
+                case EventConstants.CONSOLE_LOG_RESET: {
+                    UISynchronizeService.syncExec(new Runnable() {
 
-                    @Override
-                    public void run() {
+                        @Override
+                        public void run() {
 
-                        try {
-                            changeObservedLauncher(event);
-                        } catch (Exception e) {
+                            try {
+                                changeObservedLauncher(event);
+                            } catch (Exception e) {}
+                        }
+                    });
+                    break;
+                }
+                case EventConstants.CONSOLE_LOG_ADD_ITEMS: {
+                    if (!stopAdding && launcherWatched != null) {
+                        List<XmlLogRecord> logRecords = launcherWatched.getLogRecords();
+                        if (currentRecords.size() < logRecords.size()) {
+                            addRecords(logRecords.subList(currentRecords.size(), logRecords.size()));
                         }
                     }
-                });
-                break;
-            }
-            case EventConstants.CONSOLE_LOG_ADD_ITEMS: {
-                if (!stopAdding && launcherWatched != null) {
-                    List<XmlLogRecord> logRecords = launcherWatched.getLogRecords();
-                    if (currentRecords.size() < logRecords.size()) {
-                        addRecords(logRecords.subList(currentRecords.size(), logRecords.size()));
+                    break;
+                }
+                case EventConstants.CONSOLE_LOG_UPDATE_PROGRESS_BAR: {
+                    Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+                    if (object != null && object instanceof XmlLogRecord) {
+                        updateProgressBar((XmlLogRecord) object);
                     }
+                    break;
                 }
-                break;
-            }
-            case EventConstants.CONSOLE_LOG_UPDATE_PROGRESS_BAR: {
-                Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-                if (object != null && object instanceof XmlLogRecord) {
-                    updateProgressBar((XmlLogRecord) object);
+                case EventConstants.CONSOLE_LOG_CHANGE_VIEW_TYPE: {
+                    if (stopAdding) {
+                        return;
+                    }
+                    stopAdding = true;
+                    resetProgressBar();
+                    createLogViewerControl(parentComposite);
+                    break;
                 }
-                break;
-            }
-            case EventConstants.CONSOLE_LOG_CHANGE_VIEW_TYPE: {
-                if (stopAdding) {
-                    return;
+                case EventConstants.CONSOLE_LOG_WORD_WRAP: {
+                    setWrapTxtMessage();
+                    break;
                 }
-                stopAdding = true;
-                resetProgressBar();
-                createLogViewerControl(parentComposite);
-                break;
-            }
-            case EventConstants.CONSOLE_LOG_WORD_WRAP: {
-                setWrapTxtMessage();
-                break;
-            }
-            default: {
-                break;
-            }
+                default: {
+                    break;
+                }
             }
         } catch (Exception e) {
-            LoggerSingleton.logError(e);
+            logError(e);
         }
     }
 
@@ -1079,32 +1038,29 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
     public void handleLauncherEvent(IDELaucherEvent event, Object object) {
 
         switch (event) {
-        case UPDATE_RECORD:
-            if (stopAdding || launcherWatched == null) {
-                return;
-            }
-            UISynchronizeService.syncExec(new Runnable() {
+            case UPDATE_RECORD:
+                if (stopAdding || launcherWatched == null) {
+                    return;
+                }
+                UISynchronizeService.syncExec(new Runnable() {
 
-                @Override
-                public void run() {
-                    List<XmlLogRecord> logRecords = launcherWatched.getLogRecords();
-                    if (currentRecords.size() < logRecords.size()) {
-                        try {
-
-                            addRecords(logRecords.subList(currentRecords.size(), logRecords.size()));
-
-                        } catch (InterruptedException e) {
-                            LoggerSingleton.logError(e);
+                    @Override
+                    public void run() {
+                        List<XmlLogRecord> logRecords = launcherWatched.getLogRecords();
+                        if (currentRecords.size() < logRecords.size()) {
+                            try {
+                                addRecords(logRecords.subList(currentRecords.size(), logRecords.size()));
+                            } catch (InterruptedException e) {
+                                logError(e);
+                            }
                         }
                     }
-                }
-            });
-            break;
-        case UPDATE_STATUS:
-            break;
-        default:
-            break;
-
+                });
+                break;
+            case UPDATE_STATUS:
+                break;
+            default:
+                break;
         }
     }
 
