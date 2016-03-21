@@ -15,6 +15,7 @@ import com.kms.katalon.execution.launcher.model.LauncherResult;
 import com.kms.katalon.execution.launcher.model.LauncherStatus;
 import com.kms.katalon.execution.launcher.process.ILaunchProcess;
 import com.kms.katalon.execution.logging.IOutputStream;
+import com.kms.katalon.logging.LogUtil;
 
 public abstract class Launcher implements ILauncher, IWatchdogListener {
     private IRunConfiguration runConfig;
@@ -94,22 +95,22 @@ public abstract class Launcher implements ILauncher, IWatchdogListener {
     protected synchronized void writeLine(String line) {
         try {
             IOutputStream os = process.getOutputStreamHandler();
-            if (process.getOutputStreamHandler() != null) {
+            if (os != null) {
                 os.println(line);
             }
         } catch (IOException e) {
-
+            LogUtil.logError(e);
         }
     }
 
     protected synchronized void writeError(String line) {
         try {
-            IOutputStream os = process.getOutputStreamHandler();
-            if (process.getErrorStreamHandler() != null) {
-                os.println(line);
+            IOutputStream es = process.getErrorStreamHandler();
+            if (es != null) {
+                es.println(line);
             }
         } catch (IOException e) {
-
+            LogUtil.logError(e);
         }
     }
 
@@ -179,7 +180,7 @@ public abstract class Launcher implements ILauncher, IWatchdogListener {
         try {
             LauncherManager.getInstance().stopRunningAndSchedule(this);
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
+            LogUtil.logError(e);
         }
     }
 

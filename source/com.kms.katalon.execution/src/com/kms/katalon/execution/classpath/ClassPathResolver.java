@@ -17,44 +17,37 @@ public class ClassPathResolver {
     private ClassPathResolver() {
         // Disable default constructor
     }
-    
+
     private static List<IBuildPath> getPlatformBuildPaths() throws IOException {
-    	File configurationFolder = new File(FileLocator.resolve(Platform.getConfigurationLocation().getURL()).getFile());
-    	File resourceLib = new File(configurationFolder, "resources/lib");
-    	
-    	if (!resourceLib.exists()) {
-    		return Collections.emptyList();
-    	}
-    	
-    	List<IBuildPath> pfBuildPaths = new ArrayList<IBuildPath>();
-    	for (File jarFile : resourceLib.listFiles()) {
-    		pfBuildPaths.add(new BuildPathEntry(jarFile.getAbsolutePath()));
-    	}
-    	return pfBuildPaths;
-    }
-    
-    private static List<String> getPlatformBuildPathLocs() throws IOException {
-    	List<String> pfBuildPathLocs = new ArrayList<String>();
-    	for (IBuildPath jarFileBuildPath : getPlatformBuildPaths()) {
-    		pfBuildPathLocs.add(jarFileBuildPath.getBuildPathLocation());
-    	}
-    	
-    	return pfBuildPathLocs;
+        File configurationFolder = new File(FileLocator.resolve(Platform.getConfigurationLocation().getURL()).getFile());
+        File resourceLib = new File(configurationFolder, "resources/lib");
+
+        if (!resourceLib.exists()) {
+            return Collections.emptyList();
+        }
+
+        List<IBuildPath> pfBuildPaths = new ArrayList<IBuildPath>();
+        for (File jarFile : resourceLib.listFiles()) {
+            pfBuildPaths.add(new BuildPathEntry(jarFile.getAbsolutePath()));
+        }
+        return pfBuildPaths;
     }
 
-    /**
-     * Compiles the given <code>project</code> into classes using GroovyCompiler.
-     * 
-     * @param project
-     * @return class-path directories of this project
-     * @throws IOException
-     */
+    private static List<String> getPlatformBuildPathLocs() throws IOException {
+        List<String> pfBuildPathLocs = new ArrayList<String>();
+        for (IBuildPath jarFileBuildPath : getPlatformBuildPaths()) {
+            pfBuildPathLocs.add(jarFileBuildPath.getBuildPathLocation());
+        }
+
+        return pfBuildPathLocs;
+    }
+    
     public static String[] getClassPaths(ProjectEntity project) throws IOException {
         ProjectBuildPath prjBuildpath = new ProjectBuildPath(project);
 
         List<String> classPathLocs = prjBuildpath.getBundleBuildPathLoc();
         classPathLocs.addAll(getPlatformBuildPathLocs());
-        
+
         return classPathLocs.toArray(new String[classPathLocs.size()]);
     }
 

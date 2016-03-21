@@ -1,7 +1,6 @@
 package com.kms.katalon.execution.launcher;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 
 import com.kms.katalon.controller.ProjectController;
@@ -12,7 +11,6 @@ import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.process.ConsoleProcess;
 import com.kms.katalon.execution.launcher.process.ILaunchProcess;
 import com.kms.katalon.execution.launcher.process.LaunchProcessor;
-import com.kms.katalon.execution.logging.LaunchOutputStreamHandler;
 
 public class ConsoleLauncher extends ReportableLauncher {
 
@@ -25,30 +23,12 @@ public class ConsoleLauncher extends ReportableLauncher {
         return new ConsoleLauncher(runConfig);
     }
 
-    protected OutputStream getInputStreamHandler() {
-        return System.out;
-    }
-
-    protected OutputStream getErrorStreamHandler() {
-        return System.err;
-    }
-
     @Override
     protected ILaunchProcess launch() throws ExecutionException {
         try {
             Process systemProcess = new LaunchProcessor(
                     ClassPathResolver.getClassPaths(ProjectController.getInstance().getCurrentProject()))
                             .execute(getRunConfig().getExecutionSetting().getScriptFile());
-
-            Thread inputStreamThread = new LaunchOutputStreamHandler(systemProcess.getInputStream(),
-                    getInputStreamHandler());
-
-            Thread errorStreamThread = new LaunchOutputStreamHandler(systemProcess.getErrorStream(),
-                    getErrorStreamHandler());
-
-            inputStreamThread.start();
-
-            errorStreamThread.start();
 
             return new ConsoleProcess(systemProcess);
         } catch (IOException ex) {

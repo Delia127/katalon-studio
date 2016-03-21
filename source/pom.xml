@@ -16,6 +16,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	<modules>
 		<module>com.kms.katalon.target</module>
 		<module>com.kms.katalon.constant</module>		
+		<module>com.kms.katalon.logging</module>
 		<module>com.kms.katalon.entity</module>
 		<module>com.kms.katalon.preferences</module>
 		<module>com.kms.katalon.groovy</module>

@@ -36,6 +36,7 @@ import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.launcher.model.LauncherStatus;
 import com.kms.katalon.execution.launcher.process.ILaunchProcess;
 import com.kms.katalon.groovy.util.GroovyUtil;
+import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class IDELauncher extends ReportableLauncher implements ILaunchListener {
@@ -204,6 +205,11 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener {
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
+    }
+    
+    @Override
+    protected synchronized void writeError(String line) {
+        LogUtil.logErrorMessage(line);
     }
 
     private boolean isExpectedLaunch(ILaunch launch) {

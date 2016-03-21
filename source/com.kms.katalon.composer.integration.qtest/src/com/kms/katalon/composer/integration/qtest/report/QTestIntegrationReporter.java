@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.integration.qtest.report;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
+import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.model.TestCaseRepo;
 import com.kms.katalon.composer.integration.qtest.model.TestSuiteRepo;
 import com.kms.katalon.controller.ProjectController;
@@ -112,7 +114,19 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
             ReportEntity reportEntity = ReportController.getInstance().getReportEntity(suiteLog.getLogFolder());
 
             QTestIntegrationUtil.saveReportEntity(reportEntity, uploadedPreview);
+
+            printlnSuccessfulMessage();
         }
+    }
+
+    private void printlnSuccessfulMessage() {
+        if (isUploadByDefault()) {
+            return;
+        }
+        long desId = destinationIdCommand.getDestinationId();
+        String desType = destinationTypeCommand.getDestinationType();
+        System.out.println(MessageFormat.format(StringConstants.REPORT_MSG_UPLOAD_SUCCESFULLY, Long.toString(desId),
+                desType));
     }
 
     private QTestSuite getSelectedTestSuite(TestSuiteEntity testSuite) throws Exception {
@@ -125,7 +139,7 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
 
         QTestProject qTestProject = QTestIntegrationUtil.getTestSuiteRepo(testSuite,
                 ProjectController.getInstance().getCurrentProject()).getQTestProject();
-        if (destinationIdCommand == null || destinationTypeCommand == null || isUploadByDefault()) {
+        if (isUploadByDefault()) {
             return QTestIntegrationTestSuiteManager.getSelectedQTestSuiteByIntegratedEntity(qTestSuiteCollection);
         } else {
             QTestSuite selectedQTestSuite = null;
@@ -290,7 +304,9 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
     }
 
     private boolean isUploadByDefault() {
-        return destinationIdCommand.getDestinationId() <= 0
+        return destinationIdCommand == null 
+                || destinationTypeCommand == null
+                || destinationIdCommand.getDestinationId() <= 0
                 || StringUtils.isBlank(destinationTypeCommand.getDestinationType());
     }
 

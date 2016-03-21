@@ -46,6 +46,7 @@ import com.kms.katalon.execution.entity.TestDataExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.launcher.ILauncherResult;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
+import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class ExecutionUtil {
@@ -467,7 +468,8 @@ public class ExecutionUtil {
             testSuite = TestSuiteController.getInstance().getTestSuiteByDisplayId(prevExecuted.getSourceId(),
                     ProjectController.getInstance().getCurrentProject());
         } catch (Exception e) {
-            // TODO need to log here
+            LogUtil.logError(e);
+            return null;
         }
 
         DefaultRerunSetting rerunSetting = new DefaultRerunSetting(prevExecuted.getPreviousRerunTimes() + 1,

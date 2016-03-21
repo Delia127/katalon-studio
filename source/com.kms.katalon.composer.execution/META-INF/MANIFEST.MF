@@ -53,7 +53,8 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.core.webui,
  com.kms.katalon.composer.explorer,
  com.kms.katalon.core.mobile,
- com.kms.katalon.execution.webui
+ com.kms.katalon.execution.webui,
+ com.kms.katalon.logging
 Export-Package: com.kms.katalon.composer.execution.components,
  com.kms.katalon.composer.execution.components.contributor,
  com.kms.katalon.composer.execution.constants,

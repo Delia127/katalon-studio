@@ -13,10 +13,10 @@ public class ConsoleProcess implements ILaunchProcess {
     public ConsoleProcess(Process systemProcess) {
         fSystemProcess = systemProcess;
 
-        fOutputStreamHandler = new LaunchOutputStreamHandler(systemProcess.getInputStream(), System.out);
+        fOutputStreamHandler = LaunchOutputStreamHandler.outputHandlerFrom(systemProcess.getInputStream());
         fOutputStreamHandler.start();
 
-        fErrorStreamHandler = new LaunchOutputStreamHandler(systemProcess.getErrorStream(), System.err);
+        fErrorStreamHandler = LaunchOutputStreamHandler.errorHandlerFrom(systemProcess.getErrorStream());
         fErrorStreamHandler.start();
     }
 
