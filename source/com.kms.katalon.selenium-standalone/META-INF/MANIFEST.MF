@@ -6,7 +6,7 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .,
- resources/lib/selenium-server-standalone-2.48.2.jar
+ resources/lib/selenium-server-standalone-2.53.0.jar
 Export-Package: com.google.common.base,
  com.google.common.collect,
  com.kms.katalon.selenium,
@@ -17,7 +17,6 @@ Export-Package: com.google.common.base,
  org.openqa.selenium.firefox,
  org.openqa.selenium.firefox.internal,
  org.openqa.selenium.html5,
- org.openqa.selenium.htmlunit,
  org.openqa.selenium.ie,
  org.openqa.selenium.interactions,
  org.openqa.selenium.interactions.internal,
@@ -54,7 +53,6 @@ Export-Package: com.google.common.base,
  org.openqa.selenium.security,
  org.openqa.selenium.server,
  org.openqa.selenium.server.browserlaunchers,
- org.openqa.selenium.server.cli,
  org.openqa.selenium.server.commands,
  org.openqa.selenium.server.htmlrunner,
  org.openqa.selenium.server.security,
