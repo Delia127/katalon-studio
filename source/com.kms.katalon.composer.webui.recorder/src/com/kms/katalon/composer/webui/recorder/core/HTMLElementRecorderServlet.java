@@ -12,7 +12,7 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
-import com.kms.katalon.composer.webui.recorder.util.HTMLActionUtil;
+import com.kms.katalon.composer.webui.recorder.util.HTMLActionJsonParser;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.objectspy.util.HTMLElementUtil;
 
@@ -41,25 +41,27 @@ public class HTMLElementRecorderServlet extends HttpServlet {
         } finally {
             reader.close();
         }
-        if (sb.indexOf("=") != -1) {
-            String key = sb.substring(0, sb.indexOf("="));
-            if (HTMLElementUtil.decodeURIComponent(key).equals(ELEMENT_KEY)) {
-                String value = sb.substring(sb.indexOf("=") + 1, sb.length());
-                HTMLActionMapping newActionMapping = null;
-                try {
-                    newActionMapping = HTMLActionUtil.buildActionMapping(value);
-                } catch (Exception e) {
-                    logger.error(e);
-                }
-                response.setContentType("text/html");
-                response.addHeader("Access-Control-Allow-Origin", "*");
-                if (newActionMapping != null) {
-                    eventBroker.post(EventConstants.RECORDER_ELEMENT_ADDED, newActionMapping);
-                    response.setStatus(HttpServletResponse.SC_OK);
-                } else {
-                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                }
-            }
+        if (sb.indexOf("=") == -1) {
+            return;
+        }
+        String key = sb.substring(0, sb.indexOf("="));
+        if (!HTMLElementUtil.decodeURIComponent(key).equals(ELEMENT_KEY)) {
+            return;
+        }
+        String value = sb.substring(sb.indexOf("=") + 1, sb.length());
+        HTMLActionMapping newActionMapping = null;
+        try {
+            newActionMapping = HTMLActionJsonParser.parseJsonIntoHTMLActionMapping(value);
+        } catch (Exception e) {
+            logger.error(e);
+        }
+        response.setContentType("text/html");
+        response.addHeader("Access-Control-Allow-Origin", "*");
+        if (newActionMapping != null) {
+            eventBroker.post(EventConstants.RECORDER_ELEMENT_ADDED, newActionMapping);
+            response.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 }
