@@ -1,5 +1,7 @@
 package com.kms.katalon.execution.launcher;
 
+import static com.kms.katalon.execution.util.MailUtil.getDistinctRecipients;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -14,7 +16,6 @@ import java.util.Map.Entry;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPreferenceStore;
 
@@ -144,7 +145,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
 
         TestSuiteEntity testSuite = getTestSuite();
-        String[] mailRecipients = getRecipients(testSuite.getMailRecipient(),
+        String[] mailRecipients = getDistinctRecipients(testSuite.getMailRecipient(),
                 prefs.getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_REPORT_RECIPIENTS));
         if (mailRecipients.length > 0) {
             EmailConfig conf = new EmailConfig();
@@ -169,22 +170,6 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
             writeLine(StringConstants.LAU_PRT_EMAIL_SENT);
         }
-    }
-
-    private static String[] getRecipients(String testSuiteRecipients, String reportRecipients) {
-        String[] tsRecipients = StringUtils.split(testSuiteRecipients, MailUtil.EMAIL_SEPARATOR);
-        String[] rptRecipients = StringUtils.split(reportRecipients, MailUtil.EMAIL_SEPARATOR);
-
-        List<String> recipientList = new ArrayList<String>(Arrays.asList((rptRecipients != null) ? rptRecipients
-                : new String[] {}));
-        if (tsRecipients != null) {
-            for (String recipient : tsRecipients) {
-                if (recipientList.contains(recipient.trim()))
-                    continue;
-                recipientList.add(recipient);
-            }
-        }
-        return recipientList.toArray(new String[recipientList.size()]);
     }
 
     protected void updateLastRun(Date startTime) throws Exception {

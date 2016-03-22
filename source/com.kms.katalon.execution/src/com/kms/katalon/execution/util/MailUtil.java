@@ -1,8 +1,12 @@
 package com.kms.katalon.execution.util;
 
+import static java.util.Arrays.asList;
+import static org.apache.commons.lang.StringUtils.split;
+
 import java.io.File;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.lingala.zip4j.core.ZipFile;
@@ -23,7 +27,7 @@ public class MailUtil {
     }
 
     public static final String EMAIL_SEPARATOR = ";";
-    
+
     private static final String SUBJECT = "Katalon Summary Report";
 
     private static final String EMAIL_HTML_TEMPLATE = "<html><head><style type=\"text/css\">body'{'margin:0;padding:0;min-width:100%;background-color:#f5f7fa;font-family:Tahoma,Droid Sans,Verdana,sans-serif;color:#60666d;font-size:14;font-style:normal;'}'table'{'border-collapse:collapse;border-spacing:0;margin:0 auto 24px;font-size:14;'}'td'{'padding:5px;word-break:break-word;word-wrap:break-word;vertical-align:middle;'}'.border td'{'border:1px solid #dddee1;'}'</style></head><body><center style=\"padding-bottom:24px\"><table width=\"600\" style=\"width:600px\"><tbody><tr height=\"101\" style=\"padding-top:24px;padding-bottom:24px\"><td width=\"50%\" style=\"width:50%;padding:0\"><img src=\"http://katalon.kms-technology.com/assets/images/katalon_logo.png\" alt=\"KATALON LOGO\" /></td><td width=\"50%\" valign=\"middle\" style=\"width:50%;vertical-align:middle;padding:0\"><h2 style=\"margin:0;font-size:18px;color:#04a0dc;text-align:right\">Test Suite Execution Report</h2></td></tr><tr style=\"background-color:#fff\"><td style=\"border:1px solid #dddee1;padding:24px;word-break:break-word;word-wrap:break-word\" colspan=\"2\"><p>Dear Sir/Madam,<br><br>Your test suite has just finished its execution. Here is the summary report.</p><table class=\"border\" width=\"100%\" border=\"1\" bgcolor=\"#f5f7fa\" style=\"width:100%;background-color:#f5f7fa;border:1px solid #dddee1\"><tbody><tr><td width=\"24%\" style=\"width:24%\">Host Name</td><td colspan=\"3\" class=\"border\">{0}</td></tr><tr><td>Operating System</td><td colspan=\"3\">{1}</td></tr><tr><td class=\"border\">Browser</td><td colspan=\"3\">{2}</td></tr><tr><td>Test Suite</td><td colspan=\"3\">{3}</td></tr><tr><td>Result</td><td width=\"25%\" style=\"width:25%;color:green\">Passed: {4}</td><td width=\"25%\" style=\"width:25%;color:red\">Failed: {5}</td><td width=\"25%\" style=\"width:25%;color:red\">Error: {6}</td></tr></tbody></table><p>{7}<br><br>This email was sent automatically by Katalon System. Please do not reply.<br><br>Thanks,<br>{8}</p></td></tr></tbody></table></center></body></html>";
@@ -188,5 +192,30 @@ public class MailUtil {
             return new File(folder.getParent() + File.separator + zipName + ".zip");
         }
         return null;
+    }
+
+    /**
+     * Get all recipient email address from Preference and Test Suite without duplication
+     * 
+     * @param testSuiteRecipients recipients from Test Suite
+     * @param preferenceRecipients recipients from Preferences > Execution > Email > Report Recipients
+     * @return non-duplicated recipients
+     */
+    public static String[] getDistinctRecipients(String testSuiteRecipients, String preferenceRecipients) {
+        String[] tsRecipients = split(testSuiteRecipients, EMAIL_SEPARATOR);
+        String[] prefRecipients = split(preferenceRecipients, EMAIL_SEPARATOR);
+
+        List<String> recipientList = new ArrayList<String>();
+        if (prefRecipients != null) {
+            recipientList.addAll(asList(prefRecipients));
+        }
+
+        if (tsRecipients != null) {
+            for (String recipient : tsRecipients) {
+                if (recipientList.contains(recipient.trim())) continue;
+                recipientList.add(recipient);
+            }
+        }
+        return recipientList.toArray(new String[recipientList.size()]);
     }
 }
