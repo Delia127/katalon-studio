@@ -89,8 +89,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_TITLE_TEST_SUITE_DUPLICATION = "Test Suite Duplication Detected";
     public static final String DIA_MSG_CONFIRM_MERGE_UPLOADED_TEST_SUITE = "System has detected that a test suite on qTest"
             + " with id: {0} has the same name as test suite: ''{1}'' under {2}: ''{3}''.\nDo you want to merge them?";
-    
-    //DisintegrateTestSuiteJob
+
+    // DisintegrateTestSuiteJob
     public static final String JOB_TITLE_DISINTEGRATE_TEST_SUITE = "Disintegrate test suites";
     public static final String JOB_TASK_DISINTEGRATE_TEST_SUITE = "Disintegrating test suites...";
 
@@ -148,11 +148,11 @@ public class StringConstants extends GlobalStringConstants {
     /******************************************************************************************************************/
 
     /*********************************************** Preference *******************************************************/
-    //PreferenceID
-    public static final String PREF_QTEST_MAIN_PAGE = "com.kms.katalon.composer.intergration.qtest.setting";    
+    // PreferenceID
+    public static final String PREF_QTEST_MAIN_PAGE = "com.kms.katalon.composer.intergration.qtest.setting";
     public static final String PREF_TEST_CASE_REPO_PAGE = "com.kms.katalon.composer.integration.qtest.testCaseRepoMapping";
     public static final String PREF_TEST_SUITE_REPO_PAGE = "com.kms.katalon.composer.integration.qtest.testSuiteRepoMapping";
-    
+
     // QTestIntegrationPage
     public static final String DIA_MSG_UNABLE_TO_SAVE_SETTING_PAGE = "Unable to save qTest's settings.";
     public static final String DIA_TITLE_ENABLE_INTEGRATION = "Enable integration";
@@ -175,7 +175,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_MSG_UNABLE_REMOVE_TEST_CASE_REPO = "Unable to remove Test Case Repository.";
     public static final String DIA_CONFIRM_DISINTEGRATE_TEST_CASE_FOLDER = "Are you sure you want to disintegrate all "
             + "test cases in this folder with qTest?";
-    
+
     // TestSuiteRepoPreferencePage
     public static final String DIA_TITLE_TEST_SUITE_FOLDER = "Katalon Test Suite's Folder";
 
@@ -282,12 +282,17 @@ public class StringConstants extends GlobalStringConstants {
     public static final String WZ_P_FINISH_TITLE = "Finish Up";
     public static final String WZ_P_FINISH_INFO = "Congratulations! You've finished your integration setup with qTest.";
     /******************************************************************************************************************/
-    
+
     /*********************************************** Handler **********************************************************/
-    //ReportHandler
+    // ReportHandler
     public static final String HDL_LABEL_VALIDATING_REPORT = "{0}\tValidating...({1}%)";
 
     // QTestSettingsHandler
     public static final String HDL_TITLE_PROJECT_SETTINGS = "Project Settings";
+    /******************************************************************************************************************/
+
+    /************************************************ Report **********************************************************/
+    // QTestIntegrationReporter
+    public static final String REPORT_MSG_UPLOAD_SUCCESFULLY = "Test results are uploaded to qTest:{0} - {1} successfully.";
     /******************************************************************************************************************/
 }

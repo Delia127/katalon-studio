@@ -109,7 +109,7 @@ public class LifeCycleManager {
     }
 
     private void startUpConsoleMode() throws Exception {
-        PlatformUI.getWorkbench().getDisplay().getActiveShell().setVisible(false);
+        PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().setVisible(false);
         try {
             ConsoleMain.launch(ApplicationRunningMode.getInstance().getRunArguments());
         } catch (Exception e) {

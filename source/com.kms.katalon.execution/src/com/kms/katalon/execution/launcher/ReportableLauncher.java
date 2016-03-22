@@ -47,6 +47,7 @@ import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.execution.util.MailUtil.EmailConfig;
 import com.kms.katalon.execution.util.MailUtil.MailSecurityProtocolType;
+import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public abstract class ReportableLauncher extends LoggableLauncher {
@@ -80,6 +81,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
         } catch (Exception e) {
             writeError(MessageFormat.format(StringConstants.LAU_RPT_ERROR_TO_GENERATE_REPORT, e.getMessage()));
+            LogUtil.logError(e);
         }
 
         if (needToRerun()) {
@@ -100,6 +102,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 LauncherManager.getInstance().addLauncher(rerunLauncher);
             } catch (IOException | ExecutionException e) {
                 writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_RERUN_TEST_SUITE, e.getMessage()));
+                LogUtil.logError(e);
             }
         }
     }
@@ -184,14 +187,11 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     protected void prepareReport() {
         try {
             TestSuiteLogRecord suiteLog = ReportUtil.generate(getRunConfig().getExecutionSetting().getFolderPath());
-
             ReportUtil.writeLogRecordToFiles(suiteLog, getReportFolder());
-
             uploadReportToIntegratingProduct(suiteLog);
-
             copyReport();
         } catch (Exception e) {
-
+            LogUtil.logError(e);
         }
     }
 
@@ -235,7 +235,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 writeLine(StringConstants.LAU_PRT_CANNOT_SEND_EMAIL);
             }
         } catch (IOException ex) {
-            // TODO Log here
+            LogUtil.logError(ex);
         }
     }
 
@@ -243,7 +243,6 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
         }
-
         for (Entry<String, ReportIntegrationContribution> reportContributorEntry : ReportIntegrationFactory
                 .getInstance().getIntegrationContributorMap().entrySet()) {
             try {

@@ -11,7 +11,9 @@ import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
+import org.osgi.framework.BundleException;
 
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants.IPluginPreferenceConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.application.ApplicationRunningMode.RunningMode;
@@ -29,6 +31,10 @@ public class Application implements IApplication {
      * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app. IApplicationContext)
      */
     public Object start(IApplicationContext context) {
+        if (!activeLoggingBundle()) {
+            return IApplication.EXIT_OK;
+        }
+        
         final Map<?, ?> args = context.getArguments();
         final String[] appArgs = (String[]) args.get("application.args");
         boolean isConsoleMode = false;
@@ -89,5 +95,14 @@ public class Application implements IApplication {
                 if (!display.isDisposed()) workbench.close();
             }
         });
+    }
+    
+    private boolean activeLoggingBundle() {
+        try {
+            Platform.getBundle(IdConstants.KATALON_LOGGING_BUNDLE_ID).start();
+            return true;
+        } catch (BundleException ex) {
+            return false;
+        }
     }
 }
