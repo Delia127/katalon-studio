@@ -767,12 +767,12 @@ public class ReportPart implements EventHandler, IComposerPart {
         lblError.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
         lblError.setText("Error");
         setLabelToBeBold(lblError);
-        lblError.setForeground(ColorUtil.getWarningLogBackgroundColor());
+        lblError.setForeground(ColorUtil.getErrorLogBackgroundColor());
         lblError.setBackground(ColorUtil.getWhiteBackgroundColor());
 
         txtTCErrors = new StyledText(compositeSummaryDetails, SWT.READ_ONLY);
         txtTCErrors.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-        txtTCErrors.setForeground(ColorUtil.getWarningLogBackgroundColor());
+        txtTCErrors.setForeground(ColorUtil.getErrorLogBackgroundColor());
 
         Label lblIncompleted = new Label(compositeSummaryDetails, SWT.NONE);
         lblIncompleted.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
