@@ -13,7 +13,8 @@ Require-Bundle: org.codehaus.groovy,
  org.apache.commons.lang
 Export-Package: com.kms.katalon.core.webui.constants,
  com.kms.katalon.core.webui.driver,
- com.kms.katalon.core.webui.keyword
+ com.kms.katalon.core.webui.keyword,
+ com.kms.katalon.core.webui.util
 Bundle-ClassPath: .,
  resources/lib/sikuli-api-1.0.2-standalone.jar
 

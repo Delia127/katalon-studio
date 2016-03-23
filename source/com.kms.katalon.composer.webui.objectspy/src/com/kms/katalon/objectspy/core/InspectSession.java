@@ -24,6 +24,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
+import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.configuration.impl.DefaultExecutionSetting;
@@ -37,10 +38,6 @@ import com.kms.katalon.objectspy.util.WinRegistry;
 
 @SuppressWarnings("restriction")
 public class InspectSession implements Runnable {
-    private static final String STARTUP_HOMEPAGE_WELCOME_URL_ADDITIONAL_PREFERENCE = "startup.homepage_welcome_url.additional";
-    private static final String STARTUP_HOMEPAGE_WELCOME_URL_PREFERENCE = "startup.homepage_welcome_url";
-    private static final String BROWSER_STARTUP_HOMEPAGE_PREFERENCE = "browser.startup.homepage";
-    private static final String FIREFOX_BLANK_PAGE = "about:blank";
     private static final String LOAD_EXTENSION_CHROME_PREFIX = "load-extension=";
     private static final String OBJECT_SPY_ADD_ON_NAME = "Object Spy";
     private static final String SERVER_URL_EXPRESSION_FOR_CHROME = "qAutomate_server_url = ''{0}''";
@@ -200,17 +197,13 @@ public class InspectSession implements Runnable {
     }
 
     protected FirefoxProfile createFireFoxProfile() throws IOException {
+        FirefoxProfile firefoxProfile = WebDriverPropertyUtil.createDefaultFirefoxProfile();
+        firefoxProfile.setPreference(SERVER_URL_PREFERENCE_KEY, serverUrl);
         File file = getFirefoxAddonFile();
         if (file != null) {
-            FirefoxProfile firefoxProfile = new FirefoxProfile();
             firefoxProfile.addExtension(file);
-            firefoxProfile.setPreference(SERVER_URL_PREFERENCE_KEY, serverUrl);
-            firefoxProfile.setPreference(BROWSER_STARTUP_HOMEPAGE_PREFERENCE, FIREFOX_BLANK_PAGE);
-            firefoxProfile.setPreference(STARTUP_HOMEPAGE_WELCOME_URL_PREFERENCE, FIREFOX_BLANK_PAGE);
-            firefoxProfile.setPreference(STARTUP_HOMEPAGE_WELCOME_URL_ADDITIONAL_PREFERENCE, FIREFOX_BLANK_PAGE);
-            return firefoxProfile;
         }
-        return null;
+        return firefoxProfile;
     }
 
     protected DesiredCapabilities createChromDriverOptions() throws IOException, ExtensionNotFoundException {

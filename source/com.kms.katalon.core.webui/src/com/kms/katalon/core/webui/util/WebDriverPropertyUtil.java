@@ -33,7 +33,13 @@ public class WebDriverPropertyUtil {
             CHROME_MINI_DUMP_PATH_PROPERTY_KEY, CHROME_MOBILE_EMULATION_PROPERTY_KEY,
             CHROME_PREF_LOGGING_PREFS_PROPERTY_KEY };
 
-    public static DesiredCapabilities toDesireCapabilities(Map<String, Object> propertyMap, WebUIDriverType webUIDriverType) {
+    private static final String STARTUP_HOMEPAGE_WELCOME_URL_ADDITIONAL_PREFERENCE = "startup.homepage_welcome_url.additional";
+    private static final String STARTUP_HOMEPAGE_WELCOME_URL_PREFERENCE = "startup.homepage_welcome_url";
+    private static final String BROWSER_STARTUP_HOMEPAGE_PREFERENCE = "browser.startup.homepage";
+    private static final String FIREFOX_BLANK_PAGE = "about:blank";
+
+    public static DesiredCapabilities toDesireCapabilities(Map<String, Object> propertyMap,
+            WebUIDriverType webUIDriverType) {
         if (propertyMap == null) {
             return null;
         }
@@ -66,44 +72,57 @@ public class WebDriverPropertyUtil {
 
     public static DesiredCapabilities getDesireCapabilitiesForFirefox(Map<String, Object> propertyMap) {
         DesiredCapabilities desireCapabilities = DesiredCapabilities.firefox();
+        FirefoxProfile firefoxProfile = createDefaultFirefoxProfile();
         for (Entry<String, Object> property : propertyMap.entrySet()) {
-            KeywordLogger.getInstance().logInfo("User set: [" + property.getKey() + ", " + property.getValue() + "]");
-            if (property.getKey().equals(FirefoxDriver.PROFILE)) {
-                if (property.getValue() instanceof Map<?, ?>) {
-                    Map<?, ?> firefoxPropertyMap = (Map<?, ?>) property.getValue();
-                    FirefoxProfile firefoxProfile = new FirefoxProfile();
-                    for (Entry<?, ?> entry : firefoxPropertyMap.entrySet()) {
-                        if (entry.getKey() instanceof String) {
-                            String entryKey = (String) entry.getKey();
-                            boolean isSet = false;
-                            if (entry.getValue() instanceof Number) {
-                                firefoxProfile.setPreference(entryKey, ((Number) entry.getValue()).intValue());
-                                isSet = true;
-                            } else if (entry.getValue() instanceof Boolean) {
-                                firefoxProfile.setPreference(entryKey, (Boolean) entry.getValue());
-                                isSet = true;
-                            } else if (entry.getValue() instanceof String) {
-                                firefoxProfile.setPreference(entryKey, (String) entry.getValue());
-                                isSet = true;
-                            }
-                            if (isSet) {
-                                KeywordLogger.getInstance().logInfo(
-                                        MessageFormat.format(StringConstants.KW_LOG_FIREFOX_PROPERTY_SETTING, entryKey,
-                                                entry.getValue()));
-                            }
-                        }
-                    }
-                    desireCapabilities.setCapability(FirefoxDriver.PROFILE, firefoxProfile);
-                } else {
-                    desireCapabilities.setCapability(property.getKey(), property.getValue());
-                    KeywordLogger.getInstance().logInfo(
-                            MessageFormat.format(StringConstants.KW_LOG_WEB_UI_PROPERTY_SETTING, property.getKey(),
-                                    property.getValue()));
-                }
+            if (property.getKey().equals(FirefoxDriver.PROFILE) && property.getValue() instanceof Map<?, ?>) {
+                processFirefoxPreferencesSetting(firefoxProfile, (Map<?, ?>) property.getValue());
+            } else {
+                desireCapabilities.setCapability(property.getKey(), property.getValue());
+                KeywordLogger.getInstance().logInfo(
+                        MessageFormat.format(StringConstants.KW_LOG_WEB_UI_PROPERTY_SETTING, property.getKey(),
+                                property.getValue()));
             }
-
         }
+        desireCapabilities.setCapability(FirefoxDriver.PROFILE, firefoxProfile);
         return desireCapabilities;
+    }
+
+    private static void processFirefoxPreferencesSetting(FirefoxProfile firefoxProfile, Map<?, ?> firefoxPropertyMap) {
+        for (Entry<?, ?> entry : firefoxPropertyMap.entrySet()) {
+            if (!(entry.getKey() instanceof String)) {
+                continue;
+            }
+            String entryKey = (String) entry.getKey();
+            if (setFirefoxPreferenceValue(firefoxProfile, entryKey, entry.getValue())) {
+                KeywordLogger.getInstance().logInfo(
+                        MessageFormat.format(StringConstants.KW_LOG_FIREFOX_PROPERTY_SETTING, entryKey,
+                                entry.getValue()));
+            }
+        }
+    }
+
+    private static boolean setFirefoxPreferenceValue(FirefoxProfile firefoxProfile, String entryKey, Object entryValue) {
+        if (entryValue instanceof Number) {
+            firefoxProfile.setPreference(entryKey, ((Number) entryValue).intValue());
+            return true;
+        }
+        if (entryValue instanceof Boolean) {
+            firefoxProfile.setPreference(entryKey, (Boolean) entryValue);
+            return true;
+        }
+        if (entryValue instanceof String) {
+            firefoxProfile.setPreference(entryKey, (String) entryValue);
+            return true;
+        }
+        return false;
+    }
+
+    public static FirefoxProfile createDefaultFirefoxProfile() {
+        FirefoxProfile firefoxProfile = new FirefoxProfile();
+        firefoxProfile.setPreference(BROWSER_STARTUP_HOMEPAGE_PREFERENCE, FIREFOX_BLANK_PAGE);
+        firefoxProfile.setPreference(STARTUP_HOMEPAGE_WELCOME_URL_PREFERENCE, FIREFOX_BLANK_PAGE);
+        firefoxProfile.setPreference(STARTUP_HOMEPAGE_WELCOME_URL_ADDITIONAL_PREFERENCE, FIREFOX_BLANK_PAGE);
+        return firefoxProfile;
     }
 
     public static DesiredCapabilities getDesireCapabilitiesForChrome(Map<String, Object> propertyMap) {
