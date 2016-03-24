@@ -19,6 +19,7 @@ import com.kms.katalon.execution.configuration.impl.LocalHostConfiguration;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
+import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.generator.TestCaseScriptGenerator;
 import com.kms.katalon.execution.generator.TestSuiteScriptGenerator;
 import com.kms.katalon.execution.util.ExecutionUtil;
@@ -29,7 +30,8 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     protected DefaultExecutionSetting executionSetting;
 
     @Override
-    public final IExecutionSetting build(FileEntity fileEntity, IExecutedEntity executedEntity) throws IOException {
+    public final IExecutionSetting build(FileEntity fileEntity, IExecutedEntity executedEntity) throws IOException,
+            ExecutionException {
         init(fileEntity);
 
         executionSetting.setExecutedEntity(executedEntity);
@@ -47,7 +49,7 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         return executionSetting;
     }
 
-    protected File generateTempScriptFile(FileEntity fileEntity) {
+    protected File generateTempScriptFile(FileEntity fileEntity) throws ExecutionException {
         try {
             if (fileEntity instanceof TestSuiteEntity) {
                 return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this, (TestSuiteExecutedEntity) this
@@ -56,8 +58,7 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
                 return new TestCaseScriptGenerator((TestCaseEntity) fileEntity, this).generateScriptFile();
             }
         } catch (Exception ex) {
-            // Need to log here
-            return null;
+            throw new ExecutionException(ex.getMessage());
         }
     }
 
