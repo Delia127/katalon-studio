@@ -1,5 +1,9 @@
 package com.kms.katalon.composer.project.handlers;
 
+import static com.kms.katalon.composer.components.impl.util.EntityPartUtil.getOpenedEntityIds;
+import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
+import static org.eclipse.ui.PlatformUI.getPreferenceStore;
+
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -14,10 +18,9 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.PreferenceConstants.IPluginPreferenceConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 
@@ -89,15 +92,14 @@ public class CloseProjectHandler {
      * @param project
      */
     private static void saveOpenedEntitiesState(EPartService partService, ProjectEntity project) {
+        if (!getPreferenceStore().getBoolean(IPluginPreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION)) {
+            return;
+        }
         try {
-            List<ProjectEntity> recentProjects = ProjectController.getInstance().getRecentProjects();
-            if (recentProjects != null && !recentProjects.isEmpty()) {
-                recentProjects.get(0).setRecentOpenedTreeEntityIds(
-                        EntityPartUtil.getOpenedEntityIds(partService.getParts()));
-                ProjectController.getInstance().saveRecentProjects(recentProjects);
-            }
+            List<String> openedEntityIds = getOpenedEntityIds(partService.getParts());
+            ProjectController.getInstance().keepStateOfOpenedEntities(openedEntityIds);
         } catch (Exception e) {
-            LoggerSingleton.logError(e);
+            logError(e);
         }
     }
 }

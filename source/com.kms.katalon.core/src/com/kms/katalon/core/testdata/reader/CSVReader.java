@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.supercsv.io.CsvListReader;
 import org.supercsv.io.ICsvListReader;
 import org.supercsv.prefs.CsvPreference;
@@ -18,11 +17,11 @@ public class CSVReader {
     private String[] columnNames;
     private boolean containsHeader;
 
-    public CSVReader(String sourceUrl, CSVSeperator seperator, boolean containHeader) throws IOException {
+    public CSVReader(String sourceUrl, CSVSeparator separator, boolean containHeader) throws IOException {
         try {
             this.containsHeader = containHeader;
             FileReader reader = new FileReader(new File(sourceUrl));
-            switch (seperator) {
+            switch (separator) {
             case COMMA:
                 listReader = new CsvListReader(reader, CsvPreference.STANDARD_PREFERENCE);
                 break;
@@ -41,30 +40,14 @@ public class CSVReader {
             while ((rowValues = listReader.read()) != null) {
                 data.add(rowValues.toArray(new String[rowValues.size()]));
             }
-
-            if (!containHeader) {
-                if (data.size() > 0) {
-                    columnNames = new String[data.get(0).length];
-                } else {
-                    columnNames = new String[0];
-                }
-            }
-
-            if (data.size() > 0) {
-                if (containHeader) {
-                    columnNames = data.get(0);
-                } else {
-                    columnNames = new String[data.get(0).length];
-                }
-            }
         } finally {
             IOUtils.closeQuietly(listReader);
         }
     }
 
-    public String[] getColumnNames() {
+    public String[] getColumnNames() throws IOException {
         if (columnNames == null) {
-            columnNames = ArrayUtils.EMPTY_STRING_ARRAY;
+            columnNames = new String[getColumnCount()];
         }
         return columnNames;
     }
@@ -78,7 +61,7 @@ public class CSVReader {
         return data;
     }
 
-    public int getColumnIndex(String columnName) {
+    public int getColumnIndex(String columnName) throws IOException {
         if (columnName != null && !columnName.isEmpty()) {
             for (int i = 0; i < getColumnNames().length; i++) {
                 if (columnNames[i] != null && getColumnNames()[i].equals(columnName)) {

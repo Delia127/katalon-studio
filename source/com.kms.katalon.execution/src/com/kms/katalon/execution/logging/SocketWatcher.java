@@ -14,6 +14,7 @@ import org.apache.commons.io.IOUtils;
 import com.kms.katalon.core.logging.XMLLoggerParser;
 import com.kms.katalon.core.logging.XMLParserException;
 import com.kms.katalon.core.logging.XmlLogRecord;
+import com.kms.katalon.logging.LogUtil;
 
 public class SocketWatcher extends AbstractLogWatcher {
     protected BufferedReader reader;
@@ -63,7 +64,7 @@ public class SocketWatcher extends AbstractLogWatcher {
         } catch (IOException | InterruptedException e) {
             // Don't need to log here
         } catch (XMLParserException e) {
-            // TODO Log here
+            LogUtil.logError(e);
         } finally {
             IOUtils.closeQuietly(reader);
             IOUtils.closeQuietly(is);

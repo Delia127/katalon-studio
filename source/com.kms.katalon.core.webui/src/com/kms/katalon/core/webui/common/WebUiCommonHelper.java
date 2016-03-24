@@ -229,7 +229,6 @@ public class WebUiCommonHelper extends KeywordHelper {
 
     public static void selectOrDeselectOptionsByValue(Select select, String value, boolean isRegex, boolean isSelect,
             TestObject to, String regularExpressionLog) {
-        List<WebElement> allOptions = select.getOptions();
         if (isSelect) {
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SELECTING_OPTS_ON_OBJ_X_W_VAL_Y,
                     to.getObjectId(), value, regularExpressionLog));
@@ -237,28 +236,44 @@ public class WebUiCommonHelper extends KeywordHelper {
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_DESELECTING_OPTS_ON_OBJ_W_VAL,
                     to.getObjectId(), value, regularExpressionLog));
         }
+        if (isRegex) {
+            selectOrDeselectOptionsByValueByRegularExpression(select, value, isSelect, regularExpressionLog);
+        } else {
+            select.selectByValue(value);
+        }
+    }
+
+    private static void selectOrDeselectOptionsByValueByRegularExpression(Select select, String value,
+            boolean isSelect, String regularExpressionLog) {
+        long startTime = System.currentTimeMillis();
+        List<WebElement> allOptions = select.getOptions();
+        long period = System.currentTimeMillis() - startTime;
+        logger.logInfo("All options: " + period);
         for (int index = 0; index < allOptions.size(); index++) {
+            startTime = System.currentTimeMillis();
             String optionValue = allOptions.get(index).getAttribute("value");
-            if (optionValue != null && WebUiCommonHelper.match(optionValue, value, isRegex)) {
-                if (isSelect) {
-                    select.selectByIndex(index);
-                    logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SELECTED_OPT_AT_INDEX_W_VAL, index,
-                            optionValue, regularExpressionLog));
-                } else {
-                    select.deselectByIndex(index);
-                    logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_OPT_AT_IDX_X_W_VAL_Y_IS_SELECTED,
-                            index, optionValue, regularExpressionLog));
-                }
-                if (!isRegex) {
-                    break;
-                }
+            period = System.currentTimeMillis() - startTime;
+            logger.logInfo("Get value #" + index + ":" + period);
+            if (optionValue == null || !WebUiCommonHelper.match(optionValue, value, true)) {
+                continue;
             }
+            startTime = System.currentTimeMillis();
+            if (isSelect) {
+                select.selectByIndex(index);
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SELECTED_OPT_AT_INDEX_W_VAL, index,
+                        optionValue, regularExpressionLog));
+            } else {
+                select.deselectByIndex(index);
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_OPT_AT_IDX_X_W_VAL_Y_IS_SELECTED,
+                        index, optionValue, regularExpressionLog));
+            }
+            period = System.currentTimeMillis() - startTime;
+            logger.logInfo("Select or deselect #" + index + ":" + period);
         }
     }
 
     public static void selectOrDeselectOptionsByLabel(Select select, String label, boolean isRegex, boolean isSelect,
             TestObject to, String regularExpressionLog) {
-        List<WebElement> allOptions = select.getOptions();
         if (isSelect) {
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SELECTING_OPTS_ON_OBJ_X_W_LBL_Y,
                     to.getObjectId(), label, regularExpressionLog));
@@ -266,23 +281,29 @@ public class WebUiCommonHelper extends KeywordHelper {
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_DESELECTING_OPTS_ON_OBJ_X_W_LBL_Y,
                     to.getObjectId(), label, regularExpressionLog));
         }
+        if (isRegex) {
+            selectOrDeselectOptionsByLabelWithRegularExpression(select, label, isSelect, regularExpressionLog);
+        } else {
+            select.selectByVisibleText(label);
+        }
+    }
+
+    private static void selectOrDeselectOptionsByLabelWithRegularExpression(Select select, String label, boolean isSelect,
+            String regularExpressionLog) {
+        List<WebElement> allOptions = select.getOptions();
         for (int index = 0; index < allOptions.size(); index++) {
             String optionValue = allOptions.get(index).getText();
-            if (optionValue != null && WebUiCommonHelper.match(optionValue, label, isRegex)) {
-                if (isSelect) {
-                    select.selectByIndex(index);
-                    logger.logInfo(MessageFormat.format(
-                            StringConstants.KW_LOG_INFO_OPT_AT_IDX_X_W_LBL_TXT_Y_IS_SELECTED, index, optionValue,
-                            regularExpressionLog));
-                } else {
-                    select.deselectByIndex(index);
-                    logger.logInfo(MessageFormat.format(
-                            StringConstants.KW_LOG_INFO_OPT_AT_IDX_X_W_LBL_TXT_Y_IS_DESELECTED, index, optionValue,
-                            regularExpressionLog));
-                }
-                if (!isRegex) {
-                    break;
-                }
+            if (optionValue == null || !WebUiCommonHelper.match(optionValue, label, true)) {
+                continue;
+            }
+            if (isSelect) {
+                select.selectByIndex(index);
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_OPT_AT_IDX_X_W_LBL_TXT_Y_IS_SELECTED,
+                        index, optionValue, regularExpressionLog));
+            } else {
+                select.deselectByIndex(index);
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_OPT_AT_IDX_X_W_LBL_TXT_Y_IS_DESELECTED,
+                        index, optionValue, regularExpressionLog));
             }
         }
     }

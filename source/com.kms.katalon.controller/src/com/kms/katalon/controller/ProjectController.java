@@ -202,4 +202,43 @@ public class ProjectController extends EntityController {
                 .getAbsolutePath();
     }
 
+    public void clearWorkingStateOfRecentProjects() {
+        // Clear working state of recent projects
+        try {
+            List<ProjectEntity> recentProjects = getRecentProjects();
+            if (recentProjects == null || recentProjects.isEmpty()) {
+                return;
+            }
+            for (ProjectEntity project : recentProjects) {
+                project.setRecentExpandedTreeEntityIds(null);
+                project.setRecentOpenedTreeEntityIds(null);
+            }
+            saveRecentProjects(recentProjects);
+        } catch (Exception e) {}
+    }
+
+    public void keepStateOfExpandedTreeEntities(List<String> expandedTreeEntityIds) throws Exception {
+        if (getCurrentProject() == null) {
+            return;
+        }
+        List<ProjectEntity> recentProjects = getRecentProjects();
+        if (recentProjects == null || recentProjects.isEmpty()) {
+            return;
+        }
+        recentProjects.get(0).setRecentExpandedTreeEntityIds(expandedTreeEntityIds);
+        saveRecentProjects(recentProjects);
+    }
+
+    public void keepStateOfOpenedEntities(List<String> openedEntityIds) throws Exception {
+        if (getCurrentProject() == null) {
+            return;
+        }
+        List<ProjectEntity> recentProjects = getRecentProjects();
+        if (recentProjects == null || recentProjects.isEmpty()) {
+            return;
+        }
+        recentProjects.get(0).setRecentOpenedTreeEntityIds(openedEntityIds);
+        saveRecentProjects(recentProjects);
+    }
+
 }

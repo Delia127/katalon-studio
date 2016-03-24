@@ -55,4 +55,6 @@ Require-Bundle: org.eclipse.e4.core.contexts,
  com.google.gson,
  com.kms.katalon.jasper;bundle-version="1.0.0",
  org.apache.commons.cli,
- org.dom4j
+ org.dom4j,
+ net.sf.jopt-simple.jopt-simple,
+ com.kms.katalon.logging

@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.testsuite.dialogs;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -130,7 +131,12 @@ public class TestDataColumnChooserDialog extends Dialog {
         List<ColumnNameIndexPair> pairLst = new ArrayList<ColumnNameIndexPair>();
         ColumnNameIndexPair selection = null;
         List<Integer> emptyColumnIndexes = new ArrayList<Integer>();
-        String[] columnNames = testData.getColumnNames();
+        String[] columnNames;
+        try {
+            columnNames = testData.getColumnNames();
+        } catch (IOException e) {
+            return;
+        }
         
         for (int i = 0; i < columnNames.length; i++) {
             ColumnNameIndexPair pair = new ColumnNameIndexPair(i, columnNames[i]);

@@ -28,13 +28,14 @@ public class CustomExecutionHandler {
     }
 
     private CustomRunConfigurationContributor getRunConfigurationContributor(MMenuItem menuItem) {
-        if (menuItem != null) {
-            for (CustomRunConfigurationContributor customRunConfigContributor : RunConfigurationCollector.getInstance()
-                    .getAllCustomRunConfigurationContributors()) {
-                if (menuItem.getElementId().equals(
-                        StringConstants.CUSTOM_RUN_CONFIG_ID_PREFIX + customRunConfigContributor.getId())) {
-                    return customRunConfigContributor;
-                }
+        if (menuItem == null) {
+            return null;
+        }
+        for (CustomRunConfigurationContributor customRunConfigContributor : RunConfigurationCollector.getInstance()
+                .getAllCustomRunConfigurationContributors()) {
+            if (menuItem.getElementId().equals(
+                    StringConstants.CUSTOM_RUN_CONFIG_ID_PREFIX + customRunConfigContributor.getId())) {
+                return customRunConfigContributor;
             }
         }
         return null;
@@ -42,34 +43,31 @@ public class CustomExecutionHandler {
 
     @Execute
     public void execute(@Optional MMenuItem menuItem) {
-        String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
         CustomRunConfigurationContributor customRunConfigurationContributor = getRunConfigurationContributor(menuItem);
         Entity entity = AbstractExecutionHandler.getExecutionTarget();
-        
-        if (customRunConfigurationContributor != null && entity != null) {
-            try {
-                IRunConfiguration runConfig = customRunConfigurationContributor.getRunConfiguration(projectDir, null);
-                
-                LaunchMode launchMode = LaunchMode.RUN;
-                
-                if (entity instanceof TestCaseEntity) {
-                    TestCaseEntity testCase = (TestCaseEntity) entity;
-                    
-                    AbstractExecutionHandler.executeTestCase(testCase, launchMode, runConfig);
-                } else if (entity instanceof TestSuiteEntity) {
-                    TestSuiteEntity testSuite = (TestSuiteEntity) entity;
-                    
-                    AbstractExecutionHandler.executeTestSuite(testSuite, launchMode, runConfig);
-                }
-            } catch (ExecutionException e) {
-                MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR, e.getMessage());
-            } catch (SWTException e) {
-                // Ignore it
-            } catch (Exception e) {
-                MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR,
-                        "Unable to execute test script. (Root cause: " + e.getMessage() + " )");
-                LoggerSingleton.logError(e);
+        if (customRunConfigurationContributor == null || entity == null) {
+            return;
+        }
+        String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+        try {
+            IRunConfiguration runConfig = customRunConfigurationContributor.getRunConfiguration(projectDir);
+            LaunchMode launchMode = LaunchMode.RUN;
+
+            if (entity instanceof TestCaseEntity) {
+                TestCaseEntity testCase = (TestCaseEntity) entity;
+                AbstractExecutionHandler.executeTestCase(testCase, launchMode, runConfig);
+            } else if (entity instanceof TestSuiteEntity) {
+                TestSuiteEntity testSuite = (TestSuiteEntity) entity;
+                AbstractExecutionHandler.executeTestSuite(testSuite, launchMode, runConfig);
             }
+        } catch (ExecutionException e) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR, e.getMessage());
+        } catch (SWTException e) {
+            // Ignore it
+        } catch (Exception e) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR,
+                    "Unable to execute test script. (Root cause: " + e.getMessage() + " )");
+            LoggerSingleton.logError(e);
         }
     }
 }

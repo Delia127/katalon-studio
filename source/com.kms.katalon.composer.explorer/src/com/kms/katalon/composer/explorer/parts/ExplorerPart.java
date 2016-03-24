@@ -1,5 +1,9 @@
 package com.kms.katalon.composer.explorer.parts;
 
+import static com.kms.katalon.composer.components.impl.util.TreeEntityUtil.getTreeEntityIds;
+import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
+import static org.eclipse.ui.PlatformUI.getPreferenceStore;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,6 +96,7 @@ import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants;
+import com.kms.katalon.constants.PreferenceConstants.IPluginPreferenceConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
@@ -400,11 +405,11 @@ public class ExplorerPart {
         };
         job.setUser(true);
         job.schedule();
-        
+
         job.addJobChangeListener(new JobChangeAdapter() {
             @Override
             public void done(IJobChangeEvent event) {
-                UISynchronizeService.syncExec(new Runnable() {                    
+                UISynchronizeService.syncExec(new Runnable() {
                     @Override
                     public void run() {
                         try {
@@ -527,8 +532,7 @@ public class ExplorerPart {
     private void reloadTreeInputEventHandler(
             @UIEventTopic(EventConstants.EXPLORER_RELOAD_INPUT) final List<Object> treeEntities) {
         try {
-            if (treeViewer.getTree().isDisposed())
-                return;
+            if (treeViewer.getTree().isDisposed()) return;
             while (treeViewer.isBusy()) {
                 // wait for tree is not busy
             }
@@ -758,6 +762,9 @@ public class ExplorerPart {
     @Inject
     @Optional
     private void restorePersistedState() {
+        if (isNotAutoRestoreSession()) {
+            return;
+        }
         eventBroker.subscribe(EventConstants.PROJECT_OPENED, new EventHandler() {
 
             @Override
@@ -812,17 +819,14 @@ public class ExplorerPart {
      */
     @PersistState
     public void savePersistedState() {
+        if (isNotAutoRestoreSession()) {
+            return;
+        }
         try {
-            if (ProjectController.getInstance().getCurrentProject() != null) {
-                List<ProjectEntity> recentProjects = ProjectController.getInstance().getRecentProjects();
-                if (recentProjects != null && !recentProjects.isEmpty()) {
-                    recentProjects.get(0).setRecentExpandedTreeEntityIds(
-                            TreeEntityUtil.getTreeEntityIds(getViewer().getExpandedElements()));
-                    ProjectController.getInstance().saveRecentProjects(recentProjects);
-                }
-            }
+            List<String> expandedTreeEntityIds = getTreeEntityIds(getViewer().getExpandedElements());
+            ProjectController.getInstance().keepStateOfExpandedTreeEntities(expandedTreeEntityIds);
         } catch (Exception e) {
-            LoggerSingleton.logError(e);
+            logError(e);
         }
     }
 
@@ -839,5 +843,9 @@ public class ExplorerPart {
     @Optional
     private void saveExplorerState(@UIEventTopic(EventConstants.PROJECT_SWITCH) String toProjectId) {
         savePersistedState();
+    }
+
+    private boolean isNotAutoRestoreSession() {
+        return !getPreferenceStore().getBoolean(IPluginPreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION);
     }
 }

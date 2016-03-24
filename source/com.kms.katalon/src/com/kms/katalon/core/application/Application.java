@@ -1,5 +1,7 @@
 package com.kms.katalon.core.application;
 
+import static org.eclipse.ui.PlatformUI.getPreferenceStore;
+
 import java.io.File;
 import java.util.Map;
 
@@ -9,8 +11,11 @@ import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
+import org.osgi.framework.BundleException;
 
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants.IPluginPreferenceConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.application.ApplicationRunningMode.RunningMode;
 import com.kms.katalon.execution.launcher.manager.ConsoleMain;
 
@@ -26,6 +31,10 @@ public class Application implements IApplication {
      * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app. IApplicationContext)
      */
     public Object start(IApplicationContext context) {
+        if (!activeLoggingBundle()) {
+            return IApplication.EXIT_OK;
+        }
+        
         final Map<?, ?> args = context.getArguments();
         final String[] appArgs = (String[]) args.get("application.args");
         boolean isConsoleMode = false;
@@ -59,13 +68,17 @@ public class Application implements IApplication {
 
     private void clearSession(boolean isNotConsoleMode) {
         if (isNotConsoleMode
-                && !PlatformUI.getPreferenceStore().getBoolean(
+                && !getPreferenceStore().getBoolean(
                         IPluginPreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION)) {
+            // Clear workbench layout
             File workbenchXmi = new File(Platform.getLocation().toString()
                     + "/.metadata/.plugins/org.eclipse.e4.workbench/workbench.xmi");
             if (workbenchXmi.exists()) {
                 workbenchXmi.delete();
             }
+
+            // Clear working state of recent projects
+            ProjectController.getInstance().clearWorkingStateOfRecentProjects();
         }
     }
 
@@ -82,5 +95,14 @@ public class Application implements IApplication {
                 if (!display.isDisposed()) workbench.close();
             }
         });
+    }
+    
+    private boolean activeLoggingBundle() {
+        try {
+            Platform.getBundle(IdConstants.KATALON_LOGGING_BUNDLE_ID).start();
+            return true;
+        } catch (BundleException ex) {
+            return false;
+        }
     }
 }

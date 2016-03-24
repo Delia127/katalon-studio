@@ -22,7 +22,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_LBL_APP_TYPE = "Application Type";
 
     public static final String DIA_APP_TYPE_NATIVE_APP = "Native Application";
-    //public static final String DIA_APP_TYPE_MOBILE_WEB = "Mobile Web";
+
+    // public static final String DIA_APP_TYPE_MOBILE_WEB = "Mobile Web";
 
     public static final String DIA_LBL_APP_FILE = "Application File";
 
@@ -64,8 +65,12 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String DIA_LBL_OBJECT_NAME = "Object Name";
 
+    public static final String DIA_TOOLTIP_OBJECT_NAME = "Press Enter to update new name and Esc to discard change";
+
     // CheckboxTreeSelectionHelper
     public static final String TREE_EXC_MSG_REQUIRE_CONTENT_PROVIDER = "Content provider is required";
-	public static final String DIA_ERROR_MSG_OS_NOT_SUPPORT = "OS type has not been support";
-	public static final String DIA_ERROR_MSG_OPERATION_CANCELED = "Operation was canceled";
+
+    public static final String DIA_ERROR_MSG_OS_NOT_SUPPORT = "OS type has not been support";
+
+    public static final String DIA_ERROR_MSG_OPERATION_CANCELED = "Operation was canceled";
 }

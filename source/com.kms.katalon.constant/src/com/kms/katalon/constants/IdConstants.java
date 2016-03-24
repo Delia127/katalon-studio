@@ -97,6 +97,8 @@ public interface IdConstants {
     public static final String OPEN_RECENT_PROJECT_COMMAND_PARAMETER_ID = "com.kms.katalon.composer.project.command.openrecentproject.parameters.project";
 
     // Bundle
+    public static final String KATALON_LOGGING_BUNDLE_ID = "com.kms.katalon.logging";
+    
     public static final String KATALON_CUSTOM_BUNDLE_ID = "com.kms.katalon.custom";
 
     public static final String KATALON_CORE_BUNDLE_ID = "com.kms.katalon.core";

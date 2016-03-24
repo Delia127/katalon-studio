@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Logging
+Bundle-SymbolicName: com.kms.katalon.logging
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: com.kms.katalon.logging.Activator
+Bundle-Vendor: KMS
+Require-Bundle: org.eclipse.core.runtime,
+ org.apache.commons.io,
+ org.apache.commons.lang
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
+Export-Package: com.kms.katalon.logging

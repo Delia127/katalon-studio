@@ -16,12 +16,12 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XmlLogRecord;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class LogTableViewer extends TableViewer {
 
@@ -109,6 +109,10 @@ public class LogTableViewer extends TableViewer {
                 item.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
                 break;
             case ERROR:
+                item.setBackground(ColorUtil.getErrorLogBackgroundColor());
+                item.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
+                break;
+            case WARNING:
                 item.setBackground(ColorUtil.getWarningLogBackgroundColor());
                 item.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
                 break;

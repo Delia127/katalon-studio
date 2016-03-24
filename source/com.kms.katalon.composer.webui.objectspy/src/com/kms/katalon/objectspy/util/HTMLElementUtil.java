@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -62,7 +63,8 @@ public class HTMLElementUtil {
 
     private static final String XPATH_KEY = "xpath";
 
-    public static String generateHTMLElementName(String elementType, Map<String, String> attributes) throws Exception {
+    public static String generateHTMLElementName(String elementType, Map<String, String> attributes)
+            throws UnsupportedEncodingException {
         String content = attributes.get(ELEMENT_TEXT_KEY);
         if (content != null) {
             return elementType + "_" + URLEncoder.encode(content, "UTF-8");
@@ -91,90 +93,120 @@ public class HTMLElementUtil {
         return null;
     }
 
-    public static HTMLElement buildHTMLElement(JsonObject elementJsonObject, boolean isFrame) throws Exception {
-        if (elementJsonObject != null) {
-            String elementType = null;
-            JsonPrimitive elementTypeObject = elementJsonObject.getAsJsonPrimitive(ELEMENT_TYPE_KEY);
-            if (elementTypeObject != null) {
-                elementType = elementTypeObject.getAsString();
-            }
+    public static HTMLElement buildHTMLElement(JsonObject elementJsonObject, boolean isFrame)
+            throws UnsupportedEncodingException {
+        if (elementJsonObject == null || !elementJsonObject.get(ELEMENT_TYPE_KEY).isJsonPrimitive()) {
+            return null;
+        }
+        String elementType = elementJsonObject.getAsJsonPrimitive(ELEMENT_TYPE_KEY).getAsString();
 
-            Map<String, String> attributesMap = new HashMap<String, String>();
-            JsonArray contentArray = elementJsonObject.getAsJsonArray(ELEMENT_CONTENT_KEY);
-            if (contentArray != null) {
-                if (contentArray.size() == 1) {
-                    JsonElement contentJsonElement = contentArray.get(0);
-                    if (contentJsonElement.isJsonPrimitive()) {
-                        String contentString = contentJsonElement.getAsString();
-                        if (contentString != null) {
-                            contentString = contentString.trim();
-                            if (!contentString.isEmpty()) {
-                                attributesMap.put(ELEMENT_TEXT_KEY, contentString);
-                            }
-                        }
-                    }
-                }
-            }
+        Map<String, String> attributesMap = new HashMap<String, String>();
+        collectElementContents(elementJsonObject, attributesMap);
+        collectElementAttributes(elementJsonObject, attributesMap);
 
-            JsonObject elementAttributesObject = elementJsonObject.getAsJsonObject(ELEMENT_ATTRIBUTES_KEY);
-            if (elementAttributesObject != null) {
-                Set<Entry<String, JsonElement>> entrySet = elementAttributesObject.entrySet();
-                for (Entry<String, JsonElement> entry : entrySet) {
-                    if (entry.getValue() != null) {
-                        String keyValue = entry.getValue().getAsString().trim();
-                        if (!entry.getKey().equals(ELEMENT_ATTRIBUTES_STYLE_KEY)) {
-                            attributesMap.put(entry.getKey(), keyValue);
-                        }
-                    }
-                }
-            }
-
-            String xpathString = elementJsonObject.getAsJsonPrimitive(XPATH_KEY).getAsString();
+        String xpathString = getElementXpath(elementJsonObject);
+        if (xpathString != null) {
             attributesMap.put(XPATH_KEY, xpathString);
+        }
 
-            HTMLFrameElement parentElement = null;
-            elementJsonObject.get(ELEMENT_PARENT_KEY);
-            JsonObject parentElementJson = elementJsonObject.getAsJsonObject(ELEMENT_PARENT_KEY);
-            if (parentElementJson != null) {
-                HTMLElement tempParentElement = buildHTMLElement(parentElementJson, true);
-                if (tempParentElement instanceof HTMLFrameElement) {
-                    parentElement = (HTMLFrameElement) tempParentElement;
-                }
-            } else {
-                parentElement = buildHTMLPageElement(elementJsonObject.getAsJsonObject(ELEMENT_PAGE_KEY));
-            }
+        HTMLFrameElement parentElement = getParentElement(elementJsonObject);
 
-            String newName = generateHTMLElementName(elementType, attributesMap);
-            if (newName.length() > NAME_LENGTH_LIMIT) {
-                newName = newName.substring(0, NAME_LENGTH_LIMIT);
-            }
+        String newName = generateHTMLElementName(elementType, attributesMap);
+        if (newName.length() > NAME_LENGTH_LIMIT) {
+            newName = newName.substring(0, NAME_LENGTH_LIMIT);
+        }
+        if (isFrame) {
+            return new HTMLFrameElement(newName, elementType, attributesMap, parentElement,
+                    new ArrayList<HTMLElement>());
+        }
+        return new HTMLElement(newName, elementType, attributesMap, parentElement);
+    }
 
-            if (isFrame) {
-                return new HTMLFrameElement(newName, elementType, attributesMap, parentElement,
-                        new ArrayList<HTMLElement>());
-            } else {
-                return new HTMLElement(newName, elementType, attributesMap, parentElement);
+    private static HTMLFrameElement getParentElement(JsonObject elementJsonObject) throws UnsupportedEncodingException {
+        HTMLFrameElement parentElement = null;
+        if (elementJsonObject.has(ELEMENT_PARENT_KEY) && elementJsonObject.get(ELEMENT_PARENT_KEY).isJsonObject()) {
+            HTMLElement tempParentElement = buildHTMLElement(elementJsonObject.getAsJsonObject(ELEMENT_PARENT_KEY),
+                    true);
+            if (tempParentElement instanceof HTMLFrameElement) {
+                parentElement = (HTMLFrameElement) tempParentElement;
             }
+        } else {
+            parentElement = buildHTMLPageElement(elementJsonObject.getAsJsonObject(ELEMENT_PAGE_KEY));
+        }
+        return parentElement;
+    }
+
+    private static String getElementXpath(JsonObject elementJsonObject) {
+        if (elementJsonObject.has(XPATH_KEY) && elementJsonObject.get(XPATH_KEY).isJsonPrimitive()) {
+            return elementJsonObject.getAsJsonPrimitive(XPATH_KEY).getAsString();
 
         }
         return null;
     }
 
-    private static HTMLPageElement buildHTMLPageElement(JsonObject parentPageJsonObject) throws Exception {
-        if (parentPageJsonObject != null) {
-            String pageUrlString = parentPageJsonObject.getAsJsonPrimitive(PAGE_URL_KEY).getAsString();
-            String pageTitleString = parentPageJsonObject.getAsJsonPrimitive(PAGE_TITLE_KEY).getAsString();
-
-            Map<String, String> attributeMap = new HashMap<String, String>();
-            attributeMap.put(PAGE_URL_KEY, pageUrlString);
-            attributeMap.put(PAGE_TITLE_KEY, pageTitleString);
-            return new HTMLPageElement("Page_"
-                    + URLEncoder.encode(
-                            (pageTitleString.length() > NAME_LENGTH_LIMIT) ? pageTitleString.substring(0,
-                                    NAME_LENGTH_LIMIT) : pageTitleString, "UTF-8"), attributeMap,
-                    new ArrayList<HTMLElement>(), pageUrlString);
+    private static void collectElementAttributes(JsonObject elementJsonObject, Map<String, String> attributesMap) {
+        if (!isElementAttributesSet(elementJsonObject)) {
+            return;
         }
-        return null;
+        for (Entry<String, JsonElement> entry : elementJsonObject.getAsJsonObject(ELEMENT_ATTRIBUTES_KEY).entrySet()) {
+            if (!isValidElementAttribute(entry)) {
+                continue;
+            }
+            attributesMap.put(entry.getKey(), entry.getValue().getAsString().trim());
+        }
+    }
+
+    private static boolean isElementAttributesSet(JsonObject elementJsonObject) {
+        return elementJsonObject.has(ELEMENT_ATTRIBUTES_KEY)
+                && elementJsonObject.get(ELEMENT_ATTRIBUTES_KEY).isJsonObject();
+    }
+
+    private static boolean isValidElementAttribute(Entry<String, JsonElement> attributeEntry) {
+        return attributeEntry.getValue() != null && !StringUtils.isBlank(attributeEntry.getValue().getAsString())
+                && !attributeEntry.getKey().equals(ELEMENT_ATTRIBUTES_STYLE_KEY);
+    }
+
+    private static void collectElementContents(JsonObject elementJsonObject, Map<String, String> attributesMap) {
+        if (!isElementContent(elementJsonObject)) {
+            return;
+        }
+        JsonArray contentArray = elementJsonObject.getAsJsonArray(ELEMENT_CONTENT_KEY);
+        if (!isValidElementContent(contentArray)) {
+            return;
+        }
+        attributesMap.put(ELEMENT_TEXT_KEY, contentArray.get(0).getAsString());
+    }
+
+    private static boolean isElementContent(JsonObject elementJsonObject) {
+        return elementJsonObject.has(ELEMENT_CONTENT_KEY) && elementJsonObject.get(ELEMENT_CONTENT_KEY).isJsonArray();
+    }
+
+    private static boolean isValidElementContent(JsonArray contentArray) {
+        return contentArray != null && contentArray.size() == 1 && contentArray.get(0).isJsonPrimitive()
+                && !StringUtils.isBlank(contentArray.get(0).getAsString());
+    }
+
+    private static HTMLPageElement buildHTMLPageElement(JsonObject parentPageJsonObject)
+            throws UnsupportedEncodingException {
+        if (parentPageJsonObject == null) {
+            return null;
+        }
+
+        String pageUrlString = parentPageJsonObject.getAsJsonPrimitive(PAGE_URL_KEY).getAsString();
+        String pageTitleString = parentPageJsonObject.getAsJsonPrimitive(PAGE_TITLE_KEY).getAsString();
+
+        Map<String, String> attributeMap = new HashMap<String, String>();
+        attributeMap.put(PAGE_URL_KEY, pageUrlString);
+        attributeMap.put(PAGE_TITLE_KEY, pageTitleString);
+        return new HTMLPageElement(generateHTMLPageElementName(pageTitleString), attributeMap,
+                new ArrayList<HTMLElement>(), pageUrlString);
+    }
+
+    private static String generateHTMLPageElementName(String pageTitleString) throws UnsupportedEncodingException {
+        return "Page_"
+                + URLEncoder.encode(
+                        (pageTitleString.length() > NAME_LENGTH_LIMIT) ? pageTitleString
+                                .substring(0, NAME_LENGTH_LIMIT) : pageTitleString, "UTF-8");
     }
 
     public static WebElementEntity convertElementToWebElementEntity(HTMLElement element, WebElementEntity refElement,

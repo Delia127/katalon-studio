@@ -76,7 +76,7 @@ public class MobileDriverFactory {
             } catch (Exception e) {
                 KeywordLogger.getInstance().logWarning(e.getMessage());
             }
-            return null;
+            return new LinkedHashMap<String, String>();
         }
     };
 
@@ -88,7 +88,7 @@ public class MobileDriverFactory {
             } catch (Exception e) {
                 KeywordLogger.getInstance().logWarning(e.getMessage());
             }
-            return null;
+            return new LinkedHashMap<String, String>();
         }
     };
 
@@ -305,8 +305,8 @@ public class MobileDriverFactory {
 
     public static List<String> getDevices() throws Exception {
         List<String> devices = new ArrayList<String>();
-        devices.addAll(localStorageAndroidDevices.get().values());
-        devices.addAll(localStorageIosDevices.get().values());
+        devices.addAll(getAndroidDevices().values());
+        devices.addAll(getIosDevices().values());
         return devices;
     }
 
@@ -406,7 +406,7 @@ public class MobileDriverFactory {
         return androidDevices;
     }
 
-    public static String getDeviceId(String deviceName) throws Exception {
+    public static String getDeviceId(String deviceName) {
         for (Map.Entry<String, String> entry : localStorageAndroidDevices.get().entrySet()) {
             if (entry.getValue().equalsIgnoreCase(deviceName) || entry.getKey().equalsIgnoreCase(deviceName)) {
                 return entry.getKey();

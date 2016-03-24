@@ -1,5 +1,7 @@
 package com.kms.katalon.execution.launcher;
 
+import static com.kms.katalon.execution.util.MailUtil.getDistinctRecipients;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -14,7 +16,6 @@ import java.util.Map.Entry;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPreferenceStore;
 
@@ -26,7 +27,7 @@ import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.reporting.ReportUtil;
 import com.kms.katalon.core.testdata.reader.CSVReader;
-import com.kms.katalon.core.testdata.reader.CSVSeperator;
+import com.kms.katalon.core.testdata.reader.CSVSeparator;
 import com.kms.katalon.core.testdata.reader.CsvWriter;
 import com.kms.katalon.core.util.PathUtil;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -46,6 +47,7 @@ import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.execution.util.MailUtil.EmailConfig;
 import com.kms.katalon.execution.util.MailUtil.MailSecurityProtocolType;
+import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public abstract class ReportableLauncher extends LoggableLauncher {
@@ -79,6 +81,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
         } catch (Exception e) {
             writeError(MessageFormat.format(StringConstants.LAU_RPT_ERROR_TO_GENERATE_REPORT, e.getMessage()));
+            LogUtil.logError(e);
         }
 
         if (needToRerun()) {
@@ -99,6 +102,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 LauncherManager.getInstance().addLauncher(rerunLauncher);
             } catch (IOException | ExecutionException e) {
                 writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_RERUN_TEST_SUITE, e.getMessage()));
+                LogUtil.logError(e);
             }
         }
     }
@@ -144,7 +148,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
 
         TestSuiteEntity testSuite = getTestSuite();
-        String[] mailRecipients = getRecipients(testSuite.getMailRecipient(),
+        String[] mailRecipients = getDistinctRecipients(testSuite.getMailRecipient(),
                 prefs.getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_REPORT_RECIPIENTS));
         if (mailRecipients.length > 0) {
             EmailConfig conf = new EmailConfig();
@@ -171,22 +175,6 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
     }
 
-    private static String[] getRecipients(String testSuiteRecipients, String reportRecipients) {
-        String[] tsRecipients = StringUtils.split(testSuiteRecipients, MailUtil.EMAIL_SEPARATOR);
-        String[] rptRecipients = StringUtils.split(reportRecipients, MailUtil.EMAIL_SEPARATOR);
-
-        List<String> recipientList = new ArrayList<String>(Arrays.asList((rptRecipients != null) ? rptRecipients
-                : new String[] {}));
-        if (tsRecipients != null) {
-            for (String recipient : tsRecipients) {
-                if (recipientList.contains(recipient.trim()))
-                    continue;
-                recipientList.add(recipient);
-            }
-        }
-        return recipientList.toArray(new String[recipientList.size()]);
-    }
-
     protected void updateLastRun(Date startTime) throws Exception {
         TestSuiteEntity testSuite = getTestSuite();
 
@@ -199,14 +187,11 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     protected void prepareReport() {
         try {
             TestSuiteLogRecord suiteLog = ReportUtil.generate(getRunConfig().getExecutionSetting().getFolderPath());
-
             ReportUtil.writeLogRecordToFiles(suiteLog, getReportFolder());
-
             uploadReportToIntegratingProduct(suiteLog);
-
             copyReport();
         } catch (Exception e) {
-
+            LogUtil.logError(e);
         }
     }
 
@@ -250,7 +235,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 writeLine(StringConstants.LAU_PRT_CANNOT_SEND_EMAIL);
             }
         } catch (IOException ex) {
-            // TODO Log here
+            LogUtil.logError(ex);
         }
     }
 
@@ -258,7 +243,6 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
         }
-
         for (Entry<String, ReportIntegrationContribution> reportContributorEntry : ReportIntegrationFactory
                 .getInstance().getIntegrationContributorMap().entrySet()) {
             try {
@@ -319,7 +303,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 continue;
             }
             // Collect result and send mail here
-            CSVReader csvReader = new CSVReader(file, CSVSeperator.COMMA, true);
+            CSVReader csvReader = new CSVReader(file, CSVSeparator.COMMA, true);
             Deque<String[]> datas = new ArrayDeque<String[]>();
             datas.addAll(csvReader.getData());
             String[] suiteRow = datas.pollFirst();

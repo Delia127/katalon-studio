@@ -52,6 +52,7 @@ public class StringConstants {
 
 	// AppPOI
     public static final String UTIL_EXC_FILE_IS_UNSUPPORTED = "File is unsupported: {0}";
+    public static final String UTIL_EXC_FILE_IS_NOT_HTML_FORMAT = "File is not in HTML format.";
     public static final String UTIL_EXC_FILE_NOT_FOUND = "File: {0} not found.";
     
     //ShettPOI

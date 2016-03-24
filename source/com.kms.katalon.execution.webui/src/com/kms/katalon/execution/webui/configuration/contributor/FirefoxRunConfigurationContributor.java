@@ -1,15 +1,13 @@
 package com.kms.katalon.execution.webui.configuration.contributor;
 
 import java.io.IOException;
-import java.util.Map;
 
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
-import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.webui.configuration.FirefoxRunConfiguration;
 
-public class FirefoxRunConfigurationContributor implements IRunConfigurationContributor {
+public class FirefoxRunConfigurationContributor extends WebUIRunConfigurationContributor {
 
     @Override
     public String getId() {
@@ -17,14 +15,12 @@ public class FirefoxRunConfigurationContributor implements IRunConfigurationCont
     }
 
     @Override
-    public IRunConfiguration getRunConfiguration(String projectDir, Map<String, String> runInput)
-            throws IOException, ExecutionException {
+    public IRunConfiguration getRunConfiguration(String projectDir) throws IOException, ExecutionException {
         return new FirefoxRunConfiguration(projectDir);
     }
-    
+
     @Override
     public int getPreferredOrder() {
         return 1;
-    }
-
+    }   
 }

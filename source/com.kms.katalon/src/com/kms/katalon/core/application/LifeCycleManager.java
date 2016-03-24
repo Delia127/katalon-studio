@@ -109,8 +109,14 @@ public class LifeCycleManager {
     }
 
     private void startUpConsoleMode() throws Exception {
-        PlatformUI.getWorkbench().getDisplay().getActiveShell().setVisible(false);
-        new ConsoleMain().launch(ApplicationRunningMode.getInstance().getRunArguments());
+        PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().setVisible(false);
+        try {
+            ConsoleMain.launch(ApplicationRunningMode.getInstance().getRunArguments());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            ConsoleMain.closeWorkbench();
+            return;
+        }
     }
 
     private void refreshAllProjects() throws Exception {

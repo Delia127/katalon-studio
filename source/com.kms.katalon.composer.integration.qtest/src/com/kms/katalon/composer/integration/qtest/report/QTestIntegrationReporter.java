@@ -1,10 +1,14 @@
 package com.kms.katalon.composer.integration.qtest.report;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
+import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.model.TestCaseRepo;
 import com.kms.katalon.composer.integration.qtest.model.TestSuiteRepo;
 import com.kms.katalon.controller.ProjectController;
@@ -19,7 +23,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
-import com.kms.katalon.execution.integration.IntegrationCommand;
+import com.kms.katalon.execution.entity.ConsoleOption;
 import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.integration.qtest.QTestIntegrationReportManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestCaseManager;
@@ -36,8 +40,8 @@ import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class QTestIntegrationReporter implements ReportIntegrationContribution {
-
-    private QTestIntegrationCommandImpl cmd;
+    private QTestDestinationIdIntegrationCommand destinationIdCommand;
+    private QTestDestinationTypeIntegrationCommand destinationTypeCommand;
 
     private IQTestCredential getCredential() {
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
@@ -110,24 +114,37 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
             ReportEntity reportEntity = ReportController.getInstance().getReportEntity(suiteLog.getLogFolder());
 
             QTestIntegrationUtil.saveReportEntity(reportEntity, uploadedPreview);
+
+            printlnSuccessfulMessage();
         }
+    }
+
+    private void printlnSuccessfulMessage() {
+        if (isUploadByDefault()) {
+            return;
+        }
+        long desId = destinationIdCommand.getDestinationId();
+        String desType = destinationTypeCommand.getDestinationType();
+        System.out.println(MessageFormat.format(StringConstants.REPORT_MSG_UPLOAD_SUCCESFULLY, Long.toString(desId),
+                desType));
     }
 
     private QTestSuite getSelectedTestSuite(TestSuiteEntity testSuite) throws Exception {
         IntegratedEntity testSuiteIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(testSuite);
         List<QTestSuite> qTestSuiteCollection = new ArrayList<QTestSuite>();
         if (testSuiteIntegratedEntity != null) {
-            qTestSuiteCollection = QTestIntegrationTestSuiteManager.getQTestSuiteListByIntegratedEntity(testSuiteIntegratedEntity);
+            qTestSuiteCollection = QTestIntegrationTestSuiteManager
+                    .getQTestSuiteListByIntegratedEntity(testSuiteIntegratedEntity);
         }
 
         QTestProject qTestProject = QTestIntegrationUtil.getTestSuiteRepo(testSuite,
                 ProjectController.getInstance().getCurrentProject()).getQTestProject();
-        if (cmd == null || cmd.isUploadByDefault()) {
+        if (isUploadByDefault()) {
             return QTestIntegrationTestSuiteManager.getSelectedQTestSuiteByIntegratedEntity(qTestSuiteCollection);
         } else {
             QTestSuite selectedQTestSuite = null;
-            long desId = cmd.getDestinationId();
-            String desType = cmd.getDestinationType();
+            long desId = destinationIdCommand.getDestinationId();
+            String desType = destinationTypeCommand.getDestinationType();
 
             // Search in list of qTestSuite of the given testSuite first
             if ("test-suite".equals(desType)) {
@@ -286,11 +303,24 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
         }
     }
 
+    private boolean isUploadByDefault() {
+        return destinationIdCommand == null 
+                || destinationTypeCommand == null
+                || destinationIdCommand.getDestinationId() <= 0
+                || StringUtils.isBlank(destinationTypeCommand.getDestinationType());
+    }
+
     @Override
-    public IntegrationCommand getIntegrationCommand() {
-        if (cmd == null) {
-            cmd = new QTestIntegrationCommandImpl();
+    public List<ConsoleOption<?>> getIntegrationCommands() {
+        if (destinationIdCommand == null) {
+            destinationIdCommand = new QTestDestinationIdIntegrationCommand();
         }
-        return cmd;
+        if (destinationTypeCommand == null) {
+            destinationTypeCommand = new QTestDestinationTypeIntegrationCommand();
+        }
+        List<ConsoleOption<?>> integrationCommandList = new ArrayList<ConsoleOption<?>>();
+        integrationCommandList.add(destinationIdCommand);
+        integrationCommandList.add(destinationTypeCommand);
+        return integrationCommandList;
     }
 }

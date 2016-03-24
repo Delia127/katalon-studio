@@ -4,58 +4,54 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
 
-public class LaunchOutputStreamHandler extends Thread implements IOutputStream{
+import org.apache.commons.io.IOUtils;
+
+import com.kms.katalon.logging.LogManager;
+import com.kms.katalon.logging.LogMode;
+import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.logging.SystemLogger;
+
+public class LaunchOutputStreamHandler extends Thread implements IOutputStream {
     private InputStream is;
-    private OutputStream os;
+    private SystemLogger logger;
 
-    public LaunchOutputStreamHandler(InputStream is) {
-        this(is, null);
-    }
-
-    public LaunchOutputStreamHandler(InputStream is, OutputStream redirect) {
+    private LaunchOutputStreamHandler(InputStream is, SystemLogger logger) {
         this.is = is;
-        this.os = redirect;
+        this.logger = logger;
     }
 
     public void run() {
+        InputStreamReader isr = null;
+        BufferedReader br = null;
         try {
-            PrintWriter pw = null;
-            if (os != null) {
-                pw = new PrintWriter(os);
-            }
-            
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
+            isr = new InputStreamReader(is);
+            br = new BufferedReader(isr);
             String line = null;
             while ((line = br.readLine()) != null) {
-                if (pw != null) {
-                    pw.println(line);
-                    pw.flush();
-                }
+                println(line);
             }
-            
-            if (pw != null) {
-                pw.flush();
-            }
-                
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
+        } catch (IOException e) {
+            // Stream closed
+        } finally {
+            IOUtils.closeQuietly(br);
+            IOUtils.closeQuietly(isr);
         }
     }
-    
+
     public synchronized void println(String line) {
-        PrintWriter pw = null;
-        if (os != null) {
-            pw = new PrintWriter(os);
-        }
-        pw.println(line);
-        pw.flush();
+        LogUtil.println(logger, line, LogMode.CONSOLE);
     }
 
     @Override
     public void close() throws IOException {
+    }
+
+    public static LaunchOutputStreamHandler outputHandlerFrom(InputStream is) {
+        return new LaunchOutputStreamHandler(is, LogManager.getOutputLogger());
+    }
+
+    public static LaunchOutputStreamHandler errorHandlerFrom(InputStream is) {
+        return new LaunchOutputStreamHandler(is, LogManager.getErrorLogger());
     }
 }

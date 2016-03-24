@@ -10,6 +10,7 @@ import org.apache.commons.io.IOUtils;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.execution.configuration.IHostConfiguration;
 import com.kms.katalon.execution.util.ExecutionUtil;
+import com.kms.katalon.logging.LogUtil;
 
 public class LocalHostConfiguration implements IHostConfiguration {
     
@@ -46,7 +47,7 @@ public class LocalHostConfiguration implements IHostConfiguration {
             port = socket.getLocalPort();
             return port;
         } catch (IOException e) {
-            // TODO need to log here
+            LogUtil.logError(e);
         } finally {
             IOUtils.closeQuietly(socket);
         }
