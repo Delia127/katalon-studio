@@ -278,34 +278,31 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
      */
     @Override
     public void uploadTestSuiteResult(TestSuiteEntity testSuite, TestSuiteLogRecord suiteLog) throws Exception {
+        if (!isIntegrationActive(testSuite)) {
+            return;
+        }
+        
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-        String projectDir = projectEntity.getFolderLocation();
-        if (QTestSettingStore.isIntegrationActive(projectDir) && QTestSettingStore.isAutoSubmitResultActive(projectDir)) {
-            IntegratedEntity projectIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(projectEntity);
-            if (projectIntegratedEntity == null) {
-                return;
+
+        IntegratedEntity projectIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(projectEntity);
+        for (ILogRecord logRecord : suiteLog.getChildRecords()) {
+            if (!(logRecord instanceof TestCaseLogRecord)) {
+                continue;
             }
 
-            for (ILogRecord logRecord : suiteLog.getChildRecords()) {
-                if (!(logRecord instanceof TestCaseLogRecord)) {
-                    continue;
-                }
+            TestCaseLogRecord testCaseLogRecord = (TestCaseLogRecord) logRecord;
 
-                TestCaseLogRecord testCaseLogRecord = (TestCaseLogRecord) logRecord;
-
-                if (!QTestIntegrationReportManager.isAvailableForSendingResult(testCaseLogRecord.getStatus()
-                        .getStatusValue(), projectDir)) {
-                    continue;
-                }
-
-                uploadTestCaseResult(testSuite, projectIntegratedEntity, testCaseLogRecord, suiteLog);
+            if (!QTestIntegrationReportManager.isAvailableForSendingResult(testCaseLogRecord.getStatus()
+                    .getStatusValue(), projectEntity.getFolderLocation())) {
+                continue;
             }
+
+            uploadTestCaseResult(testSuite, projectIntegratedEntity, testCaseLogRecord, suiteLog);
         }
     }
 
     private boolean isUploadByDefault() {
-        return destinationIdCommand == null 
-                || destinationTypeCommand == null
+        return destinationIdCommand == null || destinationTypeCommand == null
                 || destinationIdCommand.getDestinationId() <= 0
                 || StringUtils.isBlank(destinationTypeCommand.getDestinationType());
     }
@@ -322,5 +319,21 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
         integrationCommandList.add(destinationIdCommand);
         integrationCommandList.add(destinationTypeCommand);
         return integrationCommandList;
+    }
+
+    @Override
+    public boolean isIntegrationActive(TestSuiteEntity testSuite) {
+        if (testSuite == null) {
+            return false;
+        }
+        
+        ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
+        if (!QTestIntegrationUtil.isIntegrationEnable(projectEntity)
+                || !QTestSettingStore.isAutoSubmitResultActive(projectEntity.getFolderLocation())) {
+            return false;
+        }
+
+        return QTestIntegrationUtil.getIntegratedEntity(projectEntity) != null
+                && QTestIntegrationUtil.getIntegratedEntity(testSuite) != null;
     }
 }

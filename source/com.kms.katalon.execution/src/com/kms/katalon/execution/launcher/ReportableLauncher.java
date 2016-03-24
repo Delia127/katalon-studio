@@ -63,7 +63,6 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         if (getStatus() == LauncherStatus.TERMINATED) {
             return;
         }
-        
 
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
@@ -245,6 +244,11 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
         for (Entry<String, ReportIntegrationContribution> reportContributorEntry : ReportIntegrationFactory
                 .getInstance().getIntegrationContributorMap().entrySet()) {
+            ReportIntegrationContribution contribution = reportContributorEntry.getValue();
+            if (contribution == null || !contribution.isIntegrationActive(getTestSuite())) {
+                continue;
+            }
+
             try {
                 writeLine(MessageFormat.format(StringConstants.LAU_PRT_SENDING_RPT_TO, reportContributorEntry.getKey()));
 
