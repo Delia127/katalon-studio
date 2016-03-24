@@ -214,7 +214,7 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String KW_MSG_CANNOT_SEL_OPT_BY_INDEX = "Unable to select option by index";
 	public static final String KW_LOG_INFO_CHECKING_VAL_PARAM = "Checking value parameter";
 	public static final String KW_EXC_VAL_IS_NULL = "Value is null";
-	public static final String KW_LOG_INFO_SELECTING_OPTS_ON_OBJ_X_W_VAL_Y = "Selecting options on object''{0}'' with value ''{1}''{2}";
+	public static final String KW_LOG_INFO_SELECTING_OPTS_ON_OBJ_X_W_VAL_Y = "Selecting options on object ''{0}'' with value ''{1}''{2}";
 	public static final String KW_LOG_INFO_SELECTED_OPT_AT_INDEX_W_VAL = "Option at index ''{0}'' with value ''{1}'' is selected {2}";
 	public static final String KW_MSG_CANNOT_SELECT_OPT_BY_VAL_OF_OBJ = "Unable to select option by value ''{0}'' of object ''{1}'' {2}";
 	public static final String KW_MSG_CANNOT_SEL_OPT_BY_VAL = "Unable to select option by value {0}";
