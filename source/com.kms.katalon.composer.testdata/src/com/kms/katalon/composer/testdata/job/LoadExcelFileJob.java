@@ -8,27 +8,27 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
 import com.kms.katalon.composer.testdata.constants.StringConstants;
-import com.kms.katalon.core.testdata.reader.AppPOI;
+import com.kms.katalon.core.testdata.ExcelData;
+import com.kms.katalon.core.testdata.reader.ExcelFactory;
 
 public class LoadExcelFileJob extends Job {
 
-    private String fSourceUrl;
-    private String[] fSheetNames;
+    private String sourceUrl;
+    private boolean hasHeaders;
+    private ExcelData excelData;
 
-    public LoadExcelFileJob(String sourceUrl) {
+    public LoadExcelFileJob(String sourceUrl, boolean hasHeaders) {
         super(StringConstants.JOB_LOAD_EXCL_TITLE);
-        fSourceUrl = sourceUrl;
+        this.sourceUrl = sourceUrl;
+        this.hasHeaders = hasHeaders;
+        excelData = null;
     }
 
     @Override
     protected IStatus run(IProgressMonitor monitor) {
         try {
-            //free memory because an AppPOI instance takes too much memory.
-            Runtime.getRuntime().gc();
-            
             monitor.beginTask(StringConstants.JOB_LOAD_EXCL_TASK_NAME, IProgressMonitor.UNKNOWN);
-            AppPOI appoi = new AppPOI(fSourceUrl);
-            fSheetNames = appoi.getSheetNames();
+            excelData = ExcelFactory.getExcelData(sourceUrl, hasHeaders);
             if (monitor.isCanceled()) {
                 return Status.CANCEL_STATUS;
             }
@@ -40,10 +40,7 @@ public class LoadExcelFileJob extends Job {
         }
     }
 
-    public String[] getSheetNames() {
-        if (fSheetNames == null) {
-            fSheetNames = new String[0];
-        }
-        return fSheetNames;
+    public ExcelData getExcelData() {
+        return excelData;
     }
 }

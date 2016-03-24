@@ -142,9 +142,9 @@ public class ExecutionUtil {
 
             TestCaseExecutedEntity testCaseExecutedEntity = new TestCaseExecutedEntity(testCaseLink.getTestCaseId());
 
-            testCaseExecutedEntity.setLoopTimes(0);
+            testCaseExecutedEntity.setLoopTimes(1);
 
-            int numberTestCaseUsedOnce = -1;
+            int numberTestCaseUsedOnce = 0;
             int numTestDataRowUsedManyTimes = 1;
 
             List<TestCaseTestDataLink> testDataLinkUsedList = TestSuiteController.getInstance()
@@ -169,56 +169,44 @@ public class ExecutionUtil {
 
                     if (testData == null
                             || dataFile == null
-                            || ((dataFile.isContainsHeaders() ? testData.getRowNumbers() - 1 : testData.getRowNumbers()) < 0)) {
+                            || testData.getRowNumbers() < 1) {
                         throw new IllegalArgumentException(MessageFormat.format(
                                 StringConstants.UTIL_EXC_TD_DATA_SRC_X_UNAVAILABLE, testDataLink.getTestDataId()));
-                    } else {
-                        TestDataExecutedEntity testDataExecutedEntity = getTestDataExecutedEntity(testCaseLink,
-                                testDataLink, testData);
-                        if (testDataExecutedEntity == null) {
-                            continue;
-                        }
-
-                        int rowCount = testDataExecutedEntity.getRowIndexes().length;
-
-                        // update numberTestCaseUsedOnce or
-                        // numTestDataRowUsedManyTimes depend on
-                        // combinationType of testDataLink
-                        if (testDataLink.getCombinationType() == TestDataCombinationType.ONE) {
-                            if (numberTestCaseUsedOnce < 1) {
-                                numberTestCaseUsedOnce = rowCount;
-                            } else {
-                                numberTestCaseUsedOnce = Math.min(numberTestCaseUsedOnce, rowCount);
-                            }
-                        } else {
-                            numTestDataRowUsedManyTimes *= rowCount;
-
-                            for (TestDataExecutedEntity siblingDataExecuted : testCaseExecutedEntity
-                                    .getTestDataExecutions()) {
-                                if (siblingDataExecuted.getType() == TestDataCombinationType.MANY) {
-                                    siblingDataExecuted.setMultiplier(siblingDataExecuted.getMultiplier() * rowCount);
-                                }
-                            }
-                        }
-                        testCaseExecutedEntity.getTestDataExecutions().add(testDataExecutedEntity);
                     }
+                    
+                    TestDataExecutedEntity testDataExecutedEntity = getTestDataExecutedEntity(testCaseLink,
+                            testDataLink, testData);
+                    if (testDataExecutedEntity == null) {
+                        continue;
+                    }
+
+                    int rowCount = testDataExecutedEntity.getRowIndexes().length;
+
+                    if (testDataLink.getCombinationType() == TestDataCombinationType.ONE) {
+                        if (numberTestCaseUsedOnce < 1) {
+                            numberTestCaseUsedOnce = rowCount;
+                        } else {
+                            numberTestCaseUsedOnce = Math.min(numberTestCaseUsedOnce, rowCount);
+                        }
+                    } else {
+                        numTestDataRowUsedManyTimes *= rowCount;
+
+                        for (TestDataExecutedEntity siblingDataExecuted : testCaseExecutedEntity
+                                .getTestDataExecutions()) {
+                            if (siblingDataExecuted.getType() == TestDataCombinationType.MANY) {
+                                siblingDataExecuted.setMultiplier(siblingDataExecuted.getMultiplier() * rowCount);
+                            }
+                        }
+                    }
+                    testCaseExecutedEntity.getTestDataExecutions().add(testDataExecutedEntity);
                 }
 
-                if (numberTestCaseUsedOnce < 1) {
-                    numberTestCaseUsedOnce = 1;
-                }
-
-                testCaseExecutedEntity.setLoopTimes(numTestDataRowUsedManyTimes * numberTestCaseUsedOnce);
-            } else {
-                testCaseExecutedEntity.setLoopTimes(1);
+                testCaseExecutedEntity.setLoopTimes(numTestDataRowUsedManyTimes * Math.max(numberTestCaseUsedOnce, 1));
             }
-
-            if (numberTestCaseUsedOnce < 1) {
-                numberTestCaseUsedOnce = 1;
-            }
+            
             // make sure all TestDataExecutedEntity in testCaseExecutedEntity
             // has the same rows to prevent NullPointerException
-            cutRedundantIndexes(testCaseExecutedEntity, numberTestCaseUsedOnce);
+            cutRedundantIndexes(testCaseExecutedEntity, Math.max(numberTestCaseUsedOnce, 1));
 
             testSuiteExecutedEntity.getTestCaseExecutedEntities().add(testCaseExecutedEntity);
         }
@@ -263,18 +251,16 @@ public class ExecutionUtil {
     private static TestDataExecutedEntity getTestDataExecutedEntity(TestSuiteTestCaseLink testCaseLink,
             TestCaseTestDataLink testDataLink, TestData testData) throws Exception {
 
-        DataFileEntity dataFile = TestDataController.getInstance().getTestDataByDisplayId(testDataLink.getTestDataId());
-
         TestDataExecutedEntity testDataExecutedEntity = new TestDataExecutedEntity(testDataLink.getId(),
                 testDataLink.getTestDataId());
         testDataExecutedEntity.setType(testDataLink.getCombinationType());
 
         int rowCount = 0;
-        int totalRowCount = (dataFile.isContainsHeaders() ? testData.getRowNumbers() - 1 : testData.getRowNumbers());
+        int totalRowCount = testData.getRowNumbers();
 
         switch (testDataLink.getIterationEntity().getIterationType()) {
         case ALL: {
-            rowCount = (dataFile.isContainsHeaders() ? testData.getRowNumbers() - 1 : testData.getRowNumbers());
+            rowCount = testData.getRowNumbers();
 
             if (rowCount <= 0) {
                 throw new IllegalArgumentException(MessageFormat.format(
@@ -282,8 +268,8 @@ public class ExecutionUtil {
             }
 
             int[] rowIndexes = new int[rowCount];
-            for (int index = 0; index < rowCount; index++) {
-                rowIndexes[index] = index + (dataFile.isContainsHeaders() ? 1 : 0);
+            for (int index = 0; index < rowCount ; index++) {
+                rowIndexes[index] = index + TestData.BASE_INDEX;
             }
             testDataExecutedEntity.setRowIndexes(rowIndexes);
 
@@ -310,10 +296,9 @@ public class ExecutionUtil {
 
             int[] rowIndexes = new int[rowCount];
             for (int index = 0; index < rowCount; index++) {
-                rowIndexes[index] = index + rowStart - (dataFile.isContainsHeaders() ? 0 : 1);
+                rowIndexes[index] = index + rowStart;
             }
             testDataExecutedEntity.setRowIndexes(rowIndexes);
-
             break;
         }
         case SPECIFIC:
@@ -343,26 +328,18 @@ public class ExecutionUtil {
                                 testCaseLink.getTestCaseId(), Integer.toString(rowEnd)));
                     }
                     for (int rowIndex = rowStart; rowIndex <= rowEnd; rowIndex++) {
-                        if (dataFile.isContainsHeaders()) {
-                            rowIndexArray.add(rowIndex);
-                        } else {
-                            rowIndexArray.add(rowIndex - 1);
-                        }
+                        rowIndexArray.add(rowIndex);
                     }
 
                 } else {
                     int rowIndex = Integer.valueOf(rowIndexesString[index]);
 
-                    if (rowIndex < 1 || rowIndex > totalRowCount) {
+                    if (rowIndex < TestData.BASE_INDEX || rowIndex > totalRowCount) {
                         throw new IllegalArgumentException(MessageFormat.format(
                                 StringConstants.UTIL_EXC_IDX_X_INVALID_TC_Y_TD_Z, rowIndexesString[index],
                                 testCaseLink.getTestCaseId(), testDataLink.getTestDataId()));
                     }
-                    if (dataFile.isContainsHeaders()) {
-                        rowIndexArray.add(rowIndex);
-                    } else {
-                        rowIndexArray.add(rowIndex - 1);
-                    }
+                    rowIndexArray.add(rowIndex);
                 }
             }
             testDataExecutedEntity.setRowIndexes(ArrayUtils.toPrimitive(rowIndexArray.toArray(new Integer[rowIndexArray

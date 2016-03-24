@@ -1,35 +1,37 @@
 package com.kms.katalon.core.testdata;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.kms.katalon.core.testdata.reader.CSVReader;
-import com.kms.katalon.core.testdata.reader.CSVSeperator;
+import com.kms.katalon.core.testdata.reader.CSVSeparator;
 
 public class CSVData extends AbstractTestData {
 
     private CSVReader reader;
-    private String sourceUrl;
+    private CSVSeparator separator;
 
-    public CSVData(String sourceUrl, boolean containHeader, CSVSeperator seperator) throws Exception {
-        reader = new CSVReader(sourceUrl, seperator, containHeader);
-        this.sourceUrl = sourceUrl;
+    public CSVData(String sourceUrl, boolean containsHeader, CSVSeparator separator) throws IOException {
+        super(sourceUrl, containsHeader);
+        this.separator = separator;
+    }
+    
+    private CSVReader getReader() throws IOException {
+        if (reader == null) {
+            reader = new CSVReader(sourceUrl, separator, hasHeaders);
+        }
+        return reader;
     }
 
     @Override
-    public String getValue(String columnName, int rowIndex) {
-    	verifyColumnName(columnName);
-    	verifyRowIndex(rowIndex);
-        //return reader.getData().get(rowIndex - 1)[reader.getColumnIndex(columnName)];
-    	return reader.getData().get(rowIndex)[reader.getColumnIndex(columnName)];
+    public String internallyGetValue(String columnName, int rowIndex) throws IOException {
+        return getReader().getData().get(rowIndex)[getReader().getColumnIndex(columnName)];
     }
-    
-	@Override
-	public String getValue(int columnIndex, int rowIndex) throws IllegalArgumentException {
-		verifyColumnIndex(columnIndex);
-		verifyRowIndex(rowIndex);
-		//return reader.getData().get(rowIndex - 1)[columnIndex - 1];
-		return reader.getData().get(rowIndex)[columnIndex - 1];
-	}
+
+    @Override
+    public String internallyGetValue(int columnIndex, int rowIndex) throws IOException {
+        return getReader().getData().get(rowIndex)[columnIndex];
+    }
 
     @Override
     public TestDataType getType() {
@@ -37,29 +39,31 @@ public class CSVData extends AbstractTestData {
     }
 
     @Override
-    public String getSourceUrl() {
-        return sourceUrl;
-    }
-
-    @Override
-    public String[] getColumnNames() {
-        if (reader.getColumnNames() != null) {
-            return reader.getColumnNames();
+    public String[] getColumnNames() throws IOException {
+        if (getReader().getColumnNames() != null) {
+            return getReader().getColumnNames();
         } else {
             return new String[0];
         }
     }
 
     @Override
-    public int getRowNumbers() {
-        return reader.getData().size();
+    public int getRowNumbers() throws IOException {
+        return getReader().getData().size();
     }
-	@Override
-	public int getColumnNumbers() {
-		try {
-			return reader.getColumnCount();
-		} catch (IOException e) {
-			return 0;
-		}
-	}
+
+    @Override
+    public int getColumnNumbers() throws IOException {
+        return getColumnNames().length;
+    }
+
+    @Override
+    public void activeHeaders(boolean active) throws IOException {
+        super.activeHeaders(active);
+        reader = null;
+    }
+    
+    public List<String[]> getData() throws IOException {
+        return getReader().getData();
+    }
 }
