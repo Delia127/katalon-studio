@@ -23,8 +23,8 @@ public class AndroidDriverConnector extends MobileDriverConnector {
     public IDriverConnector clone() {
         try {
             AndroidDriverConnector androidDriverConnector = new AndroidDriverConnector(getParentFolderPath());
-            androidDriverConnector.setDeviceName(getDeviceName());
-            androidDriverConnector.driverProperties = (Map<String, Object>) cloneDriverPropertyValue(getDriverProperties());
+            androidDriverConnector.setDevice(getDevice());
+            androidDriverConnector.driverProperties = (Map<String, Object>) cloneDriverPropertyValue(getUserConfigProperties());
             return androidDriverConnector;
         } catch (IOException e) {
             // do nothing

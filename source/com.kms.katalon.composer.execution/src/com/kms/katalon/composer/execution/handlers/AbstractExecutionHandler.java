@@ -1,10 +1,11 @@
 package com.kms.katalon.composer.execution.handlers;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -30,10 +31,13 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.widgets.Display;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.execution.listener.TestSuiteExecutionJobCompletedListener;
+import com.kms.katalon.composer.execution.launcher.IDELaunchShorcut;
+import com.kms.katalon.composer.execution.launcher.IDELauncher;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.parts.TestSuiteCompositePart;
@@ -44,9 +48,11 @@ import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
+import com.kms.katalon.execution.entity.TestCaseExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
-import com.kms.katalon.execution.launcher.IDELauncher;
+import com.kms.katalon.execution.launcher.ILauncher;
+import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.util.ExecutionUtil;
 
@@ -74,7 +80,22 @@ public abstract class AbstractExecutionHandler {
     @Inject
     protected static UISynchronize sync;
 
-    protected static TestSuiteExecutionJobCompletedListener testSuiteCompletedListener;
+    /**
+     * Cleans all run configuration before any execution is started
+     */
+    @Inject
+    public void start() {
+        eventBroker.subscribe(EventConstants.PROJECT_OPENED, new EventHandler() {
+            @Override
+            public void handleEvent(Event event) {
+                try {
+                    IDELaunchShorcut.cleanAllConfigurations();
+                } catch (CoreException e) {
+                    LoggerSingleton.logError(e);
+                }
+            }
+        });
+    }
 
     @CanExecute
     public boolean canExecute() {
@@ -144,32 +165,30 @@ public abstract class AbstractExecutionHandler {
         return null;
     }
 
-    protected abstract IRunConfiguration getRunConfigurationForExecution(TestCaseEntity testCase) throws Exception;
-
-    protected abstract IRunConfiguration getRunConfigurationForExecution(TestSuiteEntity testSuite) throws Exception;
+    protected abstract IRunConfiguration getRunConfigurationForExecution(String projectDir) throws IOException,
+            ExecutionException, InterruptedException;
 
     public void execute(LaunchMode launchMode) throws Exception {
+        String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+
         Entity targetEntity = getExecutionTarget();
 
         if (targetEntity == null) {
             return;
         }
+        
+        IRunConfiguration runConfiguration = getRunConfigurationForExecution(projectDir);
+        if (runConfiguration == null) {
+            return;
+        }
 
         if (targetEntity instanceof TestCaseEntity) {
             TestCaseEntity testCase = (TestCaseEntity) targetEntity;
-            IRunConfiguration runConfiguration = getRunConfigurationForExecution(testCase);
-            if (runConfiguration == null) {
-                return;
-            }
+           
             executeTestCase(testCase, launchMode, runConfiguration);
         } else if (targetEntity instanceof TestSuiteEntity) {
             TestSuiteEntity testSuite = (TestSuiteEntity) targetEntity;
-
-            IRunConfiguration runConfiguration = getRunConfigurationForExecution(testSuite);
-            if (runConfiguration == null) {
-                return;
-            }
-            executeTestSuite(testSuite, launchMode, runConfiguration, 0, new ArrayList<String>());
+            executeTestSuite(testSuite, launchMode, runConfiguration);
         }
     }
 
@@ -187,23 +206,12 @@ public abstract class AbstractExecutionHandler {
                         monitor.worked(1);
 
                         monitor.subTask("Building scripts...");
-                        final IDELauncher launcher = new IDELauncher(eventBroker, LoggerSingleton.getInstance()
-                                .getLogger(), launchMode, runConfig);
-                        monitor.worked(1);
 
-                        monitor.subTask("Launching test case...");
-                        launcher.setTotalTestCase(1);
+                        runConfig.build(testCase, new TestCaseExecutedEntity(testCase.getIdForDisplay()));
 
-                        sync.syncExec(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    launcher.launch(testCase);
-                                } catch (Exception e) {
-                                    monitor.setCanceled(true);
-                                }
-                            }
-                        });
+                        ILauncher launcher = new IDELauncher(runConfig, launchMode);
+                        LauncherManager.getInstance().addLauncher(launcher);
+
                         monitor.worked(1);
 
                         monitor.done();
@@ -230,7 +238,7 @@ public abstract class AbstractExecutionHandler {
     // final int pageLoadTimeout, final LaunchMode launchMode) throws Exception
     // {
     public static void executeTestSuite(final TestSuiteEntity testSuite, final LaunchMode launchMode,
-            final IRunConfiguration runConfig, final int reRunTime, final List<String> passedTestCaseIds) throws Exception {
+            final IRunConfiguration runConfig) throws Exception {
         if (testSuite == null) {
             return;
         }
@@ -242,9 +250,9 @@ public abstract class AbstractExecutionHandler {
                     monitor.beginTask("Launching test suite...", 4);
                     monitor.subTask("Validating test suite...");
                     // back-up
-                    
+
                     final TestSuiteExecutedEntity testSuiteExecutedEntity = ExecutionUtil.loadTestDataForTestSuite(
-                            testSuite, testSuite.getProject(), passedTestCaseIds);
+                            testSuite, testSuite.getProject());
                     final int totalTestCases = testSuiteExecutedEntity.getTotalTestCases();
                     if (totalTestCases > 0) {
                         monitor.subTask("Activating viewers...");
@@ -252,26 +260,13 @@ public abstract class AbstractExecutionHandler {
                         monitor.worked(1);
 
                         monitor.subTask("Building scripts...");
-                        final IDELauncher launcher = new IDELauncher(eventBroker, LoggerSingleton.getInstance()
-                                .getLogger(), launchMode, runConfig);
+                        runConfig.build(testSuite, testSuiteExecutedEntity);
                         monitor.worked(1);
 
                         monitor.subTask("Launching test suite...");
-                        launcher.setTotalTestCase(totalTestCases);
+                        ILauncher launcher = new IDELauncher(runConfig, launchMode);
+                        LauncherManager.getInstance().addLauncher(launcher);
 
-                        sync.syncExec(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    launcher.launch(testSuite, testSuiteExecutedEntity, reRunTime, passedTestCaseIds);
-                                } catch (Exception e) {
-                                    monitor.setCanceled(true);
-                                    MultiStatusErrorDialog.showErrorDialog(e,
-                                            "Unable to execute the current selected test suite.",
-                                            "Test suite is not valid.");
-                                }
-                            }
-                        });
                         monitor.worked(1);
 
                         monitor.done();
@@ -307,11 +302,6 @@ public abstract class AbstractExecutionHandler {
         };
         job.setUser(true);
         job.schedule();
-
-        if (testSuiteCompletedListener == null) {
-            testSuiteCompletedListener = new TestSuiteExecutionJobCompletedListener();
-            eventBroker.subscribe(EventConstants.JOB_COMPLETED, testSuiteCompletedListener);
-        }
     }
 
     /**

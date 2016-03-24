@@ -2,7 +2,6 @@ package com.kms.katalon.execution.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
@@ -19,13 +18,13 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.constants.PreferenceConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.configuration.RunConfiguration;
+import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.testdata.TestData;
 import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
@@ -36,12 +35,16 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
+import com.kms.katalon.execution.configuration.IDriverConnector;
+import com.kms.katalon.execution.configuration.IExecutionSetting;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
 import com.kms.katalon.execution.constants.StringConstants;
+import com.kms.katalon.execution.entity.DefaultRerunSetting;
 import com.kms.katalon.execution.entity.TestCaseExecutedEntity;
 import com.kms.katalon.execution.entity.TestDataExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
+import com.kms.katalon.execution.launcher.ILauncherResult;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
@@ -53,6 +56,14 @@ public class ExecutionUtil {
     private static final String OS_NAME_PROPERTY = "os.name";
 
     private static final String UNKNOW_HOST = "Unknow host";
+
+    public static String getLocalHostAddress() {
+        try {
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            return "localhost";
+        }
+    }
 
     public static String getLocalHostName() {
         try {
@@ -110,10 +121,10 @@ public class ExecutionUtil {
      * @param project
      * @return
      */
-    public static TestSuiteExecutedEntity loadTestDataForTestSuite(TestSuiteEntity testSuite, ProjectEntity project,
-            List<String> passedTestCaseIds) throws Exception {
-        TestSuiteExecutedEntity testSuiteExecutedEntity = new TestSuiteExecutedEntity();
-        testSuiteExecutedEntity.setTestSuiteId(testSuite.getIdForDisplay());
+    public static TestSuiteExecutedEntity loadTestDataForTestSuite(TestSuiteEntity testSuite, ProjectEntity project)
+            throws Exception {
+        TestSuiteExecutedEntity testSuiteExecutedEntity = new TestSuiteExecutedEntity(testSuite);
+
         String projectDir = project.getFolderLocation();
 
         // key: id of id of test data
@@ -126,9 +137,6 @@ public class ExecutionUtil {
             if (testCase == null) {
                 throw new IllegalArgumentException(MessageFormat.format(StringConstants.UTIL_EXC_TEST_CASE_X_NOT_FOUND,
                         testCaseLink.getTestCaseId()));
-            }
-            if (passedTestCaseIds != null && passedTestCaseIds.contains(testCase.getIdForDisplay())) {
-                continue;
             }
 
             TestCaseExecutedEntity testCaseExecutedEntity = new TestCaseExecutedEntity(testCaseLink.getTestCaseId());
@@ -147,8 +155,9 @@ public class ExecutionUtil {
                     // check test data in the test data map first, if is doesn't
                     // exist, find it by using TestDataFactory to read its
                     // source.
-                	DataFileEntity dataFile = TestDataController.getInstance().getTestDataByDisplayId(testDataLink.getTestDataId());
-                	
+                    DataFileEntity dataFile = TestDataController.getInstance().getTestDataByDisplayId(
+                            testDataLink.getTestDataId());
+
                     TestData testData = testDataUsedMap.get(testDataLink.getTestDataId());
 
                     if (testData == null) {
@@ -157,14 +166,17 @@ public class ExecutionUtil {
                         testDataUsedMap.put(testDataLink.getTestDataId(), testData);
                     }
 
-                    if (testData == null || dataFile == null || ((dataFile.isContainsHeaders()? testData.getRowNumbers()-1 : testData.getRowNumbers()) < 0)) {
+                    if (testData == null
+                            || dataFile == null
+                            || ((dataFile.isContainsHeaders() ? testData.getRowNumbers() - 1 : testData.getRowNumbers()) < 0)) {
                         throw new IllegalArgumentException(MessageFormat.format(
                                 StringConstants.UTIL_EXC_TD_DATA_SRC_X_UNAVAILABLE, testDataLink.getTestDataId()));
                     } else {
                         TestDataExecutedEntity testDataExecutedEntity = getTestDataExecutedEntity(testCaseLink,
                                 testDataLink, testData);
-                        if (testDataExecutedEntity == null)
+                        if (testDataExecutedEntity == null) {
                             continue;
+                        }
 
                         int rowCount = testDataExecutedEntity.getRowIndexes().length;
 
@@ -216,16 +228,17 @@ public class ExecutionUtil {
     }
 
     /**
-     * Make sure all TestDataExecutedEntity in the given testCaseExecutedEntity has the same rows with the given
-     * numberTestCaseUsedOnce
+     * Make sure all TestDataExecutedEntity in the given <code>testCaseExecutedEntity</code> has the same rows with the
+     * given <code>numberTestCaseUsedOnce</code>
      * 
      * @param testCaseExecutedEntity
      * @see {@link TestCaseExecutedEntity}
      * @param numberTestCaseUsedOnce
      */
     private static void cutRedundantIndexes(TestCaseExecutedEntity testCaseExecutedEntity, int numberTestCaseUsedOnce) {
-        if (numberTestCaseUsedOnce <= 1)
+        if (numberTestCaseUsedOnce <= 1) {
             return;
+        }
 
         for (TestDataExecutedEntity siblingDataExecuted : testCaseExecutedEntity.getTestDataExecutions()) {
             if ((siblingDataExecuted.getType() == TestDataCombinationType.ONE)
@@ -244,23 +257,23 @@ public class ExecutionUtil {
      * @param testCaseLink
      * @param testDataLink
      * @param testData
-     * @throws Exception 
+     * @throws Exception
      */
     private static TestDataExecutedEntity getTestDataExecutedEntity(TestSuiteTestCaseLink testCaseLink,
             TestCaseTestDataLink testDataLink, TestData testData) throws Exception {
-    	
-    	DataFileEntity dataFile = TestDataController.getInstance().getTestDataByDisplayId(testDataLink.getTestDataId());
-    	
+
+        DataFileEntity dataFile = TestDataController.getInstance().getTestDataByDisplayId(testDataLink.getTestDataId());
+
         TestDataExecutedEntity testDataExecutedEntity = new TestDataExecutedEntity(testDataLink.getId(),
                 testDataLink.getTestDataId());
         testDataExecutedEntity.setType(testDataLink.getCombinationType());
 
-        int rowCount = 0; 
-        int totalRowCount = (dataFile.isContainsHeaders()? testData.getRowNumbers()-1 : testData.getRowNumbers());
+        int rowCount = 0;
+        int totalRowCount = (dataFile.isContainsHeaders() ? testData.getRowNumbers() - 1 : testData.getRowNumbers());
 
         switch (testDataLink.getIterationEntity().getIterationType()) {
         case ALL: {
-            rowCount = (dataFile.isContainsHeaders()? testData.getRowNumbers()-1 : testData.getRowNumbers());
+            rowCount = (dataFile.isContainsHeaders() ? testData.getRowNumbers() - 1 : testData.getRowNumbers());
 
             if (rowCount <= 0) {
                 throw new IllegalArgumentException(MessageFormat.format(
@@ -269,7 +282,7 @@ public class ExecutionUtil {
 
             int[] rowIndexes = new int[rowCount];
             for (int index = 0; index < rowCount; index++) {
-                rowIndexes[index] = index + (dataFile.isContainsHeaders()? 1 : 0);
+                rowIndexes[index] = index + (dataFile.isContainsHeaders() ? 1 : 0);
             }
             testDataExecutedEntity.setRowIndexes(rowIndexes);
 
@@ -282,21 +295,21 @@ public class ExecutionUtil {
             if (rowStart > totalRowCount) {
                 throw new IllegalArgumentException(MessageFormat.format(
                         StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_START_AT_ROW_IDX,
-                        testDataLink.getTestDataId(), Integer.toString(totalRowCount),
-                        testCaseLink.getTestCaseId(), Integer.toString(rowStart)));
+                        testDataLink.getTestDataId(), Integer.toString(totalRowCount), testCaseLink.getTestCaseId(),
+                        Integer.toString(rowStart)));
             }
 
             if (rowEnd > totalRowCount) {
                 throw new IllegalArgumentException(MessageFormat.format(
                         StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_ENDS_AT_ROW_IDX,
-                        testDataLink.getTestDataId(), Integer.toString(totalRowCount),
-                        testCaseLink.getTestCaseId(), Integer.toString(rowEnd)));
+                        testDataLink.getTestDataId(), Integer.toString(totalRowCount), testCaseLink.getTestCaseId(),
+                        Integer.toString(rowEnd)));
             }
             rowCount = rowEnd - rowStart + 1;
 
             int[] rowIndexes = new int[rowCount];
             for (int index = 0; index < rowCount; index++) {
-                rowIndexes[index] = index + rowStart - (dataFile.isContainsHeaders()? 0 : 1);
+                rowIndexes[index] = index + rowStart - (dataFile.isContainsHeaders() ? 0 : 1);
             }
             testDataExecutedEntity.setRowIndexes(rowIndexes);
 
@@ -329,11 +342,10 @@ public class ExecutionUtil {
                                 testCaseLink.getTestCaseId(), Integer.toString(rowEnd)));
                     }
                     for (int rowIndex = rowStart; rowIndex <= rowEnd; rowIndex++) {
-                        if(dataFile.isContainsHeaders()){
-                        	rowIndexArray.add(rowIndex);
-                        }
-                        else{
-                        	rowIndexArray.add(rowIndex-1);	
+                        if (dataFile.isContainsHeaders()) {
+                            rowIndexArray.add(rowIndex);
+                        } else {
+                            rowIndexArray.add(rowIndex - 1);
                         }
                     }
 
@@ -345,11 +357,10 @@ public class ExecutionUtil {
                                 StringConstants.UTIL_EXC_IDX_X_INVALID_TC_Y_TD_Z, rowIndexesString[index],
                                 testCaseLink.getTestCaseId(), testDataLink.getTestDataId()));
                     }
-                    if(dataFile.isContainsHeaders()){
-                    	rowIndexArray.add(rowIndex);
-                    }
-                    else{
-                    	rowIndexArray.add(rowIndex-1);	
+                    if (dataFile.isContainsHeaders()) {
+                        rowIndexArray.add(rowIndex);
+                    } else {
+                        rowIndexArray.add(rowIndex - 1);
                     }
                 }
             }
@@ -365,35 +376,129 @@ public class ExecutionUtil {
         }
     }
 
+    public static Map<String, Object> getExecutionProperties(IExecutionSetting executionSetting,
+            Map<String, IDriverConnector> driverConnectors) {
+        Map<String, Object> propertyMap = new LinkedHashMap<String, Object>();
+
+        Map<String, Object> executionProperties = new LinkedHashMap<String, Object>();
+
+        executionProperties.put(RunConfiguration.EXECUTION_GENERAL_PROPERTY, executionSetting.getGeneralProperties());
+
+        executionProperties.put(RunConfiguration.EXECUTION_DRIVER_PROPERTY,
+                getDriverExecutionProperties(driverConnectors));
+
+        propertyMap.put(RunConfiguration.EXECUTION_PROPERTY, executionProperties);
+
+        return propertyMap;
+    }
+
+    /**
+     * Returns execution properties for drivers connector.
+     * @return a {@link LinkedHashMap} that contains all driver system and preferences properties
+     * </br>
+     * Sample output in JSON:
+     * <ul>
+     * </br>{
+     * </br>    "system": { 
+     * </br>        "WebUI": {
+     * </br>        }
+     * </br>    },
+     * </br>    "preferences": {
+     * </br>        "WebUI": {
+     * </br>        }
+     * </br>    }
+     * </br>}
+     * </ul>
+     */
+    private static Map<String, Object> getDriverExecutionProperties(Map<String, IDriverConnector> driverConnectors) {
+        Map<String, Object> driverProperties = new LinkedHashMap<String, Object>();
+        Map<String, Object> driverSystemProperties = new HashMap<String, Object>();
+
+        Map<String, Object> driverPerferencesProperties = new HashMap<String, Object>();
+
+        for (Entry<String, IDriverConnector> kwDriverConnector : driverConnectors.entrySet()) {
+            if (kwDriverConnector == null) {
+                continue;
+            }
+            driverSystemProperties.put(kwDriverConnector.getKey(), kwDriverConnector.getValue().getSystemProperties());
+            driverPerferencesProperties.put(kwDriverConnector.getKey(), kwDriverConnector.getValue()
+                    .getUserConfigProperties());
+        }
+
+        driverProperties.put(RunConfiguration.EXECUTION_SYSTEM_PROPERTY, driverSystemProperties);
+        driverProperties.put(RunConfiguration.EXECUTION_PREFS_PROPERTY, driverPerferencesProperties);
+
+        return driverProperties;
+    }
+
     public static File writeRunConfigToFile(IRunConfiguration runConfig) throws IOException {
-        File executionFile = new File(runConfig.getExecutionSettingFilePath());
+        IExecutionSetting setting = runConfig.getExecutionSetting();
+        File executionFile = new File(setting.getSettingFilePath());
         if (!executionFile.exists()) {
             executionFile.createNewFile();
         }
         Gson gsonObj = new Gson();
-        String strJson = gsonObj.toJson(runConfig.getExecutionSettingMap());
+        String strJson = gsonObj.toJson(setting.getGeneralProperties());
         FileUtils.writeStringToFile(executionFile, strJson);
         return executionFile;
     }
 
-    public static Map<?, ?> readRunConfigSettingFromFile(String executionConfigFilePath) throws IOException {
-        File executionConfigFile = new File(executionConfigFilePath);
-        if (!executionConfigFile.exists()) {
-            return null;
+    public static Map<String, Object> readRunConfigSettingFromFile(String executionConfigFilePath) throws IOException {
+        RunConfiguration.setExecutionSettingFile(executionConfigFilePath);
+        Map<String, Object> executionProps = new LinkedHashMap<String, Object>();
+
+        Map<String, Object> generalProps = RunConfiguration.getExecutionGeneralProperties();
+        if (generalProps != null && !generalProps.values().isEmpty()) {
+            executionProps.putAll(RunConfiguration.getExecutionGeneralProperties());
         }
-        Gson gsonObj = new Gson();
+        
+        Map<String, Object> preferenceProps = RunConfiguration.getDriverPreferencesProperties();
+        if (preferenceProps != null && !preferenceProps.values().isEmpty()) {
+            executionProps.putAll(RunConfiguration.getDriverPreferencesProperties());
+        }
+
+        return executionProps;
+    }
+
+    public static TestSuiteExecutedEntity getRerunExecutedEntity(TestSuiteExecutedEntity prevExecuted,
+            ILauncherResult prevResult) {
+        TestSuiteEntity testSuite = null;
         try {
-            String executionConfigFileContent = FileUtils.readFileToString(executionConfigFile);
-            Type collectionType = new TypeToken<Map<String, Object>>() {
-            }.getType();
-            Map<String, Object> result = gsonObj.fromJson(executionConfigFileContent, collectionType);
-            if (result == null || !(result.get(RunConfiguration.EXECUTION_DRIVER_PROPERTY) instanceof Map<?, ?>)) {
-                return new LinkedHashMap<String, Object>();
-            }
-            return (Map<?, ?>) result.get(RunConfiguration.EXECUTION_DRIVER_PROPERTY);
-        } catch (IOException | JsonSyntaxException exception) {
-            // reading file failed or parsing json failed --> return empty map;
+            testSuite = TestSuiteController.getInstance().getTestSuiteByDisplayId(prevExecuted.getSourceId(),
+                    ProjectController.getInstance().getCurrentProject());
+        } catch (Exception e) {
+            // TODO need to log here
         }
-        return null;
+
+        DefaultRerunSetting rerunSetting = new DefaultRerunSetting(prevExecuted.getPreviousRerunTimes() + 1,
+                prevExecuted.getRemainingRerunTimes() - 1, prevExecuted.isRerunFailedTestCasesOnly());
+
+        TestSuiteExecutedEntity newExecutedEntity = new TestSuiteExecutedEntity(testSuite, rerunSetting);
+        newExecutedEntity.setReportLocation(prevExecuted.getReportLocationSetting());
+        newExecutedEntity.setTestDataMap(prevExecuted.getTestDataMap());
+
+        List<TestCaseExecutedEntity> prevTestCaseExecutedEntities = prevExecuted.getTestCaseExecutedEntities();
+
+        List<TestCaseExecutedEntity> newTestCaseExecutedEntities = new ArrayList<TestCaseExecutedEntity>();
+        if (prevExecuted.isRerunFailedTestCasesOnly()) {
+            TestStatusValue[] prevResultValues = prevResult.getResultValues();
+            int rsIdx = 0;
+
+            for (TestCaseExecutedEntity prevExecutedTC : prevTestCaseExecutedEntities) {
+                for (int i = rsIdx; i < rsIdx + prevExecutedTC.getLoopTimes(); i++) {
+                    if (prevResultValues[i] == TestStatusValue.FAILED || prevResultValues[i] == TestStatusValue.ERROR) {
+                        newTestCaseExecutedEntities.add(prevExecutedTC);
+                        break;
+                    }
+                }
+                rsIdx += prevExecutedTC.getLoopTimes();
+            }
+
+            newExecutedEntity.setTestCaseExecutedEntities(newTestCaseExecutedEntities);
+        } else {
+            newExecutedEntity.setTestCaseExecutedEntities(prevTestCaseExecutedEntities);
+        }
+
+        return newExecutedEntity;
     }
 }

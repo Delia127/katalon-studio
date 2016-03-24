@@ -14,9 +14,12 @@ import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.util.ExceptionsUtil;
 
 public class CustomKeywordDelegatingMetaClass extends DelegatingMetaClass {
-	CustomKeywordDelegatingMetaClass(final Class<?> aclass) {
-		super(aclass);
+    private ScriptEngine engine;
+    
+	CustomKeywordDelegatingMetaClass(final Class<?> clazz, ScriptEngine engine) {
+		super(clazz);
 		initialize();
+		this.engine = engine;
 	}
 
 	@Override
@@ -27,7 +30,7 @@ public class CustomKeywordDelegatingMetaClass extends DelegatingMetaClass {
 			int index = methodName.lastIndexOf(".");
 			String customKeywordClassName = methodName.substring(0, index);
 			String customKeywordMethodName =  methodName.substring(index + 1, methodName.length());
-			Class<?> customKeywordClass = Class.forName(customKeywordClassName);
+			Class<?> customKeywordClass = engine.getGroovyClassLoader().loadClass(customKeywordClassName);
 			
 			InvokerHelper.metaRegistry.setMetaClass(customKeywordClass, new KeywordClassDelegatingMetaClass(
 					customKeywordClass));

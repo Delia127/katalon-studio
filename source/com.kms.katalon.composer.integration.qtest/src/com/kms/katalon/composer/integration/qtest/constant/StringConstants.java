@@ -29,6 +29,10 @@ public class StringConstants extends GlobalStringConstants {
     public static final String CM_YES = "Yes";
     public static final String CM_NO = "No";
     public static final String CM_SETTINGS = "Settings";
+    public static final String CM_NEW = "New";
+    public static final String CM_CREATED = "Created";
+    public static final String CM_NEW_DUPLICATED = "New but Duplicated";
+    public static final String CM_MODULE = "Module";
 
     /******************************************************************************************************************/
 

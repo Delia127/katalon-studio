@@ -10,10 +10,12 @@ import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.constants.StringConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
+import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.CustomRunConfigurationContributor;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
@@ -40,18 +42,24 @@ public class CustomExecutionHandler {
 
     @Execute
     public void execute(@Optional MMenuItem menuItem) {
+        String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
         CustomRunConfigurationContributor customRunConfigurationContributor = getRunConfigurationContributor(menuItem);
         Entity entity = AbstractExecutionHandler.getExecutionTarget();
-        if (customRunConfigurationContributor != null && (entity != null)) {
+        
+        if (customRunConfigurationContributor != null && entity != null) {
             try {
+                IRunConfiguration runConfig = customRunConfigurationContributor.getRunConfiguration(projectDir, null);
+                
+                LaunchMode launchMode = LaunchMode.RUN;
+                
                 if (entity instanceof TestCaseEntity) {
                     TestCaseEntity testCase = (TestCaseEntity) entity;
-                    AbstractExecutionHandler.executeTestCase(testCase, LaunchMode.RUN,
-                            customRunConfigurationContributor.getRunConfiguration(testCase, null));
+                    
+                    AbstractExecutionHandler.executeTestCase(testCase, launchMode, runConfig);
                 } else if (entity instanceof TestSuiteEntity) {
                     TestSuiteEntity testSuite = (TestSuiteEntity) entity;
-                    AbstractExecutionHandler.executeTestSuite(testSuite, LaunchMode.RUN,
-                            customRunConfigurationContributor.getRunConfiguration(testSuite, null), 0, null);
+                    
+                    AbstractExecutionHandler.executeTestSuite(testSuite, launchMode, runConfig);
                 }
             } catch (ExecutionException e) {
                 MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR, e.getMessage());

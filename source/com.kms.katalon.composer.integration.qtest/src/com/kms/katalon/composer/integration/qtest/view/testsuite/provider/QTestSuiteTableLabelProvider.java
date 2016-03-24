@@ -13,23 +13,26 @@ public class QTestSuiteTableLabelProvider extends LabelProvider implements ITabl
     private static final int CLMN_PARENT_NAME_IDX = 0;
     private static final int CLMN_PARENT_TYPE_IDX = 1;
     private static final int CLMN_PARENT_IS_DEFAULT_IDX = 2;
+
     @Override
     public Image getColumnImage(Object element, int columnIndex) {
         if (element != null && element instanceof QTestSuite) {
             QTestSuite qTestSuite = (QTestSuite) element;
             switch (columnIndex) {
-                case CLMN_PARENT_NAME_IDX:
-                    if (qTestSuite.getId() > 0) {
-                        return ImageConstants.IMG_16_UPLOADED;
-                    } else {
-                        return ImageConstants.IMG_16_UPLOADING;
-                    }
-                case CLMN_PARENT_IS_DEFAULT_IDX:
-                    if (qTestSuite.isSelected()) {
-                        return ImageConstants.IMG_16_CHECKED;
-                    } else {
-                        return ImageConstants.IMG_16_UNCHECKED;
-                    }
+            case CLMN_PARENT_NAME_IDX: {
+                if (qTestSuite.getId() > 0) {
+                    return ImageConstants.IMG_16_UPLOADED;
+                } else {
+                    return ImageConstants.IMG_16_UPLOADING;
+                }
+            }
+            case CLMN_PARENT_IS_DEFAULT_IDX: {
+                if (qTestSuite.isSelected()) {
+                    return ImageConstants.IMG_16_CHECKED;
+                } else {
+                    return ImageConstants.IMG_16_UNCHECKED;
+                }
+            }
             }
 
         }
@@ -39,28 +42,33 @@ public class QTestSuiteTableLabelProvider extends LabelProvider implements ITabl
     @Override
     public String getColumnText(Object element, int columnIndex) {
         if (element == null || !(element instanceof QTestSuite) || columnIndex < CLMN_PARENT_NAME_IDX
-                || columnIndex > CLMN_PARENT_TYPE_IDX) return "";
+                || columnIndex > CLMN_PARENT_TYPE_IDX) {
+            return "";
+        }
 
         QTestSuite qTestSuite = (QTestSuite) element;
         switch (columnIndex) {
-            case CLMN_PARENT_NAME_IDX:
-                QTestSuiteParent parent = qTestSuite.getParent();
-                if (parent instanceof QTestCycle && parent.getParent() != null) {
-                    String parentName = parent.getParent().getName();
-                    if (parent != null && !parentName.isEmpty()) {
-                        return parent.getParent().getName() + " / " + parent.getName();
-                    } else {
-                        return parent.getName();
-                    }
-
+        case CLMN_PARENT_NAME_IDX: {
+            QTestSuiteParent parent = qTestSuite.getParent();
+            if (parent instanceof QTestCycle && parent.getParent() != null) {
+                String parentName = parent.getParent().getName();
+                if (parent != null && !parentName.isEmpty()) {
+                    return parent.getParent().getName() + " / " + parent.getName();
                 } else {
                     return parent.getName();
                 }
 
-            case CLMN_PARENT_TYPE_IDX:
-                return qTestSuite.getParent().getTypeName();
+            } else {
+                return parent.getName();
+            }
         }
-        return "";
+        case CLMN_PARENT_TYPE_IDX: {
+            return qTestSuite.getParent().getTypeName();
+        }
+        default: {
+            return "";
+        }
+        }
     }
 
 }

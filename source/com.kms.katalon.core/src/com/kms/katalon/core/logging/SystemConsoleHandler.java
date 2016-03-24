@@ -25,10 +25,10 @@ public class SystemConsoleHandler extends ConsoleHandler {
 	}
 
 	@Override
-	public void publish(LogRecord record) {
+	public synchronized void publish(LogRecord record) {
 		try {
 			String message = getFormatter().format(record);
-			if (record.getLevel().intValue() >= LogLevel.WARNING.intValue()) {
+			if (record.getLevel().intValue() >= LogLevel.WARNING.getValue()) {
 				System.err.write(message.getBytes());
 			} else {
 				System.out.write(message.getBytes());
@@ -37,6 +37,6 @@ public class SystemConsoleHandler extends ConsoleHandler {
 			reportError(null, exception, ErrorManager.FORMAT_FAILURE);
 			return;
 		}
-
+		flush();
 	}
 }

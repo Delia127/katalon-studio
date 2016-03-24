@@ -4,63 +4,61 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Level;
 
-import com.kms.katalon.core.constants.StringConstants;
 
-public class LogLevel extends Level {
-
-	private static final long serialVersionUID = 6700699007644941984L;
-
-	public static final LogLevel START = new LogLevel(StringConstants.LOG_LVL_START, 1002);
-	public static final LogLevel END = new LogLevel(StringConstants.LOG_LVL_END, 1003);
-
-	public static final LogLevel PASSED = new LogLevel(StringConstants.LOG_LVL_PASSED, 1000);
-	public static final LogLevel INFO = new LogLevel(StringConstants.LOG_LVL_INFO, 1001);
-
-	public static final LogLevel WARNING = new LogLevel(StringConstants.LOG_LVL_WARNING, 1004);
-	public static final LogLevel FAILED = new LogLevel(StringConstants.LOG_LVL_FAILED, 1005);
-	public static final LogLevel ERROR = new LogLevel(StringConstants.LOG_LVL_ERROR, 1006);
-	public static final LogLevel ABORTED = new LogLevel(StringConstants.LOG_LVL_ABORTED, 1009);
-	public static final LogLevel INCOMPLETE = new LogLevel(StringConstants.LOG_LVL_INCOMPLETE, 1010);
-	
-	public static final LogLevel RUN_DATA = new LogLevel(StringConstants.LOG_LVL_RUN_DATA, 2000);
-
-	protected LogLevel(String arg0, int arg1) {
-		super(arg0, arg1);
-	}
-
-	public static Level parse(String levelString) {
-		switch (levelString) {
-		case (StringConstants.LOG_LVL_PASSED):
-			return PASSED;
-		case (StringConstants.LOG_LVL_ERROR):
-			return ERROR;
-		case (StringConstants.LOG_LVL_INFO):
-			return INFO;
-		case (StringConstants.LOG_LVL_WARNING):
-			return WARNING;
-		case (StringConstants.LOG_LVL_FAILED):
-			return FAILED;
-		case (StringConstants.LOG_LVL_ABORTED):
-			return ABORTED;
-		case (StringConstants.LOG_LVL_START):
-			return START;
-		case (StringConstants.LOG_LVL_END):
-			return END;
-		case (StringConstants.LOG_LVL_INCOMPLETE):
-			return INCOMPLETE;
-		case (StringConstants.LOG_LVL_RUN_DATA):
-            return RUN_DATA;
-		}
-		return null;
-	}
-	
+public enum LogLevel {
+    START(1002),
+    END(1003),
+    PASSED(1000),
+    INFO(1001),
+    WARNING(1004),
+    FAILED(1005),
+    ERROR(1006),
+    ABORTED(1009),
+    INCOMPLETE(1010),
+    RUN_DATA(2000);
+    
+    private final int value;
+    private Level level;
+    
+    private LogLevel(int value) {
+        this.value = value;
+    }
+    
+    public int getValue() {
+        return value;
+    }
+    
+    public Level getLevel() {
+        if (level == null) {
+            level = new InternalLogLevel(name(), getValue());;
+        }
+        return level;
+    }
+    
+    public static LogLevel valueOf(Level level) {
+        for (LogLevel logLevel : values()) {
+            if (logLevel.getValue() == level.intValue()) {
+                return logLevel;
+            }
+        }
+        return null;        
+    }
+    
 	public static Set<LogLevel> getResultLogs() {
 	    Set<LogLevel> resultLogs = new LinkedHashSet<LogLevel>();
-	    resultLogs.add(LogLevel.PASSED);
-	    resultLogs.add(LogLevel.FAILED);
-	    resultLogs.add(LogLevel.ERROR);
-	    resultLogs.add(LogLevel.INCOMPLETE);
+	    resultLogs.add(PASSED);
+	    resultLogs.add(FAILED);
+	    resultLogs.add(ERROR);
+	    resultLogs.add(INCOMPLETE);
 	    
 	    return resultLogs;
+	}
+	
+	private class InternalLogLevel extends Level {
+        private static final long serialVersionUID = 7111238540539667071L;
+
+        protected InternalLogLevel(String arg0, int arg1) {
+            super(arg0, arg1);
+        }
 	}
 }

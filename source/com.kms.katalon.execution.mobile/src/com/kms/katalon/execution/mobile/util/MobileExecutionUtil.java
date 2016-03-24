@@ -8,23 +8,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.Platform;
 
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
-import com.kms.katalon.entity.file.FileEntity;
-import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.mobile.driver.AndroidDriverConnector;
 import com.kms.katalon.execution.mobile.driver.IosDriverConnector;
+import com.kms.katalon.execution.mobile.driver.MobileDevice;
+import com.kms.katalon.execution.mobile.driver.MobileDriverConnector;
 
 public class MobileExecutionUtil {
     private static final String RO_BUILD_VERSION_RELEASE = "ro.build.version.release";
 
     private static final String RO_PRODUCT_MODEL = "ro.product.model";
 
-    private static final String RO_PRODUCT_MANUFACTURER = "ro.product.manufacturer";
+    private static final String RO_PRODUCT_NAME = "ro.product.name";
 
     private static final String ABD_COMMAND_GETPROP_OPTION = "getprop";
 
@@ -60,7 +59,7 @@ public class MobileExecutionUtil {
 
     private static final String IDEVICEID_COMMAND = "idevice_id";
 
-    public static IDriverConnector getMobileDriverConnector(MobileDriverType mobileDriverType, String projectDirectory)
+    public static MobileDriverConnector getMobileDriverConnector(MobileDriverType mobileDriverType, String projectDirectory)
             throws IOException {
         switch (mobileDriverType) {
             case ANDROID_DRIVER:
@@ -73,8 +72,8 @@ public class MobileExecutionUtil {
         return null;
     }
 
-    public static Map<String, String> getIosDevices() throws IOException, InterruptedException {
-        Map<String, String> deviceMap = new HashMap<String, String>();
+    public static Map<String, MobileDevice> getIosDevices() throws IOException, InterruptedException {
+        Map<String, MobileDevice> deviceMap = new HashMap<String, MobileDevice>();
 
         if (!(Platform.getOS().equals(Platform.OS_MACOSX))) {
             return deviceMap;
@@ -102,29 +101,30 @@ public class MobileExecutionUtil {
             p = pb.start();
             p.waitFor();
             br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String deviceInfo = "";
+            MobileDevice iosDevice = new MobileDevice(deviceId);
+            
             while ((line = br.readLine()) != null) {
                 if (line.contains(DEVICE_CLASS_LINE_STARTER)) {
-                    deviceInfo = line.substring(DEVICE_CLASS_LINE_STARTER.length(), line.length()).trim();
+                    iosDevice.setModel(line.substring(DEVICE_CLASS_LINE_STARTER.length(), line.length()).trim());
                     continue;
                 }
                 if (line.contains(DEVICE_NAME_LINE_STARTER)) {
-                    deviceInfo += " " + line.substring(DEVICE_NAME_LINE_STARTER.length(), line.length()).trim();
+                    iosDevice.setName(line.substring(DEVICE_NAME_LINE_STARTER.length(), line.length()).trim());
                     continue;
                 }
                 if (line.contains(PRODUCT_VERSION_LINE_STARTER)) {
-                    deviceInfo += " " + line.substring(PRODUCT_VERSION_LINE_STARTER.length(), line.length()).trim();
+                    iosDevice.setVersion(line.substring(PRODUCT_VERSION_LINE_STARTER.length(), line.length()).trim());
                     continue;
                 }
             }
 
-            deviceMap.put(deviceId, deviceInfo);
+            deviceMap.put(deviceId, iosDevice);
         }
         return deviceMap;
     }
 
-    public static Map<String, String> getAndroidDevices() throws IOException, InterruptedException {
-        Map<String, String> deviceMap = new HashMap<String, String>();
+    public static Map<String, MobileDevice> getAndroidDevices() throws IOException, InterruptedException {
+        Map<String, MobileDevice> deviceMap = new HashMap<String, MobileDevice>();
 
         String adbPath = System.getenv(ANDROID_HOME_ENVIRONMENT_VARIABLE);
         if (adbPath != null) {
@@ -135,7 +135,7 @@ public class MobileExecutionUtil {
             Process process = pb.start();
             process.waitFor();
             BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line, deviceId, deviceName;
+            String line, deviceId;
             try {
                 while ((line = br.readLine()) != null) {
                     if (!line.toLowerCase().trim().contains(LIST_OF_DEVICES_LINE_STARTER)) {
@@ -152,21 +152,24 @@ public class MobileExecutionUtil {
 
             for (String id : deviceIds) {
                 try {
+                    MobileDevice androidDevice = new MobileDevice(id);
                     cmd = new String[] { adbPath, ADB_COMMAND_S_OPTION, id, ADB_COMMAND_SHELL_OPTION,
-                            ABD_COMMAND_GETPROP_OPTION, RO_PRODUCT_MANUFACTURER };
+                            ABD_COMMAND_GETPROP_OPTION, RO_PRODUCT_NAME };
                     pb.command(cmd);
                     process = pb.start();
                     process.waitFor();
 
                     br = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                    deviceName = br.readLine();
+                    androidDevice.setName(br.readLine());
+                    br.close();
+                    
                     cmd = new String[] { adbPath, ADB_COMMAND_S_OPTION, id, ADB_COMMAND_SHELL_OPTION,
                             ABD_COMMAND_GETPROP_OPTION, RO_PRODUCT_MODEL };
                     pb.command(cmd);
                     process = pb.start();
                     process.waitFor();
                     br = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                    deviceName += " " + br.readLine();
+                    androidDevice.setModel(br.readLine());                    
                     br.close();
 
                     cmd = new String[] { adbPath, ADB_COMMAND_S_OPTION, id, ADB_COMMAND_SHELL_OPTION,
@@ -175,10 +178,10 @@ public class MobileExecutionUtil {
                     process = pb.start();
                     process.waitFor();
                     br = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                    deviceName += " " + br.readLine();
+                    androidDevice.setVersion(br.readLine());
                     br.close();
 
-                    deviceMap.put(id, deviceName);
+                    deviceMap.put(id, androidDevice);
                 } finally {
                     if (br == null) {
                         continue;
@@ -191,21 +194,26 @@ public class MobileExecutionUtil {
         return deviceMap;
     }
 
-    public static String getDefaultDeviceName(FileEntity fileEntity, MobileDriverType platform) throws IOException {
+    public static String getDefaultDeviceId(String projectDir, MobileDriverType platform) throws IOException {
+        String deviceId = null;
         switch (platform) {
-            case ANDROID_DRIVER:
-                return new AndroidDriverConnector(fileEntity.getProject().getFolderLocation() + File.separator
-                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME).getDeviceName();
-            case IOS_DRIVER:
-                return new IosDriverConnector(fileEntity.getProject().getFolderLocation() + File.separator
-                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME).getDeviceName();
+            case ANDROID_DRIVER: {
+                deviceId = new AndroidDriverConnector(projectDir+ File.separator
+                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME).getDeviceId();
+                break;
+            }
+            case IOS_DRIVER: {
+                deviceId =  new IosDriverConnector(projectDir + File.separator
+                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME).getDeviceId();
+                break;
+            }
         }
-        return null;
+        return deviceId;
     }
 
-    public static boolean checkDeviceName(MobileDriverType mobileDriverType, String deviceName) throws IOException,
+    public static MobileDevice getDevice(MobileDriverType mobileDriverType, String deviceId) throws IOException,
             InterruptedException {
-        Map<String, String> deviceMap = null;
+        Map<String, MobileDevice> deviceMap = null;
         switch (mobileDriverType) {
             case ANDROID_DRIVER:
                 deviceMap = MobileExecutionUtil.getAndroidDevices();
@@ -214,11 +222,6 @@ public class MobileExecutionUtil {
                 deviceMap = MobileExecutionUtil.getIosDevices();
                 break;
         }
-        for (Entry<String, String> device : deviceMap.entrySet()) {
-            if (device.getKey().equals(deviceName)) {
-                return true;
-            }
-        }
-        return false;
+        return deviceMap.get(deviceId);
     }
 }

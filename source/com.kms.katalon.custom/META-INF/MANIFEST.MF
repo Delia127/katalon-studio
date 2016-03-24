@@ -24,6 +24,7 @@ Require-Bundle: org.codehaus.groovy,
  org.eclipse.e4.ui.model.workbench,
  org.eclipse.e4.core.contexts,
  org.apache.xerces.impl,
- org.eclipse.core.filesystem
+ org.eclipse.core.filesystem,
+ org.apache.commons.lang
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy

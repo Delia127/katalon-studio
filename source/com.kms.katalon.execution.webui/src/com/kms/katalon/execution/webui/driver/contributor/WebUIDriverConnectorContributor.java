@@ -2,6 +2,7 @@ package com.kms.katalon.execution.webui.driver.contributor;
 
 import java.io.IOException;
 
+import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.configuration.contributor.IDriverConnectorContributor;
 import com.kms.katalon.execution.webui.driver.ChromeDriverConnector;
@@ -19,5 +20,10 @@ public class WebUIDriverConnectorContributor implements IDriverConnectorContribu
                 new EdgeDriverConnector(configFolderPath), new FirefoxDriverConnector(configFolderPath),
                 new IEDriverConnector(configFolderPath), new RemoteWebDriverConnector(configFolderPath),
                 new SafariDriverConnector(configFolderPath) };
+    }
+
+    @Override
+    public String getName() {
+        return DriverFactory.WEB_UI_DRIVER_PROPERTY;
     }
 }

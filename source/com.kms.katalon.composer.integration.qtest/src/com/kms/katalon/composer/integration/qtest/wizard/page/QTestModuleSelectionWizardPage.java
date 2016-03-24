@@ -129,7 +129,7 @@ public class QTestModuleSelectionWizardPage extends AbstractWizardPage {
                         selectedModule = null;
 
                         // Disable next button
-                        UISynchronizeService.getInstance().getSync().syncExec(new Runnable() {
+                        UISynchronizeService.syncExec(new Runnable() {
                             @Override
                             public void run() {
                                 firePageChanged();
@@ -147,7 +147,7 @@ public class QTestModuleSelectionWizardPage extends AbstractWizardPage {
                         return Status.OK_STATUS;
                     }
 
-                    UISynchronizeService.getInstance().getSync().syncExec(new Runnable() {
+                    UISynchronizeService.syncExec(new Runnable() {
                         @Override
                         public void run() {
                             try {
@@ -167,7 +167,7 @@ public class QTestModuleSelectionWizardPage extends AbstractWizardPage {
 
                     return Status.OK_STATUS;
                 } catch (QTestException | IOException e) {
-                    UISynchronizeService.getInstance().getSync().syncExec(new Runnable() {
+                    UISynchronizeService.syncExec(new Runnable() {
                         @Override
                         public void run() {
                             MultiStatusErrorDialog.showErrorDialog(e, MessageFormat.format(
@@ -175,7 +175,7 @@ public class QTestModuleSelectionWizardPage extends AbstractWizardPage {
                                     .getMessage());
                         }
                     });
-                    return Status.OK_STATUS;
+                    return Status.CANCEL_STATUS;
                 } finally {
                     monitor.done();
                 }

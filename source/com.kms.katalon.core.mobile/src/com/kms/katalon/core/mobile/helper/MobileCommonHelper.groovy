@@ -17,7 +17,8 @@ public class MobileCommonHelper {
 
     @CompileStatic
     public static void initializeMobileDriver(String appFile, boolean uninstallAfterCloseApp) throws Exception {
-        String deviceId = MobileDriverFactory.getDeviceId(RunConfiguration.getStringProperty(MobileDriverFactory.EXECUTED_DEVICE_NAME));
+        String deviceId = MobileDriverFactory.getDeviceId(RunConfiguration.getStringProperty(MobileDriverFactory.EXECUTED_DEVICE_ID,
+            RunConfiguration.getDriverPreferencesProperties(MobileDriverFactory.MOBILE_DRIVER_PROPERTY)));
         OsType deviceOs = MobileDriverFactory.getDeviceOs(deviceId);
         switch (deviceOs) {
             case OsType.IOS:
@@ -36,7 +37,8 @@ public class MobileCommonHelper {
 
     @CompileStatic
     public static String getDeviceModel() throws StepFailedException, IOException, InterruptedException {
-        String deviceId = MobileDriverFactory.getDeviceId(RunConfiguration.getStringProperty(MobileDriverFactory.EXECUTED_DEVICE_NAME));
+        String deviceId = MobileDriverFactory.getDeviceId(RunConfiguration.getStringProperty(MobileDriverFactory.EXECUTED_DEVICE_ID,
+            RunConfiguration.getDriverPreferencesProperties(MobileDriverFactory.MOBILE_DRIVER_PROPERTY)));
         OsType deviceOs = MobileDriverFactory.getDeviceOs(deviceId);
         String model = null;
         ProcessBuilder pb = new ProcessBuilder();
@@ -72,7 +74,8 @@ public class MobileCommonHelper {
     
     @CompileStatic
     public static String getDeviceOSVersion() throws StepFailedException, IOException, InterruptedException {
-        String deviceId = MobileDriverFactory.getDeviceId(RunConfiguration.getStringProperty(MobileDriverFactory.EXECUTED_DEVICE_NAME));
+        String deviceId = MobileDriverFactory.getDeviceId(RunConfiguration.getStringProperty(MobileDriverFactory.EXECUTED_DEVICE_ID,
+            RunConfiguration.getDriverPreferencesProperties(MobileDriverFactory.MOBILE_DRIVER_PROPERTY)));
         OsType deviceOs = MobileDriverFactory.getDeviceOs(deviceId);
         String osVersion = null;
         ProcessBuilder pb = new ProcessBuilder();

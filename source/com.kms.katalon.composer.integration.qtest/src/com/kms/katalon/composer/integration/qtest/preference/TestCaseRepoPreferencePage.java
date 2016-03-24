@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -23,6 +24,7 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -39,7 +41,6 @@ import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.TestCaseRepoDialog;
 import com.kms.katalon.composer.integration.qtest.job.DisintegrateTestCaseJob;
-import com.kms.katalon.composer.integration.qtest.job.listener.DisintegrateJobListener;
 import com.kms.katalon.composer.integration.qtest.model.TestCaseRepo;
 import com.kms.katalon.composer.integration.qtest.preference.provider.TestCaseRepoTableLabelProvider;
 import com.kms.katalon.controller.FolderController;
@@ -52,8 +53,6 @@ import com.kms.katalon.integration.qtest.QTestIntegrationFolderManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationProjectManager;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
-
-import org.eclipse.swt.layout.FillLayout;
 
 public class TestCaseRepoPreferencePage extends AbstractQTestIntegrationPage {
     public TestCaseRepoPreferencePage() {
@@ -229,8 +228,10 @@ public class TestCaseRepoPreferencePage extends AbstractQTestIntegrationPage {
     }
 
     private void editTestCaseRepo() {
-        IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-        if (selection == null || selection.isEmpty()) return;
+        IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();        
+        if (selection == null || selection.isEmpty()) {
+            return;
+        }
 
         final TestCaseRepo repo = (TestCaseRepo) selection.getFirstElement();
         List<String> currentFolderIds = getRegisteredFolderIds();
@@ -240,32 +241,36 @@ public class TestCaseRepoPreferencePage extends AbstractQTestIntegrationPage {
                 currentFolderIds, repo);
         if (dialog.open() == Dialog.OK) {
             final TestCaseRepo newRepo = dialog.getTestCaseRepo();
-            if (!repo.equals(newRepo)) {
-                final int index = testCaseRepositories.indexOf(repo);
-                String folderId = repo.getFolderId();
-                ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-                try {
-                    FolderEntity folderEntity = FolderController.getInstance().getFolderByDisplayId(projectEntity,
-                            folderId);
+            
+            if (repo.equals(newRepo)) {
+                return;
+            }
+            
+            final int index = testCaseRepositories.indexOf(repo);
+            String folderId = repo.getFolderId();
+            ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
+            try {
+                FolderEntity folderEntity = FolderController.getInstance().getFolderByDisplayId(projectEntity,
+                        folderId);
 
-                    if (folderEntity == null) {
-                        insertNewRepoToTable(index, newRepo);
-                    }
-
-                    IntegratedEntity folderIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(folderEntity);
-
-                    if (folderIntegratedEntity == null) {
-                        insertNewRepoToTable(index, newRepo);
-                    }
-
-                    if (confirmRemoveRepo()) {
-                        performInsertTestCaseRepor(folderEntity, newRepo, index);
-                    }
-                } catch (Exception e) {
-                    LoggerSingleton.logError(e);
-                    MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_UNABLE_MOFIDY_TEST_CASE_REPO, e
-                            .getClass().getSimpleName());
+                if (folderEntity == null) {
+                    insertNewRepoToTable(index, newRepo);
+                    return;
                 }
+                
+                IntegratedEntity folderIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(folderEntity);
+                
+                if (folderIntegratedEntity == null) {
+                    insertNewRepoToTable(index, newRepo);
+                }
+
+                if (confirmRemoveRepo()) {
+                    performInsertTestCaseRepo(folderEntity, newRepo, index);
+                }
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+                MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_UNABLE_MOFIDY_TEST_CASE_REPO, e
+                        .getClass().getSimpleName());
             }
         }
     }
@@ -288,17 +293,15 @@ public class TestCaseRepoPreferencePage extends AbstractQTestIntegrationPage {
     }
 
     private boolean confirmRemoveRepo() {
-        if (MessageDialog.openConfirm(null, StringConstants.CONFIRMATION,
-                StringConstants.DIA_CONFIRM_DISINTEGRATE_TEST_CASE_FOLDER)) {
-            return true;
-        } else {
-            return false;
-        }
+       return MessageDialog.openConfirm(null, StringConstants.CONFIRMATION,
+               StringConstants.DIA_CONFIRM_DISINTEGRATE_TEST_CASE_FOLDER);
     }
 
     private void removeTestCaseRepo() {
         IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-        if (selection == null || selection.isEmpty()) return;
+        if (selection == null || selection.isEmpty()) {
+            return;
+        }
 
         final TestCaseRepo repo = (TestCaseRepo) selection.getFirstElement();
 
@@ -333,32 +336,30 @@ public class TestCaseRepoPreferencePage extends AbstractQTestIntegrationPage {
         DisintegrateTestCaseJob job = new DisintegrateTestCaseJob(true);
         job.setFileEntities(Arrays.asList((IntegratedFileEntity) folderEntity));
         job.doTask();
-        job.addJobChangeListener(new DisintegrateJobListener() {
+        job.addJobChangeListener(new JobChangeAdapter() {
             @Override
             public void done(IJobChangeEvent event) {
                 sync.syncExec(new Runnable() {
                     @Override
                     public void run() {
-                        removeRepoFromTable(repo);
-                        return;
+                        removeRepoFromTable(repo);                        
                     }
                 });
             }
         });
     }
 
-    private void performInsertTestCaseRepor(final FolderEntity folderEntity, final TestCaseRepo newRepo, final int index) {
+    private void performInsertTestCaseRepo(final FolderEntity folderEntity, final TestCaseRepo newRepo, final int index) {
         DisintegrateTestCaseJob job = new DisintegrateTestCaseJob(true);
         job.setFileEntities(Arrays.asList((IntegratedFileEntity) folderEntity));
         job.doTask();
-        job.addJobChangeListener(new DisintegrateJobListener() {
+        job.addJobChangeListener(new JobChangeAdapter() {
             @Override
             public void done(IJobChangeEvent event) {
                 sync.syncExec(new Runnable() {
                     @Override
                     public void run() {
                         insertNewRepoToTable(index, newRepo);
-                        return;
                     }
                 });
             }
@@ -368,7 +369,9 @@ public class TestCaseRepoPreferencePage extends AbstractQTestIntegrationPage {
     @Override
     public boolean performOk() {
         // if it never be opened, just returns to the parent class
-        if (container == null) return true;
+        if (container == null) {
+            return true;
+        }
 
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
 

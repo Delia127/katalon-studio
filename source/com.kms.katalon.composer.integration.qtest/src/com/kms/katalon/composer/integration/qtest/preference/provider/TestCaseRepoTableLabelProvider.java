@@ -20,25 +20,35 @@ public class TestCaseRepoTableLabelProvider extends LabelProvider implements ITa
 
     @Override
     public String getColumnText(Object element, int columnIndex) {
-        if (columnIndex < 0 || columnIndex > CLMN_KATALON_FOLDER_IDX) return "";
-        if (element == null || !(element instanceof TestCaseRepo)) return "";
+        if (columnIndex < 0 || columnIndex > CLMN_KATALON_FOLDER_IDX) {
+            return "";
+        }
+        
+        if (element == null || !(element instanceof TestCaseRepo)) {
+            return "";
+        }
 
         TestCaseRepo node = (TestCaseRepo) element;
 
         switch (columnIndex) {
-            case CLMN_QTEST_PROJECT_IDX:
+            case CLMN_QTEST_PROJECT_IDX: {
                 return node.getQTestProject().getName();
-            case CLMN_QTEST_MODULE_IDX:
+            }
+            case CLMN_QTEST_MODULE_IDX: {
                 QTestModule module = node.getQTestModule();
                 if (module != null && module.getName() != null) {
                     return node.getQTestModule().getName();
                 } else {
                     return "";
                 }
-            case CLMN_KATALON_FOLDER_IDX:
+            }
+            case CLMN_KATALON_FOLDER_IDX: {
                 return node.getFolderId();
+            }
+            default: {
+                return "";
+            }
         }
-        return "";
     }
 
 }

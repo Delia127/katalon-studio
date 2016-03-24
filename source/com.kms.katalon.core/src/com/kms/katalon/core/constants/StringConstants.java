@@ -1,5 +1,7 @@
 package com.kms.katalon.core.constants;
 
+import java.io.File;
+
 public class StringConstants {
 	// KeywordLogger
 	public static final String LOG_START_SUITE = "Start Test Suite";
@@ -134,17 +136,22 @@ public class StringConstants {
 	public static final String XML_LOG_ID_PROPERTY = "id";
 	public static final String XML_LOG_SOURCE_PROPERTY = "source";
 	public static final String XML_LOG_BROWSER_TYPE_PROPERTY = "browserType";
-	public static final String XML_LOG_DEVICE_NAME_PROPERTY = "deviceName";
+	public static final String XML_LOG_DEVICE_ID_PROPERTY = "deviceId";
 	public static final String XML_LOG_DEVICE_PLATFORM_PROPERTY = "devicePlatform";
 	public static final String XML_LOG_START_LINE_PROPERTY = "startLine";
 	public static final String XML_LOG_STEP_INDEX = "stepIndex";
 	public static final String XML_LOG_OS_PROPERTY = "os";
 	public static final String XML_LOG_HOST_NAME_PROPERTY = "hostName";
+	public static final String XML_LOG_HOST_ADDRESS_PROPERTY = "hostAddress";
 	
 
 	// CustomKeywords
+	public static final String GENERATED_SCRIPT_FOLDER = "Libs";
+	public static final String SCRIPT_FILE_EXT = "groovy";
+	public static final String CUSTOM_KEYWORD_FOLDER_NAME = "Keywords";
 	public static final String CUSTOM_KEYWORD_CLASS_NAME = "CustomKeywords";
 	public static final String GLOBAL_VARIABLE_CLASS_NAME = "GlobalVariable";
+	public static final String GLOBAL_VARIABLE_FILE_NAME = GENERATED_SCRIPT_FOLDER + File.separator + "GlobalVariable." + SCRIPT_FILE_EXT;
 
 	// TestDataFactory
 	public static final String XML_LOG_TEST_DATA_CHECKING_TEST_DATA_ID = "Checking test data id";
@@ -163,14 +170,29 @@ public class StringConstants {
 	public static final String XML_LOG_ERROR_SHEET_NAME_X_NOT_EXISTS = "Sheet with name ''{0}'' does not exists";
 	
 	// RunConfiguration
-	public static final String CONF_PROPERTY_LOG_FILE_PATH = "katalon.logFilePath";
-	public static final String CONF_PROPERTY_TIMEOUT = "katalon.timeOut";
-	public static final String CONF_PROPERTY_PROJECT_DIR = "katalon.projectDir";
+	public static final String CONF_PROPERTY_WEBUI_DRIVER = "WebUI";
+	public static final String CONF_PROPERTY_MOBILE_DRIVER= "Mobile";
+	
+	public static final String CONF_PROPERTY_LOG_FILE_PATH = "logFilePath";
+    public static final String CONF_APPIUM_LOG_FILE = "appiumLogFile";
+	public static final String CONF_PROPERTY_TIMEOUT = "timeout";
+	
+	public static final String CONF_PROPERTY_PROJECT_DIR = "projectDir";
+	
+	public static final String CONF_PROPERTY_HOST = "host";	
 	public static final String CONF_PROPERTY_HOST_NAME = XML_LOG_HOST_NAME_PROPERTY;
 	public static final String CONF_PROPERTY_HOST_OS = XML_LOG_OS_PROPERTY;
+	public static final String CONF_PROPERTY_HOST_ADDRESS = XML_LOG_HOST_ADDRESS_PROPERTY;
+	public static final String CONF_PROPERTY_HOST_PORT = "hostPort";
+	
+	public static final String CONF_PROPERTY_GENERAL = "general";
+	public static final String CONF_PROPERTY_DRIVER = "drivers";
+	public static final String CONF_PROPERTY_EXEC = "execution";
+	
 	public static final String CONF_PROPERTY_EXECUTION_SOURCE = XML_LOG_SOURCE_PROPERTY;
 	public static final String CONF_PROPERTY_EXECUTION_SOURCE_NAME = XML_LOG_NAME_PROPERTY;
 	public static final String CONF_PROPERTY_EXECUTION_SOURCE_ID = XML_LOG_ID_PROPERTY;
 	public static final String CONF_PROPERTY_EXECUTION_SOURCE_DESCRIPTION = XML_LOG_DESCRIPTION_PROPERTY;
-	public static final String CONF_PROPERTY_EXECUTION_DRIVER_PROPERTY = "katalon.execution.driver.property";
+	public static final String CONF_PROPERTY_EXECUTION_PREFS_PROPERTY = "preferences";
+	public static final String CONF_PROPERTY_EXECUTION_SYSTEM_PROPERTY = "system";
 }

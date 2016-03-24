@@ -22,8 +22,8 @@ public class ChromeDriverConnector extends WebUiDriverConnector {
 	}
 
 	@Override
-	public Map<String, Object> getExecutionSettingPropertyMap() {
-		Map<String, Object> propertyMap = super.getExecutionSettingPropertyMap();
+	public Map<String, Object> getSystemProperties() {
+		Map<String, Object> propertyMap = super.getSystemProperties();
 		propertyMap.put(StringConstants.CONF_PROPERTY_CHROME_DRIVER_PATH, getChromeDriverPath());
 		return propertyMap;
 	}
@@ -42,7 +42,7 @@ public class ChromeDriverConnector extends WebUiDriverConnector {
         try {
             ChromeDriverConnector iosDriverConnector = new ChromeDriverConnector(getParentFolderPath());
             iosDriverConnector.setChromeDriverPath(getChromeDriverPath());
-            iosDriverConnector.driverProperties = (Map<String, Object>) cloneDriverPropertyValue(getDriverProperties());
+            iosDriverConnector.driverProperties = (Map<String, Object>) cloneDriverPropertyValue(getUserConfigProperties());
             return iosDriverConnector;
         } catch (IOException e) {
             // do nothing

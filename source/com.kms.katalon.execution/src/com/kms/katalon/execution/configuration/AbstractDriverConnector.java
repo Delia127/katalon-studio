@@ -35,15 +35,15 @@ public abstract class AbstractDriverConnector implements IDriverConnector {
         loadDriverProperties();
     }
 
-    // public AbstractDriverConnector(String projectDir, CustomRunConfiguration customRunConfiguration) throws
-    // IOException {
-    // propertyConfigFile = new File(customRunConfiguration.getAbsoluteFolderPath() + File.separator
-    // + getSettingFileName() + PropertySettingStoreUtil.PROPERTY_FILE_EXENSION);
-    // if (!propertyConfigFile.exists()) {
-    // propertyConfigFile.createNewFile();
-    // }
-    // loadDriverProperties();
-    // }
+//     public AbstractDriverConnector(String projectDir, CustomRunConfiguration customRunConfiguration) throws
+//     IOException {
+//     propertyConfigFile = new File(customRunConfiguration.getAbsoluteFolderPath() + File.separator
+//     + getSettingFileName() + PropertySettingStoreUtil.PROPERTY_FILE_EXENSION);
+//     if (!propertyConfigFile.exists()) {
+//     propertyConfigFile.createNewFile();
+//     }
+//     loadDriverProperties();
+//     }
 
     @Override
     public void setParentFolderPath(String parentFolderPath) {
@@ -58,14 +58,10 @@ public abstract class AbstractDriverConnector implements IDriverConnector {
     }
 
     @Override
-    public Map<String, Object> getExecutionSettingPropertyMap() {
-        Map<String, Object> executionSettingPropertyMap = new HashMap<String, Object>();
-        Map<String, Object> driverProperties = getDriverProperties();
-        executionSettingPropertyMap.put(getDriverType().getPropertyKey(), getDriverType().getPropertyValue());
-        executionSettingPropertyMap.put(
-                com.kms.katalon.core.constants.StringConstants.CONF_PROPERTY_EXECUTION_DRIVER_PROPERTY,
-                driverProperties);
-        return executionSettingPropertyMap;
+    public Map<String, Object> getSystemProperties() {
+       HashMap<String, Object> systemProperties = new HashMap<String, Object>();
+       systemProperties.put(getDriverType().getPropertyKey(), getDriverType().getPropertyValue());
+       return systemProperties;
     }
 
     protected void loadDriverProperties() throws IOException {
@@ -81,11 +77,16 @@ public abstract class AbstractDriverConnector implements IDriverConnector {
         }
     }
 
-    public Map<String, Object> getDriverProperties() {
+    public Map<String, Object> getUserConfigProperties() {
         return driverProperties;
     }
+    
+    @Override
+    public void setUserConfigProperties(Map<String, Object> properties) {
+        driverProperties = properties;
+    }
 
-    public void saveDriverProperties() throws IOException {
+    public void saveUserConfigProperties() throws IOException {
         if (!propertyConfigFile.exists()) {
             propertyConfigFile.createNewFile();
         }
@@ -147,7 +148,7 @@ public abstract class AbstractDriverConnector implements IDriverConnector {
     }
 
     public Object getDriverPropertyValue(String rawKey) {
-        for (Entry<String, Object> driverProperty : getDriverProperties().entrySet()) {
+        for (Entry<String, Object> driverProperty : getUserConfigProperties().entrySet()) {
             if (driverProperty.getKey().equals(rawKey)) {
                 return driverProperty.getValue();
             }
@@ -156,7 +157,7 @@ public abstract class AbstractDriverConnector implements IDriverConnector {
     }
 
     public void setDriverPropertyValue(String rawKey, String propertyValue) {
-        for (Entry<String, Object> driverProperty : getDriverProperties().entrySet()) {
+        for (Entry<String, Object> driverProperty : getUserConfigProperties().entrySet()) {
             if (driverProperty.getKey().equals(rawKey)) {
                 driverProperty.setValue(propertyValue);
             }
@@ -165,7 +166,7 @@ public abstract class AbstractDriverConnector implements IDriverConnector {
 
     @Override
     public String toString() {
-        return getDriverProperties().toString();
+        return getUserConfigProperties().toString();
     }
 
     public abstract IDriverConnector clone();

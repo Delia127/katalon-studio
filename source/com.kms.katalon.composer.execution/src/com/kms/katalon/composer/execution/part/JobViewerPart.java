@@ -3,7 +3,6 @@ package com.kms.katalon.composer.execution.part;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.eclipse.debug.core.DebugException;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -43,11 +42,12 @@ import com.kms.katalon.composer.components.impl.control.GifCLabel;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.execution.constants.ImageConstants;
+import com.kms.katalon.composer.execution.launcher.IDELauncher;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.execution.launcher.AbstractLauncher;
-import com.kms.katalon.execution.launcher.IDELauncher;
+import com.kms.katalon.execution.launcher.ILauncher;
+import com.kms.katalon.execution.launcher.ILauncherResult;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.launcher.model.LauncherStatus;
@@ -139,7 +139,7 @@ public class JobViewerPart implements EventHandler {
         eventBroker.subscribe(EventConstants.JOB_UPDATE_PROGRESS, this);
     }
 
-    private void createJobComposite(Composite composite, final AbstractLauncher launcher) throws Exception {
+    private void createJobComposite(Composite composite, final IDELauncher launcher) throws Exception {
 
         final Composite compositeLauncher = new FocusableComposite(composite, SWT.BORDER);
 
@@ -170,13 +170,13 @@ public class JobViewerPart implements EventHandler {
 
         Label lblId = new Label(compositeLauncher, SWT.WRAP);
         lblId.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        lblId.setText(launcher.getId());
+        lblId.setText(launcher.getName());
         lblId.setFont(JFaceResources.getFontRegistry().getBold(""));
         lblId.setBackground(compositeLauncher.getBackground());
 
         Label lblProgressStatus = new Label(compositeLauncher, SWT.WRAP);
         lblProgressStatus.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-        lblProgressStatus.setText(launcher.getNumberExecutedTestCase() + "/" + launcher.getTotalTestCase());
+        lblProgressStatus.setText(launcher.getResult().getExecutedTestCases() + "/" + launcher.getResult().getTotalTestCases());
         lblProgressStatus.setBackground(compositeLauncher.getBackground());
         lblProgressStatus.setData(CONTROL_ID, LAUNCHER_PROGRESS_LABEL);
 
@@ -219,7 +219,7 @@ public class JobViewerPart implements EventHandler {
         GridData gdLblStatus = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         gdLblStatus.heightHint = 9;
         
-        String driver = launcher.getRunConfiguration().getName();
+        String driver = launcher.getRunConfig().getName();
 
         lblStatus.setText("<" + launcher.getStatus().toString() + ">" + " - " + driver);
         lblStatus.setBackground(compositeLauncher.getBackground());
@@ -240,8 +240,8 @@ public class JobViewerPart implements EventHandler {
             progressBar.setLayoutData(gd_progressBar);
             progressBar.setBackground(compositeLauncher.getBackground());
             progressBar.setMinimum(0);
-            progressBar.setMaximum(launcher.getTotalTestCase());
-            progressBar.setSelection(launcher.getNumberExecutedTestCase());
+            progressBar.setMaximum(launcher.getResult().getTotalTestCases());
+            progressBar.setSelection(launcher.getResult().getExecutedTestCases());
             progressBar.setData(CONTROL_ID, LAUNCHER_PROGRESS_BAR);
             if (launcher.getStatus() == LauncherStatus.SUSPEND) {
                 progressBar.setState(SWT.PAUSED);
@@ -268,7 +268,7 @@ public class JobViewerPart implements EventHandler {
             tltmStop.addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
-                    launcher.forceStop();
+                    launcher.stop();
                     compositeLauncher.setFocus();
                 }
             });
@@ -284,27 +284,27 @@ public class JobViewerPart implements EventHandler {
             }
 
             final IDELauncher ideLauncher = (IDELauncher) launcher;
-            if (ideLauncher.getLaunchMode() == LaunchMode.RUN) {
+            if (ideLauncher.getMode() == LaunchMode.RUN) {
                 tltmPause.setEnabled(false);
             }
-
-            tltmPause.addSelectionListener(new SelectionAdapter() {
-                @SuppressWarnings("restriction")
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    try {
-                        if (launcher.getStatus() == LauncherStatus.RUNNING) {
-                            ideLauncher.suspend();
-                        } else {
-                            ideLauncher.resume();
-                        }
-
-                        compositeLauncher.setFocus();
-                    } catch (DebugException ex) {
-                        LoggerSingleton.getInstance().getLogger().error(ex);
-                    }
-                }
-            });
+//
+//            tltmPause.addSelectionListener(new SelectionAdapter() {
+//                @SuppressWarnings("restriction")
+//                @Override
+//                public void widgetSelected(SelectionEvent e) {
+//                    try {
+//                        if (launcher.getStatus() == LauncherStatus.RUNNING) {
+//                            ideLauncher.suspend();
+//                        } else {
+//                            ideLauncher.resume();
+//                        }
+//
+//                        compositeLauncher.setFocus();
+//                    } catch (DebugException ex) {
+//                        LoggerSingleton.getInstance().getLogger().error(ex);
+//                    }
+//                }
+//            });
 
             progressBar.addMouseListener(mouseAdapter);
         } else {
@@ -336,8 +336,8 @@ public class JobViewerPart implements EventHandler {
 
     private void draw() {
         try {
-            for (AbstractLauncher launcher : LauncherManager.getInstance().getIDELaunchers()) {
-                createJobComposite(listCompositeLauncher, launcher);
+            for (ILauncher launcher : LauncherManager.getInstance().getAllLaunchers()) {
+                createJobComposite(listCompositeLauncher, (IDELauncher) launcher);
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -368,7 +368,7 @@ public class JobViewerPart implements EventHandler {
 
                     if (!launcherCompositeId.equals(object)) { continue; }
 
-                    AbstractLauncher launcher = LauncherManager.getInstance().getLauncherInRunningList(
+                    ILauncher launcher = LauncherManager.getInstance().getLauncherInRunningList(
                             launcherCompositeId);
                     if (launcher == null) { continue; }
 
@@ -378,15 +378,17 @@ public class JobViewerPart implements EventHandler {
 
                         String dataId = (String) launcherControl.getData(CONTROL_ID);
 
+                        ILauncherResult result = launcher.getResult();
                         if (dataId.equals(LAUNCHER_PROGRESS_LABEL)) {
+                            
                             Label progressLabel = (Label) launcherControl;
-                            progressLabel.setText(launcher.getNumberExecutedTestCase() + "/"
-                                    + launcher.getTotalTestCase());
+                            progressLabel.setText(result.getTotalTestCases() + "/"
+                                    + result.getTotalTestCases());
                             progressLabel.pack();
 
                         } else if (dataId.equals(LAUNCHER_PROGRESS_BAR)) {
                             ProgressBar progressBar = (ProgressBar) launcherControl;
-                            progressBar.setSelection(launcher.getNumberExecutedTestCase());
+                            progressBar.setSelection(result.getTotalTestCases());
                         }
                     }
                 }

@@ -18,8 +18,7 @@ public class QTestSuiteParentTreeContentProvider implements ITreeContentProvider
     @Override
     public Object[] getElements(Object inputElement) {
         if (inputElement != null && inputElement instanceof QTestSuiteParent[]) {
-            QTestSuiteParent[] releaseRoots = (QTestSuiteParent[]) inputElement;
-            return releaseRoots;
+            return (QTestSuiteParent[]) inputElement;
         } else {
             return null;
         }

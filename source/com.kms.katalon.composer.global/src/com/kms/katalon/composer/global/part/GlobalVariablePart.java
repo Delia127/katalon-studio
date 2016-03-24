@@ -153,8 +153,7 @@ public class GlobalVariablePart implements EventHandler {
             public void widgetSelected(SelectionEvent e) {
                 IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
 
-                if (selection == null || selection.getFirstElement() == null)
-                    return;
+                if (selection == null || selection.getFirstElement() == null) return;
 
                 eventBroker.post(EventConstants.GLOBAL_VARIABLE_SHOW_REFERENCES, selection.getFirstElement());
             }
@@ -212,7 +211,8 @@ public class GlobalVariablePart implements EventHandler {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 Point pt = composite.toDisplay(1, 1);
-                GlobalVariableBuilderDialog dialog = new GlobalVariableBuilderDialog(composite.getShell(), pt);
+                GlobalVariableBuilderDialog dialog = new GlobalVariableBuilderDialog(composite.getShell(), pt,
+                        getAllGlobalVariableName());
                 if (dialog.open() == Dialog.OK) {
                     GlobalVariableEntity variable = dialog.getVariableEntity();
                     tableViewer.add(variable);
@@ -226,13 +226,12 @@ public class GlobalVariablePart implements EventHandler {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 StructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
-                if (selection.getFirstElement() == null)
-                    return;
+                if (selection.getFirstElement() == null) return;
                 GlobalVariableEntity selectedVariable = (GlobalVariableEntity) selection.getFirstElement();
 
                 Point pt = composite.toDisplay(1, 1);
                 GlobalVariableBuilderDialog dialog = new GlobalVariableBuilderDialog(composite.getShell(),
-                        selectedVariable, pt);
+                        selectedVariable, pt, getAllGlobalVariableName());
                 String variableName = selectedVariable.getName();
                 String variableValue = selectedVariable.getInitValue();
                 String variableDescription = selectedVariable.getDescription();
@@ -314,8 +313,7 @@ public class GlobalVariablePart implements EventHandler {
                         List<GlobalVariableEntity> globalVariables = GlobalVariableController.getInstance()
                                 .getAllGlobalVariables(project);
 
-                        if (globalVariables == tableViewer.getInput())
-                            return;
+                        if (globalVariables == tableViewer.getInput()) return;
 
                         GlobalVariableController.getInstance().updateVariables(globalVariables, project);
                         setInput();
@@ -414,5 +412,14 @@ public class GlobalVariablePart implements EventHandler {
         boolean isEnabled = !(selection == null || selection.getFirstElement() == null);
         tltmEdit.setEnabled(isEnabled);
         tltmRemove.setEnabled(isEnabled);
+    }
+
+    private List<String> getAllGlobalVariableName() {
+        List<String> varNames = new ArrayList<String>();
+        if (tableViewer == null || tableViewer.getTable().isDisposed()) return varNames;
+        for (TableItem item : tableViewer.getTable().getItems()) {
+            varNames.add(((GlobalVariableEntity) item.getData()).getName());
+        }
+        return varNames;
     }
 }

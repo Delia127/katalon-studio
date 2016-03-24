@@ -184,7 +184,9 @@ public class TestSuiteRepoPreferencePage extends AbstractQTestIntegrationPage {
 
     protected void removeTestSuiteRepo() {
         IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-        if (selection == null || selection.isEmpty()) return;
+        if (selection == null || selection.isEmpty()) {
+            return;
+        }
 
         final TestSuiteRepo repo = (TestSuiteRepo) selection.getFirstElement();
         testSuiteRepositories.remove(repo);
@@ -204,7 +206,9 @@ public class TestSuiteRepoPreferencePage extends AbstractQTestIntegrationPage {
 
     protected void editTestSuiteRepo() {
         IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-        if (selection == null || selection.isEmpty()) return;
+        if (selection == null || selection.isEmpty()) {
+            return;
+        }
 
         final TestSuiteRepo repo = (TestSuiteRepo) selection.getFirstElement();
         List<String> currentFolderIds = getRegisteredFolderIds();

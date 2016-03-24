@@ -11,7 +11,12 @@ public class MobileDriverConnectorContributor implements IDriverConnectorContrib
 
     @Override
     public IDriverConnector[] getDriverConnector(String configFolderPath) throws IOException {
-        return new IDriverConnector[] {new IosDriverConnector(configFolderPath), new AndroidDriverConnector(configFolderPath)} ;
+        return new IDriverConnector[] { new IosDriverConnector(configFolderPath),
+                new AndroidDriverConnector(configFolderPath) };
     }
 
+    @Override
+    public String getName() {
+        return "Mobile";
+    }
 }

@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.execution.handlers;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
 import org.eclipse.core.commands.ParameterizedCommand;
@@ -9,8 +11,6 @@ import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import org.eclipse.e4.ui.model.application.ui.menu.impl.HandledToolItemImpl;
 
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
 import com.kms.katalon.execution.util.ExecutionUtil;
@@ -20,11 +20,7 @@ public class ExecuteHandler extends AbstractExecutionHandler {
     @Inject
     protected IEclipseContext context;
     
-    protected IRunConfiguration getRunConfigurationForExecution(TestCaseEntity testCase) throws Exception {
-        return null;
-    }
-
-    protected IRunConfiguration getRunConfigurationForExecution(TestSuiteEntity testSuite) throws Exception {
+    protected IRunConfiguration getRunConfigurationForExecution(String projectDir) throws IOException {
         return null;
     }
 

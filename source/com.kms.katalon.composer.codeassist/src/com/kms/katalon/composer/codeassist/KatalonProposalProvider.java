@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.codeassist;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -56,7 +57,7 @@ public class KatalonProposalProvider implements IProposalProvider {
         }
 
         // Add test case's binded variable for test case's script
-        if (context.getEnclosingGroovyType().equals(completionType)) {
+        if (completionType.equals(context.getEnclosingGroovyType())) {
             TestCaseEntity testCaseEntity = KatalonContextUtil.isTestCaseScriptContext(context);
             if (testCaseEntity != null) {
                 for (String variableName : KatalonContextUtil.getTestCaseVariableStrings(testCaseEntity)) {
@@ -72,12 +73,12 @@ public class KatalonProposalProvider implements IProposalProvider {
 
     @Override
     public List<MethodNode> getNewMethodProposals(ContentAssistContext context) {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
     public List<String> getNewFieldProposals(ContentAssistContext context) {
-        return null;
+        return Collections.emptyList();
     }
 
     private boolean isKeywordNode(MethodNode methodNode) {

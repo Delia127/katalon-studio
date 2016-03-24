@@ -84,9 +84,9 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage {
         lblHeader.setText(StringConstants.WZ_P_PROJECT_INFO);
 
         connectingComposite = new Composite(composite, SWT.NONE);
-        GridLayout gl_connectingComposite = new GridLayout(2, false);
-        gl_connectingComposite.marginWidth = 0;
-        connectingComposite.setLayout(gl_connectingComposite);
+        GridLayout glConnectingComposite = new GridLayout(2, false);
+        glConnectingComposite.marginWidth = 0;
+        connectingComposite.setLayout(glConnectingComposite);
         connectingComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
         connectingLabel = new GifCLabel(connectingComposite, SWT.NONE);
@@ -197,7 +197,7 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage {
                             qTestProjects = QTestIntegrationProjectManager.getAllProject(new QTestCredentialImpl()
                                     .setToken(fToken).setServerUrl(fServerUrl));
                         } catch (QTestException e) {
-                            UISynchronizeService.getInstance().getSync().syncExec(new Runnable() {
+                            UISynchronizeService.syncExec(new Runnable() {
                                 @Override
                                 public void run() {
                                     MessageDialog.openWarning(null, StringConstants.WARN,
@@ -206,7 +206,7 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage {
                             });
                         }
                     }
-                    UISynchronizeService.getInstance().getSync().syncExec(new Runnable() {
+                    UISynchronizeService.syncExec(new Runnable() {
                         @Override
                         public void run() {
                             try {
@@ -218,7 +218,7 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage {
                     });
                     return Status.OK_STATUS;
                 } finally {
-                    UISynchronizeService.getInstance().getSync().syncExec(new Runnable() {
+                    UISynchronizeService.syncExec(new Runnable() {
                         @Override
                         public void run() {
                             try {

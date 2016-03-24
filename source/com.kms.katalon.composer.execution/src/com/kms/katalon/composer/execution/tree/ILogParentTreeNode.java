@@ -14,4 +14,5 @@ public interface ILogParentTreeNode extends ILogTreeNode {
 	void addChild(ILogTreeNode childNode);
 	void setRecordEnd(XmlLogRecord recordEnd);
 	void setResult(XmlLogRecord result);
+    String getIndexString();
 }

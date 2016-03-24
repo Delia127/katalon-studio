@@ -3,15 +3,13 @@ package com.kms.katalon.core.logging.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 
 public class TestSuiteLogRecord extends AbstractLogRecord {
-    private String browser;
     private String deviceName;
     private String devicePlatform;
-    private String os;
     private String logFolder;
-    private String hostName;
     private Map<String, String> runData;
 
     public TestSuiteLogRecord(String name, String logFolder) {
@@ -21,11 +19,7 @@ public class TestSuiteLogRecord extends AbstractLogRecord {
     }
 
     public String getBrowser() {
-        return browser;
-    }
-
-    public void setBrowser(String browser) {
-        this.browser = browser;
+        return (getRunData().containsKey("browser")) ? getRunData().get("browser") : "";
     }
 
     public String getLogFolder() {
@@ -83,32 +77,18 @@ public class TestSuiteLogRecord extends AbstractLogRecord {
     }
 
     public String getOs() {
-        if (os == null)
-            os = "";
-        return os;
-    }
-
-    public void setOs(String os) {
-        this.os = os;
+        return (getRunData().containsKey(RunConfiguration.HOST_OS)) ? getRunData().get(RunConfiguration.HOST_OS) : "";
     }
 
     public String getHostName() {
-        return hostName;
-    }
-
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
+        return (getRunData().containsKey(RunConfiguration.HOST_NAME)) ? getRunData().get(RunConfiguration.HOST_NAME) : "";
     }
 
     public Map<String, String> getRunData() {
         return runData;
     }
 
-    public void addRunData(String dataKey, String dataValue) {
-        runData.put(dataKey, dataValue);
-    }
-
-    public void addRunDatas(Map<String, String> runData) {
+    public void addRunData(Map<String, String> runData) {
         this.runData.putAll(runData);
     }
 }

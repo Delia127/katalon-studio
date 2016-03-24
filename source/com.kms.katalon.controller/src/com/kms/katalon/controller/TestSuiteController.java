@@ -62,7 +62,7 @@ public class TestSuiteController extends EntityController {
         dataProviderSetting.getTestSuiteDataProvider().deleteTestSuite(testSuite);
     }
 
-    public TestSuiteEntity updateTestSuite(TestSuiteEntity testSuite) throws Exception {
+    public synchronized TestSuiteEntity updateTestSuite(TestSuiteEntity testSuite) throws Exception {
         return dataProviderSetting.getTestSuiteDataProvider().updateTestSuite(testSuite);
     }
 

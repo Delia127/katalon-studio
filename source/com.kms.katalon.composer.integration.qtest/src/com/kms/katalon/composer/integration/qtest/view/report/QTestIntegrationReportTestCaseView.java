@@ -251,13 +251,17 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
     }
 
     public void createTableContextMenu(Menu parentMenu, ISelection selection) {
-        if (selection == null) return;
+        if (selection == null) {
+            return;
+        }
 
         List<TestCaseLogRecord> testCaseCanBeUploaded = new ArrayList<TestCaseLogRecord>();
         List<TestCaseLogRecord> testCaseCanBeDisintegrated = new ArrayList<TestCaseLogRecord>();
 
         QTestSuite qTestSuite = QTestIntegrationUtil.getSelectedQTestSuite(testSuiteLogRecord);
-        if (qTestSuite == null) return;
+        if (qTestSuite == null) {
+            return;
+        }
 
         IStructuredSelection structuredSelection = (IStructuredSelection) selection;
         for (Object selectedTestCaseLogObject : structuredSelection.toArray()) {

@@ -3,14 +3,18 @@ package com.kms.katalon.execution.mobile.configuration.contributor;
 import java.io.IOException;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
+import static com.kms.katalon.execution.mobile.constants.StringConstants.*;
+
 import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
-import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.mobile.configuration.AndroidRunConfiguration;
+import com.kms.katalon.execution.mobile.driver.MobileDevice;
+import com.kms.katalon.execution.mobile.util.MobileExecutionUtil;
 
 public class AndroidRunConfigurationContributor implements IRunConfigurationContributor {
 
@@ -20,38 +24,18 @@ public class AndroidRunConfigurationContributor implements IRunConfigurationCont
     }
 
     @Override
-    public IRunConfiguration getRunConfiguration(TestCaseEntity testCase, Map<String, String> runInput)
-            throws IOException, ExecutionException {
-        String deviceName = null;
+    public IRunConfiguration getRunConfiguration(String projectDir, Map<String, String> runInput)
+            throws IOException, ExecutionException, InterruptedException {
+        String deviceId = null;
         if (runInput != null) {
-            deviceName = runInput.get(StringConstants.CONF_EXECUTED_DEVICE_NAME);
+            deviceId = runInput.get(StringConstants.CONF_EXECUTED_DEVICE_ID);
         }
-        AndroidRunConfiguration runConfiguration = new AndroidRunConfiguration(testCase);
-        if (deviceName != null) {
-            runConfiguration.setDeviceName(deviceName);
+        AndroidRunConfiguration runConfiguration = new AndroidRunConfiguration(projectDir);
+        MobileDevice device = MobileExecutionUtil.getAndroidDevices().get(deviceId);        
+        if (StringUtils.isBlank(deviceId)) {
+            throw new ExecutionException(MOBILE_ERR_NO_DEVICE_NAME_AVAILABLE);
         }
-        if (runConfiguration.getDeviceName() == null || runConfiguration.getDeviceName().isEmpty()) {
-            throw new ExecutionException(
-                    com.kms.katalon.execution.mobile.constants.StringConstants.MOBILE_ERR_NO_DEVICE_NAME_AVAILABLE);
-        }
-        return runConfiguration;
-    }
-
-    @Override
-    public IRunConfiguration getRunConfiguration(TestSuiteEntity testSuite, Map<String, String> runInput)
-            throws IOException, ExecutionException {
-        String deviceName = null;
-        if (runInput != null) {
-            deviceName = runInput.get(StringConstants.CONF_EXECUTED_DEVICE_NAME);
-        }
-        AndroidRunConfiguration runConfiguration = new AndroidRunConfiguration(testSuite);
-        if (deviceName != null) {
-            runConfiguration.setDeviceName(deviceName);
-        }
-        if (runConfiguration.getDeviceName() == null || runConfiguration.getDeviceName().isEmpty()) {
-            throw new ExecutionException(
-                    com.kms.katalon.execution.mobile.constants.StringConstants.MOBILE_ERR_NO_DEVICE_NAME_AVAILABLE);
-        }
+        runConfiguration.setDevice(device);
         return runConfiguration;
     }
     

@@ -26,12 +26,13 @@ import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.entity.ExecutionEntity;
 import com.kms.katalon.execution.entity.ReportLocationSetting;
+import com.kms.katalon.execution.entity.DefaultRerunSetting;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.exception.KatalonArgumentNotValidException;
 import com.kms.katalon.execution.integration.IntegrationCommand;
 import com.kms.katalon.execution.integration.ReportIntegrationFactory;
-import com.kms.katalon.execution.launcher.AbstractLauncher;
 import com.kms.katalon.execution.launcher.ConsoleLauncher;
+import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.model.LauncherResult;
 import com.kms.katalon.execution.util.ExecutionUtil;
 
@@ -214,7 +215,12 @@ public class ConsoleMain {
         }
         executionEntities.add(executionEntity);
         startExecutionStatusThread();
-        launch(executionEntities.get(0), projectEntity, 0, rerunMaxNumber, isRerunFailedTestCaseOnly, new ArrayList<String>(), reportLocSetting);
+        DefaultRerunSetting rerunSetting = null;
+        if (rerunMaxNumber > 0 && isRerunFailedTestCaseOnly != null) {
+            rerunSetting = new DefaultRerunSetting(0, rerunMaxNumber, isRerunFailedTestCaseOnly);
+        }
+
+        launch(executionEntities.get(0), projectEntity, rerunSetting, reportLocSetting);
     }
 
     private int processIntegrationArgs(Options opts, List<IntegrationCommand> integrationCmds, String[] arguments,
@@ -274,21 +280,12 @@ public class ConsoleMain {
                         printStatus();
                         Thread.sleep(showProgressDelay * 1000);
                     } while (LauncherManager.getInstance().isAnyLauncherRunning());
+
                     printStatus();
-                    // Send summary email
-                    List<String> csvReports = new ArrayList<String>();
-                    for (AbstractLauncher launcher : LauncherManager.getInstance().getConsoleLaunchers()) {
-                        File logFolder = launcher.getCurrentLogFile().getParentFile();
-                        File csvFile = new File(logFolder, logFolder.getName() + ".csv");
-                        csvReports.add(csvFile.getAbsolutePath());
-                    }
 
-                    // sendReport(csvReports);
-
-                    // @author: Tuan Nguyen Manh.
                     // Exit code is 0 if the executed test suite is passed, 1 if
                     // the executed test suite failed.
-                    List<AbstractLauncher> consoleLaunchers = LauncherManager.getInstance().getConsoleLaunchers();
+                    List<ILauncher> consoleLaunchers = LauncherManager.getInstance().getSortedLaunchers();
                     int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
                     ConsoleMain.closeWorkbench(exitCode);
 
@@ -307,14 +304,16 @@ public class ConsoleMain {
                 }
                 System.out.println();
 
-                for (AbstractLauncher launcher : LauncherManager.getInstance().getConsoleLaunchers()) {
+                for (ILauncher launcher : LauncherManager.getInstance().getSortedLaunchers()) {
                     StringBuilder builder = new StringBuilder();
-                    builder.append(((ConsoleLauncher) launcher).getDisplayID());
-                    int infoLength = builder.toString().length() + launcher.getProgressStatus().length();
+                    builder.append(launcher.getName());
+                    String launcherStatus = launcher.getResult().getExecutedTestCases() + "/"
+                            + launcher.getResult().getTotalTestCases();
+                    int infoLength = builder.toString().length() + launcherStatus.length();
                     for (int index = 80; index > infoLength % 80; index--) {
                         builder.append(".");
                     }
-                    builder.append(launcher.getProgressStatus());
+                    builder.append(launcherStatus);
                     System.out.println(wrap(builder.toString(), consoleWidth));
                 }
 
@@ -358,31 +357,30 @@ public class ConsoleMain {
      * @param project
      * @throws Exception
      */
-    public static void launch(ExecutionEntity executionEntity, ProjectEntity project, int rerunTime,
-            int rerunMaxNumber, Boolean isRerunFailedTestCaseOnly, List<String> passedTestCaseIds,
+    public static void launch(ExecutionEntity executionEntity, ProjectEntity project, DefaultRerunSetting rerunSetting,
             ReportLocationSetting reportLocation) throws Exception {
         TestSuiteEntity testSuite = executionEntity.getTestSuite();
         for (IRunConfiguration runConfig : executionEntity.getRunConfigurations()) {
-            launchTestSuite(testSuite, runConfig, reportLocation, rerunTime, rerunMaxNumber, isRerunFailedTestCaseOnly,
-                    passedTestCaseIds);
+            launchTestSuite(testSuite, runConfig, rerunSetting, reportLocation);
         }
     }
 
     public static void launchTestSuite(TestSuiteEntity testSuite, IRunConfiguration runConfig,
-            ReportLocationSetting reportLocation, int rerunTime, int rerunMaxNumber, Boolean isRerunFailedTestCaseOnly,
-            List<String> passedTestCaseIds) throws Exception, InterruptedException {
+            DefaultRerunSetting rerunSetting, ReportLocationSetting reportLocation) throws Exception,
+            InterruptedException {
         TestSuiteExecutedEntity testSuiteExecutedEntity = ExecutionUtil.loadTestDataForTestSuite(testSuite,
-                testSuite.getProject(), passedTestCaseIds);
+                testSuite.getProject());
         testSuiteExecutedEntity.setReportLocation(reportLocation);
-        ConsoleLauncher launcher = new ConsoleLauncher(runConfig);
-        launcher.setTotalTestCase(testSuiteExecutedEntity.getTotalTestCases());
-        if (rerunMaxNumber == -1) {
-            rerunMaxNumber = testSuite.getNumberOfRerun();
+        
+        //if user didn't config rerun, use default rerun settings of test suite
+        if (rerunSetting != null) {
+            testSuiteExecutedEntity.setRerunSetting(rerunSetting);
         }
-        if (isRerunFailedTestCaseOnly == null) {
-            isRerunFailedTestCaseOnly = testSuite.isRerunFailedTestCasesOnly();
-        }
-        launcher.launch(testSuite, testSuiteExecutedEntity, rerunTime, rerunMaxNumber, isRerunFailedTestCaseOnly, passedTestCaseIds);
+
+        runConfig.build(testSuite, testSuiteExecutedEntity);
+        ConsoleLauncher cslauncher = new ConsoleLauncher(runConfig);
+        LauncherManager.getInstance().addLauncher(cslauncher);
+
         Thread.sleep(1000);
     }
 
@@ -428,7 +426,7 @@ public class ConsoleMain {
             executionEntity.setTestSuite(testSuite);
             for (String sBrowserType : argBrowserType.split(";")) {
                 IRunConfiguration runConfig = RunConfigurationCollector.getInstance().getRunConfiguration(sBrowserType,
-                        testSuite, runInput);
+                        testSuite.getProject().getFolderLocation(), runInput);
                 if (runConfig != null) {
                     executionEntity.getRunConfigurations().add(runConfig);
                 } else {

@@ -8,6 +8,12 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -34,7 +40,6 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
@@ -67,6 +72,7 @@ import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.explorer.constants.ImageConstants;
@@ -372,38 +378,66 @@ public class ExplorerPart {
             expandedTreeElements = treeViewer.getExpandedElements();
         }
 
-        BusyIndicator.showWhile(treeViewer.getTree().getDisplay(), new Runnable() {
+        Job job = new Job("Indexing...") {
+
             @Override
-            public void run() {
+            protected IStatus run(IProgressMonitor monitor) {
                 try {
-                    String broadcastMessage = getMessage();
-                    entityLabelProvider.setSearchString(broadcastMessage);
-                    entityViewerFilter.setSearchString(broadcastMessage);
-                    // viewer.getTree().setRedraw(false);
-                    treeViewer.refresh(true);
-
-                    if (StringUtils.isNotBlank(searchString)) {
-                        treeViewer.expandAll();
-                    } else {
-                        treeViewer.collapseAll();
-
-                        if (expandedTreeElements != null) {
-                            // Restore last expanded state
-                            for (Object treePath : expandedTreeElements) {
-                                treeViewer.setExpandedState(treePath, true);
-                            }
+                    monitor.beginTask("Indexing...", treeEntities.size());
+                    for (ITreeEntity folderEntity : treeEntities) {
+                        try {
+                            ((FolderTreeEntity) folderEntity).loadAllDescentdantEntities();
+                            monitor.worked(1);
+                        } catch (Exception e) {
+                            LoggerSingleton.logError(e);
                         }
                     }
-
-                    if (updateLabel) {
-                        isSearching = StringUtils.isNotBlank(searchString);
-                        updateStatusSearchLabel();
-                    }
-                } catch (Exception e) {
-                    LoggerSingleton.logError(e);
+                    return Status.OK_STATUS;
                 } finally {
-                    // viewer.getTree().setRedraw(true);
+                    monitor.done();
                 }
+            }
+        };
+        job.setUser(true);
+        job.schedule();
+        
+        job.addJobChangeListener(new JobChangeAdapter() {
+            @Override
+            public void done(IJobChangeEvent event) {
+                UISynchronizeService.syncExec(new Runnable() {                    
+                    @Override
+                    public void run() {
+                        try {
+                            String broadcastMessage = getMessage();
+                            entityLabelProvider.setSearchString(broadcastMessage);
+                            entityViewerFilter.setSearchString(broadcastMessage);
+                            treeViewer.getTree().setRedraw(false);
+                            treeViewer.refresh(true);
+
+                            if (StringUtils.isNotBlank(searchString)) {
+                                treeViewer.expandAll();
+                            } else {
+                                treeViewer.collapseAll();
+
+                                if (expandedTreeElements != null) {
+                                    // Restore last expanded state
+                                    for (Object treePath : expandedTreeElements) {
+                                        treeViewer.setExpandedState(treePath, true);
+                                    }
+                                }
+                            }
+
+                            if (updateLabel) {
+                                isSearching = StringUtils.isNotBlank(searchString);
+                                updateStatusSearchLabel();
+                            }
+                        } catch (Exception e) {
+                            LoggerSingleton.logError(e);
+                        } finally {
+                            treeViewer.getTree().setRedraw(true);
+                        }
+                    }
+                });
             }
         });
     }
@@ -493,7 +527,8 @@ public class ExplorerPart {
     private void reloadTreeInputEventHandler(
             @UIEventTopic(EventConstants.EXPLORER_RELOAD_INPUT) final List<Object> treeEntities) {
         try {
-            if (treeViewer.getTree().isDisposed()) return;
+            if (treeViewer.getTree().isDisposed())
+                return;
             while (treeViewer.isBusy()) {
                 // wait for tree is not busy
             }

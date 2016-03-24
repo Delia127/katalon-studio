@@ -293,4 +293,4 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
         }
         return cmd;
     }
-};
+}

@@ -74,9 +74,13 @@ public class QTestUploadTestCaseHandler extends AbstractQTestHandler {
      * @return a collection of {@link IntegratedFileEntity}
      */
     private List<IntegratedFileEntity> getNotIntegratedChildren(IntegratedFileEntity entity) {
-        boolean isNotIntegrated = (QTestIntegrationUtil.getIntegratedEntity(entity) == null);
+        boolean isNotIntegrated = QTestIntegrationUtil.getIntegratedEntity(entity) == null;
+        
         List<IntegratedFileEntity> unIntegratedEntities = new ArrayList<IntegratedFileEntity>();
-        if (isNotIntegrated) unIntegratedEntities.add((IntegratedFileEntity) entity);
+        
+        if (isNotIntegrated) {
+            unIntegratedEntities.add((IntegratedFileEntity) entity);
+        }
 
         if (entity instanceof FolderEntity) {
             FolderEntity folderEntity = (FolderEntity) entity;
@@ -141,17 +145,15 @@ public class QTestUploadTestCaseHandler extends AbstractQTestHandler {
                 uploadTestCases(uploadedEntities);
             } else if (selectedObject instanceof FolderEntity) {
                 FolderEntity folder = (FolderEntity) selectedObject;
-                switch (folder.getFolderType()) {
-                    case TESTCASE: {
-                        List<IntegratedFileEntity> uploadedEntities = getNotIntegratedChildren(folder);
-                        uploadTestCases(uploadedEntities);
-                        if (QTestIntegrationUtil.getIntegratedEntity(folder) == null) {
-                            addParentToUploadedEntities(folder, uploadedEntities);
-                        }
-                        break;
-                    }
-                    default:
-                        break;
+                
+                if (folder.getFolderType() != FolderType.TESTCASE) {
+                    return;
+                }
+                
+                List<IntegratedFileEntity> uploadedEntities = getNotIntegratedChildren(folder);
+                uploadTestCases(uploadedEntities);
+                if (QTestIntegrationUtil.getIntegratedEntity(folder) == null) {
+                    addParentToUploadedEntities(folder, uploadedEntities);
                 }
             }
         } catch (Exception e) {

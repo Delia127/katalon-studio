@@ -23,7 +23,7 @@ public class SafariDriverConnector extends WebUiDriverConnector {
     public IDriverConnector clone() {
         try {
             SafariDriverConnector safariDriverConnector = new SafariDriverConnector(getParentFolderPath());
-            safariDriverConnector.driverProperties = (Map<String, Object>) cloneDriverPropertyValue(getDriverProperties());
+            safariDriverConnector.driverProperties = (Map<String, Object>) cloneDriverPropertyValue(getUserConfigProperties());
             return safariDriverConnector;
         } catch (IOException e) {
             // do nothing
