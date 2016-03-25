@@ -49,6 +49,7 @@ public class ConsoleMain {
     public final static String BROWSER_TYPE_OPTION = "browserType";
 
     // Optional
+    public final static String SEND_EMAIL_OPTION = "sendMail";
     public final static String REPORT_FOLDER_OPTION = "reportFolder";
     public final static String REPORT_FILE_NAME_OPTION = "reportFileName";
     private final static String CLEAN_REPORT_FOLDER = "cleanReportFolder";
@@ -88,6 +89,7 @@ public class ConsoleMain {
         ArgumentAcceptingOptionSpec<Integer> retryOptionSpec = acceptIntegerArgument(parser, RETRY_OPTION);
         ArgumentAcceptingOptionSpec<Boolean> retryFailedTestCaseOptionSpec = acceptBooleanArgument(parser,
                 RETRY_FAIL_TEST_CASE_ONLY_OPTION);
+        ArgumentAcceptingOptionSpec<String> emailOptionSpec = acceptStringArgument(parser, SEND_EMAIL_OPTION);
 
         // Additional arguments for run configurations
         acceptConsoleOptionList(parser, RunConfigurationCollector.getInstance().getAllAddionalRequiredArguments());
@@ -147,6 +149,11 @@ public class ConsoleMain {
         reportLocSetting.setCleanReportFolder(cleanReportFolderOptionSpec.value(options));
         reportLocSetting.setReportFileName(reportFileNameOptionSpec.value(options));
         reportLocSetting.setReportFolderPath(reportFolderOptionSpec.value(options));
+        
+        String emailRecipients = "";
+        if (options.has(emailOptionSpec)) {
+            emailRecipients = emailOptionSpec.value(options);
+        }
 
         // Set the arguments back to integration services
         setArgumentToConsoleOptionList(options, ReportIntegrationFactory.getInstance().getIntegrationCommands());
@@ -154,7 +161,7 @@ public class ConsoleMain {
         startExecutionStatusThread(showStatusDelayOptionSpec.value(options));
 
         try {
-            launchTestSuite(testSuite, runConfig, rerunSetting, reportLocSetting);
+            launchTestSuite(testSuite, runConfig, rerunSetting, reportLocSetting, emailRecipients);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             closeWorkbench(LauncherResult.RETURN_CODE_ERROR);
@@ -277,7 +284,8 @@ public class ConsoleMain {
                     String launcherStatus = launcher.getResult().getExecutedTestCases() + "/"
                             + launcher.getResult().getTotalTestCases();
                     builder.append(launcherStatus);
-                    builder.insert(launcher.getName().length(), StringUtils.repeat(".", consoleWidth - builder.length() % consoleWidth));
+                    builder.insert(launcher.getName().length(),
+                            StringUtils.repeat(".", consoleWidth - builder.length() % consoleWidth));
                     System.out.println(wrap(builder.toString(), consoleWidth));
                 }
 
@@ -324,8 +332,8 @@ public class ConsoleMain {
     }
 
     public static void launchTestSuite(TestSuiteEntity testSuite, IRunConfiguration runConfig,
-            DefaultRerunSetting rerunSetting, ReportLocationSetting reportLocation) throws Exception,
-            InterruptedException {
+            DefaultRerunSetting rerunSetting, ReportLocationSetting reportLocation,
+            String mailRecipients) throws Exception, InterruptedException {
         TestSuiteExecutedEntity testSuiteExecutedEntity = ExecutionUtil.loadTestDataForTestSuite(testSuite,
                 testSuite.getProject());
         testSuiteExecutedEntity.setReportLocation(reportLocation);
@@ -333,6 +341,10 @@ public class ConsoleMain {
         // if user didn't config rerun, use default rerun settings of test suite
         if (rerunSetting != null) {
             testSuiteExecutedEntity.setRerunSetting(rerunSetting);
+        }
+        
+        if (StringUtils.isNotEmpty(mailRecipients)) {
+            testSuiteExecutedEntity.getEmailConfig().addRecipients(mailRecipients);
         }
 
         runConfig.build(testSuite, testSuiteExecutedEntity);
