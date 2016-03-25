@@ -16,6 +16,7 @@ import org.codehaus.groovy.ast.stmt.Statement;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
+import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
 import com.kms.katalon.composer.webui.recorder.action.HTMLAction;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
 import com.kms.katalon.composer.webui.recorder.action.HTMLSynchronizeAction;
@@ -34,6 +35,9 @@ import com.kms.katalon.objectspy.element.HTMLPageElement;
 import com.kms.katalon.objectspy.util.HTMLElementUtil;
 
 public class HTMLActionUtil {
+    private static List<HTMLSynchronizeAction> synchronizeActions = null;
+    private static List<HTMLValidationAction> validationActions = null;
+
     public static Statement generateWebUiTestStep(HTMLActionMapping actionMapping, WebElementEntity createdTestObject)
             throws Exception {
         Class<?> keywordClass = Class.forName(actionMapping.getAction().getMappedKeywordClassName());
@@ -133,25 +137,35 @@ public class HTMLActionUtil {
     }
 
     public static List<HTMLValidationAction> getAllHTMLValidationActions() {
-        List<HTMLValidationAction> result = new ArrayList<HTMLValidationAction>();
-        for (Method method : WebUiBuiltInKeywords.class.getDeclaredMethods()) {
-            if (method.getName().startsWith(HTMLValidationAction.VALIDATION_ACTION_PREFIX)) {
-                result.add(new HTMLValidationAction(method.getName(), WebUiBuiltInKeywords.class.getName(),
-                        WebUiBuiltInKeywords.class.getSimpleName(), method.getName()));
-            }
+        if (validationActions != null) {
+            return validationActions;
         }
-        return result;
+        validationActions = new ArrayList<HTMLValidationAction>();
+        for (Method method : WebUiBuiltInKeywords.class.getDeclaredMethods()) {
+            if (!method.getName().startsWith(HTMLValidationAction.VALIDATION_ACTION_PREFIX)) {
+                continue;
+            }
+            validationActions.add(new HTMLValidationAction(method.getName(), WebUiBuiltInKeywords.class.getName(),
+                    WebUiBuiltInKeywords.class.getSimpleName(), method.getName(), TestCaseEntityUtil
+                            .getKeywordJavaDocText(WebUiBuiltInKeywords.class.getName(), method.getName(), null)));
+        }
+        return validationActions;
     }
 
     public static List<HTMLSynchronizeAction> getAllHTMLSynchronizeActions() {
-        List<HTMLSynchronizeAction> result = new ArrayList<HTMLSynchronizeAction>();
-        for (Method method : WebUiBuiltInKeywords.class.getDeclaredMethods()) {
-            if (method.getName().startsWith(HTMLSynchronizeAction.SYNCHRONIZE_ACTION_PREFIX)) {
-                result.add(new HTMLSynchronizeAction(method.getName(), WebUiBuiltInKeywords.class.getName(),
-                        WebUiBuiltInKeywords.class.getSimpleName(), method.getName()));
-            }
+        if (synchronizeActions != null) {
+            return synchronizeActions;
         }
-        return result;
+        synchronizeActions = new ArrayList<HTMLSynchronizeAction>();
+        for (Method method : WebUiBuiltInKeywords.class.getDeclaredMethods()) {
+            if (!method.getName().startsWith(HTMLSynchronizeAction.SYNCHRONIZE_ACTION_PREFIX)) {
+                continue;
+            }
+            synchronizeActions.add(new HTMLSynchronizeAction(method.getName(), WebUiBuiltInKeywords.class.getName(),
+                    WebUiBuiltInKeywords.class.getSimpleName(), method.getName(), TestCaseEntityUtil
+                            .getKeywordJavaDocText(WebUiBuiltInKeywords.class.getName(), method.getName(), null)));
+        }
+        return synchronizeActions;
     }
 
     public static HTMLSynchronizeAction getDefaultSynchronizeAction() {
