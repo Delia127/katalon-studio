@@ -21,6 +21,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String ERROR_TITLE = ERROR;
 
     public static final String HAND_ERROR_MSG_UNABLE_TO_CREATE_NEW_PROJ = "Unable to create project";
+    
+    public static final String HAND_ERROR_MSG_NEW_PROJ_LOCATION_INVALID = "The specified project directory is either invalid or read-only";
 
     // OpenProjectHandler
     public static final String HAND_ERROR_MSG_CANNOT_OPEN_PROJ = "Can not open project.";
@@ -62,10 +64,14 @@ public class StringConstants extends GlobalStringConstants {
     public static final String VIEW_BTN_BROWSE = BROWSE;
 
     public static final String VIEW_ERROR_MSG_PROJ_LOC_CANNOT_BE_BLANK = "Project's location cannot be blank.";
+    
+    public static final String VIEW_ERROR_MSG_PROJ_LOC_INVALID = "Project's location is invalid.";
 
     public static final String VIEW_ERROR_MSG_PROJ_NAME_CANNOT_BE_BLANK = "Project's name cannot be blank.";
 
     public static final String VIEW_ERROR_MSG_PROJ_NAME_EXISTED_IN_LOC = "A project with the same name already exists in the selected location.";
-
-    public static final String VIEW_ERROR_MSG_PROJ_LOC_DOES_NOT_EXIST = "Project's location does not exist.";
+    
+    public static final String VIEW_ERROR_MSG_PROJ_LOC_NOT_READABLE = "Project's location is not readable.";
+    
+    public static final String VIEW_ERROR_MSG_PROJ_LOC_NOT_WRITEABLE = "Project's location is not writeable.";
 }
