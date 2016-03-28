@@ -29,8 +29,8 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.preferences.editor.MultiLineStringFieldEditor;
 import com.kms.katalon.constants.PreferenceConstants;
+import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.util.MailUtil;
-import com.kms.katalon.execution.util.MailUtil.EmailConfig;
 import com.kms.katalon.execution.util.MailUtil.MailSecurityProtocolType;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
@@ -191,14 +191,14 @@ public class MailPreferencePage extends FieldEditorPreferencePage {
         }
 
         EmailConfig conf = new EmailConfig();
-        conf.tos = mailRecipients;
-        conf.host = hostFieldEditor.getStringValue();
-        conf.port = portFieldEditor.getStringValue();
-        conf.from = userNameFieldEditor.getStringValue();
-        conf.securityProtocol = MailSecurityProtocolType.valueOf(protocolFieldEditor.getValue());
-        conf.username = userNameFieldEditor.getStringValue();
-        conf.password = passwordFieldEditor.getStringValue();
-        conf.sendAttachment = false;
+        conf.setTos(mailRecipients);
+        conf.setHost(hostFieldEditor.getStringValue());
+        conf.setPort(portFieldEditor.getStringValue());
+        conf.setFrom(userNameFieldEditor.getStringValue());
+        conf.setSecurityProtocol(MailSecurityProtocolType.valueOf(protocolFieldEditor.getValue()));
+        conf.setUsername(userNameFieldEditor.getStringValue());
+        conf.setPassword(passwordFieldEditor.getStringValue());
+        conf.setSendAttachment(false);
         return conf;
     }
 

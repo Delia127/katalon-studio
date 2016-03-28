@@ -8,6 +8,8 @@ import java.util.Map;
 import com.kms.katalon.core.testdata.TestData;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.constants.StringConstants;
+import com.kms.katalon.execution.entity.EmailConfig;
+import com.kms.katalon.execution.util.MailUtil;
 
 public class TestSuiteExecutedEntity implements IExecutedEntity, Reportable, Rerunnable {
     private List<TestCaseExecutedEntity> testCaseExecutedEntities;
@@ -15,7 +17,8 @@ public class TestSuiteExecutedEntity implements IExecutedEntity, Reportable, Rer
 
     private ReportLocationSetting reportLocationSetting;
     private DefaultRerunSetting rerunSetting;
-
+    private EmailConfig emailConfig;
+    
     private String testSuiteId;
     private String testSuiteName;
     private String description;
@@ -25,13 +28,13 @@ public class TestSuiteExecutedEntity implements IExecutedEntity, Reportable, Rer
         testSuiteName = entity.getName();
         description = entity.getDescription();
 
+        emailConfig = MailUtil.getEmailConfig(entity);
+
         rerunSetting = new DefaultRerunSetting(0, entity.getNumberOfRerun(), entity.isRerunFailedTestCasesOnly());
     }
 
     public TestSuiteExecutedEntity(TestSuiteEntity entity, Rerunnable rerunnable) {
-        testSuiteId = entity.getIdForDisplay();
-        testSuiteName = entity.getName();
-        description = entity.getDescription();
+        this(entity);
 
         rerunSetting = new DefaultRerunSetting(rerunnable.getPreviousRerunTimes(), rerunnable.getRemainingRerunTimes(),
                 rerunnable.isRerunFailedTestCasesOnly());
@@ -147,5 +150,9 @@ public class TestSuiteExecutedEntity implements IExecutedEntity, Reportable, Rer
     @Override
     public int getRemainingRerunTimes() {
         return rerunSetting.getRemainingRerunTimes();
+    }
+
+    public EmailConfig getEmailConfig() {
+        return emailConfig;
     }
 }
