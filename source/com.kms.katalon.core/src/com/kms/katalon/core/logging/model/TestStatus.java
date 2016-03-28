@@ -4,25 +4,7 @@ package com.kms.katalon.core.logging.model;
 public class TestStatus {
 	
 	public enum TestStatusValue {
-
-		//PASSED, FAILED, NOT_RUN, ERROR, INCOMPLETE;	//Suite & Test status
-		
-		/**
-		 * If the order of these statuses changed, please also change their corresponding order in html_template.txt  
-		 */
-		PASSED, FAILED, INCOMPLETE, ERROR, INFO;	//Suite & Test status
-		
-//		public static int indexOf(TestStatusValue testStatusValue) {
-//			if (testStatusValue != null) {
-//				TestStatusValue[] allValues = TestStatusValue.values();
-//				for (int i = 0; i < allValues.length ; i++) {
-//					if (testStatusValue == allValues[i]) {
-//						return i;
-//					}
-//				}
-//			}
-//			return -1;
-//		}
+		PASSED, FAILED, INCOMPLETE, ERROR, INFO, WARNING;	//Suite & Test status
 	}
 	// Error Java stack Trace
 	protected String stackTrace = ""; 	

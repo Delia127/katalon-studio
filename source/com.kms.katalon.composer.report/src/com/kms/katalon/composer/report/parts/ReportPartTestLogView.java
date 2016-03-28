@@ -75,7 +75,7 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 public class ReportPartTestLogView {
     private Button btnFilterTestStepInfo, btnFilterTestStepPassed, btnFilterTestStepFailed, btnFilterTestStepError,
-            btnFilterTestStepIncomplete;
+            btnFilterTestStepIncomplete, btnFilterTestStepWarning;
     private Text txtTestLogSearch;
     private CLabel lblTestLogSearch, lblTestLogAdvancedSearch;
     private ReportTestStepTreeViewer treeViewerTestSteps;
@@ -217,6 +217,15 @@ public class ReportPartTestLogView {
             }
         });
 
+        btnFilterTestStepWarning.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                testStepFilter.showWarning(btnFilterTestStepWarning.getSelection());
+                treeViewerTestSteps.refresh(true);
+                updateSelectedTestStep(getSelectedTestStep());
+            }
+        });
+
         txtTestLogSearch.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -272,7 +281,7 @@ public class ReportPartTestLogView {
             return null;
         return (ILogRecord) selection.getFirstElement();
     }
-    
+
     private void filterTestStepBySearchedText() {
         if (txtTestLogSearch.getText().isEmpty()) {
             isSearching = false;
@@ -335,7 +344,18 @@ public class ReportPartTestLogView {
 
         return compositeTestLogTree;
     }
-    
+
+    private Button createFilteringButton(Composite parent, String name, Image image, boolean defaultSeletion) {
+        Button filteringButton = new Button(parent, SWT.CHECK);
+        filteringButton.setText(StringUtils.defaultIfEmpty(name, StringUtils.EMPTY));
+        if (image != null) {
+            filteringButton.setImage(image);
+        }
+        filteringButton.setSelection(defaultSeletion);
+
+        return filteringButton;
+    }
+
     private void createCompositeFilterTestLog(Composite parent) {
         Composite compositeTestLogFilter = new Composite(parent, SWT.NONE);
         compositeTestLogFilter.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
@@ -346,32 +366,20 @@ public class ReportPartTestLogView {
 
         Composite compositeFilterDetails = new Composite(compositeTestLogFilter, SWT.NONE);
         compositeFilterDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 2, 1));
-        compositeFilterDetails.setLayout(new GridLayout(5, false));
+        compositeFilterDetails.setLayout(new GridLayout(6, false));
 
-        btnFilterTestStepInfo = new Button(compositeFilterDetails, SWT.CHECK);
-        btnFilterTestStepInfo.setText(StringConstants.INFO);
-        btnFilterTestStepInfo.setImage(ImageConstants.IMG_16_INFO);
-        btnFilterTestStepInfo.setSelection(true);
-
-        btnFilterTestStepPassed = new Button(compositeFilterDetails, SWT.CHECK);
-        btnFilterTestStepPassed.setText(StringConstants.PASSED);
-        btnFilterTestStepPassed.setImage(ImageConstants.IMG_16_PASSED);
-        btnFilterTestStepPassed.setSelection(true);
-
-        btnFilterTestStepFailed = new Button(compositeFilterDetails, SWT.CHECK);
-        btnFilterTestStepFailed.setText(StringConstants.FAILED);
-        btnFilterTestStepFailed.setImage(ImageConstants.IMG_16_FAILED);
-        btnFilterTestStepFailed.setSelection(true);
-
-        btnFilterTestStepError = new Button(compositeFilterDetails, SWT.CHECK);
-        btnFilterTestStepError.setText(StringConstants.ERROR);
-        btnFilterTestStepError.setImage(ImageConstants.IMG_16_ERROR);
-        btnFilterTestStepError.setSelection(true);
-
-        btnFilterTestStepIncomplete = new Button(compositeFilterDetails, SWT.CHECK);
-        btnFilterTestStepIncomplete.setText(StringConstants.INCOMPLETE);
-        btnFilterTestStepIncomplete.setImage(ImageConstants.IMG_16_INCOMPLETE);
-        btnFilterTestStepIncomplete.setSelection(true);
+        btnFilterTestStepInfo = createFilteringButton(compositeFilterDetails, StringConstants.INFO,
+                ImageConstants.IMG_16_INFO, true);
+        btnFilterTestStepPassed = createFilteringButton(compositeFilterDetails, StringConstants.PASSED,
+                ImageConstants.IMG_16_PASSED, true);
+        btnFilterTestStepFailed = createFilteringButton(compositeFilterDetails, StringConstants.FAILED,
+                ImageConstants.IMG_16_FAILED, true);
+        btnFilterTestStepError = createFilteringButton(compositeFilterDetails, StringConstants.ERROR,
+                ImageConstants.IMG_16_ERROR, true);
+        btnFilterTestStepIncomplete = createFilteringButton(compositeFilterDetails, StringConstants.INCOMPLETE,
+                ImageConstants.IMG_16_INCOMPLETE, true);
+        btnFilterTestStepWarning = createFilteringButton(compositeFilterDetails, StringConstants.WARN,
+                ImageConstants.IMG_16_WARNING, true);
 
         Composite compositeTestLogSearch = new Composite(compositeTestLogFilter, SWT.BORDER);
         compositeTestLogSearch.setBackground(ColorUtil.getWhiteBackgroundColor());
@@ -400,7 +408,7 @@ public class ReportPartTestLogView {
         lblTestLogSearch = new CLabel(cvsTestLogSearch, SWT.NONE);
         lblTestLogSearch.setCursor(new Cursor(Display.getCurrent(), SWT.CURSOR_HAND));
         updateStatusSearchLabel();
-        
+
         Label lblSeparator = new Label(cvsTestLogSearch, SWT.SEPARATOR);
         GridData gdLblSeparator = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdLblSeparator.heightHint = 18;
@@ -411,10 +419,10 @@ public class ReportPartTestLogView {
         lblTestLogAdvancedSearch
                 .setImage(com.kms.katalon.composer.components.impl.constants.ImageConstants.IMG_16_ADVANCED_SEARCH);
         updateStatusSearchLabel();
-        
+
         createTestLogTableToolbar(compositeTestLogFilter);
     }
-    
+
     private void createTestLogTableToolbar(Composite parent) {
         testLogToolbar = new ToolBar(parent, SWT.NONE);
         testLogToolbar.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -429,7 +437,7 @@ public class ReportPartTestLogView {
         tltmExpandAllLogs.setImage(ImageUtil.loadImage(Platform.getBundle("org.eclipse.ui"),
                 "icons/full/elcl16/expandall.png"));
     }
-    
+
     private void createTestLogTable(Composite parent) {
         Composite compositeTestLogTable = new Composite(parent, SWT.NONE);
         compositeTestLogTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -486,6 +494,7 @@ public class ReportPartTestLogView {
         testStepFilter.showFailed(btnFilterTestStepFailed.getSelection());
         testStepFilter.showError(btnFilterTestStepError.getSelection());
         testStepFilter.showIncomplete(btnFilterTestStepIncomplete.getSelection());
+        testStepFilter.showWarning(btnFilterTestStepWarning.getSelection());
     }
 
     private void createTestLogTabItem(CTabFolder tabFolder) {
@@ -494,11 +503,11 @@ public class ReportPartTestLogView {
 
         Composite compositeTestLog = new Composite(tabFolder, SWT.NONE);
         compositeTestLog.setLayout(new GridLayout(1, false));
-        
+
         createCompositeFilterTestLog(compositeTestLog);
-        
+
         createTestLogTable(compositeTestLog);
-        
+
         tabFolder.setSelection(0);
     }
 

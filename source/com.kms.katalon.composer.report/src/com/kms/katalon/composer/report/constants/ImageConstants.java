@@ -41,6 +41,7 @@ public class ImageConstants {
 	public static final Image IMG_16_INCOMPLETE = ImageUtil.loadImage(currentBundle, "/icons/log_incomplete_16.png");
 	public static final Image IMG_16_INFO = ImageUtil.loadImage(currentBundle, "/icons/log_info_16.png");
 	public static final Image IMG_16_NOT_RUN = ImageUtil.loadImage(currentBundle, "/icons/log_not_run_16.png");
+	public static final Image IMG_16_WARNING = ImageUtil.loadImage(currentBundle, "/icons/log_warning_16.png");
 	
 	public static final Image IMG_16_INTEGRATION = ImageUtil.loadImage(currentBundle, "/icons/integration_16.png");
 }

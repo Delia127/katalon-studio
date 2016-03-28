@@ -390,18 +390,8 @@ public class ReportUtil {
     }
 
     private static TestStatus evalTestStatus(ILogRecord logRecord, LogLevel level) {
-    	TestStatus testStatus = new TestStatus();
-        if (level == LogLevel.FAILED) {
-            testStatus.setStatusValue(TestStatusValue.FAILED);
-        } else if (level == LogLevel.ERROR) {
-            testStatus.setStatusValue(TestStatusValue.ERROR);
-        } else if (level == LogLevel.PASSED) {
-            testStatus.setStatusValue(TestStatusValue.PASSED);
-        } else if (level == LogLevel.ABORTED || level == LogLevel.INCOMPLETE) {
-            testStatus.setStatusValue(TestStatusValue.INCOMPLETE);
-	    } else if (level == LogLevel.INFO) {
-	        testStatus.setStatusValue(TestStatusValue.INFO);
-	    }
+        TestStatus testStatus = new TestStatus();
+        testStatus.setStatusValue(TestStatusValue.valueOf(level.name()));
         return testStatus;
     }
 
