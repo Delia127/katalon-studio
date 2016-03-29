@@ -1,5 +1,6 @@
 package com.kms.katalon.execution.util;
 
+import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 import static org.apache.commons.lang.StringUtils.split;
 
 import java.io.File;
@@ -23,8 +24,6 @@ import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.apache.commons.mail.ImageHtmlEmail;
 import org.apache.commons.mail.resolver.DataSourceUrlResolver;
-import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -91,7 +90,7 @@ public class MailUtil {
         if (conf == null || !conf.canSend()) {
             return;
         }
-        
+
         ImageHtmlEmail email = initEmail(conf, SUBJECT);
 
         String emailMsg = "You can now go to your test project to view the execution report.";
@@ -165,7 +164,6 @@ public class MailUtil {
         // add the attachment
         email.attach(attachment);
     }
-  
 
     private static File zip(String directory, String zipName) throws Exception {
         File folder = new File(directory);
@@ -182,12 +180,12 @@ public class MailUtil {
         }
         return null;
     }
-    
+
     public static String[] toArray(String recipients) {
         if (StringUtils.isBlank(recipients)) {
             return ArrayUtils.EMPTY_STRING_ARRAY;
         }
-        
+
         return split(recipients.replace(" ", ""), EMAIL_SEPARATOR);
     }
 
@@ -200,7 +198,7 @@ public class MailUtil {
      */
     public static String[] getDistinctRecipients(String... recipientsList) {
         if (recipientsList == null) {
-            return ArrayUtils.EMPTY_STRING_ARRAY; 
+            return ArrayUtils.EMPTY_STRING_ARRAY;
         }
         Set<String> recipientCollector = new LinkedHashSet<String>();
         for (String recipients : recipientsList) {
@@ -208,25 +206,24 @@ public class MailUtil {
         }
         return recipientCollector.toArray(new String[recipientCollector.size()]);
     }
-    
+
     public static EmailConfig getEmailConfig(TestSuiteEntity testSuite) {
-        IPreferenceStore prefs = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
+        ScopedPreferenceStore prefs = getPreferenceStore(PreferenceConstants.EXECUTION_QUALIFIER);
 
         String[] mailRecipients = getDistinctRecipients(testSuite.getMailRecipient(),
-                prefs.getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_REPORT_RECIPIENTS));
+                prefs.getString(PreferenceConstants.MAIL_CONFIG_REPORT_RECIPIENTS));
         EmailConfig conf = new EmailConfig();
         conf.setTos(mailRecipients);
-        conf.setHost(prefs.getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_HOST));
-        conf.setPort(prefs.getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_PORT));
-        conf.setFrom(prefs.getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_USERNAME));
+        conf.setHost(prefs.getString(PreferenceConstants.MAIL_CONFIG_HOST));
+        conf.setPort(prefs.getString(PreferenceConstants.MAIL_CONFIG_PORT));
+        conf.setFrom(prefs.getString(PreferenceConstants.MAIL_CONFIG_USERNAME));
         conf.setSecurityProtocol(MailSecurityProtocolType.valueOf(prefs
-                .getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_SECURITY_PROTOCOL)));
-        conf.setUsername(prefs.getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_USERNAME));
-        conf.setPassword(prefs.getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_PASSWORD));
-        conf.setSignature(prefs.getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_SIGNATURE));
-        conf.setSendAttachment(prefs.getBoolean(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_ATTACHMENT));
-        
+                .getString(PreferenceConstants.MAIL_CONFIG_SECURITY_PROTOCOL)));
+        conf.setUsername(prefs.getString(PreferenceConstants.MAIL_CONFIG_USERNAME));
+        conf.setPassword(prefs.getString(PreferenceConstants.MAIL_CONFIG_PASSWORD));
+        conf.setSignature(prefs.getString(PreferenceConstants.MAIL_CONFIG_SIGNATURE));
+        conf.setSendAttachment(prefs.getBoolean(PreferenceConstants.MAIL_CONFIG_ATTACHMENT));
+
         return conf;
     }
 }

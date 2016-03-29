@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.integration.slack.handlers;
 
+import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
+
 import java.text.MessageFormat;
 
 import javax.inject.Inject;
@@ -7,12 +9,9 @@ import javax.inject.Inject;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
@@ -24,10 +23,10 @@ import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.integration.slack.constants.SlackPreferenceConstants;
 import com.kms.katalon.composer.integration.slack.constants.StringConstants;
 import com.kms.katalon.composer.integration.slack.util.SlackUtil;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
@@ -36,6 +35,7 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.groovy.constant.GroovyConstants;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class SlackSendMsgHandler implements EventHandler {
     @Inject
@@ -43,7 +43,7 @@ public class SlackSendMsgHandler implements EventHandler {
 
     private SlackUtil slackUtil;
 
-    private IPreferenceStore PREFERENCE;
+    private ScopedPreferenceStore PREFERENCE;
 
     private boolean OPEN_PROJECT;
 
@@ -267,42 +267,24 @@ public class SlackSendMsgHandler implements EventHandler {
      * Get Slack Preferences
      */
     public void getSlackPreferences() {
-        PREFERENCE = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.IntegrationSlackPreferenceConstants.QUALIFIER);
-        OPEN_PROJECT = PREFERENCE
-                .getBoolean(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_OPEN_PROJECT);
-        CLOSE_PROJECT = PREFERENCE
-                .getBoolean(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CLOSE_PROJECT);
-        CREATE_TC = PREFERENCE
-                .getBoolean(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_TEST_CASE);
-        UPDATE_TC = PREFERENCE
-                .getBoolean(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_UPDATE_TEST_CASE);
-        CREATE_TS = PREFERENCE
-                .getBoolean(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_TEST_SUITE);
-        UPDATE_TS = PREFERENCE
-                .getBoolean(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_UPDATE_TEST_SUITE);
-        CREATE_TD = PREFERENCE
-                .getBoolean(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_TEST_DATA);
-        UPDATE_TD = PREFERENCE
-                .getBoolean(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_UPDATE_TEST_DATA);
-        CREATE_TO = PREFERENCE
-                .getBoolean(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_TEST_OBJECT);
-        UPDATE_TO = PREFERENCE
-                .getBoolean(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_UPDATE_TEST_OBJECT);
-        CREATE_KW = PREFERENCE
-                .getBoolean(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_KEYWORD);
-        CREATE_FD = PREFERENCE
-                .getBoolean(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_FOLDER);
-        CREATE_PK = PREFERENCE
-                .getBoolean(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_PACKAGE);
-        COPY_PASTE = PREFERENCE
-                .getBoolean(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_PASTE_FROM_COPY);
-        CUT_PASTE = PREFERENCE
-                .getBoolean(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_PASTE_FROM_CUT);
-        RENAME_ITEM = PREFERENCE
-                .getBoolean(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_RENAME_ITEM);
-        DELETE_ITEM = PREFERENCE
-                .getBoolean(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_DELETE_ITEM);
+        PREFERENCE = getPreferenceStore(SlackSendMsgHandler.class);
+        OPEN_PROJECT = PREFERENCE.getBoolean(SlackPreferenceConstants.SLACK_SEND_OPEN_PROJECT);
+        CLOSE_PROJECT = PREFERENCE.getBoolean(SlackPreferenceConstants.SLACK_SEND_CLOSE_PROJECT);
+        CREATE_TC = PREFERENCE.getBoolean(SlackPreferenceConstants.SLACK_SEND_CREATE_TEST_CASE);
+        UPDATE_TC = PREFERENCE.getBoolean(SlackPreferenceConstants.SLACK_SEND_UPDATE_TEST_CASE);
+        CREATE_TS = PREFERENCE.getBoolean(SlackPreferenceConstants.SLACK_SEND_CREATE_TEST_SUITE);
+        UPDATE_TS = PREFERENCE.getBoolean(SlackPreferenceConstants.SLACK_SEND_UPDATE_TEST_SUITE);
+        CREATE_TD = PREFERENCE.getBoolean(SlackPreferenceConstants.SLACK_SEND_CREATE_TEST_DATA);
+        UPDATE_TD = PREFERENCE.getBoolean(SlackPreferenceConstants.SLACK_SEND_UPDATE_TEST_DATA);
+        CREATE_TO = PREFERENCE.getBoolean(SlackPreferenceConstants.SLACK_SEND_CREATE_TEST_OBJECT);
+        UPDATE_TO = PREFERENCE.getBoolean(SlackPreferenceConstants.SLACK_SEND_UPDATE_TEST_OBJECT);
+        CREATE_KW = PREFERENCE.getBoolean(SlackPreferenceConstants.SLACK_SEND_CREATE_KEYWORD);
+        CREATE_FD = PREFERENCE.getBoolean(SlackPreferenceConstants.SLACK_SEND_CREATE_FOLDER);
+        CREATE_PK = PREFERENCE.getBoolean(SlackPreferenceConstants.SLACK_SEND_CREATE_PACKAGE);
+        COPY_PASTE = PREFERENCE.getBoolean(SlackPreferenceConstants.SLACK_SEND_PASTE_FROM_COPY);
+        CUT_PASTE = PREFERENCE.getBoolean(SlackPreferenceConstants.SLACK_SEND_PASTE_FROM_CUT);
+        RENAME_ITEM = PREFERENCE.getBoolean(SlackPreferenceConstants.SLACK_SEND_RENAME_ITEM);
+        DELETE_ITEM = PREFERENCE.getBoolean(SlackPreferenceConstants.SLACK_SEND_DELETE_ITEM);
     }
 
 }

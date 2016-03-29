@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.PlatformUI;
 
-import com.kms.katalon.constants.PreferenceConstants.IPluginPreferenceConstants;
+import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.constants.StringConstants;
 
 public class GeneralPreferencePage extends PreferencePage {
@@ -52,8 +52,8 @@ public class GeneralPreferencePage extends PreferencePage {
     }
 
     private void initialize() {
-        boolean autoRestore = getPreferenceStore().getBoolean(
-                IPluginPreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION);
+        boolean autoRestore = getPreferenceStore()
+                .getBoolean(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION);
         radioAutoRestorePrevSession.setSelection(autoRestore);
         radioAutoCleanPrevSession.setSelection(!autoRestore);
     }
@@ -61,7 +61,7 @@ public class GeneralPreferencePage extends PreferencePage {
     @Override
     protected void performDefaults() {
         if (parentComposite == null) return;
-        getPreferenceStore().setToDefault(IPluginPreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION);
+        getPreferenceStore().setToDefault(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION);
         initialize();
         super.performDefaults();
     }
@@ -69,7 +69,7 @@ public class GeneralPreferencePage extends PreferencePage {
     @Override
     protected void performApply() {
         if (parentComposite == null) return;
-        getPreferenceStore().setValue(IPluginPreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION,
+        getPreferenceStore().setValue(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION,
                 radioAutoRestorePrevSession.getSelection());
     }
 

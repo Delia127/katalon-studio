@@ -22,7 +22,7 @@ import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.ModelServiceSingleton;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.constants.PreferenceConstants.IPluginPreferenceConstants;
+import com.kms.katalon.constants.PreferenceConstants;
 
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
@@ -48,8 +48,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
     @SuppressWarnings("unchecked")
     @Override
     public void postWindowClose() {
-        if (PlatformUI.getPreferenceStore()
-                .getBoolean(IPluginPreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION)) {
+        if (PlatformUI.getPreferenceStore().getBoolean(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION)) {
 
             // Clear Memento state
             Map<String, String> appPersistedState = application.getPersistedState();

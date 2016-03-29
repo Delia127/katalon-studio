@@ -29,7 +29,8 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.controller,
  com.kms.katalon.groovy,
  com.kms.katalon.composer.components.impl,
- org.eclipse.e4.ui.di
+ org.eclipse.e4.ui.di,
+ com.kms.katalon.preferences
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: org.eclipse.e4.core.services.log
 Bundle-Localization: plugin

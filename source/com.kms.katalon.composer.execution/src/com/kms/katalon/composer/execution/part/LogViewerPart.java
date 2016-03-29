@@ -1,8 +1,10 @@
 package com.kms.katalon.composer.execution.part;
 
 import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
+import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.LogRecord;
@@ -14,7 +16,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -25,7 +26,6 @@ import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -73,6 +73,7 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.composer.execution.constants.ImageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.dialog.LogPropertyDialog;
@@ -90,7 +91,6 @@ import com.kms.katalon.composer.execution.tree.ILogParentTreeNode;
 import com.kms.katalon.composer.execution.tree.ILogTreeNode;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.constants.PreferenceConstants.ExecutionPreferenceConstants;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XMLLoggerParser;
 import com.kms.katalon.core.logging.XmlLogRecord;
@@ -144,7 +144,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
 
     private MPart fMPart;
 
-    private IPreferenceStore preferenceStore;
+    private ScopedPreferenceStore preferenceStore;
 
     private void updateToolItemsStatus(MPart mpart) {
         for (MToolBarElement toolbarElement : mpart.getToolbar().getChildren()) {
@@ -186,7 +186,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
 
     @PostConstruct
     public void init(Composite parent, MPart mpart) {
-        preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, ExecutionPreferenceConstants.QUALIFIER);
+        preferenceStore = getPreferenceStore(LogViewerPart.class);
         fMPart = mpart;
         logNavigator = new LogExceptionNavigator();
         launcherWatched = null;
@@ -680,8 +680,14 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
         if (isBlank(prefId)) {
             return;
         }
-        preferenceStore.setValue(prefId, button.getSelection());
-        tableViewer.refresh();
+
+        try {
+            preferenceStore.setValue(prefId, button.getSelection());
+            preferenceStore.save();
+            tableViewer.refresh();
+        } catch (IOException e) {
+            logError(e);
+        }
     }
 
     private void updateTableButtons() {

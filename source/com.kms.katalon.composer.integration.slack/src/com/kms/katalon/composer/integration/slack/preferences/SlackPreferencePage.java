@@ -27,10 +27,10 @@ import com.kms.katalon.composer.components.impl.control.GifCLabel;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.integration.slack.constants.ImageConstants;
+import com.kms.katalon.composer.integration.slack.constants.SlackPreferenceConstants;
 import com.kms.katalon.composer.integration.slack.constants.StringConstants;
 import com.kms.katalon.composer.integration.slack.util.SlackUtil;
 import com.kms.katalon.composer.integration.slack.util.SlackUtil.SlackMsgStatus;
-import com.kms.katalon.constants.PreferenceConstants;
 
 public class SlackPreferencePage extends FieldEditorPreferencePage {
     private Composite fieldEditorParent;
@@ -112,7 +112,7 @@ public class SlackPreferencePage extends FieldEditorPreferencePage {
         fieldEditorParent = new Composite(getFieldEditorParent(), SWT.NONE);
         fieldEditorParent.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true, 1, 1));
 
-        enabled = new BooleanFieldEditor(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_ENABLED,
+        enabled = new BooleanFieldEditor(SlackPreferenceConstants.SLACK_ENABLED,
                 StringConstants.PREF_LBL_SLACK_ENABLED, fieldEditorParent);
         enabled.getDescriptionControl(fieldEditorParent).setToolTipText(StringConstants.PREF_LBL_TIP_SLACK_ENABLED);
 
@@ -120,19 +120,19 @@ public class SlackPreferencePage extends FieldEditorPreferencePage {
         fieldsetSlack.setText(StringConstants.PREF_LBL_SLACK);
         fieldsetSlack.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true, 1, 1));
 
-        token = new StringFieldEditor(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_AUTH_TOKEN,
+        token = new StringFieldEditor(SlackPreferenceConstants.SLACK_AUTH_TOKEN,
                 StringConstants.PREF_LBL_SLACK_AUTH_TOKEN, fieldsetSlack);
         token.getTextControl(fieldsetSlack).setToolTipText(StringConstants.PREF_LBL_SLACK_AUTH_TOKEN);
 
-        channel = new StringFieldEditor(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_CHANNEL_GROUP,
+        channel = new StringFieldEditor(SlackPreferenceConstants.SLACK_CHANNEL_GROUP,
                 StringConstants.PREF_LBL_SLACK_CHANNEL, fieldsetSlack);
         channel.getTextControl(fieldsetSlack).setToolTipText(StringConstants.PREF_LBL_SLACK_CHANNEL_DESC);
 
-        asUser = new BooleanFieldEditor(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_AS_USER,
-                StringConstants.PREF_LBL_SLACK_AS_USER, fieldsetSlack);
+        asUser = new BooleanFieldEditor(SlackPreferenceConstants.SLACK_AS_USER, StringConstants.PREF_LBL_SLACK_AS_USER,
+                fieldsetSlack);
         asUser.getDescriptionControl(fieldsetSlack).setToolTipText(StringConstants.PREF_LBL_SLACK_AS_USER_DESC);
 
-        username = new StringFieldEditor(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_USERNAME,
+        username = new StringFieldEditor(SlackPreferenceConstants.SLACK_USERNAME,
                 StringConstants.PREF_LBL_SLACK_USERNAME, fieldsetSlack);
         username.getTextControl(fieldsetSlack).setToolTipText(StringConstants.PREF_LBL_SLACK_USERNAME_DESC);
 
@@ -159,72 +159,55 @@ public class SlackPreferencePage extends FieldEditorPreferencePage {
         fieldsetSend.setText(StringConstants.PREF_LBL_SEND_MSG_TO_SLACK_WHEN);
         fieldsetSend.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true, 1, 1));
 
-        sendOpenProject = new BooleanFieldEditor(
-                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_OPEN_PROJECT,
+        sendOpenProject = new BooleanFieldEditor(SlackPreferenceConstants.SLACK_SEND_OPEN_PROJECT,
                 StringConstants.PREF_SEND_OPEN_PROJECT, fieldsetSend);
 
-        sendCloseProject = new BooleanFieldEditor(
-                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CLOSE_PROJECT,
+        sendCloseProject = new BooleanFieldEditor(SlackPreferenceConstants.SLACK_SEND_CLOSE_PROJECT,
                 StringConstants.PREF_SEND_CLOSE_PROJECT, fieldsetSend);
 
-        sendCreateTestCase = new BooleanFieldEditor(
-                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_TEST_CASE,
+        sendCreateTestCase = new BooleanFieldEditor(SlackPreferenceConstants.SLACK_SEND_CREATE_TEST_CASE,
                 StringConstants.PREF_SEND_CREATE_TEST_CASE, fieldsetSend);
 
-        sendUpdateTestCase = new BooleanFieldEditor(
-                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_UPDATE_TEST_CASE,
+        sendUpdateTestCase = new BooleanFieldEditor(SlackPreferenceConstants.SLACK_SEND_UPDATE_TEST_CASE,
                 StringConstants.PREF_SEND_UPDATE_TEST_CASE, fieldsetSend);
 
-        sendCreateTestSuite = new BooleanFieldEditor(
-                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_TEST_SUITE,
+        sendCreateTestSuite = new BooleanFieldEditor(SlackPreferenceConstants.SLACK_SEND_CREATE_TEST_SUITE,
                 StringConstants.PREF_SEND_CREATE_TEST_SUITE, fieldsetSend);
 
-        sendUpdateTestSuite = new BooleanFieldEditor(
-                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_UPDATE_TEST_SUITE,
+        sendUpdateTestSuite = new BooleanFieldEditor(SlackPreferenceConstants.SLACK_SEND_UPDATE_TEST_SUITE,
                 StringConstants.PREF_SEND_UPDATE_TEST_SUITE, fieldsetSend);
 
-        sendCreateTestData = new BooleanFieldEditor(
-                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_TEST_DATA,
+        sendCreateTestData = new BooleanFieldEditor(SlackPreferenceConstants.SLACK_SEND_CREATE_TEST_DATA,
                 StringConstants.PREF_SEND_CREATE_TEST_DATA, fieldsetSend);
 
-        sendUpdateTestData = new BooleanFieldEditor(
-                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_UPDATE_TEST_DATA,
+        sendUpdateTestData = new BooleanFieldEditor(SlackPreferenceConstants.SLACK_SEND_UPDATE_TEST_DATA,
                 StringConstants.PREF_SEND_UPDATE_TEST_DATA, fieldsetSend);
 
-        sendCreateTestObject = new BooleanFieldEditor(
-                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_TEST_OBJECT,
+        sendCreateTestObject = new BooleanFieldEditor(SlackPreferenceConstants.SLACK_SEND_CREATE_TEST_OBJECT,
                 StringConstants.PREF_SEND_CREATE_TEST_OBJECT, fieldsetSend);
 
-        sendUpdateTestObject = new BooleanFieldEditor(
-                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_UPDATE_TEST_OBJECT,
+        sendUpdateTestObject = new BooleanFieldEditor(SlackPreferenceConstants.SLACK_SEND_UPDATE_TEST_OBJECT,
                 StringConstants.PREF_SEND_UPDATE_TEST_OBJECT, fieldsetSend);
 
-        sendCreateFolder = new BooleanFieldEditor(
-                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_FOLDER,
+        sendCreateFolder = new BooleanFieldEditor(SlackPreferenceConstants.SLACK_SEND_CREATE_FOLDER,
                 StringConstants.PREF_SEND_CREATE_FOLDER, fieldsetSend);
 
-        sendCreateKeyword = new BooleanFieldEditor(
-                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_KEYWORD,
+        sendCreateKeyword = new BooleanFieldEditor(SlackPreferenceConstants.SLACK_SEND_CREATE_KEYWORD,
                 StringConstants.PREF_SEND_CREATE_KEYWORD, fieldsetSend);
 
-        sendCreatePackage = new BooleanFieldEditor(
-                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_CREATE_PACKAGE,
+        sendCreatePackage = new BooleanFieldEditor(SlackPreferenceConstants.SLACK_SEND_CREATE_PACKAGE,
                 StringConstants.PREF_SEND_CREATE_PACKAGE, fieldsetSend);
 
-        sendPasteFromCopy = new BooleanFieldEditor(
-                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_PASTE_FROM_COPY,
+        sendPasteFromCopy = new BooleanFieldEditor(SlackPreferenceConstants.SLACK_SEND_PASTE_FROM_COPY,
                 StringConstants.PREF_SEND_PASTE_FROM_COPY, fieldsetSend);
 
-        sendPasteFromCut = new BooleanFieldEditor(
-                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_PASTE_FROM_CUT,
+        sendPasteFromCut = new BooleanFieldEditor(SlackPreferenceConstants.SLACK_SEND_PASTE_FROM_CUT,
                 StringConstants.PREF_SEND_PASTE_FROM_CUT, fieldsetSend);
 
-        sendRenameItem = new BooleanFieldEditor(
-                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_RENAME_ITEM,
+        sendRenameItem = new BooleanFieldEditor(SlackPreferenceConstants.SLACK_SEND_RENAME_ITEM,
                 StringConstants.PREF_SEND_RENAME_ITEM, fieldsetSend);
 
-        sendDeleteItem = new BooleanFieldEditor(
-                PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_SEND_DELETE_ITEM,
+        sendDeleteItem = new BooleanFieldEditor(SlackPreferenceConstants.SLACK_SEND_DELETE_ITEM,
                 StringConstants.PREF_SEND_DELETE_ITEM, fieldsetSend);
 
         addField(sendOpenProject);

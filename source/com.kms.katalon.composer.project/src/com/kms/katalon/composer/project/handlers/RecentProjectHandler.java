@@ -17,7 +17,7 @@ import org.eclipse.ui.PlatformUI;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.constants.PreferenceConstants.IPluginPreferenceConstants;
+import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 
@@ -56,8 +56,7 @@ public class RecentProjectHandler {
             List<ProjectEntity> recentProjects = ProjectController.getInstance().getRecentProjects();
             if (recentProjects == null || recentProjects.isEmpty()) return;
 
-            if (PlatformUI.getPreferenceStore().getBoolean(
-                    IPluginPreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION)) {
+            if (PlatformUI.getPreferenceStore().getBoolean(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION)) {
                 // If the Tests Explorer part is minimized or hidden, we have to activate it.
                 // So that the tree entities can be loaded.
                 MPart explorerPart = partService.findPart(IdConstants.EXPLORER_PART_ID);

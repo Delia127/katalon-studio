@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.integration.slack.util;
 
+import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
@@ -15,14 +17,12 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import com.google.gson.stream.JsonReader;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.integration.slack.constants.SlackPreferenceConstants;
 import com.kms.katalon.composer.integration.slack.constants.StringConstants;
-import com.kms.katalon.constants.PreferenceConstants;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 /**
  * Slack Utility for Team Collaboration
@@ -36,7 +36,7 @@ public class SlackUtil {
 
     public static final String RES_ERROR_MSG = "errorMsg";
 
-    private IPreferenceStore PREFERENCE;
+    private ScopedPreferenceStore PREFERENCE;
 
     private boolean isSlackEnabled;
 
@@ -58,14 +58,12 @@ public class SlackUtil {
     }
 
     public SlackUtil() {
-        PREFERENCE = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.IntegrationSlackPreferenceConstants.QUALIFIER);
-        isSlackEnabled = PREFERENCE.getBoolean(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_ENABLED);
-        token = PREFERENCE.getString(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_AUTH_TOKEN);
-        channel = PREFERENCE.getString(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_CHANNEL_GROUP);
-        username = PREFERENCE.getString(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_USERNAME);
-        asIssuedTokenUser = PREFERENCE
-                .getBoolean(PreferenceConstants.IntegrationSlackPreferenceConstants.SLACK_AS_USER);
+        PREFERENCE = getPreferenceStore(SlackUtil.class);
+        isSlackEnabled = PREFERENCE.getBoolean(SlackPreferenceConstants.SLACK_ENABLED);
+        token = PREFERENCE.getString(SlackPreferenceConstants.SLACK_AUTH_TOKEN);
+        channel = PREFERENCE.getString(SlackPreferenceConstants.SLACK_CHANNEL_GROUP);
+        username = PREFERENCE.getString(SlackPreferenceConstants.SLACK_USERNAME);
+        asIssuedTokenUser = PREFERENCE.getBoolean(SlackPreferenceConstants.SLACK_AS_USER);
     }
 
     /**

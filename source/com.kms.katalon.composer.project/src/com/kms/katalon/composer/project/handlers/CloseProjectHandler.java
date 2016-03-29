@@ -20,7 +20,7 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.constants.PreferenceConstants.IPluginPreferenceConstants;
+import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 
@@ -92,7 +92,7 @@ public class CloseProjectHandler {
      * @param project
      */
     private static void saveOpenedEntitiesState(EPartService partService, ProjectEntity project) {
-        if (!getPreferenceStore().getBoolean(IPluginPreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION)) {
+        if (!getPreferenceStore().getBoolean(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION)) {
             return;
         }
         try {
