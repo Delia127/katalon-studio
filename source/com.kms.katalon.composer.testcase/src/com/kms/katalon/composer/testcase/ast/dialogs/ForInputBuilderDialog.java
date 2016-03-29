@@ -14,6 +14,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.ClosureListExpre
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ForStatementWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.providers.AstContentProviderAdapter;
+import com.kms.katalon.composer.testcase.model.InputValueTypeUtil;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
@@ -24,10 +25,7 @@ public class ForInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
 
     private static final String COLLECTION_EXPRESSION_LABEL = "Expression";
 
-    private final InputValueType[] defaultInputValueTypes = { InputValueType.Range, InputValueType.ClosureList,
-            InputValueType.List, InputValueType.Map, InputValueType.String, InputValueType.Number,
-            InputValueType.Boolean, InputValueType.Null, InputValueType.Variable, InputValueType.GlobalVariable,
-            InputValueType.TestDataValue, InputValueType.Property };
+    private final InputValueType[] defaultInputValueTypes = InputValueTypeUtil.getValueTypeOptions(InputValueTypeUtil.FOR_OPTIONS);
 
     private ForStatementWrapper forStatement;
 

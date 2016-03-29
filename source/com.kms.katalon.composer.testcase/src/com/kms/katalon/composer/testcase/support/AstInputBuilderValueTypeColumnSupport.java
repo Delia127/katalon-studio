@@ -37,6 +37,7 @@ public class AstInputBuilderValueTypeColumnSupport extends EditingSupport {
         if (parentNode == null) {
             return;
         }
+        
         ASTNodeWrapper newAstNode = getNewAstNode(value, oldAstNode);
         if (newAstNode == null) {
             return;

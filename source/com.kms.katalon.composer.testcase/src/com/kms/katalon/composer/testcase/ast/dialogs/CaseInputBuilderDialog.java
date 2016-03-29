@@ -14,6 +14,7 @@ import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.CaseStatementWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.providers.AstContentProviderAdapter;
+import com.kms.katalon.composer.testcase.model.InputValueTypeUtil;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
@@ -22,11 +23,7 @@ import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnS
 public class CaseInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
     private static final String EXPRESSION_LABEL = "Expression";
 
-    private final InputValueType[] defaultInputValueTypes = { InputValueType.Variable, InputValueType.GlobalVariable,
-            InputValueType.TestDataValue, InputValueType.MethodCall, InputValueType.Condition, InputValueType.Binary,
-            InputValueType.Property, InputValueType.List, InputValueType.Map, InputValueType.Range,
-            InputValueType.Class, InputValueType.String, InputValueType.Number, InputValueType.Boolean,
-            InputValueType.Null };
+    private final InputValueType[] defaultInputValueTypes = InputValueTypeUtil.getValueTypeOptions(InputValueTypeUtil.CASE_OPTIONS);
 
     private CaseStatementWrapper caseStatement;
 
