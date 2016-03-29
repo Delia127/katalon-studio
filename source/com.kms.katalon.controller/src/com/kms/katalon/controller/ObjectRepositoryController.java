@@ -7,6 +7,7 @@ import java.util.List;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.kms.katalon.constants.GlobalStringConstants;
+import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.SaveWebElementInfoEntity;
@@ -117,7 +118,11 @@ public class ObjectRepositoryController extends EntityController {
                 webElement.getIdForDisplay(), projectEntity, true);
     }
 
-    public static WebElementPropertyEntity getRefElementProperty(WebElementEntity webElement) {
+    public WebElementPropertyEntity getRefElementProperty(WebElementEntity webElement) {
         return dataProviderSetting.getWebElementDataProvider().getRefElementProperty(webElement);
+    }
+
+    public void reloadTestObject(WebElementEntity testObject, Entity entity) throws Exception {
+        entity = testObject = getWebElement(entity.getId());
     }
 }

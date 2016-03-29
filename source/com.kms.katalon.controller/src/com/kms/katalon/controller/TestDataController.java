@@ -10,6 +10,7 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.dal.state.DataProviderState;
+import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.testdata.DataFileEntity;
@@ -142,5 +143,9 @@ public class TestDataController extends EntityController {
     public Map<String, List<TestSuiteTestCaseLink>> getTestDataReferences(DataFileEntity dataFileEntity)
             throws Exception {
         return dataProviderSetting.getDataFileDataProvider().getTestDataReferences(dataFileEntity);
+    }
+
+    public void reloadTestData(DataFileEntity testData, Entity entity) throws Exception {
+        entity = testData = getTestData(entity.getId());
     }
 }

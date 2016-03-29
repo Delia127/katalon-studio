@@ -227,7 +227,7 @@ public class ExplorerPart {
             public void keyPressed(KeyEvent e) {
                 if (((e.stateMask & SWT.CTRL) == SWT.CTRL)) {
                     if (e.keyCode == 'c') {
-                        CopyHandler.execute(selectionService);
+                        CopyHandler.getInstance().execute();
                     }
                 }
             }
@@ -529,7 +529,8 @@ public class ExplorerPart {
     private void reloadTreeInputEventHandler(
             @UIEventTopic(EventConstants.EXPLORER_RELOAD_INPUT) final List<Object> treeEntities) {
         try {
-            if (treeViewer.getTree().isDisposed()) return;
+            if (treeViewer.getTree().isDisposed())
+                return;
             while (treeViewer.isBusy()) {
                 // wait for tree is not busy
             }

@@ -25,6 +25,9 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String DIA_MSG_HEADER_ENTITY_REFERENCES = "Caution: ''{0}'' has been referred by some sources listed below.\nDo you want to remove all these references?";
 
+    // AbstractDeleteReferredEntityHandler
+    public static final String HAND_JOB_DELETING_FOLDER = "Deleting folder: ''{0}''...";
+
     // RenameHandler
     public static final String HAND_CONFIRM_TITLE = "Confirmation";
 

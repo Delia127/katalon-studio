@@ -11,6 +11,7 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.dal.state.DataProviderState;
+import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
@@ -84,7 +85,8 @@ public class TestSuiteController extends EntityController {
      */
     @Deprecated
     public String getIdForDisplay(TestSuiteEntity entity) throws Exception {
-        return dataProviderSetting.getTestSuiteDataProvider().getIdForDisplay(entity)
+        return dataProviderSetting.getTestSuiteDataProvider()
+                .getIdForDisplay(entity)
                 .replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPERATOR);
     }
 
@@ -152,7 +154,8 @@ public class TestSuiteController extends EntityController {
 
         for (VariableLink variableLink : testCaseLink.getVariableLinks()) {
             if (variableLink.getType() == VariableType.SCRIPT || variableLink.getTestDataLinkId() == null
-                    || variableLink.getValue() == null) continue;
+                    || variableLink.getValue() == null)
+                continue;
 
             String testDataLinkId = variableLink.getTestDataLinkId();
 
@@ -204,5 +207,9 @@ public class TestSuiteController extends EntityController {
 
     public TestSuiteTestCaseLink getTestCaseLink(String testCaseId, TestSuiteEntity testSuite) {
         return dataProviderSetting.getTestSuiteDataProvider().getTestCaseLink(testSuite, testCaseId);
+    }
+
+    public void reloadTestSuite(TestSuiteEntity testSuite, Entity entity) throws Exception {
+        entity = testSuite = getTestSuite(entity.getId());
     }
 }

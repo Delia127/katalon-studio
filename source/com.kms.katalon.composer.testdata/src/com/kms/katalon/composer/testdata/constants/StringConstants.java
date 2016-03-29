@@ -10,6 +10,8 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String HAND_JOB_DELETING_ENTITY_W_TYPE_NAME = "Deleting {0} ''{1}''...";
 
+    public static final String HAND_JOB_DELETING_ENTITY = "Deleting ''{0}''...";
+
     public static final String HAND_JOB_DELETING_FOLDER = "Deleting folder: ''{0}''...";
 
     // NewTestDataHandler

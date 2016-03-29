@@ -35,7 +35,7 @@ public class WebElementTreeEntity extends AbstractTreeEntity {
 
     @Override
     public Object getObject() throws Exception {
-        this.webElement = ObjectRepositoryController.getInstance().getWebElement(webElement.getId());
+        ObjectRepositoryController.getInstance().reloadTestObject(webElement, entity);
         loadAllDescentdantEntities();
         return webElement;
     }

@@ -1,28 +1,24 @@
 package com.kms.katalon.composer.testdata.handlers;
 
-import java.text.MessageFormat;
+import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
+import static com.kms.katalon.composer.testcase.util.TestCaseEntityUtil.getTestCaseEntities;
+import static com.kms.katalon.groovy.util.GroovyRefreshUtil.findReferencesInTestCaseScripts;
+import static com.kms.katalon.groovy.util.GroovyRefreshUtil.removeReferencesInTestCaseScripts;
+import static java.text.MessageFormat.format;
+import static org.eclipse.jface.dialogs.MessageDialog.openError;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.inject.Inject;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.ui.di.UISynchronize;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.handlers.deletion.AbstractDeleteReferredEntityHandler;
-import com.kms.katalon.composer.explorer.handlers.deletion.IDeleteEntityHandler;
-import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
 import com.kms.katalon.composer.testdata.dialog.TestDataReferencesDialog;
 import com.kms.katalon.constants.EventConstants;
@@ -36,12 +32,8 @@ import com.kms.katalon.entity.link.VariableLink.VariableType;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
-import com.kms.katalon.groovy.util.GroovyRefreshUtil;
 
-public class DeleteTestDataHandler extends AbstractDeleteReferredEntityHandler implements IDeleteEntityHandler {
-
-    @Inject
-    private IEventBroker eventBroker;
+public class DeleteTestDataHandler extends AbstractDeleteReferredEntityHandler {
 
     @Override
     public Class<? extends ITreeEntity> entityType() {
@@ -55,84 +47,89 @@ public class DeleteTestDataHandler extends AbstractDeleteReferredEntityHandler i
                 return false;
             }
 
-            final DataFileEntity testData = (DataFileEntity) entity.getObject();
+            DataFileEntity testData = (DataFileEntity) entity.getObject();
 
             if (testData == null) {
                 return false;
             }
 
-            String taskName = MessageFormat.format(StringConstants.HAND_JOB_DELETING_ENTITY_W_TYPE_NAME,
-                    entity.getTypeName(), entity.getText());
-            monitor.beginTask(taskName, 1);
+            monitor.beginTask(
+                    format(StringConstants.HAND_JOB_DELETING_ENTITY_W_TYPE_NAME, entity.getTypeName(), entity.getText()),
+                    1);
 
-            UISynchronize sync = UISynchronizeService.getInstance().getSync();
-            final String testDataId = testData.getIdForDisplay();
-            final Map<String, List<TestSuiteTestCaseLink>> referencesInTestSuite = TestDataController.getInstance()
-                    .getTestDataReferences(testData);
-
-            // Find all Test Case script which has relationship with the Test Data
-            List<IFile> affectedTestCaseScripts = GroovyRefreshUtil.findReferencesInTestCaseScripts(testDataId,
-                    testData.getProject());
-            final List<TestCaseEntity> referencesInTestCase = TestCaseEntityUtil
-                    .getTestCaseEntities(affectedTestCaseScripts);
-
-            if (referencesInTestSuite.values().size() > 0) {
-                if (!canDelete()) {
-                    if (!needToShowPreferenceDialog()) {
-                        return false;
-                    }
-
-                    final AbstractDeleteReferredEntityHandler handler = this;
-
-                    sync.syncExec(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            TestDataReferencesDialog dialog = new TestDataReferencesDialog(Display.getCurrent()
-                                    .getActiveShell(), testDataId, referencesInTestSuite, referencesInTestCase, handler);
-                            dialog.open();
-                        }
-                    });
-
-                    if (canDelete()) {
-                        // remove test data references in test suite
-                        removeReferencesInTestSuites(testData, referencesInTestSuite, eventBroker);
-
-                        // remove test data references in test case script
-                        GroovyRefreshUtil.removeReferencesInTestCaseScripts(testDataId, affectedTestCaseScripts);
-                    } else {
-                        return false;
-                    }
-                }
-
+            String testDataId = testData.getIdForDisplay();
+            if (performDeleteTestData(testData, findReferencesInTestCaseScripts(testDataId, testData.getProject()))) {
+                eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, testDataId);
+                return true;
             }
-
-            // remove TestCase part from its partStack if it exists
-            EntityPartUtil.closePart(testData);
-
-            TestDataController.getInstance().deleteDataFile(testData);
-
-            eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, testDataId);
-            return true;
         } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
-                    StringConstants.HAND_ERROR_MSG_UNABLE_TO_DEL_TEST_DATA);
-            return false;
+            logError(e);
+            openError(null, StringConstants.ERROR_TITLE, StringConstants.HAND_ERROR_MSG_UNABLE_TO_DEL_TEST_DATA);
         } finally {
             monitor.done();
         }
+        return false;
     }
 
-    public static void removeReferencesInTestSuites(DataFileEntity dataFileEntity,
-            Map<String, List<TestSuiteTestCaseLink>> testDataReferences, IEventBroker eventBroker) throws Exception {
-        final String dataFileId = dataFileEntity.getIdForDisplay();
+    protected boolean performDeleteTestData(final DataFileEntity testData, final List<IFile> affectedTestCaseScripts) {
+        isDeleted = false;
+        sync.syncExec(new Runnable() {
 
+            @Override
+            public void run() {
+                try {
+                    String testDataId = testData.getIdForDisplay();
+                    TestDataController tdController = TestDataController.getInstance();
+                    Map<String, List<TestSuiteTestCaseLink>> referencesInTestSuite = tdController.getTestDataReferences(testData);
+
+                    // Find all Test Case script which has relationship with the Test Data
+                    List<TestCaseEntity> affectedTestCases = getTestCaseEntities(affectedTestCaseScripts);
+
+                    if (!referencesInTestSuite.values().isEmpty() || !affectedTestCases.isEmpty()) {
+                        if (isDefaultResponse()) {
+                            TestDataReferencesDialog dialog = new TestDataReferencesDialog(null, testDataId,
+                                    referencesInTestSuite, affectedTestCases, needYesNoToAllButtons());
+                            setResponse(dialog.open());
+                        }
+
+                        if (isCancelResponse()) {
+                            return;
+                        }
+
+                        if (isYesResponse()) {
+                            // remove test data references in test suite
+                            removeReferencesInTestSuites(testData, referencesInTestSuite);
+
+                            // remove test data references in test case script
+                            removeReferencesInTestCaseScripts(testDataId, affectedTestCaseScripts);
+                        }
+                    }
+
+                    // remove TestCase part from its partStack if it exists
+                    EntityPartUtil.closePart(testData);
+
+                    // remove Test Data
+                    tdController.deleteDataFile(testData);
+
+                    if (!isYesNoToAllResponse()) {
+                        resetResponse();
+                    }
+
+                    isDeleted = true;
+                } catch (Exception e) {
+                    logError(e);
+                }
+            }
+        });
+        return isDeleted;
+    }
+
+    protected void removeReferencesInTestSuites(DataFileEntity dataFileEntity,
+            Map<String, List<TestSuiteTestCaseLink>> testDataReferences) throws Exception {
+        String dataFileId = dataFileEntity.getIdForDisplay();
         for (Entry<String, List<TestSuiteTestCaseLink>> entry : testDataReferences.entrySet()) {
-
             for (TestSuiteTestCaseLink testCaseLink : entry.getValue()) {
                 List<TestCaseTestDataLink> removedTestDataLinks = new ArrayList<TestCaseTestDataLink>();
-
                 for (TestCaseTestDataLink testDataLink : testCaseLink.getTestDataLinks()) {
                     if (!dataFileId.equals(testDataLink.getTestDataId())) {
                         continue;
@@ -153,11 +150,11 @@ public class DeleteTestDataHandler extends AbstractDeleteReferredEntityHandler i
                 testCaseLink.getTestDataLinks().removeAll(removedTestDataLinks);
             }
 
-            TestSuiteEntity testSuite = TestSuiteController.getInstance().getTestSuiteByDisplayId(entry.getKey(),
+            TestSuiteController tsController = TestSuiteController.getInstance();
+            TestSuiteEntity testSuite = tsController.getTestSuiteByDisplayId(entry.getKey(),
                     ProjectController.getInstance().getCurrentProject());
-            TestSuiteController.getInstance().updateTestSuite(testSuite);
+            tsController.updateTestSuite(testSuite);
             eventBroker.post(EventConstants.TEST_SUITE_UPDATED, new Object[] { testSuite.getId(), testSuite });
         }
     }
-
 }

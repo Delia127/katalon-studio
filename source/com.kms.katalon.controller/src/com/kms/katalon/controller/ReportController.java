@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
@@ -162,5 +163,9 @@ public class ReportController extends EntityController {
         String testSuiteDisplayId = parentReportFolder.getIdForDisplay().replaceFirst("Reports", "Test Suites");
         return TestSuiteController.getInstance().getTestSuiteByDisplayId(testSuiteDisplayId,
                 parentReportFolder.getProject());
+    }
+
+    public void reloadReport(ReportEntity report, Entity entity) throws Exception {
+        entity = report = getReportEntity(entity.getId());
     }
 }
