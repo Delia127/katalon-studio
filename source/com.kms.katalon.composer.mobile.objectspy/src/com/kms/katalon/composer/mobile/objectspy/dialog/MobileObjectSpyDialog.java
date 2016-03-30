@@ -752,14 +752,16 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
             return false;
         }
 
-        String appFile = txtAppFile.getText().trim();
+        String appFilePath = txtAppFile.getText().trim();
 
-        if (appFile.equals("")) {
+        if (appFilePath.equals("")) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                     StringConstants.DIA_ERROR_MSG_PLS_SELECT_APP_FILE);
             return false;
         }
-        if (new File(appFile).isFile() == false) {
+        File appFile = new File(appFilePath);
+        
+        if (appFile.isDirectory() && !appFile.getName().endsWith(".app")) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                     StringConstants.DIA_ERROR_MSG_APP_FILE_NOT_EXIST);
             return false;

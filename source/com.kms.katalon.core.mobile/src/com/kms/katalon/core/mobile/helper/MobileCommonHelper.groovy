@@ -11,6 +11,7 @@ import com.kms.katalon.core.mobile.constants.StringConstants
 import com.kms.katalon.core.mobile.keyword.GUIObject
 import com.kms.katalon.core.mobile.keyword.MobileDriverFactory
 import com.kms.katalon.core.mobile.keyword.MobileDriverFactory.OsType
+
 import org.openqa.selenium.NoSuchElementException;
 
 public class MobileCommonHelper {
@@ -19,15 +20,7 @@ public class MobileCommonHelper {
     public static void initializeMobileDriver(String appFile, boolean uninstallAfterCloseApp) throws Exception {
         String deviceId = MobileDriverFactory.getDeviceId(RunConfiguration.getStringProperty(MobileDriverFactory.EXECUTED_DEVICE_ID,
             RunConfiguration.getDriverPreferencesProperties(MobileDriverFactory.MOBILE_DRIVER_PROPERTY)));
-        OsType deviceOs = MobileDriverFactory.getDeviceOs(deviceId);
-        switch (deviceOs) {
-            case OsType.IOS:
-                MobileDriverFactory.startIosDriver(deviceId, appFile, uninstallAfterCloseApp);
-                break;
-            case OsType.ANDROID:
-                MobileDriverFactory.startAndroidDriver(deviceId, appFile, uninstallAfterCloseApp);
-                break;
-        }
+		MobileDriverFactory.startMobileDriver(MobileDriverFactory.getDeviceOs(deviceId), deviceId, appFile, uninstallAfterCloseApp)
     }
 
     @CompileStatic
@@ -39,12 +32,11 @@ public class MobileCommonHelper {
     public static String getDeviceModel() throws StepFailedException, IOException, InterruptedException {
         String deviceId = MobileDriverFactory.getDeviceId(RunConfiguration.getStringProperty(MobileDriverFactory.EXECUTED_DEVICE_ID,
             RunConfiguration.getDriverPreferencesProperties(MobileDriverFactory.MOBILE_DRIVER_PROPERTY)));
-        OsType deviceOs = MobileDriverFactory.getDeviceOs(deviceId);
         String model = null;
         ProcessBuilder pb = new ProcessBuilder();
         Process p = null;
         BufferedReader br = null;
-        switch (deviceOs) {
+        switch (MobileDriverFactory.getDeviceOs(deviceId)) {
             case OsType.IOS:
                 pb.command("ideviceinfo", "-u", deviceId);
                 p = pb.start();
@@ -76,12 +68,11 @@ public class MobileCommonHelper {
     public static String getDeviceOSVersion() throws StepFailedException, IOException, InterruptedException {
         String deviceId = MobileDriverFactory.getDeviceId(RunConfiguration.getStringProperty(MobileDriverFactory.EXECUTED_DEVICE_ID,
             RunConfiguration.getDriverPreferencesProperties(MobileDriverFactory.MOBILE_DRIVER_PROPERTY)));
-        OsType deviceOs = MobileDriverFactory.getDeviceOs(deviceId);
         String osVersion = null;
         ProcessBuilder pb = new ProcessBuilder();
         Process p = null;
         BufferedReader br = null;
-        switch (deviceOs) {
+        switch (MobileDriverFactory.getDeviceOs(deviceId)) {
             case OsType.IOS:
                 pb.command("ideviceinfo", "-u", deviceId);
                 p = pb.start();

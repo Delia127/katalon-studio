@@ -81,15 +81,8 @@ public class MobileInspectorController {
                     driverConnectors));
             RunConfiguration.setAppiumLogFilePath(projectDir + File.separator + "appium.log");
 
-            switch (os) {
-            case ANDROID:
-                MobileDriverFactory.startAndroidDriver(deviceId, appFile, uninstallAfterCloseApp);
-                break;
-            case IOS:
-                MobileDriverFactory.startIosDriver(deviceId, appFile, uninstallAfterCloseApp);
-                break;
-            }
-
+            MobileDriverFactory.startMobileDriver(os, deviceId, appFile, uninstallAfterCloseApp);
+            
             driver = MobileDriverFactory.getDriver();
     }
 
