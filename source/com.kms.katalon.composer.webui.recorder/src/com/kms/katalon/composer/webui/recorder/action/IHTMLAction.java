@@ -21,5 +21,6 @@ public interface IHTMLAction {
     public String getMappedKeywordMethod();
     public boolean hasElement();
     public boolean hasInput();
+    public String getDescription();
     public HTMLActionParam[] getParams();
 }

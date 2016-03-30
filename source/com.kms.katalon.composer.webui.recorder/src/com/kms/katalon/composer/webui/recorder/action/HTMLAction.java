@@ -4,23 +4,36 @@ import com.kms.katalon.composer.webui.recorder.util.HTMLActionUtil;
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords;
 
 public enum HTMLAction implements IHTMLAction {
-    LeftClick("click"), RightClick("rightClick"), DoubleClick("doubleClick"), Select("selectOptionByValue"), Deselect(
-            "deselectOptionByValue"), Check("check"), Uncheck("uncheck"), Submit("submit"), SetText("setText"), Navigate(
-            "navigateToUrl"), SwitchToWindow("switchToWindowTitle");
+    LeftClick("click", "Click on the given element"), RightClick("rightClick", "Right click on the given web element"), DoubleClick(
+            "doubleClick", "Double click on the given web element"), Select("selectOptionByValue",
+            "Select the option with the given value"), Deselect("deselectOptionByValue",
+            "De-select the option with the given value"), Check("check",
+            "Check a toggle-button (check-box/radio-button)"), Uncheck("uncheck",
+            "Un-check a toggle-button (check-box/radio-button)"), Submit("submit", "Submit the form"), SetText(
+            "setText", "Set text to the given element"), Navigate("navigateToUrl", "Navigate to the specified web page"), SwitchToWindow(
+            "switchToWindowTitle", "Switch to the window with given title");
 
+    private String description;
     private String mappedKeywordClassName;
     private String mappedKeywordClassSimpleName;
     private String mappedKeywordMethod;
     protected HTMLActionParam[] params;
 
     private HTMLAction(String mappedKeywordMethod) {
-        this(WebUiBuiltInKeywords.class.getName(), WebUiBuiltInKeywords.class.getSimpleName(), mappedKeywordMethod);
+        this(mappedKeywordMethod, "");
     }
 
-    private HTMLAction(String mappedKeywordClassName, String mappedKeywordSimpleName, String mappedKeywordMethod) {
+    private HTMLAction(String mappedKeywordMethod, String description) {
+        this(WebUiBuiltInKeywords.class.getName(), WebUiBuiltInKeywords.class.getSimpleName(), mappedKeywordMethod,
+                description);
+    }
+
+    private HTMLAction(String mappedKeywordClassName, String mappedKeywordSimpleName, String mappedKeywordMethod,
+            String description) {
         this.mappedKeywordClassName = mappedKeywordClassName;
         this.mappedKeywordClassSimpleName = mappedKeywordSimpleName;
         this.mappedKeywordMethod = mappedKeywordMethod;
+        this.description = description;
         params = HTMLActionUtil.collectKeywordParam(mappedKeywordClassName, mappedKeywordMethod);
     }
 
@@ -55,5 +68,9 @@ public enum HTMLAction implements IHTMLAction {
     @Override
     public HTMLActionParam[] getParams() {
         return params;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }
