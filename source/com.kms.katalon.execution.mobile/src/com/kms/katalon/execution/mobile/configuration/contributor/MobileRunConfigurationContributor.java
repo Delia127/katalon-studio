@@ -5,10 +5,13 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
-import com.kms.katalon.execution.entity.ConsoleOption;
+import com.kms.katalon.execution.console.entity.ConsoleOption;
+import com.kms.katalon.execution.console.entity.StringConsoleOption;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.mobile.configuration.MobileRunConfiguration;
 import com.kms.katalon.execution.mobile.constants.StringConstants;
@@ -16,7 +19,14 @@ import com.kms.katalon.execution.mobile.driver.MobileDevice;
 import com.kms.katalon.execution.mobile.util.MobileExecutionUtil;
 
 public abstract class MobileRunConfigurationContributor implements IRunConfigurationContributor {
-    private DeviceNameConsoleOption deviceNameConsoleOption = new DeviceNameConsoleOption();
+    private String deviceName;
+
+    public static final StringConsoleOption DEVICE_NAME_CONSOLE_OPTION = new StringConsoleOption() {
+        @Override
+        public String getOption() {
+            return com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_DEVICE_ID;
+        }
+    };
 
     @Override
     public String getId() {
@@ -26,10 +36,9 @@ public abstract class MobileRunConfigurationContributor implements IRunConfigura
     @Override
     public IRunConfiguration getRunConfiguration(String projectDir) throws IOException, ExecutionException,
             InterruptedException {
-        if (deviceNameConsoleOption.getName().isEmpty()) {
+        if (StringUtils.isBlank(deviceName)) {
             throw new ExecutionException(StringConstants.MOBILE_ERR_NO_DEVICE_NAME_AVAILABLE);
         }
-        String deviceName = deviceNameConsoleOption.getName();
         MobileRunConfiguration runConfiguration = getMobileRunConfiguration(projectDir);
         MobileDevice device = MobileExecutionUtil.getDevice(getMobileDriverType(), deviceName);
         if (device == null) {
@@ -43,10 +52,20 @@ public abstract class MobileRunConfigurationContributor implements IRunConfigura
     protected abstract MobileRunConfiguration getMobileRunConfiguration(String projectDir) throws IOException;
 
     @Override
-    public List<ConsoleOption<?>> getRequiredArguments() {
+    public List<ConsoleOption<?>> getConsoleOptionList() {
         List<ConsoleOption<?>> consoleOptionList = new ArrayList<ConsoleOption<?>>();
-        consoleOptionList.add(deviceNameConsoleOption);
+        consoleOptionList.add(DEVICE_NAME_CONSOLE_OPTION);
         return consoleOptionList;
+    }
+
+    @Override
+    public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
+        if (StringUtils.isBlank(argumentValue)) {
+            return;
+        }
+        if (consoleOption == DEVICE_NAME_CONSOLE_OPTION) {
+            deviceName = argumentValue.trim();
+        }
     }
 
     protected abstract MobileDriverType getMobileDriverType();

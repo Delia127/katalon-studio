@@ -97,7 +97,7 @@ public class KeywordLogger {
                 fileHandler.setFormatter(formatter);
                 logger.addHandler(fileHandler);
 
-                SocketHandler socketHandler = new SocketHandler(getHostAddress(), getPort());
+                SocketHandler socketHandler = new SystemSocketHandler(getHostAddress(), getPort());
                 logger.addHandler(socketHandler);
             } catch (SecurityException | IOException e) {
                 System.err.println("Unable to create logger. Root cause (" + e.getMessage() + ").");

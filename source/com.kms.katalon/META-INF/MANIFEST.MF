@@ -6,7 +6,8 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: KMS
 Export-Package: com.kms.katalon.composer.handlers,
- com.kms.katalon.composer.parts
+ com.kms.katalon.composer.parts,
+ com.kms.katalon.core.application
 Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.constant,
  org.eclipse.e4.ui.workbench,
@@ -30,7 +31,8 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.groovy,
  com.kms.katalon.composer.components.impl,
  org.eclipse.e4.ui.di,
- com.kms.katalon.preferences
+ com.kms.katalon.preferences,
+ net.sf.jopt-simple.jopt-simple
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: org.eclipse.e4.core.services.log
 Bundle-Localization: plugin

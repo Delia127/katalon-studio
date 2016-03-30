@@ -34,7 +34,6 @@ import com.kms.katalon.execution.entity.ReportLocationSetting;
 import com.kms.katalon.execution.entity.Reportable;
 import com.kms.katalon.execution.entity.Rerunnable;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
-import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.execution.integration.ReportIntegrationFactory;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
@@ -44,7 +43,6 @@ import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.logging.LogUtil;
 
 public abstract class ReportableLauncher extends LoggableLauncher {
-
     public ReportableLauncher(IRunConfiguration runConfig) {
         super(runConfig);
     }
@@ -80,19 +78,19 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             Rerunnable rerun = (Rerunnable) getExecutedEntity();
 
             TestSuiteEntity testSuite = getTestSuite();
-            IExecutedEntity newTestSuiteExecutedEntity = ExecutionUtil.getRerunExecutedEntity(
-                    (TestSuiteExecutedEntity) getExecutedEntity(), getResult());
 
             try {
+                IExecutedEntity newTestSuiteExecutedEntity = ExecutionUtil.getRerunExecutedEntity(
+                        (TestSuiteExecutedEntity) getExecutedEntity(), getResult());
                 writeLine("\n");
-                writeLine(MessageFormat.format(StringConstants.LAU_RPT_RERUN_TEST_SUITE, getExecutedEntity()
-                        .getSourceId(), String.valueOf(rerun.getPreviousRerunTimes() + 1)));
+                writeLine(MessageFormat.format(StringConstants.LAU_RPT_RERUN_TEST_SUITE,
+                        getExecutedEntity().getSourceId(), String.valueOf(rerun.getPreviousRerunTimes() + 1)));
 
                 IRunConfiguration newConfig = getRunConfig().cloneConfig();
                 newConfig.build(testSuite, newTestSuiteExecutedEntity);
                 ReportableLauncher rerunLauncher = clone(newConfig);
                 LauncherManager.getInstance().addLauncher(rerunLauncher);
-            } catch (IOException | ExecutionException e) {
+            } catch (Exception e) {
                 writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_RERUN_TEST_SUITE, e.getMessage()));
                 LogUtil.logError(e);
             }
@@ -115,8 +113,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
             File testSuiteReportSourceFolder = new File(getRunConfig().getExecutionSetting().getFolderPath());
 
-            File csvFile = new File(testSuiteReportSourceFolder, FilenameUtils.getBaseName(testSuiteReportSourceFolder
-                    .getName()) + ".csv");
+            File csvFile = new File(testSuiteReportSourceFolder,
+                    FilenameUtils.getBaseName(testSuiteReportSourceFolder.getName()) + ".csv");
 
             List<String> csvReports = new ArrayList<String>();
 
@@ -196,8 +194,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                         continue;
                     }
 
-                    if (reportLocSetting.isReportFileNameSet()
-                            && (fileExtension.equals("csv") || fileExtension.equals("html"))) {
+                    if (fileExtension.equalsIgnoreCase("csv") || fileExtension.equalsIgnoreCase("html")) {
                         fileName = reportLocSetting.getReportFileName();
                     }
 
@@ -205,8 +202,6 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                     FileUtils.copyFile(reportChildSourceFile,
                             new File(userReportFolder, fileName + "." + fileExtension));
                 }
-
-                writeLine(StringConstants.LAU_PRT_CANNOT_SEND_EMAIL);
             }
         } catch (IOException ex) {
             LogUtil.logError(ex);
@@ -217,8 +212,9 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
         }
-        for (Entry<String, ReportIntegrationContribution> reportContributorEntry : ReportIntegrationFactory
-                .getInstance().getIntegrationContributorMap().entrySet()) {
+        for (Entry<String, ReportIntegrationContribution> reportContributorEntry : ReportIntegrationFactory.getInstance()
+                .getIntegrationContributorMap()
+                .entrySet()) {
             ReportIntegrationContribution contribution = reportContributorEntry.getValue();
             if (contribution == null || !contribution.isIntegrationActive(getTestSuite())) {
                 continue;
@@ -238,13 +234,12 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     }
 
     private File getUserReportFolder(ReportLocationSetting rpLocSetting) {
-
         if (!rpLocSetting.isReportFolderPathSet()) {
             return null;
         }
 
-        File reportFolder = new File(PathUtil.relativeToAbsolutePath(rpLocSetting.getReportFolderPath(), getTestSuite()
-                .getProject().getFolderLocation()));
+        File reportFolder = new File(PathUtil.relativeToAbsolutePath(rpLocSetting.getReportFolderPath(),
+                getTestSuite().getProject().getFolderLocation()));
 
         if (reportFolder != null && !reportFolder.exists()) {
             reportFolder.mkdirs();

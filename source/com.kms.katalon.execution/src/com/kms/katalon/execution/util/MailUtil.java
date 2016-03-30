@@ -7,6 +7,7 @@ import java.io.File;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,7 +17,6 @@ import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailAttachment;
@@ -26,7 +26,6 @@ import org.apache.commons.mail.ImageHtmlEmail;
 import org.apache.commons.mail.resolver.DataSourceUrlResolver;
 
 import com.kms.katalon.constants.PreferenceConstants;
-import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
@@ -169,7 +168,9 @@ public class MailUtil {
         File folder = new File(directory);
         if (folder.isDirectory()) {
             File file = new File(folder.getParent() + File.separator + zipName + ".zip");
-            if (file.exists()) file.delete();
+            if (file.exists()) {
+                file.delete();
+            }
             ZipFile zipFile = new ZipFile(folder.getParent() + File.separator + zipName + ".zip");
             ZipParameters parameters = new ZipParameters();
             parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
@@ -181,49 +182,37 @@ public class MailUtil {
         return null;
     }
 
-    public static String[] toArray(String recipients) {
+    public static List<String> splitRecipientsString(String recipients) {
         if (StringUtils.isBlank(recipients)) {
-            return ArrayUtils.EMPTY_STRING_ARRAY;
+            return Collections.emptyList();
         }
-
-        return split(recipients.replace(" ", ""), EMAIL_SEPARATOR);
+        return Arrays.asList(split(StringUtils.deleteWhitespace(recipients), EMAIL_SEPARATOR));
     }
 
-    /**
-     * Get all recipient email address from Preference and Test Suite without duplication
-     * 
-     * @param testSuiteRecipients recipients from Test Suite
-     * @param preferenceRecipients recipients from Preferences > Execution > Email > Report Recipients
-     * @return non-duplicated recipients
-     */
-    public static String[] getDistinctRecipients(String... recipientsList) {
+    public static Set<String> getDistinctRecipients(String... recipientsList) {
         if (recipientsList == null) {
-            return ArrayUtils.EMPTY_STRING_ARRAY;
+            return Collections.emptySet();
         }
         Set<String> recipientCollector = new LinkedHashSet<String>();
         for (String recipients : recipientsList) {
-            recipientCollector.addAll(Arrays.asList(toArray(recipients)));
+            recipientCollector.addAll(splitRecipientsString(recipients));
         }
-        return recipientCollector.toArray(new String[recipientCollector.size()]);
+        return recipientCollector;
     }
 
-    public static EmailConfig getEmailConfig(TestSuiteEntity testSuite) {
+    public static EmailConfig getDefaultEmailConfig() {
         ScopedPreferenceStore prefs = getPreferenceStore(PreferenceConstants.EXECUTION_QUALIFIER);
 
-        String[] mailRecipients = getDistinctRecipients(testSuite.getMailRecipient(),
-                prefs.getString(PreferenceConstants.MAIL_CONFIG_REPORT_RECIPIENTS));
         EmailConfig conf = new EmailConfig();
-        conf.setTos(mailRecipients);
         conf.setHost(prefs.getString(PreferenceConstants.MAIL_CONFIG_HOST));
         conf.setPort(prefs.getString(PreferenceConstants.MAIL_CONFIG_PORT));
         conf.setFrom(prefs.getString(PreferenceConstants.MAIL_CONFIG_USERNAME));
-        conf.setSecurityProtocol(MailSecurityProtocolType.valueOf(prefs
-                .getString(PreferenceConstants.MAIL_CONFIG_SECURITY_PROTOCOL)));
+        conf.setSecurityProtocol(MailSecurityProtocolType.valueOf(prefs.getString(PreferenceConstants.MAIL_CONFIG_SECURITY_PROTOCOL)));
         conf.setUsername(prefs.getString(PreferenceConstants.MAIL_CONFIG_USERNAME));
         conf.setPassword(prefs.getString(PreferenceConstants.MAIL_CONFIG_PASSWORD));
         conf.setSignature(prefs.getString(PreferenceConstants.MAIL_CONFIG_SIGNATURE));
         conf.setSendAttachment(prefs.getBoolean(PreferenceConstants.MAIL_CONFIG_ATTACHMENT));
-
+        conf.addRecipients(splitRecipientsString(prefs.getString(PreferenceConstants.MAIL_CONFIG_REPORT_RECIPIENTS)));
         return conf;
     }
 }

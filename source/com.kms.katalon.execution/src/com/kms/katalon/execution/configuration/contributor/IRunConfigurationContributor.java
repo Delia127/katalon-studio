@@ -1,13 +1,12 @@
 package com.kms.katalon.execution.configuration.contributor;
 
 import java.io.IOException;
-import java.util.List;
 
 import com.kms.katalon.execution.configuration.IRunConfiguration;
-import com.kms.katalon.execution.entity.ConsoleOption;
+import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
 import com.kms.katalon.execution.exception.ExecutionException;
 
-public interface IRunConfigurationContributor {
+public interface IRunConfigurationContributor extends ConsoleOptionContributor {
     /**
      * Get id of the run configuration contributor
      * 
@@ -36,11 +35,4 @@ public interface IRunConfigurationContributor {
      */
     public IRunConfiguration getRunConfiguration(String projectDir) throws IOException, ExecutionException,
             InterruptedException;
-
-    /**
-     * Get the additional required arguments for this run configuration contributor
-     * 
-     * @return the additional required arguments for this run configuration contributor
-     */
-    public List<ConsoleOption<?>> getRequiredArguments();
 }

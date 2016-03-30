@@ -1,54 +1,68 @@
 package com.kms.katalon.execution.entity;
 
-import java.util.Arrays;
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 
+import com.kms.katalon.execution.console.entity.ConsoleOption;
+import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
+import com.kms.katalon.execution.console.entity.StringConsoleOption;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.execution.util.MailUtil.MailSecurityProtocolType;
 
-public class EmailConfig {
-    private String host;
+public class EmailConfig implements ConsoleOptionContributor {
+    public final static String SEND_EMAIL_OPTION = "sendMail";
 
-    private String port;
+    private String host = "";
 
-    private MailSecurityProtocolType securityProtocol;
+    private String port = "";
 
-    private String username;
+    private MailSecurityProtocolType securityProtocol = MailSecurityProtocolType.None;
 
-    private String password;
+    private String username = "";
 
-    private String[] tos;
+    private String password = "";
 
-    private String from;
+    private Set<String> tos = new HashSet<String>();
 
-    private String signature;
+    private String from = "";
 
-    private boolean sendAttachment;
+    private String signature = "";
 
-    public EmailConfig() {
-        setSendAttachment(false);
-        setSecurityProtocol(MailSecurityProtocolType.None);
-    }
-    
+    private boolean sendAttachment = false;
+
+    private static ConsoleOption<String> sendEmailConsoleOption = new StringConsoleOption() {
+        @Override
+        public String getOption() {
+            return SEND_EMAIL_OPTION;
+        }
+    };
+
     public void setSendAttachment(boolean sendAttachment) {
         this.sendAttachment = sendAttachment;
     }
-    
+
     public boolean isSendAttachmentEnable() {
         return sendAttachment;
     }
 
     public boolean canSend() {
-        return ArrayUtils.isNotEmpty(tos);
+        return !tos.isEmpty();
     }
-    
+
+    public void addRecipients(Set<String> recipients) {
+        tos.addAll(recipients);
+    }
+
+    public void addRecipients(List<String> recipients) {
+        tos.addAll(recipients);
+    }
+
     public void addRecipients(String recipients) {
-        Set<String> allEmails = new LinkedHashSet<String>(Arrays.asList(tos));
-        allEmails.addAll(Arrays.asList(MailUtil.getDistinctRecipients(recipients)));
-        tos = allEmails.toArray(new String[allEmails.size()]);
+        tos.addAll(MailUtil.splitRecipientsString(recipients));
     }
 
     public MailSecurityProtocolType getSecurityProtocol() {
@@ -60,9 +74,6 @@ public class EmailConfig {
     }
 
     public String getHost() {
-        if (host == null) {
-            host = "";
-        }
         return host;
     }
 
@@ -71,9 +82,6 @@ public class EmailConfig {
     }
 
     public String getPort() {
-        if (port == null) {
-            port = "";
-        }
         return port;
     }
 
@@ -82,9 +90,6 @@ public class EmailConfig {
     }
 
     public String getFrom() {
-        if (from == null) {
-            from = "";
-        }
         return from;
     }
 
@@ -93,9 +98,6 @@ public class EmailConfig {
     }
 
     public String getSignature() {
-        if (signature == null) {
-            signature = "";
-        }
         return signature;
     }
 
@@ -104,9 +106,6 @@ public class EmailConfig {
     }
 
     public String getPassword() {
-        if (password == null) {
-            password = "";
-        }
         return password;
     }
 
@@ -115,9 +114,6 @@ public class EmailConfig {
     }
 
     public String getUsername() {
-        if (username == null) {
-            username = "";
-        }
         return username;
     }
 
@@ -126,13 +122,23 @@ public class EmailConfig {
     }
 
     public String[] getTos() {
-        if (tos == null) {
-            tos = ArrayUtils.EMPTY_STRING_ARRAY;
-        }
-        return tos;
+        return tos.toArray(new String[tos.size()]);
     }
 
-    public void setTos(String[] tos) {
-        this.tos = tos;
+    @Override
+    public List<ConsoleOption<?>> getConsoleOptionList() {
+        List<ConsoleOption<?>> consoleOptionList = new ArrayList<ConsoleOption<?>>();
+        consoleOptionList.add(sendEmailConsoleOption);
+        return consoleOptionList;
+    }
+
+    @Override
+    public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
+        if (StringUtils.isBlank(argumentValue)) {
+            return;
+        }
+        if (consoleOption == sendEmailConsoleOption) {
+            addRecipients(argumentValue);
+        }
     }
 }
