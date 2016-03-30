@@ -1,5 +1,7 @@
 package com.kms.katalon.execution.util;
 
+import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -14,8 +16,6 @@ import java.util.Map.Entry;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.google.gson.Gson;
 import com.kms.katalon.constants.PreferenceConstants;
@@ -78,11 +78,12 @@ public class ExecutionUtil {
         return System.getProperty(OS_NAME_PROPERTY) + " " + System.getProperty(OS_ARCHITECTURE_PROPERTY) + BIT;
     }
 
+    private static ScopedPreferenceStore getStore() {
+        return getPreferenceStore(PreferenceConstants.EXECUTION_QUALIFIER);
+    }
+
     public static IRunConfigurationContributor getDefaultExecutionConfiguration() {
-        IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
-        String selectedRunConfiguration = store
-                .getString(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION);
+        String selectedRunConfiguration = getStore().getString(PreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION);
         IRunConfigurationContributor[] allBuiltinRunConfigurationContributor = RunConfigurationCollector.getInstance()
                 .getAllBuiltinRunConfigurationContributors();
         for (IRunConfigurationContributor runConfigurationContributor : allBuiltinRunConfigurationContributor) {
@@ -94,15 +95,11 @@ public class ExecutionUtil {
     }
 
     public static int getDefaultPageLoadTimeout() {
-        IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
-        return store.getInt(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_DEFAULT_TIMEOUT);
+        return getStore().getInt(PreferenceConstants.EXECUTION_DEFAULT_TIMEOUT);
     }
 
     public static boolean openReportAfterExecuting() {
-        IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
-        return store.getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING);
+        return getStore().getBoolean(PreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING);
     }
 
     public static Map<String, Object> escapeGroovy(Map<String, Object> propertiesMap) {
@@ -142,9 +139,9 @@ public class ExecutionUtil {
 
             TestCaseExecutedEntity testCaseExecutedEntity = new TestCaseExecutedEntity(testCaseLink.getTestCaseId());
 
-            testCaseExecutedEntity.setLoopTimes(1);
+            testCaseExecutedEntity.setLoopTimes(0);
 
-            int numberTestCaseUsedOnce = 0;
+            int numberTestCaseUsedOnce = -1;
             int numTestDataRowUsedManyTimes = 1;
 
             List<TestCaseTestDataLink> testDataLinkUsedList = TestSuiteController.getInstance()
@@ -169,44 +166,56 @@ public class ExecutionUtil {
 
                     if (testData == null
                             || dataFile == null
-                            || testData.getRowNumbers() < 1) {
+                            || ((dataFile.isContainsHeaders() ? testData.getRowNumbers() - 1 : testData.getRowNumbers()) < 0)) {
                         throw new IllegalArgumentException(MessageFormat.format(
                                 StringConstants.UTIL_EXC_TD_DATA_SRC_X_UNAVAILABLE, testDataLink.getTestDataId()));
-                    }
-                    
-                    TestDataExecutedEntity testDataExecutedEntity = getTestDataExecutedEntity(testCaseLink,
-                            testDataLink, testData);
-                    if (testDataExecutedEntity == null) {
-                        continue;
-                    }
-
-                    int rowCount = testDataExecutedEntity.getRowIndexes().length;
-
-                    if (testDataLink.getCombinationType() == TestDataCombinationType.ONE) {
-                        if (numberTestCaseUsedOnce < 1) {
-                            numberTestCaseUsedOnce = rowCount;
-                        } else {
-                            numberTestCaseUsedOnce = Math.min(numberTestCaseUsedOnce, rowCount);
-                        }
                     } else {
-                        numTestDataRowUsedManyTimes *= rowCount;
+                        TestDataExecutedEntity testDataExecutedEntity = getTestDataExecutedEntity(testCaseLink,
+                                testDataLink, testData);
+                        if (testDataExecutedEntity == null) {
+                            continue;
+                        }
 
-                        for (TestDataExecutedEntity siblingDataExecuted : testCaseExecutedEntity
-                                .getTestDataExecutions()) {
-                            if (siblingDataExecuted.getType() == TestDataCombinationType.MANY) {
-                                siblingDataExecuted.setMultiplier(siblingDataExecuted.getMultiplier() * rowCount);
+                        int rowCount = testDataExecutedEntity.getRowIndexes().length;
+
+                        // update numberTestCaseUsedOnce or
+                        // numTestDataRowUsedManyTimes depend on
+                        // combinationType of testDataLink
+                        if (testDataLink.getCombinationType() == TestDataCombinationType.ONE) {
+                            if (numberTestCaseUsedOnce < 1) {
+                                numberTestCaseUsedOnce = rowCount;
+                            } else {
+                                numberTestCaseUsedOnce = Math.min(numberTestCaseUsedOnce, rowCount);
+                            }
+                        } else {
+                            numTestDataRowUsedManyTimes *= rowCount;
+
+                            for (TestDataExecutedEntity siblingDataExecuted : testCaseExecutedEntity
+                                    .getTestDataExecutions()) {
+                                if (siblingDataExecuted.getType() == TestDataCombinationType.MANY) {
+                                    siblingDataExecuted.setMultiplier(siblingDataExecuted.getMultiplier() * rowCount);
+                                }
                             }
                         }
+                        testCaseExecutedEntity.getTestDataExecutions().add(testDataExecutedEntity);
                     }
-                    testCaseExecutedEntity.getTestDataExecutions().add(testDataExecutedEntity);
                 }
 
-                testCaseExecutedEntity.setLoopTimes(numTestDataRowUsedManyTimes * Math.max(numberTestCaseUsedOnce, 1));
+                if (numberTestCaseUsedOnce < 1) {
+                    numberTestCaseUsedOnce = 1;
+                }
+
+                testCaseExecutedEntity.setLoopTimes(numTestDataRowUsedManyTimes * numberTestCaseUsedOnce);
+            } else {
+                testCaseExecutedEntity.setLoopTimes(1);
             }
-            
+
+            if (numberTestCaseUsedOnce < 1) {
+                numberTestCaseUsedOnce = 1;
+            }
             // make sure all TestDataExecutedEntity in testCaseExecutedEntity
             // has the same rows to prevent NullPointerException
-            cutRedundantIndexes(testCaseExecutedEntity, Math.max(numberTestCaseUsedOnce, 1));
+            cutRedundantIndexes(testCaseExecutedEntity, numberTestCaseUsedOnce);
 
             testSuiteExecutedEntity.getTestCaseExecutedEntities().add(testCaseExecutedEntity);
         }
@@ -251,101 +260,112 @@ public class ExecutionUtil {
     private static TestDataExecutedEntity getTestDataExecutedEntity(TestSuiteTestCaseLink testCaseLink,
             TestCaseTestDataLink testDataLink, TestData testData) throws Exception {
 
+        DataFileEntity dataFile = TestDataController.getInstance().getTestDataByDisplayId(testDataLink.getTestDataId());
+
         TestDataExecutedEntity testDataExecutedEntity = new TestDataExecutedEntity(testDataLink.getId(),
                 testDataLink.getTestDataId());
         testDataExecutedEntity.setType(testDataLink.getCombinationType());
 
         int rowCount = 0;
-        int totalRowCount = testData.getRowNumbers();
+        int totalRowCount = (dataFile.isContainsHeaders() ? testData.getRowNumbers() - 1 : testData.getRowNumbers());
 
         switch (testDataLink.getIterationEntity().getIterationType()) {
-        case ALL: {
-            rowCount = testData.getRowNumbers();
+            case ALL: {
+                rowCount = (dataFile.isContainsHeaders() ? testData.getRowNumbers() - 1 : testData.getRowNumbers());
 
-            if (rowCount <= 0) {
-                throw new IllegalArgumentException(MessageFormat.format(
-                        StringConstants.UTIL_EXC_TD_X_DOES_NOT_CONTAIN_ANY_RECORDS, testDataLink.getTestDataId()));
-            }
-
-            int[] rowIndexes = new int[rowCount];
-            for (int index = 0; index < rowCount ; index++) {
-                rowIndexes[index] = index + TestData.BASE_INDEX;
-            }
-            testDataExecutedEntity.setRowIndexes(rowIndexes);
-
-            break;
-        }
-        case RANGE: {
-            int rowStart = testDataLink.getIterationEntity().getFrom();
-            int rowEnd = testDataLink.getIterationEntity().getTo();
-
-            if (rowStart > totalRowCount) {
-                throw new IllegalArgumentException(MessageFormat.format(
-                        StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_START_AT_ROW_IDX,
-                        testDataLink.getTestDataId(), Integer.toString(totalRowCount), testCaseLink.getTestCaseId(),
-                        Integer.toString(rowStart)));
-            }
-
-            if (rowEnd > totalRowCount) {
-                throw new IllegalArgumentException(MessageFormat.format(
-                        StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_ENDS_AT_ROW_IDX,
-                        testDataLink.getTestDataId(), Integer.toString(totalRowCount), testCaseLink.getTestCaseId(),
-                        Integer.toString(rowEnd)));
-            }
-            rowCount = rowEnd - rowStart + 1;
-
-            int[] rowIndexes = new int[rowCount];
-            for (int index = 0; index < rowCount; index++) {
-                rowIndexes[index] = index + rowStart;
-            }
-            testDataExecutedEntity.setRowIndexes(rowIndexes);
-            break;
-        }
-        case SPECIFIC:
-            String[] rowIndexesString = testDataLink.getIterationEntity().getValue().replace(" ", "").split(",");
-            rowCount = rowIndexesString.length;
-
-            List<Integer> rowIndexArray = new ArrayList<Integer>();
-            for (int index = 0; index < rowCount; index++) {
-                if (rowIndexesString[index].isEmpty()) {
-                    continue;
+                if (rowCount <= 0) {
+                    throw new IllegalArgumentException(MessageFormat.format(
+                            StringConstants.UTIL_EXC_TD_X_DOES_NOT_CONTAIN_ANY_RECORDS, testDataLink.getTestDataId()));
                 }
-                if (rowIndexesString[index].contains("-")) {
-                    int rowStart = Integer.valueOf(rowIndexesString[index].split("-")[0]);
-                    int rowEnd = Integer.valueOf(rowIndexesString[index].split("-")[1]);
 
-                    if (rowStart > totalRowCount) {
-                        throw new IllegalArgumentException(MessageFormat.format(
-                                StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_START_AT_ROW_IDX,
-                                testDataLink.getTestDataId(), Integer.toString(totalRowCount),
-                                testCaseLink.getTestCaseId(), Integer.toString(rowStart)));
-                    }
-
-                    if (rowEnd > totalRowCount) {
-                        throw new IllegalArgumentException(MessageFormat.format(
-                                StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_ENDS_AT_ROW_IDX,
-                                testDataLink.getTestDataId(), Integer.toString(totalRowCount),
-                                testCaseLink.getTestCaseId(), Integer.toString(rowEnd)));
-                    }
-                    for (int rowIndex = rowStart; rowIndex <= rowEnd; rowIndex++) {
-                        rowIndexArray.add(rowIndex);
-                    }
-
-                } else {
-                    int rowIndex = Integer.valueOf(rowIndexesString[index]);
-
-                    if (rowIndex < TestData.BASE_INDEX || rowIndex > totalRowCount) {
-                        throw new IllegalArgumentException(MessageFormat.format(
-                                StringConstants.UTIL_EXC_IDX_X_INVALID_TC_Y_TD_Z, rowIndexesString[index],
-                                testCaseLink.getTestCaseId(), testDataLink.getTestDataId()));
-                    }
-                    rowIndexArray.add(rowIndex);
+                int[] rowIndexes = new int[rowCount];
+                for (int index = 0; index < rowCount; index++) {
+                    rowIndexes[index] = index + (dataFile.isContainsHeaders() ? 1 : 0);
                 }
-            }
-            testDataExecutedEntity.setRowIndexes(ArrayUtils.toPrimitive(rowIndexArray.toArray(new Integer[rowIndexArray
-                    .size()])));
+                testDataExecutedEntity.setRowIndexes(rowIndexes);
 
-            break;
+                break;
+            }
+            case RANGE: {
+                int rowStart = testDataLink.getIterationEntity().getFrom();
+                int rowEnd = testDataLink.getIterationEntity().getTo();
+
+                if (rowStart > totalRowCount) {
+                    throw new IllegalArgumentException(MessageFormat.format(
+                            StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_START_AT_ROW_IDX,
+                            testDataLink.getTestDataId(), Integer.toString(totalRowCount),
+                            testCaseLink.getTestCaseId(), Integer.toString(rowStart)));
+                }
+
+                if (rowEnd > totalRowCount) {
+                    throw new IllegalArgumentException(MessageFormat.format(
+                            StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_ENDS_AT_ROW_IDX,
+                            testDataLink.getTestDataId(), Integer.toString(totalRowCount),
+                            testCaseLink.getTestCaseId(), Integer.toString(rowEnd)));
+                }
+                rowCount = rowEnd - rowStart + 1;
+
+                int[] rowIndexes = new int[rowCount];
+                for (int index = 0; index < rowCount; index++) {
+                    rowIndexes[index] = index + rowStart - (dataFile.isContainsHeaders() ? 0 : 1);
+                }
+                testDataExecutedEntity.setRowIndexes(rowIndexes);
+
+                break;
+            }
+            case SPECIFIC:
+                String[] rowIndexesString = testDataLink.getIterationEntity().getValue().replace(" ", "").split(",");
+                rowCount = rowIndexesString.length;
+
+                List<Integer> rowIndexArray = new ArrayList<Integer>();
+                for (int index = 0; index < rowCount; index++) {
+                    if (rowIndexesString[index].isEmpty()) {
+                        continue;
+                    }
+                    if (rowIndexesString[index].contains("-")) {
+                        int rowStart = Integer.valueOf(rowIndexesString[index].split("-")[0]);
+                        int rowEnd = Integer.valueOf(rowIndexesString[index].split("-")[1]);
+
+                        if (rowStart > totalRowCount) {
+                            throw new IllegalArgumentException(MessageFormat.format(
+                                    StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_START_AT_ROW_IDX,
+                                    testDataLink.getTestDataId(), Integer.toString(totalRowCount),
+                                    testCaseLink.getTestCaseId(), Integer.toString(rowStart)));
+                        }
+
+                        if (rowEnd > totalRowCount) {
+                            throw new IllegalArgumentException(MessageFormat.format(
+                                    StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_ENDS_AT_ROW_IDX,
+                                    testDataLink.getTestDataId(), Integer.toString(totalRowCount),
+                                    testCaseLink.getTestCaseId(), Integer.toString(rowEnd)));
+                        }
+                        for (int rowIndex = rowStart; rowIndex <= rowEnd; rowIndex++) {
+                            if (dataFile.isContainsHeaders()) {
+                                rowIndexArray.add(rowIndex);
+                            } else {
+                                rowIndexArray.add(rowIndex - 1);
+                            }
+                        }
+
+                    } else {
+                        int rowIndex = Integer.valueOf(rowIndexesString[index]);
+
+                        if (rowIndex < 1 || rowIndex > totalRowCount) {
+                            throw new IllegalArgumentException(MessageFormat.format(
+                                    StringConstants.UTIL_EXC_IDX_X_INVALID_TC_Y_TD_Z, rowIndexesString[index],
+                                    testCaseLink.getTestCaseId(), testDataLink.getTestDataId()));
+                        }
+                        if (dataFile.isContainsHeaders()) {
+                            rowIndexArray.add(rowIndex);
+                        } else {
+                            rowIndexArray.add(rowIndex - 1);
+                        }
+                    }
+                }
+                testDataExecutedEntity.setRowIndexes(ArrayUtils.toPrimitive(rowIndexArray
+                        .toArray(new Integer[rowIndexArray.size()])));
+
+                break;
         }
         if (rowCount == 0) {
             return null;
@@ -372,20 +392,12 @@ public class ExecutionUtil {
 
     /**
      * Returns execution properties for drivers connector.
-     * @return a {@link LinkedHashMap} that contains all driver system and preferences properties
-     * </br>
-     * Sample output in JSON:
+     * 
+     * @return a {@link LinkedHashMap} that contains all driver system and preferences properties </br> Sample output in
+     * JSON:
      * <ul>
-     * </br>{
-     * </br>    "system": { 
-     * </br>        "WebUI": {
-     * </br>        }
-     * </br>    },
-     * </br>    "preferences": {
-     * </br>        "WebUI": {
-     * </br>        }
-     * </br>    }
-     * </br>}
+     * </br>{ </br> "system": { </br> "WebUI": { </br> } </br> }, </br> "preferences": { </br> "WebUI": { </br> } </br>
+     * } </br>}
      * </ul>
      */
     private static Map<String, Object> getDriverExecutionProperties(Map<String, IDriverConnector> driverConnectors) {
@@ -429,7 +441,7 @@ public class ExecutionUtil {
         if (generalProps != null && !generalProps.values().isEmpty()) {
             executionProps.putAll(RunConfiguration.getExecutionGeneralProperties());
         }
-        
+
         Map<String, Object> preferenceProps = RunConfiguration.getDriverPreferencesProperties();
         if (preferenceProps != null && !preferenceProps.values().isEmpty()) {
             executionProps.putAll(RunConfiguration.getDriverPreferencesProperties());

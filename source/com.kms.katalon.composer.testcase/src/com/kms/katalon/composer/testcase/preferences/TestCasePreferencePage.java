@@ -29,8 +29,8 @@ import org.eclipse.swt.widgets.List;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.testcase.constants.TestCasePreferenceConstants;
 import com.kms.katalon.composer.testcase.model.InputValueType;
-import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.core.keyword.IKeywordContributor;
 import com.kms.katalon.core.model.FailureHandling;
@@ -286,10 +286,10 @@ public class TestCasePreferencePage extends PreferencePage {
         String defaultKeywordTypeString = null;
         if (isDefault) {
             defaultKeywordTypeString = getPreferenceStore().getDefaultString(
-                    PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE);
+                    TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE);
         } else {
             defaultKeywordTypeString = getPreferenceStore().getString(
-                    PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE);
+                    TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE);
         }
         int selectedIndex = 0;
         String[] keywordTypeStringArray = new String[contributors.length];
@@ -307,10 +307,10 @@ public class TestCasePreferencePage extends PreferencePage {
     private void initDefaultFailureHandlingValue(boolean isDefault) {
         comboDefaultFailureHandling.setItems(getFailureHandlingKeys(DF_FAILURE_HANDLING_VALUES));
         String cbbDfFailureHandlingText = getPreferenceStore().getString(
-                PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_FAILURE_HANDLING);
+                TestCasePreferenceConstants.TESTCASE_DEFAULT_FAILURE_HANDLING);
         if (isDefault) {
             cbbDfFailureHandlingText = getPreferenceStore().getDefaultString(
-                    PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_FAILURE_HANDLING);
+                    TestCasePreferenceConstants.TESTCASE_DEFAULT_FAILURE_HANDLING);
         }
 
         comboDefaultFailureHandling.setText(getFailureHandlingKey(cbbDfFailureHandlingText));
@@ -372,10 +372,10 @@ public class TestCasePreferencePage extends PreferencePage {
         resetAllRadioButtonStates();
 
         String defaultVariableType = getPreferenceStore().getString(
-                PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_VARIABLE_TYPE);
+                TestCasePreferenceConstants.TESTCASE_DEFAULT_VARIABLE_TYPE);
         if (isDefault) {
             defaultVariableType = getPreferenceStore().getDefaultString(
-                    PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_VARIABLE_TYPE);
+                    TestCasePreferenceConstants.TESTCASE_DEFAULT_VARIABLE_TYPE);
         }
 
         InputValueType valueType = InputValueType.valueOf(defaultVariableType);
@@ -389,10 +389,10 @@ public class TestCasePreferencePage extends PreferencePage {
         }
 
         boolean generateDefaultValue = getPreferenceStore().getBoolean(
-                PreferenceConstants.TestCasePreferenceConstants.TESTCASE_GENERATE_DEFAULT_VARIABLE_VALUE);
+                TestCasePreferenceConstants.TESTCASE_GENERATE_DEFAULT_VARIABLE_VALUE);
         if (isDefault) {
             generateDefaultValue = getPreferenceStore().getDefaultBoolean(
-                    PreferenceConstants.TestCasePreferenceConstants.TESTCASE_GENERATE_DEFAULT_VARIABLE_VALUE);
+                    TestCasePreferenceConstants.TESTCASE_GENERATE_DEFAULT_VARIABLE_VALUE);
         }
 
         if (generateDefaultValue) {
@@ -404,10 +404,10 @@ public class TestCasePreferencePage extends PreferencePage {
         }
 
         boolean exportVariables = getPreferenceStore().getBoolean(
-                PreferenceConstants.TestCasePreferenceConstants.TESTCASE_AUTO_EXPORT_VARIABLE);
+                TestCasePreferenceConstants.TESTCASE_AUTO_EXPORT_VARIABLE);
         if (isDefault) {
             exportVariables = getPreferenceStore().getDefaultBoolean(
-                    PreferenceConstants.TestCasePreferenceConstants.TESTCASE_AUTO_EXPORT_VARIABLE);
+                    TestCasePreferenceConstants.TESTCASE_AUTO_EXPORT_VARIABLE);
         }
 
         if (exportVariables) {
@@ -441,30 +441,26 @@ public class TestCasePreferencePage extends PreferencePage {
         }
         // Test Case Calling
         if (btnDefaultVariableIsConstant.getSelection()) {
-            getPreferenceStore().setValue(
-                    PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_VARIABLE_TYPE,
+            getPreferenceStore().setValue(TestCasePreferenceConstants.TESTCASE_DEFAULT_VARIABLE_TYPE,
                     InputValueType.String.name());
         }
 
         if (btnDefaultVariableIsVariable.getSelection()) {
-            getPreferenceStore().setValue(
-                    PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_VARIABLE_TYPE,
+            getPreferenceStore().setValue(TestCasePreferenceConstants.TESTCASE_DEFAULT_VARIABLE_TYPE,
                     InputValueType.Variable.name());
         }
 
-        getPreferenceStore().setValue(
-                PreferenceConstants.TestCasePreferenceConstants.TESTCASE_GENERATE_DEFAULT_VARIABLE_VALUE,
+        getPreferenceStore().setValue(TestCasePreferenceConstants.TESTCASE_GENERATE_DEFAULT_VARIABLE_VALUE,
                 btnGenerateDefaultValue.getSelection());
 
-        getPreferenceStore().setValue(PreferenceConstants.TestCasePreferenceConstants.TESTCASE_AUTO_EXPORT_VARIABLE,
+        getPreferenceStore().setValue(TestCasePreferenceConstants.TESTCASE_AUTO_EXPORT_VARIABLE,
                 btnExportVariable.getSelection());
 
         // Default keyword type
         String selectedKeywordType = comboKeywordType.getText();
         for (int i = 0; i < contributors.length; i++) {
             if (contributors[i].getLabelName().equalsIgnoreCase(selectedKeywordType)) {
-                getPreferenceStore().setValue(
-                        PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE,
+                getPreferenceStore().setValue(TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE,
                         contributors[i].getKeywordClass().getName());
                 break;
             }
@@ -474,8 +470,7 @@ public class TestCasePreferencePage extends PreferencePage {
         TestCasePreferenceDefaultValueInitializer.storeDefaultKeywords(defaultKeywords);
 
         // Default Failure Handling
-        getPreferenceStore().setValue(
-                PreferenceConstants.TestCasePreferenceConstants.TESTCASE_DEFAULT_FAILURE_HANDLING,
+        getPreferenceStore().setValue(TestCasePreferenceConstants.TESTCASE_DEFAULT_FAILURE_HANDLING,
                 comboDefaultFailureHandling.getData(comboDefaultFailureHandling.getText()).toString());
 
     }

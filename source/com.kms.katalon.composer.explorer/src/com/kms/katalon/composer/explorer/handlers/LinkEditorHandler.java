@@ -1,12 +1,14 @@
 package com.kms.katalon.composer.explorer.handlers;
 
+import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
+import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
+
 import java.io.IOException;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -28,10 +30,9 @@ import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
+import com.kms.katalon.composer.explorer.constants.ExplorerPreferenceConstants;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.IEntity;
@@ -45,38 +46,37 @@ import com.kms.katalon.groovy.util.GroovyEditorUtil;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class LinkEditorHandler implements EventHandler {
-    
+
     @Inject
     private EPartService partService;
-    
+
     @Inject
     private IEventBroker eventBroker;
-    
+
     private ScopedPreferenceStore store;
 
     @PostConstruct
     public void initListener() {
-        store = new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExplorerPreferenceConstants.QUALIFIER);
+        store = getPreferenceStore(LinkEditorHandler.class);
         eventBroker.subscribe(UIEvents.UILifeCycle.BRINGTOTOP, this);
     }
-    
+
     private void setActive(boolean isActive) {
-        store.setValue(PreferenceConstants.ExplorerPreferenceConstants.EXPLORER_LINK_WITH_PART, isActive);
         try {
+            store.setValue(ExplorerPreferenceConstants.EXPLORER_LINK_WITH_PART, isActive);
             store.save();
         } catch (IOException e) {
-           LoggerSingleton.logError(e);
+            logError(e);
         }
     }
-    
+
     private boolean getActive() {
-        return store.getBoolean(PreferenceConstants.ExplorerPreferenceConstants.EXPLORER_LINK_WITH_PART);
+        return store.getBoolean(ExplorerPreferenceConstants.EXPLORER_LINK_WITH_PART);
     }
 
     @CanExecute
     public boolean canExecute(MHandledToolItem item) {
-       return ProjectController.getInstance().getCurrentProject() != null;
+        return ProjectController.getInstance().getCurrentProject() != null;
     }
 
     @Execute
@@ -100,7 +100,7 @@ public class LinkEditorHandler implements EventHandler {
             performLinkWithPart(mpart);
         }
     }
-    
+
     private void performLinkWithPart(MPart mpart) {
         try {
             IEntity entity = EntityPartUtil.getEntityByPartId(mpart.getElementId());
@@ -128,7 +128,7 @@ public class LinkEditorHandler implements EventHandler {
             }
             eventBroker.post(EventConstants.EXPLORER_SHOW_ITEM, treeEntity);
         } catch (Exception e) {
-            LoggerSingleton.logError(e);
+            logError(e);
         }
     }
 
@@ -142,7 +142,7 @@ public class LinkEditorHandler implements EventHandler {
 
                 ITreeEntity newPackageTreeEntity = new PackageTreeEntity((IPackageFragment) elem.getParent(),
                         keywordRootFolder);
-                
+
                 return new KeywordTreeEntity((ICompilationUnit) elem, newPackageTreeEntity);
             }
         }

@@ -1,40 +1,42 @@
 package com.kms.katalon.composer.execution.provider;
 
+import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.composer.execution.tree.ILogParentTreeNode;
 import com.kms.katalon.composer.execution.tree.ILogTreeNode;
 import com.kms.katalon.composer.execution.tree.LogChildTreeNode;
 import com.kms.katalon.composer.execution.tree.LogParentTreeNode;
-import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XmlLogRecord;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class LogRecordTreeViewer extends TreeViewer {
 
     private ILogParentTreeNode currentParentTreeNode;
+
     private List<ILogParentTreeNode> rootNodes;
+
     private IEventBroker eventBroker;
-    private IPreferenceStore store;
+
+    private ScopedPreferenceStore store;
 
     public LogRecordTreeViewer(Composite parent, int style, IEventBroker eventBroker) {
         super(parent, style);
         rootNodes = new ArrayList<ILogParentTreeNode>();
         this.eventBroker = eventBroker;
-        store = new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
+        store = getPreferenceStore(LogRecordTreeViewer.class);
     }
 
     public void reset(List<XmlLogRecord> records) {
@@ -64,74 +66,74 @@ public class LogRecordTreeViewer extends TreeViewer {
         }
 
         switch (logLevel) {
-        case START: {
-            LogParentTreeNode newParentTreeNode = new LogParentTreeNode(currentParentTreeNode, record);
+            case START: {
+                LogParentTreeNode newParentTreeNode = new LogParentTreeNode(currentParentTreeNode, record);
 
-            if (currentParentTreeNode == null) {
-                rootNodes.add(newParentTreeNode);
-                refresh(rootNodes);
-            } else {
-                currentParentTreeNode.addChild(newParentTreeNode);
-                refresh(currentParentTreeNode);
-            }
-            currentParentTreeNode = newParentTreeNode;
-            select(new StructuredSelection(newParentTreeNode));
-            break;
-        }
-        case END: {
-            currentParentTreeNode.setRecordEnd(record);
-            LogParentTreeNode currentParentNodeImpl = (LogParentTreeNode) currentParentTreeNode;
-            refresh(currentParentNodeImpl);
-
-            // if a node is passed, collapse it, otherwise keep its current
-            // state.
-            if (currentParentNodeImpl.getResult() == null
-                    || LogLevel.valueOf(currentParentNodeImpl.getResult().getLevel()) == LogLevel.PASSED) {
-                if (isScrollLogEnable()) {
-                    setExpandedState(currentParentNodeImpl, false);
+                if (currentParentTreeNode == null) {
+                    rootNodes.add(newParentTreeNode);
+                    refresh(rootNodes);
+                } else {
+                    currentParentTreeNode.addChild(newParentTreeNode);
+                    refresh(currentParentTreeNode);
                 }
+                currentParentTreeNode = newParentTreeNode;
+                select(new StructuredSelection(newParentTreeNode));
+                break;
             }
-            refresh(currentParentNodeImpl);
-            select(new StructuredSelection(currentParentNodeImpl));
+            case END: {
+                currentParentTreeNode.setRecordEnd(record);
+                LogParentTreeNode currentParentNodeImpl = (LogParentTreeNode) currentParentTreeNode;
+                refresh(currentParentNodeImpl);
 
-            // update progress bar if a main test case (that is not a called
-            // test case) completed.
-            if (((currentParentNodeImpl.getParent() == null || ((LogParentTreeNode) currentParentNodeImpl.getParent())
-                    .getParent() == null))
-                    && record.getSourceMethodName().equals(StringConstants.LOG_END_TEST_METHOD)) {
-                eventBroker.post(EventConstants.CONSOLE_LOG_UPDATE_PROGRESS_BAR, currentParentNodeImpl.getResult());
+                // if a node is passed, collapse it, otherwise keep its current
+                // state.
+                if (currentParentNodeImpl.getResult() == null
+                        || LogLevel.valueOf(currentParentNodeImpl.getResult().getLevel()) == LogLevel.PASSED) {
+                    if (isScrollLogEnable()) {
+                        setExpandedState(currentParentNodeImpl, false);
+                    }
+                }
+                refresh(currentParentNodeImpl);
+                select(new StructuredSelection(currentParentNodeImpl));
+
+                // update progress bar if a main test case (that is not a called
+                // test case) completed.
+                if (((currentParentNodeImpl.getParent() == null || ((LogParentTreeNode) currentParentNodeImpl
+                        .getParent()).getParent() == null))
+                        && record.getSourceMethodName().equals(StringConstants.LOG_END_TEST_METHOD)) {
+                    eventBroker.post(EventConstants.CONSOLE_LOG_UPDATE_PROGRESS_BAR, currentParentNodeImpl.getResult());
+                }
+
+                // switch to parent node
+                currentParentTreeNode = currentParentNodeImpl.getParent();
+                break;
             }
+            case PASSED:
+            case FAILED:
+            case ERROR: {
+                currentParentTreeNode.setResult(record);
+                refresh(currentParentTreeNode);
 
-            // switch to parent node
-            currentParentTreeNode = currentParentNodeImpl.getParent();
-            break;
-        }
-        case PASSED:
-        case FAILED:
-        case ERROR: {
-            currentParentTreeNode.setResult(record);
-            refresh(currentParentTreeNode);
+                LogParentTreeNode currentParentNodeImpl = (LogParentTreeNode) currentParentTreeNode;
 
-            LogParentTreeNode currentParentNodeImpl = (LogParentTreeNode) currentParentTreeNode;
-
-            // update progress bar if error occurs if a test case has invalid
-            // variables
-            if (logLevel == LogLevel.ERROR
-                    && currentParentNodeImpl.getParent() == null
-                    && currentParentNodeImpl.getRecordStart().getMessage()
-                            .startsWith(StringConstants.LOG_START_SUITE_METHOD)) {
-                eventBroker.post(EventConstants.CONSOLE_LOG_UPDATE_PROGRESS_BAR, currentParentNodeImpl.getResult());
+                // update progress bar if error occurs if a test case has invalid
+                // variables
+                if (logLevel == LogLevel.ERROR
+                        && currentParentNodeImpl.getParent() == null
+                        && currentParentNodeImpl.getRecordStart().getMessage()
+                                .startsWith(StringConstants.LOG_START_SUITE_METHOD)) {
+                    eventBroker.post(EventConstants.CONSOLE_LOG_UPDATE_PROGRESS_BAR, currentParentNodeImpl.getResult());
+                }
+                break;
             }
-            break;
-        }
-        default: {
-            ILogTreeNode newChildTreeNode = new LogChildTreeNode(currentParentTreeNode, record);
-            currentParentTreeNode.addChild(newChildTreeNode);
-            refresh(currentParentTreeNode);
-            setExpandedState(currentParentTreeNode, true);
-            select(new StructuredSelection(newChildTreeNode));
-            break;
-        }
+            default: {
+                ILogTreeNode newChildTreeNode = new LogChildTreeNode(currentParentTreeNode, record);
+                currentParentTreeNode.addChild(newChildTreeNode);
+                refresh(currentParentTreeNode);
+                setExpandedState(currentParentTreeNode, true);
+                select(new StructuredSelection(newChildTreeNode));
+                break;
+            }
         }
     }
 
@@ -144,29 +146,25 @@ public class LogRecordTreeViewer extends TreeViewer {
     }
 
     private ILogParentTreeNode findFirstFailureNodeInBranch(ILogTreeNode selectedNode, ILogParentTreeNode parentNode) {
-        if (isFailureNode(parentNode) && !parentNode.equals(selectedNode))
-            return parentNode;
+        if (isFailureNode(parentNode) && !parentNode.equals(selectedNode)) return parentNode;
         for (ILogTreeNode childNode : parentNode.getChildren()) {
             if (childNode instanceof ILogParentTreeNode) {
                 ILogParentTreeNode foundNode = findFirstFailureNodeInBranch(selectedNode,
                         (ILogParentTreeNode) childNode);
-                if (foundNode != null)
-                    return foundNode;
+                if (foundNode != null) return foundNode;
             }
         }
         return null;
     }
 
     private ILogParentTreeNode findLastFailureNodeInBranch(ILogTreeNode selectedNode, ILogParentTreeNode parentNode) {
-        if (parentNode.equals(selectedNode))
-            return null;
+        if (parentNode.equals(selectedNode)) return null;
 
         for (int index = parentNode.getChildren().size() - 1; index >= 0; index--) {
             ILogTreeNode childNode = parentNode.getChildren().get(index);
             if (childNode instanceof ILogParentTreeNode) {
                 ILogParentTreeNode foundNode = findLastFailureNodeInBranch(selectedNode, (ILogParentTreeNode) childNode);
-                if (foundNode != null)
-                    return foundNode;
+                if (foundNode != null) return foundNode;
             }
         }
 
@@ -176,12 +174,9 @@ public class LogRecordTreeViewer extends TreeViewer {
     private ILogParentTreeNode findSiblingNode(ILogTreeNode treeNode, boolean previousFlag) {
         if (treeNode.getParent() == null) {
             int index = rootNodes.indexOf(treeNode);
-            if (index < 0)
-                return null;
-            if (previousFlag && index > 0)
-                return rootNodes.get(index - 1);
-            if (!previousFlag && index < rootNodes.size() - 1)
-                return rootNodes.get(index + 1);
+            if (index < 0) return null;
+            if (previousFlag && index > 0) return rootNodes.get(index - 1);
+            if (!previousFlag && index < rootNodes.size() - 1) return rootNodes.get(index + 1);
         } else {
             ILogParentTreeNode parentNode = treeNode.getParent();
             int index = parentNode.getChildren().indexOf(treeNode);
@@ -205,11 +200,9 @@ public class LogRecordTreeViewer extends TreeViewer {
     }
 
     private boolean isAncentor(ILogParentTreeNode parentNode, ILogTreeNode treeNode) {
-        if (parentNode == null)
-            return false;
+        if (parentNode == null) return false;
 
-        if (parentNode.equals(treeNode.getParent()))
-            return true;
+        if (parentNode.equals(treeNode.getParent())) return true;
 
         if (treeNode.getParent() != null) {
             return isAncentor(parentNode, (ILogTreeNode) treeNode.getParent());
@@ -226,8 +219,7 @@ public class LogRecordTreeViewer extends TreeViewer {
 
             if (previousFlag) {
                 if (isAncentor(parentNode, selectedNode)) {
-                    if (isFailureNode(parentNode))
-                        return parentNode;
+                    if (isFailureNode(parentNode)) return parentNode;
                 } else {
                     qualifiedNodeFound = findLastFailureNodeInBranch(selectedNode, parentNode);
                 }
@@ -260,8 +252,7 @@ public class LogRecordTreeViewer extends TreeViewer {
         if (selection != null) {
             ILogTreeNode selectedNode = (ILogTreeNode) selection.getFirstElement();
             ILogParentTreeNode foundNode = selectFailureRecursively(selectedNode, selectedNode, true);
-            if (foundNode != null)
-                setSelection(new StructuredSelection(foundNode));
+            if (foundNode != null) setSelection(new StructuredSelection(foundNode));
         }
     }
 
@@ -301,7 +292,7 @@ public class LogRecordTreeViewer extends TreeViewer {
     }
 
     private boolean isScrollLogEnable() {
-        return !store.getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_PIN_LOG);
+        return !store.getBoolean(ExecutionPreferenceConstants.EXECUTION_PIN_LOG);
     }
 
 }

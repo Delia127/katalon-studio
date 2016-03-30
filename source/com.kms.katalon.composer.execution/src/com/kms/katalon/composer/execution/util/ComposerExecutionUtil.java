@@ -1,21 +1,19 @@
 package com.kms.katalon.composer.execution.util;
 
+import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 import static org.apache.commons.lang.StringUtils.contains;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenu;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolItem;
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.composer.components.services.ModelServiceSingleton;
+import com.kms.katalon.composer.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.composer.execution.menu.ExecutionHandledMenuItem;
 import com.kms.katalon.composer.execution.preferences.ExecutionPreferenceDefaultValueInitializer;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.constants.PreferenceConstants.ExecutionPreferenceConstants;
 
 public class ComposerExecutionUtil {
 
@@ -23,9 +21,8 @@ public class ComposerExecutionUtil {
      * Update default label for Run drop-down item
      */
     public static void updateDefaultLabelForRunDropDownItem() {
-        String defaultItemLabel = ((IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                ExecutionPreferenceConstants.QUALIFIER))
-                .getString(ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION);
+        String defaultItemLabel = getPreferenceStore(ComposerExecutionUtil.class).getString(
+                ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION);
         if (isBlank(defaultItemLabel)) {
             defaultItemLabel = ExecutionPreferenceDefaultValueInitializer.EXECUTION_DEFAULT_RUN_CONFIGURATION;
         }

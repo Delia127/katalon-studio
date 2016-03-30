@@ -14,7 +14,7 @@ import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.BundleException;
 
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.constants.PreferenceConstants.IPluginPreferenceConstants;
+import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.application.ApplicationRunningMode.RunningMode;
 import com.kms.katalon.execution.launcher.manager.ConsoleMain;
@@ -34,7 +34,7 @@ public class Application implements IApplication {
         if (!activeLoggingBundle()) {
             return IApplication.EXIT_OK;
         }
-        
+
         final Map<?, ?> args = context.getArguments();
         final String[] appArgs = (String[]) args.get("application.args");
         boolean isConsoleMode = false;
@@ -68,8 +68,7 @@ public class Application implements IApplication {
 
     private void clearSession(boolean isNotConsoleMode) {
         if (isNotConsoleMode
-                && !getPreferenceStore().getBoolean(
-                        IPluginPreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION)) {
+                && !getPreferenceStore().getBoolean(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION)) {
             // Clear workbench layout
             File workbenchXmi = new File(Platform.getLocation().toString()
                     + "/.metadata/.plugins/org.eclipse.e4.workbench/workbench.xmi");
@@ -96,7 +95,7 @@ public class Application implements IApplication {
             }
         });
     }
-    
+
     private boolean activeLoggingBundle() {
         try {
             Platform.getBundle(IdConstants.KATALON_LOGGING_BUNDLE_ID).start();

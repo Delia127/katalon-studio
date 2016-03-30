@@ -134,12 +134,12 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         if (!(getExecutedEntity() instanceof TestSuiteExecutedEntity)) {
             return;
         }
-        
-        EmailConfig emailConfig  = ((TestSuiteExecutedEntity) getExecutedEntity()).getEmailConfig();
-        if (emailConfig == null || !emailConfig.canSend()) { 
+
+        EmailConfig emailConfig = ((TestSuiteExecutedEntity) getExecutedEntity()).getEmailConfig();
+        if (emailConfig == null || !emailConfig.canSend()) {
             return;
         }
-        
+
         writeLine(MessageFormat.format(StringConstants.LAU_PRT_SENDING_EMAIL_RPT_TO,
                 Arrays.toString(emailConfig.getTos())));
 

@@ -1,5 +1,8 @@
 package com.kms.katalon.composer.execution.launcher;
 
+import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
+import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
+
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,19 +13,16 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.SafeRunner;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchListener;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.workbench.UIEvents;
-import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.logging.XmlLogRecord;
@@ -94,7 +94,7 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener {
 
                 @Override
                 public void handleException(Throwable exception) {
-                    LoggerSingleton.logError(exception);
+                    logError(exception);
                 }
             });
 
@@ -159,20 +159,17 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener {
         }
         try {
             ReportEntity report = ReportController.getInstance().getReportEntity(getTestSuite(), getId());
-            
-            //refresh report item on tree explorer
-            eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);
-            
-            // Open report by setting
-            IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                    PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
-            if (store.getBoolean(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING)) {
 
-                
+            // refresh report item on tree explorer
+            eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);
+
+            // Open report by setting
+            ScopedPreferenceStore store = getPreferenceStore(IDELauncher.class);
+            if (store.getBoolean(ExecutionPreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING)) {
                 eventBroker.post(EventConstants.REPORT_OPEN, report);
             }
         } catch (Exception e) {
-            LoggerSingleton.logError(e);
+            logError(e);
         }
     }
 
@@ -203,10 +200,10 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener {
                 eventBroker.send(EventConstants.CONSOLE_LOG_RESET, null);
             }
         } catch (Exception e) {
-            LoggerSingleton.logError(e);
+            logError(e);
         }
     }
-    
+
     @Override
     protected synchronized void writeError(String line) {
         LogUtil.logErrorMessage(line);

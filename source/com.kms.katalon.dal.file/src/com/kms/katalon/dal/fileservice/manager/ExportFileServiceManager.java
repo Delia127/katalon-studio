@@ -1,5 +1,7 @@
 package com.kms.katalon.dal.fileservice.manager;
 
+import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
@@ -33,12 +35,10 @@ import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -63,12 +63,19 @@ import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class ExportFileServiceManager {
     private int progress;
+
     private boolean isCancelled;
+
     List<String> exportedTestCaseLocations;
+
     Queue<String> logs;
+
     private static final String TEST_SCRIPT_SOURCE_FOLDER_NAME = "Scripts";
+
     private static final String TEST_CASE_ROOT_FOLDER_NAME = "Test Cases";
+
     private static final String LIB_FOLDER_NAME = "Libs";
+
     private static final String CLASSPATH_FILE_NAME = ".classpath";
 
     public ExportFileServiceManager() {
@@ -179,16 +186,16 @@ public class ExportFileServiceManager {
         argumentList.add(new ConstantExpression(exportProjectFolder.getAbsolutePath()));
         argumentList.add(new ConstantExpression(getDefaultDriver()));
         switch (getDefaultDriver()) {
-        case "Chrome":
-            argumentList.add(new ConstantExpression(getDriverNewLocation(
-                    SeleniumWebDriverProvider.getChromeDriverPath(), exportProjectFolder)));
-            break;
-        case "IE":
-            argumentList.add(new ConstantExpression(getDriverNewLocation(SeleniumWebDriverProvider.getIEDriverPath(),
-                    exportProjectFolder)));
-            break;
-        default:
-            argumentList.add(new ConstantExpression(null));
+            case "Chrome":
+                argumentList.add(new ConstantExpression(getDriverNewLocation(
+                        SeleniumWebDriverProvider.getChromeDriverPath(), exportProjectFolder)));
+                break;
+            case "IE":
+                argumentList.add(new ConstantExpression(getDriverNewLocation(
+                        SeleniumWebDriverProvider.getIEDriverPath(), exportProjectFolder)));
+                break;
+            default:
+                argumentList.add(new ConstantExpression(null));
         }
         argumentList.add(new ConstantExpression(getDefaultPageLoadTimeout()));
 
@@ -204,16 +211,16 @@ public class ExportFileServiceManager {
         return exportProjectLocation.getAbsolutePath() + File.separator + driverPath;
     }
 
+    private static ScopedPreferenceStore getStore() {
+        return getPreferenceStore(PreferenceConstants.EXECUTION_QUALIFIER);
+    }
+
     private String getDefaultDriver() {
-        IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
-        return store.getString(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION);
+        return getStore().getString(PreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION);
     }
 
     public static int getDefaultPageLoadTimeout() {
-        IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
-        return store.getInt(PreferenceConstants.ExecutionPreferenceConstants.EXECUTION_DEFAULT_TIMEOUT);
+        return getStore().getInt(PreferenceConstants.EXECUTION_DEFAULT_TIMEOUT);
     }
 
     public void convertScriptFile(File file, File exportProjectFolder) throws IOException, Exception {

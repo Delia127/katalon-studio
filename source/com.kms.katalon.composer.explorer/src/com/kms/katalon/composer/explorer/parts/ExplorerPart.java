@@ -2,6 +2,7 @@ package com.kms.katalon.composer.explorer.parts;
 
 import static com.kms.katalon.composer.components.impl.util.TreeEntityUtil.getTreeEntityIds;
 import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
+import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 import static org.eclipse.ui.PlatformUI.getPreferenceStore;
 
 import java.util.ArrayList;
@@ -18,7 +19,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -32,7 +32,6 @@ import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
 import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -79,6 +78,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.explorer.constants.ExplorerPreferenceConstants;
 import com.kms.katalon.composer.explorer.constants.ImageConstants;
 import com.kms.katalon.composer.explorer.constants.StringConstants;
 import com.kms.katalon.composer.explorer.custom.AdvancedSearchDialog;
@@ -96,7 +96,6 @@ import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants;
-import com.kms.katalon.constants.PreferenceConstants.IPluginPreferenceConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
@@ -312,8 +311,7 @@ public class ExplorerPart {
     }
 
     private void updateToolItemStatus() {
-        IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExplorerPreferenceConstants.QUALIFIER);
+        ScopedPreferenceStore store = getPreferenceStore(ExplorerPart.class);
         for (MToolBarElement toolbarElement : part.getToolbar().getChildren()) {
             if (!(toolbarElement instanceof MHandledToolItem)) {
                 continue;
@@ -321,8 +319,7 @@ public class ExplorerPart {
             MHandledToolItem toolItem = (MHandledToolItem) toolbarElement;
             switch (toolItem.getElementId()) {
                 case IdConstants.EXPLORER_TOOL_ITEM_LINK_PART: {
-                    toolItem.setSelected(store
-                            .getBoolean(PreferenceConstants.ExplorerPreferenceConstants.EXPLORER_LINK_WITH_PART));
+                    toolItem.setSelected(store.getBoolean(ExplorerPreferenceConstants.EXPLORER_LINK_WITH_PART));
                     break;
                 }
             }
@@ -846,6 +843,6 @@ public class ExplorerPart {
     }
 
     private boolean isNotAutoRestoreSession() {
-        return !getPreferenceStore().getBoolean(IPluginPreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION);
+        return !getPreferenceStore().getBoolean(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION);
     }
 }
