@@ -33,7 +33,7 @@ import com.kms.katalon.composer.handlers.WorkbenchSaveHandler;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.application.ApplicationRunningMode.RunningMode;
-import com.kms.katalon.execution.launcher.manager.ConsoleMain;
+import com.kms.katalon.execution.console.ConsoleMain;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 @SuppressWarnings("restriction")
@@ -116,11 +116,12 @@ public class LifeCycleManager {
 
     private void startUpConsoleMode() throws Exception {
         PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().setVisible(false);
+        ConsoleMain consoleMain = Application.getConsoleMain();
         try {
-            ConsoleMain.launch(ApplicationRunningMode.getInstance().getRunArguments());
+            consoleMain.launch(ApplicationRunningMode.getInstance().getRunArguments());
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            ConsoleMain.closeWorkbench();
+            consoleMain.closeWorkbench();
             return;
         }
     }

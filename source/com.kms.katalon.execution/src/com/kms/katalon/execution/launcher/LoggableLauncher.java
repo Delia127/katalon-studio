@@ -14,7 +14,7 @@ import com.kms.katalon.execution.logging.SocketWatcher;
 public abstract class LoggableLauncher extends Launcher implements ILogCollection {
     private static final int DF_WATCHER_DELAY_TIME = 1;
 
-    private List<XmlLogRecord> logRecords;
+    private List<XmlLogRecord> logRecords = new ArrayList<XmlLogRecord>();
 
     /**
      * Returns the level of the current {@link XmlLogRecord}
@@ -23,7 +23,6 @@ public abstract class LoggableLauncher extends Launcher implements ILogCollectio
 
     public LoggableLauncher(IRunConfiguration runConfig) {
         super(runConfig);
-        logRecords = new ArrayList<XmlLogRecord>();
     }
 
     @Override

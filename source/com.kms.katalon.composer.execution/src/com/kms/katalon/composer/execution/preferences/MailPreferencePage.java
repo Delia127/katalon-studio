@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.execution.preferences;
 
 import java.text.MessageFormat;
+import java.util.Arrays;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -185,7 +186,7 @@ public class MailPreferencePage extends FieldEditorPreferencePage {
         }
 
         EmailConfig conf = new EmailConfig();
-        conf.setTos(mailRecipients);
+        conf.addRecipients(Arrays.asList(mailRecipients));
         conf.setHost(hostFieldEditor.getStringValue());
         conf.setPort(portFieldEditor.getStringValue());
         conf.setFrom(userNameFieldEditor.getStringValue());

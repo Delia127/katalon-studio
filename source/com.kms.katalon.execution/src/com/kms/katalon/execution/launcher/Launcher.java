@@ -18,7 +18,7 @@ import com.kms.katalon.execution.logging.IOutputStream;
 import com.kms.katalon.logging.LogUtil;
 
 public abstract class Launcher implements ILauncher, IWatchdogListener {
-    private IRunConfiguration runConfig;
+    protected IRunConfiguration runConfig;
     private LauncherStatus status;
     private ILauncherResult result;
 
@@ -27,17 +27,11 @@ public abstract class Launcher implements ILauncher, IWatchdogListener {
     protected LaunchWatchdog watchdog;
 
     protected ILaunchProcess process;
-
+    
     public Launcher(IRunConfiguration runConfig) {
-        setRunConfig(runConfig);
-
         status = LauncherStatus.WAITING;
-
-        executedEntity = runConfig.getExecutionSetting().getExecutedEntity();
-
-        result = new LauncherResult(executedEntity.getTotalTestCases());
-
         watchers = new HashSet<IWatcher>();
+        setRunConfig(runConfig);
     }
 
     public final String getId() {
@@ -64,7 +58,8 @@ public abstract class Launcher implements ILauncher, IWatchdogListener {
     }
 
     /**
-     * Launches execution process and starts <code>watchdog</code> to monitor that process and its watchers.
+     * Launches execution process and starts <code>watchdog</code> to monitor
+     * that process and its watchers.
      */
     @Override
     public final void start() {
@@ -136,14 +131,17 @@ public abstract class Launcher implements ILauncher, IWatchdogListener {
         watchdog.stop();
     }
 
-    private void setRunConfig(IRunConfiguration runConfig) {
+    protected void setRunConfig(IRunConfiguration runConfig) {
         this.runConfig = runConfig;
+        executedEntity = runConfig.getExecutionSetting().getExecutedEntity();
+        result = new LauncherResult(executedEntity.getTotalTestCases());
     }
 
     /**
-     * When <code>watchdog</code> completed that means the <code>process</code> is done or terminated. </p> This method
-     * is used for handling the phases that are after {@link LauncherStatus#RUNNING}. </br> Example: Preparing report,
-     * sending email,... </p>
+     * When <code>watchdog</code> completed that means the <code>process</code>
+     * is done or terminated. </p> This method is used for handling the phases
+     * that are after {@link LauncherStatus#RUNNING}. </br> Example: Preparing
+     * report, sending email,... </p>
      */
     @Override
     public final void onWatchdogComplete(LaunchWatchdog watchdog) {
@@ -153,7 +151,7 @@ public abstract class Launcher implements ILauncher, IWatchdogListener {
 
         if (getStatus() != LauncherStatus.TERMINATED) {
             preExecutionComplete();
-            
+
             setStatus(LauncherStatus.DONE);
         }
 

@@ -1,4 +1,4 @@
-package com.kms.katalon.execution.entity;
+package com.kms.katalon.execution.console.entity;
 
 
 public interface ConsoleOption<T> {
@@ -21,19 +21,14 @@ public interface ConsoleOption<T> {
     String getOption();
     
     /**
-     * Set that the console option is available from user input
+     * Get the default value for the argument, if null then the argument has no default value
+     * @return the default value for the argument, if null then the argument has no default value
      */
-    void setEnable();
+    public String getDefaultArgumentValue();
     
     /**
-     * Check if the console option is enabled or not
-     * @return true if the console option is enable; otherwise false
+     * Get the require flag for this console option
+     * @return true if the option is required; otherwise false
      */
-    public boolean isEnable();
-    
-    /**
-     * Set the argument value from user input into the console option
-     * @param argumentValue
-     */
-    void setArgumentValue(String argumentValue);
+    public boolean isRequired();
 }

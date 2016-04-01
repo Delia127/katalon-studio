@@ -13,7 +13,8 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.CustomRunConfigurationContributor;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
-import com.kms.katalon.execution.entity.ConsoleOption;
+import com.kms.katalon.execution.console.entity.ConsoleOption;
+import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
 import com.kms.katalon.execution.exception.ExecutionException;
 
 public class RunConfigurationCollector {
@@ -48,11 +49,15 @@ public class RunConfigurationCollector {
         return runConfigurationContributors.toArray(new IRunConfigurationContributor[runConfigurationContributors
                 .size()]);
     }
+    
+    public List<ConsoleOptionContributor> getConsoleOptionContributorList() {
+        return new ArrayList<ConsoleOptionContributor>(runConfigurationContributors);
+    }
 
-    public List<ConsoleOption<?>> getAllAddionalRequiredArguments() {
+    public List<ConsoleOption<?>> getConsoleOptionList() {
         List<ConsoleOption<?>> additionalArgumentList = new ArrayList<ConsoleOption<?>>();
         for (IRunConfigurationContributor runConfigContributor : runConfigurationContributors) {
-            additionalArgumentList.addAll(runConfigContributor.getRequiredArguments());
+            additionalArgumentList.addAll(runConfigContributor.getConsoleOptionList());
         }
         return additionalArgumentList;
     }

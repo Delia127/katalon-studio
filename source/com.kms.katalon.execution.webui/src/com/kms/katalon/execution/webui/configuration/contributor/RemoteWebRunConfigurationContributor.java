@@ -9,47 +9,28 @@ import org.apache.commons.lang.StringUtils;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
-import com.kms.katalon.execution.entity.AbstractConsoleOption;
-import com.kms.katalon.execution.entity.ConsoleOption;
-import com.kms.katalon.execution.entity.StringConsoleOption;
+import com.kms.katalon.execution.console.entity.AbstractConsoleOption;
+import com.kms.katalon.execution.console.entity.ConsoleOption;
+import com.kms.katalon.execution.console.entity.StringConsoleOption;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.webui.configuration.RemoteWebRunConfiguration;
 import com.kms.katalon.execution.webui.constants.StringConstants;
 import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector.RemoteWebDriverConnectorType;
 
 public class RemoteWebRunConfigurationContributor extends WebUIRunConfigurationContributor {
+    private static final RemoteWebDriverConnectorType DEFAULT_REMOTE_WEB_DRIVER_CONNECTOR_TYPE = RemoteWebDriverConnectorType.Selenium;
+
     private String remoteWebDriverUrl = "";
-    private RemoteWebDriverConnectorType remoteWebDriverType = RemoteWebDriverConnectorType.Selenium;
+    private RemoteWebDriverConnectorType remoteWebDriverType = DEFAULT_REMOTE_WEB_DRIVER_CONNECTOR_TYPE;
 
-    private StringConsoleOption remoteWebDriverUrlConsoleOption = new StringConsoleOption() {
-        @Override
-        public void setArgumentValue(String value) {
-            if (StringUtils.isBlank(value)) {
-                return;
-            }
-            remoteWebDriverUrl = value;
-        }
-
+    public static final StringConsoleOption REMOTE_WEB_DRIVER_URL_CONSOLE_OPTION = new StringConsoleOption() {
         @Override
         public String getOption() {
             return DriverFactory.REMOTE_WEB_DRIVER_URL;
         }
     };
 
-    private AbstractConsoleOption<RemoteWebDriverConnectorType> remoteWebDriverTypeConsoleOption = new AbstractConsoleOption<RemoteWebDriverConnectorType>() {
-        @Override
-        public void setArgumentValue(String value) {
-            if (StringUtils.isBlank(value)) {
-                return;
-            }
-            remoteWebDriverType = RemoteWebDriverConnectorType.valueOf(value);
-        }
-
-        @Override
-        public boolean hasArgument() {
-            return true;
-        }
-
+    public static final ConsoleOption<RemoteWebDriverConnectorType> REMOTE_WEB_DRIVER_CONNECTOR_TYPE_CONSOLE_OPTION = new AbstractConsoleOption<RemoteWebDriverConnectorType>() {
         @Override
         public String getOption() {
             return DriverFactory.REMOTE_WEB_DRIVER_TYPE;
@@ -58,6 +39,11 @@ public class RemoteWebRunConfigurationContributor extends WebUIRunConfigurationC
         @Override
         public Class<RemoteWebDriverConnectorType> getArgumentType() {
             return RemoteWebDriverConnectorType.class;
+        }
+
+        @Override
+        public String getDefaultArgumentValue() {
+            return DEFAULT_REMOTE_WEB_DRIVER_CONNECTOR_TYPE.toString();
         }
     };
 
@@ -86,10 +72,24 @@ public class RemoteWebRunConfigurationContributor extends WebUIRunConfigurationC
     }
 
     @Override
-    public List<ConsoleOption<?>> getRequiredArguments() {
+    public List<ConsoleOption<?>> getConsoleOptionList() {
         List<ConsoleOption<?>> consoleOptionList = new ArrayList<ConsoleOption<?>>();
-        consoleOptionList.add(remoteWebDriverUrlConsoleOption);
-        consoleOptionList.add(remoteWebDriverTypeConsoleOption);
+        consoleOptionList.add(REMOTE_WEB_DRIVER_URL_CONSOLE_OPTION);
+        consoleOptionList.add(REMOTE_WEB_DRIVER_CONNECTOR_TYPE_CONSOLE_OPTION);
         return consoleOptionList;
+    }
+
+    @Override
+    public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
+        if (StringUtils.isBlank(argumentValue)) {
+            return;
+        }
+        if (consoleOption == REMOTE_WEB_DRIVER_URL_CONSOLE_OPTION) {
+            remoteWebDriverUrl = argumentValue.trim();
+            return;
+        }
+        if (consoleOption == REMOTE_WEB_DRIVER_CONNECTOR_TYPE_CONSOLE_OPTION) {
+            remoteWebDriverType = RemoteWebDriverConnectorType.valueOf(argumentValue);
+        }
     }
 }

@@ -54,7 +54,6 @@ import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
-import com.kms.katalon.execution.util.ExecutionUtil;
 
 @SuppressWarnings("restriction")
 public abstract class AbstractExecutionHandler {
@@ -176,7 +175,7 @@ public abstract class AbstractExecutionHandler {
         if (targetEntity == null) {
             return;
         }
-        
+
         IRunConfiguration runConfiguration = getRunConfigurationForExecution(projectDir);
         if (runConfiguration == null) {
             return;
@@ -184,7 +183,7 @@ public abstract class AbstractExecutionHandler {
 
         if (targetEntity instanceof TestCaseEntity) {
             TestCaseEntity testCase = (TestCaseEntity) targetEntity;
-           
+
             executeTestCase(testCase, launchMode, runConfiguration);
         } else if (targetEntity instanceof TestSuiteEntity) {
             TestSuiteEntity testSuite = (TestSuiteEntity) targetEntity;
@@ -251,8 +250,7 @@ public abstract class AbstractExecutionHandler {
                     monitor.subTask("Validating test suite...");
                     // back-up
 
-                    final TestSuiteExecutedEntity testSuiteExecutedEntity = ExecutionUtil.loadTestDataForTestSuite(
-                            testSuite, testSuite.getProject());
+                    final TestSuiteExecutedEntity testSuiteExecutedEntity = new TestSuiteExecutedEntity(testSuite);
                     final int totalTestCases = testSuiteExecutedEntity.getTotalTestCases();
                     if (totalTestCases > 0) {
                         monitor.subTask("Activating viewers...");

@@ -14,6 +14,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String MNG_PRT_WORKBENCH_CLOSED = "Workbench closed.";
     public static final String MNG_PRT_MISSING_REQUIRED_ARG = "Missing required argument \"-{0}\".";
     public static final String MNG_PRT_INVALID_ARG_CANNOT_FIND_PROJ_X = "Invalid argument: Cannot find project ''{0}''.";
+    public static final String MNG_PRT_INVALID_ARG_CANNOT_PARSE_X_FOR_Y_TO_INTEGER = "Invalid argument: Cannot parse option value ''{0}'' for option ''{1}'' to integer.";
     public static final String MNG_PRT_TEST_SUITE_X_NOT_FOUND = "Test suite ''{0}'' not found.";
     public static final String MNG_PRT_INVALID_BROWSER_X = "Invalid browser: ''{0}''";
     public static final String MNG_PRT_INVALID_RETRY_ARGUMENT = "Invalid retry argument value: ''{0}''. Using test suite's retry value.";

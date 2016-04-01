@@ -1,14 +1,9 @@
-package com.kms.katalon.execution.entity;
+package com.kms.katalon.execution.console.entity;
 
 public abstract class NoArgumentConsoleOption extends AbstractConsoleOption<Object> {
     @Override
     public boolean hasArgument() {
         return false;
-    }
-
-    @Override
-    public void setArgumentValue(String argumentValue) {
-        // Do nothing because of no argument
     }
 
     @Override

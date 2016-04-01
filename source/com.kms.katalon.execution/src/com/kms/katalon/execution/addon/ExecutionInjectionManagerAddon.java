@@ -1,5 +1,7 @@
 package com.kms.katalon.execution.addon;
 
+import java.io.IOException;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -11,17 +13,16 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.execution.collector.ConsoleOptionCollector;
 import com.kms.katalon.execution.handler.EvaluateDriverConnectorContributionsHandler;
 import com.kms.katalon.execution.handler.EvaluateRunConfigurationContributionsHandler;
 import com.kms.katalon.execution.integration.EvaluateReportIntegrationContribution;
 
-
 public class ExecutionInjectionManagerAddon implements EventHandler {
     @Inject
     private IEventBroker eventBroker;
-    
-	@PostConstruct
+
+    @PostConstruct
     public void initHandlers(IEclipseContext context) {
         ContextInjectionFactory.make(EvaluateReportIntegrationContribution.class, context);
         ContextInjectionFactory.make(EvaluateRunConfigurationContributionsHandler.class, context);
@@ -32,14 +33,15 @@ public class ExecutionInjectionManagerAddon implements EventHandler {
     @Override
     public void handleEvent(Event event) {
         if (event.getTopic().equals(EventConstants.PROJECT_OPENED)) {
-            collectCustomExecutionConfigs();
+            writeConsolePropertyFile();
         }
     }
 
-    protected void collectCustomExecutionConfigs() {
-        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-        if (currentProject == null) {
-            return;
+    private void writeConsolePropertyFile() {
+        try {
+            ConsoleOptionCollector.getInstance().writeDefaultPropertyFile(ProjectController.getInstance().getCurrentProject());
+        } catch (IOException e) {
+            // IOException, ignore
         }
     }
 }
