@@ -33,8 +33,9 @@ public class CustomKeywordDelegatingMetaClass extends DelegatingMetaClass {
 			Class<?> customKeywordClass = engine.getGroovyClassLoader().loadClass(customKeywordClassName);
 			
 			InvokerHelper.metaRegistry.setMetaClass(customKeywordClass, new KeywordClassDelegatingMetaClass(
-					customKeywordClass));
-			GroovyObject obj = (GroovyObject) customKeywordClass.newInstance();	
+					customKeywordClass, engine));
+			
+			GroovyObject obj = (GroovyObject) customKeywordClass.newInstance();
 	        Object result = obj.invokeMethod(customKeywordMethodName, arguments);
 	           
             if (ErrorCollector.getCollector().containsErrors()) {
