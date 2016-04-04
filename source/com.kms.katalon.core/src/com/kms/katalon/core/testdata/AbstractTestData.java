@@ -2,7 +2,11 @@ package com.kms.katalon.core.testdata;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.kms.katalon.core.constants.StringConstants;
 
@@ -55,7 +59,7 @@ public abstract class AbstractTestData implements TestData {
         if (!isPresent) {
             throw new IllegalArgumentException(MessageFormat.format(
                     StringConstants.TD_COLUMN_NAME_X_FOR_TEST_DATA_Y_INVALID, columnName, getSourceUrl(),
-                    Arrays.toString(columnNames)));
+                    getAvailableColumnNames(columnNames)));
         }
     }
 
@@ -84,5 +88,18 @@ public abstract class AbstractTestData implements TestData {
     @Override
     public void activeHeaders(boolean active) throws IOException {
         hasHeaders = active;
+    }
+    
+    private String getAvailableColumnNames(String[] columnNames) {
+        if (!hasHeaders || ArrayUtils.isEmpty(columnNames)) {
+            return "{}";
+        }
+        List<String> validColumNames = new ArrayList<String>();
+        for (String columnName : columnNames) {
+            if (StringUtils.isNotEmpty(columnName)) {
+                validColumNames.add(columnName);
+            }
+        }
+        return ArrayUtils.toString(validColumNames.toArray(new String[validColumNames.size()]));
     }
 }

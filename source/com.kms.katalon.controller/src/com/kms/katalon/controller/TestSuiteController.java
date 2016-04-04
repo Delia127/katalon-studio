@@ -134,6 +134,12 @@ public class TestSuiteController extends EntityController {
             return null;
         }
     }
+    
+    public VariableEntity getVariable(String testCaseId, VariableLink variableLink) throws Exception {
+        TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByDisplayId(testCaseId);
+        return testCase != null ? TestCaseController.getInstance().getVariable(testCase, variableLink.getVariableId())
+                : null;
+    }
 
     public List<TestCaseTestDataLink> getTestDataLinkUsedInTestCase(TestSuiteTestCaseLink testCaseLink) {
         List<TestCaseTestDataLink> testDataLinkUsed = new ArrayList<TestCaseTestDataLink>();
