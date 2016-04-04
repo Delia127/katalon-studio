@@ -131,7 +131,7 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener {
 
     @Override
     protected void onUpdateStatus() {
-        notifyLauncherChanged(IDELaucherEvent.UPDATE_STATUS, getStatus());
+        notifyLauncherChanged(IDELaucherEvent.UPDATE_STATUS, this.getId());
         eventBroker.post(EventConstants.JOB_REFRESH, null);
     }
 
