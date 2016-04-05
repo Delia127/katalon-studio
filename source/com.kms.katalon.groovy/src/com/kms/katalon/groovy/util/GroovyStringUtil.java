@@ -6,7 +6,7 @@ import org.eclipse.core.runtime.IPath;
 
 public class GroovyStringUtil {
     public static String toGroovyStringFormat(String rawString) {
-        return StringUtils.isNotEmpty(rawString) ? "'" + escapeGroovy(rawString) + "'" : rawString;
+        return (rawString != null) ? "'" + escapeGroovy(rawString) + "'" : rawString;
     }
 
     public static String escapeGroovy(String rawString) {
