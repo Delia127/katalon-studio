@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.expr.ArgumentListExpression;
-import org.codehaus.groovy.ast.expr.Expression;
-import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -15,41 +11,37 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.testcase.constants.StringConstants;
-import com.kms.katalon.composer.testcase.model.ICustomInputValueType;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
-import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
-import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
-import com.kms.katalon.core.ast.GroovyParser;
+import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 
 public class TestDataValueBuilderDialog extends AbstractAstBuilderWithTableDialog {
+    private static final String ROW = "Row";
+    private static final String COLUMN = "Column";
+    private static final String TEST_DATA = "Test Data";
     private final InputValueType[] defaultInputValueTypes = { InputValueType.Variable, InputValueType.TestData,
             InputValueType.String, InputValueType.Number, InputValueType.Boolean, InputValueType.Null };
-    private static final String DIALOG_TITLE = StringConstants.DIA_TITLE_TEST_DATA_VALUE_INPUT;
 
-    private MethodCallExpression methodCallExpression;
-    private Expression testDataExpression;
-    private Expression columnExpression;
-    private Expression rowExpression;
+    private MethodCallExpressionWrapper methodCallExpression;
+    private ExpressionWrapper testDataExpression;
+    private ExpressionWrapper columnExpression;
+    private ExpressionWrapper rowExpression;
 
-    public TestDataValueBuilderDialog(Shell parentShell, MethodCallExpression methodCallExpression,
-            ClassNode scriptClass) {
-        super(parentShell, scriptClass);
-        if (methodCallExpression != null) {
-            this.methodCallExpression = GroovyParser.cloneMethodCallExpression(methodCallExpression);
-        } else {
-            this.methodCallExpression = (MethodCallExpression) InputValueType.TestDataValue.getNewValue(null);
+    public TestDataValueBuilderDialog(Shell parentShell, MethodCallExpressionWrapper methodCallExpression) {
+        super(parentShell);
+        if (methodCallExpression == null || !AstEntityInputUtil.isTestDataValueArgument(methodCallExpression)) {
+            throw new IllegalArgumentException();
         }
+        this.methodCallExpression = methodCallExpression.clone();
         testDataExpression = this.methodCallExpression.getObjectExpression();
-
-        ArgumentListExpression arguments = AstTreeTableInputUtil.getTestDataValueArgument(this.methodCallExpression);
-        if (arguments.getExpressions().size() >= 2) {
-            columnExpression = arguments.getExpression(0);
-            rowExpression = arguments.getExpression(1);
-        }
+        columnExpression = ((ArgumentListExpressionWrapper) this.methodCallExpression.getArguments()).getExpression(0);
+        rowExpression = ((ArgumentListExpressionWrapper) this.methodCallExpression.getArguments()).getExpression(1);
     }
 
     @Override
@@ -64,28 +56,36 @@ public class TestDataValueBuilderDialog extends AbstractAstBuilderWithTableDialo
     }
 
     @Override
-    public MethodCallExpression getReturnValue() {
-        return AstTreeTableEntityUtil
-                .getNewTestDataValueExpression(testDataExpression, columnExpression, rowExpression);
+    public MethodCallExpressionWrapper getReturnValue() {
+        return methodCallExpression;
     }
 
     @Override
-    public void changeObject(Object orginalObject, Object newObject) {
-        if (orginalObject == testDataExpression && newObject instanceof Expression) {
-            testDataExpression = (Expression) newObject;
+    public void replaceObject(Object orginalObject, Object newObject) {
+        if (!(newObject instanceof ExpressionWrapper)) {
+            return;
+        }
+        ExpressionWrapper newExpression = (ExpressionWrapper) newObject;
+        if (orginalObject == testDataExpression) {
+            methodCallExpression.setObjectExpression(newExpression);
+            testDataExpression = newExpression;
             refresh();
         } else if (orginalObject == columnExpression) {
-            columnExpression = (Expression) newObject;
+            ((ArgumentListExpressionWrapper) methodCallExpression.getArguments()).getExpressions().set(0,
+                    (ExpressionWrapper) newObject);
+            columnExpression = newExpression;
             refresh();
         } else if (orginalObject == rowExpression) {
-            rowExpression = (Expression) newObject;
+            ((ArgumentListExpressionWrapper) methodCallExpression.getArguments()).getExpressions().set(1,
+                    (ExpressionWrapper) newObject);
+            rowExpression = newExpression;
             refresh();
         }
     }
 
     @Override
     public String getDialogTitle() {
-        return DIALOG_TITLE;
+        return StringConstants.DIA_TITLE_TEST_DATA_VALUE_INPUT;
     }
 
     @Override
@@ -97,11 +97,11 @@ public class TestDataValueBuilderDialog extends AbstractAstBuilderWithTableDialo
             @Override
             public String getText(Object element) {
                 if (element == testDataExpression) {
-                    return "Test Data";
+                    return TEST_DATA;
                 } else if (element == columnExpression) {
-                    return "Column";
+                    return COLUMN;
                 } else if (element == rowExpression) {
-                    return "Row";
+                    return ROW;
                 }
                 return StringUtils.EMPTY;
             }
@@ -110,14 +110,14 @@ public class TestDataValueBuilderDialog extends AbstractAstBuilderWithTableDialo
         TableViewerColumn tableViewerColumnValueType = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnValueType.getColumn().setText(StringConstants.DIA_COL_VALUE_TYPE);
         tableViewerColumnValueType.getColumn().setWidth(100);
-        tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider(scriptClass));
+        tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider());
         tableViewerColumnValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer,
-                defaultInputValueTypes, ICustomInputValueType.TAG_TEST_DATA_VALUE, this, scriptClass));
+                defaultInputValueTypes, this));
 
         TableViewerColumn tableViewerColumnValue = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnValue.getColumn().setText(StringConstants.DIA_COL_VALUE);
         tableViewerColumnValue.getColumn().setWidth(300);
-        tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider(scriptClass));
-        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this, scriptClass));
+        tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider());
+        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this));
     }
 }

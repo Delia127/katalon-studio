@@ -3,13 +3,7 @@ package com.kms.katalon.composer.testcase.ast.dialogs;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.groovy.ast.ASTNode;
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.expr.BooleanExpression;
-import org.codehaus.groovy.ast.expr.Expression;
-import org.codehaus.groovy.ast.expr.NotExpression;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -23,34 +17,28 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 
 import com.kms.katalon.composer.testcase.constants.StringConstants;
-import com.kms.katalon.composer.testcase.model.ICustomInputValueType;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.BooleanExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
-import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
-import com.kms.katalon.core.ast.GroovyParser;
 
 public class BooleanBuilderDialog extends AbstractAstBuilderWithTableDialog {
     private final InputValueType[] defaultInputValueTypes = { InputValueType.Boolean, InputValueType.Variable,
             InputValueType.GlobalVariable, InputValueType.TestDataValue, InputValueType.MethodCall,
             InputValueType.Condition, InputValueType.Binary, InputValueType.Property };
 
-    private static final String REVERSE_BUTTON_LABEL = StringConstants.DIA_BTN_REVERSE;
-
-    private static final String DIALOG_TITLE = StringConstants.DIA_TITLE_CONDITION_INPUT;
-
-    private BooleanExpression booleanExpression;
+    private BooleanExpressionWrapper booleanExpression;
     private Button btnReverse;
 
-    public BooleanBuilderDialog(Shell parentShell, BooleanExpression booleanExpression, ClassNode scriptClass) {
-        super(parentShell, scriptClass);
-        if (booleanExpression != null) {
-            this.booleanExpression = GroovyParser.cloneBooleanExpression(booleanExpression);
-        } else {
-            this.booleanExpression = AstTreeTableEntityUtil.getNewBooleanExpression();
+    public BooleanBuilderDialog(Shell parentShell, BooleanExpressionWrapper booleanExpression) {
+        super(parentShell);
+        if (booleanExpression == null) {
+            throw new IllegalArgumentException();
         }
+        this.booleanExpression = booleanExpression.clone();
     }
 
     @Override
@@ -58,19 +46,12 @@ public class BooleanBuilderDialog extends AbstractAstBuilderWithTableDialog {
         parent.setLayout(new GridLayout(1, false));
 
         btnReverse = new Button(parent, SWT.CHECK);
-        btnReverse.setText(REVERSE_BUTTON_LABEL);
-        if (booleanExpression instanceof NotExpression) {
-            btnReverse.setSelection(true);
-        }
-
+        btnReverse.setText(StringConstants.DIA_BTN_REVERSE);
+        btnReverse.setSelection(booleanExpression.isReverse());
         btnReverse.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (btnReverse.getSelection()) {
-                    booleanExpression = new NotExpression(booleanExpression.getExpression());
-                } else {
-                    booleanExpression = new BooleanExpression(booleanExpression.getExpression());
-                }
+                booleanExpression.setReverse(btnReverse.getSelection());
                 refresh();
             }
         });
@@ -85,32 +66,29 @@ public class BooleanBuilderDialog extends AbstractAstBuilderWithTableDialog {
 
     @Override
     public void refresh() {
-        List<Expression> expressionList = new ArrayList<Expression>();
-        expressionList.add(booleanExpression);
+        List<ExpressionWrapper> expressionList = new ArrayList<ExpressionWrapper>();
+        expressionList.add(booleanExpression.getExpression());
         tableViewer.setContentProvider(new ArrayContentProvider());
         tableViewer.setInput(expressionList);
     }
 
     @Override
-    public BooleanExpression getReturnValue() {
+    public BooleanExpressionWrapper getReturnValue() {
         return booleanExpression;
     }
 
     @Override
-    public void changeObject(Object orginalObject, Object newObject) {
-        if (orginalObject == booleanExpression.getExpression() && newObject instanceof Expression) {
-            if (booleanExpression instanceof NotExpression) {
-                booleanExpression = new NotExpression((Expression) newObject);
-            } else {
-                booleanExpression = new BooleanExpression((Expression) newObject);
-            }
-            refresh();
+    public void replaceObject(Object orginalObject, Object newObject) {
+        if (!(newObject instanceof ExpressionWrapper) || orginalObject != booleanExpression.getExpression()) {
+            return;
         }
+        booleanExpression.setExpression((ExpressionWrapper) newObject);
+        refresh();
     }
 
     @Override
     public String getDialogTitle() {
-        return DIALOG_TITLE;
+        return StringConstants.DIA_TITLE_CONDITION_INPUT;
     }
 
     @Override
@@ -118,69 +96,14 @@ public class BooleanBuilderDialog extends AbstractAstBuilderWithTableDialog {
         TableViewerColumn tableViewerColumnValueType = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnValueType.getColumn().setText(StringConstants.DIA_COL_VALUE_TYPE);
         tableViewerColumnValueType.getColumn().setWidth(100);
-        tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider(scriptClass) {
-            @Override
-            public String getText(Object element) {
-                if (element == booleanExpression) {
-                    return super.getText(booleanExpression.getExpression());
-                }
-                return "";
-            }
-        });
+        tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider());
         tableViewerColumnValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer,
-                defaultInputValueTypes, ICustomInputValueType.TAG_BOOLEAN, this, scriptClass) {
-            @Override
-            protected void setValue(Object element, Object value) {
-                if (element instanceof ASTNode && value instanceof Integer && (int) value > -1
-                        && (int) value < inputValueTypeNames.size()) {
-                    super.setValue(booleanExpression.getExpression(), value);
-                }
-            }
-
-            @Override
-            protected Object getValue(Object element) {
-                if (element == booleanExpression) {
-                    return super.getValue(booleanExpression.getExpression());
-                }
-                return 0;
-            }
-        });
+                defaultInputValueTypes, this));
 
         TableViewerColumn tableViewerColumnValue = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnValue.getColumn().setText(StringConstants.DIA_COL_VALUE);
         tableViewerColumnValue.getColumn().setWidth(300);
-        tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider(scriptClass) {
-            @Override
-            public String getText(Object element) {
-                if (element == booleanExpression) {
-                    return super.getText(booleanExpression.getExpression());
-                }
-                return "";
-            }
-        });
-        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this, scriptClass) {
-            @Override
-            protected void setValue(Object element, Object value) {
-                if (element == booleanExpression) {
-                    super.setValue(booleanExpression.getExpression(), value);
-                }
-            }
-
-            @Override
-            protected Object getValue(Object element) {
-                if (element == booleanExpression) {
-                    return super.getValue(booleanExpression.getExpression());
-                }
-                return null;
-            }
-
-            @Override
-            protected CellEditor getCellEditor(Object element) {
-                if (element == booleanExpression) {
-                    return super.getCellEditor(booleanExpression.getExpression());
-                }
-                return null;
-            }
-        });
+        tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider());
+        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this));
     }
 }

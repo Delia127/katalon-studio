@@ -3,12 +3,8 @@ package com.kms.katalon.composer.testcase.ast.dialogs;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.expr.Expression;
-import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -29,102 +25,106 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Tree;
 
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
-import com.kms.katalon.composer.components.impl.providers.AbstractEntityViewerFilter;
-import com.kms.katalon.composer.components.impl.providers.IEntityLabelProvider;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
+import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
+import com.kms.katalon.composer.explorer.providers.EntityProvider;
+import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
-import com.kms.katalon.composer.testcase.model.ICustomInputValueType;
-import com.kms.katalon.composer.testcase.model.IInputValueType;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
-import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
+import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 
 public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implements AstBuilderDialog {
-    private final InputValueType[] defaultInputValueTypes = { InputValueType.Variable };
+    private static final InputValueType[] defaultInputValueTypes = { InputValueType.Variable };
 
-    private static final String DIALOG_TITLE = StringConstants.DIA_TITLE_TEST_OBJ_INPUT;
+    private static final String OBJECT_FINDER_TAB_NAME = TreeEntityUtil.getReadableKeywordName(InputValueType.TestObject
+            .getName());
 
-    private static final String OBJECT_FINDER_TAB_NAME = TreeEntityUtil.getReadableKeywordName(InputValueType.TestObject.getName());
-
-    private static final String OTHER_TAB_NAME = StringConstants.DIA_TAB_OTHER;
-
-    private static final String[] TEST_OBJECT_TABS = { OBJECT_FINDER_TAB_NAME, OTHER_TAB_NAME };
+    private static final String[] TEST_OBJECT_TABS = { OBJECT_FINDER_TAB_NAME, StringConstants.DIA_TAB_OTHER };
 
     private TestObjectBuilderDialog _instance;
 
     private TableViewer tableViewer;
 
-    private Expression objectExpression;
+    private ExpressionWrapper objectExpressionWrapper;
 
     private int fWidth = 60;
 
     private int fHeight = 18;
 
-    private ClassNode scriptClass;
-
     private boolean haveOtherTypes;
+
+    private StackLayout stackLayout;
+
+    private Composite objectFinderComposite;
+
+    private Composite otherTypesInputTableComposite;
 
     private Composite comboComposite;
 
     private Combo combo;
 
-    public TestObjectBuilderDialog(Shell parentShell, Expression objectExpression, IEntityLabelProvider labelProvider,
-            ITreeContentProvider contentProvider, AbstractEntityViewerFilter entityViewerFilter, ClassNode scriptClass,
-            boolean haveOtherTypes) {
-        super(parentShell, labelProvider, contentProvider, entityViewerFilter);
-        this.scriptClass = scriptClass;
+    public TestObjectBuilderDialog(Shell parentShell, ExpressionWrapper objectExpressionWrapper, boolean haveOtherTypes) {
+        super(parentShell, new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(new EntityProvider()));
+        if (objectExpressionWrapper == null) {
+            throw new IllegalArgumentException();
+        }
         _instance = this;
         this.haveOtherTypes = haveOtherTypes;
-        if (objectExpression != null) {
-            this.objectExpression = GroovyParser.cloneExpression(objectExpression);
-        } else {
-            this.objectExpression = AstTreeTableInputUtil.generateObjectMethodCall(null);
-        }
+        this.objectExpressionWrapper = objectExpressionWrapper.clone();
         setAllowMultiple(false);
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-        if (currentProject != null) {
-            try {
-                setInput(TreeEntityUtil.getChildren(null,
-                        FolderController.getInstance().getObjectRepositoryRoot(currentProject)));
-                refreshSelectionTree();
-            } catch (Exception e) {
-                LoggerSingleton.logError(e);
-            }
+        if (currentProject == null) {
+            throw new IllegalArgumentException();
         }
-    }
-
-    protected void refreshSelectionTree() {
         try {
-            Expression testObjectExpression = null;
-            if (objectExpression instanceof MethodCallExpression) {
-                testObjectExpression = AstTreeTableInputUtil.getObjectParam((MethodCallExpression) objectExpression);
-            }
-            if (objectExpression != null && testObjectExpression != null) {
-                WebElementEntity selectedWebElement = ObjectRepositoryController.getInstance()
-                        .getWebElementByDisplayPk(testObjectExpression.getText());
-                if (selectedWebElement != null) {
-                    setInitialSelection(new WebElementTreeEntity(selectedWebElement, createSelectedTreeEntityHierachy(
-                            selectedWebElement.getParentFolder(), FolderController.getInstance()
-                                    .getObjectRepositoryRoot(ProjectController.getInstance().getCurrentProject()))));
-                }
-            }
+            setInput(TreeEntityUtil.getChildren(null, FolderController.getInstance().getObjectRepositoryRoot(currentProject)));
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
+        refreshSelectionTree();
+    }
+
+    protected void refreshSelectionTree() {
+        ExpressionWrapper testObjectExpressionWrapper = null;
+        if (objectExpressionWrapper instanceof MethodCallExpressionWrapper) {
+            testObjectExpressionWrapper = AstEntityInputUtil
+                    .getObjectParam((MethodCallExpressionWrapper) objectExpressionWrapper);
+        }
+        if (testObjectExpressionWrapper == null || !(testObjectExpressionWrapper instanceof ConstantExpressionWrapper)) {
+            return;
+        }
+        WebElementEntity selectedWebElement = null;
+        FolderEntity objectRepositoryRoot = null;
+        try {
+            selectedWebElement = ObjectRepositoryController.getInstance().getWebElementByDisplayPk(
+                    String.valueOf(((ConstantExpressionWrapper) testObjectExpressionWrapper).getValue()));
+            objectRepositoryRoot = FolderController.getInstance().getObjectRepositoryRoot(
+                    ProjectController.getInstance().getCurrentProject());
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        if (selectedWebElement == null || objectRepositoryRoot == null) {
+            return;
+        }
+        setInitialSelection(new WebElementTreeEntity(selectedWebElement, createSelectedTreeEntityHierachy(
+                selectedWebElement.getParentFolder(), objectRepositoryRoot)));
     }
 
     @Override
@@ -144,10 +144,10 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
 
         final Composite stackComposite = new Composite(parent, SWT.NONE);
         applyDialogFont(stackComposite);
-        final StackLayout stackLayout = new StackLayout();
+        stackLayout = new StackLayout();
         stackComposite.setLayout(stackLayout);
 
-        final Composite objectFinderComposite = new Composite(stackComposite, SWT.NONE);
+        objectFinderComposite = new Composite(stackComposite, SWT.NONE);
         objectFinderComposite.setLayout(new GridLayout(1, false));
 
         TreeViewer treeViewer = createTreeViewer(objectFinderComposite);
@@ -164,91 +164,95 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         stackLayout.topControl = objectFinderComposite;
 
         if (haveOtherTypes) {
-            final Composite inputTableComposite = new Composite(stackComposite, SWT.NONE);
-            inputTableComposite.setLayout(new GridLayout(1, false));
-
-            tableViewer = new TableViewer(inputTableComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
-            Table table = tableViewer.getTable();
-            table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-            table.setLinesVisible(true);
-            table.setHeaderVisible(true);
-
-            ColumnViewerUtil.setTableActivation(tableViewer);
-
-            TableViewerColumn tableViewerColumnValueType = new TableViewerColumn(tableViewer, SWT.NONE);
-            tableViewerColumnValueType.getColumn().setText(StringConstants.DIA_COL_VALUE_TYPE);
-            tableViewerColumnValueType.getColumn().setWidth(100);
-            tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider(scriptClass));
-
-            tableViewerColumnValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer,
-                    defaultInputValueTypes, ICustomInputValueType.TAG_TEST_OBJECT, this, scriptClass));
-
-            TableViewerColumn tableViewerColumnValue = new TableViewerColumn(tableViewer, SWT.NONE);
-            tableViewerColumnValue.getColumn().setText(StringConstants.DIA_COL_VALUE);
-            tableViewerColumnValue.getColumn().setWidth(300);
-            tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider(scriptClass));
-            tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this,
-                    scriptClass));
-
-            if (objectExpression instanceof MethodCallExpression
-                    && AstTreeTableInputUtil.isObjectArgument((MethodCallExpression) objectExpression)) {
-                combo.select(0);
-                stackLayout.topControl = objectFinderComposite;
-            } else {
-                combo.select(1);
-                stackLayout.topControl = inputTableComposite;
-            }
-            combo.addSelectionListener(new SelectionAdapter() {
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    int index = combo.getSelectionIndex();
-                    if (index >= 0 && index < TEST_OBJECT_TABS.length) {
-                        String tabName = TEST_OBJECT_TABS[index];
-                        if (tabName.equals(OBJECT_FINDER_TAB_NAME)) {
-                            objectExpression = (Expression) InputValueType.TestObject.getNewValue(null);
-                            stackLayout.topControl = objectFinderComposite;
-                        } else {
-                            List<IInputValueType> valueTypes = AstTreeTableInputUtil.getInputValueTypeList(
-                                    defaultInputValueTypes, ICustomInputValueType.TAG_TEST_OBJECT);
-                            if (valueTypes.size() > 0) {
-                                objectExpression = (Expression) valueTypes.get(0).getNewValue(null);
-                                stackLayout.topControl = inputTableComposite;
-                                setSelectionResult(null);
-                            }
-                        }
-                        refresh();
-                        stackComposite.layout();
-                    }
-                }
-            });
+            createOtherTypesTab(stackComposite);
         }
 
         refresh();
         return stackComposite;
     }
 
+    private void createOtherTypesTab(final Composite parent) {
+        otherTypesInputTableComposite = new Composite(parent, SWT.NONE);
+        otherTypesInputTableComposite.setLayout(new GridLayout(1, false));
+
+        tableViewer = new TableViewer(otherTypesInputTableComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+        Table table = tableViewer.getTable();
+        table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        table.setLinesVisible(true);
+        table.setHeaderVisible(true);
+
+        ColumnViewerUtil.setTableActivation(tableViewer);
+
+        TableViewerColumn tableViewerColumnValueType = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnValueType.getColumn().setText(StringConstants.DIA_COL_VALUE_TYPE);
+        tableViewerColumnValueType.getColumn().setWidth(100);
+        tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider());
+
+        tableViewerColumnValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer,
+                defaultInputValueTypes, this));
+
+        TableViewerColumn tableViewerColumnValue = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnValue.getColumn().setText(StringConstants.DIA_COL_VALUE);
+        tableViewerColumnValue.getColumn().setWidth(300);
+        tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider());
+        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this));
+
+        combo.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                int index = combo.getSelectionIndex();
+                if (index < 0 || index >= TEST_OBJECT_TABS.length) {
+                    return;
+                }
+                String tabName = TEST_OBJECT_TABS[index];
+                ExpressionWrapper newExpression = null;
+                if (tabName.equals(OBJECT_FINDER_TAB_NAME)) {
+                    newExpression = (ExpressionWrapper) InputValueType.TestObject.getNewValue(objectExpressionWrapper.getParent());
+                    stackLayout.topControl = objectFinderComposite;
+                } else {
+                    newExpression = (ExpressionWrapper) defaultInputValueTypes[0].getNewValue(objectExpressionWrapper.getParent());
+                    stackLayout.topControl = otherTypesInputTableComposite;
+                    setSelectionResult(null);
+                }
+                newExpression.copyProperties(objectExpressionWrapper);
+                objectExpressionWrapper = newExpression;
+
+                refresh();
+                parent.layout();
+            }
+        });
+
+        if (objectExpressionWrapper instanceof MethodCallExpressionWrapper
+                && AstEntityInputUtil.isObjectArgument((MethodCallExpressionWrapper) objectExpressionWrapper)) {
+            combo.select(0);
+            stackLayout.topControl = objectFinderComposite;
+        } else {
+            combo.select(1);
+            stackLayout.topControl = otherTypesInputTableComposite;
+        }
+    }
+
     private FolderTreeEntity createSelectedTreeEntityHierachy(FolderEntity folderEntity, FolderEntity rootFolder) {
         if (folderEntity == null || folderEntity.equals(rootFolder)) {
             return null;
         }
-        return new FolderTreeEntity(folderEntity, createSelectedTreeEntityHierachy(folderEntity.getParentFolder(),
-                rootFolder));
+        return new FolderTreeEntity(folderEntity, createSelectedTreeEntityHierachy(folderEntity.getParentFolder(), rootFolder));
     }
 
     @Override
     public void refresh() {
-        List<Expression> objectExpressionList = new ArrayList<Expression>();
-        objectExpressionList.add(objectExpression);
-        if (haveOtherTypes) {
-            tableViewer.setContentProvider(new ArrayContentProvider());
-            tableViewer.setInput(objectExpressionList);
+        List<ExpressionWrapper> objectExpressionWrapperList = new ArrayList<ExpressionWrapper>();
+        objectExpressionWrapperList.add(objectExpressionWrapper);
+        if (!haveOtherTypes) {
+            return;
         }
+        tableViewer.setContentProvider(new ArrayContentProvider());
+        tableViewer.setInput(objectExpressionWrapperList);
     }
 
     protected void createButtonsForButtonBar(Composite parent) {
         Button btnOK = createButton(parent, 102, IDialogConstants.OK_LABEL, true);
         btnOK.addSelectionListener(new SelectionListener() {
-
             @Override
             public void widgetSelected(SelectionEvent e) {
                 _instance.close();
@@ -262,18 +266,26 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
     }
 
     protected void convertSelectionToObjectMethodCall() {
-        Object selectedObject = getFirstResult();
-        if (selectedObject instanceof WebElementTreeEntity) {
-            try {
-                WebElementTreeEntity webElementTreeEntity = (WebElementTreeEntity) selectedObject;
-                if (webElementTreeEntity.getObject() instanceof WebElementEntity) {
-                    String objectPk = ((WebElementEntity) webElementTreeEntity.getObject()).getIdForDisplay();
-                    objectExpression = AstTreeTableInputUtil.generateObjectMethodCall(objectPk);
-                }
-            } catch (Exception e) {
-                LoggerSingleton.logError(e);
-            }
+        if (!(getFirstResult() instanceof WebElementTreeEntity)) {
+            return;
         }
+        WebElementTreeEntity webElementTreeEntity = (WebElementTreeEntity) getFirstResult();
+        String objectPk = null;
+        try {
+            if (!(webElementTreeEntity.getObject() instanceof WebElementEntity)) {
+                return;
+            }
+            objectPk = ((WebElementEntity) webElementTreeEntity.getObject()).getIdForDisplay();
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        if (objectPk == null) {
+            return;
+        }
+        MethodCallExpressionWrapper newMethodCall = AstEntityInputUtil.generateObjectMethodCall(objectPk,
+                objectExpressionWrapper.getParent());
+        newMethodCall.copyProperties(objectExpressionWrapper);
+        objectExpressionWrapper = newMethodCall;
     }
 
     @Override
@@ -283,21 +295,23 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
     }
 
     @Override
-    public Expression getReturnValue() {
-        convertSelectionToObjectMethodCall();
-        return objectExpression;
+    public ExpressionWrapper getReturnValue() {
+        if (stackLayout.topControl == objectFinderComposite) {
+            convertSelectionToObjectMethodCall();
+        }
+        return objectExpressionWrapper;
     }
 
     @Override
-    public void changeObject(Object originalObject, Object newObject) {
-        if (originalObject == objectExpression && newObject instanceof Expression) {
-            objectExpression = (Expression) newObject;
+    public void replaceObject(Object originalObject, Object newObject) {
+        if (originalObject == objectExpressionWrapper && newObject instanceof ExpressionWrapper) {
+            objectExpressionWrapper = (ExpressionWrapper) newObject;
             refresh();
         }
     }
 
     @Override
     public String getDialogTitle() {
-        return DIALOG_TITLE;
+        return StringConstants.DIA_TITLE_TEST_OBJ_INPUT;
     }
 }

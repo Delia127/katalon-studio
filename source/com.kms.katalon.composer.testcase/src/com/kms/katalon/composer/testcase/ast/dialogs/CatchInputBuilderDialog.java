@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.groovy.ast.ASTNode;
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.Parameter;
-import org.codehaus.groovy.ast.stmt.CatchStatement;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -18,46 +14,41 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.CatchStatementWrapper;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
-import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
-import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
-import com.kms.katalon.core.ast.GroovyParser;
 
 public class CatchInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
-    private static final String DIALOG_TITLE = StringConstants.DIA_TITLE_CATCH_INPUT;
-    private CatchStatement catchStatement;
-    private ClassNode scriptClass;
+    private CatchStatementWrapper catchStatement;
 
-    public CatchInputBuilderDialog(Shell parentShell, CatchStatement catchStatement, ClassNode scriptClass) {
-        super(parentShell, scriptClass);
-        this.scriptClass = scriptClass;
-        if (catchStatement != null) {
-            this.catchStatement = GroovyParser.cloneCatchStatement(catchStatement);
-        } else {
-            this.catchStatement = AstTreeTableEntityUtil.getNewCatchStatement();
+    public CatchInputBuilderDialog(Shell parentShell, CatchStatementWrapper catchStatement) {
+        super(parentShell);
+        if (catchStatement == null) {
+            throw new IllegalArgumentException();
         }
+        this.catchStatement = catchStatement.clone();
     }
 
     @Override
-    public CatchStatement getReturnValue() {
+    public CatchStatementWrapper getReturnValue() {
         return catchStatement;
     }
 
     @Override
-    public void changeObject(Object originalObject, Object newObject) {
-        if (originalObject == catchStatement.getExceptionType() && newObject instanceof ClassNode) {
-            catchStatement = new CatchStatement(new Parameter((ClassNode) newObject, catchStatement.getVariable()
-                    .getName()), catchStatement.getCode());
+    public void replaceObject(Object originalObject, Object newObject) {
+        if (originalObject == catchStatement.getExceptionType() && newObject instanceof ClassNodeWrapper) {
+            catchStatement.setExceptionType((ClassNodeWrapper) newObject);
             refresh();
-        } else if (originalObject == catchStatement.getVariable() && newObject instanceof Parameter) {
-            catchStatement = new CatchStatement((Parameter) newObject, catchStatement.getCode());
+        } else if (originalObject == catchStatement.getVariableName() && newObject instanceof String) {
+            catchStatement.setVariableName((String) newObject);
             refresh();
         }
     }
 
     @Override
     public String getDialogTitle() {
-        return DIALOG_TITLE;
+        return StringConstants.DIA_TITLE_CATCH_INPUT;
     }
 
     @Override
@@ -69,34 +60,30 @@ public class CatchInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
             @Override
             public String getText(Object element) {
                 if (element == catchStatement && catchStatement.getExceptionType() != null) {
-                    return AstTreeTableTextValueUtil.getInstance().getTextValue(catchStatement.getExceptionType());
+                    return catchStatement.getExceptionType().getNameWithoutPackage();
                 }
                 return StringUtils.EMPTY;
             }
         });
-        tableViewerColumnExeptionType.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this,
-                scriptClass) {
+        tableViewerColumnExeptionType.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this) {
             @Override
             protected Object getValue(Object element) {
-                return super.getValue(catchStatement.getVariable().getType());
+                return super.getValue(catchStatement.getExceptionType());
             }
 
             @Override
             protected void setValue(Object element, Object value) {
-                super.setValue(catchStatement.getVariable().getType(), value);
+                super.setValue(catchStatement.getExceptionType(), value);
             }
 
             @Override
             protected boolean canEdit(Object element) {
-                if (element == catchStatement && catchStatement.getExceptionType() != null) {
-                    return true;
-                }
-                return false;
+                return (element == catchStatement && catchStatement.getExceptionType() != null && super.canEdit(catchStatement.getExceptionType()));
             }
 
             @Override
             protected CellEditor getCellEditor(Object element) {
-                return super.getCellEditor(catchStatement.getVariable().getType());
+                return super.getCellEditor(catchStatement.getExceptionType());
             }
         });
 
@@ -106,8 +93,8 @@ public class CatchInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
         tableViewerVariable.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                if (element == catchStatement && catchStatement.getExceptionType() != null) {
-                    return AstTreeTableTextValueUtil.getInstance().getTextValue(catchStatement.getVariable());
+                if (element == catchStatement && catchStatement.getVariableName() != null) {
+                    return catchStatement.getVariableName();
                 }
                 return StringUtils.EMPTY;
             }
@@ -117,16 +104,14 @@ public class CatchInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
             @Override
             protected void setValue(Object element, Object value) {
                 if (value instanceof String) {
-                    Parameter newVariable = new Parameter(catchStatement.getVariable()
-                            .getType(), (String) value);
-                    changeObject(catchStatement.getVariable(), newVariable);
+                    replaceObject(catchStatement.getVariableName(), value);
                     getViewer().refresh();
                 }
             }
 
             @Override
             protected Object getValue(Object element) {
-                return catchStatement.getVariable().getName();
+                return catchStatement.getVariableName();
             }
 
             @Override
@@ -136,7 +121,8 @@ public class CatchInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
 
             @Override
             protected boolean canEdit(Object element) {
-                if (element == catchStatement && catchStatement.getVariable() != null) {
+                if (element == catchStatement && catchStatement.getVariable() != null
+                        && catchStatement.getVariableName() != null) {
                     return true;
                 }
                 return false;
@@ -146,7 +132,7 @@ public class CatchInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
 
     @Override
     public void refresh() {
-        List<ASTNode> expressionList = new ArrayList<ASTNode>();
+        List<ASTNodeWrapper> expressionList = new ArrayList<ASTNodeWrapper>();
         expressionList.add(catchStatement);
         tableViewer.setContentProvider(new ArrayContentProvider());
         tableViewer.setInput(expressionList);

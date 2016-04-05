@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.kms.katalon.custom.keyword.KeywordClass;
+
 
 public class TreeTableMenuItemConstants {
     public static final String MENU_ITEM_ACTION_KEY = "ACTION";
@@ -82,11 +84,11 @@ public class TreeTableMenuItemConstants {
 	
 	private static Map<String, Integer> keywordClassOffsets = new HashMap<String, Integer>();
 	
-	public static void generateBuiltInKeywordMenuItemIDs(List<Class<?>> classes) {
+	public static void generateBuiltInKeywordMenuItemIDs(List<KeywordClass> keywordClasses) {
 	    keywordClassOffsets.clear();
 	    int offset = 0;
-	    for (Class<?> clazz : classes) {
-	        keywordClassOffsets.put(clazz.getName(), offset);
+	    for (KeywordClass keywordClass : keywordClasses) {
+	        keywordClassOffsets.put(keywordClass.getName(), offset);
 	        offset++;
 	    }
 	}

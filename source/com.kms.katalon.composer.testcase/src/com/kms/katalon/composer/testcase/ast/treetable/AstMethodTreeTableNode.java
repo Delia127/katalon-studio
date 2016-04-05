@@ -1,111 +1,61 @@
 package com.kms.katalon.composer.testcase.ast.treetable;
 
-import org.codehaus.groovy.ast.ASTNode;
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.MethodNode;
-import org.codehaus.groovy.ast.expr.ConstantExpression;
-import org.codehaus.groovy.ast.stmt.BlockStatement;
-import org.codehaus.groovy.ast.stmt.ReturnStatement;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.kms.katalon.composer.testcase.util.WrapperToAstTreeConverter;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.ast.editors.MethodObjectBuilderCellEditor;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
-import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
-import com.kms.katalon.composer.testcase.util.AstTreeTableUtil;
-import com.kms.katalon.core.ast.GroovyParser;
+import com.kms.katalon.composer.testcase.groovy.ast.MethodNodeWrapper;
 
-public class AstMethodTreeTableNode extends AstAbstractTreeTableNode {
-    private MethodNode methodNode;
-    private AstTreeTableNode parentNode;
-    private ClassNode parentClass;
+public class AstMethodTreeTableNode extends AstAbstractTreeTableNode implements AstItemEditableNode {
+    private MethodNodeWrapper methodNode;
 
-    public AstMethodTreeTableNode(MethodNode methodNode, AstTreeTableNode parentNode, ClassNode parentClass) {
+    private List<AstTreeTableNode> childNodes = new ArrayList<AstTreeTableNode>();
+
+    public AstMethodTreeTableNode(MethodNodeWrapper methodNode, AstTreeTableNode parentNode) {
+        super(parentNode);
         this.methodNode = methodNode;
-        this.parentNode = parentNode;
-        this.parentClass = parentClass;
+        reloadChildren();
     }
 
     @Override
-    public ASTNode getASTObject() {
+    public MethodNodeWrapper getASTObject() {
         return methodNode;
     }
 
     @Override
-    public ASTNode getParentASTObject() {
-        return parentClass;
-    }
-
-    @Override
     public String getItemText() {
-        return methodNode.getName() + "()";
+        return methodNode.getText();
     }
 
     @Override
-    public String getItemTextForDisplay() {
-        return getItemText();
+    public boolean canHaveChildren() {
+        return true;
     }
 
     @Override
     public boolean hasChildren() {
-        if (methodNode.getCode() != null) {
-            if (methodNode.getCode() instanceof BlockStatement) {
-                return true;
-            } else if (methodNode.getCode() instanceof ReturnStatement) {
-                ReturnStatement returnStatement = (ReturnStatement) methodNode.getCode();
-                if (returnStatement.getExpression() instanceof ConstantExpression
-                        && ((ConstantExpression) returnStatement.getExpression()).getValue() == null) {
-                    return false;
-                }
-                return true;
-            }
-        }
-        return false;
+        return !childNodes.isEmpty();
     }
-    
+
     @Override
     public void reloadChildren() {
-        try {
-            children = AstTreeTableUtil.getChildren(methodNode, this, parentClass);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-        }
-    }
-    
-    @Override
-    public AstTreeTableNode getParent() {
-        return parentNode;
+        childNodes.clear();
+        childNodes.addAll(WrapperToAstTreeConverter.getInstance().convert(methodNode.getBlock().getStatements(), this));
     }
 
     @Override
-    public void addChildObject(ASTNode astObject, int index) {
-        AstTreeTableUtil.addChild(methodNode.getCode(), astObject, index);
-    }
-
-    @Override
-    public void removeChildObject(ASTNode astObject) {
-        AstTreeTableUtil.removeChild(methodNode.getCode(), astObject);
-    }
-
-    @Override
-    public int getChildObjectIndex(ASTNode astObject) {
-        return AstTreeTableUtil.getIndex(methodNode.getCode(), astObject);
-    }
-
-    @Override
-    public Image getNodeIcon() {
+    public Image getIcon() {
         return ImageConstants.IMG_16_FUNCTION;
     }
 
     @Override
-    public AstTreeTableNode clone() {
-        return new AstMethodTreeTableNode(GroovyParser.cloneMethodNode(methodNode), parentNode, parentClass);
-    }
-
-    @Override
-    public boolean isItemEditable() {
+    public boolean canEditItem() {
         return true;
     }
 
@@ -116,17 +66,26 @@ public class AstMethodTreeTableNode extends AstAbstractTreeTableNode {
 
     @Override
     public CellEditor getCellEditorForItem(Composite parent) {
-        return new MethodObjectBuilderCellEditor(parent, AstTreeTableTextValueUtil.getInstance().getTextValue(
-                methodNode), parentClass);
+        return new MethodObjectBuilderCellEditor(parent, methodNode.getText(), methodNode.getParent());
     }
 
     @Override
     public boolean setItem(Object item) {
-        if (item instanceof MethodNode) {
-            MethodNode newMethodNode = (MethodNode) item;
-            methodNode.setParameters(newMethodNode.getParameters());
-            methodNode.setReturnType(newMethodNode.getReturnType());
+        if (!(item instanceof MethodNodeWrapper)) {
+            return false;
         }
+        MethodNodeWrapper newMethodNode = (MethodNodeWrapper) item;
+        methodNode.setName(newMethodNode.getName());
+        methodNode.setModifiers(newMethodNode.getModifiers());
+        methodNode.setParameters(newMethodNode.getParameters());
+        methodNode.setReturnType(newMethodNode.getReturnType());
+        methodNode.setExceptions(newMethodNode.getExceptions());
+        methodNode.setAnnotations(newMethodNode.getAnnotations());
         return true;
+    }
+
+    @Override
+    public List<AstTreeTableNode> getChildren() {
+        return childNodes;
     }
 }

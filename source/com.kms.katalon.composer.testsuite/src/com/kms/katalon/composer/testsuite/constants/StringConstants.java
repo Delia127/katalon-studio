@@ -66,8 +66,11 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String DIA_WARN_MSG_EMPTY_COLUMN_NAME = "This column has empty header.";
 
-    // TestDataCellEditor
+    // TestDataSelectionDialogCellEditor
     public static final String EDI_TITLE_TEST_DATA_BROWSER = "Test Data Browser";
+    
+    // TestCaseSelectionDialogCellEditor
+    public static final String EDI_TITLE_TEST_CASE_BROWSER = "Test Case Browser";
 
     public static final String ERROR_TITLE = ERROR;
 

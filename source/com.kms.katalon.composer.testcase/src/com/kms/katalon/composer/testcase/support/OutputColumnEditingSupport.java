@@ -4,49 +4,46 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TreeViewer;
 
-import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstOutputEditableNode;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
 
 public class OutputColumnEditingSupport extends EditingSupport {
 
-	private TreeViewer treeViewer;
-	private TestCasePart parentTestCasePart;
+    private TreeViewer treeViewer;
+    private TestCasePart parentTestCasePart;
 
-	public OutputColumnEditingSupport(TreeViewer treeViewer, TestCasePart parentTestCasePart) {
-		super(treeViewer);
-		this.treeViewer = treeViewer;
-		this.parentTestCasePart = parentTestCasePart;
-	}
+    public OutputColumnEditingSupport(TreeViewer treeViewer, TestCasePart parentTestCasePart) {
+        super(treeViewer);
+        this.treeViewer = treeViewer;
+        this.parentTestCasePart = parentTestCasePart;
+    }
 
-	@Override
-	protected CellEditor getCellEditor(Object element) {
-		if (element instanceof AstTreeTableNode) {
-			return ((AstTreeTableNode) element).getCellEditorForOutput(treeViewer.getTree());
-		}
-		return null;
-	}
+    @Override
+    protected CellEditor getCellEditor(Object element) {
+        if (element instanceof AstOutputEditableNode) {
+            return ((AstOutputEditableNode) element).getCellEditorForOutput(treeViewer.getTree());
+        }
+        return null;
+    }
 
-	@Override
-	protected boolean canEdit(Object element) {
-		if (element instanceof AstTreeTableNode) {
-			return ((AstTreeTableNode) element).isOutputEditatble();
-		}
-		return false;
-	}
+    @Override
+    protected boolean canEdit(Object element) {
+        return (element instanceof AstOutputEditableNode && ((AstOutputEditableNode) element).canEditOutput());
+    }
 
-	@Override
-	protected Object getValue(Object element) {
-		if (element instanceof AstTreeTableNode) {
-			return ((AstTreeTableNode) element).getOutput();
-		}
-		return null;
-	}
+    @Override
+    protected Object getValue(Object element) {
+        if (element instanceof AstOutputEditableNode) {
+            return ((AstOutputEditableNode) element).getOutput();
+        }
+        return null;
+    }
 
-	@Override
-	protected void setValue(Object element, Object value) {
-		if (element instanceof AstTreeTableNode && ((AstTreeTableNode) element).setOutput(value)) {
-			parentTestCasePart.getTreeTableInput().setDirty(true);
-			treeViewer.refresh(element);
-		}
-	}
+    @Override
+    protected void setValue(Object element, Object value) {
+        if (element instanceof AstOutputEditableNode && ((AstOutputEditableNode) element).setOutput(value)) {
+            parentTestCasePart.getTreeTableInput().setDirty(true);
+            treeViewer.refresh(element);
+        }
+    }
 }

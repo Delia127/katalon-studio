@@ -55,13 +55,11 @@ public class TreeEntityUtil {
                 } else if (childrenEntities[i] instanceof TestCaseEntity) {
                     childrenEntities[i] = new TestCaseTreeEntity((TestCaseEntity) childrenEntities[i], folderTreeEntity);
                 } else if (childrenEntities[i] instanceof TestSuiteEntity) {
-                    childrenEntities[i] = new TestSuiteTreeEntity((TestSuiteEntity) childrenEntities[i],
-                            folderTreeEntity);
+                    childrenEntities[i] = new TestSuiteTreeEntity((TestSuiteEntity) childrenEntities[i], folderTreeEntity);
                 } else if (childrenEntities[i] instanceof DataFileEntity) {
                     childrenEntities[i] = new TestDataTreeEntity((DataFileEntity) childrenEntities[i], folderTreeEntity);
                 } else if (childrenEntities[i] instanceof WebElementEntity) {
-                    childrenEntities[i] = new WebElementTreeEntity((WebElementEntity) childrenEntities[i],
-                            folderTreeEntity);
+                    childrenEntities[i] = new WebElementTreeEntity((WebElementEntity) childrenEntities[i], folderTreeEntity);
                 } else if (childrenEntities[i] instanceof ReportEntity) {
                     childrenEntities[i] = new ReportTreeEntity((ReportEntity) childrenEntities[i], folderTreeEntity);
                 }
@@ -75,40 +73,38 @@ public class TreeEntityUtil {
         if (folderEntity == null || folderEntity.equals(rootFolder)) {
             return new FolderTreeEntity(rootFolder, null);
         }
-        return new FolderTreeEntity(folderEntity, createSelectedTreeEntityHierachy(folderEntity.getParentFolder(),
-                rootFolder));
+        return new FolderTreeEntity(folderEntity, createSelectedTreeEntityHierachy(folderEntity.getParentFolder(), rootFolder));
     }
 
     public static TestCaseTreeEntity getTestCaseTreeEntity(TestCaseEntity testCaseEntity, ProjectEntity projectEntity)
             throws Exception {
         FolderEntity testCaseRootFolder = FolderController.getInstance().getTestCaseRoot(projectEntity);
-        return new TestCaseTreeEntity(testCaseEntity, createSelectedTreeEntityHierachy(
-                testCaseEntity.getParentFolder(), testCaseRootFolder));
+        return new TestCaseTreeEntity(testCaseEntity, createSelectedTreeEntityHierachy(testCaseEntity.getParentFolder(),
+                testCaseRootFolder));
     }
 
-    public static WebElementTreeEntity getWebElementTreeEntity(WebElementEntity testObjectEntity,
-            ProjectEntity projectEntity) throws Exception {
+    public static WebElementTreeEntity getWebElementTreeEntity(WebElementEntity testObjectEntity, ProjectEntity projectEntity)
+            throws Exception {
         FolderEntity testCaseRootFolder = FolderController.getInstance().getObjectRepositoryRoot(projectEntity);
-        return new WebElementTreeEntity(testObjectEntity, createSelectedTreeEntityHierachy(
-                testObjectEntity.getParentFolder(), testCaseRootFolder));
+        return new WebElementTreeEntity(testObjectEntity, createSelectedTreeEntityHierachy(testObjectEntity.getParentFolder(),
+                testCaseRootFolder));
     }
 
     public static TestDataTreeEntity getTestDataTreeEntity(DataFileEntity testDataEntity, ProjectEntity projectEntity)
             throws Exception {
         FolderEntity testCaseRootFolder = FolderController.getInstance().getTestDataRoot(projectEntity);
-        return new TestDataTreeEntity(testDataEntity, createSelectedTreeEntityHierachy(
-                testDataEntity.getParentFolder(), testCaseRootFolder));
+        return new TestDataTreeEntity(testDataEntity, createSelectedTreeEntityHierachy(testDataEntity.getParentFolder(),
+                testCaseRootFolder));
     }
 
-    public static TestSuiteTreeEntity getTestSuiteTreeEntity(TestSuiteEntity testSuiteEntity,
-            ProjectEntity projectEntity) throws Exception {
-        FolderEntity testCaseRootFolder = FolderController.getInstance().getTestSuiteRoot(projectEntity);
-        return new TestSuiteTreeEntity(testSuiteEntity, createSelectedTreeEntityHierachy(
-                testSuiteEntity.getParentFolder(), testCaseRootFolder));
-    }
-
-    public static ReportTreeEntity getReportTreeEntity(ReportEntity reportEntity, ProjectEntity projectEntity)
+    public static TestSuiteTreeEntity getTestSuiteTreeEntity(TestSuiteEntity testSuiteEntity, ProjectEntity projectEntity)
             throws Exception {
+        FolderEntity testCaseRootFolder = FolderController.getInstance().getTestSuiteRoot(projectEntity);
+        return new TestSuiteTreeEntity(testSuiteEntity, createSelectedTreeEntityHierachy(testSuiteEntity.getParentFolder(),
+                testCaseRootFolder));
+    }
+
+    public static ReportTreeEntity getReportTreeEntity(ReportEntity reportEntity, ProjectEntity projectEntity) throws Exception {
         FolderEntity testCaseRootFolder = FolderController.getInstance().getReportRoot(projectEntity);
         return new ReportTreeEntity(reportEntity, createSelectedTreeEntityHierachy(reportEntity.getParentFolder(),
                 testCaseRootFolder));
@@ -126,14 +122,11 @@ public class TreeEntityUtil {
 
     public static KeywordTreeEntity getKeywordTreeEntity(String keywordRelativeLocation, ProjectEntity projectEntity)
             throws Exception {
-        String packageLocation = StringUtils.substringBeforeLast(keywordRelativeLocation,
-                StringConstants.ENTITY_ID_SEPERATOR);
-        String keywordName = StringUtils.substringAfterLast(keywordRelativeLocation,
-                StringConstants.ENTITY_ID_SEPERATOR);
+        String packageLocation = StringUtils.substringBeforeLast(keywordRelativeLocation, StringConstants.ENTITY_ID_SEPERATOR);
+        String keywordName = StringUtils.substringAfterLast(keywordRelativeLocation, StringConstants.ENTITY_ID_SEPERATOR);
         PackageTreeEntity packageTreeEntity = getPackageTreeEntity(packageLocation, projectEntity);
         if (packageTreeEntity != null) {
-            ICompilationUnit keywordFile = ((IPackageFragment) packageTreeEntity.getObject())
-                    .getCompilationUnit(keywordName);
+            ICompilationUnit keywordFile = ((IPackageFragment) packageTreeEntity.getObject()).getCompilationUnit(keywordName);
             if (keywordFile != null && keywordFile.exists()) {
                 return new KeywordTreeEntity(keywordFile, packageTreeEntity);
             }
@@ -144,17 +137,18 @@ public class TreeEntityUtil {
     /**
      * Get readable keyword name by capitalized and separated the words.
      * <p>
-     * Example: getReadableKeywordName("getDeviceOSVersion") will be "Get Device OS Version"
+     * Example: getReadableKeywordName("getDeviceOSVersion") will be
+     * "Get Device OS Version"
      * 
-     * @param keywordMethodName keyword name (also known as method name)
+     * @param keywordMethodName
+     *            keyword name (also known as method name)
      * @return Readable Keyword Name
      */
     public static String getReadableKeywordName(String keywordMethodName) {
         if (keywordMethodName == null) {
             return keywordMethodName;
         }
-        return StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(StringUtils.capitalize(keywordMethodName)),
-                " ");
+        return StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(StringUtils.capitalize(keywordMethodName)), " ");
     }
 
     /**
@@ -163,14 +157,17 @@ public class TreeEntityUtil {
      * Note: This is only used for PersistedState purpose.
      * 
      * @see #getExpandedTreeEntitiesFromIds(List)
-     * @param entities TreeEntity[]
+     * @param entities
+     *            TreeEntity[]
      * @return List of TreeEntity ID
      * @throws Exception
      */
     public static List<String> getTreeEntityIds(Object[] entities) throws Exception {
         List<String> ids = new ArrayList<String>();
-        if (entities == null) return ids;
-        if (entities.length == 0) return ids;
+        if (entities == null)
+            return ids;
+        if (entities.length == 0)
+            return ids;
         for (Object o : entities) {
             if (o instanceof ITreeEntity) {
                 ITreeEntity treeEntity = (ITreeEntity) o;
@@ -190,16 +187,20 @@ public class TreeEntityUtil {
      * <p>
      * Note: This is only used for PersistedState purpose.
      * 
-     * @param ids TreeEntity IDs which is generated by {@link #getTreeEntityIds(Object[])}
+     * @param ids
+     *            TreeEntity IDs which is generated by
+     *            {@link #getTreeEntityIds(Object[])}
      * @return List of ITreeEntity
      * @throws Exception
      */
     public static List<ITreeEntity> getExpandedTreeEntitiesFromIds(List<String> ids) throws Exception {
         List<ITreeEntity> treeEntities = new ArrayList<ITreeEntity>();
-        if (ids == null || ids.isEmpty()) return treeEntities;
+        if (ids == null || ids.isEmpty())
+            return treeEntities;
         ProjectEntity project = ProjectController.getInstance().getCurrentProject();
         // Folder/Package Tree Entity
-        // Minor issue: Cannot detect default keyword package and keyword root folder
+        // Minor issue: Cannot detect default keyword package and keyword root
+        // folder
         for (String id : ids) {
             if (StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_TEST_CASE)
                     || StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_OBJECT_REPOSITORY)
@@ -241,14 +242,16 @@ public class TreeEntityUtil {
      * <p>
      * Note: This is only used for PersistedState purpose.
      * 
-     * @param ids TreeEntity IDs which is generated by
-     * {@link com.kms.katalon.composer.components.impl.util.EntityPartUtil#getOpenedEntityIds(java.util.Collection)}
+     * @param ids
+     *            TreeEntity IDs which is generated by
+     *            {@link com.kms.katalon.composer.components.impl.util.EntityPartUtil#getOpenedEntityIds(java.util.Collection)}
      * @return List of ITreeEntity
      * @throws Exception
      */
     public static List<ITreeEntity> getOpenedTreeEntitiesFromIds(List<String> ids) throws Exception {
         List<ITreeEntity> treeEntities = new ArrayList<ITreeEntity>();
-        if (ids == null || ids.isEmpty()) return treeEntities;
+        if (ids == null || ids.isEmpty())
+            return treeEntities;
         ProjectEntity project = ProjectController.getInstance().getCurrentProject();
         // Non-Folder Tree Entity
         for (String id : ids) {

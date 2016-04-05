@@ -1,86 +1,70 @@
 package com.kms.katalon.composer.testcase.ast.dialogs;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.expr.Expression;
-import org.codehaus.groovy.ast.expr.ListExpression;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableColumn;
 
 import com.kms.katalon.composer.testcase.constants.StringConstants;
-import com.kms.katalon.composer.testcase.model.ICustomInputValueType;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ListExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
-import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
-import com.kms.katalon.core.ast.GroovyParser;
 
 public class ListInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
     private final InputValueType[] defaultInputValueTypes = { InputValueType.String, InputValueType.Number,
             InputValueType.Boolean, InputValueType.Null, InputValueType.Variable, InputValueType.GlobalVariable,
             InputValueType.TestDataValue, InputValueType.MethodCall, InputValueType.Property };
 
-    private static final String DIALOG_TITLE = StringConstants.DIA_TITLE_LIST_INPUT;
-    private static final String BUTTON_INSERT_LABEL = StringConstants.DIA_BTN_INSERT;
-    private static final String BUTTON_REMOVE_LABEL = StringConstants.DIA_BTN_REMOVE;
+    private ListExpressionWrapper listExpression;
 
-    private ListExpression listExpression;
-
-    public ListInputBuilderDialog(Shell parentShell, ListExpression listExpression, ClassNode scriptClass) {
-        super(parentShell, scriptClass);
+    public ListInputBuilderDialog(Shell parentShell, ListExpressionWrapper listExpression) {
+        super(parentShell);
         if (listExpression == null) {
-            this.listExpression = AstTreeTableEntityUtil.getNewListExpression();
-        } else {
-            this.listExpression = GroovyParser.cloneListExpression(listExpression);
+            throw new IllegalArgumentException();
         }
+        this.listExpression = listExpression.clone();
     }
 
     protected void createButtonsForButtonBar(Composite parent) {
-        Button btnInsert = createButton(parent, 100, BUTTON_INSERT_LABEL, true);
-        btnInsert.addSelectionListener(new SelectionListener() {
+        Button btnInsert = createButton(parent, 100, StringConstants.DIA_BTN_INSERT, true);
+        btnInsert.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                int selectionIndex = tableViewer.getTable().getSelectionIndex();
+                ExpressionWrapper newExpression = new ConstantExpressionWrapper("", listExpression);
+                if (selectionIndex < 0 || selectionIndex >= listExpression.getExpressions().size()) {
+                    listExpression.getExpressions().add(newExpression);
+                    selectionIndex++;
+                } else {
+                    listExpression.getExpressions().add(selectionIndex, newExpression);
+                }
+                tableViewer.refresh();
+                tableViewer.getTable().setSelection(selectionIndex);
+            }
+        });
 
+        Button btnRemove = createButton(parent, 200, StringConstants.DIA_BTN_REMOVE, false);
+        btnRemove.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 int selectionIndex = tableViewer.getTable().getSelectionIndex();
                 if (selectionIndex < 0 || selectionIndex >= listExpression.getExpressions().size()) {
-                    listExpression.getExpressions().add(AstTreeTableEntityUtil.getNewStringConstantExpression());
-                } else {
-                    listExpression.getExpressions().add(selectionIndex,
-                            AstTreeTableEntityUtil.getNewStringConstantExpression());
+                    return;
                 }
+                listExpression.getExpressions().remove(selectionIndex);
                 tableViewer.refresh();
-                tableViewer.getTable().setSelection(selectionIndex + 1);
-            }
-
-            @Override
-            public void widgetDefaultSelected(SelectionEvent e) {
-            }
-        });
-
-        Button btnRemove = createButton(parent, 200, BUTTON_REMOVE_LABEL, false);
-        btnRemove.addSelectionListener(new SelectionListener() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                int index = tableViewer.getTable().getSelectionIndex();
-                if (index >= 0 && index < listExpression.getExpressions().size()) {
-                    listExpression.getExpressions().remove(index);
-                    tableViewer.refresh();
-                }
-            }
-
-            @Override
-            public void widgetDefaultSelected(SelectionEvent e) {
             }
         });
 
@@ -88,23 +72,23 @@ public class ListInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
     }
 
     @Override
-    public ListExpression getReturnValue() {
+    public ListExpressionWrapper getReturnValue() {
         return listExpression;
     }
 
     @Override
-    public void changeObject(Object originalObject, Object newObject) {
+    public void replaceObject(Object originalObject, Object newObject) {
         int index = listExpression.getExpressions().indexOf(originalObject);
-        if (newObject instanceof Expression && listExpression.getExpressions() != null && index >= 0
-                && index < listExpression.getExpressions().size()) {
-            listExpression.getExpressions().set(index, (Expression) newObject);
-            tableViewer.refresh();
+        if (!(newObject instanceof ExpressionWrapper) || index < 0 || index >= listExpression.getExpressions().size()) {
+            return;
         }
+        listExpression.getExpressions().set(index, (ExpressionWrapper) newObject);
+        tableViewer.refresh();
     }
 
     @Override
     public String getDialogTitle() {
-        return DIALOG_TITLE;
+        return StringConstants.DIA_TITLE_LIST_INPUT;
     }
 
     @Override
@@ -116,7 +100,7 @@ public class ListInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
         tableViewerColumnNo.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                if (element instanceof Expression) {
+                if (element instanceof ExpressionWrapper) {
                     return String.valueOf(listExpression.getExpressions().indexOf(element) + 1);
                 }
                 return StringUtils.EMPTY;
@@ -126,16 +110,16 @@ public class ListInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
         TableViewerColumn tableViewerColumnValueType = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnValueType.getColumn().setText(StringConstants.DIA_COL_VALUE_TYPE);
         tableViewerColumnValueType.getColumn().setWidth(100);
-        tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider(scriptClass));
+        tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider());
         tableViewerColumnValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer,
-                defaultInputValueTypes, ICustomInputValueType.TAG_LIST, this, scriptClass));
-        
+                defaultInputValueTypes, this));
+
         TableViewerColumn tableViewerColumnValue = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnNewColumnValue = tableViewerColumnValue.getColumn();
         tblclmnNewColumnValue.setText(StringConstants.DIA_COL_VALUE);
         tblclmnNewColumnValue.setWidth(170);
-        tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider(scriptClass));
-        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this, scriptClass));
+        tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider());
+        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this));
     }
 
     @Override
