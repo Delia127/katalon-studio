@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.MethodNode;
 
@@ -53,6 +53,7 @@ import com.kms.katalon.groovy.util.GroovyUtil;
  */
 public class AstTreeTableInputUtil {
     private static final String CUSTOM_KEYWORDS_CLASS_NAME = "CustomKeywords";
+
     public static final String BUILT_IN_KEYWORDS_CLASS_NAME = "BuiltInKeywords";
 
     public static boolean isBuiltInKeywordMethodCall(MethodCallExpressionWrapper methodCallExpression) {
@@ -183,8 +184,8 @@ public class AstTreeTableInputUtil {
         for (Type type : method.getGenericParameterTypes()) {
             if (type instanceof Class<?>
                     || (type instanceof ParameterizedType
-                            && ((ParameterizedType) type).getRawType() instanceof Class<?> && ((Class<?>) ((ParameterizedType) type)
-                                .getRawType()).getName().equals(Map.class.getName()))) {
+                            && ((ParameterizedType) type).getRawType() instanceof Class<?> && ((Class<?>) ((ParameterizedType) type).getRawType()).getName()
+                            .equals(Map.class.getName()))) {
                 parameterClasses.add(((Class<?>) type));
             }
         }
@@ -218,8 +219,8 @@ public class AstTreeTableInputUtil {
         if (clazz.isArray() && clazz.getComponentType() != null) {
             inputParameterClass.setArray(true);
             Class<?> componentType = clazz.getComponentType();
-            inputParameterClass.setComponentType(new InputParameterClass(componentType.getName(), componentType
-                    .getSimpleName()));
+            inputParameterClass.setComponentType(new InputParameterClass(componentType.getName(),
+                    componentType.getSimpleName()));
         }
         if (clazz.isEnum()) {
             inputParameterClass.setEnum(true);
@@ -351,8 +352,7 @@ public class AstTreeTableInputUtil {
 
     public static void generateMethodCallArguments(MethodCallExpressionWrapper keywordCallExpression,
             KeywordMethod keywordMethod) {
-        List<ExpressionWrapper> exisitingArgumentList = ((ArgumentListExpressionWrapper) keywordCallExpression
-                .getArguments()).getExpressions();
+        List<ExpressionWrapper> exisitingArgumentList = ((ArgumentListExpressionWrapper) keywordCallExpression.getArguments()).getExpressions();
         List<ExpressionWrapper> newArgumentList = new ArrayList<ExpressionWrapper>();
         for (int i = 0; i < keywordMethod.getParameters().length; i++) {
             KeywordParameter keywordParam = keywordMethod.getParameters()[i];
@@ -365,14 +365,14 @@ public class AstTreeTableInputUtil {
     }
 
     public static void generateMethodCallArguments(MethodCallExpressionWrapper keywordCallExpression, Method method) {
-        List<ExpressionWrapper> exisitingArgumentList = ((ArgumentListExpressionWrapper) keywordCallExpression
-                .getArguments()).getExpressions();
+        List<ExpressionWrapper> exisitingArgumentList = ((ArgumentListExpressionWrapper) keywordCallExpression.getArguments()).getExpressions();
         List<ExpressionWrapper> newArgumentList = new ArrayList<ExpressionWrapper>();
         for (int i = 0; i < method.getParameterTypes().length; i++) {
             Class<?> keywordParam = method.getParameterTypes()[i];
             newArgumentList.add(generateArgument((i < exisitingArgumentList.size()) ? exisitingArgumentList.get(i)
-                    : null, method.getName(), keywordParam.getName(), keywordParam.getSimpleName(), keywordParam
-                    .getName(), keywordParam.isArray(), keywordParam.isEnum(), keywordCallExpression.getArguments()));
+                    : null, method.getName(), keywordParam.getName(), keywordParam.getSimpleName(),
+                    keywordParam.getName(), keywordParam.isArray(), keywordParam.isEnum(),
+                    keywordCallExpression.getArguments()));
         }
         ((ArgumentListExpressionWrapper) keywordCallExpression.getArguments()).setExpressions(newArgumentList);
     }
@@ -389,8 +389,7 @@ public class AstTreeTableInputUtil {
         if (keywordMethod == null) {
             return;
         }
-        List<ExpressionWrapper> exisitingArgumentList = ((ArgumentListExpressionWrapper) keywordCallExpression
-                .getArguments()).getExpressions();
+        List<ExpressionWrapper> exisitingArgumentList = ((ArgumentListExpressionWrapper) keywordCallExpression.getArguments()).getExpressions();
         List<ExpressionWrapper> newArgumentList = new ArrayList<ExpressionWrapper>();
         for (int i = 0; i < keywordMethod.getParameters().length; i++) {
             if (keywordMethod.getParameters()[i].getType() == null) {
@@ -405,128 +404,172 @@ public class AstTreeTableInputUtil {
     }
 
     public static ExpressionWrapper generateArgument(ExpressionWrapper existingParam, String methodName,
-            String paramName, String classSimpleName, String classFullName, boolean isArray, boolean isEnum,
-            ASTNodeWrapper parentNode) {
-        if (isEnum) {
-            if (existingParam instanceof PropertyExpressionWrapper) {
-                String valueClassName = ((PropertyExpressionWrapper) existingParam).getObjectExpressionAsString();
-                if (classSimpleName.equals(valueClassName) || classFullName.equals(valueClassName)) {
-                    return existingParam;
-                }
-            } else if (classFullName.equals(FailureHandling.class.getName())) {
-                return getNewFailureHandlingPropertyExpression(parentNode);
-            }
+            String paramName, String paramClassSimpleName, String paramClassFullName, boolean isArrayParam,
+            boolean isEnumParam, ASTNodeWrapper parentNode) {
+        if (isDelaySecondParam(methodName, paramName)) {
+            return generateArgumentForDelaySecondParam(existingParam, parentNode);
         }
-        Class<?> objectClass = null;
-        try {
-            objectClass = Class.forName(classFullName);
-        } catch (ClassNotFoundException e) {
-            // Class not found, do nothing
-        }
-        if (existingParam instanceof VariableExpressionWrapper || existingParam instanceof MapExpressionWrapper
-                || existingParam instanceof CastExpressionWrapper || existingParam instanceof BinaryExpressionWrapper) {
+        if (existingParam != null
+                && !(existingParam instanceof PropertyExpressionWrapper && isFailureHandlingPropertyExpression((PropertyExpressionWrapper) existingParam))
+                && isClassAssignable(existingParam.getType().getName(), paramClassSimpleName, paramClassFullName)) {
             return existingParam;
         }
-        if (objectClass != null && TestObject.class.isAssignableFrom(objectClass)) {
-            if (existingParam instanceof MethodCallExpressionWrapper
-                    && AstEntityInputUtil.isObjectArgument((MethodCallExpressionWrapper) existingParam)) {
-                return existingParam;
-            } else {
-                return AstEntityInputUtil.generateObjectMethodCall(null, parentNode);
-            }
-        }
-        if (classFullName.equals(List.class.getName()) || isArray) {
-            if (existingParam instanceof ListExpressionWrapper) {
-                return existingParam;
-            } else if (existingParam instanceof CastExpressionWrapper
-                    && ((CastExpressionWrapper) existingParam).getExpression() instanceof ListExpressionWrapper) {
-                return existingParam;
-            }
+        if (isEnumParam) {
+            return generateArgumentForEnumParam(existingParam, paramClassSimpleName, paramClassFullName, parentNode);
         }
 
-        if (existingParam instanceof PropertyExpressionWrapper) {
-            String valueClassName = ((PropertyExpressionWrapper) existingParam).getObjectExpressionAsString();
-            if (valueClassName.equals(InputValueType.GlobalVariable.name())) {
-                return existingParam;
-            }
-            if (valueClassName.equals(FailureHandling.class.getName())
-                    || valueClassName.equals(FailureHandling.class.getSimpleName())) {
-                if (classFullName.equals(FailureHandling.class.getName())
-                        || classFullName.equals(FailureHandling.class.getSimpleName())) {
-                    return existingParam;
-                } else {
-                    existingParam = null;
-                }
-            } else {
-                return existingParam;
-            }
+        if (isClassAssignable(paramClassFullName, TestObject.class)) {
+            return generateArgumentForTestObjectParam(existingParam, parentNode);
         }
 
-        String paramClassName = classFullName;
-        String existingParamClassName = (existingParam != null) ? existingParam.getType().getName() : "";
-        if (paramClassName.equals(Boolean.class.getName()) || paramClassName.equals(Boolean.TYPE.getName())) {
-            if (existingParamClassName.equals(Boolean.class.getName())
-                    || existingParamClassName.equals(Boolean.TYPE.getName())) {
-                return existingParam;
-            } else if (existingParam instanceof ConstantExpressionWrapper) {
-                return new ConstantExpressionWrapper(Boolean.FALSE, parentNode);
-            }
-        } else if (paramClassName.equals(Character.class.getName()) || paramClassName.equals(String.class.getName())
-                || paramClassName.equals(Character.TYPE.getName())) {
-            if (existingParamClassName.equals(Character.class.getName())
-                    || existingParamClassName.equals(String.class.getName())
-                    || existingParamClassName.equals(Character.TYPE.getName())) {
-                return existingParam;
-            } else if (existingParam instanceof ConstantExpressionWrapper) {
-                return new ConstantExpressionWrapper("", parentNode);
-            }
-        } else if (paramClassName.equals(Byte.class.getName()) || paramClassName.equals(Byte.TYPE.getName())
-                || paramClassName.equals(Short.class.getName()) || paramClassName.equals(Short.TYPE.getName())
-                || paramClassName.equals(Integer.class.getName()) || paramClassName.equals(Integer.TYPE.getName())
-                || paramClassName.equals(Long.class.getName()) || paramClassName.equals(Long.TYPE.getName())
-                || paramClassName.equals(Float.class.getName()) || paramClassName.equals(Float.TYPE.getName())
-                || paramClassName.equals(Double.class.getName()) || paramClassName.equals(Double.TYPE.getName())
-                || paramClassName.equals(BigInteger.class.getName())
-                || paramClassName.equals(BigDecimal.class.getName())) {
-            if (existingParamClassName.equals(Byte.class.getName())
-                    || existingParamClassName.equals(Byte.TYPE.getName())
-                    || existingParamClassName.equals(Short.class.getName())
-                    || existingParamClassName.equals(Short.TYPE.getName())
-                    || existingParamClassName.equals(Integer.class.getName())
-                    || existingParamClassName.equals(Integer.TYPE.getName())
-                    || existingParamClassName.equals(Long.class.getName())
-                    || existingParamClassName.equals(Long.TYPE.getName())
-                    || existingParamClassName.equals(Float.class.getName())
-                    || existingParamClassName.equals(Float.TYPE.getName())
-                    || existingParamClassName.equals(Double.class.getName())
-                    || existingParamClassName.equals(Double.TYPE.getName())
-                    || existingParamClassName.equals(BigInteger.class.getName())
-                    || existingParamClassName.equals(BigDecimal.class.getName())) {
-                return existingParam;
-            } else if (existingParam instanceof ConstantExpressionWrapper) {
-                return new ConstantExpressionWrapper(0, parentNode);
-            }
+        if (isClassAssignable(paramClassFullName, List.class) || isArrayParam) {
+            return generateArgumentForListParam(existingParam, parentNode);
         }
-        if (methodName.equals("delay") && paramName.equals("second")) {
-            if (existingParam == null) {
-                return new ConstantExpressionWrapper(0, parentNode);
-            }
-            try {
-                Integer.parseInt(existingParam.getText());
-            } catch (NumberFormatException e) {
-                // if parse into number fail then return 0
-                return new ConstantExpressionWrapper(0, parentNode);
-            }
+
+        ExpressionWrapper newExpression = generateArgumentForConstantParam(existingParam, parentNode,
+                paramClassFullName);
+        if (newExpression != null) {
+            return newExpression;
         }
-        if (existingParam instanceof ExpressionWrapper) {
+        if (existingParam instanceof ExpressionWrapper
+                && !(existingParam instanceof PropertyExpressionWrapper && isFailureHandlingPropertyExpression((PropertyExpressionWrapper) existingParam))) {
             return existingParam;
         }
         return new ConstantExpressionWrapper(parentNode);
     }
 
+    private static ExpressionWrapper generateArgumentForDelaySecondParam(ExpressionWrapper existingParam,
+            ASTNodeWrapper parentNode) {
+        if (existingParam == null) {
+            return new ConstantExpressionWrapper(0, parentNode);
+        }
+        if (existingParam instanceof ConstantExpressionWrapper) {
+            try {
+                Integer.parseInt(existingParam.getText());
+                return existingParam;
+            } catch (NumberFormatException e) {
+                // if parse into number fail then ignore
+            }
+        }
+        if (isUnknowTypeParam(existingParam)) {
+            return existingParam;
+        }
+        return new ConstantExpressionWrapper(0, parentNode);
+    }
+
+    private static boolean isDelaySecondParam(String methodName, String paramName) {
+        return StringUtils.equals(methodName, "delay") && StringUtils.equals(paramName, "second");
+    }
+
+    private static ExpressionWrapper generateArgumentForConstantParam(ExpressionWrapper existingParam,
+            ASTNodeWrapper parentNode, String paramClassName) {
+        if (isClassAssignable(paramClassName, Boolean.class)) {
+            return generateArgumentForBooleanConstantParam(existingParam, parentNode);
+        }
+        if (isClassAssignable(paramClassName, String.class) || isClassAssignable(paramClassName, Character.class)) {
+            return generateArgumentForStringConstantParam(existingParam, parentNode);
+        }
+        if (isClassAssignable(paramClassName, Number.class)) {
+            return generateArgumentForNumberConstantExpression(existingParam, parentNode);
+        }
+        return null;
+    }
+
+    private static ExpressionWrapper generateArgumentForNumberConstantExpression(ExpressionWrapper existingParam,
+            ASTNodeWrapper parentNode) {
+        if (existingParam != null
+                && (isClassAssignable(existingParam.getType().getName(), Number.class) || isUnknowTypeParam(existingParam))) {
+            return existingParam;
+        }
+        return new ConstantExpressionWrapper(0, parentNode);
+    }
+
+    private static ExpressionWrapper generateArgumentForStringConstantParam(ExpressionWrapper existingParam,
+            ASTNodeWrapper parentNode) {
+        if (existingParam != null
+                && (isClassAssignable(existingParam.getType().getName(), String.class) || isClassAssignable(
+                        existingParam.getType().getName(), Character.class)) || isUnknowTypeParam(existingParam)) {
+            return existingParam;
+        }
+        return new ConstantExpressionWrapper("", parentNode);
+    }
+
+    private static ExpressionWrapper generateArgumentForBooleanConstantParam(ExpressionWrapper existingParam,
+            ASTNodeWrapper parentNode) {
+        if ((existingParam != null && isClassAssignable(existingParam.getType().getName(), Boolean.class))
+                || isUnknowTypeParam(existingParam)) {
+            return existingParam;
+        }
+        return new ConstantExpressionWrapper(Boolean.FALSE, parentNode);
+    }
+
+    private static ExpressionWrapper generateArgumentForListParam(ExpressionWrapper existingParam,
+            ASTNodeWrapper parentNode) {
+        if (existingParam instanceof ListExpressionWrapper
+                || (existingParam instanceof CastExpressionWrapper && ((CastExpressionWrapper) existingParam).getExpression() instanceof ListExpressionWrapper)
+                || isUnknowTypeParam(existingParam)) {
+            return existingParam;
+        }
+        return new ListExpressionWrapper(parentNode);
+    }
+
+    private static ExpressionWrapper generateArgumentForTestObjectParam(ExpressionWrapper existingParam,
+            ASTNodeWrapper parentNode) {
+        if ((existingParam instanceof MethodCallExpressionWrapper && AstEntityInputUtil.isObjectArgument((MethodCallExpressionWrapper) existingParam))
+                || (isUnknowTypeParam(existingParam))) {
+            return existingParam;
+        }
+        return AstEntityInputUtil.generateObjectMethodCall(null, parentNode);
+    }
+
+    private static boolean isUnknowTypeParam(ExpressionWrapper existingParam) {
+        return (existingParam instanceof VariableExpressionWrapper
+                || existingParam instanceof MapExpressionWrapper
+                || existingParam instanceof CastExpressionWrapper
+                || existingParam instanceof BinaryExpressionWrapper
+                || (existingParam instanceof PropertyExpressionWrapper && StringUtils.equals(
+                        ((PropertyExpressionWrapper) existingParam).getObjectExpressionAsString(),
+                        InputValueType.GlobalVariable.getName())) || (existingParam instanceof MethodCallExpressionWrapper && !AstEntityInputUtil.isObjectArgument((MethodCallExpressionWrapper) existingParam)));
+    }
+
+    private static ExpressionWrapper generateArgumentForEnumParam(ExpressionWrapper existingParam,
+            String paramClassSimpleName, String paramClassFullName, ASTNodeWrapper parentNode) {
+        if (existingParam instanceof PropertyExpressionWrapper
+                && isClassAssignable(((PropertyExpressionWrapper) existingParam).getObjectExpressionAsString(),
+                        paramClassSimpleName, paramClassFullName)) {
+            return existingParam;
+        }
+        if (paramClassFullName.equals(FailureHandling.class.getName())) {
+            return getNewFailureHandlingPropertyExpression(parentNode);
+        }
+        return new ConstantExpressionWrapper(parentNode);
+    }
+
+    private static boolean isClassAssignable(String fromClassName, String toClassSimpleName, String toClassFullName) {
+        Class<?> targetClass = loadType(fromClassName, null);
+        Class<?> paramClass = loadType(toClassFullName, null);
+        if (targetClass != null && paramClass != null) {
+            return isClassAssignable(targetClass, paramClass);
+        }
+        return StringUtils.equals(toClassSimpleName, fromClassName)
+                && StringUtils.equals(toClassFullName, fromClassName);
+    }
+
+    private static boolean isClassAssignable(String fromClassName, Class<?> toClass) {
+        Class<?> targetClass = loadType(fromClassName, null);
+        if (targetClass != null && toClass != null) {
+            return isClassAssignable(targetClass, toClass);
+        }
+        return StringUtils.equals(toClass.getName(), fromClassName);
+    }
+
+    private static boolean isClassAssignable(Class<?> fromClass, Class<?> toClass) {
+        return ClassUtils.isAssignable(fromClass, toClass, true);
+    }
+
     public static boolean isVoidClass(Class<?> clazz) {
-        return (clazz.getName().equals(Void.class.getName()) || clazz.getName().equals(Void.class.getSimpleName()) || clazz
-                .getName().equals(Void.TYPE.getName()));
+        return (clazz.getName().equals(Void.class.getName()) || clazz.getName().equals(Void.class.getSimpleName()) || clazz.getName()
+                .equals(Void.TYPE.getName()));
     }
 
     public static boolean isVoidClass(ClassNodeWrapper classNode) {
@@ -572,6 +615,11 @@ public class AstTreeTableInputUtil {
                 }
             }
         }
+        try {
+            type = ClassUtils.getClass(typeName);
+        } catch (ClassNotFoundException e) {
+            // cannot find class, continue
+        }
         if (classNode == null) {
             return type;
         }
@@ -592,8 +640,7 @@ public class AstTreeTableInputUtil {
     public static boolean isGlobalVariablePropertyExpression(PropertyExpressionWrapper propertyExprs) {
         if (!(propertyExprs.getObjectExpression() instanceof VariableExpressionWrapper))
             return false;
-        return (propertyExprs.getObjectExpressionAsString().equals(InputValueType.GlobalVariable.name()) && propertyExprs
-                .getProperty() instanceof ConstantExpressionWrapper);
+        return (propertyExprs.getObjectExpressionAsString().equals(InputValueType.GlobalVariable.name()) && propertyExprs.getProperty() instanceof ConstantExpressionWrapper);
     }
 
     public static boolean isFailureHandlingPropertyExpression(PropertyExpressionWrapper propertyExprs) {
