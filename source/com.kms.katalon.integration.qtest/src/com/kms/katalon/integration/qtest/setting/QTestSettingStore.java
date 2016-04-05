@@ -30,7 +30,7 @@ public class QTestSettingStore {
 
     public static File getPropertyFile(String projectDir) throws IOException {
         File configFile = new File(projectDir + File.separator
-                + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME + File.separator + FILE_NAME
+                + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME + File.separator + FILE_NAME
                 + PropertySettingStoreUtil.PROPERTY_FILE_EXENSION);
         if (!configFile.exists()) {
             configFile.createNewFile();

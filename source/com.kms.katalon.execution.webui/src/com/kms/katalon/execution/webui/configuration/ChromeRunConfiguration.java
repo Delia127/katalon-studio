@@ -11,7 +11,7 @@ public class ChromeRunConfiguration extends WebUiRunConfiguration {
 
     public ChromeRunConfiguration(String projectDir) throws IOException {
         super(projectDir, new ChromeDriverConnector(projectDir + File.separator
-                + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME));
+                + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME));
     }
 
     @Override

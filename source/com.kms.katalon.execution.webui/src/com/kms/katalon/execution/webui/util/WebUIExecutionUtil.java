@@ -25,16 +25,16 @@ public class WebUIExecutionUtil {
         switch (webDriverType) {
             case CHROME_DRIVER:
                 return new ChromeDriverConnector(projectDirectory + File.separator
-                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME);
+                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME);
             case FIREFOX_DRIVER:
                 return new FirefoxDriverConnector(projectDirectory + File.separator
-                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME);
+                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME);
             case IE_DRIVER:
                 return new IEDriverConnector(projectDirectory + File.separator
-                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME);
+                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME);
             case SAFARI_DRIVER:
                 return new SafariDriverConnector(projectDirectory + File.separator
-                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME);
+                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME);
             default:
                 return null;
         }

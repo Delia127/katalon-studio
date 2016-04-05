@@ -15,5 +15,7 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String LBL_REMOTE_SERVER_TYPE = "Remote web server type";
 	
 	public static final String LBL_DEBUG_PORT = "Debugging Port";
+	public static final String LBL_DEBUG_HOST = "Debugging Host";
 	public static final String LBL_DESIRED_CAP = "Desired capabilities (additional WebDriver preferences):";
+	
 }

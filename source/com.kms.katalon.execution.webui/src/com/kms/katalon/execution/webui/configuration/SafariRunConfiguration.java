@@ -10,7 +10,7 @@ import com.kms.katalon.execution.webui.driver.SafariDriverConnector;
 public class SafariRunConfiguration extends WebUiRunConfiguration {
     public SafariRunConfiguration(String projectDir) throws IOException {
         super(projectDir, new SafariDriverConnector(projectDir + File.separator
-                + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME));
+                + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME));
     }
     
     @Override

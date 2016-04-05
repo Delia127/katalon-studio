@@ -42,7 +42,7 @@ public class CustomRunConfiguration extends AbstractRunConfiguration {
 
     private File getConfigFolder(String projectFolderLocation) {
         return new File(projectFolderLocation + File.separator
-                + RunConfigurationCollector.CUSTOM_EXECUTION_CONFIG_ROOT_FOLDLER_RELATIVE_PATH + File.separator + name);
+                + RunConfigurationCollector.CUSTOM_EXECUTION_CONFIG_ROOT_FOLDER_RELATIVE_PATH + File.separator + name);
     }
 
     @Override
