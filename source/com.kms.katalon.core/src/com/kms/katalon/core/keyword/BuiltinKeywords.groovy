@@ -307,7 +307,7 @@ public class BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
-    public static callTestCase(TestCase calledTestCase, Map<String, Object> binding, FailureHandling flowControl) throws Exception {
+    public static Object callTestCase(TestCase calledTestCase, Map<String, Object> binding, FailureHandling flowControl) throws Exception {
         KeywordMain.runKeyword({
             List<Throwable> parentErrors = ErrorCollector.getCollector().getCoppiedErrors();
             try {
@@ -333,6 +333,7 @@ public class BuiltinKeywords {
                     default:
                         break;
                 }
+                return result.getScriptResult()
             } finally {
                 if (flowControl == FailureHandling.OPTIONAL) {
                     ErrorCollector.getCollector().clearErrors();

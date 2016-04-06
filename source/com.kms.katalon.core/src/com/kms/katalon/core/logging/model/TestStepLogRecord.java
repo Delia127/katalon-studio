@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.model.FailureHandling;
 
 public class TestStepLogRecord extends AbstractLogRecord {
@@ -57,16 +56,6 @@ public class TestStepLogRecord extends AbstractLogRecord {
 
             if (!StringUtils.isBlank(childAttachment)) {
                 setAttachment(childAttachment);
-            }
-
-            if (!(logRecord instanceof TestCaseLogRecord && ((TestCaseLogRecord) logRecord).isOptional())) {
-                TestStatusValue logRecordStatusValue = logRecord.getStatus().getStatusValue();
-                if (logRecordStatusValue == TestStatusValue.ERROR || logRecordStatusValue == TestStatusValue.FAILED
-                        || logRecordStatusValue == TestStatusValue.INCOMPLETE) {
-                    testStatus.setStatusValue(logRecordStatusValue);
-                    setMessage(logRecord.getMessage());
-                    break;
-                }
             }
         }
         return testStatus;
