@@ -1,11 +1,10 @@
 package com.kms.katalon.composer.execution.preferences;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPreferenceStore;
 
-import com.kms.katalon.constants.PreferenceConstants.ExecutionPreferenceConstants;
-import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.composer.execution.constants.ExecutionPreferenceConstants;
+import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
 public class ExecutionPreferenceDefaultValueInitializer extends AbstractPreferenceInitializer {
     public static final int EXECUTION_DEFAULT_TIMEOUT_VALUE = 30;
@@ -36,8 +35,8 @@ public class ExecutionPreferenceDefaultValueInitializer extends AbstractPreferen
 
     @Override
     public void initializeDefaultPreferences() {
-        IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                ExecutionPreferenceConstants.QUALIFIER);
+        IPreferenceStore store = PreferenceStoreManager
+                .getPreferenceStore(ExecutionPreferenceDefaultValueInitializer.class);
         store.setDefault(ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION,
                 EXECUTION_DEFAULT_RUN_CONFIGURATION);
         store.setDefault(ExecutionPreferenceConstants.EXECUTION_DEFAULT_TIMEOUT, EXECUTION_DEFAULT_TIMEOUT_VALUE);

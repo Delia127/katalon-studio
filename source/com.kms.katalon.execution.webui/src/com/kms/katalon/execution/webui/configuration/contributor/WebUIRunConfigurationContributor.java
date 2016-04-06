@@ -4,12 +4,16 @@ import java.util.Collections;
 import java.util.List;
 
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
-import com.kms.katalon.execution.entity.ConsoleOption;
+import com.kms.katalon.execution.console.entity.ConsoleOption;
 
 public abstract class WebUIRunConfigurationContributor implements IRunConfigurationContributor {
     @Override
-    public List<ConsoleOption<?>> getRequiredArguments() {
+    public List<ConsoleOption<?>> getConsoleOptionList() {
         return Collections.emptyList();
     }
 
+    @Override
+    public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
+        // Do nothing
+    }
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.ViewerCell;
@@ -18,6 +19,7 @@ import com.kms.katalon.composer.report.constants.ImageConstants;
 import com.kms.katalon.composer.report.parts.ReportPartTestLogView;
 import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.MessageLogRecord;
+import com.kms.katalon.core.logging.model.TestStatus;
 import com.kms.katalon.core.logging.model.TestStepLogRecord;
 import com.kms.katalon.core.util.DateUtil;
 
@@ -39,80 +41,97 @@ public class ReportPartTestStepLabelProvider extends StyledCellLabelProvider {
         reportPart = part;
     }
 
-    public Image getImage(Object element) {
-        if (element == null || !(element instanceof ILogRecord) || columnIndex < CLMN_TEST_LOG_ITEM_IDX
-                || columnIndex > CLMN_TEST_LOG_ATTACHMENT_IDX) return null;
-        if (columnIndex == CLMN_TEST_LOG_ITEM_IDX) {
-            ILogRecord logRecord = (ILogRecord) element;
-            if (logRecord instanceof MessageLogRecord) {
-                return ImageConstants.IMG_16_INFO;
-            } else {
-                switch (logRecord.getStatus().getStatusValue()) {
-                    case ERROR:
-                        return ImageConstants.IMG_16_ERROR;
-                    case FAILED:
-                        return ImageConstants.IMG_16_FAILED;
-                        // case NOT_RUN:
-                        // return ImageConstants.IMG_16_FAILED;
-                    case PASSED:
-                        return ImageConstants.IMG_16_PASSED;
-                    case INCOMPLETE:
-                        return ImageConstants.IMG_16_INCOMPLETE;
-                    default:
-                        break;
-                }
-            }
+    private Image getImageForItemColumn(ILogRecord logRecord) {
+        TestStatus testStatus = logRecord.getStatus();
+        if (testStatus == null) {
+            return null;
         }
 
-        if (columnIndex == CLMN_TEST_LOG_ATTACHMENT_IDX && element instanceof MessageLogRecord) {
-            MessageLogRecord messageLog = (MessageLogRecord) element;
-            if (messageLog.getAttachment() != null && !messageLog.getAttachment().isEmpty()) {
-                return ImageConstants.IMG_16_ATTACHMENT;
-            }
+        switch (testStatus.getStatusValue()) {
+        case ERROR:
+            return ImageConstants.IMG_16_ERROR;
+        case FAILED:
+            return ImageConstants.IMG_16_FAILED;
+        case PASSED:
+            return ImageConstants.IMG_16_PASSED;
+        case INCOMPLETE:
+            return ImageConstants.IMG_16_INCOMPLETE;
+        case WARNING:
+            return ImageConstants.IMG_16_WARNING;
+        case INFO:
+            return ImageConstants.IMG_16_INFO;
+        default:
+            return null;
+        }
+    }
+
+    private Image getImageForAttachmentColumn(ILogRecord logRecord) {
+        if (!(logRecord instanceof MessageLogRecord)) {
+            return null;
+        }
+        MessageLogRecord messageLog = (MessageLogRecord) logRecord;
+        return StringUtils.isNotEmpty(messageLog.getAttachment()) ? ImageConstants.IMG_16_ATTACHMENT : null;
+    }
+
+    private boolean isValidElement(Object element) {
+        return ((element instanceof ILogRecord) && columnIndex >= CLMN_TEST_LOG_ITEM_IDX && columnIndex <= CLMN_TEST_LOG_ATTACHMENT_IDX);
+    }
+
+    public Image getImage(Object element) {
+        if (!isValidElement(element)) {
+            return null;
+        }
+        ILogRecord logRecord = (ILogRecord) element;
+        if (columnIndex == CLMN_TEST_LOG_ITEM_IDX) {
+            return getImageForItemColumn(logRecord);
+        }
+
+        if (columnIndex == CLMN_TEST_LOG_ATTACHMENT_IDX) {
+            return getImageForAttachmentColumn(logRecord);
         }
         return null;
     }
 
     public String getText(Object element) {
-        if (element == null || !(element instanceof ILogRecord) || columnIndex < CLMN_TEST_LOG_ITEM_IDX
-                || columnIndex > CLMN_TEST_LOG_ATTACHMENT_IDX) return "";
+        if (!isValidElement(element)) {
+            return "";
+        }
         ILogRecord logRecord = (ILogRecord) element;
         switch (columnIndex) {
-            case CLMN_TEST_LOG_ITEM_IDX:
-                if (logRecord instanceof MessageLogRecord) {
-                    return ((MessageLogRecord) element).getMessage();
+        case CLMN_TEST_LOG_ITEM_IDX:
+            if (logRecord instanceof MessageLogRecord) {
+                return ((MessageLogRecord) element).getMessage();
+            } else {
+                String testStepName = ((ILogRecord) element).getName();
+                if (logRecord instanceof TestStepLogRecord) {
+                    return ((TestStepLogRecord) logRecord).getIndexString() + ". " + testStepName;
                 } else {
-                    String testStepName = ((ILogRecord) element).getName();
-                    if (logRecord instanceof TestStepLogRecord) {
-                        return ((TestStepLogRecord) logRecord).getIndexString() + ". " + testStepName;
-                    } else {
-                        return testStepName;
-                    }
+                    return testStepName;
                 }
-            case CLMN_TEST_LOG_DESCRIPTION_IDX:
-                return (logRecord.getDescription() != null) ? logRecord.getDescription() : "";
-            case CLMN_TEST_LOG_ELAPSED_IDX:
-                if (logRecord.getStartTime() > 0 && logRecord.getEndTime() > 0) {
-                    return DateUtil.getElapsedTime(logRecord.getStartTime(), logRecord.getEndTime());
-                }
-            case CLMN_TEST_LOG_ATTACHMENT_IDX:
-                break;
-            default:
-                break;
+            }
+        case CLMN_TEST_LOG_DESCRIPTION_IDX:
+            return (logRecord.getDescription() != null) ? logRecord.getDescription() : "";
+        case CLMN_TEST_LOG_ELAPSED_IDX:
+            if (logRecord.getStartTime() > 0 && logRecord.getEndTime() > 0) {
+                return DateUtil.getElapsedTime(logRecord.getStartTime(), logRecord.getEndTime());
+            }
+        case CLMN_TEST_LOG_ATTACHMENT_IDX:
+            break;
+        default:
+            break;
         }
         return "";
-
     }
 
     private StyledString getStyleString(Object element) {
         StyledString styledString = new StyledString();
         switch (columnIndex) {
-            case CLMN_TEST_LOG_ELAPSED_IDX:
-                styledString.append(getText(element), StyledString.COUNTER_STYLER);
-                break;
-            default:
-                styledString.append(getText(element));
-                break;
+        case CLMN_TEST_LOG_ELAPSED_IDX:
+            styledString.append(getText(element), StyledString.COUNTER_STYLER);
+            break;
+        default:
+            styledString.append(getText(element));
+            break;
         }
         return styledString;
     }
@@ -149,20 +168,18 @@ public class ReportPartTestStepLabelProvider extends StyledCellLabelProvider {
 
     @Override
     public String getToolTipText(Object element) {
-        if (element == null) return null;
+        if (element == null)
+            return null;
         return getText((ILogRecord) element);
     }
 
     @Override
     public Image getToolTipImage(Object element) {
-        switch (columnIndex) {
-            case CLMN_TEST_LOG_ATTACHMENT_IDX:
-                if (element instanceof MessageLogRecord && (reportPart.getReport() != null)) {
-                    MessageLogRecord messageLog = (MessageLogRecord) element;
-                    return new Image(getColumn().getViewer().getControl().getDisplay(), reportPart.getReport()
-                            .getLocation() + File.separator + messageLog.getAttachment());
-                }
-                return null;
+        if (columnIndex == CLMN_TEST_LOG_ATTACHMENT_IDX && element instanceof MessageLogRecord
+                && (reportPart.getReport() != null)) {
+            MessageLogRecord messageLog = (MessageLogRecord) element;
+            return new Image(getColumn().getViewer().getControl().getDisplay(), reportPart.getReport().getLocation()
+                    + File.separator + messageLog.getAttachment());
         }
         return null;
     }

@@ -43,7 +43,7 @@ public class ExportTestCaseHelper {
 
     @CompileStatic
     private static prepareTestRunData(String testCaseId, scriptClass) {
-        for (IKeywordContributor contributor in KeywordContributorCollection.getInstance().getKeywordContributors()) {
+        for (IKeywordContributor contributor in KeywordContributorCollection.getKeywordContributors()) {
             if (contributor.getDriverCleaner() != null) {
                 DriverCleanerCollector.getInstance().addDriverCleaner(contributor.getDriverCleaner().getConstructor().newInstance());
             }

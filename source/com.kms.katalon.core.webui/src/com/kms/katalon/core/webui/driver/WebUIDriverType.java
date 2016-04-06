@@ -4,7 +4,8 @@ import com.kms.katalon.core.driver.DriverType;
 
 public enum WebUIDriverType implements DriverType {
     FIREFOX_DRIVER("Firefox"), IE_DRIVER("IE"), CHROME_DRIVER("Chrome"), SAFARI_DRIVER("Safari"), REMOTE_WEB_DRIVER(
-            "Remote"), ANDROID_DRIVER("Android"), IOS_DRIVER("iOS"), EDGE_DRIVER("Edge");
+            "Remote"), ANDROID_DRIVER("Android"), IOS_DRIVER("iOS"), EDGE_DRIVER("Edge"), 
+            REMOTE_FIREFOX_DRIVER("Remote Firefox"), REMOTE_CHROME_DRIVER("Remote Chrome");
 
     private final String driverName;
 

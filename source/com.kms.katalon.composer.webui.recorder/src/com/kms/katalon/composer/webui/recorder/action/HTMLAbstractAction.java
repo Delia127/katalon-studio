@@ -8,12 +8,15 @@ public abstract class HTMLAbstractAction implements IHTMLAction {
     protected String mappedKeywordClassSimpleName;
     protected String mappedKeywordMethod;
     protected HTMLActionParam[] params;
+    protected String description;
 
-    public HTMLAbstractAction(String name, String mappedKeywordClassName, String mappedKeywordClassSimpleName, String mappedKeywordMethod) {
+    public HTMLAbstractAction(String name, String mappedKeywordClassName, String mappedKeywordClassSimpleName,
+            String mappedKeywordMethod, String description) {
         this.name = name;
         this.mappedKeywordClassName = mappedKeywordClassName;
         this.mappedKeywordClassSimpleName = mappedKeywordClassSimpleName;
         this.mappedKeywordMethod = mappedKeywordMethod;
+        this.description = description;
         params = HTMLActionUtil.collectKeywordParam(mappedKeywordClassName, mappedKeywordMethod);
     }
 
@@ -47,5 +50,9 @@ public abstract class HTMLAbstractAction implements IHTMLAction {
     @Override
     public HTMLActionParam[] getParams() {
         return params;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }

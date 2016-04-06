@@ -68,16 +68,20 @@ public class TestCaseMain {
     public static void beforeStart() {
         try {
             GroovyClassLoader cl = new GroovyClassLoader(TestCaseMain.class.getClassLoader())
-            
+
+            //Load GlobalVariable class
+            try {
+                cl.loadClass(StringConstants.GLOBAL_VARIABLE_CLASS_NAME)
+            } catch (ClassNotFoundException ex) {
+                cl.parseClass(new File(RunConfiguration.getProjectDir(), StringConstants.GLOBAL_VARIABLE_FILE_NAME))
+            }
+
             //Load CustomKeywords class
             Class<?> clazz = cl.parseClass('''class CustomKeywords { }''')
-            
-            //Load GlobalVariable class
-            cl.parseClass(new File(RunConfiguration.getProjectDir(), StringConstants.GLOBAL_VARIABLE_FILE_NAME))
-            
+
             engine = ScriptEngine.getDefault(cl)
-            
-            InvokerHelper.metaRegistry.setMetaClass(clazz, new CustomKeywordDelegatingMetaClass(clazz, engine))            
+
+            InvokerHelper.metaRegistry.setMetaClass(clazz, new CustomKeywordDelegatingMetaClass(clazz, engine))
         } catch (ClassNotFoundException e) {
             // Do nothing
         }
@@ -138,8 +142,8 @@ public class TestCaseMain {
                     StringBuilder stringBuilder = new StringBuilder(importString);
                     GroovyParser groovyParser = new GroovyParser(stringBuilder);
                     groovyParser.parse(method.getCode());
-                    
-					engine.runScript(stringBuilder.toString(), binding)
+
+                    engine.runScript(stringBuilder.toString(), binding)
                     endAllUnfinishedKeywords(keywordStack);
                     logger.logPassed(MessageFormat.format(StringConstants.MAIN_LOG_PASSED_METHOD_COMPLETED, method.getName()));
                 } catch (Exception e) {
@@ -177,19 +181,19 @@ public class TestCaseMain {
         }
         return importString.toString();
     }
-    
+
     private static Binding collectTestCaseVariables(TestCaseBinding testCaseBinding, List<Variable> testCaseVariables) {
         Binding binding = new Binding()
-        
+
         def importCustomizer = new ImportCustomizer()
         importCustomizer.addImport(TestDataFactory.class.getSimpleName(), TestDataFactory.class.getName());
         importCustomizer.addImport(ObjectRepository.class.getSimpleName(), ObjectRepository.class.getName());
         def configuration = new CompilerConfiguration()
         configuration.addCompilationCustomizers(importCustomizer)
         engine.setConfig(configuration)
-        
+
         logger.logInfo(StringConstants.MAIN_LOG_INFO_START_EVALUATE_VARIABLE);
-        
+
         if (testCaseBinding.getBindedValues() != null) {
             for (Entry<String, Object> entry : testCaseBinding.getBindedValues().entrySet()) {
                 if (!(entry.getValue() instanceof TestDataColumn)) {
@@ -205,7 +209,7 @@ public class TestCaseMain {
                 if (defaultValue.isEmpty()) {
                     defaultValue = "null";
                 }
-                
+
                 try {
                     Object defaultValueObject = engine.runScript(defaultValue, null);
                     logger.logInfo(MessageFormat.format(StringConstants.MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y_AS_DEFAULT,
@@ -216,7 +220,7 @@ public class TestCaseMain {
                 }
             }
         }
-        
+
         return binding
     }
 
@@ -224,7 +228,7 @@ public class TestCaseMain {
     private static TestResult internallyRunTestCase(String testCaseId, TestCaseBinding testCaseBinding, List<Variable> testCaseVariables,
             String testCaseScriptFilePath, Map<String, String> testProperties, FailureHandling flowControl) throws Exception {
         TestResult testResult = new TestResult();
-        
+
         TestStatus statusEntity = new TestStatus();
         statusEntity.setStatusValue(TestStatusValue.PASSED);
         testResult.setTestStatus(statusEntity);
@@ -238,7 +242,7 @@ public class TestCaseMain {
         List<Throwable> parentErrors = ErrorCollector.getCollector().getCoppiedErrors();
         Stack<KeywordStackElement> keywordStack = new Stack<KeywordStackElement>();
         Binding binding = new Binding();
-        
+
         logger.startTest(testCaseId, testProperties, keywordStack, flowControl == FailureHandling.OPTIONAL);
         try {
             //Collect variable values
@@ -256,7 +260,7 @@ public class TestCaseMain {
 
             ErrorCollector.getCollector().clearErrors();
             internallyRunMethods(binding, beforeRunMethods, importString, StringConstants.MAIN_MSG_START_RUNNING_SETUP_METHODS_FOR_TC);
-            
+
             //Prepare configuration before execution
             CompilerConfiguration conf = new CompilerConfiguration(System.getProperties());
             conf.addCompilationCustomizers(new ASTTransformationCustomizer(RequireAstTestStepTransformation.class))
@@ -265,7 +269,7 @@ public class TestCaseMain {
 
             //Execute
             engine.runScript(new File(testCaseScriptFilePath), binding)
-            
+
             //Evaluate error
             if (ErrorCollector.getCollector().containsErrors()) {
                 Throwable firstError = ErrorCollector.getCollector().getFirstError();
@@ -275,16 +279,16 @@ public class TestCaseMain {
                 endAllUnfinishedKeywords(keywordStack);
                 logError(firstError,
                         MessageFormat.format(StringConstants.MAIN_LOG_MSG_FAILED_BECAUSE_OF, testCaseId, ExceptionsUtil.getMessageForThrowable(firstError)));
-				runTearDownMethodByError(firstError, binding, importString, afterRunFailedMethods, afterRunErrorMethods,
+                runTearDownMethodByError(firstError, binding, importString, afterRunFailedMethods, afterRunErrorMethods,
                         afterRunMethods);
                 statusEntity.setStatusValue(getResultByError(firstError, testCaseId));
             } else {
                 endAllUnfinishedKeywords(keywordStack);
-                
-				internallyRunMethods(binding, afterRunPassedMethods, importString,
+
+                internallyRunMethods(binding, afterRunPassedMethods, importString,
                         StringConstants.MAIN_MSG_START_RUNNING_TEAR_DOWN_METHODS_FOR_PASSED_TC);
-                    
-				internallyRunMethods(binding, afterRunMethods, importString,
+
+                internallyRunMethods(binding, afterRunMethods, importString,
                         StringConstants.MAIN_MSG_START_RUNNING_TEAR_DOWN_METHODS_FOR_TC);
                 logger.logPassed(testCaseId);
             }
@@ -297,8 +301,8 @@ public class TestCaseMain {
             String message = MessageFormat.format(StringConstants.MAIN_LOG_MSG_FAILED_BECAUSE_OF, testCaseId, ExceptionsUtil.getMessageForThrowable(t));
             testResult.setMessage(message);
             logError(t, message);
-            
-			runTearDownMethodByError(t, binding, importString, afterRunFailedMethods, afterRunErrorMethods,
+
+            runTearDownMethodByError(t, binding, importString, afterRunFailedMethods, afterRunErrorMethods,
                     afterRunMethods);
         } finally {
             ErrorCollector.getCollector().getErrors().addAll(0, parentErrors);

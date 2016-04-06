@@ -21,9 +21,13 @@ public class ProjectFileServiceManager {
         if (projectLocation.endsWith(File.separator)) {
             projectLocation = projectLocation.substring(0, projectLocation.length() - 1);
         }
+        File projectFolder = new File(projectLocation + File.separator + name);
+        if (!projectFolder.exists()) {
+            projectFolder.mkdirs();
+        }
 
         ProjectEntity project = new ProjectEntity();
-        project.setFolderLocation(projectLocation + File.separator + name);
+        project.setFolderLocation(projectFolder.getAbsolutePath());
         project.setName(name);
         project.setDescription(description);
         project.setPageLoadTimeout(pageLoadTimeout);

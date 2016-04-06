@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.kms.katalon.execution.entity.ConsoleOption;
+import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
 
 public class ReportIntegrationFactory {
     private static ReportIntegrationFactory _instance;
@@ -30,15 +30,8 @@ public class ReportIntegrationFactory {
     public void addNewReportIntegration(String productName, ReportIntegrationContribution contributor) {
         reportIntegrationMap.put(productName, contributor);
     }
-
-    public List<ConsoleOption<?>> getIntegrationCommands() {
-        List<ConsoleOption<?>> integrationCommands = new ArrayList<ConsoleOption<?>>();
-        for (ReportIntegrationContribution contribution : reportIntegrationMap.values()) {
-            if (contribution.getIntegrationCommands() == null) {
-                continue;
-            }
-            integrationCommands.addAll(contribution.getIntegrationCommands());
-        }
-        return integrationCommands;
+    
+    public List<ConsoleOptionContributor> getConsoleOptionContributorList() {
+        return new ArrayList<ConsoleOptionContributor>(reportIntegrationMap.values());
     }
 }

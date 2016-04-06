@@ -9,7 +9,7 @@ import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.SafeRunner;
 
 import com.kms.katalon.core.keyword.IKeywordContributor;
-import com.kms.katalon.custom.factory.BuiltInMethodNodeFactory;
+import com.kms.katalon.core.keyword.KeywordContributorCollection;
 
 public class EvaluateKeywordContributionsHandler {
     private static final String IKEYWORD_CONTRIBUTOR_ID = "com.kms.katalon.custom.keyword";
@@ -40,8 +40,7 @@ public class EvaluateKeywordContributionsHandler {
             @Override
             public void run() throws Exception {
                 if (o instanceof IKeywordContributor) {
-                    IKeywordContributor contributor = (IKeywordContributor) o;
-                    BuiltInMethodNodeFactory.getInstance().addKeywordContributor(contributor);
+                    KeywordContributorCollection.addKeywordContributor((IKeywordContributor) o);
                 }
             }
         };

@@ -1,11 +1,11 @@
 package com.kms.katalon.composer.execution.provider;
 
-import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.jface.preference.IPreferenceStore;
+import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
+
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 
-import com.kms.katalon.constants.PreferenceConstants.ExecutionPreferenceConstants;
+import com.kms.katalon.composer.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
@@ -31,8 +31,7 @@ public class LogTableViewerFilter extends ViewerFilter {
     }
 
     private int getPreferenceShowedValue() {
-        IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                ExecutionPreferenceConstants.QUALIFIER);
+        ScopedPreferenceStore store = getPreferenceStore(LogTableViewerFilter.class);
         int showAllLogs = store.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_ALL_LOGS) ? ALL : 0;
         int showInfoLogs = store.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_INFO_LOGS) ? INFO : 0;
         int showPassedLogs = store.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_PASSED_LOGS) ? PASSED : 0;

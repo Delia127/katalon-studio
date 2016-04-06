@@ -11,7 +11,7 @@ public class EdgeRunConfiguration extends WebUiRunConfiguration {
 
     public EdgeRunConfiguration(String projectDir) throws IOException {
         super(projectDir, new EdgeDriverConnector(projectDir + File.separator
-                + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME));
+                + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME));
     }
     
     @Override

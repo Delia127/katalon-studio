@@ -34,7 +34,7 @@ public class CodeRefactoringJob extends Job {
                     "com.kms.katalon.core", projectEntity);
             monitor.worked(1);
 
-            File settingFolder = new File(projectDir, PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME);
+            File settingFolder = new File(projectDir, PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME);
             for (String fileName : settingFolder.list(new OldSettingFileNameFilter())) {
                 try {
                     FileUtils.moveFile(new File(settingFolder, fileName),

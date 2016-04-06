@@ -1,7 +1,5 @@
 package com.kms.katalon.execution.launcher;
 
-import static com.kms.katalon.execution.util.MailUtil.getDistinctRecipients;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -16,10 +14,7 @@ import java.util.Map.Entry;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.jface.preference.IPreferenceStore;
 
-import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestSuiteController;
@@ -33,25 +28,21 @@ import com.kms.katalon.core.util.PathUtil;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.constants.StringConstants;
+import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.entity.ReportLocationSetting;
 import com.kms.katalon.execution.entity.Reportable;
 import com.kms.katalon.execution.entity.Rerunnable;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
-import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.execution.integration.ReportIntegrationFactory;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LauncherStatus;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.MailUtil;
-import com.kms.katalon.execution.util.MailUtil.EmailConfig;
-import com.kms.katalon.execution.util.MailUtil.MailSecurityProtocolType;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public abstract class ReportableLauncher extends LoggableLauncher {
-
     public ReportableLauncher(IRunConfiguration runConfig) {
         super(runConfig);
     }
@@ -63,7 +54,6 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         if (getStatus() == LauncherStatus.TERMINATED) {
             return;
         }
-        
 
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
@@ -88,19 +78,19 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             Rerunnable rerun = (Rerunnable) getExecutedEntity();
 
             TestSuiteEntity testSuite = getTestSuite();
-            IExecutedEntity newTestSuiteExecutedEntity = ExecutionUtil.getRerunExecutedEntity(
-                    (TestSuiteExecutedEntity) getExecutedEntity(), getResult());
 
             try {
+                IExecutedEntity newTestSuiteExecutedEntity = ExecutionUtil.getRerunExecutedEntity(
+                        (TestSuiteExecutedEntity) getExecutedEntity(), getResult());
                 writeLine("\n");
-                writeLine(MessageFormat.format(StringConstants.LAU_RPT_RERUN_TEST_SUITE, getExecutedEntity()
-                        .getSourceId(), String.valueOf(rerun.getPreviousRerunTimes() + 1)));
+                writeLine(MessageFormat.format(StringConstants.LAU_RPT_RERUN_TEST_SUITE,
+                        getExecutedEntity().getSourceId(), String.valueOf(rerun.getPreviousRerunTimes() + 1)));
 
                 IRunConfiguration newConfig = getRunConfig().cloneConfig();
                 newConfig.build(testSuite, newTestSuiteExecutedEntity);
                 ReportableLauncher rerunLauncher = clone(newConfig);
                 LauncherManager.getInstance().addLauncher(rerunLauncher);
-            } catch (IOException | ExecutionException e) {
+            } catch (Exception e) {
                 writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_RERUN_TEST_SUITE, e.getMessage()));
                 LogUtil.logError(e);
             }
@@ -123,8 +113,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
             File testSuiteReportSourceFolder = new File(getRunConfig().getExecutionSetting().getFolderPath());
 
-            File csvFile = new File(testSuiteReportSourceFolder, FilenameUtils.getBaseName(testSuiteReportSourceFolder
-                    .getName()) + ".csv");
+            File csvFile = new File(testSuiteReportSourceFolder,
+                    FilenameUtils.getBaseName(testSuiteReportSourceFolder.getName()) + ".csv");
 
             List<String> csvReports = new ArrayList<String>();
 
@@ -138,41 +128,23 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
     }
 
-    public void sendReportEmail(File csvFile, List<Object[]> suitesSummaryForEmail) throws Exception {
-        IPreferenceStore prefs = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
-
-        // Return if user doesn't need to send email
-        if (!prefs.getBoolean(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_ATTACHMENT)) {
+    private void sendReportEmail(File csvFile, List<Object[]> suitesSummaryForEmail) throws Exception {
+        if (!(getExecutedEntity() instanceof TestSuiteExecutedEntity)) {
             return;
         }
 
-        TestSuiteEntity testSuite = getTestSuite();
-        String[] mailRecipients = getDistinctRecipients(testSuite.getMailRecipient(),
-                prefs.getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_REPORT_RECIPIENTS));
-        if (mailRecipients.length > 0) {
-            EmailConfig conf = new EmailConfig();
-            conf.tos = mailRecipients;
-            conf.host = prefs.getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_HOST);
-            conf.port = prefs.getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_PORT);
-            conf.from = prefs.getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_USERNAME);
-            conf.securityProtocol = MailSecurityProtocolType.valueOf(prefs
-                    .getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_SECURITY_PROTOCOL));
-            conf.username = prefs.getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_USERNAME);
-            conf.password = prefs.getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_PASSWORD);
-            conf.signature = prefs.getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_SIGNATURE);
-            conf.sendAttachment = prefs
-                    .getBoolean(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_ATTACHMENT);
-            conf.suitePath = testSuite.getRelativePathForUI();
-
-            writeLine(MessageFormat.format(StringConstants.LAU_PRT_SENDING_EMAIL_RPT_TO,
-                    Arrays.toString(mailRecipients)));
-
-            // Send report email
-            MailUtil.sendSummaryMail(conf, csvFile, getReportFolder(), suitesSummaryForEmail);
-
-            writeLine(StringConstants.LAU_PRT_EMAIL_SENT);
+        EmailConfig emailConfig = ((TestSuiteExecutedEntity) getExecutedEntity()).getEmailConfig();
+        if (emailConfig == null || !emailConfig.canSend()) {
+            return;
         }
+
+        writeLine(MessageFormat.format(StringConstants.LAU_PRT_SENDING_EMAIL_RPT_TO,
+                Arrays.toString(emailConfig.getTos())));
+
+        // Send report email
+        MailUtil.sendSummaryMail(emailConfig, csvFile, getReportFolder(), suitesSummaryForEmail);
+
+        writeLine(StringConstants.LAU_PRT_EMAIL_SENT);
     }
 
     protected void updateLastRun(Date startTime) throws Exception {
@@ -222,8 +194,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                         continue;
                     }
 
-                    if (reportLocSetting.isReportFileNameSet()
-                            && (fileExtension.equals("csv") || fileExtension.equals("html"))) {
+                    if (fileExtension.equalsIgnoreCase("csv") || fileExtension.equalsIgnoreCase("html")) {
                         fileName = reportLocSetting.getReportFileName();
                     }
 
@@ -231,8 +202,6 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                     FileUtils.copyFile(reportChildSourceFile,
                             new File(userReportFolder, fileName + "." + fileExtension));
                 }
-
-                writeLine(StringConstants.LAU_PRT_CANNOT_SEND_EMAIL);
             }
         } catch (IOException ex) {
             LogUtil.logError(ex);
@@ -243,8 +212,14 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
         }
-        for (Entry<String, ReportIntegrationContribution> reportContributorEntry : ReportIntegrationFactory
-                .getInstance().getIntegrationContributorMap().entrySet()) {
+        for (Entry<String, ReportIntegrationContribution> reportContributorEntry : ReportIntegrationFactory.getInstance()
+                .getIntegrationContributorMap()
+                .entrySet()) {
+            ReportIntegrationContribution contribution = reportContributorEntry.getValue();
+            if (contribution == null || !contribution.isIntegrationActive(getTestSuite())) {
+                continue;
+            }
+
             try {
                 writeLine(MessageFormat.format(StringConstants.LAU_PRT_SENDING_RPT_TO, reportContributorEntry.getKey()));
 
@@ -259,13 +234,12 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     }
 
     private File getUserReportFolder(ReportLocationSetting rpLocSetting) {
-
         if (!rpLocSetting.isReportFolderPathSet()) {
             return null;
         }
 
-        File reportFolder = new File(PathUtil.relativeToAbsolutePath(rpLocSetting.getReportFolderPath(), getTestSuite()
-                .getProject().getFolderLocation()));
+        File reportFolder = new File(PathUtil.relativeToAbsolutePath(rpLocSetting.getReportFolderPath(),
+                getTestSuite().getProject().getFolderLocation()));
 
         if (reportFolder != null && !reportFolder.exists()) {
             reportFolder.mkdirs();

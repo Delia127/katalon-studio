@@ -14,6 +14,7 @@ import com.kms.katalon.constants.PreferenceConstants;
 
 public class WebUiExecutionPreferencePage extends PreferencePage {
     private Text txtWaitForIEHanging;
+
     private Composite fieldEditorParent;
 
     public WebUiExecutionPreferencePage() {
@@ -47,7 +48,7 @@ public class WebUiExecutionPreferencePage extends PreferencePage {
 
     private void initialize() {
         txtWaitForIEHanging.setText(Integer.toString(getPreferenceStore().getInt(
-                PreferenceConstants.WebUiPreferenceConstants.EXECUTION_WAIT_FOR_IE_HANGING)));
+                PreferenceConstants.WEBUI_EXECUTION_WAIT_FOR_IE_HANGING)));
     }
 
     @Override
@@ -57,14 +58,13 @@ public class WebUiExecutionPreferencePage extends PreferencePage {
         }
         super.performDefaults();
     }
-    
+
     @Override
     protected void performApply() {
-        if (fieldEditorParent == null)
-            return;
+        if (fieldEditorParent == null) return;
 
         if (txtWaitForIEHanging != null) {
-            getPreferenceStore().setValue(PreferenceConstants.WebUiPreferenceConstants.EXECUTION_WAIT_FOR_IE_HANGING,
+            getPreferenceStore().setValue(PreferenceConstants.WEBUI_EXECUTION_WAIT_FOR_IE_HANGING,
                     Integer.parseInt(txtWaitForIEHanging.getText()));
         }
     }

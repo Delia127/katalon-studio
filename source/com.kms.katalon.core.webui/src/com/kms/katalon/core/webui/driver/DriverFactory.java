@@ -3,8 +3,12 @@ package com.kms.katalon.core.webui.driver;
 import io.appium.java_client.ios.IOSDriver;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -15,11 +19,13 @@ import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeDriverService;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.net.NetworkUtils;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.UnreachableBrowserException;
@@ -59,6 +65,12 @@ public class DriverFactory {
     public static final String REMOTE_WEB_DRIVER_TYPE = StringConstants.CONF_PROPERTY_REMOTE_WEB_DRIVER_TYPE;
     public static final String EXECUTED_MOBILE_PLATFORM = StringConstants.CONF_EXECUTED_PLATFORM;
     public static final String EXECUTED_MOBILE_DEVICE_ID = StringConstants.CONF_EXECUTED_DEVICE_ID;
+    public static final String DEBUG_PORT = "debugPort";
+    public static final String DEBUG_HOST = "debugHost";
+    public static final String DEFAULT_FIREFOX_DEBUG_PORT = "10001";
+    public static final String DEFAULT_CHROME_DEBUG_PORT = "10002";
+    public static final String DEFAULT_DEBUG_HOST = "localhost";
+    private static final int REMOTE_BROWSER_CONNECT_TIMEOUT = 60000;
 
     private static final ThreadLocal<WebDriver> localWebServerStorage = new ThreadLocal<WebDriver>() {
         @Override
@@ -169,6 +181,29 @@ public class DriverFactory {
                 webDriver = new EdgeDriver(edgeService, WebDriverPropertyUtil.toDesireCapabilities(
                         driverPreferenceProps, DesiredCapabilities.edge(), false));
                 break;
+            case REMOTE_FIREFOX_DRIVER:
+            	String debugHost = RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, DEBUG_HOST, DriverFactory.DEFAULT_DEBUG_HOST);
+                String debugPort = RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, DEBUG_PORT, DriverFactory.DEFAULT_FIREFOX_DEBUG_PORT);
+                desireCapibilities.merge(DesiredCapabilities.firefox());
+                URL firefoxDriverUrl = new URL("http", debugHost, Integer.parseInt(debugPort), "/hub");
+            	webDriver = new RemoteWebDriver(firefoxDriverUrl, desireCapibilities);
+            	waitForRemoteBrowserReady(firefoxDriverUrl);
+            	break;                     
+            case REMOTE_CHROME_DRIVER:
+            	debugHost = RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, DEBUG_HOST, DriverFactory.DEFAULT_DEBUG_HOST);
+                debugPort = RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, DEBUG_PORT, DriverFactory.DEFAULT_CHROME_DEBUG_PORT);
+                System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
+                desireCapibilities.merge(DesiredCapabilities.chrome());                
+                Map<String, Object> chromeOptions = new HashMap<String, Object>();
+        		chromeOptions.put("debuggerAddress", debugHost + ":" + debugPort);
+        		desireCapibilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+        		//Start Chrome-driver in background
+        		int chromeDriverPort = determineNextFreePort(9515);
+        		URL chromeDriverUrl = new URL("http", debugHost, chromeDriverPort, "/");
+        		Runtime.getRuntime().exec(new String[]{System.getProperty(CHROME_DRIVER_PATH_PROPERTY_KEY), "--port=" + chromeDriverPort});
+        		waitForRemoteBrowserReady(chromeDriverUrl);
+        		webDriver = new RemoteWebDriver(chromeDriverUrl, desireCapibilities);        		
+            	break;
             default:
                 throw new StepFailedException(MessageFormat.format(StringConstants.DRI_ERROR_DRIVER_X_NOT_IMPLEMENTED,
                         driver.getName()));
@@ -522,4 +557,50 @@ public class DriverFactory {
         localWebServerStorage.set(null);
         RunConfiguration.removeDriver(webDriver);
     }
+    
+    private static void waitForRemoteBrowserReady(URL url) throws Exception {
+		long waitUntil = System.currentTimeMillis() + REMOTE_BROWSER_CONNECT_TIMEOUT;
+		boolean connectable = false;		
+		while (!connectable) {
+			try {
+				url.openConnection().connect();
+				connectable = true;
+			} catch (IOException e) {
+				// Cannot connect yet.
+			}
+			
+			if (waitUntil < System.currentTimeMillis()) {
+				throw new Exception(String.format("Unable to connect to browser on host %s and port %s after %s seconds.", 
+						url.getHost(), url.getPort(), REMOTE_BROWSER_CONNECT_TIMEOUT));
+			}
+			
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException ignored) {
+			}
+		}
+	}
+    
+    private static int determineNextFreePort(int port) {
+		int newport;
+        NetworkUtils networkUtils = new NetworkUtils();
+        for (newport = port; newport < port + 2000; newport++) {
+        	Socket socket = new Socket();
+        	InetSocketAddress address = new InetSocketAddress(networkUtils.obtainLoopbackIp4Address(), newport);
+
+        	try {
+        		socket.bind(address);
+        		return newport;
+        	} catch (IOException e) {
+            // Port is already bound. Skip it and continue
+        	} finally {
+        		try {
+        			socket.close();
+        		} catch (IOException ignored) {
+        			// Nothing sane to do. Ignore this.
+        		}
+        	}
+        }
+        throw new WebDriverException(String.format("Cannot find free port in the range %d to %d ", port, newport));
+  	}
 }

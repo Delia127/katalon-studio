@@ -5,20 +5,20 @@ import org.eclipse.swt.widgets.Composite;
 
 public class ReportTestCaseTableViewer extends TableViewer {
 
-	private String searchedString;
-	
-	public ReportTestCaseTableViewer(Composite parent, int style) {
-		super(parent, style);		
-	}
+    private String searchedString;
 
-	public String getSearchedString() {
-		if (searchedString == null) {
-			searchedString = "";
-		}
-		return searchedString;
-	}
+    public ReportTestCaseTableViewer(Composite parent, int style) {
+        super(parent, style);
+    }
 
-	public void setSearchedString(String searchedString) {
-		this.searchedString = searchedString;
-	}
+    public String getSearchedString() {
+        if (searchedString == null) {
+            searchedString = "";
+        }
+        return searchedString;
+    }
+
+    public void setSearchedString(String searchedString) {
+        this.searchedString = searchedString;
+    }
 }

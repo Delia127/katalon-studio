@@ -1,8 +1,6 @@
 package com.kms.katalon.composer.report.provider;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.Viewer;
 
 import com.kms.katalon.composer.report.preference.ReportPreferenceInitializer;
@@ -11,30 +9,10 @@ import com.kms.katalon.core.logging.model.MessageLogRecord;
 
 public class ReportTestStepTableViewerFilter extends ReportTestCaseTableViewerFilter {
 
-    private List<Object> sortedElements;
-
-    /**
-     * Used to store element that has been sorted
-     */
-    public ReportTestStepTableViewerFilter() {
-        super();
-        resetLookup();
-    }
-    
-    /*package*/ void resetLookup() {
-        sortedElements = new ArrayList<Object>();
-    }
-
     @Override
     public boolean select(Viewer viewer, Object parentElement, Object element) {
-        if (sortedElements.contains(element)) {
-            return true;
-        }
-
-        if (parentElement != null && parentElement instanceof ILogRecord
-                && ReportPreferenceInitializer.isChildLogForFirstMatchIncluded()
-                && sortedElements.contains(parentElement)) {
-
+        if (parentElement instanceof ILogRecord
+                && ReportPreferenceInitializer.isChildLogForFirstMatchIncluded()) {
             return true;
         }
         return internallySelect(viewer, parentElement, element);
@@ -48,9 +26,10 @@ public class ReportTestStepTableViewerFilter extends ReportTestCaseTableViewerFi
         ReportTestStepTreeViewer tablerView = (ReportTestStepTreeViewer) viewer;
         ILogRecord logRecord = (ILogRecord) element;
         String searchString = tablerView.getSearchedString();
-        if (searchString == null || searchString.isEmpty()) {
+        if (StringUtils.isEmpty(searchString)) {
             return true;
         }
+        
         String queryTrimmed = searchString.toLowerCase().trim();
         boolean isMatched = false;
         
@@ -69,7 +48,6 @@ public class ReportTestStepTableViewerFilter extends ReportTestCaseTableViewerFi
         }
         
         if (isMatched) {
-            sortedElements.add(element);
             return true;
         }
 

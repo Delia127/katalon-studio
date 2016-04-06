@@ -1,32 +1,10 @@
 package com.kms.katalon.composer.testcase.model;
 
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.groovy.ast.ASTNode;
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.FieldNode;
-import org.codehaus.groovy.ast.ImportNode;
-import org.codehaus.groovy.ast.MethodNode;
-import org.codehaus.groovy.ast.expr.ArgumentListExpression;
-import org.codehaus.groovy.ast.expr.ConstantExpression;
-import org.codehaus.groovy.ast.expr.Expression;
-import org.codehaus.groovy.ast.expr.MethodCallExpression;
-import org.codehaus.groovy.ast.stmt.AssertStatement;
-import org.codehaus.groovy.ast.stmt.BlockStatement;
-import org.codehaus.groovy.ast.stmt.BreakStatement;
-import org.codehaus.groovy.ast.stmt.CaseStatement;
-import org.codehaus.groovy.ast.stmt.CatchStatement;
-import org.codehaus.groovy.ast.stmt.ContinueStatement;
-import org.codehaus.groovy.ast.stmt.EmptyStatement;
-import org.codehaus.groovy.ast.stmt.ExpressionStatement;
-import org.codehaus.groovy.ast.stmt.IfStatement;
-import org.codehaus.groovy.ast.stmt.Statement;
-import org.codehaus.groovy.ast.stmt.SwitchStatement;
-import org.codehaus.groovy.ast.stmt.TryCatchStatement;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -49,37 +27,63 @@ import com.kms.katalon.composer.testcase.ast.dialogs.MethodObjectBuilderDialog;
 import com.kms.katalon.composer.testcase.ast.treetable.AstAbstractKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstCaseStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstCatchStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstClassTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstElseIfStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstElseStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstFinallyStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstIfStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstMethodTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstScriptMainBlockStatmentTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstScriptTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstSwitchDefaultStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstSwitchStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTryStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.FieldNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.MethodNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.BinaryExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MapEntryExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MapExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.AssertStatementWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.BlockStatementWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.BreakStatementWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.CaseStatementWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.CatchStatementWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.ContinueStatementWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.ElseIfStatementWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.ForStatementWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.IfStatementWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.ReturnStatementWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.SwitchStatementWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.ThrowStatementWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.TryCatchStatementWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.WhileStatementWrapper;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
 import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransfer;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransferData;
-import com.kms.katalon.composer.testcase.util.AstTreeTableEntityUtil;
+import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableUtil;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.core.ast.GroovyParser;
+import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCaseFactory;
 import com.kms.katalon.core.testobject.ObjectRepository;
+import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.entity.folder.FolderEntity;
-import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 
@@ -102,9 +106,10 @@ public class TestCaseTreeTableInput {
 
     private class AstNodeAddedEdit {
         private AstTreeTableNode parentNode;
-        private ASTNode newAstObject;
 
-        public AstNodeAddedEdit(AstTreeTableNode parentNode, ASTNode newAstObject) {
+        private ASTNodeWrapper newAstObject;
+
+        public AstNodeAddedEdit(AstTreeTableNode parentNode, ASTNodeWrapper newAstObject) {
             this.parentNode = parentNode;
             this.newAstObject = newAstObject;
         }
@@ -113,25 +118,28 @@ public class TestCaseTreeTableInput {
             return parentNode;
         }
 
-        public ASTNode getNewAstObject() {
+        public ASTNodeWrapper getNewAstObject() {
             return newAstObject;
         }
     }
 
-    private List<ASTNode> astNodes;
-    private List<AstTreeTableNode> astTreeTableNodes;
     private TreeViewer treeTableViewer;
-    private ClassNode mainClassNode;
+
+    private ScriptNodeWrapper mainClassNodeWrapper;
+
+    private AstScriptTreeTableNode mainClassTreeNode;
+
     private TestCasePart parentPart;
+
     private boolean isChanged;
 
-    public ClassNode getMainClassNode() {
-        return mainClassNode;
+    public ScriptNodeWrapper getMainClassNode() {
+        return mainClassNodeWrapper;
     }
 
-    public TestCaseTreeTableInput(List<ASTNode> astNodes, TreeViewer treeTableViewer, TestCasePart parentPart) {
+    public TestCaseTreeTableInput(ScriptNodeWrapper scriptNode, TreeViewer treeTableViewer, TestCasePart parentPart) {
         this.treeTableViewer = treeTableViewer;
-        this.astNodes = astNodes;
+        this.mainClassNodeWrapper = scriptNode;
         this.parentPart = parentPart;
         setChanged(false);
     }
@@ -140,18 +148,10 @@ public class TestCaseTreeTableInput {
      * Add import to script
      * 
      * @param importClass
-     *            class to add import
+     * class to add import
      */
     public void addImport(Class<?> importClass) {
-        boolean isAlreadyImported = false;
-        for (ImportNode importNode : mainClassNode.getModule().getImports()) {
-            if (importNode.getClassName().equals(importClass.getName())) {
-                isAlreadyImported = true;
-            }
-        }
-        if (!isAlreadyImported) {
-            mainClassNode.getModule().addImport(importClass.getSimpleName(), new ClassNode(importClass));
-        }
+        mainClassNodeWrapper.addImport(importClass);
     }
 
     /**
@@ -160,11 +160,9 @@ public class TestCaseTreeTableInput {
      * @return the first currently selected tree table nodes
      */
     public AstTreeTableNode getSelectedNode() {
-        if (treeTableViewer.getSelection() instanceof ITreeSelection) {
-            ITreeSelection selection = (ITreeSelection) treeTableViewer.getSelection();
-            if (selection.getFirstElement() instanceof AstTreeTableNode) {
-                return (AstTreeTableNode) selection.getFirstElement();
-            }
+        if (treeTableViewer.getSelection() instanceof ITreeSelection
+                && ((ITreeSelection) treeTableViewer.getSelection()).getFirstElement() instanceof AstTreeTableNode) {
+            return (AstTreeTableNode) ((ITreeSelection) treeTableViewer.getSelection()).getFirstElement();
         }
         return null;
     }
@@ -175,104 +173,100 @@ public class TestCaseTreeTableInput {
      * @return list of currently selected tree table nodes
      */
     public List<AstTreeTableNode> getSelectedNodes() {
-        if (treeTableViewer.getSelection() instanceof ITreeSelection) {
-            ITreeSelection selection = (ITreeSelection) treeTableViewer.getSelection();
-            if (selection.size() > 0) {
-                List<AstTreeTableNode> selectedNodes = new ArrayList<AstTreeTableNode>();
-                Object[] selectedObjects = selection.toArray();
-                for (int i = 0; i < selection.size(); i++) {
-                    if (selectedObjects[i] instanceof AstTreeTableNode) {
-                        selectedNodes.add((AstTreeTableNode) selectedObjects[i]);
-                    }
-                }
-                return selectedNodes;
+        if (!(treeTableViewer.getSelection() instanceof ITreeSelection)
+                || ((ITreeSelection) treeTableViewer.getSelection()).isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<AstTreeTableNode> selectedNodes = new ArrayList<AstTreeTableNode>();
+        Object[] selectedObjects = ((ITreeSelection) treeTableViewer.getSelection()).toArray();
+        for (int i = 0; i < selectedObjects.length; i++) {
+            if (selectedObjects[i] instanceof AstTreeTableNode) {
+                selectedNodes.add((AstTreeTableNode) selectedObjects[i]);
             }
         }
-        return Collections.emptyList();
+        return selectedNodes;
     }
 
     /**
      * Add new ast objects into tree table
      * 
      * @param astObjects
-     *            list of ast objects
+     * list of ast objects
      * @param destinationNode
-     *            destination node to add or null if adding to end of script
+     * destination node to add or null if adding to end of script
      * @param addType
-     *            {@link NodeAddType}
+     * {@link NodeAddType}
      * @throws Exception
      */
-    public void addNewAstObjects(List<? extends ASTNode> astObjects, AstTreeTableNode destinationNode,
-            NodeAddType addType) throws Exception {
-        if (astObjects != null) {
-            AstTreeTableNode topItem = getTopItem();
-            Object[] expandedElements = saveExpandedState();
-            List<AstNodeAddedEdit> astNodeAddedEdits = new ArrayList<AstNodeAddedEdit>();
-            if (destinationNode != null) {
-                if (addType == NodeAddType.Add) {
-                    if (destinationNode.hasChildren()) {
-                        for (ASTNode astObject : astObjects) {
-                            addNewAstObjectToParentNode(astObject, destinationNode, -1, astNodeAddedEdits);
-                        }
-                    } else {
-                        addASTObjectsAfter(astObjects, destinationNode, astNodeAddedEdits);
+    public void addNewAstObjects(List<? extends ASTNodeWrapper> astObjects, AstTreeTableNode destinationNode,
+            NodeAddType addType) {
+        if (astObjects == null) {
+            return;
+        }
+        AstTreeTableNode topItem = getTopItem();
+        Object[] expandedElements = saveExpandedState();
+        List<AstNodeAddedEdit> astNodeAddedEdits = new ArrayList<AstNodeAddedEdit>();
+        if (destinationNode != null) {
+            if (addType == NodeAddType.Add) {
+                if (destinationNode.canHaveChildren()) {
+                    for (ASTNodeWrapper astObject : astObjects) {
+                        addNewAstObjectToParentNode(astObject, destinationNode.getASTObject(), -1, astNodeAddedEdits,
+                                destinationNode);
                     }
-                } else if (addType == NodeAddType.InserAfter) {
+                } else {
                     addASTObjectsAfter(astObjects, destinationNode, astNodeAddedEdits);
-                } else if (addType == NodeAddType.InserBefore) {
-                    addASTObjectsBefore(astObjects, destinationNode, astNodeAddedEdits);
                 }
-            } else {
-                addAstObjectsIntoScriptMainBlock(astObjects, astNodeAddedEdits);
+            } else if (addType == NodeAddType.InserAfter) {
+                addASTObjectsAfter(astObjects, destinationNode, astNodeAddedEdits);
+            } else if (addType == NodeAddType.InserBefore) {
+                addASTObjectsBefore(astObjects, destinationNode, astNodeAddedEdits);
             }
-            List<AstTreeTableNode> needRefreshNodes = new ArrayList<AstTreeTableNode>();
-            for (AstNodeAddedEdit astNodeAddedEdit : astNodeAddedEdits) {
-                needRefreshNodes.add(astNodeAddedEdit.getParentNode());
+        } else {
+            addAstObjectsIntoScriptMainBlock(astObjects, astNodeAddedEdits);
+        }
+        List<AstTreeTableNode> needRefreshNodes = new ArrayList<AstTreeTableNode>();
+        for (AstNodeAddedEdit astNodeAddedEdit : astNodeAddedEdits) {
+            needRefreshNodes.add(astNodeAddedEdit.getParentNode());
+        }
+        filterRelatedNodeList(needRefreshNodes);
+        if (!needRefreshNodes.isEmpty()) {
+            setDirty(true);
+            for (AstTreeTableNode needRefreshNode : needRefreshNodes) {
+                refreshObjectWithoutReloading(needRefreshNode);
             }
-            filterRelatedNodeList(needRefreshNodes);
-            if (!needRefreshNodes.isEmpty()) {
-                setDirty(true);
-                for (AstTreeTableNode needRefreshNode : needRefreshNodes) {
-                    refreshObjectWithoutReloading(needRefreshNode);
-                }
-                AstNodeAddedEdit lastEdit = astNodeAddedEdits.get(astNodeAddedEdits.size() - 1);
-                setSelection(lastEdit.getParentNode(), lastEdit.getNewAstObject());
-                setEdit(lastEdit.getParentNode(), lastEdit.getNewAstObject());
-            }
+            AstNodeAddedEdit lastEdit = astNodeAddedEdits.get(astNodeAddedEdits.size() - 1);
+            setSelection(lastEdit.getParentNode(), lastEdit.getNewAstObject());
+            setEdit(lastEdit.getParentNode(), lastEdit.getNewAstObject());
+        }
+        reloadExpandedState(expandedElements);
+        setTopItem(topItem);
+    }
 
-            reloadExpandedState(expandedElements);
-            setTopItem(topItem);
+    private void addAstObjectsIntoScriptMainBlock(List<? extends ASTNodeWrapper> astObjects,
+            List<AstNodeAddedEdit> astNodeAddedEdits) {
+        for (ASTNodeWrapper astObject : astObjects) {
+            AstTreeTableUtil.addChild(mainClassNodeWrapper, astObject, -1);
+        }
+        astNodeAddedEdits.add(new AstNodeAddedEdit(mainClassTreeNode, astObjects.get(astObjects.size() - 1)));
+    }
+
+    private void addASTObjectsBefore(List<? extends ASTNodeWrapper> astObjects, AstTreeTableNode selectedTreeTableNode,
+            List<AstNodeAddedEdit> astNodeAddedEdits) {
+        if (astObjects == null || astObjects.isEmpty() || selectedTreeTableNode == null) {
+            return;
+        }
+        for (ASTNodeWrapper astObject : astObjects) {
+            insertAstObject(astObject, selectedTreeTableNode, NodeAddType.InserBefore, astNodeAddedEdits);
         }
     }
 
-    private void addAstObjectsIntoScriptMainBlock(List<? extends ASTNode> astObjects,
-            List<AstNodeAddedEdit> astNodeAddedEdits) throws Exception {
-        for (AstTreeTableNode astTreeTableNode : astTreeTableNodes) {
-            if (astTreeTableNode instanceof AstScriptMainBlockStatmentTreeTableNode) {
-                for (ASTNode astObject : astObjects) {
-                    astTreeTableNode.addChildObject(astObject, -1);
-                }
-                astNodeAddedEdits.add(new AstNodeAddedEdit(astTreeTableNode, astObjects.get(astObjects.size() - 1)));
-                break;
-            }
+    private void addASTObjectsAfter(List<? extends ASTNodeWrapper> astObjects, AstTreeTableNode selectedTreeTableNode,
+            List<AstNodeAddedEdit> astNodeAddedEdits) {
+        if (astObjects == null || astObjects.isEmpty() || selectedTreeTableNode == null) {
+            return;
         }
-    }
-
-    private void addASTObjectsBefore(List<? extends ASTNode> astObjects, AstTreeTableNode selectedTreeTableNode,
-            List<AstNodeAddedEdit> astNodeAddedEdits) throws Exception {
-        if (selectedTreeTableNode != null) {
-            for (ASTNode astObject : astObjects) {
-                insertAstObject(astObject, selectedTreeTableNode, NodeAddType.InserBefore, astNodeAddedEdits);
-            }
-        }
-    }
-
-    private void addASTObjectsAfter(List<? extends ASTNode> astObjects, AstTreeTableNode selectedTreeTableNode,
-            List<AstNodeAddedEdit> astNodeAddedEdits) throws Exception {
-        if (selectedTreeTableNode != null) {
-            for (int i = astObjects.size() - 1; i >= 0; i--) {
-                insertAstObject(astObjects.get(i), selectedTreeTableNode, NodeAddType.InserAfter, astNodeAddedEdits);
-            }
+        for (int i = astObjects.size() - 1; i >= 0; i--) {
+            insertAstObject(astObjects.get(i), selectedTreeTableNode, NodeAddType.InserAfter, astNodeAddedEdits);
         }
     }
 
@@ -280,302 +274,93 @@ public class TestCaseTreeTableInput {
      * Add new ast object into tree table
      * 
      * @param astObject
-     *            ast object
+     * ast object
      * @param destinationNode
-     *            destination node to add or null if add to end of script
+     * destination node to add or null if add to end of script
      * @param addType
-     *            {@link NodeAddType}
+     * {@link NodeAddType}
      * @throws Exception
      */
-    public void addNewAstObject(ASTNode astObject, AstTreeTableNode destinationNode, NodeAddType addType)
-            throws Exception {
-        List<ASTNode> astObjects = new ArrayList<ASTNode>();
+    public void addNewAstObject(ASTNodeWrapper astObject, AstTreeTableNode destinationNode, NodeAddType addType) {
+        List<ASTNodeWrapper> astObjects = new ArrayList<ASTNodeWrapper>();
         astObjects.add(astObject);
         addNewAstObjects(astObjects, destinationNode, addType);
     }
 
-    private void insertAstObject(ASTNode astObject, AstTreeTableNode sibblingNode, NodeAddType addType,
-            List<AstNodeAddedEdit> astNodeAddedEdits) throws Exception {
-        int commentOffset = 0;
-        if (sibblingNode instanceof AstStatementTreeTableNode) {
-            AstStatementTreeTableNode statementSibblingNode = (AstStatementTreeTableNode) sibblingNode;
-            if (statementSibblingNode.getDescription() != null && addType == NodeAddType.InserBefore) {
-                commentOffset = -1;
-            }
+    private void insertAstObject(ASTNodeWrapper astObject, AstTreeTableNode sibblingNode, NodeAddType addType,
+            List<AstNodeAddedEdit> astNodeAddedEdits) {
+        if (sibblingNode.getParent() == null) {
+            return;
         }
-        if (sibblingNode.getParent() != null) {
-            int sibblingIndex = getAstObjectIndexFromParentNode(sibblingNode.getParent(), sibblingNode);
-            if (sibblingIndex > -1) {
-                addNewAstObjectToParentNode(astObject, sibblingNode.getParent(), sibblingIndex
-                        + ((addType == NodeAddType.InserAfter) ? 1 : 0) + commentOffset, astNodeAddedEdits);
-            }
+        int sibblingIndex = getAstObjectIndex(sibblingNode);
+        if (sibblingIndex == -1) {
+            return;
         }
+        addNewAstObjectToParentNode(astObject, sibblingNode.getASTObject().getParent(), sibblingIndex
+                + ((addType == NodeAddType.InserAfter) ? 1 : 0), astNodeAddedEdits, sibblingNode.getParent());
     }
 
     /**
      * Add new ast object into a tree table node
      * 
      * @param astObject
-     *            ast object
+     * ast object
      * @param parentNode
-     *            tree table node to add
+     * tree table node to add
      * @param index
-     *            the new index, or -1 to add at the end of the list
+     * the new index, or -1 to add at the end of the list
      * @throws Exception
      */
-    private void addNewAstObjectToParentNode(ASTNode astObject, AstTreeTableNode parentNode, int index,
-            List<AstNodeAddedEdit> astNodeAddedEdits) throws Exception {
-        parentNode.addChildObject(astObject, index);
+    private void addNewAstObjectToParentNode(ASTNodeWrapper astObject, ASTNodeWrapper parentObject, int index,
+            List<AstNodeAddedEdit> astNodeAddedEdits, AstTreeTableNode parentNode) {
+        AstTreeTableUtil.addChild(parentObject, astObject, index);
         astNodeAddedEdits.add(new AstNodeAddedEdit(parentNode, astObject));
     }
 
-    public void addElseStatement(AstTreeTableNode selectedNode) throws Exception {
-        Statement newElseStatement = null;
-        AstTreeTableNode parentNode = null;
-        if (selectedNode instanceof AstIfStatementTreeTableNode) {
-            AstIfStatementTreeTableNode ifStatementTreeTableNode = (AstIfStatementTreeTableNode) selectedNode;
-            if (ifStatementTreeTableNode.getASTObject() instanceof IfStatement) {
-                newElseStatement = addElseBlockForIfStatement((IfStatement) ifStatementTreeTableNode.getASTObject());
-                parentNode = ifStatementTreeTableNode.getParent();
-
-            }
-        } else if (selectedNode instanceof AstElseIfStatementTreeTableNode) {
-            AstElseIfStatementTreeTableNode elseIfStatementTreeTableNode = (AstElseIfStatementTreeTableNode) selectedNode;
-            if (elseIfStatementTreeTableNode.getASTObject() instanceof IfStatement) {
-                newElseStatement = addElseBlockForIfStatement((IfStatement) elseIfStatementTreeTableNode.getASTObject());
-                parentNode = elseIfStatementTreeTableNode.getParent();
-            }
-        }
-        if (newElseStatement != null) {
-            refresh(parentNode);
-            setSelection(parentNode, newElseStatement);
-            setEdit(parentNode, newElseStatement);
-            setDirty(true);
-        }
-    }
-
-    private Statement addElseBlockForIfStatement(IfStatement ifStatement) throws Exception {
-        if (ifStatement.getElseBlock() == null || ifStatement.getElseBlock() instanceof EmptyStatement) {
-            BlockStatement blockStatement = new BlockStatement();
-            ifStatement.setElseBlock(blockStatement);
-            return blockStatement;
-        } else if (ifStatement.getElseBlock() instanceof IfStatement) {
-            return addElseBlockForIfStatement((IfStatement) ifStatement.getElseBlock());
-        }
-        return null;
-    }
-
-    public void addElseIfStatement(AstTreeTableNode selectedNode, NodeAddType addType) throws Exception {
-        if (selectedNode != null) {
-            if (addType == NodeAddType.Add) {
-                addElseIfStatement(selectedNode);
-            } else if (addType == NodeAddType.InserAfter) {
-                insertAfterElseIfStatement(selectedNode);
-            } else if (addType == NodeAddType.InserBefore) {
-                insertBeforeElseIfStatement(selectedNode);
-            }
-        }
-    }
-
-    private void addElseIfStatement(AstTreeTableNode selectedTreeTableNode) throws Exception {
-        Statement newElseIfStatement = null;
-        AstTreeTableNode parentNode = null;
-        if (selectedTreeTableNode instanceof AstIfStatementTreeTableNode) {
-            AstIfStatementTreeTableNode ifStatementTreeTableNode = (AstIfStatementTreeTableNode) selectedTreeTableNode;
-            if (ifStatementTreeTableNode.getASTObject() instanceof IfStatement) {
-                newElseIfStatement = addElseIfStatementForIfStatement((IfStatement) ifStatementTreeTableNode
-                        .getASTObject());
-                parentNode = ifStatementTreeTableNode.getParent();
-            }
-        } else if (selectedTreeTableNode instanceof AstElseIfStatementTreeTableNode) {
-            AstElseIfStatementTreeTableNode elseIfStatementTreeTableNode = (AstElseIfStatementTreeTableNode) selectedTreeTableNode;
-            if (elseIfStatementTreeTableNode.getASTObject() instanceof IfStatement) {
-                newElseIfStatement = addElseIfStatementForIfStatement((IfStatement) elseIfStatementTreeTableNode
-                        .getASTObject());
-                parentNode = elseIfStatementTreeTableNode.getParent();
-            }
-        }
-        if (newElseIfStatement != null) {
-            refresh(parentNode);
-            setSelection(parentNode, newElseIfStatement);
-            setEdit(parentNode, newElseIfStatement);
-            setDirty(true);
-        }
-    }
-
-    private void insertBeforeElseIfStatement(AstTreeTableNode selectedTreeTableNode) throws Exception {
-        if (selectedTreeTableNode instanceof AstElseIfStatementTreeTableNode) {
-            Statement newElseIfStatement = null;
-            AstTreeTableNode parentNode = null;
-            AstElseIfStatementTreeTableNode elseIfStatementTreeTableNode = (AstElseIfStatementTreeTableNode) selectedTreeTableNode;
-            if (elseIfStatementTreeTableNode.getParentASTObject() instanceof IfStatement) {
-                newElseIfStatement = insertElseIfStatementForIfStatement((IfStatement) elseIfStatementTreeTableNode
-                        .getParentASTObject());
-                parentNode = elseIfStatementTreeTableNode.getParent();
-            }
-            if (newElseIfStatement != null) {
-                refresh(parentNode);
-                setSelection(parentNode, newElseIfStatement);
-                setEdit(parentNode, newElseIfStatement);
-                setDirty(true);
-            }
-        }
-    }
-
-    private void insertAfterElseIfStatement(AstTreeTableNode selectedTreeTableNode) throws Exception {
-        if (selectedTreeTableNode instanceof AstElseIfStatementTreeTableNode) {
-            Statement newElseIfStatement = null;
-            AstTreeTableNode parentNode = null;
-            AstElseIfStatementTreeTableNode elseIfStatementTreeTableNode = (AstElseIfStatementTreeTableNode) selectedTreeTableNode;
-            if (elseIfStatementTreeTableNode.getASTObject() instanceof IfStatement) {
-                newElseIfStatement = insertElseIfStatementForIfStatement((IfStatement) elseIfStatementTreeTableNode
-                        .getASTObject());
-                parentNode = elseIfStatementTreeTableNode.getParent();
-            }
-            if (newElseIfStatement != null) {
-                refresh(parentNode);
-                setSelection(parentNode, newElseIfStatement);
-                setEdit(parentNode, newElseIfStatement);
-                setDirty(true);
-            }
-        }
-    }
-
-    private Statement addElseIfStatementForIfStatement(IfStatement ifStatement) throws Exception {
-        if (ifStatement.getElseBlock() == null || ifStatement.getElseBlock() instanceof EmptyStatement
-                || ifStatement.getElseBlock() instanceof BlockStatement) {
-            Statement elseStatement = ifStatement.getElseBlock();
-            IfStatement elseIfStatement = AstTreeTableEntityUtil.getNewIfStatement();
-            elseIfStatement.setElseBlock(elseStatement);
-            ifStatement.setElseBlock(elseIfStatement);
-            return elseIfStatement;
-        } else if (ifStatement.getElseBlock() instanceof IfStatement) {
-            return addElseIfStatementForIfStatement((IfStatement) ifStatement.getElseBlock());
-        }
-        return null;
-    }
-
-    private Statement insertElseIfStatementForIfStatement(IfStatement ifStatement) throws Exception {
-        if (ifStatement.getElseBlock() == null || ifStatement.getElseBlock() instanceof EmptyStatement
-                || ifStatement.getElseBlock() instanceof BlockStatement
-                || ifStatement.getElseBlock() instanceof IfStatement) {
-            Statement elseStatement = ifStatement.getElseBlock();
-            IfStatement elseIfStatement = AstTreeTableEntityUtil.getNewIfStatement();
-            elseIfStatement.setElseBlock(elseStatement);
-            ifStatement.setElseBlock(elseIfStatement);
-            return elseIfStatement;
-        }
-        return null;
-    }
-
-    public void addCaseStatement(CaseStatement caseStatement, AstTreeTableNode selectedTreeTableNode,
-            NodeAddType addType) throws Exception {
-        if (caseStatement == null) {
-            return;
-        }
-        if (selectedTreeTableNode instanceof AstSwitchStatementTreeTableNode
-                && selectedTreeTableNode.getASTObject() instanceof SwitchStatement) {
-            SwitchStatement swichStatement = (SwitchStatement) selectedTreeTableNode.getASTObject();
-            swichStatement.addCase(caseStatement);
-            refresh(selectedTreeTableNode);
-            setSelection(selectedTreeTableNode, caseStatement);
-            setEdit(selectedTreeTableNode, caseStatement);
-            setDirty(true);
-        } else if (selectedTreeTableNode instanceof AstCaseStatementTreeTableNode
-                && selectedTreeTableNode.getASTObject() instanceof CaseStatement
-                && selectedTreeTableNode.getParentASTObject() instanceof SwitchStatement) {
-            SwitchStatement swichStatement = (SwitchStatement) selectedTreeTableNode.getParentASTObject();
-            CaseStatement selectedCaseStatement = (CaseStatement) selectedTreeTableNode.getASTObject();
-            int selectedIndex = swichStatement.getCaseStatements().indexOf(selectedCaseStatement);
-            if (addType == NodeAddType.InserBefore) {
-                swichStatement.getCaseStatements().add(selectedIndex, caseStatement);
-            } else if (selectedIndex == swichStatement.getCaseStatements().size() - 1) {
-                swichStatement.getCaseStatements().add(caseStatement);
-            } else {
-                swichStatement.getCaseStatements().add(selectedIndex + 1, caseStatement);
-            }
-            refresh(selectedTreeTableNode.getParent());
-            setSelection(selectedTreeTableNode.getParent(), caseStatement);
-            setEdit(selectedTreeTableNode.getParent(), caseStatement);
-            setDirty(true);
-        }
-    }
-
-    public void addDefaultStatement(AstTreeTableNode selectedTreeTableNode) throws Exception {
-        SwitchStatement swichStatement = null;
-        AstTreeTableNode parentNode = null;
-        if (selectedTreeTableNode instanceof AstSwitchStatementTreeTableNode
-                && selectedTreeTableNode.getASTObject() instanceof SwitchStatement) {
-            swichStatement = (SwitchStatement) selectedTreeTableNode.getASTObject();
-            parentNode = selectedTreeTableNode;
-        } else if (selectedTreeTableNode instanceof AstCaseStatementTreeTableNode
-                && selectedTreeTableNode.getParentASTObject() instanceof SwitchStatement) {
-            swichStatement = (SwitchStatement) selectedTreeTableNode.getParentASTObject();
-            parentNode = selectedTreeTableNode.getParent();
-        }
-        if (swichStatement != null
-                && (swichStatement.getDefaultStatement() == null || swichStatement.getDefaultStatement() instanceof EmptyStatement)) {
-            Statement newDefaultStatement = AstTreeTableEntityUtil.getNewDefaultStatement();
-            swichStatement.setDefaultStatement(newDefaultStatement);
-            refresh(parentNode);
-            setSelection(parentNode, newDefaultStatement);
-            setEdit(parentNode, newDefaultStatement);
-            setDirty(true);
-        }
-    }
-
-    public AstTreeTableNode getTreeTableNodeOfAstObjectFromParentNode(AstTreeTableNode parentNode, ASTNode astObject)
-            throws Exception {
+    public AstTreeTableNode getTreeTableNodeOfAstObjectFromParentNode(AstTreeTableNode parentNode,
+            ASTNodeWrapper astObject) {
         if (astObject == null) {
             return null;
         }
-        List<AstTreeTableNode> nodeList = (parentNode != null) ? parentNode.getChildren() : astTreeTableNodes;
-        for (AstTreeTableNode astNode : nodeList) {
-            if (astNode.getASTObject().equals(astObject)
-                    || (astNode instanceof AstStatementTreeTableNode && astObject
-                            .equals(((AstStatementTreeTableNode) astNode).getDescription()))) {
+        for (AstTreeTableNode astNode : parentNode.getChildren()) {
+            if (astNode.getASTObject().equals(astObject)) {
                 return astNode;
             }
         }
         return null;
     }
 
-    private void setSelection(AstTreeTableNode parentNode, ASTNode astObject) throws Exception {
+    private void setSelection(AstTreeTableNode parentNode, ASTNodeWrapper astObject) {
+        if (parentNode != null) {
+            treeTableViewer.setExpandedState(parentNode, true);
+        }
         setSelection(getTreeTableNodeOfAstObjectFromParentNode(parentNode, astObject));
     }
 
-    private void setSelection(AstTreeTableNode treeTableNode) throws Exception {
-        if (treeTableNode != null) {
-            treeTableViewer.setSelection(new StructuredSelection(treeTableNode));
+    private void setSelection(AstTreeTableNode treeTableNode) {
+        if (treeTableNode == null) {
+            return;
         }
+        treeTableViewer.setSelection(new StructuredSelection(treeTableNode));
     }
 
-    private void setEdit(AstTreeTableNode parentNode, ASTNode astObject) throws Exception {
+    private void setEdit(AstTreeTableNode parentNode, ASTNodeWrapper astObject) {
         setEdit(getTreeTableNodeOfAstObjectFromParentNode(parentNode, astObject));
     }
 
-    private void setEdit(AstTreeTableNode treeTableNode) throws Exception {
-        if (treeTableNode != null) {
-            treeTableViewer.getTree().setFocus();
-            treeTableViewer.editElement(treeTableNode, 0);
+    private void setEdit(AstTreeTableNode treeTableNode) {
+        if (treeTableNode == null) {
+            return;
         }
+        treeTableViewer.getTree().setFocus();
+        treeTableViewer.editElement(treeTableNode, 0);
     }
 
-    public int getNumberOfMethodAndClassNode() {
-        int count = 0;
-        for (AstTreeTableNode treeTableNode : astTreeTableNodes) {
-            if (treeTableNode instanceof AstMethodTreeTableNode || treeTableNode instanceof AstClassTreeTableNode) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    public void refresh() throws Exception {
+    public void refresh() {
         refresh(null);
     }
 
-    public void refresh(Object object) throws Exception {
+    public void refresh(Object object) {
         AstTreeTableNode topItem = getTopItem();
         Object[] expandedElements = saveExpandedState();
         refreshObjectWithoutReloading(object);
@@ -583,16 +368,16 @@ public class TestCaseTreeTableInput {
         setTopItem(topItem);
     }
 
-    private void refreshObjectWithoutReloading(Object object) throws Exception {
+    private void refreshObjectWithoutReloading(Object object) {
         if (object == null) {
             reloadTreeTableNodes();
-        } else {
-            if (object instanceof AstScriptMainBlockStatmentTreeTableNode) {
-                treeTableViewer.refresh();
-            } else {
-                treeTableViewer.refresh(object);
-            }
+            return;
         }
+        if (object instanceof AstScriptTreeTableNode) {
+            treeTableViewer.refresh();
+            return;
+        }
+        treeTableViewer.refresh(object);
     }
 
     private void reloadExpandedState(Object[] expandedElements) {
@@ -609,37 +394,24 @@ public class TestCaseTreeTableInput {
     }
 
     // refresh treetable root
-    private void reloadTreeTableNodes() throws Exception {
-        astTreeTableNodes = new ArrayList<AstTreeTableNode>();
-        for (ASTNode astNode : astNodes) {
-            if (astNode instanceof ClassNode) {
-                if (((ClassNode) astNode).isScript()) {
-                    mainClassNode = ((ClassNode) astNode);
-                    astTreeTableNodes.addAll(AstTreeTableUtil.getChildren(((ClassNode) astNode), null));
-                } else {
-                    astTreeTableNodes.add(new AstClassTreeTableNode((ClassNode) astNode, null));
-                }
-            }
-        }
+    private void reloadTreeTableNodes() {
+        List<AstTreeTableNode> astTreeTableNodes = new ArrayList<AstTreeTableNode>();
+        mainClassTreeNode = new AstScriptTreeTableNode(mainClassNodeWrapper, null);
+        astTreeTableNodes.add(mainClassTreeNode);
         reloadTestCaseVariables();
         treeTableViewer.setInput(astTreeTableNodes);
     }
 
     public void reloadTestCaseVariables() {
-        mainClassNode.getFields().clear();
+        mainClassNodeWrapper.getFields().clear();
         for (VariableEntity variable : parentPart.getVariables()) {
-            Expression defaultExpression = new ConstantExpression(null);
-            try {
-                ASTNode variableDefaultValue = GroovyParser
-                        .parseGroovyScriptAndGetFirstItem(variable.getDefaultValue());
-                if (variableDefaultValue instanceof ExpressionStatement) {
-                    defaultExpression = ((ExpressionStatement) variableDefaultValue).getExpression();
-                }
-            } catch (Exception e) {
-                LoggerSingleton.logError(e);
+            FieldNodeWrapper field = new FieldNodeWrapper(variable.getName(), Object.class, mainClassNodeWrapper);
+            ExpressionWrapper expression = GroovyWrapperParser.parseGroovyScriptAndGetFirstExpression(variable.getDefaultValue());
+            if (expression != null) {
+                expression.setParent(field);
+                field.setInitialValueExpression(expression);
             }
-            mainClassNode.addField(new FieldNode(variable.getName(), Modifier.PUBLIC, new ClassNode(Object.class),
-                    mainClassNode, defaultExpression));
+            mainClassNodeWrapper.getFields().add(field);
         }
     }
 
@@ -647,7 +419,7 @@ public class TestCaseTreeTableInput {
         removeRows(getSelectedNodes());
     }
 
-    public void removeRows(List<AstTreeTableNode> treeTableNodes) throws Exception {
+    public void removeRows(List<AstTreeTableNode> treeTableNodes) {
         AstTreeTableNode topItem = getTopItem();
         Object[] expandedElements = saveExpandedState();
         List<AstTreeTableNode> refreshNodeList = new ArrayList<AstTreeTableNode>();
@@ -702,6 +474,8 @@ public class TestCaseTreeTableInput {
             return true;
         } else if (treeTableNode_1 == null) {
             return false;
+        } else if (!(treeTableNode_2.canHaveChildren())) {
+            return false;
         }
         boolean isDescendant = false;
         try {
@@ -745,97 +519,52 @@ public class TestCaseTreeTableInput {
         return null;
     }
 
-    private void removeRow(AstTreeTableNode treeTableNode, List<AstTreeTableNode> refreshNodeList) throws Exception {
+    private void removeRow(AstTreeTableNode treeTableNode, List<AstTreeTableNode> refreshNodeList) {
         if (treeTableNode == null) {
             return;
         }
-        if (treeTableNode instanceof AstElseStatementTreeTableNode
-                && treeTableNode.getParentASTObject() instanceof IfStatement) {
-            removeElseStatement(treeTableNode);
+        if (treeTableNode instanceof AstElseStatementTreeTableNode) {
+            removeElseStatement((AstElseStatementTreeTableNode) treeTableNode);
             refreshNodeList.add(treeTableNode.getParent());
-        } else if (treeTableNode instanceof AstElseIfStatementTreeTableNode
-                && treeTableNode.getASTObject() instanceof IfStatement
-                && treeTableNode.getParentASTObject() instanceof IfStatement) {
-            removeElseIfStatement(treeTableNode);
+        } else if (treeTableNode instanceof AstSwitchDefaultStatementTreeTableNode) {
+            removeSwitchDefaultStatement((AstSwitchDefaultStatementTreeTableNode) treeTableNode);
             refreshNodeList.add(treeTableNode.getParent());
-        } else if (treeTableNode instanceof AstCatchStatementTreeTableNode
-                && treeTableNode.getParentASTObject() instanceof TryCatchStatement) {
-            removeCatchStatement(treeTableNode);
-            refreshNodeList.add(treeTableNode.getParent());
-        } else if (treeTableNode instanceof AstSwitchDefaultStatementTreeTableNode
-                && treeTableNode.getParentASTObject() instanceof SwitchStatement) {
-            removeSwitchStatement(treeTableNode);
-            refreshNodeList.add(treeTableNode.getParent());
-        } else if (treeTableNode instanceof AstFinallyStatementTreeTableNode
-                && treeTableNode.getParentASTObject() instanceof TryCatchStatement) {
-            removeFinallyStatement(treeTableNode);
+        } else if (treeTableNode instanceof AstFinallyStatementTreeTableNode) {
+            removeFinallyStatement((AstFinallyStatementTreeTableNode) treeTableNode);
             refreshNodeList.add(treeTableNode.getParent());
         } else {
             removeStatement(treeTableNode, refreshNodeList);
         }
     }
 
-    private void removeStatement(AstTreeTableNode treeTableNode, List<AstTreeTableNode> refreshNodeList)
-            throws Exception {
-        if (treeTableNode.getParent() != null) {
-            AstTreeTableNode parentNode = treeTableNode.getParent();
-            if (treeTableNode instanceof AstStatementTreeTableNode) {
-                AstStatementTreeTableNode statementNode = (AstStatementTreeTableNode) treeTableNode;
-                removeDescription(parentNode, statementNode);
-            }
-            parentNode.removeChildObject(treeTableNode.getASTObject());
-            refreshNodeList.add(parentNode);
-        } else {
-            if (treeTableNode.getASTObject() instanceof ClassNode && treeTableNode.getASTObject() != mainClassNode) {
-                if (astNodes.remove(treeTableNode.getASTObject())) {
-                    refreshNodeList.add(null);
-                }
-            } else if (treeTableNode.getASTObject() instanceof MethodNode) {
-                if (mainClassNode.getMethods().remove(treeTableNode.getASTObject())) {
-                    refreshNodeList.add(null);
-                }
-            }
-        }
+    private void removeStatement(AstTreeTableNode treeTableNode, List<AstTreeTableNode> refreshNodeList) {
+        AstTreeTableNode parentNode = treeTableNode.getParent();
+        AstTreeTableUtil.removeChild(treeTableNode.getASTObject().getParent(), treeTableNode.getASTObject());
+        refreshNodeList.add(parentNode);
     }
 
-    public void removeDescription(AstTreeTableNode parentNode, AstStatementTreeTableNode statementNode) {
-        if (parentNode != null && statementNode != null && statementNode.getDescription() != null) {
-            parentNode.removeChildObject(statementNode.getDescription());
-        }
-    }
-
-    private void removeFinallyStatement(AstTreeTableNode treeTableNode) throws Exception {
-        TryCatchStatement tryCatchStatement = (TryCatchStatement) treeTableNode.getParentASTObject();
-        if (tryCatchStatement.getCatchStatements().isEmpty()) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.WARN,
-                    StringConstants.WARN_TRY_STATEMENT_MUST_HAVE_CATCH_OR_FINALLY);
+    private void removeFinallyStatement(AstFinallyStatementTreeTableNode treeTableNode) {
+        BlockStatementWrapper finallyStatementWrapper = (BlockStatementWrapper) treeTableNode.getASTObject();
+        if (!(finallyStatementWrapper.getParent() instanceof TryCatchStatementWrapper)) {
             return;
         }
-        ((TryCatchStatement) treeTableNode.getParentASTObject()).setFinallyStatement(new EmptyStatement());
+        ((TryCatchStatementWrapper) finallyStatementWrapper.getParent()).setFinallyStatement(null);
     }
 
-    private void removeSwitchStatement(AstTreeTableNode treeTableNode) throws Exception {
-        ((SwitchStatement) treeTableNode.getParentASTObject()).setDefaultStatement(new EmptyStatement());
-    }
-
-    private void removeCatchStatement(AstTreeTableNode treeTableNode) throws Exception {
-        TryCatchStatement tryCatchStatement = (TryCatchStatement) treeTableNode.getParentASTObject();
-        if ((tryCatchStatement.getFinallyStatement() == null || tryCatchStatement.getFinallyStatement() instanceof EmptyStatement)
-                && tryCatchStatement.getCatchStatements().size() == 1) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.WARN,
-                    StringConstants.WARN_TRY_STATEMENT_MUST_HAVE_CATCH_OR_FINALLY);
+    private void removeSwitchDefaultStatement(AstSwitchDefaultStatementTreeTableNode treeTableNode) {
+        BlockStatementWrapper switchDefault = (BlockStatementWrapper) treeTableNode.getASTObject();
+        if (!(switchDefault.getParent() instanceof SwitchStatementWrapper)) {
             return;
         }
-        tryCatchStatement.getCatchStatements().remove(treeTableNode.getASTObject());
+        ((SwitchStatementWrapper) switchDefault.getParent()).setDefaultStatement(null);
     }
 
-    private void removeElseIfStatement(AstTreeTableNode treeTableNode) throws Exception {
-        ((IfStatement) treeTableNode.getParentASTObject()).setElseBlock(((IfStatement) treeTableNode.getASTObject())
-                .getElseBlock());
-    }
-
-    private void removeElseStatement(AstTreeTableNode treeTableNode) throws Exception {
-        ((IfStatement) treeTableNode.getParentASTObject()).setElseBlock(new EmptyStatement());
+    private void removeElseStatement(AstElseStatementTreeTableNode treeTableNode) {
+        BlockStatementWrapper elseStatement = (BlockStatementWrapper) treeTableNode.getASTObject();
+        if (!(elseStatement.getParent() instanceof IfStatementWrapper)) {
+            return;
+        }
+        ((IfStatementWrapper) elseStatement.getParent()).setElseStatement(null);
     }
 
     public void setDirty(boolean isDirty) {
@@ -843,170 +572,134 @@ public class TestCaseTreeTableInput {
         setChanged(isDirty);
     }
 
-    public void moveUp() throws Exception {
+    public void moveUp() {
         AstTreeTableNode selectedNode = getSelectedNode();
-        if (selectedNode != null && selectedNode.getParent() != null) {
-            AstTreeTableNode parentNode = selectedNode.getParent();
-            List<AstTreeTableNode> childNodes = parentNode.getChildren();
-            int nodeIndex = childNodes.indexOf(selectedNode);
-            if (nodeIndex - 1 < 0) {
-                return;
-            }
-            move(selectedNode, childNodes.get(nodeIndex - 1), NodeAddType.InserBefore);
-        }
-    }
-
-    public void moveDown() throws Exception {
-        AstTreeTableNode selectedNode = getSelectedNode();
-        if (selectedNode != null && selectedNode.getParent() != null) {
-            AstTreeTableNode parentNode = selectedNode.getParent();
-            List<AstTreeTableNode> childNodes = parentNode.getChildren();
-            int nodeIndex = childNodes.indexOf(selectedNode);
-            if (nodeIndex + 1 >= childNodes.size()) {
-                return;
-            }
-            move(selectedNode, childNodes.get(nodeIndex + 1), NodeAddType.InserAfter);
-        }
-    }
-
-    public void move(AstTreeTableNode sourceNode, AstTreeTableNode destinationNode, NodeAddType addType)
-            throws Exception {
-        if (sourceNode == null || destinationNode == null) {
+        if (selectedNode == null || !(selectedNode.getParent().canHaveChildren())
+                || selectedNode instanceof AstElseStatementTreeTableNode
+                || selectedNode instanceof AstSwitchDefaultStatementTreeTableNode
+                || selectedNode instanceof AstFinallyStatementTreeTableNode) {
             return;
         }
-        List<AstTreeTableNode> destinationNodeList = getNodeList(destinationNode);
+        AstTreeTableNode parentNode = selectedNode.getParent();
+        List<AstTreeTableNode> childNodes = parentNode.getChildren();
+        int nodeIndex = childNodes.indexOf(selectedNode);
+        if (nodeIndex - 1 < 0) {
+            return;
+        }
+        move(selectedNode, childNodes.get(nodeIndex - 1), NodeAddType.InserBefore);
+    }
+
+    public void moveDown() {
+        AstTreeTableNode selectedNode = getSelectedNode();
+        if (selectedNode == null || !(selectedNode.getParent().canHaveChildren())
+                || selectedNode instanceof AstElseStatementTreeTableNode
+                || selectedNode instanceof AstSwitchDefaultStatementTreeTableNode
+                || selectedNode instanceof AstFinallyStatementTreeTableNode) {
+            return;
+        }
+        AstTreeTableNode parentNode = selectedNode.getParent();
+        List<AstTreeTableNode> childNodes = parentNode.getChildren();
+        int nodeIndex = getAstObjectIndex(selectedNode);
+        if (nodeIndex + 1 >= childNodes.size()) {
+            return;
+        }
+        move(selectedNode, childNodes.get(nodeIndex + 1), NodeAddType.InserAfter);
+    }
+
+    public void move(AstTreeTableNode sourceNode, AstTreeTableNode destinationNode, NodeAddType addType) {
+        if (sourceNode == null
+                || destinationNode == null
+                || (sourceNode instanceof AstElseIfStatementTreeTableNode && !(destinationNode instanceof AstElseIfStatementTreeTableNode))
+                || (sourceNode instanceof AstCatchStatementTreeTableNode && !(destinationNode instanceof AstCatchStatementTreeTableNode))
+                || (sourceNode instanceof AstCaseStatementTreeTableNode && !(destinationNode instanceof AstCaseStatementTreeTableNode))) {
+            return;
+        }
+        if (destinationNode instanceof AstElseIfStatementTreeTableNode
+                && !(sourceNode instanceof AstElseIfStatementTreeTableNode)) {
+            destinationNode = getTreeTableNodeOfAstObjectFromParentNode(destinationNode.getParent(),
+                    ((AstElseIfStatementTreeTableNode) destinationNode).getASTObject().getParent());
+        } else if (destinationNode instanceof AstCatchStatementTreeTableNode
+                && !(sourceNode instanceof AstCatchStatementTreeTableNode)) {
+            destinationNode = getTreeTableNodeOfAstObjectFromParentNode(destinationNode.getParent(),
+                    ((AstCatchStatementTreeTableNode) destinationNode).getASTObject().getParent());
+        } else if (destinationNode instanceof AstElseStatementTreeTableNode) {
+            destinationNode = getTreeTableNodeOfAstObjectFromParentNode(destinationNode.getParent(),
+                    ((AstElseStatementTreeTableNode) destinationNode).getASTObject().getParent());
+        } else if (destinationNode instanceof AstFinallyStatementTreeTableNode) {
+            destinationNode = getTreeTableNodeOfAstObjectFromParentNode(destinationNode.getParent(),
+                    ((AstFinallyStatementTreeTableNode) destinationNode).getASTObject().getParent());
+        }
+        if (destinationNode == null || !(destinationNode.getParent().canHaveChildren())
+                || sourceNode == destinationNode) {
+            return;
+        }
+        List<AstTreeTableNode> destinationNodeList = destinationNode.getParent().getChildren(); // TODO: Weird
         int destinationNodeIndex = destinationNodeList.indexOf(destinationNode);
+        int listSize = destinationNodeList.size() - 1;
         List<AstTreeTableNode> removeRow = new ArrayList<AstTreeTableNode>();
         removeRow.add(sourceNode);
         removeRows(removeRow);
 
-        if (destinationNodeIndex == destinationNodeList.size() - 1) {
+        if (destinationNodeIndex == listSize) {
             addNewAstObject(sourceNode.getASTObject(), destinationNode, NodeAddType.InserAfter);
         } else {
             addNewAstObject(sourceNode.getASTObject(), destinationNode, addType);
         }
     }
 
-    private List<AstTreeTableNode> getNodeList(AstTreeTableNode node) throws Exception {
-        if (node == null) {
-            return null;
-        }
-        if (node.getParent() == null) {
-            return astTreeTableNodes;
-        } else {
-            return node.getParent().getChildren();
-        }
-    }
-
-    public int getAstObjectIndexFromParentNode(AstTreeTableNode parentTreeTableNode, ASTNode astObject)
-            throws Exception {
-        if (parentTreeTableNode != null) {
-            List<AstTreeTableNode> childNodes = parentTreeTableNode.getChildren();
-            for (AstTreeTableNode childNode : childNodes) {
-                if ((childNode.getASTObject().equals(astObject))
-                        || (childNode instanceof AstStatementTreeTableNode
-                                && ((AstStatementTreeTableNode) childNode).getDescription() != null && ((AstStatementTreeTableNode) childNode)
-                                .getDescription().equals(astObject))) {
-                    return childNodes.indexOf(childNode);
-                }
-            }
-        } else {
-            for (AstTreeTableNode childNode : astTreeTableNodes) {
-                if ((childNode.getASTObject().equals(astObject))) {
-                    return astTreeTableNodes.indexOf(childNode);
-                }
-            }
-        }
-        return -1;
-    }
-
-    public void addMethod(MethodNode method, NodeAddType addType) throws Exception {
-        int methodIndex = -1;
-        AstTreeTableNode selectedNode = getSelectedNode();
-        if (selectedNode instanceof AstMethodTreeTableNode) {
-            methodIndex = mainClassNode.getMethods().indexOf(selectedNode.getASTObject());
-        }
-        if (methodIndex == -1) {
-            addMethod(method, -1);
-        } else {
-            switch (addType) {
-            case Add:
-            case InserAfter:
-                addMethod(method, methodIndex + 1);
-                break;
-            case InserBefore:
-                addMethod(method, methodIndex);
-                break;
-            }
-        }
-        setDirty(true);
-        refresh();
-        setSelection(null, method);
-    }
-
-    public void updateMethod(MethodNode oldMethod, MethodNode newMethod) throws Exception {
-        int methodIndex = mainClassNode.getMethods().indexOf(oldMethod);
-        mainClassNode.getMethods().remove(oldMethod);
+    public void updateMethod(MethodNodeWrapper oldMethod, MethodNodeWrapper newMethod) throws Exception {
+        int methodIndex = mainClassNodeWrapper.getMethods().indexOf(oldMethod);
+        mainClassNodeWrapper.getMethods().remove(oldMethod);
         addMethod(newMethod, methodIndex);
         setDirty(true);
         refresh();
         setSelection(null, newMethod);
     }
 
-    private void addMethod(MethodNode newMethod, int methodIndex) {
-        if (methodIndex >= 0 && methodIndex < mainClassNode.getMethods().size()) {
-            mainClassNode.getMethods().add(methodIndex, newMethod);
+    private void addMethod(MethodNodeWrapper newMethod, int methodIndex) {
+        newMethod.setParent(mainClassNodeWrapper);
+        if (methodIndex >= 0 && methodIndex < mainClassNodeWrapper.getMethods().size()) {
+            mainClassNodeWrapper.getMethods().add(methodIndex, newMethod);
         } else {
-            mainClassNode.getMethods().add(newMethod);
+            mainClassNodeWrapper.getMethods().add(newMethod);
         }
     }
 
-    private int getAstObjectIndexFromParentNode(AstTreeTableNode parentNode, AstTreeTableNode node) {
-        if (parentNode == null) {
-            return 0;
+    private int getAstObjectIndex(AstTreeTableNode node) {
+        if (node == null || node.getASTObject() == null || node.getASTObject().getParent() == null) {
+            return -1;
         }
-        if (node instanceof AstElseStatementTreeTableNode) {
-            return parentNode.getChildObjectIndex(((AstElseStatementTreeTableNode) node).getRootIfStatement());
-        } else if (node instanceof AstElseIfStatementTreeTableNode) {
-            return parentNode.getChildObjectIndex(((AstElseIfStatementTreeTableNode) node).getRootIfStatement());
-        } else if (node instanceof AstCatchStatementTreeTableNode) {
-            return parentNode.getChildObjectIndex(((AstCatchStatementTreeTableNode) node).getTryCatchStatement());
-        }
-        return parentNode.getChildObjectIndex(node.getASTObject());
+        return AstTreeTableUtil.getIndex(node.getASTObject().getParent(), node.getASTObject());
     }
 
     public void changeFailureHandling(FailureHandling failureHandling) throws Exception {
         changeFailureHandling(failureHandling, getSelectedNodes());
     }
 
-    private void changeFailureHandling(FailureHandling failureHandling, List<AstTreeTableNode> treeTableNodes)
-            throws Exception {
+    private void changeFailureHandling(FailureHandling failureHandling, List<AstTreeTableNode> treeTableNodes) {
+        if (failureHandling == null || treeTableNodes == null || treeTableNodes.isEmpty()) {
+            return;
+        }
         AstTreeTableNode topItem = getTopItem();
         Object[] expandedElements = saveExpandedState();
         for (int i = treeTableNodes.size() - 1; i >= 0; i--) {
-            changeFailureHandling(failureHandling, treeTableNodes.get(i));
+            if (!(treeTableNodes.get(i) instanceof AstAbstractKeywordTreeTableNode)) {
+                continue;
+            }
+            AstAbstractKeywordTreeTableNode keywordNode = (AstAbstractKeywordTreeTableNode) treeTableNodes.get(i);
+            if (!failureHandling.equals(keywordNode.getFailureHandlingValue())
+                    && keywordNode.setFailureHandlingValue(failureHandling)) {
+                treeTableViewer.update(keywordNode, null);
+                setDirty(true);
+            }
         }
         reloadExpandedState(expandedElements);
         setTopItem(topItem);
     }
 
-    private void changeFailureHandling(FailureHandling failureHandling, AstTreeTableNode treeTableNode)
-            throws Exception {
-        if (treeTableNode instanceof AstAbstractKeywordTreeTableNode) {
-            AstAbstractKeywordTreeTableNode keywordNode = (AstAbstractKeywordTreeTableNode) treeTableNode;
-            if (keywordNode.getFailureHandlingValue() != null
-                    && !keywordNode.getFailureHandlingValue().equals(failureHandling)) {
-                if (keywordNode.setFailureHandlingValue(failureHandling)) {
-                    treeTableViewer.update(keywordNode, null);
-                    setDirty(true);
-                }
-            }
-        }
-    }
-
-    private String parseAstObjectToString(ASTNode astObject) {
+    private String parseAstObjectToString(ASTNodeWrapper astObject) {
         StringBuilder stringBuilder = new StringBuilder();
-        GroovyParser groovyParser = new GroovyParser(stringBuilder);
+        GroovyWrapperParser groovyParser = new GroovyWrapperParser(stringBuilder);
         groovyParser.parse(astObject);
         return stringBuilder.toString();
     }
@@ -1014,23 +707,17 @@ public class TestCaseTreeTableInput {
     public void copy(List<AstTreeTableNode> copyNodes) {
         StringBuilder scriptSnippets = new StringBuilder();
         for (AstTreeTableNode astTreeTableNode : copyNodes) {
-            if (astTreeTableNode instanceof AstStatementTreeTableNode) {
-                AstStatementTreeTableNode statementNode = (AstStatementTreeTableNode) astTreeTableNode;
-                if (statementNode.getDescription() != null) {
-                    scriptSnippets.append(parseAstObjectToString(statementNode.getDescription()));
-                    scriptSnippets.append(GROOVY_NEW_LINE_CHARACTER);
-                }
-            }
             scriptSnippets.append(parseAstObjectToString(astTreeTableNode.getASTObject()));
             scriptSnippets.append(GROOVY_NEW_LINE_CHARACTER);
         }
-        if (scriptSnippets.length() > 0) {
-            final Clipboard cb = new Clipboard(Display.getCurrent());
-            ScriptTransferData transferData = new ScriptTransferData(scriptSnippets.toString(), parentPart
-                    .getTestCase().getId());
-            cb.setContents(new Object[] { new ScriptTransferData[] { transferData } },
-                    new Transfer[] { new ScriptTransfer() });
+        if (scriptSnippets.length() == 0) {
+            return;
         }
+        final Clipboard cb = new Clipboard(Display.getCurrent());
+        ScriptTransferData transferData = new ScriptTransferData(scriptSnippets.toString(), parentPart.getTestCase()
+                .getId());
+        cb.setContents(new Object[] { new ScriptTransferData[] { transferData } },
+                new Transfer[] { new ScriptTransfer() });
     }
 
     public void cut(List<AstTreeTableNode> cutNodes) throws Exception {
@@ -1047,14 +734,11 @@ public class TestCaseTreeTableInput {
         } else if (data instanceof ScriptTransferData[]) {
             snippet = ((ScriptTransferData[]) data)[0].getScriptSnippet();
         }
-        List<ASTNode> astNodes = GroovyParser.parseGroovyScriptIntoAstNodes(snippet);
-        for (ASTNode astNode : astNodes) {
-            if (astNode instanceof BlockStatement) {
-                List<Statement> childStatements = ((BlockStatement) astNode).getStatements();
-                addNewAstObjects(childStatements, destinationNode, addType);
-                break;
-            }
+        ScriptNodeWrapper scriptNode = GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(snippet);
+        if (scriptNode == null) {
+            return;
         }
+        addNewAstObjects(scriptNode.getBlock().getStatements(), destinationNode, addType);
     }
 
     public boolean isChanged() {
@@ -1069,82 +753,82 @@ public class TestCaseTreeTableInput {
      * Add new ast object base on menu item id
      * 
      * @param astObjectId
-     *            menu item id, see {@link TreeTableMenuItemConstants}
+     * menu item id, see {@link TreeTableMenuItemConstants}
      * @param destinationNode
-     *            destination node to add
+     * destination node to add
      * @param addType
-     *            see {@link NodeAddType}
+     * see {@link NodeAddType}
      */
     public void addNewAstObject(int astObjectId, AstTreeTableNode destinationNode, NodeAddType addType) {
         switch (astObjectId) {
-        case TreeTableMenuItemConstants.CUSTOM_KEYWORD_MENU_ITEM_ID:
-            addNewCustomKeyword(destinationNode, addType);
-            break;
-        case TreeTableMenuItemConstants.IF_STATEMENT_MENU_ITEM_ID:
-            addNewIfStatement(destinationNode, addType);
-            break;
-        case TreeTableMenuItemConstants.ELSE_STATEMENT_MENU_ITEM_ID:
-            addNewElseStatement(destinationNode);
-            break;
-        case TreeTableMenuItemConstants.ELSE_IF_STATEMENT_MENU_ITEM_ID:
-            addNewElseIfStatement(destinationNode, addType);
-            break;
-        case TreeTableMenuItemConstants.WHILE_STATEMENT_MENU_ITEM_ID:
-            addNewWhileStatement(destinationNode, addType);
-            break;
-        case TreeTableMenuItemConstants.FOR_STATEMENT_MENU_ITEM_ID:
-            addNewForStatement(destinationNode, addType);
-            break;
-        case TreeTableMenuItemConstants.BINARY_STATEMENT_MENU_ITEM_ID:
-            addNewBinaryStatement(destinationNode, addType);
-            break;
-        case TreeTableMenuItemConstants.ASSERT_STATEMENT_MENU_ITEM_ID:
-            addNewAssertStatement(destinationNode, addType);
-            break;
-        case TreeTableMenuItemConstants.CALL_METHOD_STATEMENT_MENU_ITEM_ID:
-            addNewMethodCall(destinationNode, addType);
-            break;
-        case TreeTableMenuItemConstants.BREAK_STATMENT_MENU_ITEM_ID:
-            addNewBreakStatement(destinationNode, addType);
-            break;
-        case TreeTableMenuItemConstants.CONTINUE_STATMENT_MENU_ITEM_ID:
-            addNewContinueStatement(destinationNode, addType);
-            break;
-        case TreeTableMenuItemConstants.RETURN_STATMENT_MENU_ITEM_ID:
-            addNewReturnStatement(destinationNode, addType);
-            break;
-        case TreeTableMenuItemConstants.SWITCH_STATMENT_MENU_ITEM_ID:
-            addNewSwitchStatement(destinationNode, addType);
-            break;
-        case TreeTableMenuItemConstants.CASE_STATMENT_MENU_ITEM_ID:
-            addNewCaseStatement(destinationNode, addType);
-            break;
-        case TreeTableMenuItemConstants.DEFAULT_STATMENT_MENU_ITEM_ID:
-            addNewDefaultStatement(destinationNode, addType);
-            break;
-        case TreeTableMenuItemConstants.TRY_STATEMENT_MENU_ITEM_ID:
-            addNewTryStatement(destinationNode, addType);
-            break;
-        case TreeTableMenuItemConstants.CATCH_STATMENT_MENU_ITEM_ID:
-            addNewCatchStatement(destinationNode, addType);
-            break;
-        case TreeTableMenuItemConstants.FINALLY_STATMENT_MENU_ITEM_ID:
-            addNewFinallyStatement(destinationNode, addType);
-            break;
-        case TreeTableMenuItemConstants.THROW_STATMENT_MENU_ITEM_ID:
-            addNewThrowStatement(destinationNode, addType);
-            break;
-        case TreeTableMenuItemConstants.METHOD_MENU_ITEM_ID:
-            addNewMethod(destinationNode, addType);
-            break;
-        case TreeTableMenuItemConstants.CALL_TEST_CASE_MENU_ITEM_ID:
-            callTestCase(destinationNode, addType);
-            break;
-        default:
-            if (TreeTableMenuItemConstants.isBuildInKeywordID(astObjectId)) {
-                addNewBuiltInKeyword(astObjectId, destinationNode, addType);
-            }
-            break;
+            case TreeTableMenuItemConstants.CUSTOM_KEYWORD_MENU_ITEM_ID:
+                addNewCustomKeyword(destinationNode, addType);
+                break;
+            case TreeTableMenuItemConstants.IF_STATEMENT_MENU_ITEM_ID:
+                addNewIfStatement(destinationNode, addType);
+                break;
+            case TreeTableMenuItemConstants.ELSE_STATEMENT_MENU_ITEM_ID:
+                addNewElseStatement(destinationNode);
+                break;
+            case TreeTableMenuItemConstants.ELSE_IF_STATEMENT_MENU_ITEM_ID:
+                addNewElseIfStatement(destinationNode, addType);
+                break;
+            case TreeTableMenuItemConstants.WHILE_STATEMENT_MENU_ITEM_ID:
+                addNewWhileStatement(destinationNode, addType);
+                break;
+            case TreeTableMenuItemConstants.FOR_STATEMENT_MENU_ITEM_ID:
+                addNewForStatement(destinationNode, addType);
+                break;
+            case TreeTableMenuItemConstants.BINARY_STATEMENT_MENU_ITEM_ID:
+                addNewBinaryStatement(destinationNode, addType);
+                break;
+            case TreeTableMenuItemConstants.ASSERT_STATEMENT_MENU_ITEM_ID:
+                addNewAssertStatement(destinationNode, addType);
+                break;
+            case TreeTableMenuItemConstants.CALL_METHOD_STATEMENT_MENU_ITEM_ID:
+                addNewMethodCall(destinationNode, addType);
+                break;
+            case TreeTableMenuItemConstants.BREAK_STATMENT_MENU_ITEM_ID:
+                addNewBreakStatement(destinationNode, addType);
+                break;
+            case TreeTableMenuItemConstants.CONTINUE_STATMENT_MENU_ITEM_ID:
+                addNewContinueStatement(destinationNode, addType);
+                break;
+            case TreeTableMenuItemConstants.RETURN_STATMENT_MENU_ITEM_ID:
+                addNewReturnStatement(destinationNode, addType);
+                break;
+            case TreeTableMenuItemConstants.SWITCH_STATMENT_MENU_ITEM_ID:
+                addNewSwitchStatement(destinationNode, addType);
+                break;
+            case TreeTableMenuItemConstants.CASE_STATMENT_MENU_ITEM_ID:
+                addNewCaseStatement(destinationNode, addType);
+                break;
+            case TreeTableMenuItemConstants.DEFAULT_STATMENT_MENU_ITEM_ID:
+                addNewDefaultStatement(destinationNode, addType);
+                break;
+            case TreeTableMenuItemConstants.TRY_STATEMENT_MENU_ITEM_ID:
+                addNewTryStatement(destinationNode, addType);
+                break;
+            case TreeTableMenuItemConstants.CATCH_STATMENT_MENU_ITEM_ID:
+                addNewCatchStatement(destinationNode, addType);
+                break;
+            case TreeTableMenuItemConstants.FINALLY_STATMENT_MENU_ITEM_ID:
+                addNewFinallyStatement(destinationNode, addType);
+                break;
+            case TreeTableMenuItemConstants.THROW_STATMENT_MENU_ITEM_ID:
+                addNewThrowStatement(destinationNode, addType);
+                break;
+            case TreeTableMenuItemConstants.METHOD_MENU_ITEM_ID:
+                addNewMethod(destinationNode, addType);
+                break;
+            case TreeTableMenuItemConstants.CALL_TEST_CASE_MENU_ITEM_ID:
+                callTestCase(destinationNode, addType);
+                break;
+            default:
+                if (TreeTableMenuItemConstants.isBuildInKeywordID(astObjectId)) {
+                    addNewBuiltInKeyword(astObjectId, destinationNode, addType);
+                }
+                break;
         }
     }
 
@@ -1162,53 +846,55 @@ public class TestCaseTreeTableInput {
     }
 
     public void callTestCase(AstTreeTableNode destinationNode, NodeAddType addType) {
+        if (ProjectController.getInstance().getCurrentProject() == null) {
+            return;
+        }
         try {
-            ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-            if (currentProject != null) {
-                TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(Display.getCurrent().getActiveShell(),
-                        new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(new EntityProvider()));
+            TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(Display.getCurrent().getActiveShell(),
+                    new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(new EntityProvider()));
+            dialog.setAllowMultiple(false);
+            dialog.setTitle(StringConstants.EDI_TITLE_TEST_CASE_BROWSER);
+            dialog.setInput(TreeEntityUtil.getChildren(null,
+                    FolderController.getInstance().getTestCaseRoot(ProjectController.getInstance().getCurrentProject())));
+            if (dialog.open() != Window.OK) {
+                return;
+            }
+            Object[] selectedObjects = dialog.getResult();
+            for (Object object : selectedObjects) {
+                if (!(object instanceof ITreeEntity))
+                    continue;
 
-                dialog.setAllowMultiple(false);
-                dialog.setTitle(StringConstants.EDI_TITLE_TEST_CASE_BROWSER);
-                dialog.setInput(TreeEntityUtil.getChildren(null,
-                        FolderController.getInstance().getTestCaseRoot(currentProject)));
-                if (dialog.open() == Window.OK) {
-                    Object[] selectedObjects = dialog.getResult();
-                    for (Object object : selectedObjects) {
-                        if (!(object instanceof ITreeEntity))
-                            continue;
-
-                        ITreeEntity treeEntity = (ITreeEntity) object;
-                        List<TestCaseEntity> testCaseList = new ArrayList<TestCaseEntity>();
-                        if (treeEntity.getObject() instanceof FolderEntity) {
-                            for (TestCaseEntity testCase : TestCaseEntityUtil
-                                    .getTestCasesFromFolderTree((FolderTreeEntity) treeEntity)) {
-                                if (qualify(testCase)) {
-                                    testCaseList.add(testCase);
-                                }
-                            }
-                        } else if (treeEntity.getObject() instanceof TestCaseEntity) {
-                            TestCaseEntity calledTestCase = (TestCaseEntity) treeEntity.getObject();
-                            if (qualify(calledTestCase)) {
-                                testCaseList.add(calledTestCase);
-                            }
+                ITreeEntity treeEntity = (ITreeEntity) object;
+                List<TestCaseEntity> testCaseList = new ArrayList<TestCaseEntity>();
+                if (treeEntity.getObject() instanceof FolderEntity) {
+                    for (TestCaseEntity testCase : TestCaseEntityUtil.getTestCasesFromFolderTree((FolderTreeEntity) treeEntity)) {
+                        if (qualify(testCase)) {
+                            testCaseList.add(testCase);
                         }
-                        List<Statement> statementsToAdd = new ArrayList<Statement>();
-                        List<VariableEntity> variablesToAdd = new ArrayList<VariableEntity>();
-                        if (addType == NodeAddType.InserBefore) {
-                            for (TestCaseEntity testCase : testCaseList) {
-                                statementsToAdd.add(generateStatementForCalledTestCase(testCase, variablesToAdd));
-                            }
-                        } else {
-                            for (int index = testCaseList.size() - 1; index >= 0; index--) {
-                                statementsToAdd.add(generateStatementForCalledTestCase(testCaseList.get(index),
-                                        variablesToAdd));
-                            }
-                        }
-
-                        addNewAstObjects(statementsToAdd, destinationNode, addType);
+                    }
+                } else if (treeEntity.getObject() instanceof TestCaseEntity) {
+                    TestCaseEntity calledTestCase = (TestCaseEntity) treeEntity.getObject();
+                    if (qualify(calledTestCase)) {
+                        testCaseList.add(calledTestCase);
                     }
                 }
+                List<StatementWrapper> statementsToAdd = new ArrayList<StatementWrapper>();
+                List<VariableEntity> variablesToAdd = new ArrayList<VariableEntity>();
+                if (addType == NodeAddType.InserBefore) {
+                    for (TestCaseEntity testCase : testCaseList) {
+                        statementsToAdd.add(generateStatementWrapperForCalledTestCase(testCase, variablesToAdd));
+                    }
+                } else {
+                    for (int index = testCaseList.size() - 1; index >= 0; index--) {
+                        statementsToAdd.add(generateStatementWrapperForCalledTestCase(testCaseList.get(index),
+                                variablesToAdd));
+                    }
+                }
+                addNewAstObjects(statementsToAdd, destinationNode, addType);
+                if (variablesToAdd.isEmpty()) {
+                    return;
+                }
+                parentPart.addVariables(variablesToAdd.toArray(new VariableEntity[variablesToAdd.size()]));
             }
         } catch (Exception e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
@@ -1217,18 +903,51 @@ public class TestCaseTreeTableInput {
         }
     }
 
-    private Statement generateStatementForCalledTestCase(TestCaseEntity testCase, List<VariableEntity> variablesToAdd)
-            throws Exception {
-        ExpressionStatement statement = AstTreeTableInputUtil.generateCallTestCaseExpresionStatement(testCase);
-        MethodCallExpression methodCallExpression = (MethodCallExpression) statement.getExpression();
-        ArgumentListExpression argumentList = (ArgumentListExpression) methodCallExpression.getArguments();
-        variablesToAdd.addAll(TestCaseEntityUtil.getCallTestCaseVariables(argumentList));
+    private StatementWrapper generateStatementWrapperForCalledTestCase(TestCaseEntity testCase,
+            List<VariableEntity> variablesToAdd) {
+        ExpressionStatementWrapper statement = AstEntityInputUtil.generateCallTestCaseExpresionStatement(testCase, null);
+        variablesToAdd.addAll(getCallTestCaseVariables((ArgumentListExpressionWrapper) ((MethodCallExpressionWrapper) statement.getExpression()).getArguments()));
         return statement;
+    }
+
+    public static List<VariableEntity> getCallTestCaseVariables(
+            ArgumentListExpressionWrapper argumentListExpressionWrapper) {
+        if (TestCasePreferenceDefaultValueInitializer.isSetGenerateVariableDefaultValue()
+                || !TestCasePreferenceDefaultValueInitializer.isSetAutoExportVariables()) {
+            return Collections.emptyList();
+        }
+        MethodCallExpressionWrapper methodCallExpressionWrapper = (MethodCallExpressionWrapper) argumentListExpressionWrapper.getExpression(0);
+        ConstantExpressionWrapper constantExpressionWrapper = (ConstantExpressionWrapper) AstEntityInputUtil.getCallTestCaseParam(methodCallExpressionWrapper);
+        String calledTestCaseId = String.valueOf(constantExpressionWrapper.getValue());
+        MapExpressionWrapper mapExpressionWrapper = (MapExpressionWrapper) argumentListExpressionWrapper.getExpression(1);
+        List<VariableEntity> variableEntities = new ArrayList<VariableEntity>();
+        for (MapEntryExpressionWrapper entryExpressionWrapper : mapExpressionWrapper.getMapEntryExpressions()) {
+            String variableName = (entryExpressionWrapper.getKeyExpression() instanceof ConstantExpressionWrapper)
+                    ? String.valueOf(((ConstantExpressionWrapper) entryExpressionWrapper.getKeyExpression()).getValue())
+                    : entryExpressionWrapper.getKeyExpression().getText();
+
+            VariableEntity variableInCalledTestCase = null;
+            try {
+                variableInCalledTestCase = TestCaseController.getInstance().getVariable(calledTestCaseId, variableName);
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+            if (variableInCalledTestCase == null) {
+                continue;
+            }
+
+            VariableEntity newVariable = new VariableEntity();
+            newVariable.setName(variableName);
+            newVariable.setDefaultValue(variableInCalledTestCase.getDefaultValue());
+            variableEntities.add(newVariable);
+        }
+
+        return variableEntities;
     }
 
     private void addNewThrowStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
         try {
-            addNewAstObject(AstTreeTableEntityUtil.getNewThrowStatement(), destinationNode, addType);
+            addNewAstObject(new ThrowStatementWrapper(null), destinationNode, addType);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
@@ -1239,11 +958,33 @@ public class TestCaseTreeTableInput {
     public void addNewMethod(AstTreeTableNode destinationNode, NodeAddType addType) {
         try {
             MethodObjectBuilderDialog dialog = new MethodObjectBuilderDialog(Display.getCurrent().getActiveShell(),
-                    null);
+                    null, null);
             int result = dialog.open();
-            if (result == Window.OK && dialog.getReturnValue() != null) {
-                addMethod(dialog.getReturnValue(), addType);
+            if (result != Window.OK || dialog.getReturnValue() == null) {
+                return;
             }
+            MethodNodeWrapper method = dialog.getReturnValue();
+            int methodIndex = -1;
+            AstTreeTableNode selectedNode = getSelectedNode();
+            if (selectedNode instanceof AstMethodTreeTableNode) {
+                methodIndex = mainClassNodeWrapper.getMethods().indexOf(selectedNode.getASTObject());
+            }
+            if (methodIndex == -1) {
+                addMethod(method, -1);
+            } else {
+                switch (addType) {
+                    case Add:
+                    case InserAfter:
+                        addMethod(method, methodIndex + 1);
+                        break;
+                    case InserBefore:
+                        addMethod(method, methodIndex);
+                        break;
+                }
+            }
+            setDirty(true);
+            refresh();
+            setSelection(mainClassTreeNode, method);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_CANNOT_ADD_METHOD);
@@ -1253,20 +994,22 @@ public class TestCaseTreeTableInput {
     public void addNewBuiltInKeyword(int id, AstTreeTableNode destinationNode, NodeAddType addType) {
         try {
             String className = TreeTableMenuItemConstants.getContributingClassName(id);
-            Class<?> clazz = KeywordController.getInstance().getBuiltInKeywordClass(className);
-            addImport(clazz);
+            KeywordClass keywordClass = KeywordController.getInstance().getBuiltInKeywordClassByName(className);
+            addImport(keywordClass.getType());
             addImport(ObjectRepository.class);
             addImport(TestCaseFactory.class);
             addImport(FailureHandling.class);
             String defaultSettingKeywordName = TestCasePreferenceDefaultValueInitializer.getDefaultKeywords().get(
                     className);
-            ASTNode astNode = null;
+            ASTNodeWrapper astNode = null;
             if (!StringUtils.isBlank(defaultSettingKeywordName)
                     && KeywordController.getInstance().getBuiltInKeywordByName(className, defaultSettingKeywordName) != null) {
-                astNode = AstTreeTableInputUtil.createBuiltInKeywordMethodCall(clazz.getSimpleName(),
-                        defaultSettingKeywordName);
+                astNode = AstTreeTableInputUtil.createBuiltInKeywordMethodCall(keywordClass.getSimpleName(),
+                        defaultSettingKeywordName, null);
             } else {
-                astNode = AstTreeTableEntityUtil.getNewKeyword(false, clazz.getSimpleName());
+                astNode = AstTreeTableInputUtil.createBuiltInKeywordMethodCall(keywordClass.getSimpleName(),
+                        KeywordController.getInstance().getBuiltInKeywords(keywordClass.getName()).get(0).getName(),
+                        null);
             }
             addNewAstObject(astNode, destinationNode, addType);
         } catch (Exception e) {
@@ -1277,17 +1020,16 @@ public class TestCaseTreeTableInput {
 
     public void addNewCustomKeyword(AstTreeTableNode destinationNode, NodeAddType addType) {
         try {
-            Statement statemt = AstTreeTableEntityUtil.getNewKeyword(true, null);
-            if (statemt != null) {
-                addImport(ObjectRepository.class);
-                addImport(TestCaseFactory.class);
-                addImport(FailureHandling.class);
-
-                addNewAstObject(statemt, destinationNode, addType);
-            } else {
+            StatementWrapper statemt = AstTreeTableInputUtil.getNewCustomKeyword(null);
+            if (statemt == null) {
                 MessageDialog.openWarning(null, StringConstants.WARN_TITLE,
                         StringConstants.PA_ERROR_MSG_NO_CUSTOM_KEYWORD);
+                return;
             }
+            addImport(ObjectRepository.class);
+            addImport(TestCaseFactory.class);
+            addImport(FailureHandling.class);
+            addNewAstObject(statemt, destinationNode, addType);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_CANNOT_ADD_KEYWORD);
@@ -1296,7 +1038,7 @@ public class TestCaseTreeTableInput {
 
     public void addNewIfStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
         try {
-            addNewAstObject(AstTreeTableEntityUtil.getNewIfStatement(), destinationNode, addType);
+            addNewAstObject(new IfStatementWrapper(null), destinationNode, addType);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
@@ -1305,8 +1047,39 @@ public class TestCaseTreeTableInput {
     }
 
     public void addNewElseStatement(AstTreeTableNode destinationNode) {
+        if (destinationNode == null
+                || !(destinationNode instanceof AstIfStatementTreeTableNode || destinationNode instanceof AstElseIfStatementTreeTableNode)) {
+            return;
+        }
         try {
-            addElseStatement(destinationNode);
+            AstTreeTableNode parentNode = null;
+            BlockStatementWrapper newElseStatement = null;
+            if (destinationNode instanceof AstIfStatementTreeTableNode
+                    && ((AstIfStatementTreeTableNode) destinationNode).getASTObject() != null) {
+                IfStatementWrapper ifStatement = (IfStatementWrapper) destinationNode.getASTObject();
+                if (ifStatement.getElseStatement() != null) {
+                    return;
+                }
+                newElseStatement = new BlockStatementWrapper(ifStatement);
+                ifStatement.setElseStatement(newElseStatement);
+                parentNode = destinationNode.getParent();
+            } else if (destinationNode instanceof AstElseIfStatementTreeTableNode
+                    && ((AstElseIfStatementTreeTableNode) destinationNode).getASTObject() != null) {
+                ElseIfStatementWrapper elseIfStatement = (ElseIfStatementWrapper) destinationNode.getASTObject();
+                if (elseIfStatement.getParent().getElseStatement() != null) {
+                    return;
+                }
+                newElseStatement = new BlockStatementWrapper(elseIfStatement.getParent());
+                elseIfStatement.getParent().setElseStatement(newElseStatement);
+                parentNode = destinationNode.getParent();
+            }
+            if (parentNode == null || newElseStatement == null) {
+                return;
+            }
+            refresh(parentNode);
+            setSelection(parentNode, newElseStatement);
+            setEdit(parentNode, newElseStatement);
+            setDirty(true);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
@@ -1315,8 +1088,37 @@ public class TestCaseTreeTableInput {
     }
 
     public void addNewElseIfStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
+        if (destinationNode == null
+                || !(destinationNode instanceof AstIfStatementTreeTableNode || destinationNode instanceof AstElseIfStatementTreeTableNode)) {
+            return;
+        }
         try {
-            addElseIfStatement(destinationNode, addType);
+            IfStatementWrapper parentIfStatement = null;
+            int newIndex = -1;
+            if (destinationNode instanceof AstIfStatementTreeTableNode) {
+                parentIfStatement = ((AstIfStatementTreeTableNode) destinationNode).getASTObject();
+            } else if (destinationNode instanceof AstElseIfStatementTreeTableNode) {
+                ElseIfStatementWrapper selectedElseIfStatmenet = ((AstElseIfStatementTreeTableNode) destinationNode).getASTObject();
+                parentIfStatement = selectedElseIfStatmenet.getParent();
+                List<ElseIfStatementWrapper> elseIfStatementList = parentIfStatement.getElseIfStatements();
+                int selectElseIfStatementIndex = elseIfStatementList.indexOf(selectedElseIfStatmenet);
+                if (addType == NodeAddType.InserAfter && selectElseIfStatementIndex < elseIfStatementList.size()) {
+                    newIndex = selectElseIfStatementIndex + 1;
+                }
+                if (addType == NodeAddType.InserBefore && selectElseIfStatementIndex >= 0) {
+                    newIndex = selectElseIfStatementIndex;
+                }
+            }
+
+            ElseIfStatementWrapper newElseIfStatement = new ElseIfStatementWrapper(parentIfStatement);
+            if (newIndex == -1) {
+                parentIfStatement.addElseIfStatement(newElseIfStatement);
+            } else {
+                parentIfStatement.addElseIfStatement(newElseIfStatement, newIndex);
+            }
+            refresh(destinationNode.getParent());
+            setDirty(true);
+            setSelection(destinationNode.getParent(), newElseIfStatement);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
@@ -1326,7 +1128,7 @@ public class TestCaseTreeTableInput {
 
     public void addNewWhileStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
         try {
-            addNewAstObject(AstTreeTableEntityUtil.getNewWhileStatement(), destinationNode, addType);
+            addNewAstObject(new WhileStatementWrapper(null), destinationNode, addType);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
@@ -1336,7 +1138,7 @@ public class TestCaseTreeTableInput {
 
     public void addNewForStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
         try {
-            addNewAstObject(AstTreeTableEntityUtil.getNewForStatement(), destinationNode, addType);
+            addNewAstObject(new ForStatementWrapper(null), destinationNode, addType);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
@@ -1346,7 +1148,7 @@ public class TestCaseTreeTableInput {
 
     public void addNewBinaryStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
         try {
-            addNewAstObject(new ExpressionStatement(AstTreeTableEntityUtil.getNewBinaryExpression()), destinationNode,
+            addNewAstObject(new ExpressionStatementWrapper(new BinaryExpressionWrapper(null), null), destinationNode,
                     addType);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -1357,8 +1159,7 @@ public class TestCaseTreeTableInput {
 
     public void addNewAssertStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
         try {
-            addNewAstObject(new AssertStatement(AstTreeTableEntityUtil.getNewBooleanExpression()), destinationNode,
-                    addType);
+            addNewAstObject(new AssertStatementWrapper(null), destinationNode, addType);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
@@ -1368,7 +1169,7 @@ public class TestCaseTreeTableInput {
 
     public void addNewMethodCall(AstTreeTableNode destinationNode, NodeAddType addType) {
         try {
-            addNewAstObject(new ExpressionStatement(AstTreeTableEntityUtil.getNewMethodCallExpression()),
+            addNewAstObject(new ExpressionStatementWrapper(new MethodCallExpressionWrapper(null), null),
                     destinationNode, addType);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -1379,7 +1180,7 @@ public class TestCaseTreeTableInput {
 
     public void addNewBreakStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
         try {
-            addNewAstObject(new BreakStatement(), destinationNode, addType);
+            addNewAstObject(new BreakStatementWrapper(null), destinationNode, addType);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
@@ -1389,7 +1190,7 @@ public class TestCaseTreeTableInput {
 
     public void addNewContinueStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
         try {
-            addNewAstObject(new ContinueStatement(), destinationNode, addType);
+            addNewAstObject(new ContinueStatementWrapper(null), destinationNode, addType);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
@@ -1399,7 +1200,7 @@ public class TestCaseTreeTableInput {
 
     public void addNewReturnStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
         try {
-            addNewAstObject(AstTreeTableEntityUtil.getNewReturnStatement(), destinationNode, addType);
+            addNewAstObject(new ReturnStatementWrapper(null), destinationNode, addType);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
@@ -1409,7 +1210,7 @@ public class TestCaseTreeTableInput {
 
     public void addNewSwitchStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
         try {
-            addNewAstObject(AstTreeTableEntityUtil.getNewSwitchStatement(), destinationNode, addType);
+            addNewAstObject(new SwitchStatementWrapper(null), destinationNode, addType);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
@@ -1418,8 +1219,15 @@ public class TestCaseTreeTableInput {
     }
 
     public void addNewCaseStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
+        if (destinationNode == null
+                || !(destinationNode instanceof AstSwitchStatementTreeTableNode || destinationNode instanceof AstCaseStatementTreeTableNode)) {
+            return;
+        }
         try {
-            addCaseStatement(AstTreeTableEntityUtil.getNewCaseStatement(), destinationNode, addType);
+            if (destinationNode instanceof AstCaseStatementTreeTableNode && addType == NodeAddType.Add) {
+                addType = NodeAddType.InserAfter;
+            }
+            addNewAstObject(new CaseStatementWrapper(null), destinationNode, addType);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
@@ -1428,8 +1236,32 @@ public class TestCaseTreeTableInput {
     }
 
     public void addNewDefaultStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
+        if (destinationNode == null
+                || !(destinationNode instanceof AstSwitchStatementTreeTableNode || destinationNode instanceof AstCaseStatementTreeTableNode)) {
+            return;
+        }
         try {
-            addDefaultStatement(destinationNode);
+            SwitchStatementWrapper swichStatementWrapper = null;
+            AstTreeTableNode parentNode = null;
+            if (destinationNode instanceof AstSwitchStatementTreeTableNode && destinationNode.getASTObject() != null) {
+                swichStatementWrapper = (SwitchStatementWrapper) destinationNode.getASTObject();
+                parentNode = destinationNode;
+            } else if (destinationNode instanceof AstCaseStatementTreeTableNode
+                    && destinationNode.getASTObject() != null) {
+                swichStatementWrapper = (SwitchStatementWrapper) destinationNode.getASTObject().getParent();
+                parentNode = destinationNode.getParent();
+            }
+            if (swichStatementWrapper == null || parentNode == null
+                    || swichStatementWrapper.getDefaultStatement() != null) {
+                return;
+            }
+            BlockStatementWrapper newDefaultStatementWrapper = new BlockStatementWrapper(swichStatementWrapper);
+            newDefaultStatementWrapper.addStatement(new BreakStatementWrapper(newDefaultStatementWrapper));
+            swichStatementWrapper.setDefaultStatement(newDefaultStatementWrapper);
+            refresh(parentNode);
+            setSelection(parentNode, newDefaultStatementWrapper);
+            setEdit(parentNode, newDefaultStatementWrapper);
+            setDirty(true);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
@@ -1439,7 +1271,7 @@ public class TestCaseTreeTableInput {
 
     public void addNewTryStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
         try {
-            addNewAstObject(AstTreeTableEntityUtil.getNewTryCatchStatement(), destinationNode, addType);
+            addNewAstObject(new TryCatchStatementWrapper(null), destinationNode, addType);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
@@ -1447,35 +1279,38 @@ public class TestCaseTreeTableInput {
         }
     }
 
-    public void addNewCatchStatement(AstTreeTableNode selectedTreeTableNode, NodeAddType addType) {
+    public void addNewCatchStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
+        if (destinationNode == null
+                || !(destinationNode instanceof AstTryStatementTreeTableNode || destinationNode instanceof AstCatchStatementTreeTableNode)) {
+            return;
+        }
         try {
-            CatchStatement catchStatement = AstTreeTableEntityUtil.getNewCatchStatement();
-            if (selectedTreeTableNode instanceof AstTryStatementTreeTableNode
-                    && selectedTreeTableNode.getASTObject() instanceof TryCatchStatement) {
-                TryCatchStatement tryStatement = (TryCatchStatement) selectedTreeTableNode.getASTObject();
-                tryStatement.addCatch(catchStatement);
-                refresh(selectedTreeTableNode.getParent());
-                setSelection(selectedTreeTableNode.getParent(), catchStatement);
-                setEdit(selectedTreeTableNode.getParent(), catchStatement);
-                setDirty(true);
-            } else if (selectedTreeTableNode instanceof AstCatchStatementTreeTableNode
-                    && selectedTreeTableNode.getASTObject() instanceof CatchStatement
-                    && selectedTreeTableNode.getParentASTObject() instanceof TryCatchStatement) {
-                TryCatchStatement tryStatement = (TryCatchStatement) selectedTreeTableNode.getParentASTObject();
-                CatchStatement selectedCatchStatement = (CatchStatement) selectedTreeTableNode.getASTObject();
-                int selectedIndex = tryStatement.getCatchStatements().indexOf(selectedCatchStatement);
-                if (addType == NodeAddType.InserBefore) {
-                    tryStatement.getCatchStatements().add(selectedIndex, catchStatement);
-                } else if (selectedIndex == tryStatement.getCatchStatements().size() - 1) {
-                    tryStatement.getCatchStatements().add(catchStatement);
-                } else {
-                    tryStatement.getCatchStatements().add(selectedIndex + 1, catchStatement);
+            TryCatchStatementWrapper parentTryCatchStatement = null;
+            int newIndex = -1;
+            if (destinationNode instanceof AstTryStatementTreeTableNode) {
+                parentTryCatchStatement = ((AstTryStatementTreeTableNode) destinationNode).getASTObject();
+            } else if (destinationNode instanceof AstCatchStatementTreeTableNode) {
+                CatchStatementWrapper selectedCatchStatement = ((AstCatchStatementTreeTableNode) destinationNode).getASTObject();
+                parentTryCatchStatement = selectedCatchStatement.getParent();
+                List<CatchStatementWrapper> catchStatementList = parentTryCatchStatement.getCatchStatements();
+                int selectElseIfStatementIndex = catchStatementList.indexOf(selectedCatchStatement);
+                if (addType == NodeAddType.InserAfter && selectElseIfStatementIndex < catchStatementList.size()) {
+                    newIndex = selectElseIfStatementIndex + 1;
                 }
-                refresh(selectedTreeTableNode.getParent());
-                setSelection(selectedTreeTableNode.getParent(), catchStatement);
-                setEdit(selectedTreeTableNode.getParent(), catchStatement);
-                setDirty(true);
+                if (addType == NodeAddType.InserBefore && selectElseIfStatementIndex >= 0) {
+                    newIndex = selectElseIfStatementIndex;
+                }
             }
+
+            CatchStatementWrapper newCatchStatement = new CatchStatementWrapper(parentTryCatchStatement);
+            if (newIndex == -1) {
+                parentTryCatchStatement.addCatchStatement(newCatchStatement);
+            } else {
+                parentTryCatchStatement.addCatchStatement(newCatchStatement, newIndex);
+            }
+            refresh(destinationNode.getParent());
+            setDirty(true);
+            setSelection(destinationNode.getParent(), newCatchStatement);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
@@ -1483,28 +1318,31 @@ public class TestCaseTreeTableInput {
         }
     }
 
-    public void addNewFinallyStatement(AstTreeTableNode selectedTreeTableNode, NodeAddType addType) {
+    public void addNewFinallyStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
+        if (destinationNode == null
+                || !(destinationNode instanceof AstTryStatementTreeTableNode || destinationNode instanceof AstCatchStatementTreeTableNode)) {
+            return;
+        }
         try {
-            TryCatchStatement tryStatement = null;
+            TryCatchStatementWrapper tryStatementWrapper = null;
             AstTreeTableNode parentNode = null;
-            if (selectedTreeTableNode instanceof AstTryStatementTreeTableNode
-                    && selectedTreeTableNode.getASTObject() instanceof TryCatchStatement) {
-                tryStatement = (TryCatchStatement) selectedTreeTableNode.getASTObject();
-                parentNode = selectedTreeTableNode.getParent();
-            } else if (selectedTreeTableNode instanceof AstCatchStatementTreeTableNode
-                    && selectedTreeTableNode.getParentASTObject() instanceof TryCatchStatement) {
-                tryStatement = (TryCatchStatement) selectedTreeTableNode.getParentASTObject();
-                parentNode = selectedTreeTableNode.getParent();
+            if (destinationNode instanceof AstTryStatementTreeTableNode && destinationNode.getASTObject() != null) {
+                tryStatementWrapper = (TryCatchStatementWrapper) destinationNode.getASTObject();
+                parentNode = destinationNode.getParent();
+            } else if (destinationNode instanceof AstCatchStatementTreeTableNode
+                    && destinationNode.getASTObject() != null) {
+                tryStatementWrapper = (TryCatchStatementWrapper) destinationNode.getASTObject().getParent();
+                parentNode = destinationNode.getParent();
             }
-            if (tryStatement != null
-                    && (tryStatement.getFinallyStatement() == null || tryStatement.getFinallyStatement() instanceof EmptyStatement)) {
-                Statement newFinallyStatement = AstTreeTableEntityUtil.getNewFinallyStatement();
-                tryStatement.setFinallyStatement(newFinallyStatement);
-                refresh(parentNode);
-                setSelection(parentNode, newFinallyStatement);
-                setEdit(parentNode, newFinallyStatement);
-                setDirty(true);
+            if (tryStatementWrapper == null || tryStatementWrapper.getFinallyStatement() != null) {
+                return;
             }
+            BlockStatementWrapper newFinallyStatementWrapper = new BlockStatementWrapper(tryStatementWrapper);
+            tryStatementWrapper.setFinallyStatement(newFinallyStatementWrapper);
+            refresh(parentNode);
+            setSelection(parentNode, newFinallyStatementWrapper);
+            setEdit(parentNode, newFinallyStatementWrapper);
+            setDirty(true);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,

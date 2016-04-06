@@ -25,7 +25,6 @@ import com.kms.katalon.entity.testdata.DataFileEntity;
 
 public class TestDataCellEditor extends DialogCellEditor {
     private String defaultContent;
-
     private String selectedTestDataId;
 
     public TestDataCellEditor(Composite parent, String defaultContent, String selectedPk) {

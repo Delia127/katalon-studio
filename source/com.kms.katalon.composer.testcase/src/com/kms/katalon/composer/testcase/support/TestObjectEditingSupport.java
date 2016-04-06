@@ -7,55 +7,45 @@ import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TreeViewer;
 
 import com.kms.katalon.composer.testcase.ast.treetable.AstCallTestCaseKeywordTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstObjectEditableNode;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
 import com.kms.katalon.entity.variable.VariableEntity;
 
 public class TestObjectEditingSupport extends EditingSupport {
-	private TreeViewer treeViewer;
-	private TestCasePart parentTestCasePart;
+    private TreeViewer treeViewer;
+    private TestCasePart parentTestCasePart;
 
-	public TestObjectEditingSupport(TreeViewer treeViewer, TestCasePart parentTestCasePart) {
-		super(treeViewer);
-		this.treeViewer = treeViewer;
-		this.parentTestCasePart = parentTestCasePart;
-	}
+    public TestObjectEditingSupport(TreeViewer treeViewer, TestCasePart parentTestCasePart) {
+        super(treeViewer);
+        this.treeViewer = treeViewer;
+        this.parentTestCasePart = parentTestCasePart;
+    }
 
-	@Override
-	protected CellEditor getCellEditor(Object element) {
-		if (element instanceof AstTreeTableNode) {
-			return ((AstTreeTableNode) element).getCellEditorForTestObject(treeViewer.getTree());
-		}
-		return null;
-	}
+    @Override
+    protected CellEditor getCellEditor(Object element) {
+        return ((AstObjectEditableNode) element).getCellEditorForTestObject(treeViewer.getTree());
+    }
 
-	@Override
-	protected boolean canEdit(Object element) {
-		if (element instanceof AstTreeTableNode) {
-			return ((AstTreeTableNode) element).isTestObjectEditable();
-		}
-		return false;
-	}
+    @Override
+    protected boolean canEdit(Object element) {
+        return (element instanceof AstObjectEditableNode && ((AstObjectEditableNode) element).canEditTestObject());
+    }
 
-	@Override
-	protected Object getValue(Object element) {
-		if (element instanceof AstTreeTableNode) {
-			return ((AstTreeTableNode) element).getTestObject();
-		}
-		return null;
-	}
+    @Override
+    protected Object getValue(Object element) {
+        return ((AstObjectEditableNode) element).getTestObject();
+    }
 
-	@Override
-	protected void setValue(Object element, Object value) {
-		if (element instanceof AstTreeTableNode && ((AstTreeTableNode) element).setTestObject(value)) {
-			if (element instanceof AstCallTestCaseKeywordTreeTableNode) {
-				List<VariableEntity> testCaseVariables = ((AstCallTestCaseKeywordTreeTableNode) element)
-						.getCallTestCaseVariables();
-				parentTestCasePart
-						.addVariables(testCaseVariables.toArray(new VariableEntity[testCaseVariables.size()]));
-			}
-			parentTestCasePart.getTreeTableInput().setDirty(true);
-			treeViewer.refresh(element);
-		}
-	}
+    @Override
+    protected void setValue(Object element, Object value) {
+        if (!((AstObjectEditableNode) element).setTestObject(value)) {
+            return;
+        }
+        if (element instanceof AstCallTestCaseKeywordTreeTableNode) {
+            List<VariableEntity> testCaseVariables = ((AstCallTestCaseKeywordTreeTableNode) element).getCallTestCaseVariables();
+            parentTestCasePart.addVariables(testCaseVariables.toArray(new VariableEntity[testCaseVariables.size()]));
+        }
+        parentTestCasePart.getTreeTableInput().setDirty(true);
+        treeViewer.refresh(element);
+    }
 }

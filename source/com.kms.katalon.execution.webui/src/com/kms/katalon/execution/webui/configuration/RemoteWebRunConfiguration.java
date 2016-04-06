@@ -11,7 +11,7 @@ import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector.RemoteWeb
 public class RemoteWebRunConfiguration extends WebUiRunConfiguration {
     public RemoteWebRunConfiguration(String projectDir) throws IOException {
         super(projectDir, new RemoteWebDriverConnector(projectDir + File.separator
-                + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME));
+                + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME));
     }
     
     @Override

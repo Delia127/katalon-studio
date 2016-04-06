@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Composite;
 import com.kms.katalon.execution.configuration.IDriverConnector;
 
 public class DriverPreferenceComposite extends Composite {
+	
     protected Map<String, Object> driverProperties;
 
     protected DriverPropertyMapComposite driverPropertyMapComposite;

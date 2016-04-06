@@ -1,8 +1,10 @@
 package com.kms.katalon.composer.execution.part;
 
 import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
+import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.LogRecord;
@@ -10,11 +12,11 @@ import java.util.logging.LogRecord;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -25,7 +27,6 @@ import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -73,6 +74,7 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.composer.execution.constants.ImageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.dialog.LogPropertyDialog;
@@ -90,13 +92,13 @@ import com.kms.katalon.composer.execution.tree.ILogParentTreeNode;
 import com.kms.katalon.composer.execution.tree.ILogTreeNode;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.constants.PreferenceConstants.ExecutionPreferenceConstants;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XMLLoggerParser;
 import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.core.logging.XmlLogRecordException;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.execution.launcher.ILauncher;
+import com.kms.katalon.execution.launcher.ILauncherResult;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.logging.LogExceptionFilter;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
@@ -144,7 +146,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
 
     private MPart fMPart;
 
-    private IPreferenceStore preferenceStore;
+    private ScopedPreferenceStore preferenceStore;
 
     private void updateToolItemsStatus(MPart mpart) {
         for (MToolBarElement toolbarElement : mpart.getToolbar().getChildren()) {
@@ -186,7 +188,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
 
     @PostConstruct
     public void init(Composite parent, MPart mpart) {
-        preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, ExecutionPreferenceConstants.QUALIFIER);
+        preferenceStore = getPreferenceStore(LogViewerPart.class);
         fMPart = mpart;
         logNavigator = new LogExceptionNavigator();
         launcherWatched = null;
@@ -680,8 +682,14 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
         if (isBlank(prefId)) {
             return;
         }
-        preferenceStore.setValue(prefId, button.getSelection());
-        tableViewer.refresh();
+
+        try {
+            preferenceStore.setValue(prefId, button.getSelection());
+            preferenceStore.save();
+            tableViewer.refresh();
+        } catch (IOException e) {
+            logError(e);
+        }
     }
 
     private void updateTableButtons() {
@@ -785,7 +793,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
         table.setMenu(popupMenu);
         tableViewer.setInput(new ArrayList<XmlLogRecord>());
         if (launcherWatched != null) {
-            for (XmlLogRecord record : launcherWatched.getLogRecords()) {
+            for (XmlLogRecord record : currentRecords) {
                 tableViewer.add(record);
             }
         }
@@ -824,43 +832,28 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
         createStatusComposite(parent);
     }
 
-    private void updateProgressBar(final XmlLogRecord testCaseResult) {
+    private void updateProgressBar() {
         sync.asyncExec(new Runnable() {
             @Override
             public void run() {
-                int progress = 0;
-                while (progress < INCREMENT) {
-                    progressBar.setSelection(progressBar.getSelection() + 1);
-                    progress++;
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException e) {
-                        logError(e);
-                    }
-                }
-                lblNumTestcases.setText(Integer.toString(progressBar.getSelection() / INCREMENT) + "/"
-                        + Integer.toString(progressBar.getMaximum() / INCREMENT));
-                // update
-                LogLevel logLevel = LogLevel.valueOf(testCaseResult.getLevel());
-                if (logLevel == null) {
+                if (launcherWatched == null) {
                     return;
                 }
-
-                switch (logLevel) {
-                    case PASSED:
-                        lblNumPasses.setText(Integer.toString(Integer.valueOf(lblNumPasses.getText()) + 1));
-                        break;
-                    case FAILED:
-                        lblNumFailures.setText(Integer.toString(Integer.valueOf(lblNumFailures.getText()) + 1));
-                        lblNumFailures.setForeground(ColorUtil.getFailedLogBackgroundColor());
-                        break;
-                    case ERROR:
-                        lblNumErrors.setText(Integer.toString(Integer.valueOf(lblNumErrors.getText()) + 1));
-                        lblNumErrors.setForeground(ColorUtil.getErrorLogBackgroundColor());
-                        break;
-                    default:
-                        return;
+                
+                ILauncherResult result = launcherWatched.getResult();
+                if (result == null) {
+                    return;
                 }
+                
+                final int numExecuted = result.getExecutedTestCases();
+                progressBar.setSelection(numExecuted * INCREMENT);
+                lblNumTestcases.setText(Integer.toString(numExecuted) + "/"
+                        + Integer.toString(result.getTotalTestCases()));
+                // update
+                lblNumPasses.setText(Integer.toString(result.getNumPasses()));
+                lblNumFailures.setText(Integer.toString(result.getNumFailures()));
+                lblNumErrors.setText(Integer.toString(result.getNumErrors()));
+                
                 lblNumTestcases.getParent().getParent().layout();
             }
         });
@@ -947,14 +940,14 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
         }
 
         resetProgressBar();
+        
+        createLogViewerControl(parentComposite);
         if (launcherWatched != null) {
             currentRecords.addAll(launcherWatched.getLogRecords());
-            createLogViewerControl(parentComposite);
             launcherWatched.setObserved(true);
             launcherWatched.addListener(this);
             setSelectedConsoleView();
-        } else {
-            createLogViewerControl(parentComposite);
+            updateProgressBar();
         }
 
         eventBroker.send(EventConstants.JOB_REFRESH, null);
@@ -970,7 +963,6 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
 
                         @Override
                         public void run() {
-
                             try {
                                 changeObservedLauncher(event);
                             } catch (Exception e) {}
@@ -987,13 +979,6 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                     }
                     break;
                 }
-                case EventConstants.CONSOLE_LOG_UPDATE_PROGRESS_BAR: {
-                    Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-                    if (object != null && object instanceof XmlLogRecord) {
-                        updateProgressBar((XmlLogRecord) object);
-                    }
-                    break;
-                }
                 case EventConstants.CONSOLE_LOG_CHANGE_VIEW_TYPE: {
                     if (stopAdding) {
                         return;
@@ -1001,6 +986,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                     stopAdding = true;
                     resetProgressBar();
                     createLogViewerControl(parentComposite);
+                    updateProgressBar();
                     break;
                 }
                 case EventConstants.CONSOLE_LOG_WORD_WRAP: {
@@ -1047,17 +1033,22 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                     @Override
                     public void run() {
                         List<XmlLogRecord> logRecords = launcherWatched.getLogRecords();
-                        if (currentRecords.size() < logRecords.size()) {
-                            try {
-                                addRecords(logRecords.subList(currentRecords.size(), logRecords.size()));
-                            } catch (InterruptedException e) {
-                                logError(e);
-                            }
+                        if (currentRecords.size() >= logRecords.size()) {
+                            return;
+                        }
+                        
+                        try {
+                            addRecords(logRecords.subList(currentRecords.size(), logRecords.size()));
+                        } catch (InterruptedException e) {
+                            logError(e);
                         }
                     }
                 });
                 break;
             case UPDATE_STATUS:
+                if (launcherWatched != null && StringUtils.defaultIfEmpty(launcherWatched.getId(), "").equals(object)) {
+                    updateProgressBar();
+                }
                 break;
             default:
                 break;

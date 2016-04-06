@@ -1,157 +1,88 @@
 package com.kms.katalon.composer.testcase.ast.treetable;
 
-import org.codehaus.groovy.ast.ASTNode;
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.stmt.BlockStatement;
-import org.codehaus.groovy.ast.stmt.ExpressionStatement;
-import org.codehaus.groovy.ast.stmt.IfStatement;
-import org.codehaus.groovy.ast.stmt.Statement;
-import org.codehaus.groovy.ast.stmt.SwitchStatement;
-import org.codehaus.groovy.ast.stmt.TryCatchStatement;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Composite;
 
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
-import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
-import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
-import com.kms.katalon.composer.testcase.util.AstTreeTableUtil;
-import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
-import com.kms.katalon.core.ast.GroovyParser;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
+import org.eclipse.swt.widgets.Composite;
 
-public class AstStatementTreeTableNode extends AstAbstractTreeTableNode {
-    protected Statement statement;
-    protected AstTreeTableNode parentNode;
-    protected ASTNode parentAstObject;
-    protected ExpressionStatement descriptionStatement;
-    protected ClassNode scriptClass;
 
-    public AstStatementTreeTableNode(Statement statement, AstTreeTableNode parentNode, ASTNode parentAstObject,
-            ClassNode scriptClass) {
+public abstract class AstStatementTreeTableNode extends AstAbstractTreeTableNode implements AstInputEditableNode {
+    protected StatementWrapper statement;
+    private Image icon;
+    private String itemText;
+
+    public AstStatementTreeTableNode(StatementWrapper statement, AstTreeTableNode parentNode) {
+        this(statement, parentNode, ImageConstants.IMG_16_FAILED_CONTINUE);
+    }
+
+    protected AstStatementTreeTableNode(StatementWrapper statement, AstTreeTableNode parentNode, Image icon) {
+        this(statement, parentNode, icon, StringConstants.TREE_STATEMENT);
+    }
+
+    public AstStatementTreeTableNode(StatementWrapper statement, AstTreeTableNode parentNode, String itemText) {
+        this(statement, parentNode, ImageConstants.IMG_16_FAILED_CONTINUE, itemText);
+    }
+
+    public AstStatementTreeTableNode(StatementWrapper statement, AstTreeTableNode parentNode, Image icon, String itemText) {
+        super(parentNode);
         this.statement = statement;
-        this.parentNode = parentNode;
-        this.parentAstObject = parentAstObject;
-        this.scriptClass = scriptClass;
+        this.icon = icon;
+        this.itemText = itemText;
     }
 
     @Override
-    public ASTNode getASTObject() {
+    public StatementWrapper getASTObject() {
         return statement;
     }
 
     @Override
     public String getItemText() {
-        return StringConstants.TREE_STATEMENT;
+        return itemText;
     }
 
     @Override
-    public String getItemTextForDisplay() {
-        return getItemText();
+    public Image getIcon() {
+        return icon;
+    }
+    
+    public String getDescription() {
+        return statement.getDescription();
+    }
+
+    public void setDescription(String description) {
+        this.statement.setDescription(description);
     }
 
     @Override
-    public AstTreeTableNode getParent() {
-        return parentNode;
-    }
-
-    @Override
-    public ASTNode getParentASTObject() {
-        return parentAstObject;
-    }
-
-    @Override
-    public Image getNodeIcon() {
-        return ImageConstants.IMG_16_FAILED_CONTINUE;
-    }
-
-    @Override
-    public AstTreeTableNode clone() {
-        return new AstStatementTreeTableNode(GroovyParser.cloneStatement(statement), parentNode, parentAstObject,
-                scriptClass);
-    }
-
-    @Override
-    public boolean isInputEditable() {
-        if (statement != null) {
-            return true;
-        }
+    public boolean canEditInput() {
         return false;
-    }
-
-    @Override
-    public Object getInput() {
-        return AstTreeTableValueUtil.getValue(statement, scriptClass);
     }
 
     @Override
     public String getInputText() {
-        Object input = getInput();
-        if (input instanceof String) {
-            return String.valueOf(input);
-        } else if (input instanceof ASTNode) {
-            return AstTreeTableTextValueUtil.getInstance().getTextValue(input);
-        }
-        return "";
+        return statement.getInputText();
     }
 
     @Override
-    public CellEditor getCellEditorForInput(Composite parent) {
-        return AstTreeTableInputUtil.getCellEditorForStatement(parent, statement, scriptClass);
+    public String getInputTooltipText() {
+        return getInputText();
+    }
+
+    @Override
+    public Object getInput() {
+        return statement.getInput();
     }
 
     @Override
     public boolean setInput(Object input) {
-        return AstTreeTableValueUtil.setValue(statement, input, scriptClass);
-    }
-
-    public boolean hasDescription() {
-        return descriptionStatement != null;
-    }
-
-    public ExpressionStatement getDescription() {
-        return descriptionStatement;
-    }
-
-    public void setDescription(ExpressionStatement descriptionStatement) {
-        this.descriptionStatement = descriptionStatement;
-    }
-
-    @Override
-    public boolean hasChildren() {
-        if (statement instanceof BlockStatement || statement instanceof IfStatement
-                || statement instanceof TryCatchStatement || statement instanceof SwitchStatement) {
-            return true;
-        }
         return false;
     }
-    
-    @Override
-    public void reloadChildren() {
-        try {
-            children = AstTreeTableUtil.getChildren(statement, this, statement, scriptClass);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-        }
-    }
 
     @Override
-    public int getChildObjectIndex(ASTNode astObject) {
-        return AstTreeTableUtil.getIndex(statement, astObject);
-    }
-
-    @Override
-    public void addChildObject(ASTNode astObject, int index) {
-        AstTreeTableUtil.addChild(statement, astObject, index);
-    }
-
-    @Override
-    public void removeChildObject(ASTNode astObject) {
-        AstTreeTableUtil.removeChild(statement, astObject);
-    }
-
-    public ClassNode getScriptClass() {
-        return scriptClass;
+    public CellEditor getCellEditorForInput(Composite parent) {
+        return null;
     }
 }

@@ -64,10 +64,10 @@ public class MobileExecutionUtil {
         switch (mobileDriverType) {
             case ANDROID_DRIVER:
                 return new AndroidDriverConnector(projectDirectory + File.separator
-                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME);
+                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME);
             case IOS_DRIVER:
                 return new IosDriverConnector(projectDirectory + File.separator
-                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME);
+                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME);
         }
         return null;
     }
@@ -199,12 +199,12 @@ public class MobileExecutionUtil {
         switch (platform) {
             case ANDROID_DRIVER: {
                 deviceId = new AndroidDriverConnector(projectDir+ File.separator
-                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME).getDeviceId();
+                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME).getDeviceId();
                 break;
             }
             case IOS_DRIVER: {
                 deviceId =  new IosDriverConnector(projectDir + File.separator
-                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME).getDeviceId();
+                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME).getDeviceId();
                 break;
             }
         }

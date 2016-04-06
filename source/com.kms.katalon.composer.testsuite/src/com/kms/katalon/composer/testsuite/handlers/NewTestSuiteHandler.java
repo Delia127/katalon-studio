@@ -1,11 +1,12 @@
 package com.kms.katalon.composer.testsuite.handlers;
 
+import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
+
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -15,7 +16,6 @@ import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
@@ -32,13 +32,12 @@ import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
-import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class NewTestSuiteHandler {
 
     @Inject
     private IEventBroker eventBroker;
-    
+
     @Inject
     private ESelectionService selectionService;
 
@@ -79,18 +78,18 @@ public class NewTestSuiteHandler {
                 if (dialog.getReturnCode() == Dialog.OK) {
                     TestSuiteEntity testSuite = TestSuiteController.getInstance().addNewTestSuite(parentFolderEntity,
                             dialog.getName());
-                    
+
                     testSuite.setMailRecipient(getDefaultEmail());
-                    
+
                     TestSuiteController.getInstance().updateTestSuite(testSuite);
-                    
+
                     if (testSuite != null) {
                         eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
                         eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, new TestSuiteTreeEntity(testSuite,
                                 parentTreeEntity));
                         eventBroker.post(EventConstants.TEST_SUITE_OPEN, testSuite);
-                        
-//                         partService.saveAll(true);
+
+                        // partService.saveAll(true);
                     }
                 }
             }
@@ -139,11 +138,10 @@ public class NewTestSuiteHandler {
             LoggerSingleton.logError(e);
         }
     }
-    
+
     private String getDefaultEmail() {
-        IPreferenceStore store = (IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                PreferenceConstants.ExecutionPreferenceConstants.QUALIFIER);
-        return store.getString(PreferenceConstants.ExecutionPreferenceConstants.MAIL_CONFIG_REPORT_RECIPIENTS);
+        return getPreferenceStore(PreferenceConstants.EXECUTION_QUALIFIER).getString(
+                PreferenceConstants.MAIL_CONFIG_REPORT_RECIPIENTS);
     }
-    
+
 }

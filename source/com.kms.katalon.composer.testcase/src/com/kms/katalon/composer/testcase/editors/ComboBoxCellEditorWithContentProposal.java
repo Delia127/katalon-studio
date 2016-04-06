@@ -19,14 +19,13 @@ import com.kms.katalon.composer.testcase.model.ContentProposalCheck;
 
 public class ComboBoxCellEditorWithContentProposal extends TooltipComboBoxCellEditor {
     private ContentProposalCheck contentProposalCheck;
-    private String[] items;
-    private String[] toolTips;
+    protected String[] items;
+    protected String[] toolTips;
     private ContentProposalAdapter adapter;
 
-    public ComboBoxCellEditorWithContentProposal(Composite parent, String[] items, String[] toolTips,
-            ContentProposalCheck contentProposalCheck) {
+    public ComboBoxCellEditorWithContentProposal(Composite parent, String[] items, String[] toolTips) {
         super(parent, items, toolTips);
-        this.contentProposalCheck = contentProposalCheck;
+        this.contentProposalCheck = new ContentProposalCheck();
         this.items = items;
         this.toolTips = toolTips;
     }
@@ -69,8 +68,7 @@ public class ComboBoxCellEditorWithContentProposal extends TooltipComboBoxCellEd
                 }
             };
 
-            adapter = new ContentProposalAdapter(combo, new CComboContentAdapter(),
-                    proposalProvider, null, null);
+            adapter = new ContentProposalAdapter(combo, new CComboContentAdapter(), proposalProvider, null, null);
             adapter.setPropagateKeys(true);
             adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
             adapter.addContentProposalListener(new IContentProposalListener2() {

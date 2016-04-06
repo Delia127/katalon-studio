@@ -7,6 +7,7 @@ import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.driver.DriverCleanerCollector
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.keyword.IKeywordContributor
+import com.kms.katalon.core.keyword.KeywordContributorCollection;
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.main.TestCaseMain
 import com.kms.katalon.core.model.FailureHandling
@@ -74,7 +75,7 @@ KeywordLogger.getInstance().endSuite('<%= testSuite.getName() %>', null)
 
 
         def driverCleaners = []
-        for (IKeywordContributor contributor in BuiltInMethodNodeFactory.getInstance().getKeywordContributors()) {
+        for (IKeywordContributor contributor in KeywordContributorCollection.getKeywordContributors()) {
             if (contributor.getDriverCleaner() != null) {
                 driverCleaners.add(contributor.getDriverCleaner().getName())
             }

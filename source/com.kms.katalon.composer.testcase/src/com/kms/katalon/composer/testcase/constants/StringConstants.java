@@ -285,6 +285,9 @@ public class StringConstants extends GlobalStringConstants {
 
     // AstWhileStatementTreeTableNode
     public static final String TREE_WHILE_STATEMENT = "While Statement";
+    
+    // AstDoWhileStatementTreeTableNode
+    public static final String TREE_DO_WHILE_STATEMENT = "Do While Statement";
 
     // AstIfStatementTreeTableNode
     public static final String TREE_IF_STATEMENT = "If Statement";
@@ -323,4 +326,8 @@ public class StringConstants extends GlobalStringConstants {
 
     // TestCaseTreeTableInput
     public static final String WARN_TRY_STATEMENT_MUST_HAVE_CATCH_OR_FINALLY = "Try Statement must have as least 1 Catch or Finally Statement";
+
+    // KeysInputBuilderDialog
+    public static final String KEYS_BUILDER_DIALOG_TITLE = "Keys Builder";
+    public static final String KEYS_BUILDER_TABLE_COLUMN_TYPE_LABEL = "Type";
 }

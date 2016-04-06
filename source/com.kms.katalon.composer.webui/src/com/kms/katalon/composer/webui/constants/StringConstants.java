@@ -14,7 +14,8 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String LBL_REMOTE_SERVER_URL = "Remote web server url";
 	public static final String LBL_REMOTE_SERVER_TYPE = "Remote web server type";
 	
-	// KeysInputBuilderDialog
-	public static final String KEYS_BUILDER_DIALOG_TITLE = "Keys Builder";
-	public static final String KEYS_BUILDER_TABLE_COLUMN_TYPE_LABEL = "Type";
+	public static final String LBL_DEBUG_PORT = "Debugging Port";
+	public static final String LBL_DEBUG_HOST = "Debugging Host";
+	public static final String LBL_DESIRED_CAP = "Desired capabilities (additional WebDriver preferences):";
+	
 }

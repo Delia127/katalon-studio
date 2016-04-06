@@ -5,9 +5,7 @@ import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TreeViewer;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.testcase.ast.treetable.AstCatchStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstForStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstInputEditableNode;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
 
 public class InputColumnEditingSupport extends EditingSupport {
@@ -22,42 +20,29 @@ public class InputColumnEditingSupport extends EditingSupport {
 
     @Override
     protected CellEditor getCellEditor(Object element) {
-        if (element instanceof AstTreeTableNode) {
-            return ((AstTreeTableNode) element).getCellEditorForInput(treeViewer.getTree());
-        }
-        return null;
+        return ((AstInputEditableNode) element).getCellEditorForInput(treeViewer.getTree());
     }
 
     @Override
     protected boolean canEdit(Object element) {
-        if (element instanceof AstTreeTableNode) {
-            return ((AstTreeTableNode) element).isInputEditable();
-        }
-        return false;
+        return (element instanceof AstInputEditableNode && ((AstInputEditableNode) element).canEditInput());
     }
 
     @Override
     protected Object getValue(Object element) {
-        if (element instanceof AstTreeTableNode) {
-            return ((AstTreeTableNode) element).getInput();
-        }
-        return null;
+        return ((AstInputEditableNode) element).getInput();
     }
 
     @Override
     protected void setValue(Object element, Object value) {
-        if (element instanceof AstTreeTableNode && ((AstTreeTableNode) element).setInput(value)) {
-            try {
-                parentTestCasePart.getTreeTableInput().setDirty(true);
-                if (element instanceof AstForStatementTreeTableNode
-                        || element instanceof AstCatchStatementTreeTableNode) {
-                    parentTestCasePart.getTreeTableInput().refresh(((AstTreeTableNode) element).getParent());
-                } else {
-                    parentTestCasePart.getTreeTableInput().refresh(element);
-                }
-            } catch (Exception e) {
-                LoggerSingleton.logError(e);
-            }
+        if (!((AstInputEditableNode) element).setInput(value)) {
+            return;
+        }
+        try {
+            parentTestCasePart.getTreeTableInput().setDirty(true);
+            parentTestCasePart.getTreeTableInput().refresh(element);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
         }
     }
 }

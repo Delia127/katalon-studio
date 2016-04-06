@@ -3,8 +3,6 @@ package com.kms.katalon.composer.global.dialog;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.groovy.ast.ASTNode;
-import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
@@ -32,15 +30,13 @@ import org.eclipse.swt.widgets.TableColumn;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.global.constants.StringConstants;
-import com.kms.katalon.composer.testcase.model.IInputValueType;
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
-import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
-import com.kms.katalon.composer.testcase.util.AstTreeTableTextValueUtil;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
-import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.entity.global.GlobalVariableEntity;
 import com.kms.katalon.groovy.constant.GroovyConstants;
 
@@ -49,7 +45,6 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
             InputValueType.Boolean, InputValueType.Null, InputValueType.TestDataValue, InputValueType.TestObject,
             InputValueType.TestData, InputValueType.Property, InputValueType.List, InputValueType.Map };
 
-    private static final String CUSTOM_TAG = "Global Variable";
 
     public enum DialogType {
         NEW, EDIT
@@ -165,153 +160,115 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
         tblclmnName.setText(StringConstants.PA_COL_NAME);
 
         TableViewerColumn tableViewerColumnDefaultValueType = new TableViewerColumn(tableViewer, SWT.NONE);
-        tableViewerColumnDefaultValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer,
-                defaultInputValueTypes, CUSTOM_TAG, null, null) {
-            @Override
-            protected boolean canEdit(Object element) {
-                if (element instanceof GlobalVariableEntity) {
-                    return true;
-                }
-                return false;
-            }
-
-            @Override
-            protected Object getValue(Object element) {
-                if (element instanceof GlobalVariableEntity) {
-                    try {
-                        ASTNode astNode = GroovyParser
-                                .parseGroovyScriptAndGetFirstItem(((GlobalVariableEntity) element).getInitValue());
-                        IInputValueType valueType = AstTreeTableValueUtil.getTypeValue(astNode, null);
-                        return inputValueTypeNames.indexOf(valueType.getName());
-                    } catch (Exception e) {
-                        LoggerSingleton.logError(e);
-                    }
-                }
-                return 0;
-            }
-
-            @Override
-            protected void setValue(Object element, Object value) {
-                if (element instanceof GlobalVariableEntity && value instanceof Integer && (int) value > -1
-                        && (int) value < inputValueTypeNames.size()) {
-                    try {
-                        ASTNode astNode = GroovyParser
-                                .parseGroovyScriptAndGetFirstItem(((GlobalVariableEntity) element).getInitValue());
-                        String newValueTypeString = inputValueTypeNames.get((int) value);
-                        IInputValueType newValueType = AstTreeTableInputUtil
-                                .getInputValueTypeFromString(newValueTypeString);
-                        IInputValueType oldValueType = AstTreeTableValueUtil.getTypeValue(astNode, null);
-                        if (newValueType != oldValueType) {
-                            ASTNode newAstNode = (ASTNode) newValueType.getNewValue(astNode);
-                            StringBuilder stringBuilder = new StringBuilder();
-                            GroovyParser groovyParser = new GroovyParser(stringBuilder);
-                            groovyParser.parse(newAstNode);
-                            ((GlobalVariableEntity) element).setInitValue(stringBuilder.toString());
-                            this.getViewer().update(element, null);
-                            refresh();
-                        }
-                    } catch (Exception e) {
-                        LoggerSingleton.logError(e);
-                    }
-
-                }
-            }
-        });
-        TableColumn tblclmnDefaultValueType = tableViewerColumnDefaultValueType.getColumn();
-        tblclmnDefaultValueType.setWidth(100);
-        tblclmnDefaultValueType.setText(StringConstants.PA_COL_DEFAULT_VALUE_TYPE);
         tableViewerColumnDefaultValueType.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                if (element != null && element instanceof GlobalVariableEntity) {
-                    if (element instanceof GlobalVariableEntity) {
-                        try {
-                            IInputValueType valueType = AstTreeTableValueUtil.getTypeValue(GroovyParser
-                                    .parseGroovyScriptAndGetFirstItem(((GlobalVariableEntity) element).getInitValue()),
-                                    null);
-                            if (valueType != null) {
-                                return TreeEntityUtil.getReadableKeywordName(valueType.getName());
-                            }
-                        } catch (Exception e) {
-                            LoggerSingleton.logError(e);
-                        }
-                    }
+                if (!(element instanceof GlobalVariableEntity)) {
+                    return "";
+                }
+                InputValueType valueType = AstTreeTableValueUtil.getTypeValue(GroovyWrapperParser
+                        .parseGroovyScriptAndGetFirstExpression(((GlobalVariableEntity) element).getInitValue()));
+                if (valueType != null) {
+                    return TreeEntityUtil.getReadableKeywordName(valueType.getName());
                 }
                 return "";
             }
         });
 
+        tableViewerColumnDefaultValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer,
+                defaultInputValueTypes) {
+            private ExpressionWrapper expression;
+
+            @Override
+            protected boolean canEdit(Object element) {
+                return (element instanceof GlobalVariableEntity);
+            }
+
+            @Override
+            protected Object getValue(Object element) {
+                return super.getValue(GroovyWrapperParser
+                        .parseGroovyScriptAndGetFirstExpression(((GlobalVariableEntity) element).getInitValue()));
+            }
+
+            @Override
+            protected void setValue(Object element, Object value) {
+                if (!(value instanceof Integer) || (int) value < 0 || (int) value >= inputValueTypes.length) {
+                    return;
+                }
+                InputValueType newValueType = inputValueTypes[(int) value];
+                InputValueType oldValueType = AstTreeTableValueUtil.getTypeValue(expression);
+                if (newValueType == oldValueType) {
+                    return;
+                }
+                ASTNodeWrapper newAstNode = (ASTNodeWrapper) newValueType.getNewValue(expression != null ? expression
+                        .getParent() : null);
+                if (newAstNode == null) {
+                    return;
+                }
+                StringBuilder stringBuilder = new StringBuilder();
+                GroovyWrapperParser groovyParser = new GroovyWrapperParser(stringBuilder);
+                groovyParser.parse(newAstNode);
+                ((GlobalVariableEntity) element).setInitValue(stringBuilder.toString());
+                this.getViewer().update(element, null);
+                refresh();
+            }
+        });
+        TableColumn tblclmnDefaultValueType = tableViewerColumnDefaultValueType.getColumn();
+        tblclmnDefaultValueType.setWidth(100);
+        tblclmnDefaultValueType.setText(StringConstants.PA_COL_DEFAULT_VALUE_TYPE);
+
         TableViewerColumn tableViewerColumnDefaultValue = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnDefaultValue.setEditingSupport(new EditingSupport(tableViewer) {
+            private ExpressionWrapper expression;
 
             @Override
             protected CellEditor getCellEditor(Object element) {
-                try {
-                    ASTNode astNode = GroovyParser.parseGroovyScriptAndGetFirstItem(((GlobalVariableEntity) element)
-                            .getInitValue());
-                    IInputValueType inputValueType = AstTreeTableValueUtil.getTypeValue(astNode, null);
-                    if (inputValueType != null) {
-                        return inputValueType
-                                .getCellEditorForValue((Composite) getViewer().getControl(), astNode, null);
-                    }
-                } catch (Exception e) {
-                    LoggerSingleton.logError(e);
+                expression = GroovyWrapperParser
+                        .parseGroovyScriptAndGetFirstExpression(((GlobalVariableEntity) element).getInitValue());
+                if (expression == null) {
+                    return null;
+                }
+                InputValueType inputValueType = AstTreeTableValueUtil.getTypeValue(expression);
+                if (inputValueType != null) {
+                    return inputValueType.getCellEditorForValue((Composite) getViewer().getControl(), expression);
                 }
                 return null;
             }
 
             @Override
             protected boolean canEdit(Object element) {
-                if (element instanceof GlobalVariableEntity) {
-                    return true;
-                }
-                return false;
+                return (element instanceof GlobalVariableEntity);
             }
 
             @Override
             protected Object getValue(Object element) {
-                if (element instanceof GlobalVariableEntity) {
-                    try {
-                        ASTNode astNode = GroovyParser
-                                .parseGroovyScriptAndGetFirstItem(((GlobalVariableEntity) element).getInitValue());
-                        IInputValueType inputValueType = AstTreeTableValueUtil.getTypeValue(astNode, null);
-                        if (inputValueType != null) {
-                            return inputValueType.getValueToEdit(astNode, null);
-                        }
-                    } catch (Exception e) {
-                        LoggerSingleton.logError(e);
-                    }
-                    return ((GlobalVariableEntity) element).getInitValue();
+                InputValueType inputValueType = AstTreeTableValueUtil.getTypeValue(expression);
+                if (inputValueType != null) {
+                    return inputValueType.getValueToEdit(expression);
                 }
-                return "";
+                return null;
             }
 
             @Override
             protected void setValue(Object element, Object value) {
-                if (element != null && element instanceof GlobalVariableEntity && value != null) {
-                    try {
-                        GlobalVariableEntity globalVariableEntity = (GlobalVariableEntity) element;
-                        ASTNode astNode = GroovyParser.parseGroovyScriptAndGetFirstItem(globalVariableEntity
-                                .getInitValue());
-                        IInputValueType inputValueType = AstTreeTableValueUtil.getTypeValue(astNode, null);
-                        if (inputValueType != null) {
-                            Object object = inputValueType.changeValue(
-                                    astNode instanceof ExpressionStatement ? ((ExpressionStatement) astNode)
-                                            .getExpression() : astNode, value, null);
-                            if (object instanceof ASTNode) {
-                                ASTNode newAstNode = (ASTNode) object;
-                                StringBuilder stringBuilder = new StringBuilder();
-                                GroovyParser groovyParser = new GroovyParser(stringBuilder);
-                                groovyParser.parse(newAstNode);
-                                globalVariableEntity.setInitValue(stringBuilder.toString());
-                                this.getViewer().update(globalVariableEntity, null);
-                                refresh();
-                            }
-                        }
-                    } catch (Exception e) {
-                        LoggerSingleton.logError(e);
-                    }
+                if (value == null) {
+                    return;
                 }
+                InputValueType inputValueType = AstTreeTableValueUtil.getTypeValue(expression);
+                if (inputValueType == null) {
+                    return;
+                }
+                Object object = inputValueType.changeValue(expression, value);
+                if (!(object instanceof ASTNodeWrapper)) {
+                    return;
+                }
+                ASTNodeWrapper newAstNode = (ASTNodeWrapper) object;
+                StringBuilder stringBuilder = new StringBuilder();
+                GroovyWrapperParser groovyParser = new GroovyWrapperParser(stringBuilder);
+                groovyParser.parse(newAstNode);
+                ((GlobalVariableEntity) element).setInitValue(stringBuilder.toString());
+                this.getViewer().update(element, null);
+                refresh();
             }
         });
         TableColumn tblclmnDefaultValue = tableViewerColumnDefaultValue.getColumn();
@@ -320,16 +277,16 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
         tableViewerColumnDefaultValue.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                if (element != null && element instanceof GlobalVariableEntity) {
-                    try {
-                        ASTNode astNode = GroovyParser
-                                .parseGroovyScriptAndGetFirstItem(((GlobalVariableEntity) element).getInitValue());
-                        return AstTreeTableTextValueUtil.getInstance().getTextValue(astNode);
-                    } catch (Exception e) {
-                        LoggerSingleton.logError(e);
-                    }
+                if (!(element instanceof GlobalVariableEntity)
+                        || ((GlobalVariableEntity) element).getInitValue() == null) {
+                    return "";
                 }
-                return StringConstants.EMPTY;
+                ExpressionWrapper expression = GroovyWrapperParser
+                        .parseGroovyScriptAndGetFirstExpression(((GlobalVariableEntity) element).getInitValue());
+                if (expression == null) {
+                    return "";
+                }
+                return expression.getText();
             }
         });
 

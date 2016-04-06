@@ -13,7 +13,6 @@ import com.kms.katalon.execution.launcher.process.ILaunchProcess;
 import com.kms.katalon.execution.launcher.process.LaunchProcessor;
 
 public class ConsoleLauncher extends ReportableLauncher {
-
     public ConsoleLauncher(IRunConfiguration runConfig) {
         super(runConfig);
     }
@@ -26,9 +25,8 @@ public class ConsoleLauncher extends ReportableLauncher {
     @Override
     protected ILaunchProcess launch() throws ExecutionException {
         try {
-            Process systemProcess = new LaunchProcessor(
-                    ClassPathResolver.getClassPaths(ProjectController.getInstance().getCurrentProject()))
-                            .execute(getRunConfig().getExecutionSetting().getScriptFile());
+            Process systemProcess = new LaunchProcessor(ClassPathResolver.getClassPaths(ProjectController.getInstance()
+                    .getCurrentProject())).execute(getRunConfig().getExecutionSetting().getScriptFile());
 
             return new ConsoleProcess(systemProcess);
         } catch (IOException ex) {
@@ -43,5 +41,4 @@ public class ConsoleLauncher extends ReportableLauncher {
         // No need to remember log records in console mode
         records.clear();
     }
-
 }

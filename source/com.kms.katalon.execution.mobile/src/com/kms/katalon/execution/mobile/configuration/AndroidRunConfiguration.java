@@ -10,7 +10,7 @@ import com.kms.katalon.execution.mobile.driver.AndroidDriverConnector;
 public class AndroidRunConfiguration extends MobileRunConfiguration {
     public AndroidRunConfiguration(String projectDir) throws IOException {
         super(projectDir, new AndroidDriverConnector(projectDir + File.separator
-                + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME));
+                + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME));
     }
 
     @Override

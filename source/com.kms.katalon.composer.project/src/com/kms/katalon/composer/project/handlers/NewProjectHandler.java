@@ -1,6 +1,9 @@
 package com.kms.katalon.composer.project.handlers;
 
+import java.io.FileNotFoundException;
+
 import javax.inject.Inject;
+import javax.xml.bind.MarshalException;
 
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -19,32 +22,47 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 @SuppressWarnings("restriction")
 public class NewProjectHandler {
 
-	@Inject
-	private IEventBroker eventBroker;
+    @Inject
+    private IEventBroker eventBroker;
 
-	@Execute
-	public void execute(Shell shell) {
-		NewProjectDialog dialog = new NewProjectDialog(shell);
-		dialog.open();
+    @Execute
+    public void execute(Shell shell) {
+        NewProjectDialog dialog = new NewProjectDialog(shell);
+        dialog.open();
+        if (dialog.getReturnCode() != Window.OK) {
+            return;
+        }
+        try {
+            ProjectEntity newProject = createNewProject(shell, dialog.getProjectName(), dialog.getProjectLocation(),
+                    dialog.getProjectDescription());
+            if (newProject == null) {
+                return;
+            }
+            eventBroker.send(EventConstants.PROJECT_CREATED, newProject);
+            // Open created project
+            eventBroker.post(EventConstants.PROJECT_OPEN, newProject.getId());
+            LauncherManager.refresh();
+            eventBroker.post(EventConstants.JOB_REFRESH, null);
+            eventBroker.post(EventConstants.CONSOLE_LOG_REFRESH, null);
+        } catch (Exception ex) {
+            LoggerSingleton.getInstance().getLogger().error(ex);
+            MessageDialog.openError(shell, StringConstants.ERROR_TITLE,
+                    StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_NEW_PROJ);
+        }
+    }
 
-		ProjectEntity newProject = null;
-		try {
-			if (dialog.getReturnCode() == Window.OK) {
-				newProject = ProjectController.getInstance().addNewProject(dialog.getProjectName(),
-						dialog.getProjectDescription(), dialog.getProjectLocation());
-			}
-			// Open created project
-			if (newProject != null) {
-				eventBroker.send(EventConstants.PROJECT_CREATED, newProject);
-				eventBroker.post(EventConstants.PROJECT_OPEN, newProject.getId());
-				LauncherManager.refresh();
-				eventBroker.post(EventConstants.JOB_REFRESH, null);
-				eventBroker.post(EventConstants.CONSOLE_LOG_REFRESH, null);				
-			}
-		} catch (Exception ex) {
-			LoggerSingleton.getInstance().getLogger().error(ex);
-			MessageDialog.openError(shell, StringConstants.ERROR_TITLE, 
-					StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_NEW_PROJ);
-		}
-	}
+    private ProjectEntity createNewProject(Shell shell, String projectName, String projectLocation,
+            String projectDescription) throws Exception {
+        try {
+            return ProjectController.getInstance().addNewProject(projectName, projectDescription, projectLocation);
+        } catch (MarshalException ex) {
+            if (!(ex.getLinkedException() instanceof FileNotFoundException)) {
+                throw ex;
+            }
+            LoggerSingleton.getInstance().getLogger().error(ex);
+            MessageDialog.openError(shell, StringConstants.ERROR_TITLE,
+                    StringConstants.HAND_ERROR_MSG_NEW_PROJ_LOCATION_INVALID);
+        }
+        return null;
+    }
 }

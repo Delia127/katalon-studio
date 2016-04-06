@@ -4,27 +4,23 @@ import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
 import static com.kms.katalon.core.util.PathUtil.absoluteToRelativePath;
 import static com.kms.katalon.core.util.PathUtil.relativeToAbsolutePath;
 import static com.kms.katalon.execution.util.MailUtil.getDistinctRecipients;
+import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.isNumeric;
 import static org.apache.commons.lang.StringUtils.join;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.window.Window;
@@ -54,24 +50,36 @@ import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.dialogs.AddMailRecipientDialog;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
+import com.kms.katalon.composer.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
-import com.kms.katalon.constants.PreferenceConstants.ExecutionPreferenceConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.core.application.Application;
 import com.kms.katalon.core.mobile.keyword.MobileDriverFactory;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
-import com.kms.katalon.execution.launcher.manager.ConsoleMain;
+import com.kms.katalon.execution.collector.ConsoleOptionCollector;
+import com.kms.katalon.execution.console.ConsoleMain;
+import com.kms.katalon.execution.console.entity.OsgiConsoleOptionContributor;
+import com.kms.katalon.execution.entity.EmailConfig;
+import com.kms.katalon.execution.entity.ReportLocationSetting;
+import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector.RemoteWebDriverConnectorType;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class GenerateCommandDialog extends AbstractDialog {
+
+    private enum GenerateCommandMode {
+        CONSOLE_COMMAND, PROPERTIES_FILE
+    };
+
+    private static final String KATALON_EXECUTABLE = "katalon";
 
     private static final int GENERATE_PROPERTY_ID = 22;
 
@@ -123,21 +131,21 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private static final String defaultStatusDelay = Integer.toString(ConsoleMain.DEFAULT_SHOW_PROGRESS_DELAY);
 
-    private static final String defaultPropertyFileName = "default.properties";
+    private static final String defaultPropertyFileName = ConsoleOptionCollector.DEFAULT_EXECUTION_PROPERTY_FILE_NAME;
 
-    private static final String ARG_RUN_MODE = ConsoleMain.RUN_MODE_OPTION;
+    private static final String ARG_RUN_MODE = Application.RUN_MODE_OPTION;
 
     private static final String ARG_PROJECT_PATH = ConsoleMain.PROJECT_PK_OPTION;
 
-    private static final String ARG_REPORT_FOLDER = ConsoleMain.REPORT_FOLDER_OPTION;
+    private static final String ARG_REPORT_FOLDER = ReportLocationSetting.REPORT_FOLDER_OPTION;
 
-    private static final String ARG_REPORT_FILE_NAME = ConsoleMain.REPORT_FILE_NAME_OPTION;
+    private static final String ARG_REPORT_FILE_NAME = ReportLocationSetting.REPORT_FILE_NAME_OPTION;
 
-    private static final String ARG_SEND_MAIL = "sendMail";
+    private static final String ARG_SEND_MAIL = EmailConfig.SEND_EMAIL_OPTION;
 
-    private static final String ARG_OSGI_CONSOLE_LOG = "consoleLog";
+    private static final String ARG_OSGI_CONSOLE_LOG = OsgiConsoleOptionContributor.OSGI_CONSOLE_LOG_OPTION;
 
-    private static final String ARG_OSGI_NO_EXIT = "noExit";
+    private static final String ARG_OSGI_NO_EXIT = OsgiConsoleOptionContributor.OSGI_NO_EXIT_OPTION;
 
     private static final String ARG_STATUS_DELAY = ConsoleMain.SHOW_STATUS_DELAY_OPTION;
 
@@ -159,8 +167,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         defaultOutputReportLocation = projectLocation() + File.separator + StringConstants.ROOT_FOLDER_NAME_REPORT
                 + File.separator;
 
-        IPreferenceStore prefs = ((IPreferenceStore) new ScopedPreferenceStore(InstanceScope.INSTANCE,
-                ExecutionPreferenceConstants.QUALIFIER));
+        ScopedPreferenceStore prefs = getPreferenceStore(GenerateCommandDialog.class);
         boolean isSendAttachmentPrefEnabled = prefs.getBoolean(ExecutionPreferenceConstants.MAIL_CONFIG_ATTACHMENT);
         if (isSendAttachmentPrefEnabled) {
             preferenceRecipients = prefs.getString(ExecutionPreferenceConstants.MAIL_CONFIG_REPORT_RECIPIENTS);
@@ -471,8 +478,8 @@ public class GenerateCommandDialog extends AbstractDialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 Shell shell = Display.getDefault().getActiveShell();
-                AddMailRecipientDialog addMailDialog = new AddMailRecipientDialog(shell, listMailRecipientViewer
-                        .getList().getItems());
+                AddMailRecipientDialog addMailDialog = new AddMailRecipientDialog(shell,
+                        listMailRecipientViewer.getList().getItems());
                 addMailDialog.open();
 
                 if (addMailDialog.getReturnCode() == Dialog.OK) {
@@ -602,17 +609,19 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private void generatePropertyPressed() {
         try {
+            validateUserInput();
             FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
             dialog.setFilterNames(new String[] { "Property Files (*.properties)" });
             dialog.setFilterExtensions(new String[] { "*.properties" });
             dialog.setFilterPath(projectLocation());
             dialog.setFileName(defaultPropertyFileName);
-
-            String fileLocation = dialog.open();
-            if (isBlank(fileLocation)) {
+            String result = dialog.open();
+            
+            // User pressed cancel
+            if (result == null) {
                 return;
             }
-            savePropertyFile(fileLocation);
+            savePropertyFile(result);
         } catch (Exception e) {
             MessageDialog.openWarning(getShell(), StringConstants.WARN_TITLE, e.getMessage());
         }
@@ -628,42 +637,21 @@ public class GenerateCommandDialog extends AbstractDialog {
     }
 
     private void savePropertyFile(String fileLocation) throws Exception {
-        if (fileLocation == null) {
+        if (isBlank(fileLocation)) {
             throw new Exception(StringConstants.DIA_MSG_PLS_SPECIFY_FILE_LOCATION);
         }
-
-        validateUserInput();
-        Map<String, String> consoleAgrsMap = getUserConsoleAgrsMap();
-
-        Properties prop = null;
-        OutputStream output = null;
         try {
-            output = new FileOutputStream(fileLocation);
-            prop = new Properties();
-            for (String key : consoleAgrsMap.keySet()) {
-                // set the properties value
-                prop.setProperty(key, consoleAgrsMap.get(key));
-            }
-            // save properties
-            prop.store(output, null);
+            ExecutionUtil.savePropertiesFile(getUserConsoleAgrsMap(GenerateCommandMode.PROPERTIES_FILE), fileLocation);
         } catch (IOException e) {
             logError(e);
-        } finally {
-            if (output != null) {
-                try {
-                    output.close();
-                } catch (IOException e) {
-                    logError(e);
-                }
-            }
         }
     }
 
     private String generateCommand() throws Exception {
         validateUserInput();
 
-        Map<String, String> consoleAgrsMap = getUserConsoleAgrsMap();
-        StringBuilder commandBuilder = new StringBuilder("katalon");
+        Map<String, String> consoleAgrsMap = getUserConsoleAgrsMap(GenerateCommandMode.CONSOLE_COMMAND);
+        StringBuilder commandBuilder = new StringBuilder(KATALON_EXECUTABLE);
         for (String key : consoleAgrsMap.keySet()) {
             commandBuilder.append(" ");
             commandBuilder.append(wrapArgName(key));
@@ -677,51 +665,53 @@ public class GenerateCommandDialog extends AbstractDialog {
         return commandBuilder.toString();
     }
 
-    private Map<String, String> getUserConsoleAgrsMap() {
+    private Map<String, String> getUserConsoleAgrsMap(GenerateCommandMode generateCommandMode) {
         Map<String, String> args = new LinkedHashMap<String, String>();
-        args.put(ARG_RUN_MODE, "console");
-        args.put(ARG_PROJECT_PATH, wrapArgValue(project.getLocation()));
+        if (generateCommandMode == GenerateCommandMode.CONSOLE_COMMAND) {
+            args.put(ARG_RUN_MODE, Application.RUN_MODE_OPTION_CONSOLE);
+            if (chkDisplayConsoleLog.getSelection()) {
+                // OSGi argument
+                args.put(ARG_OSGI_CONSOLE_LOG, "");
+            }
+
+            if (chkKeepConsoleLog.getSelection()) {
+                // OSGi argument
+                args.put(ARG_OSGI_NO_EXIT, "");
+            }
+        }
+
+        args.put(ARG_PROJECT_PATH, getArgumentValueToSave(project.getLocation(), generateCommandMode));
 
         if (useCustomReportFolder()) {
-            args.put(ARG_REPORT_FOLDER, wrapArgValue(txtOutputLocation.getText()));
+            args.put(ARG_REPORT_FOLDER, getArgumentValueToSave(txtOutputLocation.getText(), generateCommandMode));
 
             // -reportFileName only affects when using with -reportFolder option
             if (!StringUtils.equals(txtReportName.getText(), StringConstants.DIA_TXT_DEFAULT_REPORT_NAME)) {
-                args.put(ARG_REPORT_FILE_NAME, wrapArgValue(txtReportName.getText()));
+                args.put(ARG_REPORT_FILE_NAME, getArgumentValueToSave(txtReportName.getText(), generateCommandMode));
             }
         }
 
         if (chkSendEmail.getSelection() && listMailRecipient.getItemCount() > 0) {
-            args.put(ARG_SEND_MAIL, wrapArgValue(join(listMailRecipient.getItems(), MailUtil.EMAIL_SEPARATOR)));
-        }
-
-        if (chkDisplayConsoleLog.getSelection()) {
-            // OSGi argument
-            args.put(ARG_OSGI_CONSOLE_LOG, "");
-        }
-
-        if (chkKeepConsoleLog.getSelection()) {
-            // OSGi argument
-            args.put(ARG_OSGI_NO_EXIT, "");
+            args.put(ARG_SEND_MAIL,
+                    getArgumentValueToSave(join(listMailRecipient.getItems(), MailUtil.EMAIL_SEPARATOR), generateCommandMode));
         }
 
         if (!StringUtils.equals(txtStatusDelay.getText(), defaultStatusDelay)) {
             args.put(ARG_STATUS_DELAY, txtStatusDelay.getText());
         }
 
-        args.put(ARG_TEST_SUITE_PATH, wrapArgValue(txtTestSuite.getText()));
+        args.put(ARG_TEST_SUITE_PATH, getArgumentValueToSave(txtTestSuite.getText(), generateCommandMode));
 
-        args.put(ARG_BROWSER_TYPE, comboBrowser.getText());
+        args.put(ARG_BROWSER_TYPE, getArgumentValueToSave(comboBrowser.getText(), generateCommandMode));
 
         if (browserTypeIs(WebUIDriverType.REMOTE_WEB_DRIVER)) {
-            args.put(ARG_REMOTE_WEB_DRIVER_URL, wrapArgValue(txtRemoteWebDriverURL.getText()));
+            args.put(ARG_REMOTE_WEB_DRIVER_URL, getArgumentValueToSave(txtRemoteWebDriverURL.getText(), generateCommandMode));
             args.put(ARG_REMOTE_WEB_DRIVER_TYPE, comboRemoteWebDriverType.getText());
-            return args;
         }
 
         if (browserTypeIs(WebUIDriverType.ANDROID_DRIVER) || browserTypeIs(WebUIDriverType.IOS_DRIVER)) {
-            args.put(ARG_MOBILE_DEVICE_ID, wrapArgValue(MobileDriverFactory.getDeviceId(comboMobileDevice.getText())));
-            return args;
+            args.put(ARG_MOBILE_DEVICE_ID,
+                    getArgumentValueToSave(MobileDriverFactory.getDeviceId(comboMobileDevice.getText()), generateCommandMode));
         }
 
         return args;
@@ -735,7 +725,14 @@ public class GenerateCommandDialog extends AbstractDialog {
         return ConsoleMain.ARGUMENT_PREFIX + name;
     }
 
-    private String wrapArgValue(String value) {
+    private String getArgumentValueToSave(String value, GenerateCommandMode generateCommandMode) {
+        if (generateCommandMode == GenerateCommandMode.PROPERTIES_FILE) {
+            return value;
+        }
+        return wrapArgumentValue(value);
+    }
+
+    private String wrapArgumentValue(String value) {
         return "\"" + value + "\"";
     }
 

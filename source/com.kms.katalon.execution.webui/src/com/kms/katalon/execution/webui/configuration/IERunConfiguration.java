@@ -10,7 +10,7 @@ import com.kms.katalon.execution.webui.driver.IEDriverConnector;
 public class IERunConfiguration extends WebUiRunConfiguration {
     public IERunConfiguration(String projectDir) throws IOException {
         super(projectDir, new IEDriverConnector(projectDir + File.separator
-                + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDLER_NAME));
+                + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME));
     }
 
     @Override

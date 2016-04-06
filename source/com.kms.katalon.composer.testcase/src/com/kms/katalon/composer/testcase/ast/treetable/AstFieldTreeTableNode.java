@@ -1,26 +1,22 @@
 package com.kms.katalon.composer.testcase.ast.treetable;
 
-import org.codehaus.groovy.ast.ASTNode;
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.FieldNode;
 import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.testcase.groovy.ast.FieldNodeWrapper;
 
 public class AstFieldTreeTableNode extends AstAbstractTreeTableNode {
-	private FieldNode fieldNode;
-	private AstTreeTableNode parentNode;
-	private ClassNode classNode;
+	private FieldNodeWrapper fieldNode;
 	
-	public AstFieldTreeTableNode(FieldNode fieldNode, AstTreeTableNode parentNode, ClassNode parentClassNode) {
+	public AstFieldTreeTableNode(FieldNodeWrapper fieldNode, AstTreeTableNode parentNode) {
+	    super(parentNode);
 		this.fieldNode = fieldNode;
 		this.parentNode = parentNode;
-		this.classNode = parentClassNode;
 	}
 
 	@Override
-	public ASTNode getASTObject() {
+	public FieldNodeWrapper getASTObject() {
 		return fieldNode;
 	}
 
@@ -29,30 +25,13 @@ public class AstFieldTreeTableNode extends AstAbstractTreeTableNode {
 		return StringConstants.TREE_FIELD;
 	}
 
-	@Override
-    public String getItemTextForDisplay() {
-        return getItemText();
-    }
-
     @Override
 	public AstTreeTableNode getParent() {
 		return parentNode;
 	}
 
 	@Override
-	public ASTNode getParentASTObject() {
-		return classNode;
-	}
-
-	@Override
-	public Image getNodeIcon() {
+	public Image getIcon() {
 		return ImageConstants.IMG_16_FUNCTION;
 	}
-
-	@Override
-	public AstTreeTableNode clone() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

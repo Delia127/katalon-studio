@@ -1,66 +1,73 @@
 package com.kms.katalon.composer.testcase.support;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.codehaus.groovy.ast.ASTNode;
-import org.codehaus.groovy.ast.ClassNode;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.testcase.ast.dialogs.AstBuilderDialog;
-import com.kms.katalon.composer.testcase.model.IInputValueType;
-import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
 
 public class AstInputBuilderValueTypeColumnSupport extends EditingSupport {
     protected AstBuilderDialog parentDialog;
 
-    protected ClassNode scriptClass;
+    protected InputValueType[] inputValueTypes;
 
-    protected List<String> inputValueTypeNames;
-
-    protected List<String> readableValueTypeNames;
+    protected String[] readableValueTypeNames;
 
     protected String customTag;
-
-    protected IInputValueType[] defaultInputValueTypes;
-
-    public AstInputBuilderValueTypeColumnSupport(ColumnViewer viewer, IInputValueType[] defaultInputValueTypes,
-            String customTag, AstBuilderDialog parentDialog, ClassNode scriptClass) {
+    
+    public AstInputBuilderValueTypeColumnSupport(ColumnViewer viewer, InputValueType[] defaultInputValueTypes) {
         super(viewer);
-        this.defaultInputValueTypes = defaultInputValueTypes;
-        this.customTag = customTag;
+        inputValueTypes = defaultInputValueTypes;
+        readableValueTypeNames = new String[defaultInputValueTypes.length];
+        for (int i = 0; i < defaultInputValueTypes.length; i++) {
+            readableValueTypeNames[i] = TreeEntityUtil.getReadableKeywordName(defaultInputValueTypes[i].getName());
+        }
+    }
+
+    public AstInputBuilderValueTypeColumnSupport(ColumnViewer viewer, InputValueType[] defaultInputValueTypes,
+            AstBuilderDialog parentDialog) {
+        this(viewer, defaultInputValueTypes);
         this.parentDialog = parentDialog;
-        this.scriptClass = scriptClass;
-        inputValueTypeNames = new ArrayList<String>();
-        readableValueTypeNames = new ArrayList<String>();
     }
 
     @Override
     protected void setValue(Object element, Object value) {
-        if (element instanceof ASTNode && value instanceof Integer && (int) value > -1
-                && (int) value < inputValueTypeNames.size()) {
-            String newValueTypeString = inputValueTypeNames.get((int) value);
-            IInputValueType newValueType = AstTreeTableInputUtil.getInputValueTypeFromString(newValueTypeString);
-            IInputValueType oldValueType = AstTreeTableValueUtil.getTypeValue((ASTNode) element, scriptClass);
-            if (newValueType != oldValueType) {
-                ASTNode astNode = (ASTNode) newValueType.getNewValue(element);
-                parentDialog.changeObject(element, astNode);
-                getViewer().refresh();
-            }
+        if (!(value instanceof Integer) || (int) value < 0 || (int) value >= inputValueTypes.length) {
+            return;
         }
+        ASTNodeWrapper oldAstNode = (ASTNodeWrapper) element;
+        InputValueType newValueType = inputValueTypes[(int) value];
+        InputValueType oldValueType = AstTreeTableValueUtil.getTypeValue(oldAstNode);
+        if (newValueType == oldValueType) {
+            return;
+        }
+        ASTNodeWrapper newAstNode = (ASTNodeWrapper) newValueType.getNewValue(oldAstNode.getParent());
+        if (newAstNode == null) {
+            return;
+        }
+        newAstNode.copyProperties(oldAstNode);
+        newAstNode.setParent(oldAstNode.getParent());
+        if (parentDialog != null) {
+            parentDialog.replaceObject(oldAstNode, newAstNode);
+        }
+        getViewer().refresh();
     }
 
     @Override
     protected Object getValue(Object element) {
-        if (element instanceof ASTNode) {
-            IInputValueType valueType = AstTreeTableValueUtil.getTypeValue((ASTNode) element, scriptClass);
-            if (valueType != null) {
-                return inputValueTypeNames.indexOf(valueType.getName());
+        InputValueType valueType = AstTreeTableValueUtil.getTypeValue((ASTNodeWrapper) element);
+        if (valueType == null) {
+            return 0;
+        }
+        for (int index = 0; index < inputValueTypes.length; index++) {
+            if (valueType.equals(inputValueTypes[index])) {
+                return index;
             }
         }
         return 0;
@@ -68,19 +75,12 @@ public class AstInputBuilderValueTypeColumnSupport extends EditingSupport {
 
     @Override
     protected CellEditor getCellEditor(Object element) {
-        inputValueTypeNames.clear();
-        inputValueTypeNames
-                .addAll(AstTreeTableInputUtil.getInputValueTypeStringList(defaultInputValueTypes, customTag));
-        readableValueTypeNames.clear();
-        readableValueTypeNames.addAll(AstTreeTableInputUtil.getReadableInputValueTypeStringList(defaultInputValueTypes,
-                customTag));
-        return new ComboBoxCellEditor((Composite) getViewer().getControl(),
-                readableValueTypeNames.toArray(new String[readableValueTypeNames.size()]));
+        return new ComboBoxCellEditor((Composite) getViewer().getControl(), readableValueTypeNames);
     }
 
     @Override
     protected boolean canEdit(Object element) {
-        if (element instanceof ASTNode) {
+        if (element instanceof ASTNodeWrapper) {
             return true;
         }
         return false;

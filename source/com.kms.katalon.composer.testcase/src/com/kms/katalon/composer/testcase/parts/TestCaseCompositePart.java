@@ -10,7 +10,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.codehaus.groovy.ast.ASTNode;
-import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.eclipse.editor.GroovyEditor;
 import org.eclipse.core.resources.IResource;
@@ -53,6 +52,9 @@ import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.parts.MultipleTabsCompositePart;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
 import com.kms.katalon.constants.EventConstants;
@@ -135,7 +137,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
 
     private TestCaseEntity originalTestCase;
 
-    private List<ASTNode> astNodes;
+    private ScriptNodeWrapper scriptNode;
 
     public boolean isInitialized() {
         return isInitialized;
@@ -206,15 +208,15 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                             setScriptContentToManual();
                         } else if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_EDITOR_PART_INDEX
                                 && childTestCasePart.isManualScriptChanged()) {
-                            setChildEditorContents(astNodes);
+                            setChildEditorContents(scriptNode);
                         }
                     }
                 });
             }
-            boolean isSetScriptToManualSuccessfully = setScriptContentToManual();
             childTestCaseVariablesPart.loadVariables();
+            boolean isSetScriptToManualSuccessfully = setScriptContentToManual();
             if (isSetScriptToManualSuccessfully) {
-                childTestCasePart.getTreeTableInput().reloadTestCaseVariables();
+                // childTestCasePart.getTreeTableInput().reloadTestCaseVariables();
             }
             childTestCaseIntegrationPart.loadInput();
             isInitialized = true;
@@ -236,7 +238,6 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                             if (!isScriptChanged) {
                                 isScriptChanged = true;
                             }
-
                             childTestCaseEditorPart.getModel().setDirty(true);
                         }
 
@@ -268,18 +269,18 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
 
     public boolean setScriptContentToManual() {
         try {
-            astNodes = getAstNodesFromScript();
-            if (astNodes == null || astNodes.isEmpty()) {
-                astNodes = GroovyParser.generateNewScript();
+            if (groovyEditor == null || childTestCasePart == null) {
+                return false;
             }
-            if (childTestCasePart != null && groovyEditor != null) {
-                childTestCasePart.loadASTNodesToTreeTable(astNodes);
-                isScriptChanged = false;
-                return true;
+            scriptNode = GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(groovyEditor.getViewer().getDocument().get());
+            if (scriptNode == null) {
+                scriptNode = new ScriptNodeWrapper();
             }
+            childTestCasePart.loadASTNodesToTreeTable(scriptNode);
+            isScriptChanged = false;
+            return true;
         } catch (CompilationFailedException exception) {
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_PLS_FIX_ERROR_IN_SCRIPT);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_PLS_FIX_ERROR_IN_SCRIPT);
             subPartStack.setSelectedElement(childTestCaseEditorPart.getModel());
             isScriptChanged = true;
             GroovyEditorUtil.showProblems(groovyEditor);
@@ -296,7 +297,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         return Collections.emptyList();
     }
 
-    private boolean setChildEditorContents(List<ASTNode> astNodes) {
+    private boolean setChildEditorContents(ScriptNodeWrapper scriptNode) {
         while (groovyEditor.getViewer() == null) {
             // wait for groovy Editor appears
         }
@@ -304,7 +305,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         if (groovyEditor.getViewer() != null) {
             try {
                 StringBuilder stringBuilder = new StringBuilder();
-                new GroovyParser(stringBuilder).parseGroovyAstIntoScript(astNodes);
+                new GroovyWrapperParser(stringBuilder).parseGroovyAstIntoScript(scriptNode);
                 groovyEditor.getViewer().getDocument().set(stringBuilder.toString());
                 childTestCasePart.setManualScriptChanged(false);
                 childTestCaseEditorPart.getModel().setDirty(true);
@@ -359,7 +360,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
     @Override
     public void save() throws Exception {
         if (childTestCasePart.isManualScriptChanged()) {
-            setChildEditorContents(astNodes);
+            setChildEditorContents(scriptNode);
         }
         saveTestScript();
         saveTestCase();
@@ -373,7 +374,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         return childTestCaseVariablesPart.getVariables();
     }
 
-    public void addStatements(List<Statement> statements) throws Exception {
+    public void addStatements(List<StatementWrapper> statements) {
         childTestCasePart.addStatements(statements, NodeAddType.InserAfter);
     }
 
@@ -382,8 +383,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         if (status.isOK()) {
             return childTestCaseVariablesPart.validateVariables();
         } else {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
-                    status.getMessage());
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, status.getMessage());
             return false;
         }
     }
@@ -429,8 +429,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                 originalTestCase.setScriptContents(temp.getScriptContents());
 
                 LoggerSingleton.logError(e);
-                MessageDialog.openWarning(Display.getCurrent().getActiveShell(), StringConstants.WARN_TITLE,
-                        e.getMessage());
+                MessageDialog.openWarning(Display.getCurrent().getActiveShell(), StringConstants.WARN_TITLE, e.getMessage());
             }
         }
         return false;
@@ -469,8 +468,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         try {
             save();
         } catch (Exception e) {
-            MessageDialog
-                    .openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_PART);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_PART);
             LoggerSingleton.logError(e);
         }
     }
@@ -534,8 +532,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                         }
                     } else if (object instanceof FolderTreeEntity) {
                         FolderEntity folder = (FolderEntity) ((ITreeEntity) object).getObject();
-                        if (folder != null
-                                && FolderController.getInstance().isFolderAncestorOfEntity(folder, getTestCase())) {
+                        if (folder != null && FolderController.getInstance().isFolderAncestorOfEntity(folder, getTestCase())) {
                             if (TestCaseController.getInstance().getTestCase(getTestCase().getId()) == null) {
                                 dispose();
                             }
@@ -580,16 +577,16 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                 MPartStack partStack = (MPartStack) compositePart.getChildren().get(0);
                 partStack.setElementId(newCompositePartId + IdConstants.TEST_CASE_SUB_PART_STACK_ID_SUFFIX);
 
-                childTestCasePart.getMPart().setElementId(
-                        newCompositePartId + IdConstants.TEST_CASE_GENERAL_PART_ID_SUFFIX);
+                childTestCasePart.getMPart().setElementId(newCompositePartId + IdConstants.TEST_CASE_GENERAL_PART_ID_SUFFIX);
                 childTestCaseVariablesPart.getMPart().setElementId(
                         newCompositePartId + IdConstants.TEST_CASE_VARIABLES_PART_ID_SUFFIX);
 
                 partService.hidePart(getChildCompatibilityPart(), true);
                 String testCaseEditorId = newCompositePartId + IdConstants.TEST_CASE_EDITOR_PART_ID_SUFFIX;
-                MPart editorPart = GroovyEditorUtil.createTestCaseEditorPart(ResourcesPlugin.getWorkspace().getRoot()
-                        .getFile(GroovyUtil.getGroovyScriptForTestCase(testCase).getPath()), partStack,
-                        testCaseEditorId, partService, CHILD_TEST_CASE_EDITOR_PART_INDEX);
+                MPart editorPart = GroovyEditorUtil.createTestCaseEditorPart(
+                        ResourcesPlugin.getWorkspace().getRoot()
+                                .getFile(GroovyUtil.getGroovyScriptForTestCase(testCase).getPath()), partStack, testCaseEditorId,
+                        partService, CHILD_TEST_CASE_EDITOR_PART_INDEX);
                 partService.activate(editorPart);
                 initComponent();
                 partStack.setSelectedElement(getChildManualPart());

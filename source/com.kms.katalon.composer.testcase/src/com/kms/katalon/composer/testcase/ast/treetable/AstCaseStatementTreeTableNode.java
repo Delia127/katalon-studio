@@ -1,55 +1,10 @@
 package com.kms.katalon.composer.testcase.ast.treetable;
 
-import org.codehaus.groovy.ast.ASTNode;
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.stmt.CaseStatement;
-import org.codehaus.groovy.ast.stmt.SwitchStatement;
-
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
-import com.kms.katalon.composer.testcase.util.AstTreeTableUtil;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.CaseStatementWrapper;
 
-public class AstCaseStatementTreeTableNode extends AstStatementTreeTableNode {
-	private CaseStatement caseStatement;
-
-	public AstCaseStatementTreeTableNode(CaseStatement statement, AstTreeTableNode parentNode,
-			SwitchStatement switchStatement, ClassNode scriptClass) {
-		super(statement, parentNode, switchStatement, scriptClass);
-		this.caseStatement = statement;
-	}
-
-	@Override
-	public String getItemText() {
-		return StringConstants.TREE_CASE_STATEMENT;
-	}
-
-	@Override
-	public boolean hasChildren() {
-		return caseStatement.getCode() != null;
-	}
-	
-    @Override
-    public void reloadChildren() {
-        try {
-            children = AstTreeTableUtil.getChildren(caseStatement.getCode(), this, caseStatement.getCode(), scriptClass);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-        }
+public class AstCaseStatementTreeTableNode extends AstCompositeEditableInputStatementTreeTableNode {
+    public AstCaseStatementTreeTableNode(CaseStatementWrapper caseStatement, AstTreeTableNode parentNode) {
+        super(caseStatement, parentNode, StringConstants.TREE_CASE_STATEMENT);
     }
-
-	@Override
-	public void addChildObject(ASTNode astObject, int index) {
-		AstTreeTableUtil.addChild(caseStatement.getCode(), astObject, index);
-	}
-
-	@Override
-	public void removeChildObject(ASTNode astObject) {
-		AstTreeTableUtil.removeChild(caseStatement.getCode(), astObject);
-	}
-
-	@Override
-	public int getChildObjectIndex(ASTNode astObject) {
-		return AstTreeTableUtil.getIndex(caseStatement.getCode(), astObject);
-	}
-
 }

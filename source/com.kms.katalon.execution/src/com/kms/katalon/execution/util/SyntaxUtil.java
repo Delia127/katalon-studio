@@ -7,7 +7,7 @@ import org.codehaus.groovy.control.messages.SyntaxErrorMessage;
 import org.codehaus.groovy.syntax.SyntaxException;
 
 public class SyntaxUtil {
-    public static final String LINE_SEPERATOR = System.getProperty("line.separator");
+    public static final String LINE_SEPARATOR = System.getProperty("line.separator");
     
     public static boolean checkVariableSyntax(String variableName, String variableValue) {
         try {

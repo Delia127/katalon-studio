@@ -1,20 +1,11 @@
 package com.kms.katalon.composer.testcase.ast.treetable;
 
-import org.codehaus.groovy.ast.ASTNode;
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.stmt.ContinueStatement;
-
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.ContinueStatementWrapper;
 
 public class AstContinueStatementTreeTableNode extends AstStatementTreeTableNode {
-
-    public AstContinueStatementTreeTableNode(ContinueStatement statement, AstTreeTableNode parentNode, ASTNode parentObject,
-            ClassNode scriptClass) {
-        super(statement, parentNode, parentObject, scriptClass);
+    public AstContinueStatementTreeTableNode(ContinueStatementWrapper continueStatement, AstTreeTableNode parentNode) {
+        super(continueStatement, parentNode, StringConstants.TREE_CONTINUE_STATEMENT);
     }
 
-    @Override
-    public String getItemText() {
-        return StringConstants.TREE_CONTINUE_STATEMENT;
-    }
 }

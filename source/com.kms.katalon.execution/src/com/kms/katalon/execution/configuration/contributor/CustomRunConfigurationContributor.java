@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.kms.katalon.execution.configuration.CustomRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
-import com.kms.katalon.execution.entity.ConsoleOption;
+import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.exception.ExecutionException;
 
 public class CustomRunConfigurationContributor implements IRunConfigurationContributor {
@@ -32,7 +32,12 @@ public class CustomRunConfigurationContributor implements IRunConfigurationContr
     }
 
     @Override
-    public List<ConsoleOption<?>> getRequiredArguments() {
+    public List<ConsoleOption<?>> getConsoleOptionList() {
         return Collections.emptyList();
+    }
+
+    @Override
+    public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
+        // Do nothing
     }
 }

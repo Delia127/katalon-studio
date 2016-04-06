@@ -19,6 +19,7 @@ import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
@@ -600,6 +601,7 @@ public class RecorderDialog extends Dialog implements EventHandler {
         actionTableViewer = new TableViewer(tableComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
         actionTableViewer.getTable().setHeaderVisible(true);
         actionTableViewer.getTable().setLinesVisible(true);
+        ColumnViewerToolTipSupport.enableFor(actionTableViewer);
 
         ColumnViewerUtil.setTableActivation(actionTableViewer);
 
@@ -647,6 +649,15 @@ public class RecorderDialog extends Dialog implements EventHandler {
                 }
                 return StringUtils.EMPTY;
             }
+            
+            @Override
+            public String getToolTipText(Object element) {
+                if (element instanceof HTMLActionMapping && ((HTMLActionMapping) element).getAction() != null) {
+                    return ((HTMLActionMapping) element).getAction().getDescription();
+                }
+                return super.getToolTipText(element);
+            }
+            
         });
 
         tableViewerColumnAction.setEditingSupport(new EditingSupport(actionTableViewer) {

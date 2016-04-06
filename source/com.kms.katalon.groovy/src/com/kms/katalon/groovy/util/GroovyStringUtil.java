@@ -5,14 +5,18 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IPath;
 
 public class GroovyStringUtil {
+    public static String toGroovyStringFormat(String rawString) {
+        return (rawString != null) ? "'" + escapeGroovy(rawString) + "'" : rawString;
+    }
+
     public static String escapeGroovy(String rawString) {
-        if (rawString == null || rawString.isEmpty()) return rawString;
-        return StringEscapeUtils.escapeJava(rawString).replace("'", "\\'");
+        return StringUtils.isNotEmpty(rawString) ? StringEscapeUtils.escapeJava(rawString).replace("'", "\\'")
+                : rawString;
     }
 
     public static String unescapeGroovy(String rawString) {
-        if (rawString == null || rawString.isEmpty()) return rawString;
-        return StringEscapeUtils.unescapeJava(rawString).replace("\\'", "'");
+        return StringUtils.isNotEmpty(rawString) ? StringEscapeUtils.unescapeJava(rawString).replace("\\'", "'")
+                : rawString;
     }
 
     /**
@@ -20,7 +24,8 @@ public class GroovyStringUtil {
      * <p>
      * For example, <code>Keywords/NewKeyword.groovy</code>
      * 
-     * @param path Keyword full path
+     * @param path
+     *            Keyword full path
      * @return Keyword relative path
      */
     public static String getKeywordsRelativeLocation(IPath path) {

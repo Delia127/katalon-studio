@@ -13,7 +13,10 @@ class GlobalVariableTemplate {
     def static tpl = """
 import ${TestDataFactory.class.getName()}
 import ${ObjectRepository.class.getName()}
+import groovy.transform.CompileStatic
 
+
+@CompileStatic
 class GlobalVariable {
 	<% globalVariables.each { %> 
     /**

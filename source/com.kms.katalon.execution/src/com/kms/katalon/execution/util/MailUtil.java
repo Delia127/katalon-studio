@@ -1,25 +1,33 @@
 package com.kms.katalon.execution.util;
 
-import static java.util.Arrays.asList;
+import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 import static org.apache.commons.lang.StringUtils.split;
 
 import java.io.File;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.apache.commons.mail.ImageHtmlEmail;
 import org.apache.commons.mail.resolver.DataSourceUrlResolver;
+
+import com.kms.katalon.constants.PreferenceConstants;
+import com.kms.katalon.execution.entity.EmailConfig;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class MailUtil {
     public enum MailSecurityProtocolType {
@@ -56,16 +64,16 @@ public class MailUtil {
 
     private static ImageHtmlEmail initEmail(EmailConfig conf, String subject) throws EmailException {
         ImageHtmlEmail email = new ImageHtmlEmail();
-        email.setHostName(conf.host);
-        email.setFrom(conf.from, "");
-        email.addTo(conf.tos);
+        email.setHostName(conf.getHost());
+        email.setFrom(conf.getFrom(), "");
+        email.addTo(conf.getTos());
         email.setSubject(subject);
 
-        email.setAuthenticator(new DefaultAuthenticator(conf.username, conf.password));
-        switch (conf.securityProtocol) {
+        email.setAuthenticator(new DefaultAuthenticator(conf.getUsername(), conf.getPassword()));
+        switch (conf.getSecurityProtocol()) {
             case SSL:
                 email.setSSLOnConnect(true);
-                email.setSslSmtpPort(conf.port);
+                email.setSslSmtpPort(conf.getPort());
                 break;
             case TLS:
                 email.setStartTLSEnabled(true);
@@ -78,20 +86,22 @@ public class MailUtil {
 
     public static void sendSummaryMail(EmailConfig conf, File csvFile, File logFolder,
             List<Object[]> suitesSummaryForEmail) throws Exception {
+        if (conf == null || !conf.canSend()) {
+            return;
+        }
 
         ImageHtmlEmail email = initEmail(conf, SUBJECT);
 
         String emailMsg = "You can now go to your test project to view the execution report.";
-        if (conf.sendAttachment) {
-            emailMsg = "Please see attached file for more details.";
-        }
 
-        // Attachment
-        if (conf.sendAttachment && csvFile != null && csvFile.exists()) {
-            attachSummary(email, csvFile);
-        }
-        if (conf.sendAttachment && logFolder != null && logFolder.exists()) {
-            attach(email, logFolder);
+        if (conf.isSendAttachmentEnable()) {
+            // Attachment
+            if (csvFile != null && csvFile.exists()) {
+                attachSummary(email, csvFile);
+            }
+            if (logFolder != null && logFolder.exists()) {
+                attach(email, logFolder);
+            }
         }
 
         String suiteName = (String) suitesSummaryForEmail.get(0)[0];
@@ -105,9 +115,9 @@ public class MailUtil {
 
         // Prepare email message
         String htmlMessage = MessageFormat.format(EMAIL_HTML_TEMPLATE, hostName, os, browser, suiteName, passed,
-                failed, error, emailMsg, conf.signature);
+                failed, error, emailMsg, conf.getSignature());
         String textMessage = MessageFormat.format(EMAIL_TEXT_TEMPLATE, hostName, os, browser, suiteName, passed,
-                failed, error, emailMsg, conf.signature);
+                failed, error, emailMsg, conf.getSignature());
 
         // Define the base URL to resolve relative resource locations
         URL url = new URL("http://katalon.kms-technology.com");
@@ -154,35 +164,13 @@ public class MailUtil {
         email.attach(attachment);
     }
 
-    public static class EmailConfig {
-        public String host = "";
-
-        public String port = "";
-
-        public MailSecurityProtocolType securityProtocol = MailSecurityProtocolType.None;
-
-        public String username;
-
-        public String password;
-
-        public String[] tos = {};
-
-        public String from = "";
-
-        public File logFile;
-
-        public String suitePath = "";
-
-        public String signature = "";
-
-        public boolean sendAttachment = false;
-    }
-
     private static File zip(String directory, String zipName) throws Exception {
         File folder = new File(directory);
         if (folder.isDirectory()) {
             File file = new File(folder.getParent() + File.separator + zipName + ".zip");
-            if (file.exists()) file.delete();
+            if (file.exists()) {
+                file.delete();
+            }
             ZipFile zipFile = new ZipFile(folder.getParent() + File.separator + zipName + ".zip");
             ZipParameters parameters = new ZipParameters();
             parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
@@ -194,28 +182,37 @@ public class MailUtil {
         return null;
     }
 
-    /**
-     * Get all recipient email address from Preference and Test Suite without duplication
-     * 
-     * @param testSuiteRecipients recipients from Test Suite
-     * @param preferenceRecipients recipients from Preferences > Execution > Email > Report Recipients
-     * @return non-duplicated recipients
-     */
-    public static String[] getDistinctRecipients(String testSuiteRecipients, String preferenceRecipients) {
-        String[] tsRecipients = split(testSuiteRecipients, EMAIL_SEPARATOR);
-        String[] prefRecipients = split(preferenceRecipients, EMAIL_SEPARATOR);
-
-        List<String> recipientList = new ArrayList<String>();
-        if (prefRecipients != null) {
-            recipientList.addAll(asList(prefRecipients));
+    public static List<String> splitRecipientsString(String recipients) {
+        if (StringUtils.isBlank(recipients)) {
+            return Collections.emptyList();
         }
+        return Arrays.asList(split(StringUtils.deleteWhitespace(recipients), EMAIL_SEPARATOR));
+    }
 
-        if (tsRecipients != null) {
-            for (String recipient : tsRecipients) {
-                if (recipientList.contains(recipient.trim())) continue;
-                recipientList.add(recipient);
-            }
+    public static Set<String> getDistinctRecipients(String... recipientsList) {
+        if (recipientsList == null) {
+            return Collections.emptySet();
         }
-        return recipientList.toArray(new String[recipientList.size()]);
+        Set<String> recipientCollector = new LinkedHashSet<String>();
+        for (String recipients : recipientsList) {
+            recipientCollector.addAll(splitRecipientsString(recipients));
+        }
+        return recipientCollector;
+    }
+
+    public static EmailConfig getDefaultEmailConfig() {
+        ScopedPreferenceStore prefs = getPreferenceStore(PreferenceConstants.EXECUTION_QUALIFIER);
+
+        EmailConfig conf = new EmailConfig();
+        conf.setHost(prefs.getString(PreferenceConstants.MAIL_CONFIG_HOST));
+        conf.setPort(prefs.getString(PreferenceConstants.MAIL_CONFIG_PORT));
+        conf.setFrom(prefs.getString(PreferenceConstants.MAIL_CONFIG_USERNAME));
+        conf.setSecurityProtocol(MailSecurityProtocolType.valueOf(prefs.getString(PreferenceConstants.MAIL_CONFIG_SECURITY_PROTOCOL)));
+        conf.setUsername(prefs.getString(PreferenceConstants.MAIL_CONFIG_USERNAME));
+        conf.setPassword(prefs.getString(PreferenceConstants.MAIL_CONFIG_PASSWORD));
+        conf.setSignature(prefs.getString(PreferenceConstants.MAIL_CONFIG_SIGNATURE));
+        conf.setSendAttachment(prefs.getBoolean(PreferenceConstants.MAIL_CONFIG_ATTACHMENT));
+        conf.addRecipients(splitRecipientsString(prefs.getString(PreferenceConstants.MAIL_CONFIG_REPORT_RECIPIENTS)));
+        return conf;
     }
 }

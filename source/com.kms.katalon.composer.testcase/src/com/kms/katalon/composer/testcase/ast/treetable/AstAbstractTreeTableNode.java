@@ -1,17 +1,22 @@
 package com.kms.katalon.composer.testcase.ast.treetable;
 
-import java.util.List;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.codehaus.groovy.ast.ASTNode;
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.swt.widgets.Composite;
 
-import com.kms.katalon.composer.components.log.LoggerSingleton;
+import java.util.Collections;
+import java.util.List;
 
 public abstract class AstAbstractTreeTableNode implements AstTreeTableNode {
-    protected List<AstTreeTableNode> children;
+    protected AstTreeTableNode parentNode;
+    
+    public AstAbstractTreeTableNode(AstTreeTableNode parentNode) {
+        this.parentNode = parentNode;
+    }
+    
+    @Override
+    public AstTreeTableNode getParent() {
+        return parentNode;
+    }
     
     @Override
     public boolean equals(Object object) {
@@ -27,172 +32,26 @@ public abstract class AstAbstractTreeTableNode implements AstTreeTableNode {
 		return new HashCodeBuilder(7, 31).appendSuper(super.hashCode()).append(this.getASTObject().hashCode())
 				.toHashCode();
 	}
-
-	@Override
-	public boolean isItemEditable() {
-		return false;
-	}
-
-	@Override
-	public boolean isTestObjectEditable() {
-		return false;
-	}
-
-	@Override
-	public boolean isInputEditable() {
-		return false;
-	}
-
-	@Override
-	public boolean isOutputEditatble() {
-		return false;
-	}
-
-	@Override
-	public Object getItem() {
-		return null;
-	}
-
-	@Override
-	public Object getTestObject() {
-		return null;
-	}
-
-	@Override
-	public Object getInput() {
-		return null;
-	}
-
-	@Override
-	public Object getOutput() {
-		return null;
-	}
-
-	@Override
-	public String getTestObjectText() {
-		return "";
-	}
-
-	@Override
-	public String getInputText() {
-		return "";
-	}
-
-	@Override
-	public String getOutputText() {
-		return "";
-	}
-
-	@Override
-	public boolean setItem(Object item) {
-		return false;
-	}
-
-	@Override
-	public boolean setTestObject(Object object) {
-		return false;
-	}
-
-	@Override
-	public boolean setInput(Object input) {
-		return false;
-	}
-
-	@Override
-	public boolean setOutput(Object output) {
-		return false;
-	}
-
-	@Override
-	public CellEditor getCellEditorForItem(Composite parent) {
-		return null;
-	}
-
-	@Override
-	public CellEditor getCellEditorForTestObject(Composite parent) {
-		return null;
-	}
-
-	@Override
-	public CellEditor getCellEditorForInput(Composite parent) {
-		return null;
-	}
-
-	@Override
-	public CellEditor getCellEditorForOutput(Composite parent) {
-		return null;
-	}
-
-	@Override
-	public abstract AstTreeTableNode clone();
-
-	@Override
-	public List<AstTreeTableNode> getChildren() throws Exception {
-		if (hasChildren()) {
-		    if (children == null) {
-                reloadChildren();
-            }
-            return children;
-		}
-		return null;
-	}
-
-	@Override
-	public boolean hasChildren() {
-		return false;
-	}
-	
-	@Override
-	public void reloadChildren() {
-	    // do nothing
-	}
-
-	@Override
-	public int getChildObjectIndex(ASTNode astObject) {
-		return -1;
-	}
-
-	@Override
-	public void addChildObject(ASTNode astObject, int index) {
-		// Do nothing
-	}
-
-	@Override
-	public void removeChildObject(ASTNode astObject) {
-		// Do nothing
-	}
-
-	@Override
-	public String getIndex() {
-		if (getParent() == null) {
-			return "";
-		}
-		String parentIndex = getParent().getIndex();
-		try {
-			return ((!parentIndex.isEmpty()) ? parentIndex + "." : "") + (getParent().getChildren().indexOf(this) + 1);
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-		return "";
-	}
 	
     @Override
     public String getItemTooltipText() {
         return getItemText();
     }
-
+    
     @Override
-    public String getTestObjectTooltipText() {
-        return getTestObjectText();
+    public boolean canHaveChildren() {
+        return false;
     }
 
-    @Override
-    public String getInputTooltipText() {
-        return getInputText();
-    }
+    public boolean hasChildren() {
+        return false;
+    };
 
-    @Override
-    public String getOutputTooltipText() {
-        return getOutputText();
-    }
+    public List<AstTreeTableNode> getChildren() {
+        return Collections.emptyList();
+    };
+
+    public void reloadChildren() {
+        // Do nothing
+    };
 }

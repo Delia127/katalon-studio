@@ -10,9 +10,10 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IPackageFragment;
 
-import com.kms.katalon.core.keyword.IKeywordContributor;
 import com.kms.katalon.custom.factory.BuiltInMethodNodeFactory;
 import com.kms.katalon.custom.factory.CustomMethodNodeFactory;
+import com.kms.katalon.custom.keyword.KeywordClass;
+import com.kms.katalon.custom.keyword.KeywordMethod;
 import com.kms.katalon.custom.parser.CustomKeywordParser;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
@@ -31,21 +32,11 @@ public class KeywordController extends EntityController {
         return (KeywordController) _instance;
     }
 
-    public List<Class<?>> getBuiltInKeywordClasses() {
-        return BuiltInMethodNodeFactory.getInstance().getKeywordClasses();
+    public List<KeywordClass> getBuiltInKeywordClasses() {
+        return BuiltInMethodNodeFactory.getKeywordClasses();
     }
-
-    public IKeywordContributor[] getBuiltInKeywordContributors() {
-        return BuiltInMethodNodeFactory.getInstance().getKeywordContributors();
-    }
-
-    public IKeywordContributor getBuiltInKeywordContributor(String builtInKeywordClassName) {
-        for (IKeywordContributor contributor : BuiltInMethodNodeFactory.getInstance().getKeywordContributors()) {
-            if (contributor.getKeywordClass().getName().equals(builtInKeywordClassName)) {
-                return contributor;
-            }
-        }
-        return null;
+    public KeywordClass getBuiltInKeywordClassByName(String builtInKeywordClassName) {
+        return BuiltInMethodNodeFactory.findClass(builtInKeywordClassName);
     }
 
     public boolean isCustomKeywordClass(String className) {
@@ -54,46 +45,22 @@ public class KeywordController extends EntityController {
     }
 
     public boolean isBuiltinKeywordClassName(String className) {
-        if (className == null || className.isEmpty()) return false;
-        return BuiltInMethodNodeFactory.getInstance().getKeywordClassNames().contains(className);
-    }
-
-    public Class<?> getBuiltInKeywordClass(String className) {
-        if (className == null || className.isEmpty()) return null;
-        for (IKeywordContributor contributor : BuiltInMethodNodeFactory.getInstance().getKeywordContributors()) {
-            Class<?> clazz = contributor.getKeywordClass();
-            if (className.equals(clazz.getName()) || className.equals(clazz.getSimpleName())) {
-                return clazz;
-            }
+        if (className == null || className.isEmpty()) {
+            return false;
         }
-        return null;
+        return BuiltInMethodNodeFactory.findClass(className) != null;
     }
 
-    public Method getBuiltInKeywordByName(String className, String keywordName) throws Exception {
-        List<Method> methods = getBuiltInKeywords(className);
-        for (Method method : methods) {
-            if (method.getName().equals(keywordName)) {
-                return method;
-            }
-        }
-
-        if (keywordName.equals(BuiltInMethodNodeFactory.CALL_TEST_CASE_METHOD_NAME)) {
-            return BuiltInMethodNodeFactory.getInstance().getCallTestCaseMethod(className);
-        }
-        return null;
+    public KeywordMethod getBuiltInKeywordByName(String className, String keywordName) {
+        return BuiltInMethodNodeFactory.findMethod(className, keywordName);
     }
 
-    public List<String> getParameterName(Method method) throws Exception {
-        return BuiltInMethodNodeFactory.getInstance().getParameterNames(method);
-    }
-
-    public List<Method> getBuiltInKeywords(String builtInKeywordClassName) throws Exception {
-        return BuiltInMethodNodeFactory.getInstance().getSortedMethods(builtInKeywordClassName);
+    public List<KeywordMethod> getBuiltInKeywords(String builtInKeywordClassName) {
+        return BuiltInMethodNodeFactory.getFilteredMethods(builtInKeywordClassName);
     }
 
     public List<MethodNode> getCustomKeywords(ProjectEntity project) throws Exception {
-        IFolder libFolder = GroovyUtil.getCustomKeywordLibFolder(project);
-        return CustomKeywordParser.getInstance().getAllMethodNodes(libFolder);
+        return CustomKeywordParser.getInstance().getAllMethodNodes(GroovyUtil.getCustomKeywordLibFolder(project));
     }
 
     public MethodNode getCustomKeywordByName(String className, String methodName, ProjectEntity project)

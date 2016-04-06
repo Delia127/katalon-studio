@@ -1,7 +1,11 @@
 package com.kms.katalon.composer.project.views;
 
 import java.io.File;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
@@ -24,6 +28,8 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 
 public class NewProjectDialog extends TitleAreaDialog {
+    private static final String DEFAULT_PROJECT_LOCATION = System.getProperty("user.home") + File.separator
+            + StringConstants.APP_NAME;
 
     private Text txtProjectName;
 
@@ -102,6 +108,7 @@ public class NewProjectDialog extends TitleAreaDialog {
 
         txtProjectLocation = new Text(container, SWT.BORDER);
         txtProjectLocation.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        txtProjectLocation.setText(DEFAULT_PROJECT_LOCATION);
 
         if (project == null) {
             btnFolderChooser = new Button(container, SWT.PUSH);
@@ -113,31 +120,33 @@ public class NewProjectDialog extends TitleAreaDialog {
 
     private void addControlModifyListeners() {
         txtProjectLocation.addModifyListener(new ModifyListener() {
-
             @Override
             public void modifyText(ModifyEvent e) {
-                validate();
+                checkInput();
             }
         });
 
         txtProjectName.addModifyListener(new ModifyListener() {
-
             @Override
             public void modifyText(ModifyEvent e) {
-                validate();
+                checkInput();
             }
         });
-        if (btnFolderChooser != null) {
-            btnFolderChooser.addSelectionListener(new SelectionAdapter() {
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    DirectoryDialog dialog = new DirectoryDialog(btnFolderChooser.getShell());
-                    String path = dialog.open();
-                    if (path == null) return;
-                    txtProjectLocation.setText(path);
-                }
-            });
+        if (btnFolderChooser == null) {
+            return;
         }
+        btnFolderChooser.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                DirectoryDialog dialog = new DirectoryDialog(btnFolderChooser.getShell());
+                dialog.setFilterPath(getProjectLocationInput());
+                String path = dialog.open();
+                if (path == null) {
+                    return;
+                }
+                txtProjectLocation.setText(path);
+            }
+        });
     }
 
     public void setErrorMessage(String newErrorMessage) {
@@ -150,50 +159,83 @@ public class NewProjectDialog extends TitleAreaDialog {
     protected void createButtonsForButtonBar(Composite parent) {
         super.createButtonsForButtonBar(parent);
         showError = false;
-        validate();
+        checkInput();
         showError = true;
     }
 
-    private boolean validateProjectFolderLocation(String projectLocation) {
-        if (projectLocation == null || projectLocation.isEmpty()) {
+    private boolean validateProjectFolderLocation() {
+        String projectLocation = getProjectLocationInput();
+        if (StringUtils.isBlank(projectLocation)) {
             setErrorMessage(StringConstants.VIEW_ERROR_MSG_PROJ_LOC_CANNOT_BE_BLANK);
             return false;
         }
-        File folderLocation = new File(txtProjectLocation.getText());
-        return folderLocation.isDirectory() ? true : false;
+        Path folderPath = null;
+        try {
+            folderPath = Paths.get(projectLocation);
+        } catch (InvalidPathException invalidPathException) {
+            setErrorMessage(StringConstants.VIEW_ERROR_MSG_PROJ_LOC_INVALID);
+            return false;
+        }
+
+        File folderLocation = folderPath.toFile();
+        if (!folderLocation.exists()) {
+            return true;
+        }
+        if (!folderLocation.canRead()) {
+            setErrorMessage(StringConstants.VIEW_ERROR_MSG_PROJ_LOC_NOT_READABLE);
+            return false;
+        }
+        if (!folderLocation.canWrite()) {
+            setErrorMessage(StringConstants.VIEW_ERROR_MSG_PROJ_LOC_NOT_WRITEABLE);
+            return false;
+        }
+        return true;
     }
 
-    private boolean validate() {
+    private String getProjectLocationInput() {
+        if (txtProjectLocation == null || StringUtils.isBlank(txtProjectLocation.getText())) {
+            return "";
+        }
         String projectLocation = txtProjectLocation.getText().trim();
+        if (!projectLocation.contains(File.separator)) {
+            projectLocation = DEFAULT_PROJECT_LOCATION + File.separator + projectLocation;
+        }
+        return projectLocation;
+    }
+
+    private boolean validateProjectName() {
+        if (StringUtils.isBlank(txtProjectName.getText())) {
+            setErrorMessage(StringConstants.VIEW_ERROR_MSG_PROJ_NAME_CANNOT_BE_BLANK);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validateProjectNameDuplication() {
+        String projectLocation = getProjectLocationInput();
         String projectName = txtProjectName.getText().trim();
-        if (validateProjectFolderLocation(projectLocation)) {
-            try {
-                if (projectName == null || projectName.isEmpty()) {
-                    setErrorMessage(StringConstants.VIEW_ERROR_MSG_PROJ_NAME_CANNOT_BE_BLANK);
-                    return false;
-                }
-                if (ProjectController.getInstance().validateNewProjectName(projectLocation, projectName)) {
-                    getButton(Dialog.OK).setEnabled(true);
-                    setErrorMessage(null);
-                    return true;
-                } else {
-                    setErrorMessage(StringConstants.VIEW_ERROR_MSG_PROJ_NAME_EXISTED_IN_LOC);
-                }
-            } catch (Exception e) {
-                setErrorMessage(e.getMessage());
+        try {
+            if (!ProjectController.getInstance().validateNewProjectName(projectLocation, projectName)) {
+                setErrorMessage(StringConstants.VIEW_ERROR_MSG_PROJ_NAME_EXISTED_IN_LOC);
+                return false;
             }
-            getButton(Dialog.OK).setEnabled(false);
-        } else {
-            setErrorMessage(StringConstants.VIEW_ERROR_MSG_PROJ_LOC_DOES_NOT_EXIST);
-            getButton(Dialog.OK).setEnabled(false);
+            return true;
+        } catch (Exception e) {
+            setErrorMessage(e.getMessage());
         }
         return false;
+    }
+
+    private void checkInput() {
+        setErrorMessage(null);
+        getButton(Dialog.OK).setEnabled(
+                validateProjectFolderLocation() && validateProjectName() && validateProjectNameDuplication());
     }
 
     @Override
     protected void okPressed() {
         name = txtProjectName.getText();
-        loc = txtProjectLocation == null ? "" : txtProjectLocation.getText();
+        loc = getProjectLocationInput();
         desc = txtProjectDescription.getText();
         super.okPressed();
     }
