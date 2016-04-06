@@ -10,9 +10,11 @@ import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
@@ -352,8 +354,20 @@ public class TestCaseTreeTableInput {
         if (treeTableNode == null) {
             return;
         }
-        treeTableViewer.getTree().setFocus();
+        Tree tree = treeTableViewer.getTree();
+        ensureTreeGotTopItem(treeTableNode, tree);
+        tree.setFocus();
         treeTableViewer.editElement(treeTableNode, 0);
+    }
+
+    // Check for avoiding NullPointerException in TreeViewerFocusCellManager.getInitialFocusCell()
+    private void ensureTreeGotTopItem(AstTreeTableNode treeTableNode, Tree tree) {
+        if (tree.getTopItem() != null) {
+            return;
+        }
+        TreeItem treeItem = new TreeItem(tree, SWT.NONE);
+        treeItem.setData(treeTableNode);
+        tree.setTopItem(treeItem);
     }
 
     public void refresh() {
