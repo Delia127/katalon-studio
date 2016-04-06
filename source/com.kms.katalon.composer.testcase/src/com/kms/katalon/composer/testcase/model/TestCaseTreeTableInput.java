@@ -850,57 +850,57 @@ public class TestCaseTreeTableInput {
             return;
         }
         try {
-            TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(Display.getCurrent().getActiveShell(),
-                    new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(new EntityProvider()));
-            dialog.setAllowMultiple(false);
-            dialog.setTitle(StringConstants.EDI_TITLE_TEST_CASE_BROWSER);
-            dialog.setInput(TreeEntityUtil.getChildren(null,
-                    FolderController.getInstance().getTestCaseRoot(ProjectController.getInstance().getCurrentProject())));
-            if (dialog.open() != Window.OK) {
+            List<TestCaseEntity> testCaseList = openDialogAndCollectTestCases();
+            if (testCaseList.isEmpty()) {
                 return;
             }
-            Object[] selectedObjects = dialog.getResult();
-            for (Object object : selectedObjects) {
-                if (!(object instanceof ITreeEntity))
-                    continue;
-
-                ITreeEntity treeEntity = (ITreeEntity) object;
-                List<TestCaseEntity> testCaseList = new ArrayList<TestCaseEntity>();
-                if (treeEntity.getObject() instanceof FolderEntity) {
-                    for (TestCaseEntity testCase : TestCaseEntityUtil.getTestCasesFromFolderTree((FolderTreeEntity) treeEntity)) {
-                        if (qualify(testCase)) {
-                            testCaseList.add(testCase);
-                        }
-                    }
-                } else if (treeEntity.getObject() instanceof TestCaseEntity) {
-                    TestCaseEntity calledTestCase = (TestCaseEntity) treeEntity.getObject();
-                    if (qualify(calledTestCase)) {
-                        testCaseList.add(calledTestCase);
-                    }
-                }
-                List<StatementWrapper> statementsToAdd = new ArrayList<StatementWrapper>();
-                List<VariableEntity> variablesToAdd = new ArrayList<VariableEntity>();
-                if (addType == NodeAddType.InserBefore) {
-                    for (TestCaseEntity testCase : testCaseList) {
-                        statementsToAdd.add(generateStatementWrapperForCalledTestCase(testCase, variablesToAdd));
-                    }
-                } else {
-                    for (int index = testCaseList.size() - 1; index >= 0; index--) {
-                        statementsToAdd.add(generateStatementWrapperForCalledTestCase(testCaseList.get(index),
-                                variablesToAdd));
-                    }
-                }
-                addNewAstObjects(statementsToAdd, destinationNode, addType);
-                if (variablesToAdd.isEmpty()) {
-                    return;
-                }
-                parentPart.addVariables(variablesToAdd.toArray(new VariableEntity[variablesToAdd.size()]));
+            List<StatementWrapper> statementsToAdd = new ArrayList<StatementWrapper>();
+            List<VariableEntity> variablesToAdd = new ArrayList<VariableEntity>();
+            for (TestCaseEntity testCase : testCaseList) {
+                statementsToAdd.add(generateStatementWrapperForCalledTestCase(testCase, variablesToAdd));
             }
+            addNewAstObjects(statementsToAdd, destinationNode, addType);
+            if (variablesToAdd.isEmpty()) {
+                return;
+            }
+            parentPart.addVariables(variablesToAdd.toArray(new VariableEntity[variablesToAdd.size()]));
         } catch (Exception e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                     StringConstants.PA_ERROR_MSG_UNABLE_TO_CALL_TEST_CASE);
             LoggerSingleton.logError(e);
         }
+    }
+
+    private List<TestCaseEntity> openDialogAndCollectTestCases() throws Exception {
+        TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(Display.getCurrent().getActiveShell(),
+                new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(new EntityProvider()));
+        dialog.setAllowMultiple(false);
+        dialog.setTitle(StringConstants.EDI_TITLE_TEST_CASE_BROWSER);
+        dialog.setInput(TreeEntityUtil.getChildren(null,
+                FolderController.getInstance().getTestCaseRoot(ProjectController.getInstance().getCurrentProject())));
+        if (dialog.open() != Window.OK) {
+            return Collections.emptyList();
+        }
+        List<TestCaseEntity> testCaseList = new ArrayList<TestCaseEntity>();
+        for (Object object : dialog.getResult()) {
+            if (!(object instanceof ITreeEntity))
+                continue;
+
+            ITreeEntity treeEntity = (ITreeEntity) object;
+            if (treeEntity.getObject() instanceof FolderEntity) {
+                for (TestCaseEntity testCase : TestCaseEntityUtil.getTestCasesFromFolderTree((FolderTreeEntity) treeEntity)) {
+                    if (qualify(testCase)) {
+                        testCaseList.add(testCase);
+                    }
+                }
+            } else if (treeEntity.getObject() instanceof TestCaseEntity) {
+                TestCaseEntity calledTestCase = (TestCaseEntity) treeEntity.getObject();
+                if (qualify(calledTestCase)) {
+                    testCaseList.add(calledTestCase);
+                }
+            }
+        }
+        return testCaseList;
     }
 
     private StatementWrapper generateStatementWrapperForCalledTestCase(TestCaseEntity testCase,
