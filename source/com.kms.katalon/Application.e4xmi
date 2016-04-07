@@ -143,4 +143,5 @@
   <addons xmi:id="_hQQH1xYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.workbench.contexts.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.ContextProcessingAddon"/>
   <addons xmi:id="_hQQH2BYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.workbench.bindings.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.swt/org.eclipse.e4.ui.workbench.swt.util.BindingProcessingAddon"/>
   <addons xmi:id="_efHPkNn6EeWQyuuwTERZYg" elementId="com.kms.katalon.addons.PerspectiveResetAddon" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.addons.PerspectiveResetAddon"/>
+  <addons xmi:id="_y9WjEPvgEeWzS_PQeAIF8Q" elementId="com.kms.katalon.addon.JavaHomeAsDefaultInstalledJREAddon" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.addons.MacOSAddon"/>
 </application:Application>
