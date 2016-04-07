@@ -4,13 +4,16 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
+import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.editors.CallTestCaseCellEditor;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
@@ -53,16 +56,15 @@ public class AstCallTestCaseKeywordTreeTableNode extends AstBuiltInKeywordTreeTa
         if (!(arguments.getExpression(0) instanceof MethodCallExpressionWrapper)) {
             return;
         }
-        ExpressionWrapper objectExpressionWrapper = AstEntityInputUtil
-                .getCallTestCaseParam((MethodCallExpressionWrapper) arguments.getExpression(0));
+        ExpressionWrapper objectExpressionWrapper = AstEntityInputUtil.getCallTestCaseParam((MethodCallExpressionWrapper) arguments.getExpression(0));
         if (objectExpressionWrapper == null) {
             return;
         }
         TestCaseEntity testCase = null;
         try {
             testCase = TestCaseController.getInstance().getTestCaseByDisplayId(
-                    (objectExpressionWrapper instanceof ConstantExpressionWrapper) ? String
-                            .valueOf(((ConstantExpressionWrapper) objectExpressionWrapper).getValue())
+                    (objectExpressionWrapper instanceof ConstantExpressionWrapper)
+                            ? String.valueOf(((ConstantExpressionWrapper) objectExpressionWrapper).getValue())
                             : objectExpressionWrapper.getText());
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -176,8 +178,7 @@ public class AstCallTestCaseKeywordTreeTableNode extends AstBuiltInKeywordTreeTa
     }
 
     public List<VariableEntity> getCallTestCaseVariables() {
-        return TestCaseTreeTableInput.getCallTestCaseVariables((ArgumentListExpressionWrapper) methodCall
-                .getArguments());
+        return TestCaseTreeTableInput.getCallTestCaseVariables((ArgumentListExpressionWrapper) methodCall.getArguments());
     }
 
     @Override
@@ -217,7 +218,7 @@ public class AstCallTestCaseKeywordTreeTableNode extends AstBuiltInKeywordTreeTa
                 return false;
             }
             TestCaseEntity newTestCase = (TestCaseEntity) ((TestCaseTreeEntity) object).getObject();
-            if (testCasePk.equals(newTestCase.getIdForDisplay())) {
+            if (!verifyCallTestCase(newTestCase) || testCasePk.equals(newTestCase.getIdForDisplay())) {
                 return false;
             }
             changeTestCasePk(newTestCase);
@@ -228,6 +229,23 @@ public class AstCallTestCaseKeywordTreeTableNode extends AstBuiltInKeywordTreeTa
             LoggerSingleton.logError(e);
         }
         return false;
+    }
+
+    private boolean verifyCallTestCase(TestCaseEntity newTestCase) {
+        if (newTestCase == null) {
+            return false;
+        }
+        // Statement doesn't have link to parent script or test case, so cannot verify
+        if (statement.getScriptClass() == null || statement.getScriptClass().getTestCaseId() == null) {
+            return true;
+        }
+        if (StringUtils.equals(newTestCase.getRelativePathForUI(), statement.getScriptClass().getTestCaseId())) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_TEST_CASE_CANNOT_CALL_ITSELF);
+            return false;
+        }
+
+        return true;
     }
 
     @Override

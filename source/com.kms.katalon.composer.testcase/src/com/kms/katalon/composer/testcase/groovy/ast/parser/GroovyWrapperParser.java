@@ -93,9 +93,13 @@ public class GroovyWrapperParser {
     private List<ClassNodeWrapper> importedTypes = new ArrayList<ClassNodeWrapper>();
 
     private Stack<String> classNameStack = new Stack<String>();
+
     private String currentIndent = "";
+
     private boolean readyToIndent = false;
+
     private StringBuilder stringBuilder;
+
     private boolean needLineBreak = false;
 
     public GroovyWrapperParser(StringBuilder stringBuilder) {
@@ -308,8 +312,7 @@ public class GroovyWrapperParser {
             }
         } else {
             if (declarationExpressionWrapper.getLeftExpression() instanceof VariableExpressionWrapper) {
-                VariableExpressionWrapper variableExpressionWrapper = (VariableExpressionWrapper) declarationExpressionWrapper
-                        .getLeftExpression();
+                VariableExpressionWrapper variableExpressionWrapper = (VariableExpressionWrapper) declarationExpressionWrapper.getLeftExpression();
                 parseType(variableExpressionWrapper.getOriginType());
                 print(" " + variableExpressionWrapper.getName());
             } else {
@@ -1091,8 +1094,8 @@ public class GroovyWrapperParser {
                 numDimensions++;
             }
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(classNode.getComponentType() == null ? Object.class.getSimpleName() : classNode
-                    .getComponentType().getNameWithoutPackage());
+            stringBuilder.append(classNode.getComponentType() == null ? Object.class.getSimpleName()
+                    : classNode.getComponentType().getNameWithoutPackage());
             for (int i = 0; i < numDimensions; i++) {
                 stringBuilder.append("[]");
             }
@@ -1250,8 +1253,14 @@ public class GroovyWrapperParser {
             parseComments(node.getFollowingComments());
         }
     }
+    
+    public static ScriptNodeWrapper parseGroovyScriptIntoNodeWrapper(String scriptContent)
+            throws Exception {
+        return parseGroovyScriptIntoNodeWrapper(scriptContent, null);
+    }
 
-    public static ScriptNodeWrapper parseGroovyScriptIntoNodeWrapper(String scriptContent) throws Exception {
+    public static ScriptNodeWrapper parseGroovyScriptIntoNodeWrapper(String scriptContent, String testCaseId)
+            throws Exception {
         if (scriptContent == null) {
             return null;
         }
@@ -1262,14 +1271,20 @@ public class GroovyWrapperParser {
         List<ASTNode> resultNodes = new AstBuilder().buildFromString(CompilePhase.CONVERSION, false, scriptContent);
         for (ASTNode resultNode : resultNodes) {
             if (resultNode instanceof ClassNode && ((ClassNode) resultNode).isScript()) {
-                return new ScriptNodeWrapper((ClassNode) resultNode);
+                return new ScriptNodeWrapper(testCaseId, (ClassNode) resultNode);
             }
         }
         return null;
     }
+    
+    public static StatementWrapper parseGroovyScriptAndGetFirstStatement(String scriptContent)
+            throws Exception {
+        return parseGroovyScriptAndGetFirstStatement(scriptContent, null);
+    }
 
-    public static StatementWrapper parseGroovyScriptAndGetFirstStatement(String scriptContent) throws Exception {
-        ScriptNodeWrapper script = parseGroovyScriptIntoNodeWrapper(scriptContent);
+    public static StatementWrapper parseGroovyScriptAndGetFirstStatement(String scriptContent, String testCaseId)
+            throws Exception {
+        ScriptNodeWrapper script = parseGroovyScriptIntoNodeWrapper(scriptContent, testCaseId);
         if (script == null) {
             return null;
         }
@@ -1280,9 +1295,13 @@ public class GroovyWrapperParser {
     }
 
     public static ExpressionWrapper parseGroovyScriptAndGetFirstExpression(String scriptContent) {
+        return parseGroovyScriptAndGetFirstExpression(scriptContent, null);
+    }
+
+    public static ExpressionWrapper parseGroovyScriptAndGetFirstExpression(String scriptContent, String testCaseId) {
         ScriptNodeWrapper script = null;
         try {
-            script = parseGroovyScriptIntoNodeWrapper(scriptContent);
+            script = parseGroovyScriptIntoNodeWrapper(scriptContent, testCaseId);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
