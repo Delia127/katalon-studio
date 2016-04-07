@@ -39,7 +39,7 @@ public class OperationComboBoxCellEditor extends ComboBoxCellEditor {
     @Override
     protected void doSetValue(Object value) {
         Assert.isTrue(value instanceof TokenWrapper);
-        token = (TokenWrapper) value;
+        token = ((TokenWrapper) value).clone();
         for (int index = 0; index < OPERATION_CODES.length; index++) {
             if (OPERATION_CODES[index] == token.getType()) {
                 super.doSetValue(index);

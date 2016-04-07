@@ -1,10 +1,6 @@
 package com.kms.katalon.composer.testcase.ast.dialogs;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -14,11 +10,10 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.testcase.ast.editors.OperationComboBoxCellEditor;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
-import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.TokenWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BinaryExpressionWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
+import com.kms.katalon.composer.testcase.providers.AstContentProviderAdapter;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
@@ -39,21 +34,22 @@ public class BinaryBuilderDialog extends AbstractAstBuilderWithTableDialog {
 
     public BinaryBuilderDialog(Shell parentShell, BinaryExpressionWrapper binaryExpressionWrapper) {
         super(parentShell);
-        if (binaryExpressionWrapper == null) {
-            throw new IllegalArgumentException();
-        }
         this.binaryExpressionWrapper = binaryExpressionWrapper.clone();
     }
 
     @Override
-    public void refresh() {
-        List<ASTNodeWrapper> expressionList = new ArrayList<ASTNodeWrapper>();
-        expressionList.add(binaryExpressionWrapper.getLeftExpression());
-        expressionList.add(binaryExpressionWrapper.getOperation());
-        expressionList.add(binaryExpressionWrapper.getRightExpression());
-
-        tableViewer.setContentProvider(new ArrayContentProvider());
-        tableViewer.setInput(expressionList);
+    public void setInput() {
+        tableViewer.setContentProvider(new AstContentProviderAdapter() {
+            @Override
+            public Object[] getElements(Object inputElement) {
+                if (inputElement == binaryExpressionWrapper) {
+                    return new Object[] { binaryExpressionWrapper.getLeftExpression(),
+                            binaryExpressionWrapper.getOperation(), binaryExpressionWrapper.getRightExpression() };
+                }
+                return new Object[0];
+            }
+        });
+        tableViewer.setInput(binaryExpressionWrapper);
     }
 
     @Override
@@ -79,8 +75,8 @@ public class BinaryBuilderDialog extends AbstractAstBuilderWithTableDialog {
         tableViewerColumnValueType.getColumn().setWidth(100);
         tableViewerColumnValueType.getColumn().setText(StringConstants.DIA_COL_VALUE_TYPE);
         tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider());
-        tableViewerColumnValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer,
-                defaultValueTypes, this) {
+        tableViewerColumnValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(
+                tableViewer, defaultValueTypes) {
             @Override
             protected boolean canEdit(Object element) {
                 if (element == binaryExpressionWrapper.getOperation()) {
@@ -102,7 +98,7 @@ public class BinaryBuilderDialog extends AbstractAstBuilderWithTableDialog {
                 return super.getText(element);
             }
         });
-        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this) {
+        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer) {
             @Override
             protected CellEditor getCellEditor(Object element) {
                 if (element == binaryExpressionWrapper.getOperation()) {
@@ -129,7 +125,11 @@ public class BinaryBuilderDialog extends AbstractAstBuilderWithTableDialog {
 
             @Override
             protected void setValue(Object element, Object value) {
-                if (element == binaryExpressionWrapper.getOperation() && value instanceof TokenWrapper) {
+                if (element == binaryExpressionWrapper.getOperation()
+                        && value instanceof TokenWrapper
+                        && !StringUtils.equals(binaryExpressionWrapper.getOperation().getText(),
+                                ((TokenWrapper) value).getText())) {
+                    binaryExpressionWrapper.setOperation((TokenWrapper) value);
                     getViewer().refresh();
                     return;
                 }
@@ -141,19 +141,6 @@ public class BinaryBuilderDialog extends AbstractAstBuilderWithTableDialog {
     @Override
     public String getDialogTitle() {
         return StringConstants.DIA_TITLE_BINARY_INPUT;
-    }
-
-    @Override
-    public void replaceObject(Object orginalObject, Object newObject) {
-        if (orginalObject == binaryExpressionWrapper.getLeftExpression() && newObject instanceof ExpressionWrapper) {
-            binaryExpressionWrapper.setLeftExpression((ExpressionWrapper) newObject);
-        } else if (orginalObject == binaryExpressionWrapper.getRightExpression()
-                && newObject instanceof ExpressionWrapper) {
-            binaryExpressionWrapper.setRightExpression((ExpressionWrapper) newObject);
-        } else if (orginalObject == binaryExpressionWrapper.getOperation() && newObject instanceof TokenWrapper) {
-            binaryExpressionWrapper.setOperation((TokenWrapper) newObject);
-        }
-        refresh();
     }
 
     @Override

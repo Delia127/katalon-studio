@@ -10,9 +10,13 @@ import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 
 public class RangeExpressionWrapper extends ExpressionWrapper {
     private static final int DEFAULT_TO = 0;
+
     private static final int DEFAULT_FROM = 0;
+
     private ExpressionWrapper from;
+
     private ExpressionWrapper to;
+
     private boolean inclusive = true;
 
     public RangeExpressionWrapper(ASTNodeWrapper parentNodeWrapper) {
@@ -42,6 +46,10 @@ public class RangeExpressionWrapper extends ExpressionWrapper {
 
     public RangeExpressionWrapper(RangeExpressionWrapper rangeExpressionWrapper, ASTNodeWrapper parentNodeWrapper) {
         super(rangeExpressionWrapper, parentNodeWrapper);
+        copyRangeProperties(rangeExpressionWrapper);
+    }
+
+    private void copyRangeProperties(RangeExpressionWrapper rangeExpressionWrapper) {
         this.from = rangeExpressionWrapper.getFrom().copy(this);
         this.to = rangeExpressionWrapper.getTo().copy(this);
         this.inclusive = rangeExpressionWrapper.isInclusive();
@@ -52,6 +60,10 @@ public class RangeExpressionWrapper extends ExpressionWrapper {
     }
 
     public void setFrom(ExpressionWrapper from) {
+        if (from == null) {
+            return;
+        }
+        from.setParent(this);
         this.from = from;
     }
 
@@ -60,6 +72,10 @@ public class RangeExpressionWrapper extends ExpressionWrapper {
     }
 
     public void setTo(ExpressionWrapper to) {
+        if (to == null) {
+            return;
+        }
+        to.setParent(this);
         this.to = to;
     }
 
@@ -92,5 +108,39 @@ public class RangeExpressionWrapper extends ExpressionWrapper {
     @Override
     public RangeExpressionWrapper clone() {
         return new RangeExpressionWrapper(this, getParent());
+    }
+    
+    @Override
+    public boolean isInputEditatble() {
+        return true;
+    }
+    
+    @Override
+    public ASTNodeWrapper getInput() {
+        return this;
+    }
+    
+    @Override
+    public boolean updateInputFrom(ASTNodeWrapper input) {
+        if (!(input instanceof RangeExpressionWrapper) || this.isEqualsTo(input)) {
+            return false;
+        }
+        copyRangeProperties((RangeExpressionWrapper) input);
+        return true;
+    }
+    
+    @Override
+    public boolean replaceChild(ASTNodeWrapper oldChild, ASTNodeWrapper newChild) {
+        if (!(newChild instanceof ExpressionWrapper)) {
+            return false;
+        }
+        if (oldChild == getFrom()) {
+            setFrom((ExpressionWrapper) newChild);
+            return true;
+        } else if (oldChild == getTo()) {
+            setTo((ExpressionWrapper) newChild);
+            return true;
+        }
+        return false;
     }
 }

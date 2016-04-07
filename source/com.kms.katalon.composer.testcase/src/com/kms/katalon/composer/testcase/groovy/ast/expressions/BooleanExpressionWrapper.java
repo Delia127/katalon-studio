@@ -11,11 +11,12 @@ import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 
 public class BooleanExpressionWrapper extends ExpressionWrapper {
     private ExpressionWrapper expression;
+
     private boolean isReverse = false;
 
     public BooleanExpressionWrapper(BooleanExpressionWrapper booleanExpressionWrapper, ASTNodeWrapper parentNodeWrapper) {
         super(booleanExpressionWrapper, parentNodeWrapper);
-        copyProperties(booleanExpressionWrapper);
+        copyBooleanProperties(booleanExpressionWrapper);
     }
 
     public BooleanExpressionWrapper(ASTNodeWrapper parentNodeWrapper) {
@@ -35,7 +36,7 @@ public class BooleanExpressionWrapper extends ExpressionWrapper {
         this.expression = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(expression.getExpression(), this);
     }
 
-    private void copyProperties(BooleanExpressionWrapper booleanExpressionWrapper) {
+    private void copyBooleanProperties(BooleanExpressionWrapper booleanExpressionWrapper) {
         this.expression = booleanExpressionWrapper.getExpression().copy(this);
         this.isReverse = booleanExpressionWrapper.isReverse();
     }
@@ -53,6 +54,10 @@ public class BooleanExpressionWrapper extends ExpressionWrapper {
     }
 
     public void setExpression(ExpressionWrapper expression) {
+        if (expression == null) {
+            return;
+        }
+        expression.setParent(this);
         this.expression = expression;
     }
 
@@ -79,5 +84,52 @@ public class BooleanExpressionWrapper extends ExpressionWrapper {
     @Override
     public BooleanExpressionWrapper clone() {
         return new BooleanExpressionWrapper(this, getParent());
+    }
+
+    @Override
+    public boolean isInputEditatble() {
+        return true;
+    }
+
+    @Override
+    public ASTNodeWrapper getInput() {
+        return this;
+    }
+
+    @Override
+    public boolean updateInputFrom(ASTNodeWrapper input) {
+        if (!(input instanceof BooleanExpressionWrapper) || isEqualsTo(input)) {
+            return false;
+        }
+        copyBooleanProperties((BooleanExpressionWrapper) input);
+        return true;
+    }
+
+    @Override
+    public boolean isChildAssignble(ASTNodeWrapper astNode) {
+        return astNode instanceof ExpressionWrapper;
+    }
+
+    @Override
+    public int indexOf(ASTNodeWrapper childObject) {
+        return 0;
+    }
+
+    @Override
+    public boolean addChild(ASTNodeWrapper childObject, int index) {
+        if (!isChildAssignble(childObject) || childObject.isEqualsTo(getExpression())) {
+            return false;
+        }
+        setExpression((ExpressionWrapper) childObject);
+        return true;
+    }
+
+    @Override
+    public boolean replaceChild(ASTNodeWrapper oldChild, ASTNodeWrapper newChild) {
+        if (!isChildAssignble(newChild) || oldChild != getExpression()) {
+            return false;
+        }
+        setExpression((ExpressionWrapper) newChild);
+        return true;
     }
 }

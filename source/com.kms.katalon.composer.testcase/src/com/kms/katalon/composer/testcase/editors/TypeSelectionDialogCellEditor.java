@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.testcase.ast.editors;
+package com.kms.katalon.composer.testcase.editors;
 
 import org.eclipse.jdt.core.search.IJavaSearchConstants;
 import org.eclipse.jdt.internal.ui.JavaUIMessages;

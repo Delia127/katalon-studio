@@ -2,10 +2,15 @@ package com.kms.katalon.composer.testcase.groovy.ast;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.syntax.Token;
 
 public class TokenWrapper extends ASTNodeWrapper {
     private Token token;
+
+    public TokenWrapper(TokenWrapper tokenWrapper) {
+        this(tokenWrapper, null);
+    }
 
     public TokenWrapper(TokenWrapper tokenWrapper, ASTNodeWrapper parentNodeWrapper) {
         super(tokenWrapper, parentNodeWrapper);
@@ -36,6 +41,10 @@ public class TokenWrapper extends ASTNodeWrapper {
         return null;
     }
 
+    public Token getToken() {
+        return token;
+    }
+
     public void setToken(Token token) {
         this.token = token;
     }
@@ -46,5 +55,34 @@ public class TokenWrapper extends ASTNodeWrapper {
 
     public int getType() {
         return token.getType();
+    }
+
+    @Override
+    public boolean isInputEditatble() {
+        return true;
+    }
+
+    @Override
+    public ASTNodeWrapper getInput() {
+        return this;
+    }
+
+    @Override
+    public String getInputText() {
+        return getText();
+    };
+
+    @Override
+    public boolean updateInputFrom(ASTNodeWrapper input) {
+        if (input instanceof TokenWrapper && !StringUtils.equals(token.getText(), ((TokenWrapper) input).getText())) {
+            this.token = ((TokenWrapper) input).getToken();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public TokenWrapper clone() {
+        return new TokenWrapper(this, getParent());
     }
 }

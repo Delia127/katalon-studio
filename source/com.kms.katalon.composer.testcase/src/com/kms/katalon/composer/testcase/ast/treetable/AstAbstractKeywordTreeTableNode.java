@@ -1,7 +1,6 @@
 package com.kms.katalon.composer.testcase.ast.treetable;
 
-import java.util.List;
-
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.tools.GeneralUtils;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.TextCellEditor;
@@ -13,7 +12,6 @@ import com.kms.katalon.composer.testcase.ast.editors.InputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.TestObjectCellEditor;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.TokenWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BinaryExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
@@ -22,21 +20,12 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.PropertyExpressi
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.VariableExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
-import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
+import com.kms.katalon.composer.testcase.util.AstValueUtil;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.core.model.FailureHandling;
 
-public abstract class AstAbstractKeywordTreeTableNode extends AstStatementTreeTableNode implements AstItemEditableNode,
-        AstInputEditableNode, AstObjectEditableNode, AstOutputEditableNode {
-
-    protected static final Image CONTINUE_ON_FAIL = ImageConstants.IMG_16_FAILED_CONTINUE;
-
-    protected static final Image STOP_ON_FAIL = ImageConstants.IMG_16_FAILED_STOP;
-
-    protected static final Image COMMENT_ICON = ImageConstants.IMG_16_COMMENT;
-
-    protected static final Image OPTIONAL_ICON = ImageConstants.IMG_16_OPTIONAL_RUN;
-
+public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableStatementTreeTableNode implements
+        IAstItemEditableNode, IAstObjectEditableNode, IAstOutputEditableNode {
     private static final String COMMENT_KW_NAME = "comment";
 
     protected MethodCallExpressionWrapper methodCall;
@@ -95,9 +84,7 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstStatementTreeTa
         if (index == -1) {
             return null;
         }
-        List<ExpressionWrapper> argumentList = ((ArgumentListExpressionWrapper) methodCall.getArguments())
-                .getExpressions();
-        return argumentList.get(index);
+        return methodCall.getArguments().getExpression(index);
     }
 
     @Override
@@ -107,11 +94,11 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstStatementTreeTa
 
     @Override
     public String getTestObjectText() {
-        if (!canEditTestObject()) {
+        ExpressionWrapper expression = getTestObjectExpression();
+        if (expression == null) {
             return "";
         }
-        ExpressionWrapper expression = getTestObjectExpression();
-        InputValueType inputValueType = AstTreeTableValueUtil.getTypeValue(expression);
+        InputValueType inputValueType = AstValueUtil.getTypeValue(expression);
         if (inputValueType != null) {
             return inputValueType.getValueToDisplay(expression);
         }
@@ -134,8 +121,7 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstStatementTreeTa
         if (index == -1 || !(object instanceof ExpressionWrapper)) {
             return false;
         }
-        ((ArgumentListExpressionWrapper) methodCall.getArguments()).getExpressions().set(index,
-                (ExpressionWrapper) object);
+        methodCall.getArguments().setExpression((ExpressionWrapper) object, index);
         return true;
     }
 
@@ -172,45 +158,52 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstStatementTreeTa
     @Override
     public boolean setOutput(Object output) {
         if (output == null) {
-            return resetOutput();
+            return removeOutput();
         }
         if (!(output instanceof String)) {
             return false;
         }
         String outputString = (String) output;
         if (outputString.isEmpty()) {
-            return resetOutput();
+            return removeOutput();
         }
         if (binaryExpression == null) {
-            binaryExpression = new BinaryExpressionWrapper(parentStatement);
-            VariableExpressionWrapper leftExpression = new VariableExpressionWrapper(outputString,
-                    getOutputReturnType(), binaryExpression);
-            binaryExpression.setLeftExpression(leftExpression);
-            binaryExpression.setOperation(new TokenWrapper(GeneralUtils.ASSIGN, binaryExpression));
-            binaryExpression.setRightExpression(methodCall);
-            methodCall.setParent(binaryExpression);
-            parentStatement.setExpression(binaryExpression);
-            return true;
+            return createNewOuput(outputString);
         }
+        return changeExistingOutput(outputString);
+    }
+
+    private boolean changeExistingOutput(String outputString) {
         if (binaryExpression.getLeftExpression() instanceof VariableExpressionWrapper) {
-            VariableExpressionWrapper variableExpressionWrapper = (VariableExpressionWrapper) binaryExpression
-                    .getLeftExpression();
+            VariableExpressionWrapper variableExpressionWrapper = (VariableExpressionWrapper) binaryExpression.getLeftExpression();
             if (variableExpressionWrapper.getVariable().equals(outputString)) {
                 return false;
             }
             variableExpressionWrapper.setVariable(outputString);
             return true;
         }
-        VariableExpressionWrapper leftExpression = new VariableExpressionWrapper(outputString, getOutputReturnType(),
-                binaryExpression);
-        if (!AstTreeTableValueUtil.compareAstNode(binaryExpression.getLeftExpression(), leftExpression)) {
-            binaryExpression.setLeftExpression(leftExpression);
+        VariableExpressionWrapper newLeftExpression = new VariableExpressionWrapper(outputString,
+                getOutputReturnType(), binaryExpression);
+        if (!newLeftExpression.isEqualsTo(binaryExpression.getLeftExpression())) {
+            binaryExpression.setLeftExpression(newLeftExpression);
             return true;
         }
         return false;
     }
 
-    protected boolean resetOutput() {
+    private boolean createNewOuput(String outputString) {
+        binaryExpression = new BinaryExpressionWrapper(parentStatement);
+        VariableExpressionWrapper leftExpression = new VariableExpressionWrapper(outputString, getOutputReturnType(),
+                binaryExpression);
+        binaryExpression.setLeftExpression(leftExpression);
+        binaryExpression.setOperation(new TokenWrapper(GeneralUtils.ASSIGN, binaryExpression));
+        binaryExpression.setRightExpression(methodCall);
+        methodCall.setParent(binaryExpression);
+        parentStatement.setExpression(binaryExpression);
+        return true;
+    }
+
+    protected boolean removeOutput() {
         if (binaryExpression == null) {
             return false;
         }
@@ -221,18 +214,12 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstStatementTreeTa
     }
 
     protected PropertyExpressionWrapper getFailureHandlingPropertyExpression() {
-        if (!(methodCall.getArguments() instanceof ArgumentListExpressionWrapper)) {
-            return null;
-        }
-        for (ExpressionWrapper expression : ((ArgumentListExpressionWrapper) methodCall.getArguments())
-                .getExpressions()) {
-            if (!(expression instanceof PropertyExpressionWrapper)) {
+        for (ExpressionWrapper expression : methodCall.getArguments().getExpressions()) {
+            if (!(expression instanceof PropertyExpressionWrapper)
+                    || !(((PropertyExpressionWrapper) expression).isObjectExpressionOfClass(FailureHandling.class))) {
                 continue;
             }
-            PropertyExpressionWrapper propertyExpression = (PropertyExpressionWrapper) expression;
-            if (propertyExpression.isObjectExpressionOfClass(FailureHandling.class)) {
-                return propertyExpression;
-            }
+            return (PropertyExpressionWrapper) expression;
         }
         return null;
     }
@@ -248,7 +235,8 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstStatementTreeTa
     public boolean setFailureHandlingValue(FailureHandling failureHandling) {
         PropertyExpressionWrapper failureHandlingPropertyExpression = getFailureHandlingPropertyExpression();
         if (failureHandlingPropertyExpression == null
-                || failureHandling.toString().equals(failureHandlingPropertyExpression.getPropertyAsString())) {
+                || StringUtils.equals(failureHandling.toString(),
+                        failureHandlingPropertyExpression.getPropertyAsString())) {
             return false;
         }
         failureHandlingPropertyExpression.setProperty(new ConstantExpressionWrapper(failureHandling.toString(),
@@ -258,20 +246,29 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstStatementTreeTa
 
     @Override
     public Image getIcon() {
-        // If comment
-        if (methodCall.getMethod() != null
+        if (isComment()) {
+            return ImageConstants.IMG_16_COMMENT;
+        }
+        FailureHandling failureHandling = getFailureHandlingValue();
+        if (failureHandling == null) {
+            return ImageConstants.IMG_16_FAILED_CONTINUE;
+        }
+        switch (failureHandling) {
+            case OPTIONAL:
+                return ImageConstants.IMG_16_OPTIONAL_RUN;
+            case STOP_ON_FAILURE:
+                return ImageConstants.IMG_16_FAILED_STOP;
+            default:
+                return ImageConstants.IMG_16_FAILED_CONTINUE;
+
+        }
+    }
+
+    private boolean isComment() {
+        return methodCall.getMethod() != null
                 && COMMENT_KW_NAME.equals(methodCall.getMethodAsString())
                 && methodCall.getObjectExpression() != null
                 && KeywordController.getInstance().getBuiltInKeywordClassByName(
-                        methodCall.getObjectExpressionAsString()) != null) {
-            return COMMENT_ICON;
-        }
-        FailureHandling failureHandling = getFailureHandlingValue();
-        if (failureHandling != null && failureHandling.equals(FailureHandling.STOP_ON_FAILURE)) {
-            return STOP_ON_FAIL;
-        } else if (failureHandling != null && failureHandling.equals(FailureHandling.OPTIONAL)) {
-            return OPTIONAL_ICON;
-        }
-        return CONTINUE_ON_FAIL;
+                        methodCall.getObjectExpressionAsString()) != null;
     }
 }

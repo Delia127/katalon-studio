@@ -33,7 +33,7 @@ public class TestDataTreeEntity extends AbstractTreeEntity {
     }
 
     @Override
-    public Object getObject() throws Exception {
+    public DataFileEntity getObject() throws Exception {
         TestDataController.getInstance().reloadTestData(testData, entity);
         loadAllDescentdantEntities();
         return testData;

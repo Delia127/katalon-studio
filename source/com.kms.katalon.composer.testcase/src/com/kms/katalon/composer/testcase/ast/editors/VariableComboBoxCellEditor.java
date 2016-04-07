@@ -18,7 +18,7 @@ public class VariableComboBoxCellEditor extends StringComboBoxCellEditor {
     @Override
     protected void doSetValue(Object value) {
         Assert.isTrue(value instanceof VariableExpressionWrapper);
-        variableExpression = (VariableExpressionWrapper) value;
+        variableExpression = ((VariableExpressionWrapper) value).clone();
         super.doSetValue(variableExpression.getVariable());
     }
 

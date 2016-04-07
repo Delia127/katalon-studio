@@ -11,25 +11,29 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.BooleanExpressio
 
 public class DoWhileStatementWrapper extends CompositeStatementWrapper {
     private BooleanExpressionWrapper booleanExpression;
-    private BlockStatementWrapper loopBlock;
+    
+    public DoWhileStatementWrapper() {
+        this(null);
+    }
 
-    public DoWhileStatementWrapper(BooleanExpressionWrapper booleanExpression, 
-            ASTNodeWrapper parentNodeWrapper) {
+    public DoWhileStatementWrapper(ASTNodeWrapper parentNodeWrapper) {
+        super(parentNodeWrapper);
+        this.booleanExpression = new BooleanExpressionWrapper(this);
+    }
+
+    public DoWhileStatementWrapper(BooleanExpressionWrapper booleanExpression, ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
         this.booleanExpression = booleanExpression;
-        this.loopBlock = new BlockStatementWrapper(this);
     }
 
     public DoWhileStatementWrapper(DoWhileStatement doWhileStatement, ASTNodeWrapper parentNodeWrapper) {
-        super(doWhileStatement, parentNodeWrapper);
+        super(doWhileStatement, (BlockStatement) doWhileStatement.getLoopBlock(), parentNodeWrapper);
         this.booleanExpression = new BooleanExpressionWrapper(doWhileStatement.getBooleanExpression(), this);
-        this.loopBlock = new BlockStatementWrapper((BlockStatement) doWhileStatement.getLoopBlock(), this);
     }
-    
+
     public DoWhileStatementWrapper(DoWhileStatementWrapper doWhileStatementWrapper, ASTNodeWrapper parentNodeWrapper) {
         super(doWhileStatementWrapper, parentNodeWrapper);
         this.booleanExpression = new BooleanExpressionWrapper(doWhileStatementWrapper.getBooleanExpression(), this);
-        this.loopBlock = new BlockStatementWrapper(doWhileStatementWrapper.getBlock(), this);
     }
 
     public BooleanExpressionWrapper getBooleanExpression() {
@@ -38,7 +42,7 @@ public class DoWhileStatementWrapper extends CompositeStatementWrapper {
 
     @Override
     public String getText() {
-       return "do {...} while" + "(" + getBooleanExpression().getText() + ")";
+        return "do {...} while" + "(" + getBooleanExpression().getText() + ")";
     }
 
     @Override
@@ -49,14 +53,9 @@ public class DoWhileStatementWrapper extends CompositeStatementWrapper {
     @Override
     public List<? extends ASTNodeWrapper> getAstChildren() {
         List<ASTNodeWrapper> astNodeWrappers = new ArrayList<ASTNodeWrapper>();
-        astNodeWrappers.add(loopBlock);
+        astNodeWrappers.addAll(super.getAstChildren());
         astNodeWrappers.add(booleanExpression);
         return astNodeWrappers;
-    }
-
-    @Override
-    public BlockStatementWrapper getBlock() {
-        return loopBlock;
     }
 
     @Override

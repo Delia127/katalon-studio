@@ -31,7 +31,7 @@ public class BuiltinKeywordFolderBrowserTreeEntity extends KeywordBrowserFolderT
     @Override
     public boolean hasChildren() {
         try {
-            if (KeywordController.getInstance().getBuiltInKeywords(className).size() > 0) {
+            if (KeywordController.getInstance().getBuiltInKeywords(simpleName).size() > 0) {
                 return true;
             }
         } catch (Exception e) {
@@ -51,7 +51,7 @@ public class BuiltinKeywordFolderBrowserTreeEntity extends KeywordBrowserFolderT
     }
 
     private List<IKeywordBrowserTreeEntity> getKeywordByKeywordObject() throws Exception {
-        List<KeywordMethod> allKeywordMethod = KeywordController.getInstance().getBuiltInKeywords(className);
+        List<KeywordMethod> allKeywordMethod = KeywordController.getInstance().getBuiltInKeywords(simpleName);
         Map<String, List<KeywordMethod>> methodObjectMap = new HashMap<String, List<KeywordMethod>>();
         for (KeywordMethod method : allKeywordMethod) {
             Keyword keywordParameter = method.getKeywordAnnotation();

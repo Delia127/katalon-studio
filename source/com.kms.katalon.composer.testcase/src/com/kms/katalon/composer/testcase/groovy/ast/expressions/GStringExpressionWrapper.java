@@ -30,11 +30,7 @@ public class GStringExpressionWrapper extends ExpressionWrapper {
     public String getVerbatimText() {
         return verbatimText;
     }
-
-    public void setVerbatimText(String verbatimText) {
-        this.verbatimText = verbatimText;
-    }
-
+    
     @Override
     public GStringExpressionWrapper clone() {
         return new GStringExpressionWrapper(this, getParent());

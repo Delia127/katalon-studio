@@ -12,7 +12,7 @@ import com.kms.katalon.composer.testcase.ast.editors.MethodObjectBuilderCellEdit
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.MethodNodeWrapper;
 
-public class AstMethodTreeTableNode extends AstAbstractTreeTableNode implements AstItemEditableNode {
+public class AstMethodTreeTableNode extends AstAbstractTreeTableNode implements IAstItemEditableNode {
     private MethodNodeWrapper methodNode;
 
     private List<AstTreeTableNode> childNodes = new ArrayList<AstTreeTableNode>();

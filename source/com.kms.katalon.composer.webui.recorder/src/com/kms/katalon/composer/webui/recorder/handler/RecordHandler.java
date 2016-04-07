@@ -35,7 +35,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.TupleExpressionW
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
-import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
+import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
 import com.kms.katalon.composer.webui.recorder.constants.StringConstants;
 import com.kms.katalon.composer.webui.recorder.dialog.RecorderDialog;
@@ -210,7 +210,7 @@ public class RecordHandler {
         List<ExpressionWrapper> arguments = ((TupleExpressionWrapper) methodCallExpressionWrapper.getArguments())
                 .getExpressions();
         arguments.add(new ConstantExpressionWrapper("", methodCallExpressionWrapper.getArguments()));
-        arguments.add(AstTreeTableInputUtil.getNewFailureHandlingPropertyExpression(methodCallExpressionWrapper.getArguments()));
+        arguments.add(AstKeywordsInputUtil.getNewFailureHandlingPropertyExpression(methodCallExpressionWrapper.getArguments()));
 
         resultStatementWrappers.add(new ExpressionStatementWrapper(methodCallExpressionWrapper, null));
 
@@ -233,7 +233,7 @@ public class RecordHandler {
         methodCallExpressionWrapper = new MethodCallExpressionWrapper(WebUiBuiltInKeywords.class.getSimpleName(), "closeBrowser",
                 null);
         arguments = ((TupleExpressionWrapper) methodCallExpressionWrapper.getArguments()).getExpressions();
-        arguments.add(AstTreeTableInputUtil.getNewFailureHandlingPropertyExpression(methodCallExpressionWrapper.getArguments()));
+        arguments.add(AstKeywordsInputUtil.getNewFailureHandlingPropertyExpression(methodCallExpressionWrapper.getArguments()));
         resultStatementWrappers.add(new ExpressionStatementWrapper(methodCallExpressionWrapper, null));
 
         return resultStatementWrappers;

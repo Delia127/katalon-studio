@@ -17,5 +17,14 @@ public interface AstTreeTableNode {
 	public boolean hasChildren();
 	public List<AstTreeTableNode> getChildren();
 	public void reloadChildren();
-
+	public boolean isChildAssignble(ASTNodeWrapper astNode);
+    public boolean addChild(ASTNodeWrapper childObject);
+    public boolean addChild(ASTNodeWrapper childObject, int index);
+    public boolean removeChild(ASTNodeWrapper childObject);
+    public int indexOf(ASTNodeWrapper childObject);
+	
+	/**
+	 * Check if the input node is the descendant of this node
+	 */
+	public boolean isDescendantNode(AstTreeTableNode otherNode);
 }

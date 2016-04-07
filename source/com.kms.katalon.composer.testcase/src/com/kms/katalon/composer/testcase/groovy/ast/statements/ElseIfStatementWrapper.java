@@ -3,52 +3,55 @@ package com.kms.katalon.composer.testcase.groovy.ast.statements;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.ast.stmt.IfStatement;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BooleanExpressionWrapper;
 
-public class ElseIfStatementWrapper extends CompositeStatementWrapper {
-    private BooleanExpressionWrapper booleanExpression;
-    private BlockStatementWrapper code;
+public class ElseIfStatementWrapper extends ComplexChildStatementWrapper {
+    protected BooleanExpressionWrapper expression;
+    
+    public ElseIfStatementWrapper() {
+        this(null);
+    }
 
     public ElseIfStatementWrapper(IfStatementWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
-        this.booleanExpression = new BooleanExpressionWrapper(this);
-        this.code = new BlockStatementWrapper(parentNodeWrapper);
+        this.expression = new BooleanExpressionWrapper(this);
     }
 
     public ElseIfStatementWrapper(IfStatement ifStatement, IfStatementWrapper parentNodeWrapper) {
-        super(ifStatement, parentNodeWrapper);
-        this.booleanExpression = new BooleanExpressionWrapper(ifStatement.getBooleanExpression(), this);
-        this.code = new BlockStatementWrapper((BlockStatement) ifStatement.getIfBlock(), this);
-        this.lineNumber = booleanExpression.getLineNumber();
-        this.columnNumber = booleanExpression.getColumnNumber() - 1;
+        super(ifStatement, (BlockStatement) ifStatement.getIfBlock(), parentNodeWrapper);
+        this.expression = new BooleanExpressionWrapper(ifStatement.getBooleanExpression(), this);
+        this.lineNumber = expression.getLineNumber();
+        this.columnNumber = expression.getColumnNumber() - 1;
         this.lastLineNumber = ifStatement.getIfBlock().getLastLineNumber();
         this.lastColumnNumber = ifStatement.getIfBlock().getLastColumnNumber() - 1;
-        this.start = booleanExpression.getStart();
+        this.start = expression.getStart();
         this.end = ifStatement.getIfBlock().getEnd();
     }
 
     public ElseIfStatementWrapper(ElseIfStatementWrapper elseIfStatementWrapper, IfStatementWrapper parentNodeWrapper) {
         super(elseIfStatementWrapper, parentNodeWrapper);
-        this.booleanExpression = new BooleanExpressionWrapper(elseIfStatementWrapper.getBooleanExpression(), this);
-        this.code = new BlockStatementWrapper(elseIfStatementWrapper.getBlock(), this);
+        this.expression = new BooleanExpressionWrapper(elseIfStatementWrapper.getBooleanExpression(), this);
     }
 
     public BooleanExpressionWrapper getBooleanExpression() {
-        return booleanExpression;
+        return (BooleanExpressionWrapper) expression;
     }
 
     public void setBooleanExpression(BooleanExpressionWrapper booleanExpression) {
-        this.booleanExpression = booleanExpression;
+        if (booleanExpression == null) {
+            return;
+        }
+        booleanExpression.setParent(this);
+        this.expression = booleanExpression;
     }
 
     @Override
     public String getText() {
-        return "else if (" + getBooleanExpression().getText() + ")";
+        return "else if (" + getInputText() + ")";
     }
 
     @Override
@@ -57,21 +60,11 @@ public class ElseIfStatementWrapper extends CompositeStatementWrapper {
     }
 
     @Override
-    public boolean hasAstChildren() {
-        return true;
-    }
-
-    @Override
     public List<? extends ASTNodeWrapper> getAstChildren() {
         List<ASTNodeWrapper> astNodeWrappers = new ArrayList<ASTNodeWrapper>();
-        astNodeWrappers.add(booleanExpression);
-        astNodeWrappers.add(code);
+        astNodeWrappers.add(expression);
+        astNodeWrappers.addAll(super.getAstChildren());
         return astNodeWrappers;
-    }
-
-    @Override
-    public BlockStatementWrapper getBlock() {
-        return code;
     }
 
     @Override
@@ -80,8 +73,8 @@ public class ElseIfStatementWrapper extends CompositeStatementWrapper {
     }
 
     @Override
-    public ASTNodeWrapper getInput() {
-        return this.getBooleanExpression();
+    public BooleanExpressionWrapper getInput() {
+        return getBooleanExpression();
     }
 
     @Override
@@ -91,10 +84,15 @@ public class ElseIfStatementWrapper extends CompositeStatementWrapper {
 
     @Override
     public boolean updateInputFrom(ASTNodeWrapper input) {
-        if (input instanceof BooleanExpressionWrapper && !AstTreeTableValueUtil.compareAstNode(input, this.getBooleanExpression())) {
-            this.setBooleanExpression((BooleanExpressionWrapper) input);
+        if (input instanceof BooleanExpressionWrapper && !this.getBooleanExpression().isEqualsTo(input)) {
+            setBooleanExpression((BooleanExpressionWrapper) input);
             return true;
         }
         return false;
+    }
+    
+    @Override
+    protected boolean isAstNodeBelongToParentComplex(ASTNodeWrapper astNode) {
+        return astNode instanceof ElseIfStatementWrapper || astNode instanceof ElseStatementWrapper;
     }
 }

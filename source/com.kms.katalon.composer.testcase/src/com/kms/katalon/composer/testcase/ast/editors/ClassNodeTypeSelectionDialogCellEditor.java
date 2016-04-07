@@ -4,8 +4,9 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.testcase.editors.TypeSelectionDialogCellEditor;
 import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
-import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
+import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 
 public class ClassNodeTypeSelectionDialogCellEditor extends TypeSelectionDialogCellEditor {
     private ClassNodeWrapper classNodeWrapper;
@@ -18,14 +19,14 @@ public class ClassNodeTypeSelectionDialogCellEditor extends TypeSelectionDialogC
     protected void doSetValue(Object value) {
         Assert.isTrue(value instanceof ClassNodeWrapper || value instanceof IType);
         if (value instanceof IType) {
-            Class<?> valueClass = AstTreeTableInputUtil.loadType(((IType) value).getFullyQualifiedName(),
+            Class<?> valueClass = AstKeywordsInputUtil.loadType(((IType) value).getFullyQualifiedName(),
                     classNodeWrapper.getScriptClass());
             if (valueClass == null) {
                 return;
             }
             classNodeWrapper.setType(valueClass);
         } else if (value instanceof ClassNodeWrapper) {
-            classNodeWrapper = (ClassNodeWrapper) value;
+            classNodeWrapper = ((ClassNodeWrapper) value).clone();
         }
         super.doSetValue(classNodeWrapper.getName());
     }

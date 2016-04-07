@@ -12,35 +12,37 @@ import com.kms.katalon.composer.testcase.groovy.ast.ParameterWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ClosureListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.RangeExpressionWrapper;
-import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
 
 public class ForStatementWrapper extends CompositeStatementWrapper {
     private static final Class<?> DEFAULT_TYPE = Object.class;
+
     private static final String DEFAULT_VARIABLE_NAME = "index";
+
     private ParameterWrapper variable;
+
     private ExpressionWrapper collectionExpression;
-    private BlockStatementWrapper loopBlock;
+
+    public ForStatementWrapper() {
+        this(null);
+    }
 
     public ForStatementWrapper(ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
         variable = new ParameterWrapper(DEFAULT_TYPE, DEFAULT_VARIABLE_NAME, this);
         collectionExpression = new RangeExpressionWrapper(this);
-        loopBlock = new BlockStatementWrapper(this);
     }
 
     public ForStatementWrapper(ForStatement forStatement, ASTNodeWrapper parentNodeWrapper) {
-        super(forStatement, parentNodeWrapper);
+        super(forStatement, (BlockStatement) forStatement.getLoopBlock(), parentNodeWrapper);
         variable = new ParameterWrapper(forStatement.getVariable(), this);
-        collectionExpression = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(forStatement.getCollectionExpression(),
-                this);
-        loopBlock = new BlockStatementWrapper((BlockStatement) forStatement.getLoopBlock(), parentNodeWrapper);
+        collectionExpression = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(
+                forStatement.getCollectionExpression(), this);
     }
 
     public ForStatementWrapper(ForStatementWrapper forStatementWrapper, ASTNodeWrapper parentNodeWrapper) {
         super(forStatementWrapper, parentNodeWrapper);
         variable = new ParameterWrapper(forStatementWrapper.getVariable(), this);
         collectionExpression = forStatementWrapper.getCollectionExpression().copy(this);
-        loopBlock = new BlockStatementWrapper(forStatementWrapper.getBlock(), parentNodeWrapper);
     }
 
     public ParameterWrapper getVariable() {
@@ -48,6 +50,10 @@ public class ForStatementWrapper extends CompositeStatementWrapper {
     }
 
     public void setVariable(ParameterWrapper variable) {
+        if (variable == null) {
+            return;
+        }
+        variable.setParent(this);
         this.variable = variable;
     }
 
@@ -56,26 +62,19 @@ public class ForStatementWrapper extends CompositeStatementWrapper {
     }
 
     public void setCollectionExpression(ExpressionWrapper collectionExpression) {
+        if (collectionExpression == null) {
+            return;
+        }
+        collectionExpression.setParent(this);
         this.collectionExpression = collectionExpression;
     }
 
     @Override
-    public String getInputText() {
-        String value = "";
-        if (!(getCollectionExpression() instanceof ClosureListExpressionWrapper)) {
-            if (!isForLoopDummy(getVariable())) {
-                value += getVariable().getText();
-                value += " : ";
-            }
-        }
-        return value + getCollectionExpression().getText();
-    }
-
-    @Override
     public String getText() {
-        return "For (" + getInputText() + ")";
+        return "for (" + getInputText() + ")";
     }
 
+    // For closure list expression collection type of for statement
     public static boolean isForLoopDummy(ParameterWrapper variable) {
         return variable.getType().getName().equals(ForStatement.FOR_LOOP_DUMMY.getType().getName())
                 && variable.getName().equals(ForStatement.FOR_LOOP_DUMMY.getName());
@@ -91,13 +90,8 @@ public class ForStatementWrapper extends CompositeStatementWrapper {
         List<ASTNodeWrapper> astNodeWrappers = new ArrayList<ASTNodeWrapper>();
         astNodeWrappers.add(variable);
         astNodeWrappers.add(collectionExpression);
-        astNodeWrappers.add(loopBlock);
+        astNodeWrappers.addAll(super.getAstChildren());
         return astNodeWrappers;
-    }
-
-    @Override
-    public BlockStatementWrapper getBlock() {
-        return loopBlock;
     }
 
     @Override
@@ -106,24 +100,58 @@ public class ForStatementWrapper extends CompositeStatementWrapper {
     }
 
     @Override
-    public ASTNodeWrapper getInput() {
+    public boolean isInputEditatble() {
+        return true;
+    }
+
+    @Override
+    public String getInputText() {
+        String value = "";
+        if (!(getCollectionExpression() instanceof ClosureListExpressionWrapper)) {
+            if (!isForLoopDummy(getVariable())) {
+                value += getVariable().getText();
+                value += " : ";
+            }
+        }
+        return value + getCollectionExpression().getText();
+    }
+
+    @Override
+    public ForStatementWrapper getInput() {
         return this;
     }
 
     @Override
     public boolean updateInputFrom(ASTNodeWrapper input) {
         if (!(input instanceof ForStatementWrapper)
-                || (AstTreeTableValueUtil.compareAstNode(this.getVariable(), ((ForStatementWrapper) input).getVariable())
-                && AstTreeTableValueUtil.compareAstNode(this.getCollectionExpression(), ((ForStatementWrapper) input).getCollectionExpression()))) {
+                || (getVariable().isEqualsTo(((ForStatementWrapper) input).getVariable()) && getCollectionExpression().isEqualsTo(
+                        ((ForStatementWrapper) input).getCollectionExpression()))) {
             return false;
         }
         ForStatementWrapper newForStatement = (ForStatementWrapper) input;
-        ParameterWrapper variable = newForStatement.getVariable();
-        variable.setParent(this);
-        this.setVariable(variable);
-        ExpressionWrapper collectionExpression = newForStatement.getCollectionExpression();
-        collectionExpression.setParent(this);
-        this.setCollectionExpression(collectionExpression);
+        setVariable(newForStatement.getVariable());
+        setCollectionExpression(newForStatement.getCollectionExpression());
         return true;
+    }
+
+    @Override
+    public boolean replaceChild(ASTNodeWrapper oldChild, ASTNodeWrapper newChild) {
+        if (oldChild == getCollectionExpression() && newChild instanceof ExpressionWrapper) {
+            ExpressionWrapper newCollectionExpression = (ExpressionWrapper) newChild;
+            ParameterWrapper variable = getVariable();
+            if (newCollectionExpression instanceof ClosureListExpressionWrapper) {
+                variable = new ParameterWrapper(ForStatement.FOR_LOOP_DUMMY, this);
+            } else if (isForLoopDummy(variable)) {
+                variable = new ParameterWrapper(Object.class, DEFAULT_VARIABLE_NAME, this);
+            }
+            variable.copyProperties(getVariable());
+            setVariable(variable);
+            setCollectionExpression(newCollectionExpression);
+            return true;
+        } else if (oldChild == getVariable() && newChild instanceof ParameterWrapper) {
+            setVariable((ParameterWrapper) newChild);
+            return true;
+        }
+        return super.replaceChild(oldChild, newChild);
     }
 }

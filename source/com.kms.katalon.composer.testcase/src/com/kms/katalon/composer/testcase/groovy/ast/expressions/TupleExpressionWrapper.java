@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.testcase.groovy.ast.expressions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.codehaus.groovy.ast.expr.Expression;
@@ -16,11 +17,6 @@ public class TupleExpressionWrapper extends ExpressionWrapper {
         super(parentNodeWrapper);
     }
 
-    public TupleExpressionWrapper(List<ExpressionWrapper> expressions, ASTNodeWrapper parentNodeWrapper) {
-        super(parentNodeWrapper);
-        setExpressions(expressions);
-    }
-
     public TupleExpressionWrapper(TupleExpression tupleExpression, ASTNodeWrapper parentNodeWrapper) {
         super(tupleExpression, parentNodeWrapper);
         for (Expression expression : tupleExpression.getExpressions()) {
@@ -30,21 +26,68 @@ public class TupleExpressionWrapper extends ExpressionWrapper {
 
     public TupleExpressionWrapper(TupleExpressionWrapper tupleExpressionWrapper, ASTNodeWrapper parentNodeWrapper) {
         super(tupleExpressionWrapper, parentNodeWrapper);
+        copyTupleProperties(tupleExpressionWrapper);
+    }
+
+    private void copyTupleProperties(TupleExpressionWrapper tupleExpressionWrapper) {
         for (ExpressionWrapper expression : tupleExpressionWrapper.getExpressions()) {
             expressions.add(expression.copy(this));
         }
     }
 
     public List<ExpressionWrapper> getExpressions() {
-        return expressions;
+        return Collections.unmodifiableList(expressions);
     }
 
     public void addExpression(ExpressionWrapper expression) {
+        if (expression == null) {
+            return;
+        }
+        expression.setParent(this);
         expressions.add(expression);
     }
 
-    public void setExpressions(List<ExpressionWrapper> expressions) {
-        this.expressions = expressions;
+    public boolean addExpression(ExpressionWrapper expression, int index) {
+        if (expression == null || index < 0 || index > expressions.size()) {
+            return false;
+        }
+        expression.setParent(this);
+        expressions.add(index, expression);
+        return true;
+    }
+
+    public void addExpressions(List<ExpressionWrapper> listOfExpressions) {
+        if (listOfExpressions == null) {
+            return;
+        }
+        for (ExpressionWrapper expression : listOfExpressions) {
+            if (expression == null) {
+                continue;
+            }
+            expression.setParent(this);
+            expressions.add(expression);
+        }
+    }
+
+    public boolean removeExpression(ExpressionWrapper expression) {
+        return expressions.remove(expression);
+    }
+
+    public boolean removeExpression(int index) {
+        if (index < 0 || index >= expressions.size()) {
+            return false;
+        }
+        expressions.remove(index);
+        return true;
+    }
+
+    public boolean setExpression(ExpressionWrapper expression, int index) {
+        if (expression == null || index < 0 || index > expressions.size()) {
+            return false;
+        }
+        expression.setParent(this);
+        expressions.set(index, expression);
+        return true;
     }
 
     public ExpressionWrapper getExpression(int index) {
@@ -52,6 +95,20 @@ public class TupleExpressionWrapper extends ExpressionWrapper {
             return null;
         }
         return this.expressions.get(index);
+    }
+
+    public void setExpressions(List<ExpressionWrapper> expressions) {
+        if (expressions == null) {
+            return;
+        }
+        this.expressions.clear();
+        for (ExpressionWrapper expression : expressions) {
+            if (expression == null) {
+                continue;
+            }
+            expression.setParent(this);
+            this.expressions.add(expression);
+        }
     }
 
     @Override
@@ -86,5 +143,34 @@ public class TupleExpressionWrapper extends ExpressionWrapper {
     @Override
     public TupleExpressionWrapper clone() {
         return new TupleExpressionWrapper(this, getParent());
+    }
+
+    @Override
+    public boolean isInputEditatble() {
+        return true;
+    }
+
+    @Override
+    public ASTNodeWrapper getInput() {
+        return this;
+    }
+
+    @Override
+    public boolean updateInputFrom(ASTNodeWrapper input) {
+        if (!(input instanceof TupleExpressionWrapper) || this.isEqualsTo(input)) {
+            return false;
+        }
+        copyTupleProperties((TupleExpressionWrapper) input);
+        return true;
+    }
+
+    @Override
+    public boolean replaceChild(ASTNodeWrapper oldChild, ASTNodeWrapper newChild) {
+        int index = getExpressions().indexOf(oldChild);
+        if (newChild instanceof ExpressionWrapper && index >= 0 && index < getExpressions().size()) {
+            setExpression((ExpressionWrapper) newChild, index);
+            return true;
+        }
+        return super.replaceChild(oldChild, newChild);
     }
 }

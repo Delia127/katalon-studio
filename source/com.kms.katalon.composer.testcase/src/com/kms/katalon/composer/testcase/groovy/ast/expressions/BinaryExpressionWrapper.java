@@ -13,8 +13,14 @@ import com.kms.katalon.composer.testcase.groovy.ast.TokenWrapper;
 
 public class BinaryExpressionWrapper extends ExpressionWrapper {
     protected ExpressionWrapper leftExpression;
+
     protected ExpressionWrapper rightExpression;
+
     protected TokenWrapper operation;
+
+    public BinaryExpressionWrapper() {
+        this(null);
+    }
 
     public BinaryExpressionWrapper(ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
@@ -22,7 +28,7 @@ public class BinaryExpressionWrapper extends ExpressionWrapper {
         this.operation = new TokenWrapper(Token.newSymbol(Types.COMPARE_EQUAL, -1, -1), this);
         this.rightExpression = new ConstantExpressionWrapper(0, this);
     }
-    
+
     public BinaryExpressionWrapper(String variableName, Token operation, ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
         this.leftExpression = new ConstantExpressionWrapper(0, this);
@@ -32,6 +38,10 @@ public class BinaryExpressionWrapper extends ExpressionWrapper {
 
     public BinaryExpressionWrapper(BinaryExpressionWrapper binaryExpressionWrapper, ASTNodeWrapper parentNodeWrapper) {
         super(binaryExpressionWrapper, parentNodeWrapper);
+        copyBinaryProperties(binaryExpressionWrapper);
+    }
+
+    private void copyBinaryProperties(BinaryExpressionWrapper binaryExpressionWrapper) {
         leftExpression = binaryExpressionWrapper.getLeftExpression().copy(this);
         rightExpression = binaryExpressionWrapper.getRightExpression().copy(this);
         operation = new TokenWrapper(binaryExpressionWrapper.getOperation(), this);
@@ -40,7 +50,8 @@ public class BinaryExpressionWrapper extends ExpressionWrapper {
     public BinaryExpressionWrapper(BinaryExpression expression, ASTNodeWrapper parentNodeWrapper) {
         super(expression, parentNodeWrapper);
         leftExpression = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(expression.getLeftExpression(), this);
-        rightExpression = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(expression.getRightExpression(), this);
+        rightExpression = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(expression.getRightExpression(),
+                this);
         this.operation = new TokenWrapper(expression.getOperation(), this);
     }
 
@@ -49,6 +60,10 @@ public class BinaryExpressionWrapper extends ExpressionWrapper {
     }
 
     public void setLeftExpression(ExpressionWrapper leftExpression) {
+        if (leftExpression == null) {
+            return;
+        }
+        leftExpression.setParent(this);
         this.leftExpression = leftExpression;
     }
 
@@ -57,6 +72,10 @@ public class BinaryExpressionWrapper extends ExpressionWrapper {
     }
 
     public void setRightExpression(ExpressionWrapper rightExpression) {
+        if (rightExpression == null) {
+            return;
+        }
+        rightExpression.setParent(this);
         this.rightExpression = rightExpression;
     }
 
@@ -65,6 +84,10 @@ public class BinaryExpressionWrapper extends ExpressionWrapper {
     }
 
     public void setOperation(TokenWrapper operation) {
+        if (operation == null) {
+            return;
+        }
+        operation.setParent(this);
         this.operation = operation;
     }
 
@@ -93,5 +116,34 @@ public class BinaryExpressionWrapper extends ExpressionWrapper {
     @Override
     public BinaryExpressionWrapper clone() {
         return new BinaryExpressionWrapper(this, getParent());
+    }
+
+    @Override
+    public ASTNodeWrapper getInput() {
+        return this;
+    }
+
+    @Override
+    public boolean updateInputFrom(ASTNodeWrapper input) {
+        if (!(input instanceof BinaryExpressionWrapper) || isEqualsTo(input)) {
+            return false;
+        }
+        copyBinaryProperties((BinaryExpressionWrapper) input);
+        return true;
+    }
+
+    @Override
+    public boolean replaceChild(ASTNodeWrapper oldChild, ASTNodeWrapper newChild) {
+        if (oldChild == getLeftExpression() && newChild instanceof ExpressionWrapper) {
+            setLeftExpression((ExpressionWrapper) newChild);
+            return true;
+        } else if (oldChild == getRightExpression() && newChild instanceof ExpressionWrapper) {
+            setRightExpression((ExpressionWrapper) newChild);
+            return true;
+        } else if (oldChild == getOperation() && newChild instanceof TokenWrapper) {
+            setOperation((TokenWrapper) newChild);
+            return true;
+        }
+        return false;
     }
 }

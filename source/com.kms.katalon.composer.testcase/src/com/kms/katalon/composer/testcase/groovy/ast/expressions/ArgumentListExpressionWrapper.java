@@ -1,7 +1,5 @@
 package com.kms.katalon.composer.testcase.groovy.ast.expressions;
 
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.expr.ArgumentListExpression;
 
@@ -12,10 +10,6 @@ import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 public class ArgumentListExpressionWrapper extends TupleExpressionWrapper {
     public ArgumentListExpressionWrapper(ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
-    }
-
-    public ArgumentListExpressionWrapper(List<ExpressionWrapper> expressions, ASTNodeWrapper parentNodeWrapper) {
-        super(expressions, parentNodeWrapper);
     }
 
     public ArgumentListExpressionWrapper(ArgumentListExpression argumentListExpression, ASTNodeWrapper parentNodeWrapper) {
@@ -44,5 +38,10 @@ public class ArgumentListExpressionWrapper extends TupleExpressionWrapper {
     @Override
     public ArgumentListExpressionWrapper clone() {
         return new ArgumentListExpressionWrapper(this, getParent());
+    }
+
+    @Override
+    public ExpressionWrapper copy(ASTNodeWrapper newParent) {
+        return super.copy(newParent);
     }
 }

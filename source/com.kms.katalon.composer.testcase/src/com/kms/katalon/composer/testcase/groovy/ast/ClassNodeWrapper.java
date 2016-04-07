@@ -12,19 +12,29 @@ import org.codehaus.groovy.ast.FieldNode;
 import org.codehaus.groovy.ast.ImportNode;
 import org.codehaus.groovy.ast.MethodNode;
 
-import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
+import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 
 public class ClassNodeWrapper extends ASTNodeWrapper {
     protected Class<?> typeClass;
+
     protected GenericsTypeWrapper[] genericsTypes;
+
     protected String name;
+
     protected String nameWithoutPackage;
+
     protected boolean isThis;
+
     protected boolean isSuper;
+
     protected int modifiers;
+
     protected ClassNodeWrapper componentType = null;
+
     protected List<ImportNodeWrapper> imports = new ArrayList<ImportNodeWrapper>();
+
     protected List<MethodNodeWrapper> methods = new ArrayList<MethodNodeWrapper>();
+
     protected List<FieldNodeWrapper> fields = new ArrayList<FieldNodeWrapper>();
 
     public ClassNodeWrapper(Class<?> clazz, ASTNodeWrapper parentNodeWrapper) {
@@ -42,7 +52,7 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
         this.isSuper = classNode == ClassNode.SUPER;
         this.isThis = classNode == ClassNode.THIS;
         if (!classNode.isScript()) {
-            this.typeClass = AstTreeTableInputUtil.loadType(classNode.getName(), null);
+            this.typeClass = AstKeywordsInputUtil.loadType(classNode.getName(), null);
         }
         this.modifiers = classNode.getModifiers();
         if (classNode.getComponentType() != null) {
@@ -86,6 +96,10 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
 
     public ClassNodeWrapper(ClassNodeWrapper classNodeWrapper, ASTNodeWrapper parentNodeWrapper) {
         super(classNodeWrapper, parentNodeWrapper);
+        copyClassProperties(classNodeWrapper);
+    }
+
+    private void copyClassProperties(ClassNodeWrapper classNodeWrapper) {
         this.name = classNodeWrapper.getName();
         this.nameWithoutPackage = classNodeWrapper.getNameWithoutPackage();
         this.isSuper = classNodeWrapper.isSuper();
@@ -138,14 +152,6 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
         return nameWithoutPackage;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setNameWithoutPackage(String nameWithoutPackage) {
-        this.nameWithoutPackage = nameWithoutPackage;
-    }
-
     public boolean isSuper() {
         return isSuper;
     }
@@ -158,16 +164,12 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
         return genericsTypes;
     }
 
-    public void setGenericsTypes(GenericsTypeWrapper[] genericsTypes) {
-        this.genericsTypes = genericsTypes;
-    }
-
     public void setType(Class<?> newType) {
         copyProperties(new ClassNode(newType));
     }
 
     public List<MethodNodeWrapper> getMethods() {
-        return methods;
+        return Collections.unmodifiableList(methods);
     }
 
     public List<String> getMethodNames() {
@@ -179,48 +181,109 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
         return methodNames;
     }
 
-    public void setMethods(List<MethodNodeWrapper> methods) {
-        this.methods = methods;
+    public void addMethod(MethodNodeWrapper method) {
+        if (method == null) {
+            return;
+        }
+        method.setParent(this);
+        methods.add(method);
+    }
+
+    public boolean addMethod(MethodNodeWrapper method, int index) {
+        if (method == null || index < 0 || index > methods.size()) {
+            return false;
+        }
+        method.setParent(this);
+        methods.add(index, method);
+        return true;
+    }
+
+    public boolean removeMethod(MethodNodeWrapper method) {
+        return methods.remove(method);
+    }
+
+    public boolean removeMethod(int index) {
+        if (index < 0 || index >= methods.size()) {
+            return false;
+        }
+        methods.remove(index);
+        return true;
+    }
+
+    public int indexOfMethod(MethodNodeWrapper methodNode) {
+        if (methodNode == null) {
+            return -1;
+        }
+        return methods.indexOf(methodNode);
+    }
+
+    public boolean setMethod(MethodNodeWrapper method, int index) {
+        if (method == null || index < 0 || index > methods.size()) {
+            return false;
+        }
+        method.setParent(this);
+        methods.set(index, method);
+        return true;
     }
 
     public List<FieldNodeWrapper> getFields() {
-        return fields;
+        return Collections.unmodifiableList(fields);
     }
 
-    public void setFields(List<FieldNodeWrapper> fields) {
-        this.fields = fields;
+    public void clearFields() {
+        fields.clear();
+    }
+
+    public void addField(FieldNodeWrapper field) {
+        if (field == null) {
+            return;
+        }
+        field.setParent(this);
+        fields.add(field);
+    }
+
+    public boolean addField(FieldNodeWrapper field, int index) {
+        if (field == null || index < 0 || index > fields.size()) {
+            return false;
+        }
+        field.setParent(this);
+        fields.add(index, field);
+        return true;
+    }
+
+    public boolean removeField(FieldNodeWrapper field) {
+        return fields.remove(field);
+    }
+
+    public boolean removeField(int index) {
+        if (index < 0 || index >= fields.size()) {
+            return false;
+        }
+        fields.remove(index);
+        return true;
+    }
+
+    public int indexOfField(FieldNodeWrapper field) {
+        if (field == null) {
+            return -1;
+        }
+        return fields.indexOf(field);
     }
 
     public Class<?> getTypeClass() {
         return typeClass;
     }
 
-    public void setTypeClass(Class<?> typeClass) {
-        this.typeClass = typeClass;
-    }
-
     public int getModifiers() {
         return modifiers;
-    }
-
-    public void setModifiers(int modifiers) {
-        this.modifiers = modifiers;
     }
 
     public ClassNodeWrapper getComponentType() {
         return componentType;
     }
 
-    public void setComponentType(ClassNodeWrapper componentType) {
-        this.componentType = componentType;
-    }
-
     public List<ImportNodeWrapper> getImports() {
-        return imports;
-    }
-
-    public void setImports(List<ImportNodeWrapper> imports) {
-        this.imports = imports;
+        return Collections.unmodifiableList(imports);
     }
 
     public void addImport(Class<?> classNeedImport) {
@@ -244,4 +307,64 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
         return (getModifiers() & Opcodes.ACC_ENUM) != 0;
     }
 
+    @Override
+    public boolean isChildAssignble(ASTNodeWrapper astNode) {
+        return (astNode instanceof MethodNodeWrapper || astNode instanceof FieldNodeWrapper);
+    }
+
+    @Override
+    public boolean addChild(ASTNodeWrapper childObject) {
+        if (childObject instanceof MethodNodeWrapper) {
+            addMethod((MethodNodeWrapper) childObject);
+            return true;
+        } else if (childObject instanceof FieldNodeWrapper) {
+            addField((FieldNodeWrapper) childObject);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean addChild(ASTNodeWrapper childObject, int index) {
+        if (childObject instanceof MethodNodeWrapper) {
+            return addMethod((MethodNodeWrapper) childObject, index);
+        } else if (childObject instanceof FieldNodeWrapper) {
+            return addField((FieldNodeWrapper) childObject, index);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean removeChild(ASTNodeWrapper childObject) {
+        if (childObject instanceof MethodNodeWrapper) {
+            return removeMethod((MethodNodeWrapper) childObject);
+        } else if (childObject instanceof FieldNodeWrapper) {
+            return removeField((FieldNodeWrapper) childObject);
+        }
+        return false;
+    }
+
+    @Override
+    public int indexOf(ASTNodeWrapper childObject) {
+        if (childObject instanceof MethodNodeWrapper) {
+            return indexOfMethod((MethodNodeWrapper) childObject);
+        } else if (childObject instanceof FieldNodeWrapper) {
+            return indexOfField((FieldNodeWrapper) childObject);
+        }
+        return -1;
+    }
+
+    @Override
+    public ClassNodeWrapper clone() {
+        return new ClassNodeWrapper(this, getParent());
+    }
+
+    @Override
+    public boolean updateInputFrom(ASTNodeWrapper input) {
+        if (!(input instanceof ClassNodeWrapper) || this.isEqualsTo(input)) {
+            return false;
+        }
+        copyClassProperties((ClassNodeWrapper) input);
+        return true;
+    }
 }

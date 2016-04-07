@@ -10,6 +10,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 
 public class MapEntryExpressionWrapper extends ExpressionWrapper {
     private ExpressionWrapper keyExpression;
+
     private ExpressionWrapper valueExpression;
 
     public MapEntryExpressionWrapper(ASTNodeWrapper parentNodeWrapper) {
@@ -35,6 +36,10 @@ public class MapEntryExpressionWrapper extends ExpressionWrapper {
     public MapEntryExpressionWrapper(MapEntryExpressionWrapper mapEntryExpressionWrapper,
             ASTNodeWrapper parentNodeWrapper) {
         super(mapEntryExpressionWrapper, parentNodeWrapper);
+        copyMapEntryProperties(mapEntryExpressionWrapper);
+    }
+
+    private void copyMapEntryProperties(MapEntryExpressionWrapper mapEntryExpressionWrapper) {
         keyExpression = mapEntryExpressionWrapper.getKeyExpression().copy(this);
         valueExpression = mapEntryExpressionWrapper.getValueExpression().copy(this);
     }
@@ -44,6 +49,10 @@ public class MapEntryExpressionWrapper extends ExpressionWrapper {
     }
 
     public void setKeyExpression(ExpressionWrapper keyExpression) {
+        if (keyExpression == null) {
+            return;
+        }
+        keyExpression.setParent(this);
         this.keyExpression = keyExpression;
     }
 
@@ -52,6 +61,10 @@ public class MapEntryExpressionWrapper extends ExpressionWrapper {
     }
 
     public void setValueExpression(ExpressionWrapper valueExpression) {
+        if (valueExpression == null) {
+            return;
+        }
+        valueExpression.setParent(this);
         this.valueExpression = valueExpression;
     }
 
@@ -76,5 +89,24 @@ public class MapEntryExpressionWrapper extends ExpressionWrapper {
     @Override
     public MapEntryExpressionWrapper clone() {
         return new MapEntryExpressionWrapper(this, getParent());
+    }
+
+    @Override
+    public boolean isInputEditatble() {
+        return true;
+    }
+
+    @Override
+    public ASTNodeWrapper getInput() {
+        return this;
+    }
+
+    @Override
+    public boolean updateInputFrom(ASTNodeWrapper input) {
+        if (!(input instanceof MapEntryExpressionWrapper) || this.isEqualsTo(input)) {
+            return false;
+        }
+        copyMapEntryProperties((MapEntryExpressionWrapper) input);
+        return true;
     }
 }

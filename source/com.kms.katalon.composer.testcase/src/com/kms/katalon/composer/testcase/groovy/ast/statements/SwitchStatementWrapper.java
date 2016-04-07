@@ -11,45 +11,36 @@ import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapHelper;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BooleanExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
-import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
 
-public class SwitchStatementWrapper extends StatementWrapper {
+public class SwitchStatementWrapper extends ComplexStatementWrapper<CaseStatementWrapper, DefaultStatementWrapper> {
     private ExpressionWrapper expression;
-    private List<CaseStatementWrapper> caseStatements = new ArrayList<CaseStatementWrapper>();
-    private BlockStatementWrapper defaultStatement = null;
-
-    public SwitchStatementWrapper(ExpressionWrapper expression, ASTNodeWrapper parentNodeWrapper) {
-        super(parentNodeWrapper);
-        this.expression = expression;
+    
+    public SwitchStatementWrapper() {
+        this(null);
     }
 
     public SwitchStatementWrapper(SwitchStatement switchStatement, ASTNodeWrapper parentNodeWrapper) {
         super(switchStatement, parentNodeWrapper);
-        this.expression = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(switchStatement.getExpression(), this);
+        this.expression = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(switchStatement.getExpression(),
+                this);
         for (CaseStatement caseStatement : switchStatement.getCaseStatements()) {
-            caseStatements.add(new CaseStatementWrapper(caseStatement, this));
+            complexChildStatements.add(new CaseStatementWrapper(caseStatement, this));
         }
         if (switchStatement.getDefaultStatement() instanceof BlockStatement) {
-            defaultStatement = new BlockStatementWrapper((BlockStatement) switchStatement.getDefaultStatement(), this);
+            lastStatement = new DefaultStatementWrapper((BlockStatement) switchStatement.getDefaultStatement(), this);
         }
     }
 
     public SwitchStatementWrapper(SwitchStatementWrapper switchStatementWrapper, ASTNodeWrapper parentNodeWrapper) {
         super(switchStatementWrapper, parentNodeWrapper);
         this.expression = switchStatementWrapper.getExpression().copy(this);
-        for (CaseStatementWrapper caseStatement : switchStatementWrapper.getCaseStatements()) {
-            caseStatements.add(new CaseStatementWrapper(caseStatement, this));
-        }
-        if (switchStatementWrapper.getDefaultStatement() != null) {
-            defaultStatement = new BlockStatementWrapper(switchStatementWrapper.getDefaultStatement(), this);
-        }
     }
 
     public SwitchStatementWrapper(ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
         this.expression = new BooleanExpressionWrapper(this);
-        defaultStatement = new BlockStatementWrapper(this);
-        defaultStatement.addStatement(new BreakStatementWrapper(defaultStatement));
+        lastStatement = new DefaultStatementWrapper(this);
+        lastStatement.getBlock().addStatement(new BreakStatementWrapper(lastStatement));
     }
 
     public ExpressionWrapper getExpression() {
@@ -57,54 +48,18 @@ public class SwitchStatementWrapper extends StatementWrapper {
     }
 
     public void setExpression(ExpressionWrapper expression) {
+        if (expression == null) {
+            return;
+        }
+        expression.setParent(this);
         this.expression = expression;
-    }
-
-    public List<CaseStatementWrapper> getCaseStatements() {
-        return caseStatements;
-    }
-
-    public void setCaseStatements(List<CaseStatementWrapper> caseStatements) {
-        this.caseStatements = caseStatements;
-    }
-
-    public void addCaseStatement(CaseStatementWrapper caseStatement) {
-        caseStatements.add(caseStatement);
-    }
-
-    public boolean addCaseStatement(CaseStatementWrapper caseStatement, int index) {
-        if (index < 0 || index > caseStatements.size()) {
-            return false;
-        }
-        caseStatements.add(index, caseStatement);
-        return true;
-    }
-
-    public boolean removeCaseStatement(int index) {
-        if (index < 0 || index >= caseStatements.size()) {
-            return false;
-        }
-        caseStatements.remove(index);
-        return true;
-    }
-
-    public boolean removeCaseStatement(CaseStatementWrapper caseStatement) {
-        return caseStatements.remove(caseStatement);
-    }
-
-    public BlockStatementWrapper getDefaultStatement() {
-        return defaultStatement;
-    }
-
-    public void setDefaultStatement(BlockStatementWrapper defaultStatement) {
-        this.defaultStatement = defaultStatement;
     }
 
     @Override
     public String getText() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("switch (");
-        stringBuilder.append(getExpression().getText());
+        stringBuilder.append(getInputText());
         stringBuilder.append(")");
         return stringBuilder.toString();
     }
@@ -118,10 +73,7 @@ public class SwitchStatementWrapper extends StatementWrapper {
     public List<? extends ASTNodeWrapper> getAstChildren() {
         List<ASTNodeWrapper> astNodeWrappers = new ArrayList<ASTNodeWrapper>();
         astNodeWrappers.add(expression);
-        astNodeWrappers.addAll(caseStatements);
-        if (defaultStatement != null) {
-            astNodeWrappers.add(defaultStatement);
-        }
+        astNodeWrappers.addAll(super.getAstChildren());
         return astNodeWrappers;
     }
 
@@ -131,23 +83,77 @@ public class SwitchStatementWrapper extends StatementWrapper {
     }
 
     @Override
-    public ASTNodeWrapper getInput() {
+    public SwitchStatementWrapper getInput() {
         return this;
     }
 
     @Override
     public String getInputText() {
-        return this.getExpression().getText();
+        return getExpression().getText();
     }
 
     @Override
     public boolean updateInputFrom(ASTNodeWrapper input) {
         if (input instanceof SwitchStatementWrapper
-                && !AstTreeTableValueUtil.compareAstNode(((SwitchStatementWrapper) input).getExpression(),
-                this.getExpression())) {
-            this.setExpression(((SwitchStatementWrapper) input).getExpression());
+                && !getExpression().isEqualsTo(((SwitchStatementWrapper) input).getExpression())) {
+            setExpression(((SwitchStatementWrapper) input).getExpression());
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean isChildAssignble(ASTNodeWrapper nodeWrapper) {
+        return (nodeWrapper instanceof CaseStatementWrapper || nodeWrapper instanceof DefaultStatementWrapper);
+    }
+
+    @Override
+    public boolean addChild(ASTNodeWrapper childObject) {
+        if (childObject instanceof CaseStatementWrapper) {
+            addComplexChildStatement((CaseStatementWrapper) childObject);
+            return true;
+        } else if (childObject instanceof DefaultStatementWrapper) {
+            return setLastStatement((DefaultStatementWrapper) childObject);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean addChild(ASTNodeWrapper childObject, int index) {
+        if (childObject instanceof CaseStatementWrapper) {
+            return addComplexChildStatement((CaseStatementWrapper) childObject, index);
+        } else if (childObject instanceof DefaultStatementWrapper) {
+            return setLastStatement((DefaultStatementWrapper) childObject);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean removeChild(ASTNodeWrapper childObject) {
+        if (childObject instanceof CaseStatementWrapper) {
+            return removeComplexChildStatement((CaseStatementWrapper) childObject);
+        } else if (childObject == lastStatement) {
+            return removeLastStatement();
+        }
+        return false;
+    }
+
+    @Override
+    public int indexOf(ASTNodeWrapper childObject) {
+        if (childObject instanceof CaseStatementWrapper) {
+            return indexOf((CaseStatementWrapper) childObject);
+        } else if (childObject == lastStatement) {
+            return 0;
+        }
+        return -1;
+    }
+    
+    @Override
+    public boolean replaceChild(ASTNodeWrapper oldChild, ASTNodeWrapper newChild) {
+        if (oldChild == getExpression() && newChild instanceof ExpressionWrapper) {
+            setExpression((ExpressionWrapper) newChild);
+            return true;
+        }
+        return super.replaceChild(oldChild, newChild);
     }
 }

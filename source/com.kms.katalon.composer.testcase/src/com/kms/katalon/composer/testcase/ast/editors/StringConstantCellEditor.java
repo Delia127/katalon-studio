@@ -17,7 +17,7 @@ public class StringConstantCellEditor extends TextCellEditor {
     protected void doSetValue(Object value) {
         Assert.isTrue(value instanceof ConstantExpressionWrapper
                 && ((ConstantExpressionWrapper) value).getValue() instanceof String);
-        constantExpression = (ConstantExpressionWrapper) value;
+        constantExpression = ((ConstantExpressionWrapper) value).clone();
         super.doSetValue(((ConstantExpressionWrapper) value).getValue());
     }
 

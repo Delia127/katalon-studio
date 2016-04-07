@@ -7,7 +7,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrappe
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.parts.TestCaseVariablePart;
-import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
+import com.kms.katalon.composer.testcase.util.AstValueUtil;
 import com.kms.katalon.entity.variable.VariableEntity;
 
 public class VariableDefaultValueTypeEditingSupport extends AstInputBuilderValueTypeColumnSupport {
@@ -42,7 +42,7 @@ public class VariableDefaultValueTypeEditingSupport extends AstInputBuilderValue
             return;
         }
         InputValueType newValueType = inputValueTypes[(int) value];
-        InputValueType oldValueType = AstTreeTableValueUtil.getTypeValue(expression);
+        InputValueType oldValueType = AstValueUtil.getTypeValue(expression);
         if (newValueType == oldValueType) {
             return;
         }

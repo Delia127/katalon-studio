@@ -11,7 +11,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrappe
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.parts.TestCaseVariablePart;
-import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
+import com.kms.katalon.composer.testcase.util.AstValueUtil;
 import com.kms.katalon.entity.variable.VariableEntity;
 
 public class VariableDefaultValueEditingSupport extends EditingSupport {
@@ -30,7 +30,7 @@ public class VariableDefaultValueEditingSupport extends EditingSupport {
         if (expression == null) {
             return null;
         }
-        InputValueType inputValueType = AstTreeTableValueUtil.getTypeValue(expression);
+        InputValueType inputValueType = AstValueUtil.getTypeValue(expression);
         if (inputValueType != null) {
             return inputValueType.getCellEditorForValue((Composite) getViewer().getControl(), expression);
         }
@@ -44,7 +44,7 @@ public class VariableDefaultValueEditingSupport extends EditingSupport {
 
     @Override
     protected Object getValue(Object element) {
-        InputValueType inputValueType = AstTreeTableValueUtil.getTypeValue(expression);
+        InputValueType inputValueType = AstValueUtil.getTypeValue(expression);
         if (inputValueType != null) {
             return inputValueType.getValueToEdit(expression);
         }
@@ -56,7 +56,7 @@ public class VariableDefaultValueEditingSupport extends EditingSupport {
         if (value == null) {
             return;
         }
-        InputValueType inputValueType = AstTreeTableValueUtil.getTypeValue(expression);
+        InputValueType inputValueType = AstValueUtil.getTypeValue(expression);
         if (inputValueType == null) {
             return;
         }

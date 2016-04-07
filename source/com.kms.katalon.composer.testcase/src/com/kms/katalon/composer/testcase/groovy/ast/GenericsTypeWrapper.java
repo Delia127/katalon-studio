@@ -70,6 +70,10 @@ public class GenericsTypeWrapper extends ASTNodeWrapper {
     }
 
     public void setType(ClassNodeWrapper type) {
+        if (type == null) {
+            return;
+        }
+        type.setParent(this);
         this.type = type;
     }
 
@@ -79,5 +83,10 @@ public class GenericsTypeWrapper extends ASTNodeWrapper {
 
     public void setName(String name) {
         this.name = name;
+    }
+    
+    @Override
+    public GenericsTypeWrapper clone() {
+        return new GenericsTypeWrapper(this, getParent());
     }
 }

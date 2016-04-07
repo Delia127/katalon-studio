@@ -4,43 +4,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.kms.katalon.composer.testcase.ast.treetable.AstAssertStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstBinaryStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstBreakStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstBuiltInKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstCallTestCaseKeywordTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstCaseStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstCatchStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstCommentStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstContinueStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstCompositeInputEditableStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstCompositeStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstCustomKeywordTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstDoWhileStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstElseIfStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstElseStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstExpressionStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstFinallyStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstForStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstIfStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstMethodCallStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstReturnStatementWrapper;
+import com.kms.katalon.composer.testcase.ast.treetable.AstInputEditableStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstSwitchStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstThrowStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstTryStatementTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstWhileStatementTreeTableNode;
+import com.kms.katalon.composer.testcase.constants.ImageConstants;
+import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BinaryExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.AssertStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.BreakStatementWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.statements.CaseStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.CatchStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ContinueStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.DoWhileStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ElseIfStatementWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.statements.EmptyStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ForStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.IfStatementWrapper;
@@ -71,13 +55,10 @@ public class WrapperToAstTreeConverter {
         return instance;
     }
 
-    public List<AstTreeTableNode> convert(List<? extends StatementWrapper> statementWrappers, AstTreeTableNode parentNode) {
+    public List<AstTreeTableNode> convert(List<? extends StatementWrapper> statementWrappers,
+            AstTreeTableNode parentNode) {
         List<AstTreeTableNode> astTreeTableNodes = new ArrayList<>();
         for (StatementWrapper statement : statementWrappers) {
-            if (statement instanceof EmptyStatementWrapper) {
-                continue;
-            }
-
             // Lookup first
             Converter<StatementWrapper> converter = getConverter(statement);
             if (converter != null) {
@@ -112,10 +93,10 @@ public class WrapperToAstTreeConverter {
                 return convert(statementWrapper, (BinaryExpressionWrapper) expression, parentNode);
             } else if (expression instanceof ConstantExpressionWrapper
                     && (((ConstantExpressionWrapper) expression).getValue() instanceof String)) {
-                return new AstCommentStatementTreeTableNode(statementWrapper, parentNode);
+                return new AstInputEditableStatementTreeTableNode(statementWrapper, parentNode, ImageConstants.IMG_16_COMMENT, StringConstants.TREE_COMMENT);
             }
 
-            return new AstExpressionStatementTreeTableNode(statementWrapper, parentNode);
+            return new AstInputEditableStatementTreeTableNode(statementWrapper, parentNode);
         }
 
         private AstTreeTableNode convert(ExpressionStatementWrapper statementWrapper,
@@ -130,22 +111,20 @@ public class WrapperToAstTreeConverter {
                 }
             }
 
-            return new AstBinaryStatementTreeTableNode(statementWrapper, parentNode);
+            return new AstInputEditableStatementTreeTableNode(statementWrapper, parentNode, ImageConstants.IMG_16_BINARY, StringConstants.TREE_BINARY_STATEMENT);
         }
 
         private AstTreeTableNode convert(ExpressionStatementWrapper statementWrapper,
                 MethodCallExpressionWrapper methodCallExpression, AstTreeTableNode parentNode) {
             if (isBuiltInKeywordMethodCall(methodCallExpression)) {
-                if (AstEntityInputUtil.isCallTestCaseMethod(methodCallExpression)) {
+                if (AstEntityInputUtil.isCallTestCaseMethodCall(methodCallExpression)) {
                     return new AstCallTestCaseKeywordTreeTableNode(statementWrapper, parentNode);
                 }
-
                 return new AstBuiltInKeywordTreeTableNode(statementWrapper, parentNode);
             } else if (isCustomKeywordMethodCall(methodCallExpression)) {
                 return new AstCustomKeywordTreeTableNode(statementWrapper, parentNode);
             }
-
-            return new AstMethodCallStatementTreeTableNode(statementWrapper, parentNode);
+            return new AstInputEditableStatementTreeTableNode(statementWrapper, parentNode, ImageConstants.IMG_16_FUNCTION, StringConstants.TREE_METHOD_CALL_STATEMENT);
         }
 
         private boolean isBuiltInKeywordMethodCall(MethodCallExpressionWrapper methodCallExpression) {
@@ -172,7 +151,8 @@ public class WrapperToAstTreeConverter {
             return new ArrayList<AstTreeTableNode>() {
                 private static final long serialVersionUID = 1L;
                 {
-                    add(new AstForStatementTreeTableNode(forStatement, parentNode));
+                    add(new AstCompositeInputEditableStatementTreeTableNode(forStatement, parentNode,
+                            ImageConstants.IMG_16_LOOP, StringConstants.TREE_FOR_STATEMENT));
                 }
             };
         }
@@ -185,7 +165,8 @@ public class WrapperToAstTreeConverter {
             return new ArrayList<AstTreeTableNode>() {
                 private static final long serialVersionUID = 1L;
                 {
-                    add(new AstWhileStatementTreeTableNode(whileStatement, parentNode));
+                    add(new AstCompositeInputEditableStatementTreeTableNode(whileStatement, parentNode,
+                            ImageConstants.IMG_16_LOOP, StringConstants.TREE_WHILE_STATEMENT));
                 }
             };
         }
@@ -204,19 +185,6 @@ public class WrapperToAstTreeConverter {
         }
     };
 
-    private static Converter<CaseStatementWrapper> caseConverter = new Converter<CaseStatementWrapper>() {
-        @Override
-        public List<AstTreeTableNode> convert(final CaseStatementWrapper caseStatement,
-                final AstTreeTableNode parentNode) {
-            return new ArrayList<AstTreeTableNode>() {
-                private static final long serialVersionUID = 1L;
-                {
-                    add(new AstCaseStatementTreeTableNode(caseStatement, parentNode));
-                }
-            };
-        }
-    };
-
     private static Converter<AssertStatementWrapper> assertConverter = new Converter<AssertStatementWrapper>() {
         @Override
         public List<AstTreeTableNode> convert(final AssertStatementWrapper assertStatement,
@@ -224,7 +192,8 @@ public class WrapperToAstTreeConverter {
             return new ArrayList<AstTreeTableNode>() {
                 private static final long serialVersionUID = 1L;
                 {
-                    add(new AstAssertStatementTreeTableNode(assertStatement, parentNode));
+                    add(new AstStatementTreeTableNode(assertStatement, parentNode, ImageConstants.IMG_16_ASSERT,
+                            StringConstants.TREE_ASSERT_STATEMENT));
                 }
             };
         }
@@ -237,7 +206,7 @@ public class WrapperToAstTreeConverter {
             return new ArrayList<AstTreeTableNode>() {
                 private static final long serialVersionUID = 1L;
                 {
-                    add(new AstBreakStatementTreeTableNode(breakStatement, parentNode));
+                    add(new AstStatementTreeTableNode(breakStatement, parentNode, StringConstants.TREE_BREAK_STATEMENT));
                 }
             };
         }
@@ -250,7 +219,8 @@ public class WrapperToAstTreeConverter {
             return new ArrayList<AstTreeTableNode>() {
                 private static final long serialVersionUID = 1L;
                 {
-                    add(new AstContinueStatementTreeTableNode(continueStatement, parentNode));
+                    add(new AstStatementTreeTableNode(continueStatement, parentNode,
+                            StringConstants.TREE_CONTINUE_STATEMENT));
                 }
             };
         }
@@ -263,7 +233,8 @@ public class WrapperToAstTreeConverter {
             return new ArrayList<AstTreeTableNode>() {
                 private static final long serialVersionUID = 1L;
                 {
-                    add(new AstReturnStatementWrapper(returnStatement, parentNode));
+                    add(new AstStatementTreeTableNode(returnStatement, parentNode,
+                            StringConstants.TREE_RETURN_STATEMENT));
                 }
             };
         }
@@ -276,7 +247,7 @@ public class WrapperToAstTreeConverter {
             return new ArrayList<AstTreeTableNode>() {
                 private static final long serialVersionUID = 1L;
                 {
-                    add(new AstThrowStatementTreeTableNode(throwStatement, parentNode));
+                    add(new AstStatementTreeTableNode(throwStatement, parentNode, StringConstants.TREE_THROW_STATEMENT));
                 }
             };
         }
@@ -293,14 +264,16 @@ public class WrapperToAstTreeConverter {
         @Override
         public List<AstTreeTableNode> convert(final IfStatementWrapper ifStatement, final AstTreeTableNode parentNode) {
             List<AstTreeTableNode> astTreeTableNodes = new ArrayList<>();
-            astTreeTableNodes.add(new AstIfStatementTreeTableNode(ifStatement, parentNode));
+            astTreeTableNodes.add(new AstCompositeInputEditableStatementTreeTableNode(ifStatement, parentNode,
+                    ImageConstants.IMG_16_IF, StringConstants.TREE_IF_STATEMENT));
 
-            for (ElseIfStatementWrapper elseIfStatement : ifStatement.getElseIfStatements()) {
+            for (ElseIfStatementWrapper elseIfStatement : ifStatement.getComplexChildStatements()) {
                 astTreeTableNodes.addAll(elseIfConverter.convert(elseIfStatement, parentNode));
             }
 
-            if (ifStatement.getElseStatement() != null) {
-                astTreeTableNodes.add(new AstElseStatementTreeTableNode(ifStatement.getElseStatement(), parentNode));
+            if (ifStatement.hasLastStatement()) {
+                astTreeTableNodes.add(new AstCompositeStatementTreeTableNode(ifStatement.getLastStatement(),
+                        parentNode, ImageConstants.IMG_16_ELSE, StringConstants.TREE_ELSE_STATEMENT));
             }
             return astTreeTableNodes;
         }
@@ -313,7 +286,8 @@ public class WrapperToAstTreeConverter {
             return new ArrayList<AstTreeTableNode>() {
                 private static final long serialVersionUID = 1L;
                 {
-                    add(new AstElseIfStatementTreeTableNode(elseIfStatement, parentNode));
+                    add(new AstCompositeInputEditableStatementTreeTableNode(elseIfStatement, parentNode,
+                            ImageConstants.IMG_16_ELSE_IF, StringConstants.TREE_ELSE_IF_STATEMENT));
                 }
             };
         }
@@ -324,15 +298,16 @@ public class WrapperToAstTreeConverter {
         public List<AstTreeTableNode> convert(final TryCatchStatementWrapper tryCatchStatement,
                 final AstTreeTableNode parentNode) {
             List<AstTreeTableNode> astTreeTableNodes = new ArrayList<>();
-            astTreeTableNodes.add(new AstTryStatementTreeTableNode(tryCatchStatement, parentNode));
+            astTreeTableNodes.add(new AstCompositeStatementTreeTableNode(tryCatchStatement, parentNode,
+                    StringConstants.TREE_TRY_STATEMENT));
 
-            for (CatchStatementWrapper catchStatement : tryCatchStatement.getCatchStatements()) {
+            for (CatchStatementWrapper catchStatement : tryCatchStatement.getComplexChildStatements()) {
                 astTreeTableNodes.addAll(catchConverter.convert(catchStatement, parentNode));
             }
 
-            if (tryCatchStatement.getFinallyStatement() != null) {
-                astTreeTableNodes.add(new AstFinallyStatementTreeTableNode(tryCatchStatement.getFinallyStatement(),
-                        parentNode));
+            if (tryCatchStatement.hasLastStatement()) {
+                astTreeTableNodes.add(new AstCompositeInputEditableStatementTreeTableNode(
+                        tryCatchStatement.getLastStatement(), parentNode, StringConstants.TREE_FINALLY_STATEMENT));
             }
             return astTreeTableNodes;
         }
@@ -345,7 +320,8 @@ public class WrapperToAstTreeConverter {
             return new ArrayList<AstTreeTableNode>() {
                 private static final long serialVersionUID = 1L;
                 {
-                    add(new AstCatchStatementTreeTableNode(catchStatement, parentNode));
+                    add(new AstCompositeInputEditableStatementTreeTableNode(catchStatement, parentNode,
+                            StringConstants.TREE_CATCH_STATEMENT));
                 }
             };
         }
@@ -365,7 +341,8 @@ public class WrapperToAstTreeConverter {
             return new ArrayList<AstTreeTableNode>() {
                 private static final long serialVersionUID = 1L;
                 {
-                    add(new AstDoWhileStatementTreeTableNode(doWhileStatement, parentNode));
+                    add(new AstCompositeInputEditableStatementTreeTableNode(doWhileStatement, parentNode,
+                            ImageConstants.IMG_16_LOOP, StringConstants.TREE_DO_WHILE_STATEMENT));
                 }
             };
         }
@@ -401,7 +378,6 @@ public class WrapperToAstTreeConverter {
         converters.put(ForStatementWrapper.class.getSimpleName(), forConverter);
         converters.put(WhileStatementWrapper.class.getSimpleName(), whileConverter);
         converters.put(SwitchStatementWrapper.class.getSimpleName(), switchConverter);
-        converters.put(CaseStatementWrapper.class.getSimpleName(), caseConverter);
         converters.put(AssertStatementWrapper.class.getSimpleName(), assertConverter);
         converters.put(BreakStatementWrapper.class.getSimpleName(), breakConverter);
         converters.put(ContinueStatementWrapper.class.getSimpleName(), continueConverter);

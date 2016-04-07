@@ -11,12 +11,17 @@ import com.kms.katalon.composer.testcase.groovy.ast.statements.BlockStatementWra
 
 public class MethodNodeWrapper extends AnnonatedNodeWrapper implements ASTHasBlock {
     private BlockStatementWrapper code;
+
     private String name;
+
     private int modifiers;
+
     private ClassNodeWrapper returnType;
+
     private ParameterWrapper[] parameters;
+
     private ClassNodeWrapper[] exceptions;
-    
+
     public MethodNodeWrapper(ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
         name = "";
@@ -41,7 +46,7 @@ public class MethodNodeWrapper extends AnnonatedNodeWrapper implements ASTHasBlo
         }
         this.code = new BlockStatementWrapper(methodNodeWrapper.getBlock(), this);
     }
-    
+
     public MethodNodeWrapper(MethodNode methodNode, ASTNodeWrapper parentNodeWrapper) {
         super(methodNode, parentNodeWrapper);
         if (methodNode.getCode() instanceof BlockStatement) {
@@ -83,6 +88,10 @@ public class MethodNodeWrapper extends AnnonatedNodeWrapper implements ASTHasBlo
     }
 
     public void setReturnType(ClassNodeWrapper returnType) {
+        if (returnType == null) {
+            return;
+        }
+        returnType.setParent(this);
         this.returnType = returnType;
     }
 
@@ -91,6 +100,12 @@ public class MethodNodeWrapper extends AnnonatedNodeWrapper implements ASTHasBlo
     }
 
     public void setParameters(ParameterWrapper[] parameters) {
+        if (parameters == null) {
+            return;
+        }
+        for (ParameterWrapper parameter : parameters) {
+            parameter.setParent(this);
+        }
         this.parameters = parameters;
     }
 
@@ -99,10 +114,25 @@ public class MethodNodeWrapper extends AnnonatedNodeWrapper implements ASTHasBlo
     }
 
     public void setExceptions(ClassNodeWrapper[] exceptions) {
+        if (exceptions == null) {
+            return;
+        }
+        for (ClassNodeWrapper exception : exceptions) {
+            exception.setParent(this);
+        }
         this.exceptions = exceptions;
     }
-    
+
+    @Override
+    public BlockStatementWrapper getBlock() {
+        return code;
+    }
+
     public void setBlock(BlockStatementWrapper block) {
+        if (block == null) {
+            return;
+        }
+        block.setParent(this);
         this.code = block;
     }
 
@@ -127,15 +157,6 @@ public class MethodNodeWrapper extends AnnonatedNodeWrapper implements ASTHasBlo
         return astNodeWrappers;
     }
 
-    @Override
-    public BlockStatementWrapper getBlock() {
-        return code;
-    }
-
-    public void addAnnotation(AnnotationNodeWrapper annotationNodeWrapper) {
-        getAnnotations().add(annotationNodeWrapper);
-    }
-    
     @Override
     public MethodNodeWrapper clone() {
         return new MethodNodeWrapper(this, getParent());

@@ -31,7 +31,7 @@ public class TestCaseTreeEntity extends AbstractTreeEntity {
     }
 
     @Override
-    public Object getObject() throws Exception {
+    public TestCaseEntity getObject() throws Exception {
         TestCaseController.getInstance().reloadTestCase(testCase, entity);
         loadAllDescentdantEntities();
         return testCase;
