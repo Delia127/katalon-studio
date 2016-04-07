@@ -240,9 +240,12 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PREF_BTN_GEN_VAR_WITH_DEFAULT_VAL = "Generate variable with default value";
     public static final String PREF_BTN_GEN_VAR_WITH_THE_SAME_NAME = "Generate variable with the same name as the exposed variable of the called test case";
     public static final String PREF_BTN_EXPOSE_VARS_AUTO = "Expose variables automatically after choosing the called test case";
+    public static final String PREF_BTN_DEFAULT_VIEW_MANUAL = "In Manual View";
+    public static final String PREF_BTN_DEFAULT_VIEW_SCRIPT = "In Script View";
     public static final String PREF_LBL_DEFAULT_FAILURE_HANDLING = "Default Failure Handling";
     public static final String PREF_LBL_DEFAULT_KEYWORD_TYPE = "Default Keyword Type";
     public static final String PREF_GRP_DEFAULT_KEYWORD = "Default Keyword";
+    public static final String PREF_GRP_TEST_CASE_DEFAULT_VIEW = "Initially open Test Case";
     public static final String PREF_LBL_KEYWORK_TYPE = "Keyword Type";
     public static final String PREF_LBL_KEYWORK_NAME = "Keyword Name";
 

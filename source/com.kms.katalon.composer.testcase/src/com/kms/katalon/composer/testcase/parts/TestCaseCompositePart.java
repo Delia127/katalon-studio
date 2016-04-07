@@ -9,6 +9,7 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.eclipse.editor.GroovyEditor;
@@ -56,6 +57,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
+import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
@@ -153,6 +155,15 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         initListeners();
     }
 
+    public void initDefaultSelectedPart() {
+        String defaultTestCaseView = TestCasePreferenceDefaultValueInitializer.getTestCasePartStartView();
+        if (StringUtils.equals(defaultTestCaseView, MANUAL_TAB_TITLE)) {
+            setSelectedPart(getChildManualPart());
+        } else if (StringUtils.equals(defaultTestCaseView, SCRIPT_TAB_TITLE)) {
+            setSelectedPart(getChildCompatibilityPart());
+        }
+    }
+
     public void initComponent() {
         if (compositePart.getChildren().size() == 1 && compositePart.getChildren().get(0) instanceof MPartStack) {
             subPartStack = (MPartStack) compositePart.getChildren().get(0);
@@ -221,7 +232,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
             childTestCaseIntegrationPart.loadInput();
             isInitialized = true;
         }
-
+        initDefaultSelectedPart();
     }
 
     private void initChildEditorPart(CompatibilityEditor compatibilityEditor) {
