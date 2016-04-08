@@ -14,4 +14,6 @@ public interface TestCasePreferenceConstants extends PreferenceConstants {
     public static final String TESTCASE_DEFAULT_KEYWORD_TYPE = "default.keywordType";
 
     public static final String TESTCASE_DEFAULT_FAILURE_HANDLING = "default.failureHandling";
+    
+    public static final String TESTCASE_PART_DEFAULT_START_VIEW = "default.startView";
 }
