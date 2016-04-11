@@ -37,11 +37,11 @@ public class RunConfiguration {
     public static final String HOST_ADDRESS = StringConstants.CONF_PROPERTY_HOST_ADDRESS;
 
     public static final String HOST_PORT = StringConstants.CONF_PROPERTY_HOST_PORT;
-    
+
     public static final String EXECUTION_GENERAL_PROPERTY = StringConstants.CONF_PROPERTY_GENERAL;
 
     public static final String EXECUTION_DRIVER_PROPERTY = StringConstants.CONF_PROPERTY_DRIVER;
-    
+
     public static final String EXECUTION_SYSTEM_PROPERTY = StringConstants.CONF_PROPERTY_EXECUTION_SYSTEM_PROPERTY;
 
     public static final String EXECUTION_PREFS_PROPERTY = StringConstants.CONF_PROPERTY_EXECUTION_PREFS_PROPERTY;
@@ -97,8 +97,7 @@ public class RunConfiguration {
             Gson gsonObj = new Gson();
             try {
                 String propertyConfigFileContent = FileUtils.readFileToString(executionSettingFile);
-                Type collectionType = new TypeToken<Map<String, Object>>() {
-                }.getType();
+                Type collectionType = new TypeToken<Map<String, Object>>() {}.getType();
                 Map<String, Object> result = gsonObj.fromJson(propertyConfigFileContent, collectionType);
                 if (result != null) {
                     localExecutionSettingMapStorage.set(result);
@@ -116,6 +115,21 @@ public class RunConfiguration {
             return;
         }
         localExecutionSettingMapStorage.set(executionSettingMap);
+    }
+
+    public static void setWebDriverPreferencesProperty(String propName, Object propVal) {
+        setDriverPreferencesProperty(StringConstants.CONF_PROPERTY_WEBUI_DRIVER, propName, propVal);
+    }
+
+    public static void setMobileDriverPreferencesProperty(String propName, Object propVal) {
+        setDriverPreferencesProperty(StringConstants.CONF_PROPERTY_MOBILE_DRIVER, propName, propVal);
+    }
+
+    private static void setDriverPreferencesProperty(String driverType, String propName, Object propVal) {
+        Map<String, Object> props = RunConfiguration.getDriverPreferencesProperties(driverType);
+        if (props != null) {
+            props.put(propName, propVal);
+        }
     }
 
     public static Object getProperty(String propertyKey) {
@@ -138,10 +152,10 @@ public class RunConfiguration {
 
     public static Map<String, Object> getDriverExecutionProperties(String driverName) {
         Map<String, Object> driverProps = (Map<String, Object>) getExecutionProperties().get(EXECUTION_DRIVER_PROPERTY);
-        
+
         return (Map<String, Object>) driverProps.get(driverName);
     }
-    
+
     public static String getDriverSystemProperty(String driverConnectorId, String propertyName) {
         Map<String, Object> properties = getDriverSystemProperties(driverConnectorId);
 
@@ -150,27 +164,26 @@ public class RunConfiguration {
 
     public static String getDriverSystemProperty(String driverConnectorId, String propertyName, String defaultValue) {
         Map<String, Object> properties = getDriverSystemProperties(driverConnectorId);
-        if(properties != null && properties.get(propertyName) != null){
-        	return String.valueOf(properties.get(propertyName));
+        if (properties != null && properties.get(propertyName) != null) {
+            return String.valueOf(properties.get(propertyName));
         }
         return defaultValue;
     }
 
-    
     public static String getDriverPreferencesProperty(String driverConnectorId, String propertyName) {
         Map<String, Object> properties = getDriverPreferencesProperties(driverConnectorId);
 
         return (properties != null) ? (String) properties.get(propertyName) : null;
     }
-    
+
     public static Map<String, Object> getDriverSystemProperties(String driverConnectorId) {
         return (Map<String, Object>) getDriverExecutionProperties(EXECUTION_SYSTEM_PROPERTY).get(driverConnectorId);
     }
-    
+
     public static Map<String, Object> getDriverPreferencesProperties(String driverConnectorId) {
         return (Map<String, Object>) getDriverPreferencesProperties().get(driverConnectorId);
     }
-    
+
     public static Map<String, Object> getDriverPreferencesProperties() {
         return (Map<String, Object>) getDriverExecutionProperties(EXECUTION_PREFS_PROPERTY);
     }
@@ -186,7 +199,7 @@ public class RunConfiguration {
     public static String getSettingFilePath() {
         return settingFilePath;
     }
-    
+
     public static String getAppiumLogFilePath() {
         if (StringUtils.isBlank(localAppiumDriverStores.get())) {
             localAppiumDriverStores.set(RunConfiguration.getDriverSystemProperty(
