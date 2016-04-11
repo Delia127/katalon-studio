@@ -32,7 +32,7 @@ public class ReportTreeEntity extends AbstractTreeEntity {
 
     @Override
     public Object getObject() throws Exception {
-        this.report = ReportController.getInstance().getReportEntity(report.getId());
+        ReportController.getInstance().reloadReport(report, entity);
         loadAllDescentdantEntities();
         return report;
     }

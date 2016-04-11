@@ -65,19 +65,31 @@ import com.kms.katalon.selenium.TempClass;
 @SuppressWarnings("restriction")
 public class GroovyUtil {
     private static final String BUNDLE_LOCATION_INITIAL_PREFIX = "initial@";
+
     private static final String OUTPUT_FOLDER_NAME = "bin";
+
     private static final String TEST_CASE_OUTPUT_FOLDER_NAME = "testcase";
+
     private static final String KEYWORD_OUTPUT_FOLDER_NAME = "keyword";
+
     private static final String GROOVY_BUNDLE_LIB_FOLDER_NAME = "lib";
+
     private static final String GROOVY_BUNDLE_PLUGIN_FOLDER_NAME = "plugins";
+
     private static final String BUNDLE_LOCATION_PREFIX = "reference:file:";
+
     private static final String GROOVY_BUNDLE_ID = "org.codehaus.groovy";
+
     private static final String KEYWORD_SOURCE_FOLDER_NAME = "Keywords";
+
     private static final String TEST_SCRIPT_SOURCE_FOLDER_NAME = "Scripts";
+
     private static final String TEST_CASE_ROOT_FOLDER_NAME = "Test Cases";
+
     private static final String GROOVY_NATURE = "org.eclipse.jdt.groovy.core.groovyNature";
 
     private static final String KEYWORD_LIB_FOLDER_NAME = "Libs";
+
     private static final String KEYWORD_LIB_OUTPUT_FOLDER_NAME = "lib";
 
     private static final String DRIVERS_FOLDER_NAME = "Drivers";
@@ -309,7 +321,7 @@ public class GroovyUtil {
     /**
      * @return Returns resources folder of the current Katalon installed folder.
      */
-    private static File getPlatformResourcesDir() {       
+    private static File getPlatformResourcesDir() {
         File eclipseDir = Platform.getLocation().toFile().getParentFile();
 
         if (Platform.getOS().equals(Platform.OS_MACOSX)) {
@@ -328,7 +340,7 @@ public class GroovyUtil {
     private static File getPlatformAPIDocDir() {
         return new File(getPlatformResourcesDir(), "apidocs");
     }
-    
+
     /**
      * @return Returns libraries folder of the current Katalon installed folder.
      */
@@ -337,8 +349,8 @@ public class GroovyUtil {
     }
 
     /**
-     * Adds the given <code>customBundleFile</code> if it isn't in the given <code>entries</code>.
-     * Also attaches source folder for the given <code>customBundleFile</code>.
+     * Adds the given <code>customBundleFile</code> if it isn't in the given <code>entries</code>. Also attaches source
+     * folder for the given <code>customBundleFile</code>.
      * 
      * Note: For debug only.
      * 
@@ -359,6 +371,7 @@ public class GroovyUtil {
 
     /**
      * Adds the given <code>jarFile</code> if it is valid and isn't in the given <code>entries</code>.
+     * 
      * @param jarFile
      * @param entries
      */
@@ -372,8 +385,9 @@ public class GroovyUtil {
     }
 
     /**
-     * Adds the given <code>jarFile</code> if it is valid and isn't in the given <code>entries</code>.
-     * Also adds javadoc to the new {@link IClasspathEntry} if the given <code>jarFile</code> has groovydoc.
+     * Adds the given <code>jarFile</code> if it is valid and isn't in the given <code>entries</code>. Also adds javadoc
+     * to the new {@link IClasspathEntry} if the given <code>jarFile</code> has groovydoc.
+     * 
      * @param jarFile
      * @param entries
      * @param bundle
@@ -790,6 +804,9 @@ public class GroovyUtil {
     }
 
     public static void loadScriptContentIntoTestCase(TestCaseEntity testCase) throws Exception {
+        if (testCase == null) {
+            return;
+        }
         IFile scriptFile = ResourcesPlugin.getWorkspace().getRoot()
                 .getFile(getGroovyScriptForTestCase(testCase).getPath());
         if (scriptFile != null && scriptFile.exists()) {

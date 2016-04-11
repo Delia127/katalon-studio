@@ -12,7 +12,6 @@ import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class TestCaseTreeEntity extends AbstractTreeEntity {
 
@@ -33,7 +32,7 @@ public class TestCaseTreeEntity extends AbstractTreeEntity {
 
     @Override
     public Object getObject() throws Exception {
-        this.testCase = TestCaseController.getInstance().getTestCase(testCase.getId());
+        TestCaseController.getInstance().reloadTestCase(testCase, entity);
         loadAllDescentdantEntities();
         return testCase;
     }
@@ -119,6 +118,6 @@ public class TestCaseTreeEntity extends AbstractTreeEntity {
 
     @Override
     public void loadAllDescentdantEntities() throws Exception {
-        GroovyUtil.loadScriptContentIntoTestCase(testCase);
+        TestCaseController.getInstance().loadAllDescentdantEntities(testCase);
     }
 }

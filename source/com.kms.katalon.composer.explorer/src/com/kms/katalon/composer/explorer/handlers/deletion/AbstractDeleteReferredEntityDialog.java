@@ -4,11 +4,13 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -22,28 +24,29 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
-import com.kms.katalon.composer.components.impl.dialogs.YesNoAllOptions;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.explorer.constants.StringConstants;
 import com.kms.katalon.entity.file.FileEntity;
 
-public abstract class AbstractDeleteEntityDialog extends AbstractDialog {
-
-    private AbstractDeleteReferredEntityHandler fHandler;
+public abstract class AbstractDeleteReferredEntityDialog extends AbstractDialog {
 
     /** Entity ID for display */
-    private String entityId = StringConstants.EMPTY;
+    private String entityId;
 
     /** List of referenced entity */
-    private List<FileEntity> affectedEntities = new ArrayList<FileEntity>();
+    private List<FileEntity> affectedEntities;
 
     protected TableViewer tableViewer;
 
     protected Label lblStatus;
 
-    public AbstractDeleteEntityDialog(Shell parentShell, AbstractDeleteReferredEntityHandler deleteHandler) {
+    private boolean showYesNoToAllButtons;
+
+    public AbstractDeleteReferredEntityDialog(Shell parentShell) {
         super(parentShell);
-        fHandler = deleteHandler;
+        entityId = StringConstants.EMPTY;
+        affectedEntities = new ArrayList<FileEntity>();
+        showYesNoToAllButtons = false;
     }
 
     /*
@@ -135,8 +138,8 @@ public abstract class AbstractDeleteEntityDialog extends AbstractDialog {
      */
     @Override
     protected void buttonPressed(int buttonId) {
-        fHandler.setDeletePreferenceOption(YesNoAllOptions.getOption(buttonId));
-        super.okPressed();
+        setReturnCode(buttonId);
+        close();
     }
 
     /*
@@ -144,10 +147,29 @@ public abstract class AbstractDeleteEntityDialog extends AbstractDialog {
      * @see org.eclipse.jface.dialogs.Dialog#createButtonsForButtonBar(org.eclipse.swt.widgets.Composite)
      */
     protected final void createButtonsForButtonBar(Composite parent) {
-        // create OK and Cancel buttons by default
-        for (YesNoAllOptions option : fHandler.getAvailableDeletionOptions()) {
-            createButton(parent, option.ordinal(), option.toString(), true);
+        createButton(parent, IDialogConstants.YES_ID, IDialogConstants.YES_LABEL, false);
+        if (isShowYesNoToAllButtons()) {
+            createButton(parent, IDialogConstants.YES_TO_ALL_ID, IDialogConstants.YES_TO_ALL_LABEL, false);
         }
+        createButton(parent, IDialogConstants.NO_ID, IDialogConstants.NO_LABEL, false);
+        if (isShowYesNoToAllButtons()) {
+            createButton(parent, IDialogConstants.NO_TO_ALL_ID, IDialogConstants.NO_TO_ALL_LABEL, false);
+        }
+        createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, true);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.eclipse.jface.window.Window#handleShellCloseEvent()
+     */
+    @Override
+    protected void handleShellCloseEvent() {
+        buttonPressed(IDialogConstants.CANCEL_ID);
+    }
+
+    @Override
+    protected Point getInitialSize() {
+        return new Point(super.getInitialSize().x, 500);
     }
 
     @Override
@@ -165,7 +187,6 @@ public abstract class AbstractDeleteEntityDialog extends AbstractDialog {
     protected void setInput() {
         try {
             tableViewer.setInput(getAffectedEntities());
-            getButton(YesNoAllOptions.NO.ordinal()).forceFocus();
             mainComposite.layout(true, true);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -204,6 +225,14 @@ public abstract class AbstractDeleteEntityDialog extends AbstractDialog {
      */
     public void setAffectedEntities(List<FileEntity> affectedEntities) {
         this.affectedEntities = affectedEntities;
+    }
+
+    public boolean isShowYesNoToAllButtons() {
+        return showYesNoToAllButtons;
+    }
+
+    public void setShowYesNoToAllButtons(boolean showYesNoToAllButtons) {
+        this.showYesNoToAllButtons = showYesNoToAllButtons;
     }
 
 }

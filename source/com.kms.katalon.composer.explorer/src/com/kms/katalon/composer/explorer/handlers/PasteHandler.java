@@ -1,127 +1,81 @@
 package com.kms.katalon.composer.explorer.handlers;
 
+import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
+
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.IHandler;
-import org.eclipse.core.commands.IHandlerListener;
-import org.eclipse.e4.core.di.annotations.CanExecute;
-import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.FileTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.handlers.HandlerUtil;
 
-import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
-import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.components.services.SelectionServiceSingleton;
 import com.kms.katalon.composer.components.transfer.TransferMoveFlag;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 
-public class PasteHandler implements IHandler {
+public class PasteHandler extends AbstractHandler {
 
-    @CanExecute
-    public static boolean canExecute(ESelectionService selectionService) {
+    @Override
+    public boolean canExecute() {
+        ITreeEntity entity = getValidSelection();
+        if (entity == null) {
+            return false;
+        }
+
+        // Get clipboard
+        Clipboard clipboard = new Clipboard(Display.getCurrent());
+
         try {
-            if (selectionService.getSelection(IdConstants.EXPLORER_PART_ID) instanceof Object[]) {
-                Object[] selectedNodes = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-                if (selectedNodes == null || selectedNodes.length != 1) {
-                    return false;
-                }
-                Clipboard clipboard = new Clipboard(Display.getCurrent());
-                String keywordType = new KeywordTreeEntity(null, null).getCopyTag();
+            // Handle Keyword entity from paste
+            if (StringUtils.equals(entity.getCopyTag(), FolderType.KEYWORD.toString())
+                    && clipboard.getContents(FileTransfer.getInstance()) == null) {
+                return false;
+            }
 
-                for (Object node : selectedNodes) {
-                    ITreeEntity entity = (ITreeEntity) node;
-                    if (StringUtils.equals(entity.getCopyTag(), keywordType)) {
-                        // Handle Keyword entity from paste
-                        if (clipboard.getContents(FileTransfer.getInstance()) == null) {
-                            return false;
-                        }
-                    } else {
-                        // Handle other entities from paste
-                        if (entity.getEntityTransfer() == null
-                                || clipboard.getContents(entity.getEntityTransfer()) == null) {
-                            return false;
-                        }
+            // Handle other entities from paste
+            Transfer entityTransfer = entity.getEntityTransfer();
+            Object transferingObjects = clipboard.getContents(entityTransfer);
+            if (entityTransfer == null || transferingObjects == null || !transferingObjects.getClass().isArray()
+                    || ((Object[]) transferingObjects).length == 0
+                    || !(((Object[]) transferingObjects)[0] instanceof ITreeEntity)) {
+                return false;
+            }
 
-                        // Handle moving entities to the same location
-                        if (entity.getEntityTransfer() != null
-                                && clipboard.getContents(entity.getEntityTransfer()) != null) {
-                            Object transferingObjects = clipboard.getContents(entity.getEntityTransfer());
-                            if (TransferMoveFlag.isMove()) {
-                                if (!(entity instanceof FolderTreeEntity)
-                                        && entity.getParent().equals(
-                                                ((ITreeEntity[]) transferingObjects)[0].getParent())) {
-                                    // Disable to paste on the same location
-                                    return false;
-                                } else if (entity instanceof FolderTreeEntity
-                                        && entity.equals(((ITreeEntity[]) transferingObjects)[0].getParent())) {
-                                    // Disable to paste on the same location
-                                    return false;
-                                }
-                            }
-                        }
-                    }
-                }
+            if (!TransferMoveFlag.isMove()) {
                 return true;
             }
+
+            // parent tree entity is destination folder tree entity
+            ITreeEntity parentTreeEntity = ((ITreeEntity) ((Object[]) transferingObjects)[0]).getParent();
+            ITreeEntity destinationTreeEntity = (entity instanceof FolderTreeEntity) ? entity : entity.getParent();
+            return !parentTreeEntity.equals(destinationTreeEntity);
         } catch (Exception e) {
-            LoggerSingleton.logError(e);
-        }
-        return false;
-    }
-
-    @Execute
-    public static void execute(ESelectionService selectionService, IEventBroker eventBroker) {
-        try {
-            if (selectionService.getSelection(IdConstants.EXPLORER_PART_ID) instanceof Object[]) {
-                Object[] selectedNodes = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-                if (selectedNodes != null && selectedNodes.length == 1) {
-                    ITreeEntity target = (ITreeEntity) selectedNodes[0];
-                    eventBroker.send(EventConstants.EXPLORER_PASTE_SELECTED_ITEM, target);
-                }
-            }
-        } catch (Exception ex) {
-            LoggerSingleton.logError(ex);
+            logError(e);
+            return false;
         }
     }
 
     @Override
-    public void addHandlerListener(IHandlerListener handlerListener) {
-    }
-
-    @Override
-    public void dispose() {
-    }
-
-    @Override
-    public Object execute(ExecutionEvent event) throws ExecutionException {
-        String activePartId = HandlerUtil.getActivePartId(event);
-        if (activePartId != null && activePartId.equals(IdConstants.EXPLORER_PART_ID)) {
-            execute(SelectionServiceSingleton.getInstance().getSelectionService(), EventBrokerSingleton.getInstance()
-                    .getEventBroker());
+    public void execute() {
+        ITreeEntity entity = getValidSelection();
+        if (entity == null) {
+            return;
         }
-        return null;
+
+        eventBroker.send(EventConstants.EXPLORER_PASTE_SELECTED_ITEM, entity);
     }
 
-    @Override
-    public boolean isEnabled() {
-        return canExecute(SelectionServiceSingleton.getInstance().getSelectionService());
-    }
+    private ITreeEntity getValidSelection() {
+        Object[] selectedObjects = getSelection();
+        if (selectedObjects == null || selectedObjects.length != 1) {
+            return null;
+        }
 
-    @Override
-    public boolean isHandled() {
-        return true;
-    }
+        if (!(selectedObjects[0] instanceof ITreeEntity)) {
+            return null;
+        }
 
-    @Override
-    public void removeHandlerListener(IHandlerListener handlerListener) {
+        return (ITreeEntity) selectedObjects[0];
     }
 }

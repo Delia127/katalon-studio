@@ -118,6 +118,26 @@ public class GroovyRefreshUtil {
     }
 
     /**
+     * Find reference data from affected Test Case scripts which are collected by Folder ID
+     * 
+     * @param ref a reference to looking for
+     * @param affectedTestCaseScripts {@link #findReferencesInTestCaseScripts(String, ProjectEntity)}
+     * @return List of Test Case script
+     * @throws CoreException
+     * @throws IOException
+     */
+    public static List<IFile> findReferencesInAffectedTestCaseScripts(String ref, List<IFile> affectedTestCaseScripts)
+            throws CoreException, IOException {
+        List<IFile> affectedTestCases = new ArrayList<IFile>();
+        for (IFile scriptFile : affectedTestCaseScripts) {
+            if (hasRefInTestCaseScript(ref, scriptFile)) {
+                affectedTestCases.add(scriptFile);
+            }
+        }
+        return affectedTestCases;
+    }
+
+    /**
      * Find reference data from all Test Case
      * 
      * @param ref a reference to looking for

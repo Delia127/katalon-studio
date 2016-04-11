@@ -10,6 +10,7 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.kms.katalon.controller.constants.StringConstants;
 import com.kms.katalon.dal.state.DataProviderState;
+import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -71,22 +72,6 @@ public class TestCaseController extends EntityController {
 
     public TestCaseEntity moveTestCase(TestCaseEntity testCaseEntity, FolderEntity destinationFolder) throws Exception {
         return dataProviderSetting.getTestCaseDataProvider().moveTestCase(testCaseEntity, destinationFolder);
-    }
-
-    /**
-     * Get entity ID for display This function is deprecated. Please use {@link TestCaseEntity#getIdForDisplay()}
-     * instead.
-     * 
-     * @param entity
-     * @return Test Case ID for display
-     * @throws Exception
-     */
-    @Deprecated
-    public String getIdForDisplay(TestCaseEntity entity) throws Exception {
-        if (entity == null) {
-            return "";
-        }
-        return dataProviderSetting.getTestCaseDataProvider().getIdForDisplay(entity);
     }
 
     public List<String> getSibblingTestCaseNames(TestCaseEntity testCase) throws Exception {
@@ -184,5 +169,13 @@ public class TestCaseController extends EntityController {
         } catch (Exception ex) {
             return Collections.emptyList();
         }
+    }
+
+    public void reloadTestCase(TestCaseEntity testCase, Entity entity) throws Exception {
+        entity = testCase = getTestCase(entity.getId());
+    }
+
+    public void loadAllDescentdantEntities(TestCaseEntity testCase) throws Exception {
+        GroovyUtil.loadScriptContentIntoTestCase(testCase);
     }
 }
