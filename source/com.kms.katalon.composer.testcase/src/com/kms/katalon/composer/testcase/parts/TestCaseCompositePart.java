@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.eclipse.editor.GroovyEditor;
+import org.codehaus.groovy.eclipse.refactoring.actions.FormatKind;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -28,6 +29,8 @@ import org.eclipse.e4.ui.model.application.ui.basic.MStackElement;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.jdt.ui.actions.IJavaEditorActionDefinitionIds;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocumentListener;
@@ -51,6 +54,7 @@ import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.parts.MultipleTabsCompositePart;
+import com.kms.katalon.composer.testcase.actions.KatalonFormatAction;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
@@ -238,6 +242,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
     private void initChildEditorPart(CompatibilityEditor compatibilityEditor) {
         childTestCaseEditorPart = compatibilityEditor;
         groovyEditor = (GroovyEditor) childTestCaseEditorPart.getEditor();
+        addFormatAction();
         groovyEditor.getViewer().getDocument().addDocumentListener(new IDocumentListener() {
             @Override
             public void documentChanged(DocumentEvent event) {
@@ -266,6 +271,17 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                 // TODO Auto-generated method stub
             }
         });
+    }
+
+    private void addFormatAction() {
+        if (groovyEditor.getAction(StringConstants.PA_ACTION_FORMAT) instanceof KatalonFormatAction) {
+            return;
+        }
+
+        IAction formatAction = new KatalonFormatAction(groovyEditor.getSite(), FormatKind.FORMAT,
+                testCase.getIdForDisplay());
+        formatAction.setActionDefinitionId(IJavaEditorActionDefinitionIds.FORMAT);
+        groovyEditor.setAction(StringConstants.PA_ACTION_FORMAT, formatAction);
     }
 
     public void changeOriginalTestCase(TestCaseEntity testCase) {

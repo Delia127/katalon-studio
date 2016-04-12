@@ -159,6 +159,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_ERROR_MSG_PLS_FIX_ERROR_IN_SCRIPT = "There are errors in the script. Please fix it before switching to manual mode.";
     public static final String PA_ERROR_MSG_UNABLE_TO_SAVE_PART = "Unable to save part.";
     public static final String WARN_TITLE = WARN;
+    public static final String PA_ACTION_FORMAT = "Format";
 
     // TestCasePart
     public static final String PA_TOOLBAR_RECORD = "Record";
