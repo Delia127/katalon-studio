@@ -29,8 +29,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TreeColumn;
 
-import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.control.GifCLabel;
+import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.integration.qtest.constant.ImageConstants;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
