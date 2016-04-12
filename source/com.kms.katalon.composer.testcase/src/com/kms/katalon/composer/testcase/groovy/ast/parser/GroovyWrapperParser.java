@@ -79,10 +79,10 @@ import com.kms.katalon.composer.testcase.groovy.ast.statements.SynchronizedState
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ThrowStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.TryCatchStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.WhileStatementWrapper;
+import static com.kms.katalon.composer.testcase.preferences.ManualPreferenceValueInitializer.getMaximumLineWidth;
+import static com.kms.katalon.composer.testcase.preferences.ManualPreferenceValueInitializer.isLineWrappingEnabled;
 
 public class GroovyWrapperParser {
-    private static final int MAX_LINE_LENGTH = 100;
-
     private static final String DEFAULT_INDENT_INCREASEMENT = "    ";
 
     public static final String[] GROOVY_IMPORTED_PACKAGES = { "java.io", "java.lang", "java.net", "java.util",
@@ -1359,7 +1359,7 @@ public class GroovyWrapperParser {
     }
 
     private void checkWrapLongLine() {
-        if (getLastLineLength() > MAX_LINE_LENGTH) {
+        if (isLineWrappingEnabled() && getLastLineLength() > getMaximumLineWidth()) {
             needLineBreak = true;
         }
     }

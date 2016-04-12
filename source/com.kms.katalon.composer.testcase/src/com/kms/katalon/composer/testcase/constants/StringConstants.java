@@ -249,6 +249,12 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PREF_GRP_TEST_CASE_DEFAULT_VIEW = "Initially open Test Case";
     public static final String PREF_LBL_KEYWORK_TYPE = "Keyword Type";
     public static final String PREF_LBL_KEYWORK_NAME = "Keyword Name";
+    
+    //ManualPreferencePage
+    public static final String PREF_MANUAL_GRP_LINE_WRAPPING = "Line Wrapping settings";
+    public static final String PREF_MANUAL_BTN_ENABLE_LINE_WRAPPING = "Allow Line Wrapping";
+    public static final String PREF_MANUAL_LBL_LINE_WIDTH = "Maximum line width:";
+    public static final String PREF_MANUAL_MSG_UNABLE_TO_UPDATE = "Unable to update preferences for manual mode";
 
     // AstAssertStatementTreeTableNode
     public static final String TREE_ASSERT_STATEMENT = "Assert Statement";
