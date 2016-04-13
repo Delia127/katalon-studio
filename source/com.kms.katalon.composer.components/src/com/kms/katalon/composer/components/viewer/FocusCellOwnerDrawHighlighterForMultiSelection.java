@@ -27,6 +27,8 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
  */
 public class FocusCellOwnerDrawHighlighterForMultiSelection extends FocusCellHighlighter {
 
+    private ViewerCell focusedCell;
+    
     /**
      * Create a new instance which can be passed to a {@link TreeViewerFocusCellManager}
      * 
@@ -188,5 +190,11 @@ public class FocusCellOwnerDrawHighlighterForMultiSelection extends FocusCellHig
             // 1 is a fix for Linux-GTK
             oldCell.getControl().redraw(x, rect.y - 1, width, rect.height + 1, true);
         }
+        
+        focusedCell = newCell;
+    }
+
+    public ViewerCell getMarkedCell() {
+        return focusedCell;
     }
 }
