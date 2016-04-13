@@ -105,6 +105,8 @@ import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class LogViewerPart implements EventHandler, IDELauncherListener {
 
+    private static final int AFTER_STATUS_MENU_INDEX = 1;
+
     private static final int INCREMENT = 10;
 
     @Inject
@@ -128,8 +130,6 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
     private IDELauncher launcherWatched;
 
     private boolean isBusy;
-
-    private boolean stopAdding;
 
     private LogRecordTreeViewer treeViewer;
 
@@ -193,7 +193,6 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
         logNavigator = new LogExceptionNavigator();
         launcherWatched = null;
         isBusy = false;
-        stopAdding = false;
         currentRecords = new ArrayList<XmlLogRecord>();
         parentComposite = parent;
         updateToolItemsStatus(mpart);
@@ -204,24 +203,33 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
 
     private void createLogViewerControl(Composite parent) {
         isBusy = true;
-        while (parent.getChildren().length > 1) {
-            parent.getChildren()[1].dispose();
-        }
+        try {
+            disposeChildrenFromIndex(parent, AFTER_STATUS_MENU_INDEX);
 
-        boolean showLogsAsTree = preferenceStore.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
+            boolean showLogsAsTree = preferenceStore.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
 
-        if (showLogsAsTree) {
-            createTreeCompositeContainer(parent);
-        } else {
-            createTableComposite(parent);
+            if (showLogsAsTree) {
+                createTreeCompositeContainer(parent);
+            } else {
+                createTableComposite(parent);
+            }
+            parent.layout(true);
+            updateMenuStatus(fMPart);
+        } finally {
+            isBusy = false;
         }
-        parent.layout(true);
-        updateMenuStatus(fMPart);
+    }
+
+    private void disposeChildrenFromIndex(Composite parent, int start) {
+        parent.setRedraw(false);
+        while (parent.getChildren().length > start) {
+            parent.getChildren()[start].dispose();
+        }
+        parent.setRedraw(true);
     }
 
     private void registerEventListeners() {
         eventBroker.subscribe(EventConstants.CONSOLE_LOG_RESET, this);
-        eventBroker.subscribe(EventConstants.CONSOLE_LOG_ADD_ITEMS, this);
         eventBroker.subscribe(EventConstants.CONSOLE_LOG_REFRESH, this);
         eventBroker.subscribe(EventConstants.CONSOLE_LOG_UPDATE_PROGRESS_BAR, this);
         eventBroker.subscribe(EventConstants.CONSOLE_LOG_CHANGE_VIEW_TYPE, this);
@@ -347,9 +355,6 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
             Job loadingJob = new LogLoadingJob();
             loadingJob.setUser(true);
             loadingJob.schedule();
-        } else {
-            stopAdding = false;
-            isBusy = false;
         }
     }
 
@@ -395,7 +400,6 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                         compositeTreeContainer.setRedraw(true);
                     }
                 });
-                stopAdding = false;
                 isBusy = false;
             }
         }
@@ -809,8 +813,6 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
 
         createTableButtonComposite(tableContainer);
         createTableCompositeDetails(tableContainer);
-        stopAdding = false;
-        isBusy = false;
     }
 
     private void showRecordProperties() {
@@ -880,9 +882,6 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
 
     private void addRecords(final List<XmlLogRecord> records) throws InterruptedException {
         while (isBusy) {
-            if (stopAdding) {
-                return;
-            }
             // wait for refreshing records completely.
             Thread.sleep(100);
         }
@@ -909,22 +908,16 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
     }
 
     private synchronized void changeObservedLauncher(Event event) throws Exception {
-        if (stopAdding) {
-            return;
-        }
-
-        stopAdding = true;
-
         while (isBusy) {
             Thread.sleep(100);
         }
 
+        currentRecords.clear();
         if (launcherWatched != null) {
             launcherWatched.setObserved(false);
             launcherWatched.removeListener(this);
 
             launcherWatched = null;
-            currentRecords.clear();
         }
 
         Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
@@ -941,7 +934,6 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
 
         resetProgressBar();
         
-        createLogViewerControl(parentComposite);
         if (launcherWatched != null) {
             currentRecords.addAll(launcherWatched.getLogRecords());
             launcherWatched.setObserved(true);
@@ -949,6 +941,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
             setSelectedConsoleView();
             updateProgressBar();
         }
+        createLogViewerControl(parentComposite);
 
         eventBroker.send(EventConstants.JOB_REFRESH, null);
     }
@@ -959,31 +952,10 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
             String topic = event.getTopic();
             switch (topic) {
                 case EventConstants.CONSOLE_LOG_RESET: {
-                    UISynchronizeService.syncExec(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            try {
-                                changeObservedLauncher(event);
-                            } catch (Exception e) {}
-                        }
-                    });
-                    break;
-                }
-                case EventConstants.CONSOLE_LOG_ADD_ITEMS: {
-                    if (!stopAdding && launcherWatched != null) {
-                        List<XmlLogRecord> logRecords = launcherWatched.getLogRecords();
-                        if (currentRecords.size() < logRecords.size()) {
-                            addRecords(logRecords.subList(currentRecords.size(), logRecords.size()));
-                        }
-                    }
+                    changeObservedLauncher(event);
                     break;
                 }
                 case EventConstants.CONSOLE_LOG_CHANGE_VIEW_TYPE: {
-                    if (stopAdding) {
-                        return;
-                    }
-                    stopAdding = true;
                     resetProgressBar();
                     createLogViewerControl(parentComposite);
                     updateProgressBar();
@@ -1025,7 +997,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
 
         switch (event) {
             case UPDATE_RECORD:
-                if (stopAdding || launcherWatched == null) {
+                if (launcherWatched == null) {
                     return;
                 }
                 UISynchronizeService.syncExec(new Runnable() {

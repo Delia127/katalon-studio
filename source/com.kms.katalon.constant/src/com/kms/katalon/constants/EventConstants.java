@@ -91,7 +91,6 @@ public class EventConstants {
     // Console Log Events
     public static final String CONSOLE_LOG_OPEN = "CONSOLE_LOG/OPEN";
     public static final String CONSOLE_LOG_RESET = "CONSOLE_LOG/RESET";
-    public static final String CONSOLE_LOG_ADD_ITEMS = "CONSOLE_LOG/ADD_ITEMS";
     public static final String CONSOLE_LOG_REFRESH = "CONSOLE_LOG/REFRESH";
     public static final String CONSOLE_LOG_UPDATE_PROGRESS_BAR = "CONSOLE_LOG/UPDATE_PROGRESS_BAR";
     public static final String CONSOLE_LOG_CHANGE_VIEW_TYPE = "CONSOLE_LOG/CHANGE_VIEW_TYPE";
