@@ -36,6 +36,8 @@ public class CustomEditorActivationStrategy extends ColumnViewerEditorActivation
                 return (!(source instanceof MouseEvent) || ((MouseEvent) source).button != RIGHT_MOUSE);
             case ColumnViewerEditorActivationEvent.KEY_PRESSED:
                 return event.keyCode == SWT.CR;
+            case ColumnViewerEditorActivationEvent.PROGRAMMATIC:
+                return true;
         }
 
         return false;
