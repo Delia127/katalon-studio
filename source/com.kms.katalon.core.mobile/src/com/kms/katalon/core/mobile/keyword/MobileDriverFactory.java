@@ -433,7 +433,7 @@ public class MobileDriverFactory {
     }
 
     public static String getDevicePlatform() {
-        return RunConfiguration.getStringProperty(EXECUTED_PLATFORM);
+        return RunConfiguration.getDriverSystemProperty(StringConstants.CONF_PROPERTY_MOBILE_DRIVER, EXECUTED_PLATFORM);
     }
 
     public static String getDeviceName() {

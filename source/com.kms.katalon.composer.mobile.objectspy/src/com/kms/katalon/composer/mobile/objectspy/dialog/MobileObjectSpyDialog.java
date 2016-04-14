@@ -130,7 +130,7 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
     private String IOS_FILTER_NAMES = "iOS Application (*.app, *.ipa)";
 
-    private String IOS_FILTER_EXTS = "*.app; *.ipa";
+    private String IOS_FILTER_EXTS = "*.app;*.ipa";
 
     private MobileInspectorController inspectorController;
 
