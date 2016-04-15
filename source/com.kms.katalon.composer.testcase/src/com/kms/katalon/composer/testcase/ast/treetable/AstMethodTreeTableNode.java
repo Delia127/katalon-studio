@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.kms.katalon.composer.testcase.util.WrapperToAstTreeConverter;
+
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.testcase.ast.editors.MethodObjectBuilderCellEditor;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.MethodNodeWrapper;
 
 public class AstMethodTreeTableNode extends AstAbstractTreeTableNode implements IAstItemEditableNode {
@@ -87,5 +89,26 @@ public class AstMethodTreeTableNode extends AstAbstractTreeTableNode implements 
     @Override
     public List<AstTreeTableNode> getChildren() {
         return childNodes;
+    }
+    
+    @Override
+    public boolean isChildAssignble(ASTNodeWrapper astNode) {
+        return methodNode.isChildAssignble(astNode);
+    }
+
+    public boolean addChild(ASTNodeWrapper childObject) {
+        return methodNode.addChild(childObject);
+    }
+
+    public boolean addChild(ASTNodeWrapper childObject, int index) {
+        return methodNode.addChild(childObject, index);
+    }
+
+    public boolean removeChild(ASTNodeWrapper childObject) {
+        return methodNode.removeChild(childObject);
+    }
+
+    public int indexOf(ASTNodeWrapper childObject) {
+        return methodNode.indexOf(childObject);
     }
 }

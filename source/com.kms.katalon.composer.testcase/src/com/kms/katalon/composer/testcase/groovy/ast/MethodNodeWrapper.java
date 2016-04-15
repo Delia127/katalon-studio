@@ -161,4 +161,34 @@ public class MethodNodeWrapper extends AnnonatedNodeWrapper implements ASTHasBlo
     public MethodNodeWrapper clone() {
         return new MethodNodeWrapper(this, getParent());
     }
+    
+    @Override
+    public boolean isChildAssignble(ASTNodeWrapper astNode) {
+        return getBlock().isChildAssignble(astNode);
+    }
+    
+    @Override
+    public boolean addChild(ASTNodeWrapper childObject) {
+        return getBlock().addChild(childObject);
+    }
+    
+    @Override
+    public boolean addChild(ASTNodeWrapper childObject, int index) {
+        return getBlock().addChild(childObject, index);
+    }
+    
+    @Override
+    public boolean removeChild(ASTNodeWrapper childObject) {
+        return getBlock().removeChild(childObject);
+    }
+    
+    @Override
+    public boolean replaceChild(ASTNodeWrapper oldChild, ASTNodeWrapper newChild) {
+        return getBlock().replaceChild(oldChild, newChild);
+    }
+    
+    @Override
+    public int indexOf(ASTNodeWrapper childObject) {
+        return getBlock().indexOf(childObject);
+    }
 }

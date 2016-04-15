@@ -208,6 +208,14 @@ public class TestCaseTreeTableInput {
         }
         AstTreeTableNode topItem = getTopItem();
         Object[] expandedElements = saveExpandedState();
+        boolean addSuccessfully = internalAddNewAstObjects(astObjects, destinationNode, addType);
+        reloadExpandedState(expandedElements);
+        setTopItem(topItem);
+        return addSuccessfully;
+    }
+
+    private boolean internalAddNewAstObjects(List<? extends ASTNodeWrapper> astObjects, AstTreeTableNode destinationNode,
+            NodeAddType addType) {
         List<AstNodeAddedEdit> astNodeAddedEdits = new ArrayList<AstNodeAddedEdit>();
         if (destinationNode == null) {
             astNodeAddedEdits.addAll(addAstObjects(astObjects, mainClassTreeNode));
@@ -220,13 +228,11 @@ public class TestCaseTreeTableInput {
         } else {
             astNodeAddedEdits.addAll(insertASTObjects(astObjects, destinationNode, addType));
         }
-        if (astNodeAddedEdits.isEmpty()) {
-            return false;
+        if (!astNodeAddedEdits.isEmpty()) {
+            processAfterEdits(astNodeAddedEdits);
+            return true;
         }
-        processAfterEdits(astNodeAddedEdits);
-        reloadExpandedState(expandedElements);
-        setTopItem(topItem);
-        return true;
+        return false;
     }
 
     private void processAfterEdits(List<AstNodeAddedEdit> astNodeAddedEdits) {
