@@ -53,9 +53,8 @@ public class HTMLActionUtil {
 
         MethodCallExpressionWrapper methodCallExpressionWrapper = new MethodCallExpressionWrapper(actionMapping.getAction()
                 .getMappedKeywordClassSimpleName(), actionMapping.getAction().getMappedKeywordMethod(), null);
-        ArgumentListExpressionWrapper argumentListExpressionWrapper = (ArgumentListExpressionWrapper) methodCallExpressionWrapper
+        ArgumentListExpressionWrapper argumentListExpressionWrapper = methodCallExpressionWrapper
                 .getArguments();
-        List<ExpressionWrapper> arguments = argumentListExpressionWrapper.getExpressions();
         for (int i = 0; i < method.getParameterTypes().length; i++) {
             Class<?> argumentClass = method.getParameterTypes()[i];
             ExpressionWrapper generatedExression = null;
@@ -69,7 +68,7 @@ public class HTMLActionUtil {
                 generatedExression = new ConstantExpressionWrapper(data, argumentListExpressionWrapper);
                 actionDataCount++;
             }
-            arguments.add(generatedExression);
+            argumentListExpressionWrapper.addExpression(generatedExression);
         }
         return new ExpressionStatementWrapper(methodCallExpressionWrapper, null);
     }
