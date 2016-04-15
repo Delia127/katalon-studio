@@ -40,7 +40,6 @@ public class SwitchStatementWrapper extends ComplexStatementWrapper<CaseStatemen
         super(parentNodeWrapper);
         this.expression = new BooleanExpressionWrapper(this);
         lastStatement = new DefaultStatementWrapper(this);
-        lastStatement.getBlock().addStatement(new BreakStatementWrapper(lastStatement));
     }
 
     public ExpressionWrapper getExpression() {
