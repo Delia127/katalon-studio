@@ -93,7 +93,8 @@ public class WrapperToAstTreeConverter {
                 return convert(statementWrapper, (BinaryExpressionWrapper) expression, parentNode);
             } else if (expression instanceof ConstantExpressionWrapper
                     && (((ConstantExpressionWrapper) expression).getValue() instanceof String)) {
-                return new AstInputEditableStatementTreeTableNode(statementWrapper, parentNode, ImageConstants.IMG_16_COMMENT, StringConstants.TREE_COMMENT);
+                return new AstInputEditableStatementTreeTableNode(statementWrapper, parentNode,
+                        ImageConstants.IMG_16_COMMENT, StringConstants.TREE_COMMENT);
             }
 
             return new AstInputEditableStatementTreeTableNode(statementWrapper, parentNode);
@@ -111,7 +112,8 @@ public class WrapperToAstTreeConverter {
                 }
             }
 
-            return new AstInputEditableStatementTreeTableNode(statementWrapper, parentNode, ImageConstants.IMG_16_BINARY, StringConstants.TREE_BINARY_STATEMENT);
+            return new AstInputEditableStatementTreeTableNode(statementWrapper, parentNode,
+                    ImageConstants.IMG_16_BINARY, StringConstants.TREE_BINARY_STATEMENT);
         }
 
         private AstTreeTableNode convert(ExpressionStatementWrapper statementWrapper,
@@ -124,7 +126,8 @@ public class WrapperToAstTreeConverter {
             } else if (isCustomKeywordMethodCall(methodCallExpression)) {
                 return new AstCustomKeywordTreeTableNode(statementWrapper, parentNode);
             }
-            return new AstInputEditableStatementTreeTableNode(statementWrapper, parentNode, ImageConstants.IMG_16_FUNCTION, StringConstants.TREE_METHOD_CALL_STATEMENT);
+            return new AstInputEditableStatementTreeTableNode(statementWrapper, parentNode,
+                    ImageConstants.IMG_16_FUNCTION, StringConstants.TREE_METHOD_CALL_STATEMENT);
         }
 
         private boolean isBuiltInKeywordMethodCall(MethodCallExpressionWrapper methodCallExpression) {
@@ -192,8 +195,8 @@ public class WrapperToAstTreeConverter {
             return new ArrayList<AstTreeTableNode>() {
                 private static final long serialVersionUID = 1L;
                 {
-                    add(new AstStatementTreeTableNode(assertStatement, parentNode, ImageConstants.IMG_16_ASSERT,
-                            StringConstants.TREE_ASSERT_STATEMENT));
+                    add(new AstInputEditableStatementTreeTableNode(assertStatement, parentNode,
+                            ImageConstants.IMG_16_ASSERT, StringConstants.TREE_ASSERT_STATEMENT));
                 }
             };
         }
