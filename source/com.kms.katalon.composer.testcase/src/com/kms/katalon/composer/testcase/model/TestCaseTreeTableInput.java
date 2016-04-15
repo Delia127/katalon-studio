@@ -214,8 +214,8 @@ public class TestCaseTreeTableInput {
         return addSuccessfully;
     }
 
-    private boolean internalAddNewAstObjects(List<? extends ASTNodeWrapper> astObjects, AstTreeTableNode destinationNode,
-            NodeAddType addType) {
+    private boolean internalAddNewAstObjects(List<? extends ASTNodeWrapper> astObjects,
+            AstTreeTableNode destinationNode, NodeAddType addType) {
         List<AstNodeAddedEdit> astNodeAddedEdits = new ArrayList<AstNodeAddedEdit>();
         if (destinationNode == null) {
             astNodeAddedEdits.addAll(addAstObjects(astObjects, mainClassTreeNode));
@@ -560,7 +560,7 @@ public class TestCaseTreeTableInput {
     }
 
     public void moveDown() {
-        move(1);
+        move(2);
     }
 
     private void move(int offset) {
@@ -573,15 +573,19 @@ public class TestCaseTreeTableInput {
         }
         ASTNodeWrapper astNode = selectedNode.getASTObject();
         ASTNodeWrapper parentASTNode = astNode.getParent();
-        int nodeIndex = parentASTNode.indexOf(selectedNode.getASTObject());
-        int newIndex = nodeIndex + offset;
-        if (newIndex < 0 || !parentASTNode.removeChild(astNode) || !parentASTNode.addChild(astNode, newIndex)) {
+        int newIndex = parentASTNode.indexOf(astNode) + offset;
+        if (newIndex < 0) {
             return;
         }
+        ASTNodeWrapper cloneNode = astNode.clone();
+        if (!(parentASTNode.addChild(cloneNode, newIndex) || parentASTNode.addChild(cloneNode))) {
+            return;
+        }
+        parentASTNode.removeChild(astNode);
+        setDirty(true);
         AstTreeTableNode parentNode = selectedNode.getParent();
         refreshObjectWithoutReloading(parentNode);
-        setSelection(parentNode, astNode);
-        setEdit(parentNode, astNode);
+        setSelection(parentNode, cloneNode);
     }
 
     private boolean isUnmoveableAstNode(AstTreeTableNode selectedNode) {
