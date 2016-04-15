@@ -356,10 +356,14 @@ public class TestCaseTreeTableInput {
         if (treeTableNode == null) {
             return;
         }
+        setFocus(treeTableNode);
+        treeTableViewer.editElement(treeTableNode, 0);
+    }
+
+    private void setFocus(AstTreeTableNode treeTableNode) {
         Tree tree = treeTableViewer.getTree();
         ensureTreeGotTopItem(treeTableNode, tree);
         tree.setFocus();
-        treeTableViewer.editElement(treeTableNode, 0);
     }
 
     // Check for avoiding NullPointerException in TreeViewerFocusCellManager.getInitialFocusCell()
@@ -873,7 +877,7 @@ public class TestCaseTreeTableInput {
         setDirty(true);
         refresh();
         setSelection(mainClassTreeNode, method);
-        setEdit(mainClassTreeNode, method);
+        setFocus(getTreeTableNodeOfAstObjectFromParentNode(mainClassTreeNode, method));
     }
 
     public void addNewDefaultBuiltInKeyword(NodeAddType addType) {
