@@ -16,6 +16,7 @@ import org.codehaus.groovy.eclipse.refactoring.actions.FormatKind;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Persist;
@@ -31,6 +32,8 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jdt.ui.actions.IJavaEditorActionDefinitionIds;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.swt.SWT;
@@ -145,6 +148,8 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
 
     private ScriptNodeWrapper scriptNode;
 
+    private boolean parsingFailed;
+
     public boolean isInitialized() {
         return isInitialized;
     }
@@ -163,8 +168,10 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         String defaultTestCaseView = TestCasePreferenceDefaultValueInitializer.getTestCasePartStartView();
         if (StringUtils.equals(defaultTestCaseView, MANUAL_TAB_TITLE)) {
             setSelectedPart(getChildManualPart());
+            setScriptContentToManual();
         } else if (StringUtils.equals(defaultTestCaseView, SCRIPT_TAB_TITLE)) {
             setSelectedPart(getChildCompatibilityPart());
+            isScriptChanged = true;
         }
     }
 
@@ -229,10 +236,6 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                 });
             }
             childTestCaseVariablesPart.loadVariables();
-            boolean isSetScriptToManualSuccessfully = setScriptContentToManual();
-            if (isSetScriptToManualSuccessfully) {
-                // childTestCasePart.getTreeTableInput().reloadTestCaseVariables();
-            }
             childTestCaseIntegrationPart.loadInput();
             isInitialized = true;
         }
@@ -299,21 +302,44 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
             if (groovyEditor == null || childTestCasePart == null) {
                 return false;
             }
-            scriptNode = GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(groovyEditor.getViewer().getDocument().get(), testCase.getRelativePathForUI());
+            parsingFailed = false;
+            Shell activeShell = Display.getCurrent().getActiveShell();
+            new ProgressMonitorDialog(activeShell).run(true, false, new IRunnableWithProgress() {
+
+                @Override
+                public void run(IProgressMonitor monitor) {
+                    // TODO: find a way to calculate progress for parsing groovy script
+                    monitor.beginTask(StringConstants.PARSING_SCRIPT_PROGRESS_NAME, IProgressMonitor.UNKNOWN);
+                    try {
+                        scriptNode = GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(groovyEditor.getViewer()
+                                .getDocument()
+                                .get(), testCase.getRelativePathForUI());
+                    } catch (GroovyParsingException exception) {
+                        parsingFailed = true;
+                    } catch (Exception e) {
+                        parsingFailed = true;
+                        LoggerSingleton.logError(e);
+                    }
+                    monitor.done();
+                }
+            });
+            
+            if (parsingFailed) {
+                MessageDialog.openError(activeShell, StringConstants.ERROR_TITLE,
+                        StringConstants.PA_ERROR_MSG_PLS_FIX_ERROR_IN_SCRIPT);
+                subPartStack.setSelectedElement(childTestCaseEditorPart.getModel());
+                isScriptChanged = true;
+                GroovyEditorUtil.showProblems(groovyEditor);
+                return false;
+            }
 
             if (scriptNode == null) {
                 scriptNode = new ScriptNodeWrapper(testCase.getRelativePathForUI());
             }
-            
+
             childTestCasePart.loadASTNodesToTreeTable(scriptNode);
             isScriptChanged = false;
             return true;
-        } catch (GroovyParsingException exception) {
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_PLS_FIX_ERROR_IN_SCRIPT);
-            subPartStack.setSelectedElement(childTestCaseEditorPart.getModel());
-            isScriptChanged = true;
-            GroovyEditorUtil.showProblems(groovyEditor);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
