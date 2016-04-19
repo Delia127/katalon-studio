@@ -77,7 +77,6 @@ import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 import com.kms.katalon.composer.testcase.keywords.KeywordBrowserTreeEntityTransfer;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
-import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.testcase.providers.AstTreeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstTreeTableContentProvider;
 import com.kms.katalon.composer.testcase.providers.TestCaseSelectionListener;
@@ -89,13 +88,9 @@ import com.kms.katalon.composer.testcase.support.OutputColumnEditingSupport;
 import com.kms.katalon.composer.testcase.support.TestObjectEditingSupport;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransfer;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransferData;
-import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
 import com.kms.katalon.composer.testcase.util.TestCaseMenuUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.core.model.FailureHandling;
-import com.kms.katalon.core.testcase.TestCaseFactory;
-import com.kms.katalon.core.testobject.ObjectRepository;
-import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 
@@ -112,7 +107,8 @@ public class TestCasePart implements IComposerPart, EventHandler {
     private Text lblTestCaseIDContain;
 
     private Composite compositeManual, compositeToolbar, compositeMain, compositeInformation, compositeDetails,
-            compositeInformationHeader, compositeTable, compositeVisualizer, compositeInformationDetails, compositeSteps;
+            compositeInformationHeader, compositeTable, compositeVisualizer, compositeInformationDetails,
+            compositeSteps;
 
     private ImageButton btnExpandVisualizer, btnExpandGeneralInformation;
 
@@ -484,17 +480,17 @@ public class TestCasePart implements IComposerPart, EventHandler {
         TreeColumnLayout treeColumnLayout = new TreeColumnLayout();
         compositeTable.setLayout(treeColumnLayout);
 
-        addTreeTableColumn(treeTable, treeColumnLayout, StringConstants.PA_COL_ITEM, 200, 0, new AstTreeLabelProvider(),
-                new ItemColumnEditingSupport(treeTable, this));
+        addTreeTableColumn(treeTable, treeColumnLayout, StringConstants.PA_COL_ITEM, 200, 0,
+                new AstTreeLabelProvider(), new ItemColumnEditingSupport(treeTable, this));
 
         addTreeTableColumn(treeTable, treeColumnLayout, StringConstants.PA_COL_OBJ, 200, 0, new AstTreeLabelProvider(),
                 new TestObjectEditingSupport(treeTable, this));
-        addTreeTableColumn(treeTable, treeColumnLayout, StringConstants.PA_COL_INPUT, 200, 0, new AstTreeLabelProvider(),
-                new InputColumnEditingSupport(treeTable, this));
-        addTreeTableColumn(treeTable, treeColumnLayout, StringConstants.PA_COL_OUTPUT, 200, 0, new AstTreeLabelProvider(),
-                new OutputColumnEditingSupport(treeTable, this));
-        addTreeTableColumn(treeTable, treeColumnLayout, StringConstants.PA_COL_DESCRIPTION, 400, 100, new AstTreeLabelProvider(),
-                new DescriptionColumnEditingSupport(treeTable, this));
+        addTreeTableColumn(treeTable, treeColumnLayout, StringConstants.PA_COL_INPUT, 200, 0,
+                new AstTreeLabelProvider(), new InputColumnEditingSupport(treeTable, this));
+        addTreeTableColumn(treeTable, treeColumnLayout, StringConstants.PA_COL_OUTPUT, 200, 0,
+                new AstTreeLabelProvider(), new OutputColumnEditingSupport(treeTable, this));
+        addTreeTableColumn(treeTable, treeColumnLayout, StringConstants.PA_COL_DESCRIPTION, 400, 100,
+                new AstTreeLabelProvider(), new DescriptionColumnEditingSupport(treeTable, this));
 
         treeTable.setContentProvider(new AstTreeTableContentProvider());
 
@@ -534,7 +530,8 @@ public class TestCasePart implements IComposerPart, EventHandler {
         failureContinueMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_CONTINUE_ON_FAILURE);
         failureContinueMenuItem.addSelectionListener(selectionListener);
         failureContinueMenuItem.setID(TreeTableMenuItemConstants.CHANGE_FAILURE_HANDLING_MENU_ITEM_ID);
-        failureContinueMenuItem.setData(TreeTableMenuItemConstants.FAILURE_HANDLING_KEY, FailureHandling.CONTINUE_ON_FAILURE);
+        failureContinueMenuItem.setData(TreeTableMenuItemConstants.FAILURE_HANDLING_KEY,
+                FailureHandling.CONTINUE_ON_FAILURE);
 
         MenuItem optionalMenuItem = new MenuItem(failureHandlingMenu, SWT.NONE);
         optionalMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_OPTIONAL);
@@ -636,8 +633,8 @@ public class TestCasePart implements IComposerPart, EventHandler {
         treeTableColumn.getColumn().setText(headerText);
         treeTableColumn.setLabelProvider(labelProvider);
         treeTableColumn.setEditingSupport(editingSupport);
-        treeColumnLayout.setColumnData(treeTableColumn.getColumn(), new ColumnWeightData(weight, treeTableColumn.getColumn()
-                .getWidth()));
+        treeColumnLayout.setColumnData(treeTableColumn.getColumn(), new ColumnWeightData(weight,
+                treeTableColumn.getColumn().getWidth()));
     }
 
     private void hookDragEvent() {
@@ -668,7 +665,8 @@ public class TestCasePart implements IComposerPart, EventHandler {
                     scriptSnippets.append("\n");
                 }
                 if (scriptSnippets.length() > 0) {
-                    ScriptTransferData transferData = new ScriptTransferData(scriptSnippets.toString(), getTestCase().getId());
+                    ScriptTransferData transferData = new ScriptTransferData(scriptSnippets.toString(),
+                            getTestCase().getId());
                     event.data = new ScriptTransferData[] { transferData };
                 }
             }
@@ -683,20 +681,22 @@ public class TestCasePart implements IComposerPart, EventHandler {
                 }
                 selectedNodes.clear();
             }
+            
+            private List<AstTreeTableNode> getKeywordScriptFromTree() {
+                TreeItem[] selection = treeTable.getTree().getSelection();
+                List<AstTreeTableNode> treeEntities = new ArrayList<AstTreeTableNode>();
+                for (TreeItem item : selection) {
+                    Object treeItemData = item.getData();
+                    if (treeItemData instanceof AstTreeTableNode && !(treeItemData instanceof AstMethodTreeTableNode)
+                            && TestCaseTreeTableInput.isNodeMoveable((AstTreeTableNode) treeItemData)) {
+                        treeEntities.add((AstTreeTableNode) treeItemData);
+                    }
+                }
+                return treeEntities;
+            };
 
         });
     }
-
-    private List<AstTreeTableNode> getKeywordScriptFromTree() {
-        TreeItem[] selection = treeTable.getTree().getSelection();
-        List<AstTreeTableNode> treeEntities = new ArrayList<AstTreeTableNode>();
-        for (TreeItem item : selection) {
-            if (item.getData() instanceof AstTreeTableNode && !(item.getData() instanceof AstMethodTreeTableNode)) {
-                treeEntities.add((AstTreeTableNode) item.getData());
-            }
-        }
-        return treeEntities;
-    };
 
     private void hookDropEvent() {
         DropTarget dt = new DropTarget(treeTable.getTree(), DND.DROP_MOVE | DND.DROP_COPY);
@@ -870,7 +870,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
                 menu.setVisible(true);
             }
         } else {
-            addNewDefaultBuiltInKeyword(NodeAddType.Add);
+            treeTableInput.addNewDefaultBuiltInKeyword(NodeAddType.Add);
         }
     }
 
@@ -879,67 +879,44 @@ public class TestCasePart implements IComposerPart, EventHandler {
         Object value = menuItem.getData(TreeTableMenuItemConstants.MENU_ITEM_ACTION_KEY);
         if (value instanceof AddAction) {
             switch ((AddAction) value) {
-            case Add:
-                addType = NodeAddType.Add;
-                break;
-            case InsertAfter:
-                addType = NodeAddType.InserAfter;
-                break;
-            case InsertBefore:
-                addType = NodeAddType.InserBefore;
-                break;
+                case Add:
+                    addType = NodeAddType.Add;
+                    break;
+                case InsertAfter:
+                    addType = NodeAddType.InserAfter;
+                    break;
+                case InsertBefore:
+                    addType = NodeAddType.InserBefore;
+                    break;
 
             }
         }
         switch (menuItem.getID()) {
-        case TreeTableMenuItemConstants.CHANGE_FAILURE_HANDLING_MENU_ITEM_ID:
-            Object failureHandlingValue = menuItem.getData(TreeTableMenuItemConstants.FAILURE_HANDLING_KEY);
-            if (failureHandlingValue instanceof FailureHandling) {
-                changeKeywordFailureHandling((FailureHandling) failureHandlingValue);
-            }
-            break;
-        case TreeTableMenuItemConstants.COPY_MENU_ITEM_ID:
-            copyTestStep();
-            break;
-        case TreeTableMenuItemConstants.CUT_MENU_ITEM_ID:
-            cutTestStep();
-            break;
-        case TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID:
-            pasteTestStep();
-            break;
-        case TreeTableMenuItemConstants.REMOVE_MENU_ITEM_ID:
-            removeTestStep();
-        default:
-            treeTableInput.addNewAstObject(menuItem.getID(), treeTableInput.getSelectedNode(), addType);
-            break;
+            case TreeTableMenuItemConstants.CHANGE_FAILURE_HANDLING_MENU_ITEM_ID:
+                Object failureHandlingValue = menuItem.getData(TreeTableMenuItemConstants.FAILURE_HANDLING_KEY);
+                if (failureHandlingValue instanceof FailureHandling) {
+                    changeKeywordFailureHandling((FailureHandling) failureHandlingValue);
+                }
+                break;
+            case TreeTableMenuItemConstants.COPY_MENU_ITEM_ID:
+                copyTestStep();
+                break;
+            case TreeTableMenuItemConstants.CUT_MENU_ITEM_ID:
+                cutTestStep();
+                break;
+            case TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID:
+                pasteTestStep();
+                break;
+            case TreeTableMenuItemConstants.REMOVE_MENU_ITEM_ID:
+                removeTestStep();
+            default:
+                treeTableInput.addNewAstObject(menuItem.getID(), treeTableInput.getSelectedNode(), addType);
+                break;
         }
     }
 
     public void addStatements(List<StatementWrapper> statements, NodeAddType addType) {
-        try {
-            treeTableInput.addNewAstObjects(statements, treeTableInput.getSelectedNode(), addType);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_CANNOT_ADD_STATEMENTS);
-        }
-    }
-
-    private void addNewDefaultBuiltInKeyword(NodeAddType addType) {
-        try {
-            KeywordClass defaultBuiltinKeywordContributor = TestCasePreferenceDefaultValueInitializer.getDefaultKeywordType();
-            String defaultSettingKeywordName = TestCasePreferenceDefaultValueInitializer.getDefaultKeywords().get(
-                    defaultBuiltinKeywordContributor.getName());
-            treeTableInput.addImport(defaultBuiltinKeywordContributor.getType());
-            treeTableInput.addImport(ObjectRepository.class);
-            treeTableInput.addImport(TestCaseFactory.class);
-            treeTableInput.addImport(FailureHandling.class);
-            treeTableInput.addNewAstObject(AstTreeTableInputUtil.createBuiltInKeywordMethodCall(
-                    defaultBuiltinKeywordContributor.getSimpleName(), defaultSettingKeywordName, null), treeTableInput
-                    .getSelectedNode(), addType);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_CANNOT_ADD_KEYWORD);
-        }
+        treeTableInput.addNewAstObjects(statements, treeTableInput.getSelectedNode(), addType);
     }
 
     public void performButtonSelected(Button button) {
@@ -951,67 +928,31 @@ public class TestCasePart implements IComposerPart, EventHandler {
     }
 
     private void changeKeywordFailureHandling(FailureHandling failureHandling) {
-        try {
-            treeTableInput.changeFailureHandling(failureHandling);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_CANNOT_CHANGE_FAILURE_HANDLING);
-        }
+        treeTableInput.changeFailureHandling(failureHandling);
     }
 
     private void removeTestStep() {
-        try {
-            treeTableInput.removeSelectedRows();
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_CANNOT_REMOVE_STATEMENT);
-        }
+        treeTableInput.removeSelectedRows();
     }
 
     private void upStep() {
-        try {
-            treeTableInput.moveUp();
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_CANNOT_MOVE_STATEMENT_UP);
-        }
+        treeTableInput.moveUp();
     }
 
     private void downStep() {
-        try {
-            treeTableInput.moveDown();
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_CANNOT_MOVE_STATEMENT_DOWN);
-        }
+        treeTableInput.moveDown();
     }
 
     private void copyTestStep() {
-        try {
-            treeTableInput.copy(treeTableInput.getSelectedNodes());
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_CANNOT_COPY);
-        }
+        treeTableInput.copy(treeTableInput.getSelectedNodes());
     }
 
     private void cutTestStep() {
-        try {
-            treeTableInput.cut(treeTableInput.getSelectedNodes());
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_CANNOT_CUT);
-        }
+        treeTableInput.cut(treeTableInput.getSelectedNodes());
     }
 
     private void pasteTestStep() {
-        try {
-            treeTableInput.paste(treeTableInput.getSelectedNode(), NodeAddType.Add);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_CANNOT_PASTE);
-        }
+        treeTableInput.paste(treeTableInput.getSelectedNode(), NodeAddType.Add);
     }
 
     private void updateCompositeDetailsLayout() {

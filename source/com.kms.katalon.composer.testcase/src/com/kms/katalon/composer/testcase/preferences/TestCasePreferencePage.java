@@ -396,7 +396,7 @@ public class TestCasePreferencePage extends PreferencePage {
     private void updateListViewKwName() throws Exception {
         IKeywordContributor contributor = (IKeywordContributor) ((IStructuredSelection) listViewerKwType.getSelection()).getFirstElement();
         java.util.List<KeywordMethod> methods = KeywordController.getInstance().getBuiltInKeywords(
-                contributor.getKeywordClass().getName());
+                contributor.getKeywordClass().getSimpleName());
         listViewerKwName.setInput(methods);
         listViewerKwName.getList().deselectAll();
 

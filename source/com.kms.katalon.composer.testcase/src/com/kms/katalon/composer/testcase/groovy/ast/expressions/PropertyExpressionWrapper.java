@@ -10,28 +10,44 @@ import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 
 public class PropertyExpressionWrapper extends ExpressionWrapper {
     private static final String THIS_VARIABLE_NAME = "this";
+
     private ExpressionWrapper objectExpression;
+
     private ExpressionWrapper property;
+
     private boolean spreadSafe = false;
+
     private boolean safe = false;
+
     private boolean isStatic = false;
+    
+    public PropertyExpressionWrapper(String variableName, String propertyName) {
+        this(variableName, propertyName, null);
+    }
 
     public PropertyExpressionWrapper(String variableName, String propertyName, ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
         this.objectExpression = new VariableExpressionWrapper(variableName, this);
         this.property = new ConstantExpressionWrapper(propertyName, this);
     }
+    
+    public PropertyExpressionWrapper(String variableName, ASTNodeWrapper parentNodeWrapper) {
+        this(variableName, null, parentNodeWrapper);
+    }
 
     public PropertyExpressionWrapper(ASTNodeWrapper parentNodeWrapper) {
         this(THIS_VARIABLE_NAME, null, parentNodeWrapper);
+    }
+    
+    public PropertyExpressionWrapper() {
+        this(null);
     }
 
     public PropertyExpressionWrapper(PropertyExpression propertyExpression, ASTNodeWrapper parentNodeWrapper) {
         super(propertyExpression, parentNodeWrapper);
         this.objectExpression = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(
                 propertyExpression.getObjectExpression(), this);
-        this.property = ASTNodeWrapHelper
-                .getExpressionNodeWrapperFromExpression(propertyExpression.getProperty(), this);
+        this.property = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(propertyExpression.getProperty(), this);
         this.spreadSafe = propertyExpression.isSpreadSafe();
         this.safe = propertyExpression.isSafe();
         this.isStatic = propertyExpression.isStatic();
@@ -40,6 +56,10 @@ public class PropertyExpressionWrapper extends ExpressionWrapper {
     public PropertyExpressionWrapper(PropertyExpressionWrapper propertyExpressionWrapper,
             ASTNodeWrapper parentNodeWrapper) {
         super(propertyExpressionWrapper, parentNodeWrapper);
+        copyPropertyProperties(propertyExpressionWrapper);
+    }
+
+    private void copyPropertyProperties(PropertyExpressionWrapper propertyExpressionWrapper) {
         this.objectExpression = propertyExpressionWrapper.getObjectExpression().copy(this);
         this.property = propertyExpressionWrapper.getProperty().copy(this);
         this.spreadSafe = propertyExpressionWrapper.isSpreadSafe();
@@ -59,6 +79,10 @@ public class PropertyExpressionWrapper extends ExpressionWrapper {
     }
 
     public void setObjectExpression(ExpressionWrapper objectExpression) {
+        if (objectExpression == null) {
+            return;
+        }
+        objectExpression.setParent(this);
         this.objectExpression = objectExpression;
     }
 
@@ -72,6 +96,10 @@ public class PropertyExpressionWrapper extends ExpressionWrapper {
     }
 
     public void setProperty(ExpressionWrapper property) {
+        if (property == null) {
+            return;
+        }
+        property.setParent(this);
         this.property = property;
     }
 
@@ -146,5 +174,36 @@ public class PropertyExpressionWrapper extends ExpressionWrapper {
     @Override
     public PropertyExpressionWrapper clone() {
         return new PropertyExpressionWrapper(this, getParent());
+    }
+    
+    @Override
+    public boolean isInputEditatble() {
+        return true;
+    }
+    
+    @Override
+    public ASTNodeWrapper getInput() {
+        return this;
+    }
+    
+    @Override
+    public boolean updateInputFrom(ASTNodeWrapper input) {
+        if (!(input instanceof PropertyExpressionWrapper) || this.isEqualsTo(input)) {
+            return false;
+        }
+        copyPropertyProperties((PropertyExpressionWrapper) input);
+        return true;
+    }
+    
+    @Override
+    public boolean replaceChild(ASTNodeWrapper oldChild, ASTNodeWrapper newChild) {
+        if (oldChild == getObjectExpression() && newChild instanceof ExpressionWrapper) {
+            setObjectExpression((ExpressionWrapper) newChild);
+            return true;
+        } else if (oldChild == getProperty() && newChild instanceof ExpressionWrapper) {
+            setProperty((ExpressionWrapper) newChild);
+            return true;
+        } 
+        return super.replaceChild(oldChild, newChild);
     }
 }

@@ -3,37 +3,41 @@ package com.kms.katalon.composer.testcase.groovy.ast.expressions;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codehaus.groovy.ast.expr.ArgumentListExpression;
 import org.codehaus.groovy.ast.expr.ConstructorCallExpression;
 
-import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapHelper;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
 
 public class ConstructorCallExpressionWrapper extends ExpressionWrapper {
-    private ExpressionWrapper arguments;
-    
+    private ArgumentListExpressionWrapper arguments;
+
     public ConstructorCallExpressionWrapper(Class<?> type, ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
         this.type = new ClassNodeWrapper(type, this);
-        this.arguments = new ConstantExpressionWrapper("", this);
+        this.arguments = new ArgumentListExpressionWrapper(this);
     }
 
     public ConstructorCallExpressionWrapper(ConstructorCallExpression constructorCallExpression,
             ASTNodeWrapper parentNodeWrapper) {
         super(constructorCallExpression, parentNodeWrapper);
         this.type = new ClassNodeWrapper(constructorCallExpression.getType(), this);
-        this.arguments = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(
-                constructorCallExpression.getArguments(), this);
+        if (constructorCallExpression.getArguments() instanceof ArgumentListExpression) {
+            arguments = new ArgumentListExpressionWrapper(
+                    (ArgumentListExpression) constructorCallExpression.getArguments(), this);
+        } else {
+            arguments = new ArgumentListExpressionWrapper(this);
+        }
     }
 
     public ConstructorCallExpressionWrapper(ConstructorCallExpressionWrapper constructorCallExpressionWrapper,
             ASTNodeWrapper parentNodeWrapper) {
         super(constructorCallExpressionWrapper, parentNodeWrapper);
         this.type = constructorCallExpressionWrapper.getType();
-        this.arguments = constructorCallExpressionWrapper.getArguments().copy(this);
+        this.arguments = new ArgumentListExpressionWrapper(constructorCallExpressionWrapper.getArguments(), this);
     }
 
-    public ExpressionWrapper getArguments() {
+    public ArgumentListExpressionWrapper getArguments() {
         return arguments;
     }
 
@@ -80,5 +84,14 @@ public class ConstructorCallExpressionWrapper extends ExpressionWrapper {
     @Override
     public ConstructorCallExpressionWrapper clone() {
         return new ConstructorCallExpressionWrapper(this, getParent());
+    }
+
+    @Override
+    public boolean replaceChild(ASTNodeWrapper oldChild, ASTNodeWrapper newChild) {
+        if (oldChild == getType() && newChild instanceof ClassNodeWrapper) {
+            setType((ClassNodeWrapper) newChild);
+            return true;
+        }
+        return super.replaceChild(oldChild, newChild);
     }
 }

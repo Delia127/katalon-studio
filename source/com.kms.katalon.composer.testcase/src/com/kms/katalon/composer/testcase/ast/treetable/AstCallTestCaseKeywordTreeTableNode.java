@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.testcase.ast.treetable;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -16,24 +15,14 @@ import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.editors.CallTestCaseCellEditor;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MapExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
-import com.kms.katalon.composer.testcase.model.InputParameter;
-import com.kms.katalon.composer.testcase.model.InputValueType;
-import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
-import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
-import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
+import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.controller.TestCaseController;
-import com.kms.katalon.core.model.FailureHandling;
-import com.kms.katalon.core.testcase.TestCase;
-import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.custom.factory.BuiltInMethodNodeFactory;
 import com.kms.katalon.custom.keyword.KeywordMethod;
-import com.kms.katalon.custom.keyword.KeywordParameter;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 
@@ -52,20 +41,13 @@ public class AstCallTestCaseKeywordTreeTableNode extends AstBuiltInKeywordTreeTa
     }
 
     private void internallySetTestCasePk() {
-        ArgumentListExpressionWrapper arguments = (ArgumentListExpressionWrapper) methodCall.getArguments();
-        if (!(arguments.getExpression(0) instanceof MethodCallExpressionWrapper)) {
-            return;
-        }
-        ExpressionWrapper objectExpressionWrapper = AstEntityInputUtil.getCallTestCaseParam((MethodCallExpressionWrapper) arguments.getExpression(0));
-        if (objectExpressionWrapper == null) {
+        String testCaseId = AstEntityInputUtil.findTestCaseIdArgumentFromCallTestCaseMethodCall(methodCall);
+        if (testCaseId == null) {
             return;
         }
         TestCaseEntity testCase = null;
         try {
-            testCase = TestCaseController.getInstance().getTestCaseByDisplayId(
-                    (objectExpressionWrapper instanceof ConstantExpressionWrapper)
-                            ? String.valueOf(((ConstantExpressionWrapper) objectExpressionWrapper).getValue())
-                            : objectExpressionWrapper.getText());
+            testCase = TestCaseController.getInstance().getTestCaseByDisplayId(testCaseId);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
@@ -75,58 +57,33 @@ public class AstCallTestCaseKeywordTreeTableNode extends AstBuiltInKeywordTreeTa
         testCasePk = testCase.getIdForDisplay();
     }
 
-    protected void changeMapExpressionWrapper(MapExpressionWrapper mapExprs) {
-        ArgumentListExpressionWrapper arguments = (ArgumentListExpressionWrapper) methodCall.getArguments();
-        arguments.getExpressions().remove(1);
-        arguments.getExpressions().add(1, mapExprs);
+    private void changeMapExpressionWrapper(MapExpressionWrapper mapExprs) {
+        methodCall.getArguments().setExpression(mapExprs, 1);
     }
 
-    protected void changeTestCasePk(TestCaseEntity testCase) {
-        MethodCallExpressionWrapper testCaseMethodCallEprs = AstEntityInputUtil.getNewCallTestCaseExpression(testCase,
-                methodCall.getArguments());
-        ArgumentListExpressionWrapper arguments = (ArgumentListExpressionWrapper) methodCall.getArguments();
-        arguments.getExpressions().remove(0);
-        arguments.getExpressions().add(0, testCaseMethodCallEprs);
+    private void changeTestCasePk(TestCaseEntity testCase) {
+        ArgumentListExpressionWrapper arguments = methodCall.getArguments();
+        MethodCallExpressionWrapper testCaseMethodCallEprs = AstEntityInputUtil.createNewFindTestCaseMethodCall(testCase,
+                arguments);
+        arguments.setExpression(testCaseMethodCallEprs, 0);
         internallySetTestCasePk();
     }
 
     @Override
     public String getInputText() {
-        ArgumentListExpressionWrapper arguments = (ArgumentListExpressionWrapper) methodCall.getArguments();
+        ArgumentListExpressionWrapper arguments = methodCall.getArguments();
         if (arguments == null || arguments.getExpressions().size() == 0) {
             return "";
         }
-        KeywordMethod keywordMethod = null;
-        try {
-            keywordMethod = BuiltInMethodNodeFactory.findCallTestCaseMethod(getBuiltInKWClassSimpleName());
-        } catch (IOException e) {
-            LoggerSingleton.logError(e);
-        }
+        KeywordMethod keywordMethod = BuiltInMethodNodeFactory.findCallTestCaseMethod(getBuiltInKWClassSimpleName());
         if (keywordMethod == null) {
             return "";
         }
-        int count = 0;
-        StringBuilder displayString = new StringBuilder();
-        for (int i = 0; i < keywordMethod.getParameters().length; i++) {
-            KeywordParameter keywordParam = keywordMethod.getParameters()[i];
-            if (TestObject.class.isAssignableFrom(keywordParam.getType())
-                    || FailureHandling.class.isAssignableFrom(keywordParam.getType())
-                    || TestCase.class.isAssignableFrom(keywordParam.getType())) {
-                continue;
-            }
-            if (count > 0) {
-                displayString.append("; ");
-            }
-            ExpressionWrapper inputExpression = arguments.getExpression(i);
-            InputValueType typeValue = AstTreeTableValueUtil.getTypeValue(inputExpression);
-            if (typeValue != null) {
-                displayString.append(typeValue.getValueToDisplay(inputExpression));
-            } else {
-                displayString.append(inputExpression.getText());
-            }
-            count++;
-        }
-        return displayString.toString();
+        return buildInputDisplayString(arguments, keywordMethod);
+    }
+    
+    protected boolean isIgnoreParamType(Class<?> paramType) {
+        return super.isIgnoreParamType(paramType) || AstEntityInputUtil.isTestCaseClass(paramType) ;
     }
 
     @Override
@@ -140,13 +97,8 @@ public class AstCallTestCaseKeywordTreeTableNode extends AstBuiltInKeywordTreeTa
         if (argumentList == null) {
             return null;
         }
-        try {
-            return AstTreeTableInputUtil.generateBuiltInKeywordInputParameters(
-                    BuiltInMethodNodeFactory.findCallTestCaseMethod(getBuiltInKWClassSimpleName()), argumentList);
-        } catch (IOException e) {
-            LoggerSingleton.logError(e);
-        }
-        return null;
+        return AstKeywordsInputUtil.generateInputParameters(
+                BuiltInMethodNodeFactory.findCallTestCaseMethod(getBuiltInKWClassSimpleName()), argumentList);
     }
 
     @Override
@@ -155,30 +107,15 @@ public class AstCallTestCaseKeywordTreeTableNode extends AstBuiltInKeywordTreeTa
             return false;
         }
         List<?> inputParameters = (List<?>) input;
-        KeywordMethod keywordMethod = null;
-        try {
-            keywordMethod = BuiltInMethodNodeFactory.findCallTestCaseMethod(getBuiltInKWClassSimpleName());
-        } catch (IOException e) {
-            LoggerSingleton.logError(e);
-        }
+        KeywordMethod keywordMethod = BuiltInMethodNodeFactory.findCallTestCaseMethod(getBuiltInKWClassSimpleName());
         if (keywordMethod == null) {
             return false;
         }
-        ArgumentListExpressionWrapper argumentListExpression = new ArgumentListExpressionWrapper(methodCall);
-        for (int i = 0; i < keywordMethod.getParameters().length; i++) {
-            argumentListExpression.addExpression(AstTreeTableInputUtil.getArgumentExpression(
-                    (InputParameter) inputParameters.get(i), parentStatement));
-
-        }
-        if (!AstTreeTableValueUtil.compareAstNode(argumentListExpression, methodCall.getArguments())) {
-            methodCall.setArguments(argumentListExpression);
-            return true;
-        }
-        return false;
+        return setInput(inputParameters, keywordMethod);
     }
 
     public List<VariableEntity> getCallTestCaseVariables() {
-        return TestCaseTreeTableInput.getCallTestCaseVariables((ArgumentListExpressionWrapper) methodCall.getArguments());
+        return AstEntityInputUtil.getCallTestCaseVariables(methodCall);
     }
 
     @Override
@@ -212,23 +149,23 @@ public class AstCallTestCaseKeywordTreeTableNode extends AstBuiltInKeywordTreeTa
 
     @Override
     public boolean setTestObject(Object object) {
+        if (!(object instanceof TestCaseTreeEntity)) {
+            return false;
+        }
+        TestCaseEntity newTestCase;
         try {
-            if (!(object instanceof TestCaseTreeEntity)
-                    || !(((TestCaseTreeEntity) object).getObject() instanceof TestCaseEntity)) {
-                return false;
-            }
-            TestCaseEntity newTestCase = (TestCaseEntity) ((TestCaseTreeEntity) object).getObject();
-            if (!verifyCallTestCase(newTestCase) || testCasePk.equals(newTestCase.getIdForDisplay())) {
-                return false;
-            }
-            changeTestCasePk(newTestCase);
-            changeMapExpressionWrapper(AstEntityInputUtil.generateTestCaseVariableBindingExpression(newTestCase,
-                    methodCall));
-            return true;
+            newTestCase = ((TestCaseTreeEntity) object).getObject();
         } catch (Exception e) {
             LoggerSingleton.logError(e);
+            return false;
         }
-        return false;
+        if (!verifyCallTestCase(newTestCase)) {
+            return false;
+        }
+        changeTestCasePk(newTestCase);
+        changeMapExpressionWrapper(AstEntityInputUtil.generateTestCaseVariableBindingMapExpression(newTestCase,
+                methodCall));
+        return true;
     }
 
     private boolean verifyCallTestCase(TestCaseEntity newTestCase) {

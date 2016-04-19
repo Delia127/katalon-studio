@@ -7,12 +7,12 @@ import org.codehaus.groovy.ast.expr.ClosureExpression;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ASTHasBlock;
-import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapHelper;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ParameterWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.BlockStatementWrapper;
 
 public class ClosureExpressionWrapper extends ExpressionWrapper implements ASTHasBlock {
+    private static final String UNKNOWN = "<unknown>";
     private ParameterWrapper[] parameters;
     private BlockStatementWrapper code;
 
@@ -39,10 +39,10 @@ public class ClosureExpressionWrapper extends ExpressionWrapper implements ASTHa
         }
         this.code = new BlockStatementWrapper(closureExpressionWrapper.getBlock(), this);
     }
-
+    
     @Override
     public String getText() {
-        String paramText = ASTNodeWrapHelper.getParametersText(parameters);
+        String paramText = getParametersText(parameters);
         if (paramText.length() > 0) {
             return "{ " + paramText + " -> ... }";
         } else {
@@ -77,5 +77,34 @@ public class ClosureExpressionWrapper extends ExpressionWrapper implements ASTHa
     @Override
     public ClosureExpressionWrapper clone() {
         return new ClosureExpressionWrapper(this, getParent());
+    }
+
+    private static String getParameterText(ParameterWrapper node) {
+        if (node == null)
+            return UNKNOWN;
+
+        String name = node.getName() == null ? UNKNOWN : node.getName();
+        String type = node.getType() == null || node.getType().getName() == null ? UNKNOWN : node.getType()
+                .getName();
+        if (node.getInitialExpression() != null) {
+            return type + " " + name + " = " + node.getInitialExpression().getText();
+        }
+        return type + " " + name;
+    }
+
+    private static String getParametersText(ParameterWrapper[] parameters) {
+        if (parameters == null)
+            return "";
+        if (parameters.length == 0)
+            return "";
+        StringBuilder result = new StringBuilder();
+        int max = parameters.length;
+        for (int x = 0; x < max; x++) {
+            result.append(getParameterText(parameters[x]));
+            if (x < (max - 1)) {
+                result.append(", ");
+            }
+        }
+        return result.toString();
     }
 }

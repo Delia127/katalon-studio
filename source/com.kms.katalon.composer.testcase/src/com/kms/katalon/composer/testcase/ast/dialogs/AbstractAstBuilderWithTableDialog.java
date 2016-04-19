@@ -35,6 +35,12 @@ public abstract class AbstractAstBuilderWithTableDialog extends AbstractAstBuild
      * sub classes need to override this method to add columns to table
      */
     protected abstract void addTableColumns();
+    
+
+    /**
+     * Refresh the input
+     */
+    protected abstract void setInput();
 
     @Override
     protected Control createDialogArea(Composite parent) {
@@ -42,7 +48,7 @@ public abstract class AbstractAstBuilderWithTableDialog extends AbstractAstBuild
         container.setLayout(new GridLayout(1, false));
         tableViewer = createTable(container);
         addTableColumns();
-        refresh();
+        setInput();
         return container;
     }
 }

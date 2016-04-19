@@ -11,7 +11,6 @@ import javax.inject.Named;
 
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.ASTNode;
-import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.eclipse.editor.GroovyEditor;
 import org.codehaus.groovy.eclipse.refactoring.actions.FormatKind;
 import org.eclipse.core.resources.IResource;
@@ -57,6 +56,7 @@ import com.kms.katalon.composer.parts.MultipleTabsCompositePart;
 import com.kms.katalon.composer.testcase.actions.KatalonFormatAction;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.testcase.exceptions.GroovyParsingException;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
@@ -299,16 +299,16 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
             if (groovyEditor == null || childTestCasePart == null) {
                 return false;
             }
-            scriptNode = GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(groovyEditor.getViewer()
-                    .getDocument()
-                    .get(), testCase.getRelativePathForUI());
+            scriptNode = GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(groovyEditor.getViewer().getDocument().get(), testCase.getRelativePathForUI());
+
             if (scriptNode == null) {
                 scriptNode = new ScriptNodeWrapper(testCase.getRelativePathForUI());
             }
+            
             childTestCasePart.loadASTNodesToTreeTable(scriptNode);
             isScriptChanged = false;
             return true;
-        } catch (CompilationFailedException exception) {
+        } catch (GroovyParsingException exception) {
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
                     StringConstants.PA_ERROR_MSG_PLS_FIX_ERROR_IN_SCRIPT);
             subPartStack.setSelectedElement(childTestCaseEditorPart.getModel());

@@ -5,7 +5,7 @@ import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TreeViewer;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.testcase.ast.treetable.AstInputEditableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.IAstInputEditableNode;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
 
 public class InputColumnEditingSupport extends EditingSupport {
@@ -20,22 +20,22 @@ public class InputColumnEditingSupport extends EditingSupport {
 
     @Override
     protected CellEditor getCellEditor(Object element) {
-        return ((AstInputEditableNode) element).getCellEditorForInput(treeViewer.getTree());
+        return ((IAstInputEditableNode) element).getCellEditorForInput(treeViewer.getTree());
     }
 
     @Override
     protected boolean canEdit(Object element) {
-        return (element instanceof AstInputEditableNode && ((AstInputEditableNode) element).canEditInput());
+        return (element instanceof IAstInputEditableNode && ((IAstInputEditableNode) element).canEditInput());
     }
 
     @Override
     protected Object getValue(Object element) {
-        return ((AstInputEditableNode) element).getInput();
+        return ((IAstInputEditableNode) element).getInput();
     }
 
     @Override
     protected void setValue(Object element, Object value) {
-        if (!((AstInputEditableNode) element).setInput(value)) {
+        if (!((IAstInputEditableNode) element).setInput(value)) {
             return;
         }
         try {

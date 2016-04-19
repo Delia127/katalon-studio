@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.testcase.groovy.ast;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,15 +50,15 @@ public class AnnotationNodeWrapper extends ASTNodeWrapper {
     }
 
     public void setClassNode(ClassNodeWrapper classNode) {
+        if (classNode == null) {
+            return;
+        }
+        classNode.setParent(this);
         this.classNode = classNode;
     }
 
     public Map<String, ExpressionWrapper> getMembers() {
-        return members;
-    }
-
-    public void setMembers(Map<String, ExpressionWrapper> members) {
-        this.members = members;
+        return Collections.unmodifiableMap(members);
     }
 
     @Override
@@ -97,5 +98,10 @@ public class AnnotationNodeWrapper extends ASTNodeWrapper {
         }
         children.addAll(members.values());
         return children;
+    }
+
+    @Override
+    public AnnotationNodeWrapper clone() {
+        return new AnnotationNodeWrapper(this, getParent());
     }
 }

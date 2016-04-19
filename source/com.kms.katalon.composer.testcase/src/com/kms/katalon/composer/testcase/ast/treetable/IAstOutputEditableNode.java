@@ -3,7 +3,7 @@ package com.kms.katalon.composer.testcase.ast.treetable;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.widgets.Composite;
 
-public interface AstOutputEditableNode {
+public interface IAstOutputEditableNode {
     public boolean canEditOutput();
     public String getOutputText();
     public String getOutputTooltipText();

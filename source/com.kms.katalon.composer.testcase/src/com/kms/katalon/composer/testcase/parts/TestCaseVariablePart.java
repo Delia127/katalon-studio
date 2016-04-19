@@ -50,7 +50,7 @@ import com.kms.katalon.composer.testcase.support.VariableDefaultValueEditingSupp
 import com.kms.katalon.composer.testcase.support.VariableDefaultValueTypeEditingSupport;
 import com.kms.katalon.composer.testcase.support.VariableDescriptionEditingSupport;
 import com.kms.katalon.composer.testcase.support.VariableNameEditingSupport;
-import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
+import com.kms.katalon.composer.testcase.util.AstValueUtil;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.util.SyntaxUtil;
@@ -259,7 +259,7 @@ public class TestCaseVariablePart {
                     if (expression == null) {
                         return null;
                     }
-                    InputValueType valueType = AstTreeTableValueUtil.getTypeValue(expression);
+                    InputValueType valueType = AstValueUtil.getTypeValue(expression);
                     if (valueType != null) {
                         return TreeEntityUtil.getReadableKeywordName(valueType.getName());
                     }

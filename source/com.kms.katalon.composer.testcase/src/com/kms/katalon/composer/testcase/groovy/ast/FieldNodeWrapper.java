@@ -10,17 +10,20 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrappe
 
 public class FieldNodeWrapper extends AnnonatedNodeWrapper {
     private String name;
+
     private int modifiers;
+
     private ClassNodeWrapper type;
+
     private ExpressionWrapper initialValueExpression;
-    
+
     public FieldNodeWrapper(String name, Class<?> type, ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
         this.name = name;
         this.type = new ClassNodeWrapper(type, this);
         this.modifiers = Modifier.PUBLIC;
     }
-    
+
     public FieldNodeWrapper(FieldNode fieldNode, ASTNodeWrapper parentNodeWrapper) {
         super(fieldNode, parentNodeWrapper);
         this.name = fieldNode.getName();
@@ -29,7 +32,7 @@ public class FieldNodeWrapper extends AnnonatedNodeWrapper {
         this.initialValueExpression = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(
                 fieldNode.getInitialExpression(), this);
     }
-    
+
     public FieldNodeWrapper(FieldNodeWrapper fieldNodeWrapper, ASTNodeWrapper parentNodeWrapper) {
         super(fieldNodeWrapper, parentNodeWrapper);
         this.name = fieldNodeWrapper.getName();
@@ -39,7 +42,7 @@ public class FieldNodeWrapper extends AnnonatedNodeWrapper {
             initialValueExpression = fieldNodeWrapper.getInitialValueExpression().copy(this);
         }
     }
-    
+
     public FieldNodeWrapper(FieldNodeWrapper fieldNodeWrapper) {
         this(fieldNodeWrapper, fieldNodeWrapper.getParent());
     }
@@ -48,32 +51,24 @@ public class FieldNodeWrapper extends AnnonatedNodeWrapper {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public int getModifiers() {
         return modifiers;
-    }
-
-    public void setModifiers(int modifiers) {
-        this.modifiers = modifiers;
     }
 
     public ExpressionWrapper getInitialValueExpression() {
         return initialValueExpression;
     }
-
+    
     public void setInitialValueExpression(ExpressionWrapper initialValueExpression) {
+        if (initialValueExpression == null) {
+            return;
+        }
+        initialValueExpression.setParent(this);
         this.initialValueExpression = initialValueExpression;
     }
 
     public ClassNodeWrapper getType() {
         return type;
-    }
-
-    public void setType(ClassNodeWrapper type) {
-        this.type = type;
     }
 
     @Override
@@ -92,5 +87,10 @@ public class FieldNodeWrapper extends AnnonatedNodeWrapper {
         astNodeWrappers.addAll(super.getAstChildren());
         astNodeWrappers.add(initialValueExpression);
         return astNodeWrappers;
+    }
+    
+    @Override
+    public FieldNodeWrapper clone() {
+        return new FieldNodeWrapper(this, getParent());
     }
 }

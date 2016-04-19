@@ -1,7 +1,12 @@
 package com.kms.katalon.composer.testcase.ast.editors;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.ClassUtils;
 import org.eclipse.core.runtime.Assert;
@@ -10,7 +15,6 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
-import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
 
 public class MethodComboBoxCellEditor extends ComboBoxCellEditor {
     private Method[] methods;
@@ -29,7 +33,7 @@ public class MethodComboBoxCellEditor extends ComboBoxCellEditor {
      * Accept a {@link MethodCallExpressionWrapper} object
      * 
      * @param a
-     *            {@link MethodCallExpressionWrapper} object
+     * {@link MethodCallExpressionWrapper} object
      */
     @Override
     protected void doSetValue(Object value) {
@@ -61,14 +65,14 @@ public class MethodComboBoxCellEditor extends ComboBoxCellEditor {
         return methods[selectionIndex];
     }
 
-    private static String getMethodSignature(Method method) {
+    public static String getMethodSignature(Method method) {
         if (method == null) {
             return "";
         }
 
         StringBuilder sb = new StringBuilder();
         sb.append(method.getName() + "(");
-        List<Class<?>> paramClasses = AstTreeTableInputUtil.getParamClasses(method);
+        List<Class<?>> paramClasses = getParamClasses(method);
         for (int j = 0; j < paramClasses.size(); j++) {
             sb.append(getTypeName(paramClasses.get(j)));
             if (j < (paramClasses.size() - 1)) {
@@ -119,10 +123,7 @@ public class MethodComboBoxCellEditor extends ComboBoxCellEditor {
     }
 
     public static Class<?>[] getMethodCallParams(MethodCallExpressionWrapper methodCall) {
-        if (!(methodCall.getArguments() instanceof ArgumentListExpressionWrapper)) {
-            return new Class<?>[0];
-        }
-        ArgumentListExpressionWrapper argumentList = ((ArgumentListExpressionWrapper) methodCall.getArguments());
+        ArgumentListExpressionWrapper argumentList = methodCall.getArguments();
         Class<?>[] methodCallParam = new Class<?>[argumentList.getExpressions().size()];
         for (int index = 0; index < argumentList.getExpressions().size(); index++) {
             methodCallParam[index] = argumentList.getExpression(index).getType().getTypeClass();
@@ -130,16 +131,46 @@ public class MethodComboBoxCellEditor extends ComboBoxCellEditor {
         return methodCallParam;
     }
 
-    private static boolean compareArguments(Class<?>[] methodClassParams, Class<?>[] methodCallParam) {
-        if (methodClassParams.length != methodCallParam.length) {
+    private static boolean compareArguments(Class<?>[] methodClassParams, Class<?>[] methodCallParams) {
+        if (methodClassParams.length != methodCallParams.length) {
             return false;
         }
         for (int i = 0; i < methodClassParams.length; i++) {
-            if (!ClassUtils.isAssignable(methodClassParams[i], methodCallParam[i], true)) {
+            Class<?> methodClassParam = changeToPrimitiveTypeIfPossible(methodClassParams[i]);
+            Class<?> methodCallParam = changeToPrimitiveTypeIfPossible(methodCallParams[i]);
+            if (!ClassUtils.isAssignable(methodCallParam, methodClassParam, true)) {
                 return false;
             }
         }
         return true;
     }
 
+    private static Class<?> changeToPrimitiveTypeIfPossible(Class<?> type) {
+        if (type == null || type.isPrimitive()) {
+            return type;
+        }
+        Class<?> primitiveType = ClassUtils.wrapperToPrimitive(type);
+        if (primitiveType != null) {
+            return primitiveType;
+        }
+        return type;
+    }
+    
+    public static List<Class<?>> getParamClasses(Method method) {
+        if (method == null) {
+            return Collections.emptyList();
+        }
+        List<Class<?>> parameterClasses = new ArrayList<Class<?>>();
+        for (Type type : method.getGenericParameterTypes()) {
+            if (type instanceof Class<?> || isMapType(type)) {
+                parameterClasses.add(((Class<?>) type));
+            }
+        }
+        return parameterClasses;
+    }
+
+    private static boolean isMapType(Type type) {
+        return type instanceof ParameterizedType && ((ParameterizedType) type).getRawType() instanceof Class<?>
+                && ((Class<?>) ((ParameterizedType) type).getRawType()).getName().equals(Map.class.getName());
+    }
 }

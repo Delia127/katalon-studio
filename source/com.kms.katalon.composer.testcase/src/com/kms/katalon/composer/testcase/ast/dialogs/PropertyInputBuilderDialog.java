@@ -17,14 +17,13 @@ import org.eclipse.swt.widgets.TableColumn;
 
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.PropertyExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
-import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
+import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 
 public class PropertyInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
     private final InputValueType[] defaultObjectInputValueTypes = { InputValueType.Class, InputValueType.Variable };
@@ -33,14 +32,11 @@ public class PropertyInputBuilderDialog extends AbstractAstBuilderWithTableDialo
 
     public PropertyInputBuilderDialog(Shell parentShell, PropertyExpressionWrapper propertyExpression) {
         super(parentShell);
-        if (propertyExpression == null || propertyExpression.getObjectExpression() == null) {
-            throw new IllegalArgumentException();
-        }
         this.propertyExpression = propertyExpression.clone();
     }
 
     @Override
-    public void refresh() {
+    public void setInput() {
         tableViewer.setContentProvider(new ArrayContentProvider());
         List<ASTNodeWrapper> expressionList = new ArrayList<ASTNodeWrapper>();
         expressionList.add(propertyExpression);
@@ -54,60 +50,93 @@ public class PropertyInputBuilderDialog extends AbstractAstBuilderWithTableDialo
     }
 
     @Override
-    public void replaceObject(Object originalObject, Object newObject) {
-        if (originalObject == propertyExpression.getObjectExpression() && newObject instanceof ExpressionWrapper) {
-            propertyExpression.setObjectExpression((ExpressionWrapper) newObject);
-            tableViewer.refresh();
-        }
-    }
-
-    @Override
     public String getDialogTitle() {
         return StringConstants.DIA_TITLE_PROPERTY_INPUT;
     }
 
     @Override
     protected void addTableColumns() {
-        TableViewerColumn tableViewerColumnObjectType = new TableViewerColumn(tableViewer, SWT.NONE);
-        TableColumn tableColumnObjectType = tableViewerColumnObjectType.getColumn();
-        tableColumnObjectType.setWidth(152);
-        tableColumnObjectType.setText(StringConstants.DIA_COL_OBJ_TYPE);
-        tableViewerColumnObjectType.setLabelProvider(new AstInputTypeLabelProvider() {
+        addTableColumnObjectType();
+
+        addTableColumnObject();
+
+        addTableColumnProperty();
+    }
+
+    private void addTableColumnProperty() {
+        TableViewerColumn tableViewerColumnProperty = new TableViewerColumn(tableViewer, SWT.NONE);
+        TableColumn tblclmnNewColumnProperty = tableViewerColumnProperty.getColumn();
+        tblclmnNewColumnProperty.setText(StringConstants.DIA_COL_PROPERTY);
+        tblclmnNewColumnProperty.setWidth(152);
+        tableViewerColumnProperty.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
                 if (element == propertyExpression) {
-                    return super.getText(propertyExpression.getObjectExpression());
+                    return propertyExpression.getPropertyAsString();
                 }
-                return "";
+                return StringUtils.EMPTY;
             }
         });
 
-        tableViewerColumnObjectType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer,
-                defaultObjectInputValueTypes, this) {
-            @Override
-            protected CellEditor getCellEditor(Object element) {
-                return super.getCellEditor(propertyExpression.getObjectExpression());
-            }
+        tableViewerColumnProperty.setEditingSupport(new EditingSupport(tableViewer) {
+            Class<?> type;
 
-            @Override
-            protected boolean canEdit(Object element) {
-                if (element == propertyExpression) {
-                    return true;
-                }
-                return false;
-            }
+            String[] fieldNames;
 
             @Override
             protected void setValue(Object element, Object value) {
-                super.setValue(propertyExpression.getObjectExpression(), value);
+                if (type != null && fieldNames != null && fieldNames.length > 0 && value instanceof Integer
+                        && (int) value >= 0 && (int) value < fieldNames.length) {
+                    propertyExpression.setProperty(fieldNames[(int) value]);
+                    getViewer().refresh();
+                    return;
+                }
+                if (value instanceof String) {
+                    propertyExpression.setProperty((String) value);
+                    getViewer().refresh();
+                }
             }
 
             @Override
             protected Object getValue(Object element) {
-                return super.getValue(propertyExpression.getObjectExpression());
+                if (type == null || fieldNames == null || fieldNames.length == 0) {
+                    return propertyExpression.getPropertyAsString();
+                }
+                for (int i = 0; i < fieldNames.length; i++) {
+                    if (propertyExpression.getPropertyAsString().equals(fieldNames[i])) {
+                        return i;
+                    }
+                }
+                return 0;
+            }
+
+            @Override
+            protected CellEditor getCellEditor(Object element) {
+                if (type != null && fieldNames != null && fieldNames.length > 0) {
+                    return new ComboBoxCellEditor(tableViewer.getTable(), fieldNames);
+                }
+                return new TextCellEditor(tableViewer.getTable());
+            }
+
+            @Override
+            protected boolean canEdit(Object element) {
+                if (element != propertyExpression) {
+                    return false;
+                }
+                type = AstKeywordsInputUtil.loadType(propertyExpression.getObjectExpressionAsString(),
+                        propertyExpression.getScriptClass());
+                if (type != null) {
+                    fieldNames = new String[type.getFields().length];
+                    for (int index = 0; index < type.getFields().length; index++) {
+                        fieldNames[index] = type.getFields()[index].getName();
+                    }
+                }
+                return true;
             }
         });
+    }
 
+    private void addTableColumnObject() {
         TableViewerColumn tableViewerColumnObject = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnNewColumnObject = tableViewerColumnObject.getColumn();
         tblclmnNewColumnObject.setWidth(152);
@@ -122,7 +151,7 @@ public class PropertyInputBuilderDialog extends AbstractAstBuilderWithTableDialo
             }
         });
 
-        tableViewerColumnObject.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this) {
+        tableViewerColumnObject.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer) {
             @Override
             protected CellEditor getCellEditor(Object element) {
                 return super.getCellEditor(propertyExpression.getObjectExpression());
@@ -143,72 +172,43 @@ public class PropertyInputBuilderDialog extends AbstractAstBuilderWithTableDialo
                 return super.getValue(propertyExpression.getObjectExpression());
             }
         });
+    }
 
-        TableViewerColumn tableViewerColumnProperty = new TableViewerColumn(tableViewer, SWT.NONE);
-        TableColumn tblclmnNewColumnProperty = tableViewerColumnProperty.getColumn();
-        tblclmnNewColumnProperty.setText(StringConstants.DIA_COL_PROPERTY);
-        tblclmnNewColumnProperty.setWidth(152);
-        tableViewerColumnProperty.setLabelProvider(new ColumnLabelProvider() {
+    private void addTableColumnObjectType() {
+        TableViewerColumn tableViewerColumnObjectType = new TableViewerColumn(tableViewer, SWT.NONE);
+        TableColumn tableColumnObjectType = tableViewerColumnObjectType.getColumn();
+        tableColumnObjectType.setWidth(152);
+        tableColumnObjectType.setText(StringConstants.DIA_COL_OBJ_TYPE);
+        tableViewerColumnObjectType.setLabelProvider(new AstInputTypeLabelProvider() {
             @Override
             public String getText(Object element) {
                 if (element == propertyExpression) {
-                    return propertyExpression.getPropertyAsString();
+                    return super.getText(propertyExpression.getObjectExpression());
                 }
-                return StringUtils.EMPTY;
+                return "";
             }
         });
 
-        tableViewerColumnProperty.setEditingSupport(new EditingSupport(tableViewer) {
-            Class<?> type;
-            String[] fieldNames;
-
-            @Override
-            protected void setValue(Object element, Object value) {
-                if (type != null && fieldNames != null && fieldNames.length > 0 && value instanceof Integer
-                        && (int) value >= 0 && (int) value < fieldNames.length) {
-                    propertyExpression.setProperty(fieldNames[(int) value]);
-                    getViewer().refresh();
-                } else if (value instanceof String) {
-                    propertyExpression.setProperty((String) value);
-                    getViewer().refresh();
-                }
-            }
-
-            @Override
-            protected Object getValue(Object element) {
-                if (type != null && fieldNames != null && fieldNames.length > 0) {
-                    for (int i = 0; i < fieldNames.length; i++) {
-                        if (propertyExpression.getPropertyAsString().equals(fieldNames[i])) {
-                            return i;
-                        }
-                    }
-                    return 0;
-                }
-                return propertyExpression.getPropertyAsString();
-            }
-
+        tableViewerColumnObjectType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(
+                tableViewer, defaultObjectInputValueTypes) {
             @Override
             protected CellEditor getCellEditor(Object element) {
-                if (type != null && fieldNames != null && fieldNames.length > 0) {
-                    return new ComboBoxCellEditor(tableViewer.getTable(), fieldNames);
-                }
-                return new TextCellEditor(tableViewer.getTable());
+                return super.getCellEditor(propertyExpression.getObjectExpression());
             }
 
             @Override
             protected boolean canEdit(Object element) {
-                if (element == propertyExpression) {
-                    type = AstTreeTableInputUtil.loadType(propertyExpression.getObjectExpressionAsString(),
-                            propertyExpression.getScriptClass());
-                    if (type != null) {
-                        fieldNames = new String[type.getFields().length];
-                        for (int index = 0; index < type.getFields().length; index++) {
-                            fieldNames[index] = type.getFields()[index].getName();
-                        }
-                    }
-                    return true;
-                }
-                return false;
+                return element == propertyExpression;
+            }
+
+            @Override
+            protected void setValue(Object element, Object value) {
+                super.setValue(propertyExpression.getObjectExpression(), value);
+            }
+
+            @Override
+            protected Object getValue(Object element) {
+                return super.getValue(propertyExpression.getObjectExpression());
             }
         });
     }

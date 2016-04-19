@@ -4,7 +4,7 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TreeViewer;
 
-import com.kms.katalon.composer.testcase.ast.treetable.AstOutputEditableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.IAstOutputEditableNode;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
 
 public class OutputColumnEditingSupport extends EditingSupport {
@@ -20,28 +20,28 @@ public class OutputColumnEditingSupport extends EditingSupport {
 
     @Override
     protected CellEditor getCellEditor(Object element) {
-        if (element instanceof AstOutputEditableNode) {
-            return ((AstOutputEditableNode) element).getCellEditorForOutput(treeViewer.getTree());
+        if (element instanceof IAstOutputEditableNode) {
+            return ((IAstOutputEditableNode) element).getCellEditorForOutput(treeViewer.getTree());
         }
         return null;
     }
 
     @Override
     protected boolean canEdit(Object element) {
-        return (element instanceof AstOutputEditableNode && ((AstOutputEditableNode) element).canEditOutput());
+        return (element instanceof IAstOutputEditableNode && ((IAstOutputEditableNode) element).canEditOutput());
     }
 
     @Override
     protected Object getValue(Object element) {
-        if (element instanceof AstOutputEditableNode) {
-            return ((AstOutputEditableNode) element).getOutput();
+        if (element instanceof IAstOutputEditableNode) {
+            return ((IAstOutputEditableNode) element).getOutput();
         }
         return null;
     }
 
     @Override
     protected void setValue(Object element, Object value) {
-        if (element instanceof AstOutputEditableNode && ((AstOutputEditableNode) element).setOutput(value)) {
+        if (element instanceof IAstOutputEditableNode && ((IAstOutputEditableNode) element).setOutput(value)) {
             parentTestCasePart.getTreeTableInput().setDirty(true);
             treeViewer.refresh(element);
         }

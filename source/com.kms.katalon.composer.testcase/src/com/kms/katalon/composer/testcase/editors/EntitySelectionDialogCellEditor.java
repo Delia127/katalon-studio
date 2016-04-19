@@ -39,8 +39,9 @@ public abstract class EntitySelectionDialogCellEditor extends AbstractDialogCell
         }
         try {
             dialog.setInput(TreeEntityUtil.getChildren(null, rootFolder));
-            if (getValue() instanceof Entity && getInitialSelection() != null) {
-                dialog.setInitialSelection(getInitialSelection());
+            ITreeEntity initialSelection = getInitialSelection();
+            if (initialSelection != null) {
+                dialog.setInitialSelection(initialSelection);
             }
             if (dialog.open() == Window.OK) {
                 return dialog.getFirstResult();

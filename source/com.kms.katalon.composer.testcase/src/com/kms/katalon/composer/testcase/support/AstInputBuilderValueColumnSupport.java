@@ -5,18 +5,15 @@ import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.swt.widgets.Composite;
 
-import com.kms.katalon.composer.testcase.ast.dialogs.AstBuilderDialog;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
-import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
+import com.kms.katalon.composer.testcase.util.AstValueUtil;
 
 public class AstInputBuilderValueColumnSupport extends EditingSupport {
-    protected AstBuilderDialog parentDialog;
     protected InputValueType inputValueType;
 
-    public AstInputBuilderValueColumnSupport(ColumnViewer viewer, AstBuilderDialog parentDialog) {
+    public AstInputBuilderValueColumnSupport(ColumnViewer viewer) {
         super(viewer);
-        this.parentDialog = parentDialog;
     }
 
     @Override
@@ -25,12 +22,15 @@ public class AstInputBuilderValueColumnSupport extends EditingSupport {
         if (object == null || !(object instanceof ASTNodeWrapper)) {
             return;
         }
-        if (!object.equals(element)) {
-            ASTNodeWrapper oldAstNode = (ASTNodeWrapper) element;
-            ASTNodeWrapper newAstNode = (ASTNodeWrapper) object;
-            newAstNode.copyProperties(oldAstNode);
-            parentDialog.replaceObject(oldAstNode, newAstNode);
+
+        ASTNodeWrapper oldAstNode = (ASTNodeWrapper) element;
+        ASTNodeWrapper newAstNode = (ASTNodeWrapper) object;
+        if (oldAstNode.updateInputFrom(newAstNode)) {
+            handleUpdateInputSuccessfully();
         }
+    }
+
+    protected void handleUpdateInputSuccessfully() {
         getViewer().refresh();
     }
 
@@ -47,7 +47,7 @@ public class AstInputBuilderValueColumnSupport extends EditingSupport {
     @Override
     protected boolean canEdit(Object element) {
         if (element instanceof ASTNodeWrapper) {
-            inputValueType = AstTreeTableValueUtil.getTypeValue((ASTNodeWrapper) element);
+            inputValueType = AstValueUtil.getTypeValue((ASTNodeWrapper) element);
             return inputValueType != null;
         }
         return false;

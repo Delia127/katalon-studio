@@ -32,10 +32,6 @@ public class FieldExpressionWrapper extends ExpressionWrapper {
         return fieldNode;
     }
 
-    public void setField(FieldNode fieldNode) {
-        this.fieldNode = fieldNode;
-    }
-
     @Override
     public FieldExpressionWrapper clone() {
         return new FieldExpressionWrapper(this, getParent());

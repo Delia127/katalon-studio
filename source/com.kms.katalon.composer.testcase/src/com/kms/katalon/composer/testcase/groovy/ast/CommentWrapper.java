@@ -55,4 +55,9 @@ public class CommentWrapper extends ASTNodeWrapper {
     public void setMultiLine(boolean isMultiLine) {
         this.isMultiLine = isMultiLine;
     }
+
+    @Override
+    public CommentWrapper clone() {
+        return new CommentWrapper(this, getParent());
+    }
 }

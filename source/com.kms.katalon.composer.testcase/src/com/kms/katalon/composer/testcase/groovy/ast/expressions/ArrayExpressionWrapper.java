@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.testcase.groovy.ast.expressions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -15,7 +16,9 @@ import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
 
 public class ArrayExpressionWrapper extends ExpressionWrapper {
     private List<ExpressionWrapper> expressions = new ArrayList<ExpressionWrapper>();
+
     private List<ExpressionWrapper> sizeExpression = new ArrayList<ExpressionWrapper>();
+
     private ClassNodeWrapper elementType;
 
     public ArrayExpressionWrapper(ArrayExpression arrayExpression, ASTNodeWrapper parentNodeWrapper) {
@@ -59,15 +62,11 @@ public class ArrayExpressionWrapper extends ExpressionWrapper {
     }
 
     public List<ExpressionWrapper> getExpressions() {
-        return expressions;
-    }
-
-    public void setExpressions(List<ExpressionWrapper> expressions) {
-        this.expressions = expressions;
+        return Collections.unmodifiableList(expressions);
     }
 
     public List<ExpressionWrapper> getSizeExpression() {
-        return sizeExpression;
+        return Collections.unmodifiableList(sizeExpression);
     }
 
     @Override

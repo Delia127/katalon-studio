@@ -3,22 +3,38 @@ package com.kms.katalon.composer.testcase.groovy.ast.expressions;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+import org.codehaus.groovy.ast.expr.ArgumentListExpression;
 import org.codehaus.groovy.ast.expr.MethodCallExpression;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapHelper;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 
 public class MethodCallExpressionWrapper extends ExpressionWrapper {
-    private static final String TO_STRING_METHOD_NAME = "toString";
+    public static final String TO_STRING_METHOD_NAME = "toString";
+
+    public static final String THIS_VARIABLE = "this";
 
     private ExpressionWrapper objectExpression;
+
     private ExpressionWrapper method;
-    private ExpressionWrapper arguments;
+
+    private ArgumentListExpressionWrapper arguments;
+
     private boolean spreadSafe = false;
+
     private boolean safe = false;
+
+    public MethodCallExpressionWrapper() {
+        this(null);
+    }
 
     public MethodCallExpressionWrapper(ASTNodeWrapper parentNodeWrapper) {
         this("this", TO_STRING_METHOD_NAME, parentNodeWrapper);
+    }
+
+    public MethodCallExpressionWrapper(String classSimpleName, String method) {
+        this(classSimpleName, method, null);
     }
 
     public MethodCallExpressionWrapper(String classSimpleName, String method, ASTNodeWrapper parentNodeWrapper) {
@@ -37,15 +53,23 @@ public class MethodCallExpressionWrapper extends ExpressionWrapper {
         objectExpression = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(expression.getObjectExpression(),
                 this);
         method = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(expression.getMethod(), this);
-        arguments = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(expression.getArguments(), this);
+        if (expression.getArguments() instanceof ArgumentListExpression) {
+            arguments = new ArgumentListExpressionWrapper((ArgumentListExpression) expression.getArguments(), this);
+        } else {
+            arguments = new ArgumentListExpressionWrapper(this);
+        }
     }
 
     public MethodCallExpressionWrapper(MethodCallExpressionWrapper methodCallExpressionWrapper,
             ASTNodeWrapper parentNodeWrapper) {
         super(methodCallExpressionWrapper, parentNodeWrapper);
+        copyMethodCallProperties(methodCallExpressionWrapper);
+    }
+
+    private void copyMethodCallProperties(MethodCallExpressionWrapper methodCallExpressionWrapper) {
         objectExpression = methodCallExpressionWrapper.getObjectExpression().copy(this);
         method = methodCallExpressionWrapper.getMethod().copy(this);
-        arguments = methodCallExpressionWrapper.getArguments().copy(this);
+        arguments = new ArgumentListExpressionWrapper(methodCallExpressionWrapper.getArguments(), this);
     }
 
     public ExpressionWrapper getObjectExpression() {
@@ -53,6 +77,10 @@ public class MethodCallExpressionWrapper extends ExpressionWrapper {
     }
 
     public void setObjectExpression(ExpressionWrapper objectExpression) {
+        if (objectExpression == null) {
+            return;
+        }
+        objectExpression.setParent(this);
         this.objectExpression = objectExpression;
     }
 
@@ -62,10 +90,15 @@ public class MethodCallExpressionWrapper extends ExpressionWrapper {
         }
         return ((ConstantExpressionWrapper) objectExpression).getValue().toString();
     }
-    
+
     public boolean isObjectExpressionOfClass(Class<?> clazz) {
         String objectExpressionString = getObjectExpressionAsString();
-        return objectExpressionString.equals(clazz.getName()) || objectExpressionString.equals(clazz.getSimpleName());
+        return StringUtils.equals(objectExpressionString, clazz.getName())
+                || StringUtils.equals(objectExpressionString, clazz.getSimpleName());
+    }
+
+    public boolean isObjectExpressionOfClass(String className) {
+        return StringUtils.equals(getObjectExpressionAsString(), className);
     }
 
     /**
@@ -73,31 +106,47 @@ public class MethodCallExpressionWrapper extends ExpressionWrapper {
      */
     public String getMethodAsString() {
         if (!(method instanceof ConstantExpressionWrapper)) {
-            return null;
+            return method.getText();
         }
-        return ((ConstantExpressionWrapper) method).getValue().toString();
+        return ((ConstantExpressionWrapper) method).getValueAsString();
     }
 
     public ExpressionWrapper getMethod() {
         return method;
     }
 
-    public void setMethod(ExpressionWrapper method) {
+    public boolean setMethod(ExpressionWrapper method) {
+        if (method == null || method.isEqualsTo(this.method)) {
+            return false;
+        }
+        method.copyProperties(this.method);
+        method.setParent(this);
         this.method = method;
+        return true;
     }
 
-    public void setMethod(String method) {
+    public boolean setMethod(String method) {
+        if (StringUtils.equals(method, getMethodAsString())) {
+            return false;
+        }
         ConstantExpressionWrapper newConstant = new ConstantExpressionWrapper(method, this);
         newConstant.copyProperties(this.method);
         this.method = newConstant;
+        return true;
     }
 
-    public ExpressionWrapper getArguments() {
+    public ArgumentListExpressionWrapper getArguments() {
         return arguments;
     }
 
-    public void setArguments(ExpressionWrapper arguments) {
+    public boolean setArguments(ArgumentListExpressionWrapper arguments) {
+        if (arguments == null || arguments.isEqualsTo(this.arguments)) {
+            return false;
+        }
+        arguments.setParent(this);
+        arguments.copyProperties(this.arguments);
         this.arguments = arguments;
+        return true;
     }
 
     public boolean isSpreadSafe() {
@@ -142,5 +191,39 @@ public class MethodCallExpressionWrapper extends ExpressionWrapper {
     @Override
     public MethodCallExpressionWrapper clone() {
         return new MethodCallExpressionWrapper(this, getParent());
+    }
+
+    @Override
+    public boolean isInputEditatble() {
+        return true;
+    }
+
+    @Override
+    public ASTNodeWrapper getInput() {
+        return this;
+    }
+
+    @Override
+    public boolean updateInputFrom(ASTNodeWrapper input) {
+        if (!(input instanceof MethodCallExpressionWrapper) || this.isEqualsTo(input)) {
+            return false;
+        }
+        copyMethodCallProperties((MethodCallExpressionWrapper) input);
+        return true;
+    }
+
+    @Override
+    public boolean replaceChild(ASTNodeWrapper oldChild, ASTNodeWrapper newChild) {
+        if (oldChild == getObjectExpression() && newChild instanceof ExpressionWrapper) {
+            setObjectExpression((ExpressionWrapper) newChild);
+            return true;
+        } else if (oldChild == getMethod() && newChild instanceof ExpressionWrapper) {
+            setMethod((ExpressionWrapper) newChild);
+            return true;
+        } else if (oldChild == getArguments() && newChild instanceof ArgumentListExpressionWrapper) {
+            setArguments((ArgumentListExpressionWrapper) newChild);
+            return true;
+        } 
+        return super.replaceChild(oldChild, newChild);
     }
 }

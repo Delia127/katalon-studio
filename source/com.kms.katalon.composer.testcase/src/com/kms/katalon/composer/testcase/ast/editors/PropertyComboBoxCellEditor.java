@@ -39,7 +39,7 @@ public abstract class PropertyComboBoxCellEditor extends ComboBoxCellEditor {
     @Override
     protected void doSetValue(Object value) {
         Assert.isTrue(value instanceof PropertyExpressionWrapper);
-        propertyExpression = (PropertyExpressionWrapper) value;
+        propertyExpression = ((PropertyExpressionWrapper) value).clone();
         String propertyEnumValue = propertyExpression.getPropertyAsString();
         for (int index = 0; index < getItems().length; index++) {
             if (!getItems()[index].equals(propertyEnumValue)) {

@@ -38,16 +38,6 @@ public class ClosureListInputBuilderDialog extends AbstractAstBuilderWithTableDi
     }
 
     @Override
-    public void replaceObject(Object originalObject, Object newObject) {
-        int index = closureListExpression.getExpressions().indexOf(originalObject);
-        if (newObject instanceof ExpressionWrapper && closureListExpression != null && index >= 0
-                && index < closureListExpression.getExpressions().size()) {
-            closureListExpression.getExpressions().set(index, (ExpressionWrapper) newObject);
-            refresh();
-        }
-    }
-
-    @Override
     public String getDialogTitle() {
         return StringConstants.DIA_TITLE_CLOSURE_LIST_INPUT;
     }
@@ -73,19 +63,19 @@ public class ClosureListInputBuilderDialog extends AbstractAstBuilderWithTableDi
         tableViewerColumnValueType.getColumn().setWidth(100);
         tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider());
         tableViewerColumnValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer,
-                defaultInputValueTypes, this));
+                defaultInputValueTypes));
 
         TableViewerColumn tableViewerColumnValue = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnNewColumnValue = tableViewerColumnValue.getColumn();
         tblclmnNewColumnValue.setText(StringConstants.DIA_COL_VALUE);
         tblclmnNewColumnValue.setWidth(300);
         tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider());
-        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this));
+        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer));
 
     }
 
     @Override
-    public void refresh() {
+    public void setInput() {
         tableViewer.setContentProvider(new ArrayContentProvider());
         tableViewer.setInput(closureListExpression.getExpressions());
         tableViewer.refresh();

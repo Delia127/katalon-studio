@@ -11,9 +11,11 @@ import com.kms.katalon.composer.testcase.groovy.ast.TokenWrapper;
 
 public class PrefixExpressionWrapper extends ExpressionWrapper {
     private TokenWrapper operation;
+
     private ExpressionWrapper expression;
 
-    public PrefixExpressionWrapper(TokenWrapper operation, ExpressionWrapper expression, ASTNodeWrapper parentNodeWrapper) {
+    public PrefixExpressionWrapper(TokenWrapper operation, ExpressionWrapper expression,
+            ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
         this.operation = operation;
         this.expression = expression;
@@ -22,10 +24,10 @@ public class PrefixExpressionWrapper extends ExpressionWrapper {
     public PrefixExpressionWrapper(PrefixExpression prefixExpression, ASTNodeWrapper parentNodeWrapper) {
         super(prefixExpression, parentNodeWrapper);
         this.operation = new TokenWrapper(prefixExpression.getOperation(), this);
-        this.expression = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(
-                prefixExpression.getExpression(), this);
+        this.expression = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(prefixExpression.getExpression(),
+                this);
     }
-    
+
     public PrefixExpressionWrapper(PrefixExpressionWrapper prefixExpressionWrapper, ASTNodeWrapper parentNodeWrapper) {
         super(prefixExpressionWrapper, parentNodeWrapper);
         this.operation = new TokenWrapper(prefixExpressionWrapper.getOperation(), this);

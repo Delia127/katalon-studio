@@ -9,12 +9,16 @@ import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapHelper;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstructorCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
-import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
 import com.kms.katalon.core.exception.StepFailedException;
 
 public class ThrowStatementWrapper extends StatementWrapper {
     public static final Class<?> DEFAULT_THROW_TYPE = StepFailedException.class;
+
     private ExpressionWrapper expression;
+    
+    public ThrowStatementWrapper() {
+        this(null);
+    }
 
     public ThrowStatementWrapper(ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
@@ -28,8 +32,7 @@ public class ThrowStatementWrapper extends StatementWrapper {
 
     public ThrowStatementWrapper(ThrowStatement throwStatement, ASTNodeWrapper parentNodeWrapper) {
         super(throwStatement, parentNodeWrapper);
-        this.expression = ASTNodeWrapHelper
-                .getExpressionNodeWrapperFromExpression(throwStatement.getExpression(), this);
+        this.expression = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(throwStatement.getExpression(), this);
     }
 
     public ThrowStatementWrapper(ThrowStatementWrapper throwStatementWrapper, ASTNodeWrapper parentNodeWrapper) {
@@ -42,12 +45,16 @@ public class ThrowStatementWrapper extends StatementWrapper {
     }
 
     public void setExpression(ExpressionWrapper expression) {
+        if (expression == null) {
+            return;
+        }
+        expression.setParent(this);
         this.expression = expression;
     }
 
     @Override
     public String getText() {
-        return "throw " + expression.getText();
+        return "throw " + getInputText();
     }
 
     @Override
@@ -68,22 +75,36 @@ public class ThrowStatementWrapper extends StatementWrapper {
     }
 
     @Override
+    public boolean isInputEditatble() {
+        return true;
+    }
+
+    @Override
     public ASTNodeWrapper getInput() {
         return this;
     }
 
     @Override
     public String getInputText() {
-        return this.getExpression().getText();
+        return getExpression().getText();
     }
 
     @Override
     public boolean updateInputFrom(ASTNodeWrapper input) {
-        if (input instanceof ThrowStatementWrapper && !AstTreeTableValueUtil.compareAstNode(((ThrowStatementWrapper) input).getExpression(), this.getExpression())) {
-            this.setExpression(((ThrowStatementWrapper) input).getExpression());
+        if (input instanceof ThrowStatementWrapper
+                && !getExpression().isEqualsTo(((ThrowStatementWrapper) input).getExpression())) {
+            setExpression(((ThrowStatementWrapper) input).getExpression());
             return true;
         }
         return false;
     }
 
+    @Override
+    public boolean replaceChild(ASTNodeWrapper oldChild, ASTNodeWrapper newChild) {
+        if (oldChild == getExpression() && newChild instanceof ExpressionWrapper) {
+            setExpression((ExpressionWrapper) newChild);
+            return true;
+        }
+        return super.replaceChild(oldChild, newChild);
+    }
 }

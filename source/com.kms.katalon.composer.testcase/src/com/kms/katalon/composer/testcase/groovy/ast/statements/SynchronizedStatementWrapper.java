@@ -12,25 +12,22 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrappe
 
 public class SynchronizedStatementWrapper extends CompositeStatementWrapper {
     private ExpressionWrapper expression;
-    private BlockStatementWrapper code;
 
     public SynchronizedStatementWrapper(ExpressionWrapper expression, ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
         this.expression = expression;
-        this.code = new BlockStatementWrapper(this);
     }
 
     public SynchronizedStatementWrapper(SynchronizedStatement synchronizedStatement, ASTNodeWrapper parentNodeWrapper) {
-        super(synchronizedStatement, parentNodeWrapper);
-        this.expression = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(synchronizedStatement.getExpression(), this);
-        this.code = new BlockStatementWrapper((BlockStatement) synchronizedStatement.getCode(), this);
+        super(synchronizedStatement, (BlockStatement) synchronizedStatement.getCode(), parentNodeWrapper);
+        this.expression = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(
+                synchronizedStatement.getExpression(), this);
     }
 
     public SynchronizedStatementWrapper(SynchronizedStatementWrapper synchronizedStatementWrapper,
             ASTNodeWrapper parentNodeWrapper) {
         super(synchronizedStatementWrapper, parentNodeWrapper);
         this.expression = synchronizedStatementWrapper.getExpression().copy(this);
-        this.code = new BlockStatementWrapper(synchronizedStatementWrapper.getBlock(), this);
     }
 
     public ExpressionWrapper getExpression() {
@@ -38,6 +35,10 @@ public class SynchronizedStatementWrapper extends CompositeStatementWrapper {
     }
 
     public void setExpression(ExpressionWrapper expression) {
+        if (expression == null) {
+            return;
+        }
+        expression.setParent(this);
         this.expression = expression;
     }
 
@@ -55,13 +56,8 @@ public class SynchronizedStatementWrapper extends CompositeStatementWrapper {
     public List<? extends ASTNodeWrapper> getAstChildren() {
         List<ASTNodeWrapper> astNodeWrappers = new ArrayList<ASTNodeWrapper>();
         astNodeWrappers.add(expression);
-        astNodeWrappers.add(code);
+        astNodeWrappers.addAll(super.getAstChildren());
         return astNodeWrappers;
-    }
-
-    @Override
-    public BlockStatementWrapper getBlock() {
-        return code;
     }
 
     @Override

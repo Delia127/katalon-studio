@@ -9,8 +9,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
-public abstract class AbstractAstBuilderDialog extends Dialog implements AstBuilderDialog {
+public abstract class AbstractAstBuilderDialog extends Dialog implements IAstDialogBuilder {
     protected static final int DEFAULT_DIALOG_HEIGHT = 500;
+
     protected static final int DEFAULT_DIALOG_WIDTH = 700;
 
     public AbstractAstBuilderDialog(Shell parentShell) {
@@ -34,6 +35,13 @@ public abstract class AbstractAstBuilderDialog extends Dialog implements AstBuil
         createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
     }
 
+    /**
+     * Get the dialog title for a specific ast node
+     * 
+     * @return the dialog title for a specific ast node
+     */
+    public abstract String getDialogTitle();
+    
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);

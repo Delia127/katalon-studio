@@ -44,6 +44,10 @@ public abstract class ExpressionWrapper extends AnnonatedNodeWrapper {
     }
 
     public void setType(ClassNodeWrapper type) {
+        if (type == null) {
+            return;
+        }
+        type.setParent(this);
         this.type = type;
     }
     
@@ -52,15 +56,19 @@ public abstract class ExpressionWrapper extends AnnonatedNodeWrapper {
         if (scriptClass != null) {
             getScriptClass().addImport(typeClass);
         }
-        this.type.setType(typeClass);
+        type.setType(typeClass);
     }
     
     @Override
     public abstract ExpressionWrapper clone();
 
+    @Override
     public ExpressionWrapper copy(ASTNodeWrapper newParent) {
-        ExpressionWrapper newInstance = clone();
-        newInstance.setParent(newParent);
-        return newInstance;
+        return (ExpressionWrapper) super.copy(newParent);
+    }
+    
+    @Override
+    public String getInputText() {
+        return getText();
     }
 }
