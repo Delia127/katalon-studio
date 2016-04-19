@@ -20,6 +20,7 @@ import org.openqa.selenium.Point
 import org.openqa.selenium.ScreenOrientation
 import org.openqa.selenium.TimeoutException
 import org.openqa.selenium.WebDriver
+import org.openqa.selenium.WebDriverException
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.interactions.touch.TouchActions
 import org.openqa.selenium.remote.server.DriverFactory
@@ -830,24 +831,28 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
 
     @CompileStatic
     private static boolean internalSwitchToNativeContext(AppiumDriver driver) {
-        for (String context : driver.getContextHandles()) {
-            if (context.contains("NATIVE")) {
-                driver.context(context);
-                return true;
+        return internalSwitchToContext(driver, "NATIVE");
+    }
+    
+    @CompileStatic
+    private static boolean internalSwitchToContext(AppiumDriver driver, String contextName) {
+        try {
+            for (String context : driver.getContextHandles()) {
+                if (context.contains(contextName)) {
+                    driver.context(context);
+                    return true;
+                }
             }
+        } catch (WebDriverException e) {
+            // Appium will raise WebDriverException error when driver.getContextHandles() is called but ios-webkit-debug-proxy is not started.
+            // Catch it here and ignore
         }
         return false;
     }
 
     @CompileStatic
     private static boolean internalSwitchToWebViewContext(AppiumDriver driver) {
-        for (String context : driver.getContextHandles()) {
-            if (context.contains("WEBVIEW")) {
-                driver.context(context);
-                return true;
-            }
-        }
-        return false;
+        return internalSwitchToContext(driver, "WEBVIEW");
     }
 
     /**
