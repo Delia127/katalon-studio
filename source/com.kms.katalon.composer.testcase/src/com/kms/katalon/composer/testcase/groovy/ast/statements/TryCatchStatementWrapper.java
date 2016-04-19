@@ -21,6 +21,7 @@ public class TryCatchStatementWrapper extends ComplexStatementWrapper<CatchState
     public TryCatchStatementWrapper(ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
         block = new BlockStatementWrapper(this);
+        lastStatement = new FinallyStatementWrapper(this);
     }
 
     public TryCatchStatementWrapper(TryCatchStatement tryCatchStatement, ASTNodeWrapper parentNodeWrapper) {
