@@ -173,7 +173,7 @@ public class MapExpressionWrapper extends ExpressionWrapper {
                 return true;
             } else if (mapEntry.getValueExpression() == originalExpression) {
                 mapEntry.setValueExpression(newExpression);
-                return false;
+                return true;
             }
         }
         return false;

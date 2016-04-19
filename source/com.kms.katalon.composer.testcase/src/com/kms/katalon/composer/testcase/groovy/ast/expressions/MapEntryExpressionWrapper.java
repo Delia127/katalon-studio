@@ -109,4 +109,21 @@ public class MapEntryExpressionWrapper extends ExpressionWrapper {
         copyMapEntryProperties((MapEntryExpressionWrapper) input);
         return true;
     }
+
+    @Override
+    public boolean replaceChild(ASTNodeWrapper oldChild, ASTNodeWrapper newChild) {
+        if (!(newChild instanceof ExpressionWrapper) || !(oldChild instanceof ExpressionWrapper)) {
+            return false;
+        }
+        ExpressionWrapper originalExpression = (ExpressionWrapper) oldChild;
+        ExpressionWrapper newExpression = (ExpressionWrapper) newChild;
+        if (getKeyExpression() == originalExpression) {
+            setKeyExpression(newExpression);
+            return true;
+        } else if (getValueExpression() == originalExpression) {
+            setValueExpression(newExpression);
+            return true;
+        }
+        return false;
+    }
 }
