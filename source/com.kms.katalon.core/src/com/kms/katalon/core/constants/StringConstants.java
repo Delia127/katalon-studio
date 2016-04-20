@@ -338,4 +338,8 @@ public class StringConstants {
     public static final String TEST_STEP_TRANSFORMATION_CLASS = "com.kms.katalon.core.ast.RequireAstTestStepTransformation";
 
     public static final String NULL_AS_STRING = "null";
+
+    // alias of GlobalStringConstants.APP_INFO_FILE_LOCATION
+    public static final String APP_INFO_FILE_LOCATION = System.getProperty("user.home") + File.separator + ".katalon"
+            + File.separator + "application.properties";
 }

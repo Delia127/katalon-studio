@@ -94,7 +94,7 @@ public class ReportPart implements EventHandler, IComposerPart {
     private IEventBroker eventBroker;
 
     // Controls
-    private StyledText txtTestSuiteId, txtHostName, txtOS, txtPlatform, txtStartTime, txtEndTime, txtRunTime;
+    private StyledText txtTestSuiteId, txtHostName, txtOS, txtPlatform, txtStartTime, txtEndTime, txtRunTime, txtKatalonVersion;
     private StyledText txtTotalTestCase, txtTCPasses, txtTCFailures, txtTCIncompleted, txtTCErrors;
     private TestSuiteLogRecord testSuiteLogRecord;
     private ReportTestCaseTableViewer testCaseTableViewer;
@@ -396,6 +396,8 @@ public class ReportPart implements EventHandler, IComposerPart {
                 txtOS.setText(ReportUtil.getOs());
             }
 
+            txtKatalonVersion.setText(testSuiteLogRecord.getAppVersion());
+
             if (testSuiteLogRecord.getBrowser() != null && !testSuiteLogRecord.getBrowser().isEmpty()) {
                 txtPlatform.setText(testSuiteLogRecord.getBrowser());
             } else {
@@ -690,16 +692,23 @@ public class ReportPart implements EventHandler, IComposerPart {
         txtOS = new StyledText(compositeSummaryDetails, SWT.READ_ONLY);
         txtOS.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
+        Label lblKatalonVersion = new Label(compositeSummaryDetails, SWT.NONE);
+        lblKatalonVersion.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
+        lblKatalonVersion.setText(StringConstants.LBL_KATALON_VERSION);
+        setLabelToBeBold(lblKatalonVersion);
+        lblKatalonVersion.setBackground(ColorUtil.getWhiteBackgroundColor());
+
+        txtKatalonVersion = new StyledText(compositeSummaryDetails, SWT.READ_ONLY);
+        txtKatalonVersion.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
         Label lblPlatform = new Label(compositeSummaryDetails, SWT.NONE);
         lblPlatform.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
-        lblPlatform.setText("Platform");
+        lblPlatform.setText(StringConstants.LBL_PLATFORM);
         setLabelToBeBold(lblPlatform);
         lblPlatform.setBackground(ColorUtil.getWhiteBackgroundColor());
 
         txtPlatform = new StyledText(compositeSummaryDetails, SWT.READ_ONLY);
         txtPlatform.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        new Label(compositeSummaryDetails, SWT.NONE);
-        new Label(compositeSummaryDetails, SWT.NONE);
 
         Label lblStart = new Label(compositeSummaryDetails, SWT.NONE);
         lblStart.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
