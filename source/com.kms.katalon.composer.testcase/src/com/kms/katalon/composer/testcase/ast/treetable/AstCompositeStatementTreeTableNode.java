@@ -1,8 +1,10 @@
 package com.kms.katalon.composer.testcase.ast.treetable;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ASTHasBlock;
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 import com.kms.katalon.composer.testcase.util.WrapperToAstTreeConverter;
+
 import org.eclipse.swt.graphics.Image;
 
 import java.util.ArrayList;
@@ -12,7 +14,7 @@ import java.util.List;
 /**
  * Created by taittle on 3/17/16.
  */
-public abstract class AstCompositeStatementTreeTableNode extends AstStatementTreeTableNode {
+public class AstCompositeStatementTreeTableNode extends AstStatementTreeTableNode {
     protected List<AstTreeTableNode> childNodes = new ArrayList<>();
 
     public AstCompositeStatementTreeTableNode(StatementWrapper statement, AstTreeTableNode parentNode) {
@@ -30,7 +32,8 @@ public abstract class AstCompositeStatementTreeTableNode extends AstStatementTre
         reloadChildren();
     }
 
-    public AstCompositeStatementTreeTableNode(StatementWrapper statement, AstTreeTableNode parentNode, Image icon, String itemText) {
+    public AstCompositeStatementTreeTableNode(StatementWrapper statement, AstTreeTableNode parentNode, Image icon,
+            String itemText) {
         super(statement, parentNode, icon, itemText);
         reloadChildren();
     }
@@ -60,9 +63,31 @@ public abstract class AstCompositeStatementTreeTableNode extends AstStatementTre
         if (getASTObject() instanceof ASTHasBlock) {
             return ((ASTHasBlock) getASTObject()).getBlock().getStatements();
         }
-
         return Collections.emptyList();
     }
+    
+    @Override
+    public boolean isChildAssignble(ASTNodeWrapper astNode) {
+        return statement.isChildAssignble(astNode);
+    }
 
+    @Override
+    public boolean addChild(ASTNodeWrapper childObject) {
+        return statement.addChild(childObject);
+    }
 
+    @Override
+    public boolean addChild(ASTNodeWrapper childObject, int index) {
+        return statement.addChild(childObject, index);
+    }
+
+    @Override
+    public boolean removeChild(ASTNodeWrapper childObject) {
+        return statement.removeChild(childObject);
+    }
+    
+    @Override
+    public int indexOf(ASTNodeWrapper childObject) {
+        return statement.indexOf(childObject);
+    }
 }

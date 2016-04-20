@@ -4,7 +4,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
-import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
+import com.kms.katalon.composer.testcase.util.AstValueUtil;
 
 public class AstInputValueLabelProvider extends ColumnLabelProvider {
     @Override
@@ -12,7 +12,7 @@ public class AstInputValueLabelProvider extends ColumnLabelProvider {
         if (!(element instanceof ASTNodeWrapper)) {
             return "";
         }
-        InputValueType typeValue = AstTreeTableValueUtil.getTypeValue((ASTNodeWrapper) element);
+        InputValueType typeValue = AstValueUtil.getTypeValue((ASTNodeWrapper) element);
         if (typeValue != null) {
             return typeValue.getValueToDisplay(element);
         }

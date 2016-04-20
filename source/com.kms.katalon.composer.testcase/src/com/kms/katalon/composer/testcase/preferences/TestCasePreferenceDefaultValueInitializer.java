@@ -15,6 +15,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.kms.katalon.composer.testcase.constants.TestCasePreferenceConstants;
 import com.kms.katalon.composer.testcase.model.InputValueType;
+import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.core.keyword.IKeywordContributor;
 import com.kms.katalon.core.model.FailureHandling;
@@ -23,7 +24,7 @@ import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenceInitializer {
     private static final String CALL_TEST_CASE = "callTestCase";
-    
+
     private static ScopedPreferenceStore getStore() {
         return getPreferenceStore(TestCasePreferenceDefaultValueInitializer.class);
     }
@@ -40,12 +41,14 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
         store.setDefault(TestCasePreferenceConstants.TESTCASE_AUTO_EXPORT_VARIABLE, false);
 
         // Default Added Keyword
-        store.setDefault(TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE,
-                KeywordController.getInstance().getBuiltInKeywordClasses().get(0).getName());
+        store.setDefault(TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE, KeywordController.getInstance()
+                .getBuiltInKeywordClasses()
+                .get(0)
+                .getName());
         Map<String, String> defaultKeywords = new HashMap<String, String>();
         for (KeywordClass keywordClass : KeywordController.getInstance().getBuiltInKeywordClasses()) {
             defaultKeywords.put(keywordClass.getName(),
-                    KeywordController.getInstance().getBuiltInKeywords(keywordClass.getName()).get(0).getName());
+                    KeywordController.getInstance().getBuiltInKeywords(keywordClass.getSimpleName()).get(0).getName());
         }
 
         store.setDefault(TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORDS,
@@ -54,6 +57,9 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
         // Default Failure Handling
         store.setDefault(TestCasePreferenceConstants.TESTCASE_DEFAULT_FAILURE_HANDLING,
                 FailureHandling.STOP_ON_FAILURE.name());
+        
+        // Default view for test case part
+        store.setDefault(TestCasePreferenceConstants.TESTCASE_PART_DEFAULT_START_VIEW, TestCaseCompositePart.MANUAL_TAB_TITLE);
     }
 
     public static boolean isSetGenerateVariableDefaultValue() {
@@ -83,7 +89,7 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
         return defaultKeywords;
     }
 
-    public static KeywordClass getDefaultKeywordType() throws Exception {
+    public static KeywordClass getDefaultKeywordType() {
         String keywordType = getStore().getString(TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE);
         KeywordClass contributor = KeywordController.getInstance().getBuiltInKeywordClassByName(keywordType);
         if (contributor == null) {
@@ -117,8 +123,12 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
     }
 
     public static FailureHandling getDefaultFailureHandling() {
-        String failureHandlingName = getStore()
-                .getString(TestCasePreferenceConstants.TESTCASE_DEFAULT_FAILURE_HANDLING);
+        String failureHandlingName = getStore().getString(TestCasePreferenceConstants.TESTCASE_DEFAULT_FAILURE_HANDLING);
         return FailureHandling.valueOf(failureHandlingName);
     }
+
+    public static String getTestCasePartStartView() {
+        return getStore().getString(TestCasePreferenceConstants.TESTCASE_PART_DEFAULT_START_VIEW);
+    }
+
 }

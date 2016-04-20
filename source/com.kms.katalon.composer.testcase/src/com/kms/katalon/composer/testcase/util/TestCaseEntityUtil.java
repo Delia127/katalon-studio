@@ -1,7 +1,9 @@
 package com.kms.katalon.composer.testcase.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.core.resources.IFile;
@@ -18,10 +20,10 @@ import org.jsoup.safety.Whitelist;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
+import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.custom.keyword.KeywordMethod;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -57,14 +59,6 @@ public class TestCaseEntityUtil {
         }
     }
 
-    public static boolean isClassChildOf(String parentClassName, String childClassName) {
-        try {
-            return Class.forName(parentClassName).isAssignableFrom(Class.forName(childClassName));
-        } catch (ClassNotFoundException ex) {
-            return false;
-        }
-    }
-
     public static List<TestCaseEntity> getTestCasesFromFolderTree(FolderTreeEntity folderTree) {
         List<TestCaseEntity> lstTestCases = new ArrayList<TestCaseEntity>();
         try {
@@ -87,10 +81,20 @@ public class TestCaseEntityUtil {
             return "";
         }
         // replace and put line break into javadoc html
-        String replace = javadocHTML.replace("<br/>", "<br/>\n").replace("<BR/>", "<BR/>\n").replace("</DT>", "</DT> ")
-                .replace("</dt>", "</dt> ").replace("<code>", "\n<code>").replace("<CODE>", "\n<CODE>").replace("</p>", "</p>\n")
-                .replace("</P>", "</P>\n").replace("<DL>", "<DL>\n").replace("<dl>", "<dl>\n").replace("</DD>", "</DD>\n")
-                .replace("</dd>", "</dd>\n").replace("<b>", "\n<b>").replace("<B>", "\n<B>")
+        String replace = javadocHTML.replace("<br/>", "<br/>\n")
+                .replace("<BR/>", "<BR/>\n")
+                .replace("</DT>", "</DT> ")
+                .replace("</dt>", "</dt> ")
+                .replace("<code>", "\n<code>")
+                .replace("<CODE>", "\n<CODE>")
+                .replace("</p>", "</p>\n")
+                .replace("</P>", "</P>\n")
+                .replace("<DL>", "<DL>\n")
+                .replace("<dl>", "<dl>\n")
+                .replace("</DD>", "</DD>\n")
+                .replace("</dd>", "</dd>\n")
+                .replace("<b>", "\n<b>")
+                .replace("<B>", "\n<B>")
                 .replaceAll("(?s)<(h|H)4>.*<\\/(h|H)4>", "");
         // decode any encoded html, preventing &lt;script&gt; to be rendered as
         // <script>
@@ -98,34 +102,57 @@ public class TestCaseEntityUtil {
         // remove all html tags, but maintain line breaks
         String clean = Jsoup.clean(html, "", Whitelist.none(), new Document.OutputSettings().prettyPrint(false));
         // decode html again to convert character entities back into text
-        return StringEscapeUtils.unescapeHtml(clean).trim().replaceAll("(?m)(^ *| +(?= |$))", "")
+        return StringEscapeUtils.unescapeHtml(clean)
+                .trim()
+                .replaceAll("(?m)(^ *| +(?= |$))", "")
                 .replaceAll("(?m)^$([\r\n]+?)(^$[\r\n]+?^)+", "$1");
     }
 
-    public static List<String> getAllKeywordJavaDocText(String keywordClassName, ClassNodeWrapper scriptClass) {
-        List<String> allKeywordJavaDocs = new ArrayList<String>();
-        try {
-            Class<?> keywordType = AstTreeTableInputUtil.loadType(keywordClassName, scriptClass);
-            if (keywordType == null) {
-                return allKeywordJavaDocs;
-            }
-            IProject groovyProject = GroovyUtil.getGroovyProject(ProjectController.getInstance().getCurrentProject());
-            IJavaProject javaProject = JavaCore.create(groovyProject);
-            IType builtinKeywordType = javaProject.findType(keywordType.getName());
-            List<KeywordMethod> builtInKeywordMethods = KeywordController.getInstance().getBuiltInKeywords(keywordClassName);
-            for (KeywordMethod method : builtInKeywordMethods) {
-                IMethod builtInMethod = findBuiltinMethods(builtinKeywordType, method.getName(), javaProject);
-                if (builtInMethod != null) {
-                    allKeywordJavaDocs.add(parseJavaDocHTML(builtInMethod.getAttachedJavadoc(null)));
-                }
-            }
-        } catch (JavaModelException e) {
-            LoggerSingleton.logError(e);
+    private static Map<String, Map<String, String>> keywordMethodJavaDocMap;
+
+    public static Map<String, Map<String, String>> getKeywordMethodJavaDocMap() {
+        if (keywordMethodJavaDocMap == null) {
+            initKeywordJavaDocMap();
         }
-        return allKeywordJavaDocs;
+        return keywordMethodJavaDocMap;
     }
 
-    private static IMethod findBuiltinMethods(IType type, String methodName, IJavaProject javaProject) throws JavaModelException {
+    private static void initKeywordJavaDocMap() {
+        keywordMethodJavaDocMap = new HashMap<String, Map<String, String>>();
+        for (KeywordClass keywordClass : KeywordController.getInstance().getBuiltInKeywordClasses()) {
+            Map<String, String> allKeywordJavaDocMap = new HashMap<String, String>();
+            String keywordClassName = keywordClass.getSimpleName();
+            keywordMethodJavaDocMap.put(keywordClassName, allKeywordJavaDocMap);
+            try {
+                Class<?> keywordType = AstKeywordsInputUtil.loadType(keywordClass.getName(), null);
+                if (keywordType == null) {
+                    continue;
+                }
+                IProject groovyProject = GroovyUtil.getGroovyProject(ProjectController.getInstance()
+                        .getCurrentProject());
+                IJavaProject javaProject = JavaCore.create(groovyProject);
+                IType builtinKeywordType = javaProject.findType(keywordType.getName());
+                List<KeywordMethod> builtInKeywordMethods = KeywordController.getInstance().getBuiltInKeywords(
+                        keywordClassName);
+                for (KeywordMethod method : builtInKeywordMethods) {
+                    IMethod builtInMethod = findBuiltinMethods(builtinKeywordType, method.getName(), javaProject);
+                    if (builtInMethod != null) {
+                        allKeywordJavaDocMap.put(method.getName(),
+                                parseJavaDocHTML(builtInMethod.getAttachedJavadoc(null)));
+                    }
+                }
+            } catch (JavaModelException e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+    }
+
+    public static List<String> getAllKeywordJavaDocText(String keywordClassName) {
+        return new ArrayList<String>(getKeywordMethodJavaDocMap().get(keywordClassName).values());
+    }
+
+    private static IMethod findBuiltinMethods(IType type, String methodName, IJavaProject javaProject)
+            throws JavaModelException {
         for (IMethod keywordMethod : type.getMethods()) {
             if (keywordMethod.getElementName().equals(methodName)) {
                 return keywordMethod;
@@ -137,32 +164,19 @@ public class TestCaseEntityUtil {
         return null;
     }
 
-    public static String getKeywordJavaDocText(String keywordClassName, String methodName, ClassNodeWrapper scriptClass) {
-        try {
-            Class<?> keywordType = AstTreeTableInputUtil.loadType(keywordClassName, scriptClass);
-            if (keywordType == null) {
-                return "";
-            }
-            IProject groovyProject = GroovyUtil.getGroovyProject(ProjectController.getInstance().getCurrentProject());
-            IJavaProject javaProject = JavaCore.create(groovyProject);
-            IType builtinKeywordType = javaProject.findType(keywordType.getName());
-            if (builtinKeywordType != null) {
-                IMethod builtInMethod = findBuiltinMethods(builtinKeywordType, methodName, javaProject);
-                if (builtInMethod != null) {
-                    return parseJavaDocHTML(builtInMethod.getAttachedJavadoc(null));
-                }
-            }
-        } catch (JavaModelException e) {
-            LoggerSingleton.logError(e);
+    public static String getKeywordJavaDocText(String keywordClassName, String methodName) {
+        Map<String, String> keywordClassMethodJavaDocMap = getKeywordMethodJavaDocMap().get(keywordClassName);
+        if (keywordClassMethodJavaDocMap == null || keywordClassMethodJavaDocMap.get(methodName) == null) {
+            return "";
         }
-        return "";
+        return keywordClassMethodJavaDocMap.get(methodName);
     }
 
     /**
      * Get Test Case Entity list from their script file
      * 
      * @param scriptFiles
-     *            list of test case script files
+     * list of test case script files
      * @return List of TestCaseEntity
      * @throws Exception
      */
@@ -172,7 +186,8 @@ public class TestCaseEntityUtil {
             return testCaseEntities;
         }
         for (IFile file : scriptFiles) {
-            testCaseEntities.add(TestCaseController.getInstance().getTestCaseByScriptFilePath(file.getRawLocation().toString()));
+            testCaseEntities.add(TestCaseController.getInstance().getTestCaseByScriptFilePath(
+                    file.getRawLocation().toString()));
         }
         return testCaseEntities;
     }

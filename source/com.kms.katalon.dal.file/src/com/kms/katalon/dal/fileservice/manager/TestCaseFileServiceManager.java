@@ -19,7 +19,6 @@ import com.kms.katalon.entity.dal.exception.DuplicatedFileNameException;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.dal.exception.LengthExceedLimitationException;
 import com.kms.katalon.entity.dal.exception.NoEntityException;
-import com.kms.katalon.entity.dal.exception.TestCaseIsReferencedByTestSuiteExepception;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
@@ -159,8 +158,7 @@ public class TestCaseFileServiceManager {
             String oldTestCaseLocation) throws Exception {
         // if test case changed its name, update reference Location in test
         // suites that refer to it
-        List<TestSuiteEntity> lstTestSuites = FolderFileServiceManager
-                .getDescendantTestSuitesOfFolder(FolderFileServiceManager.getTestSuiteRoot(project));
+        List<TestSuiteEntity> lstTestSuites = FolderFileServiceManager.getDescendantTestSuitesOfFolder(FolderFileServiceManager.getTestSuiteRoot(project));
         File projectFile = new File(project.getLocation());
         String oldRelativeTcLocation = oldTestCaseLocation.substring(projectFile.getParent().length() + 1);
         String oldRelativeTcId = FilenameUtils.removeExtension(oldRelativeTcLocation).replace(File.separator, "/");
@@ -313,8 +311,10 @@ public class TestCaseFileServiceManager {
     public static TestCaseEntity moveTestCase(TestCaseEntity testCase, FolderEntity destinationFolder) throws Exception {
         EntityService.getInstance().validateName(testCase.getName());
         String oldTestCaseLocation = testCase.getLocation();
-        IFolder oldScriptFolderFile = (IFolder) ResourcesPlugin.getWorkspace().getRoot()
-                .getFile(GroovyUtil.getGroovyScriptForTestCase(testCase).getPath()).getParent();
+        IFolder oldScriptFolderFile = (IFolder) ResourcesPlugin.getWorkspace()
+                .getRoot()
+                .getFile(GroovyUtil.getGroovyScriptForTestCase(testCase).getPath())
+                .getParent();
         // refactorCallingTestCaseIfRenameTestCase(project, testCase,
         // oldTestCaseLocation);
 
@@ -377,13 +377,8 @@ public class TestCaseFileServiceManager {
 
     public static void deleteTestCase(TestCaseEntity testCase) throws Exception {
         if (testCase != null) {
-            checkTestSuiteRef(testCase,
-                    FolderFileServiceManager.getDescendantTestSuitesOfFolder(FolderFileServiceManager
-                            .getTestSuiteRoot(testCase.getProject())));
             EntityFileServiceManager.delete(testCase);
-
-            FolderEntity testCaseRootFolder = FolderFileServiceManager
-                    .loadAllTestCaseDescendants(FolderFileServiceManager.getTestCaseRoot(testCase.getProject()));
+            FolderEntity testCaseRootFolder = FolderFileServiceManager.loadAllTestCaseDescendants(FolderFileServiceManager.getTestCaseRoot(testCase.getProject()));
             GroovyUtil.updateTestCaseDeleted(testCase, testCaseRootFolder);
             FolderFileServiceManager.refreshFolder(testCase.getParentFolder());
         } else {
@@ -391,38 +386,9 @@ public class TestCaseFileServiceManager {
         }
     }
 
-    private static void checkTestSuiteRef(TestCaseEntity testCase, List<TestSuiteEntity> allTestSuites)
-            throws TestCaseIsReferencedByTestSuiteExepception {
-        TestCaseIsReferencedByTestSuiteExepception exception = new TestCaseIsReferencedByTestSuiteExepception();
-
-        FileServiceDataProviderSetting dataProviderSetting = new FileServiceDataProviderSetting();
-        String testCaseId = testCase.getRelativePathForUI().replace(File.separator, "/");
-
-        for (TestSuiteEntity testSuite : allTestSuites) {
-            String testSuiteId = testSuite.getRelativePathForUI().replace(File.separator, "/");
-
-            if (dataProviderSetting.getTestSuiteDataProvider().getTestCaseLink(testSuite, testCaseId) != null) {
-                exception.addReference(testCaseId, testSuiteId);
-            }
-        }
-
-        if (!exception.getReferences().isEmpty()) {
-            throw exception;
-        }
-    }
-
     public static void deleteTestCaseFolder(FolderEntity folderEntity) throws Exception {
         if (folderEntity != null) {
-            FolderEntity testCaseRootFolder = FolderFileServiceManager
-                    .loadAllTestCaseDescendants(FolderFileServiceManager.getTestCaseRoot(folderEntity.getProject()));
-            List<TestCaseEntity> descentdantTestCases = FolderFileServiceManager
-                    .getDescendantTestCasesOfFolder(folderEntity);
-            List<TestSuiteEntity> allTestSuites = FolderFileServiceManager
-                    .getDescendantTestSuitesOfFolder(FolderFileServiceManager.getTestSuiteRoot(folderEntity
-                            .getProject()));
-            for (TestCaseEntity descentdantTestCase : descentdantTestCases) {
-                checkTestSuiteRef(descentdantTestCase, allTestSuites);
-            }
+            FolderEntity testCaseRootFolder = FolderFileServiceManager.loadAllTestCaseDescendants(FolderFileServiceManager.getTestCaseRoot(folderEntity.getProject()));
             deleteTestCaseAndFolderRecursively(folderEntity, testCaseRootFolder);
             FolderFileServiceManager.refreshFolder(folderEntity.getParentFolder());
         }
@@ -455,8 +421,8 @@ public class TestCaseFileServiceManager {
     public static TestCaseEntity getByGUID(String guid, ProjectEntity project) throws Exception {
         File projectFolder = new File(project.getFolderLocation());
         if (projectFolder.exists() && projectFolder.isDirectory()) {
-            File testCaseFolder = new File(FileServiceConstant.getTestCaseRootFolderLocation(projectFolder
-                    .getAbsolutePath()));
+            File testCaseFolder = new File(
+                    FileServiceConstant.getTestCaseRootFolderLocation(projectFolder.getAbsolutePath()));
             if (testCaseFolder.exists() && testCaseFolder.isDirectory()) {
                 return getByGUID(testCaseFolder.getAbsolutePath(), guid, project);
             }
@@ -469,7 +435,8 @@ public class TestCaseFileServiceManager {
         if (folder.exists() && folder.isDirectory()) {
             for (File file : folder.listFiles(EntityFileServiceManager.fileFilter)) {
                 if (file.isFile()
-                        && file.getName().toLowerCase()
+                        && file.getName()
+                                .toLowerCase()
                                 .endsWith(TestCaseEntity.getTestCaseFileExtension().toLowerCase())) {
                     TestCaseEntity testCase = getTestCase(file.getAbsolutePath());
                     if (testCase.getTestCaseGuid().equals(guid)) {
@@ -512,8 +479,7 @@ public class TestCaseFileServiceManager {
     public static TestCaseEntity getTestCaseByScriptFileName(String scriptFileName, ProjectEntity projectEntity)
             throws Exception {
         FolderEntity testCaseRootFolder = FolderFileServiceManager.getTestCaseRoot(projectEntity);
-        for (TestCaseEntity testCaseEntity : FolderFileServiceManager
-                .getDescendantTestCasesOfFolder(testCaseRootFolder)) {
+        for (TestCaseEntity testCaseEntity : FolderFileServiceManager.getDescendantTestCasesOfFolder(testCaseRootFolder)) {
             if (scriptFileName.equals(GroovyUtil.getScriptNameForTestCase(testCaseEntity))) {
                 return testCaseEntity;
             }
@@ -524,7 +490,8 @@ public class TestCaseFileServiceManager {
     public static TestCaseEntity getTestCaseByScriptFilePath(String scriptFilePath, ProjectEntity projectEntity)
             throws Exception {
         String testCaseId = GroovyUtil.getTestCaseIdByScriptPath(scriptFilePath, projectEntity);
-        if (testCaseId == null || testCaseId.isEmpty()) return null;
+        if (testCaseId == null || testCaseId.isEmpty())
+            return null;
 
         return getTestCaseByDisplayId(testCaseId, projectEntity);
     }
@@ -544,8 +511,7 @@ public class TestCaseFileServiceManager {
 
         FileServiceDataProviderSetting dataProviderSetting = new FileServiceDataProviderSetting();
 
-        List<TestSuiteEntity> allTestSuites = FolderFileServiceManager
-                .getDescendantTestSuitesOfFolder(FolderFileServiceManager.getTestSuiteRoot(testCase.getProject()));
+        List<TestSuiteEntity> allTestSuites = FolderFileServiceManager.getDescendantTestSuitesOfFolder(FolderFileServiceManager.getTestSuiteRoot(testCase.getProject()));
 
         for (TestSuiteEntity testSuite : allTestSuites) {
             if (dataProviderSetting.getTestSuiteDataProvider().getTestCaseLink(testSuite, testCaseId) != null) {

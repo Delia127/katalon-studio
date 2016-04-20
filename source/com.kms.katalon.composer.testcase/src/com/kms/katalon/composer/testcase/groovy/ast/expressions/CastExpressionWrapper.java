@@ -24,14 +24,19 @@ public class CastExpressionWrapper extends ExpressionWrapper {
         expression = castExpressionWrapper.getExpression().copy(this);
         type = new ClassNodeWrapper(castExpressionWrapper.getType(), this);
     }
-    
+
     public CastExpressionWrapper(ClassNode typeClass, ExpressionWrapper expression, ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
         type = new ClassNodeWrapper(typeClass, this);
-        if (expression != null) {
-            expression.setParent(this);
-            this.expression = expression;
+        setExpression(expression);
+    }
+
+    private void setExpression(ExpressionWrapper expression) {
+        if (expression == null) {
+            return;
         }
+        expression.setParent(this);
+        this.expression = expression;
     }
 
     @Override
@@ -41,10 +46,6 @@ public class CastExpressionWrapper extends ExpressionWrapper {
 
     public ExpressionWrapper getExpression() {
         return expression;
-    }
-
-    public void setExpression(ExpressionWrapper expression) {
-        this.expression = expression;
     }
 
     @Override

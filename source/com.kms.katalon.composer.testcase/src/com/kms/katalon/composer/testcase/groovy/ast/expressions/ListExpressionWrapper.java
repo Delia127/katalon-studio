@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.testcase.groovy.ast.expressions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -11,6 +12,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapHelper;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
 
 public class ListExpressionWrapper extends ExpressionWrapper {
     protected List<ExpressionWrapper> expressions = new ArrayList<ExpressionWrapper>();
@@ -22,7 +24,7 @@ public class ListExpressionWrapper extends ExpressionWrapper {
 
     public ListExpressionWrapper(List<ExpressionWrapper> expressions, ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
-        setExpressions(expressions);
+        this.expressions = expressions;
     }
 
     public ListExpressionWrapper(ListExpression listExpression, ASTNodeWrapper parentNodeWrapper) {
@@ -35,6 +37,10 @@ public class ListExpressionWrapper extends ExpressionWrapper {
 
     public ListExpressionWrapper(ListExpressionWrapper listExpressionWrapper, ASTNodeWrapper parentNodeWrapper) {
         super(listExpressionWrapper, parentNodeWrapper);
+        copyListProperties(listExpressionWrapper);
+    }
+
+    private void copyListProperties(ListExpressionWrapper listExpressionWrapper) {
         for (ExpressionWrapper childExpression : listExpressionWrapper.getExpressions()) {
             expressions.add(childExpression.copy(this));
         }
@@ -42,19 +48,62 @@ public class ListExpressionWrapper extends ExpressionWrapper {
     }
 
     public List<ExpressionWrapper> getExpressions() {
-        return expressions;
+        return Collections.unmodifiableList(expressions);
+    }
+    
+    public void addExpression(ExpressionWrapper expression) {
+        if (expression == null) {
+            return;
+        }
+        expression.setParent(this);
+        expressions.add(expression);
     }
 
-    public void setExpressions(List<ExpressionWrapper> expressions) {
-        this.expressions = expressions;
+    public boolean addExpression(ExpressionWrapper expression, int index) {
+        if (expression == null || index < 0 || index > expressions.size()) {
+            return false;
+        }
+        expression.setParent(this);
+        expressions.add(index, expression);
+        return true;
+    }
+
+    public void addExpressions(List<ExpressionWrapper> listOfExpressions) {
+        if (listOfExpressions == null) {
+            return;
+        }
+        for (ExpressionWrapper expression : listOfExpressions) {
+            if (expression == null) {
+                continue;
+            }
+            expression.setParent(this);
+            expressions.add(expression);
+        }
+    }
+    
+    public boolean removeExpression(ExpressionWrapper expression) {
+        return expressions.remove(expression);
+    }
+    
+    public boolean removeExpression(int index) {
+        if (index < 0 || index >= expressions.size()) {
+            return false;
+        }
+        expressions.remove(index);
+        return true;
+    }
+    
+    public boolean setExpression(ExpressionWrapper expression, int index) {
+        if (expression == null || index < 0 || index > expressions.size()) {
+            return false;
+        }
+        expression.setParent(this);
+        expressions.set(index, expression);
+        return true;
     }
 
     public boolean isWrapped() {
         return wrapped;
-    }
-
-    public void setWrapped(boolean wrapped) {
-        this.wrapped = wrapped;
     }
 
     @Override
@@ -87,4 +136,34 @@ public class ListExpressionWrapper extends ExpressionWrapper {
     public ListExpressionWrapper clone() {
         return new ListExpressionWrapper(this, getParent());
     }
+    
+    @Override
+    public boolean isInputEditatble() {
+        return true;
+    }
+    
+    @Override
+    public ASTNodeWrapper getInput() {
+        return this;
+    }
+    
+    @Override
+    public boolean updateInputFrom(ASTNodeWrapper input) {
+        if (!(input instanceof ListExpressionWrapper) || this.isEqualsTo(input)) {
+            return false;
+        }
+        copyListProperties((ListExpressionWrapper) input);
+        return true;
+    }
+
+    @Override
+    public boolean replaceChild(ASTNodeWrapper oldChild, ASTNodeWrapper newChild) {
+        int index = getExpressions().indexOf(oldChild);
+        if (newChild instanceof ExpressionWrapper && index >= 0 && index < getExpressions().size()) {
+            setExpression((ExpressionWrapper) newChild, index);
+            return true;
+        }
+        return false;
+    }
+    
 }

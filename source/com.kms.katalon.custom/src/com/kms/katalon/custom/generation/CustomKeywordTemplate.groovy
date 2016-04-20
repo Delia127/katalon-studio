@@ -3,62 +3,61 @@ package com.kms.katalon.custom.generation
 import groovy.text.GStringTemplateEngine
 import groovy.transform.CompileStatic
 
+import org.apache.commons.lang.ClassUtils
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.GenericsType
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.Parameter
 
-import com.kms.katalon.core.exception.StepFailedException
-import com.kms.katalon.core.keyword.IKeywordContributor
-import com.kms.katalon.core.keyword.KeywordContributorCollection
-import com.kms.katalon.core.keyword.KeywordExceptionHandler
-import com.kms.katalon.core.logging.ErrorCollector
-import com.kms.katalon.core.logging.KeywordLogger
+import com.kms.katalon.core.ast.GroovyParser
 import com.kms.katalon.custom.factory.CustomMethodNodeFactory
 
-class CustomKeywordTemplate{
+class CustomKeywordTemplate {
+    private static final String[] GROOVY_DF_IMPORTED = [
+        "java.lang",
+        "java.util",
+        "java.io",
+        "java.net",
+        "groovy.lang",
+        "groovy.util",
+        "java.math.BigInteger",
+        "java.math.BigDecimal"
+    ];
 
+    private static final String IMMUTABLE_CLASS_NAME = "org.codehaus.groovy.ast.ImmutableClassNode"
+    
+    private static final String JAVA_AS_STRING = "java."
+    
+    private static final String GROOVY_AS_STRING = "groovy."
+    
+    private static final String DOT = "."
+    
+    private static Map<String, String> shortClassNameLookup = [:]
+    
     private static final String tpl =
-    '''<% classNames.each { %>import <%= it %>
+    '''
+<% importClassNames.each {%>
+import <%= it %>
 <% } %>
-<% methodNodes.each { %>
-/**
- * @see <%= it.getDeclaringClass().getName() %>#<%= it.getName() %>(
- * <% it.getParameters().eachWithIndex { item, index -> %> <% if (index > 0) { %> ,<% }%> 
- * <%= CustomKeywordTemplate.toString(item.getType()) %> <% } %>)
- */
-def static "<%= it.getDeclaringClass().getName() %>.<%= it.getName() %>" (<% it.getParameters().eachWithIndex { item, index -> %>
-    <% if (index > 0) { %> , <% }%>	<%= CustomKeywordTemplate.toString(item.getType()) %>  <%= item.getName() %>	<% } %>) {
-    (new <%= it.getDeclaringClass().getName() %>()).<%= it.getName() %>(<% it.getParameters().eachWithIndex { item, index -> %>
+<% methodNodesMap.each { key, value ->
+    value.each { %>
+def static "<%= key %>.<%= it.getName() %>"(<% it.getParameters().eachWithIndex { item, index -> %>
+    <% if (index > 0) { %> , <% }%>	<%= CustomKeywordTemplate.getInitialExpression(item) %>	<% } %>) {
+    (new <%= key %>()).<%= it.getName() %>(<% it.getParameters().eachWithIndex { item, index -> %>
         <% if (index > 0) { %> , <% }%>	<%= item.getName() %><% } %>)
 }
-<% } %>'''
+<% }
+} %>'''
 
     @CompileStatic
     def generateCustomKeywordFile(File file) {
-        Set<String> classNames = new HashSet<String>()
-        classNames.add(KeywordLogger.class.getName())
-        classNames.add(KeywordExceptionHandler.class.getName())
-        classNames.add(StepFailedException.class.getName())
-        classNames.add(ErrorCollector.class.getName())
-        for (IKeywordContributor keywordContribution : KeywordContributorCollection.getKeywordContributors()) {
-            classNames.add(keywordContribution.getKeywordClass().getName());
-        }
-        List<MethodNode> methodNodes = CustomMethodNodeFactory.getInstance().getAllMethodNodes()
-
-
-        for (MethodNode methodNode : methodNodes) {
-            for (Parameter param : methodNode.getParameters()) {
-                String[] className = getImportNames(param.getOriginType())
-                if (className != null) {
-                    classNames.addAll(className)
-                }
-            }
-        }
-
+        shortClassNameLookup.clear()
+        Map<String, List<MethodNode>> methodNodesMap = CustomMethodNodeFactory.getInstance().getMethodNodesMap()
+        String[] importClassNames = getImportClassNames(methodNodesMap)
         def binding = [
-            "classNames": classNames,
-            "methodNodes":  methodNodes,
+            "importClassNames": importClassNames,
+            "methodNodesMap":  methodNodesMap,
             "CustomKeywordTemplate": CustomKeywordTemplate
         ]
 
@@ -69,57 +68,87 @@ def static "<%= it.getDeclaringClass().getName() %>.<%= it.getName() %>" (<% it.
         }
     }
 
-    @CompileStatic
-    private String[] getImportNames(ClassNode classNode) {
-        if (canImportClassNode(classNode)) {
-            List<String> names = new ArrayList<String>()
-            if (classNode.isArray()) {
-                names.addAll(getImportNames(classNode.getComponentType()))
-            } else {
-                names.add(classNode.getName())
-            }
-
-            if (classNode.getGenericsTypes() != null && classNode.getGenericsTypes().length > 0) {
-                for (GenericsType childNode in classNode.getGenericsTypes()) {
-                    names.addAll(getImportNames(childNode.getType()))
+    private static String[] getImportClassNames(Map<String, List<MethodNode>> methodNodesMap) {
+        def importClassNames = [] as Set<String>
+        methodNodesMap.each { key, methodNodes ->
+            methodNodes.each  { methodNode ->
+                methodNode.getParameters().each { param ->
+                    String className = resolveClassName(param.getType(), true)
+                    if (canBeImported(className)) {
+                        importClassNames.add(className)
+                        shortClassNameLookup.put(className, ClassUtils.getShortCanonicalName(className))
+                    }
                 }
             }
-            return names.toArray(new String[names.size()]);
         }
-        return Collections.emptyList().toArray()
+        return importClassNames as String[]
     }
 
-    @CompileStatic
-    private boolean canImportClassNode(ClassNode classNode) {
-        if (classNode.isResolved() || classNode.isPrimaryClassNode()) {
-            return false
-        }
-
-        return true
+    private static boolean canBeImported(String className) {
+        return StringUtils.isNotEmpty(className) && className.contains(DOT) && !isGroovyImportedClassName(className) 
     }
 
-    public static String toString(ClassNode classNode) {
+    public static String resolveClassName(ClassNode classNode, boolean resolveGeneric) {
         try {
             if (classNode.isArray()) {
-                return toString(classNode.getComponentType()) + "[]"
+                return resolveClassName(classNode.getComponentType(), resolveGeneric) + "[]"
             }
 
-            String ret = classNode.getName()
-            if (!classNode.isPrimitive()) {
-                if (classNode.placeholder) ret = classNode.getUnresolvedName()
-                if (!classNode.placeholder && classNode.getGenericsTypes() != null) {
-                    ret += " <"
-                    for (int i = 0; i < classNode.getGenericsTypes().length; i++) {
-                        if (i != 0) ret += ", "
-                        GenericsType genericsType = classNode.getGenericsTypes()[i]
-                        ret += toString(genericsType.getType())
-                    }
-                    ret += ">"
-                }
+            if (IMMUTABLE_CLASS_NAME.equals(classNode.getClass().getName())
+                || classNode.isPrimaryClassNode()
+                || classNode.isGenericsPlaceHolder()) {
+                return ClassUtils.getShortCanonicalName(classNode.getUnresolvedName())
             }
-            return ret
-        } catch (Exception e) {
-            return "def";
+
+            String fullClassName = getFullClassName(classNode)
+            if (shortClassNameLookup.containsKey(fullClassName)) {
+                return shortClassNameLookup.get(fullClassName)
+            }
+
+            GenericsType[] genericsTypes = classNode.getGenericsTypes();
+            if (resolveGeneric && !classNode.isGenericsPlaceHolder() && genericsTypes != null && genericsTypes.length > 0) {
+                StringBuilder classNameBuilder = new StringBuilder(fullClassName)
+                classNameBuilder.append("<")
+                genericsTypes.eachWithIndex { genericType, index ->
+                    classNameBuilder.append((index > 0) ? ", " : "")
+                            .append(resolveClassName(genericType.getType(), resolveGeneric))
+                }
+                classNameBuilder.append(">")
+                return classNameBuilder.toString()
+            }
+            return isGroovyImportedClassName(fullClassName) ? ClassUtils.getShortCanonicalName(fullClassName) : fullClassName
+        } catch (Exception ignored) {
+            return classNode.getUnresolvedName()
         }
+    }
+
+    private static boolean isGroovyImportedClassName(String className) {
+        if (StringUtils.isEmpty(className) || !(className.startsWith(JAVA_AS_STRING) || className.startsWith(GROOVY_AS_STRING))) {
+            return false
+        }
+        return GROOVY_DF_IMPORTED.any {  className.startsWith(it)  }
+    }
+
+    private static String getFullClassName(ClassNode classNode) {
+        return getPackageNamePlusDot(classNode) + classNode.getNameWithoutPackage()
+    }
+
+    private static String getPackageNamePlusDot(ClassNode classNode) {
+        String packageName = classNode.getPackageName()
+        return StringUtils.isNotEmpty(packageName) ? packageName + DOT : "";
+    }
+
+    public static String getInitialExpression(Parameter param) {
+        StringBuilder initializedString = new StringBuilder(resolveClassName(param.getType(), true))
+                .append(" ").append(param.getName())
+
+        if (param.hasInitialExpression()) {
+            initializedString.append(" = ")
+            GroovyParser parser = new GroovyParser(new StringBuilder())
+            parser.parse(param.getInitialExpression())
+            initializedString.append(parser.getValue())
+        }
+
+        return initializedString.toString()
     }
 }

@@ -16,7 +16,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -25,8 +24,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.explorer.handlers.deletion.AbstractDeleteEntityDialog;
-import com.kms.katalon.composer.explorer.handlers.deletion.AbstractDeleteReferredEntityHandler;
+import com.kms.katalon.composer.explorer.handlers.deletion.AbstractDeleteReferredEntityDialog;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteController;
@@ -34,7 +32,7 @@ import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
-public class TestDataReferencesDialog extends AbstractDeleteEntityDialog {
+public class TestDataReferencesDialog extends AbstractDeleteReferredEntityDialog {
     private Map<String, List<TestSuiteTestCaseLink>> referencesInTestSuite;
 
     private List<TestSuiteTestCaseLink> allAffectedTestCase;
@@ -43,12 +41,13 @@ public class TestDataReferencesDialog extends AbstractDeleteEntityDialog {
 
     public TestDataReferencesDialog(Shell parentShell, String testDataId,
             Map<String, List<TestSuiteTestCaseLink>> referencesInTestSuite, List<TestCaseEntity> referencesInTestCase,
-            AbstractDeleteReferredEntityHandler handler) {
-        super(parentShell, handler);
+            boolean showYesNoToAllButtons) {
+        super(parentShell);
         setDialogTitle(StringConstants.DIA_TITLE_TEST_DATA_REFERENCES);
         setEntityId(testDataId);
         this.referencesInTestSuite = referencesInTestSuite;
         setAllAffectedTestCase(referencesInTestCase);
+        setShowYesNoToAllButtons(showYesNoToAllButtons);
     }
 
     @Override
@@ -79,7 +78,8 @@ public class TestDataReferencesDialog extends AbstractDeleteEntityDialog {
 
     private void updateTestCaseLinkTableInput() {
         IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-        if (selection == null || selection.size() != 1) return;
+        if (selection == null || selection.size() != 1)
+            return;
         String testSuiteId = (String) selection.getFirstElement();
         if (StringUtils.equals(testSuiteId, StringConstants.DIA_LBL_REFERENCED_TEST_CASES)) {
             testCaseLinkTableViewer.setInput(allAffectedTestCase);
@@ -209,10 +209,5 @@ public class TestDataReferencesDialog extends AbstractDeleteEntityDialog {
             link.setTestCaseId(tc.getIdForDisplay());
             allAffectedTestCase.add(link);
         }
-    }
-
-    @Override
-    protected Point getInitialSize() {
-        return new Point(500, 500);
     }
 }

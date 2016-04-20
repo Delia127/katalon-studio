@@ -10,6 +10,7 @@ import com.kms.katalon.core.exception.StepFailedException;
 
 public class ErrorCollector {
     private List<Throwable> errors;
+
     private static ErrorCollector _instance;
 
     private ErrorCollector() {
@@ -98,5 +99,11 @@ public class ErrorCollector {
             return errors.get(0);
         }
         return null;
+    }
+
+    public static LogLevel fromError(Throwable t) {
+        Class<?> throwableClass = t.getClass();
+        return (StepFailedException.class == throwableClass || AssertionError.class.isAssignableFrom(throwableClass))
+                ? LogLevel.FAILED : LogLevel.ERROR;
     }
 }

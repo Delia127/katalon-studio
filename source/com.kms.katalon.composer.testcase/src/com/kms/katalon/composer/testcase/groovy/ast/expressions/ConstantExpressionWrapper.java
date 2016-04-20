@@ -6,9 +6,17 @@ import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 
 public class ConstantExpressionWrapper extends ExpressionWrapper {
     private Object value;
+    
+    public ConstantExpressionWrapper() {
+        this(null);
+    }
 
     public ConstantExpressionWrapper(ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
+    }
+    
+    public ConstantExpressionWrapper(Object value) {
+        this(value, null);
     }
 
     public ConstantExpressionWrapper(Object value, ASTNodeWrapper parentNodeWrapper) {
@@ -21,13 +29,18 @@ public class ConstantExpressionWrapper extends ExpressionWrapper {
         setValue(constantExpression.getValue());
     }
 
-    public ConstantExpressionWrapper(ConstantExpressionWrapper constantExpressionWrapper, ASTNodeWrapper parentNodeWrapper) {
+    public ConstantExpressionWrapper(ConstantExpressionWrapper constantExpressionWrapper,
+            ASTNodeWrapper parentNodeWrapper) {
         super(constantExpressionWrapper, parentNodeWrapper);
         setValue(constantExpressionWrapper.getValue());
     }
 
     public Object getValue() {
         return value;
+    }
+    
+    public String getValueAsString() {
+        return String.valueOf(value);
     }
 
     public void setValue(Object value) {
@@ -61,6 +74,10 @@ public class ConstantExpressionWrapper extends ExpressionWrapper {
     public boolean isNumberExpression() {
         return value instanceof Number;
     }
+    
+    public boolean isBooleanExpression() {
+        return isTrueExpression() || isFalseExpression();
+    }
 
     public boolean isTrueExpression() {
         return Boolean.TRUE.equals(value);
@@ -68,5 +85,24 @@ public class ConstantExpressionWrapper extends ExpressionWrapper {
 
     public boolean isFalseExpression() {
         return Boolean.FALSE.equals(value);
+    }
+
+    @Override
+    public boolean isInputEditatble() {
+        return true;
+    }
+
+    @Override
+    public ASTNodeWrapper getInput() {
+        return this;
+    }
+
+    @Override
+    public boolean updateInputFrom(ASTNodeWrapper input) {
+        if (!(input instanceof ConstantExpressionWrapper) || this.isEqualsTo(input)) {
+            return false;
+        }
+        setValue(((ConstantExpressionWrapper) input).getValue());
+        return true;
     }
 }

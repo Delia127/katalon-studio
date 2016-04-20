@@ -9,30 +9,32 @@ import org.codehaus.groovy.ast.stmt.CatchStatement;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ParameterWrapper;
-import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
 
-public class CatchStatementWrapper extends CompositeStatementWrapper {
+public class CatchStatementWrapper extends ComplexChildStatementWrapper {
     private static final String DEFAULT_VARIABLE_NAME = "e";
+
     private static final Class<?> DEFAULT_EXCEPTION_TYPE = Exception.class;
+
     private ParameterWrapper variable;
-    private BlockStatementWrapper code;
 
     public CatchStatementWrapper(TryCatchStatementWrapper parentTryCatchStatement) {
         super(parentTryCatchStatement);
         variable = new ParameterWrapper(DEFAULT_EXCEPTION_TYPE, DEFAULT_VARIABLE_NAME, this);
-        code = new BlockStatementWrapper(this);
     }
 
     public CatchStatementWrapper(CatchStatement catchStatement, TryCatchStatementWrapper parentTryCatchStatement) {
-        super(catchStatement, parentTryCatchStatement);
+        super(catchStatement, (BlockStatement) catchStatement.getCode(), parentTryCatchStatement);
         this.variable = new ParameterWrapper(catchStatement.getVariable(), this);
-        this.code = new BlockStatementWrapper((BlockStatement) catchStatement.getCode(), this);
     }
 
-    public CatchStatementWrapper(CatchStatementWrapper catchStatementWrapper, TryCatchStatementWrapper parentTryCatchStatement) {
+    public CatchStatementWrapper(CatchStatementWrapper catchStatementWrapper,
+            TryCatchStatementWrapper parentTryCatchStatement) {
         super(catchStatementWrapper, parentTryCatchStatement);
         this.variable = new ParameterWrapper(catchStatementWrapper.getVariable(), this);
-        this.code = new BlockStatementWrapper(catchStatementWrapper.getBlock(), this);
+    }
+
+    public CatchStatementWrapper() {
+        this(null);
     }
 
     public ParameterWrapper getVariable() {
@@ -40,6 +42,10 @@ public class CatchStatementWrapper extends CompositeStatementWrapper {
     }
 
     public void setVariable(ParameterWrapper variable) {
+        if (variable == null) {
+            return;
+        }
+        variable.setParent(this);
         this.variable = variable;
     }
 
@@ -62,13 +68,8 @@ public class CatchStatementWrapper extends CompositeStatementWrapper {
     public List<? extends ASTNodeWrapper> getAstChildren() {
         List<ASTNodeWrapper> astNodeWrappers = new ArrayList<ASTNodeWrapper>();
         astNodeWrappers.add(variable);
-        astNodeWrappers.add(code);
+        astNodeWrappers.addAll(super.getAstChildren());
         return astNodeWrappers;
-    }
-
-    @Override
-    public BlockStatementWrapper getBlock() {
-        return code;
     }
 
     @Override
@@ -81,6 +82,10 @@ public class CatchStatementWrapper extends CompositeStatementWrapper {
     }
 
     public void setExceptionType(ClassNodeWrapper type) {
+        if (type == null) {
+            return;
+        }
+        type.setParent(variable);
         variable.setType(type);
     }
 
@@ -90,6 +95,11 @@ public class CatchStatementWrapper extends CompositeStatementWrapper {
 
     public void setVariableName(String name) {
         variable.setName(name);
+    }
+
+    @Override
+    public boolean isInputEditatble() {
+        return true;
     }
 
     @Override
@@ -105,13 +115,26 @@ public class CatchStatementWrapper extends CompositeStatementWrapper {
     @Override
     public boolean updateInputFrom(ASTNodeWrapper input) {
         if (!(input instanceof CatchStatementWrapper)
-                || AstTreeTableValueUtil.compareAstNode(this.getVariable(),
-                ((CatchStatementWrapper) input).getVariable())) {
+                || this.getVariable().isEqualsTo(((CatchStatementWrapper) input).getVariable())) {
             return false;
         }
-        this.setVariable(((CatchStatementWrapper) input).getVariable());
+        setVariable(((CatchStatementWrapper) input).getVariable());
         return true;
-
     }
 
+    @Override
+    protected boolean isAstNodeBelongToParentComplex(ASTNodeWrapper astNode) {
+        return astNode instanceof CatchStatementWrapper || astNode instanceof FinallyStatementWrapper;
+    }
+
+    @Override
+    public boolean replaceChild(ASTNodeWrapper oldChild, ASTNodeWrapper newChild) {
+        if (oldChild == getExceptionType() && newChild instanceof ClassNodeWrapper) {
+            setExceptionType((ClassNodeWrapper) newChild);
+            return true;
+        } else if (oldChild == getVariable() && newChild instanceof ParameterWrapper) {
+            setVariable((ParameterWrapper) newChild);
+        }
+        return false;
+    }
 }

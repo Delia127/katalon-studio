@@ -21,8 +21,6 @@ public interface ITestCaseDataProvider {
 
 	//public void uploadTestCaseToQTest(String token, TestCaseEntity testCase, ProjectEntity project) throws Exception;
 
-	public String getIdForDisplay(TestCaseEntity testCase) throws Exception;
-
 	public TestCaseEntity getTestCaseByDisplayId(String testCaseId) throws Exception;
 	
 	public String getAvailableTestCaseName(FolderEntity parentFolder, String name) throws Exception;

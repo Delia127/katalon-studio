@@ -31,9 +31,6 @@ public class ListInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
 
     public ListInputBuilderDialog(Shell parentShell, ListExpressionWrapper listExpression) {
         super(parentShell);
-        if (listExpression == null) {
-            throw new IllegalArgumentException();
-        }
         this.listExpression = listExpression.clone();
     }
 
@@ -45,10 +42,10 @@ public class ListInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
                 int selectionIndex = tableViewer.getTable().getSelectionIndex();
                 ExpressionWrapper newExpression = new ConstantExpressionWrapper("", listExpression);
                 if (selectionIndex < 0 || selectionIndex >= listExpression.getExpressions().size()) {
-                    listExpression.getExpressions().add(newExpression);
+                    listExpression.addExpression(newExpression);
                     selectionIndex++;
                 } else {
-                    listExpression.getExpressions().add(selectionIndex, newExpression);
+                    listExpression.addExpression(newExpression, selectionIndex);
                 }
                 tableViewer.refresh();
                 tableViewer.getTable().setSelection(selectionIndex);
@@ -63,7 +60,7 @@ public class ListInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
                 if (selectionIndex < 0 || selectionIndex >= listExpression.getExpressions().size()) {
                     return;
                 }
-                listExpression.getExpressions().remove(selectionIndex);
+                listExpression.removeExpression(selectionIndex);
                 tableViewer.refresh();
             }
         });
@@ -74,16 +71,6 @@ public class ListInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
     @Override
     public ListExpressionWrapper getReturnValue() {
         return listExpression;
-    }
-
-    @Override
-    public void replaceObject(Object originalObject, Object newObject) {
-        int index = listExpression.getExpressions().indexOf(originalObject);
-        if (!(newObject instanceof ExpressionWrapper) || index < 0 || index >= listExpression.getExpressions().size()) {
-            return;
-        }
-        listExpression.getExpressions().set(index, (ExpressionWrapper) newObject);
-        tableViewer.refresh();
     }
 
     @Override
@@ -112,18 +99,18 @@ public class ListInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
         tableViewerColumnValueType.getColumn().setWidth(100);
         tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider());
         tableViewerColumnValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer,
-                defaultInputValueTypes, this));
+                defaultInputValueTypes));
 
         TableViewerColumn tableViewerColumnValue = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnNewColumnValue = tableViewerColumnValue.getColumn();
         tblclmnNewColumnValue.setText(StringConstants.DIA_COL_VALUE);
         tblclmnNewColumnValue.setWidth(170);
         tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider());
-        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this));
+        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer));
     }
 
     @Override
-    public void refresh() {
+    public void setInput() {
         tableViewer.setContentProvider(new ArrayContentProvider());
         tableViewer.setInput(listExpression.getExpressions());
         tableViewer.refresh();

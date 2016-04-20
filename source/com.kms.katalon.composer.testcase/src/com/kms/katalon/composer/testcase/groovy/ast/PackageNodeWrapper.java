@@ -22,10 +22,6 @@ public class PackageNodeWrapper extends AnnonatedNodeWrapper {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     @Override
     public String getText() {
         return name;
@@ -39,5 +35,10 @@ public class PackageNodeWrapper extends AnnonatedNodeWrapper {
     @Override
     public List<? extends ASTNodeWrapper> getAstChildren() {
         return Collections.emptyList();
+    }
+    
+    @Override
+    public PackageNodeWrapper clone() {
+        return new PackageNodeWrapper(this, getParent());
     }
 }

@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.kms.katalon.composer.testcase.util.WrapperToAstTreeConverter;
+
 import org.eclipse.swt.graphics.Image;
 
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.MethodNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 
@@ -56,5 +58,30 @@ public class AstScriptTreeTableNode extends AstAbstractTreeTableNode {
     @Override
     public Image getIcon() {
         return null;
+    }
+    
+    @Override
+    public boolean isChildAssignble(ASTNodeWrapper astNode) {
+        return scriptNode.getBlock().isChildAssignble(astNode);
+    }
+
+    @Override
+    public boolean addChild(ASTNodeWrapper childObject) {
+        return scriptNode.getBlock().addChild(childObject);
+    }
+
+    @Override
+    public boolean addChild(ASTNodeWrapper childObject, int index) {
+        return scriptNode.getBlock().addChild(childObject, index);
+    }
+
+    @Override
+    public boolean removeChild(ASTNodeWrapper childObject) {
+        return scriptNode.getBlock().removeChild(childObject);
+    }
+    
+    @Override
+    public int indexOf(ASTNodeWrapper childObject) {
+        return scriptNode.getBlock().indexOf(childObject);
     }
 }

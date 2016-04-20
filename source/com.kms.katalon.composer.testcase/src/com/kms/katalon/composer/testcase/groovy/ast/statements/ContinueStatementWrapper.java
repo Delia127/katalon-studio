@@ -7,6 +7,10 @@ import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 public class ContinueStatementWrapper extends StatementWrapper {
     private String label;
     
+    public ContinueStatementWrapper() {
+        this(null);
+    }
+    
     public ContinueStatementWrapper(ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
     }
@@ -43,5 +47,4 @@ public class ContinueStatementWrapper extends StatementWrapper {
     public ContinueStatementWrapper clone() {
         return new ContinueStatementWrapper(this, getParent());
     }
-
 }

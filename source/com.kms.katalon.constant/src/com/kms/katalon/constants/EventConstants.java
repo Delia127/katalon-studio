@@ -32,6 +32,7 @@ public class EventConstants {
     public static final String EXPLORER_OPEN_SELECTED_ITEM = "EXPLORER/OPEN_SELECTED_ITEM";
     public static final String EXPLORER_DELETE_SELECTED_ITEM = "EXPLORER/DELETE_SELECTED_ITEM";
     public static final String EXPLORER_DELETED_SELECTED_ITEM = "EXPLORER/DELETED_SELECTED_ITEM";
+    public static final String EXPLORER_RESET_USER_RESPONSE_FOR_DELETION = "EXPLORER/RESET_USER_RESPONSE_FOR_DELETION";
     public static final String EXPLORER_RENAME_SELECTED_ITEM = "EXPLORER/RENAME_SELECTED_ITEM";
     public static final String EXPLORER_RENAMED_SELECTED_ITEM = "EXPLORER/RENAMED_SELECTED_ITEM";
     public static final String EXPLORER_PASTE_SELECTED_ITEM = "EXPLORER/PASTE_SELECTED_ITEM";
@@ -90,7 +91,6 @@ public class EventConstants {
     // Console Log Events
     public static final String CONSOLE_LOG_OPEN = "CONSOLE_LOG/OPEN";
     public static final String CONSOLE_LOG_RESET = "CONSOLE_LOG/RESET";
-    public static final String CONSOLE_LOG_ADD_ITEMS = "CONSOLE_LOG/ADD_ITEMS";
     public static final String CONSOLE_LOG_REFRESH = "CONSOLE_LOG/REFRESH";
     public static final String CONSOLE_LOG_UPDATE_PROGRESS_BAR = "CONSOLE_LOG/UPDATE_PROGRESS_BAR";
     public static final String CONSOLE_LOG_CHANGE_VIEW_TYPE = "CONSOLE_LOG/CHANGE_VIEW_TYPE";

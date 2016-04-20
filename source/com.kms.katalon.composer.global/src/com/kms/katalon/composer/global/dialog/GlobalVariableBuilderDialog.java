@@ -36,7 +36,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrappe
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
-import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
+import com.kms.katalon.composer.testcase.util.AstValueUtil;
 import com.kms.katalon.entity.global.GlobalVariableEntity;
 import com.kms.katalon.groovy.constant.GroovyConstants;
 
@@ -166,7 +166,7 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
                 if (!(element instanceof GlobalVariableEntity)) {
                     return "";
                 }
-                InputValueType valueType = AstTreeTableValueUtil.getTypeValue(GroovyWrapperParser
+                InputValueType valueType = AstValueUtil.getTypeValue(GroovyWrapperParser
                         .parseGroovyScriptAndGetFirstExpression(((GlobalVariableEntity) element).getInitValue()));
                 if (valueType != null) {
                     return TreeEntityUtil.getReadableKeywordName(valueType.getName());
@@ -196,7 +196,7 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
                     return;
                 }
                 InputValueType newValueType = inputValueTypes[(int) value];
-                InputValueType oldValueType = AstTreeTableValueUtil.getTypeValue(expression);
+                InputValueType oldValueType = AstValueUtil.getTypeValue(expression);
                 if (newValueType == oldValueType) {
                     return;
                 }
@@ -228,7 +228,7 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
                 if (expression == null) {
                     return null;
                 }
-                InputValueType inputValueType = AstTreeTableValueUtil.getTypeValue(expression);
+                InputValueType inputValueType = AstValueUtil.getTypeValue(expression);
                 if (inputValueType != null) {
                     return inputValueType.getCellEditorForValue((Composite) getViewer().getControl(), expression);
                 }
@@ -242,7 +242,7 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
 
             @Override
             protected Object getValue(Object element) {
-                InputValueType inputValueType = AstTreeTableValueUtil.getTypeValue(expression);
+                InputValueType inputValueType = AstValueUtil.getTypeValue(expression);
                 if (inputValueType != null) {
                     return inputValueType.getValueToEdit(expression);
                 }
@@ -254,7 +254,7 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
                 if (value == null) {
                     return;
                 }
-                InputValueType inputValueType = AstTreeTableValueUtil.getTypeValue(expression);
+                InputValueType inputValueType = AstValueUtil.getTypeValue(expression);
                 if (inputValueType == null) {
                     return;
                 }

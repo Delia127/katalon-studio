@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.MethodNode;
 
@@ -16,12 +16,12 @@ public class CustomMethodNodeFactory {
     /**
      * key: class name value: list of all methods that the class owns
      */
-    private Map<String, List<MethodNode>> mapMethodNodes;
+    private Map<String, List<MethodNode>> methodNodesMap;
 
     private static CustomMethodNodeFactory _instance;
 
     private CustomMethodNodeFactory() {
-        mapMethodNodes = new HashMap<String, List<MethodNode>>();
+        methodNodesMap = new HashMap<String, List<MethodNode>>();
     }
 
     public static CustomMethodNodeFactory getInstance() {
@@ -31,50 +31,43 @@ public class CustomMethodNodeFactory {
         return _instance;
     }
 
-    /**
-     * Returns all methods that are in custom keyword file, not in CustomKeywords.groovy
-     */
-    public List<MethodNode> getAllMethodNodes() {
-        List<MethodNode> output = new ArrayList<MethodNode>();
-        for (Entry<String, List<MethodNode>> entry : mapMethodNodes.entrySet()) {
-            if (entry.getValue() instanceof List) {
-                List<MethodNode> entryMethods = entry.getValue();
-                for (MethodNode methodNode : entryMethods) {
-                    output.add(methodNode);
-                }
-            }
-        }
-        return output;
-    }
-
     public void addMethodNodes(String className, List<MethodNode> methodNodes) {
-        List<MethodNode> qualfiliers = new ArrayList<MethodNode>();
+        List<MethodNode> customKeywordMethods = new ArrayList<MethodNode>();
         for (MethodNode method : methodNodes) {
-            if (method.getAnnotations() != null) {
-                for (AnnotationNode annotationNode : method.getAnnotations()) {
-                    if (annotationNode.getClassNode().getName().equals(Keyword.class.getName()) ||
-                            annotationNode.getClassNode().getName().equals(Keyword.class.getSimpleName())) {
-                        qualfiliers.add(method);
-                        break;
-                    }
+            if (method.getAnnotations() == null) {
+                continue;
+            }
+            for (AnnotationNode annotationNode : method.getAnnotations()) {
+                if (isKeywordAnnotationNode(annotationNode)) {
+                    customKeywordMethods.add(method);
+                    break;
                 }
             }
         }
-        mapMethodNodes.put(className, qualfiliers);
+        methodNodesMap.put(className, customKeywordMethods);
+    }
+    
+    private boolean isKeywordAnnotationNode(AnnotationNode annotationNode) {
+        String annotaionClassNodeName = annotationNode.getClassNode().getName();
+        return (Keyword.class.getName().equals(annotaionClassNodeName) || Keyword.class.getSimpleName().equals(
+                annotaionClassNodeName));
     }
     
     public void removeMethodNodes(String className) {
-        if (mapMethodNodes.containsKey(className)) {
-            mapMethodNodes.remove(className);
+        if (methodNodesMap.containsKey(className)) {
+            methodNodesMap.remove(className);
         }
     }
 
     public void reset() {
-        mapMethodNodes.clear();
+        methodNodesMap.clear();
     }
     
     public boolean isCustomKeywordClass(String className) {
-    	if ((className == null) || className.isEmpty()) return false; 
-    	return mapMethodNodes.containsKey(className);
+        return StringUtils.isNotEmpty(className) && methodNodesMap.containsKey(className);
+    }
+    
+    public Map<String, List<MethodNode>> getMethodNodesMap() {
+        return methodNodesMap;
     }
 }

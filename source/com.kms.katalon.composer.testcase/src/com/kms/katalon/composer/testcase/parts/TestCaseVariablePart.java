@@ -14,12 +14,9 @@ import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnViewerEditor;
-import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.TableViewerEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSourceAdapter;
@@ -40,7 +37,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
-import com.kms.katalon.composer.components.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
@@ -53,7 +50,7 @@ import com.kms.katalon.composer.testcase.support.VariableDefaultValueEditingSupp
 import com.kms.katalon.composer.testcase.support.VariableDefaultValueTypeEditingSupport;
 import com.kms.katalon.composer.testcase.support.VariableDescriptionEditingSupport;
 import com.kms.katalon.composer.testcase.support.VariableNameEditingSupport;
-import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
+import com.kms.katalon.composer.testcase.util.AstValueUtil;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.util.SyntaxUtil;
@@ -180,11 +177,6 @@ public class TestCaseVariablePart {
 
         });
 
-        // Enable editing on Tab move
-        TableViewerEditor.create(tableViewer, new ColumnViewerEditorActivationStrategy(tableViewer),
-                ColumnViewerEditor.TABBING_HORIZONTAL | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
-                        | ColumnViewerEditor.KEYBOARD_ACTIVATION);
-
         tableViewer.addDragSupport(DND.DROP_MOVE, new Transfer[] { TextTransfer.getInstance() },
                 new DragSourceAdapter() {
 
@@ -267,7 +259,7 @@ public class TestCaseVariablePart {
                     if (expression == null) {
                         return null;
                     }
-                    InputValueType valueType = AstTreeTableValueUtil.getTypeValue(expression);
+                    InputValueType valueType = AstValueUtil.getTypeValue(expression);
                     if (valueType != null) {
                         return TreeEntityUtil.getReadableKeywordName(valueType.getName());
                     }

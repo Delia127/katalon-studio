@@ -3,7 +3,7 @@ package com.kms.katalon.composer.testcase.ast.editors;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
-import com.kms.katalon.composer.testcase.ast.dialogs.AstBuilderDialog;
+import com.kms.katalon.composer.testcase.ast.dialogs.IAstDialogBuilder;
 import com.kms.katalon.composer.testcase.ast.dialogs.MethodObjectBuilderDialog;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.MethodNodeWrapper;
@@ -17,7 +17,7 @@ public class MethodObjectBuilderCellEditor extends AstDialogCellEditor {
 	}
 
 	@Override
-	protected AstBuilderDialog getDialog(Shell shell) {
+	protected IAstDialogBuilder getDialog(Shell shell) {
 		return new MethodObjectBuilderDialog(shell, (MethodNodeWrapper) getValue(), parentNode);
 	}
 

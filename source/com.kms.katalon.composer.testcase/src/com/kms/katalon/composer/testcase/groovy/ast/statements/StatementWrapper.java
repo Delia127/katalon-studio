@@ -3,13 +3,15 @@ package com.kms.katalon.composer.testcase.groovy.ast.statements;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.stmt.Statement;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 
 // Base class for all statement
 public abstract class StatementWrapper extends ASTNodeWrapper {
-    private static final String TEXT = "Statement";
+    public static final String TEXT = "Statement";
+
     protected String description = "";
 
     public StatementWrapper(ASTNodeWrapper parentNodeWrapper) {
@@ -25,22 +27,24 @@ public abstract class StatementWrapper extends ASTNodeWrapper {
         super(statement, parentNodeWrapper);
     }
 
-    @Override
-    public boolean hasAstChildren() {
-        return false;
+    public boolean canHaveDescription() {
+        return true;
     }
 
-    @Override
-    public List<? extends ASTNodeWrapper> getAstChildren() {
-        return Collections.emptyList();
+    public boolean hasDescription() {
+        return !StringUtils.isEmpty(description);
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public boolean setDescription(String description) {
+        if (description == null || StringUtils.equals(description, this.description)) {
+            return false;
+        }
         this.description = description;
+        return true;
     }
 
     @Override
@@ -51,21 +55,18 @@ public abstract class StatementWrapper extends ASTNodeWrapper {
     @Override
     public abstract StatementWrapper clone();
 
+    @Override
     public StatementWrapper copy(ASTNodeWrapper newParent) {
-        StatementWrapper newInstance = clone();
-        newInstance.setParent(newParent);
-        return newInstance;
+        return (StatementWrapper) super.copy(newParent);
     }
 
-    // By default, it's immutable
-    public ASTNodeWrapper getInput() {
-        return null;
-    }
-    public String getInputText() {
-        return "";
-    }
-
-    public boolean updateInputFrom(ASTNodeWrapper input) {
+    @Override
+    public boolean hasAstChildren() {
         return false;
+    }
+
+    @Override
+    public List<? extends ASTNodeWrapper> getAstChildren() {
+        return Collections.emptyList();
     }
 }

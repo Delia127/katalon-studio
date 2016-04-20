@@ -13,7 +13,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpres
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
-import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
+import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
 import com.kms.katalon.composer.webui.recorder.action.HTMLAction;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
@@ -53,23 +53,22 @@ public class HTMLActionUtil {
 
         MethodCallExpressionWrapper methodCallExpressionWrapper = new MethodCallExpressionWrapper(actionMapping.getAction()
                 .getMappedKeywordClassSimpleName(), actionMapping.getAction().getMappedKeywordMethod(), null);
-        ArgumentListExpressionWrapper argumentListExpressionWrapper = (ArgumentListExpressionWrapper) methodCallExpressionWrapper
+        ArgumentListExpressionWrapper argumentListExpressionWrapper = methodCallExpressionWrapper
                 .getArguments();
-        List<ExpressionWrapper> arguments = argumentListExpressionWrapper.getExpressions();
         for (int i = 0; i < method.getParameterTypes().length; i++) {
             Class<?> argumentClass = method.getParameterTypes()[i];
             ExpressionWrapper generatedExression = null;
             if (argumentClass.getName().equals(TestObject.class.getName())) {
-                generatedExression = AstEntityInputUtil.generateObjectMethodCall(
+                generatedExression = AstEntityInputUtil.createNewFindTestObjectMethodCall(
                         (createdTestObject != null) ? createdTestObject.getIdForDisplay() : null, null);
             } else if (argumentClass.getName().equals(FailureHandling.class.getName())) {
-                generatedExression = AstTreeTableInputUtil.getNewFailureHandlingPropertyExpression(null);
+                generatedExression = AstKeywordsInputUtil.getNewFailureHandlingPropertyExpression(null);
             } else {
                 Object data = actionMapping.getData()[actionDataCount];
                 generatedExression = new ConstantExpressionWrapper(data, argumentListExpressionWrapper);
                 actionDataCount++;
             }
-            arguments.add(generatedExression);
+            argumentListExpressionWrapper.addExpression(generatedExression);
         }
         return new ExpressionStatementWrapper(methodCallExpressionWrapper, null);
     }
@@ -131,7 +130,7 @@ public class HTMLActionUtil {
             }
             validationActions.add(new HTMLValidationAction(method.getName(), WebUiBuiltInKeywords.class.getName(),
                     WebUiBuiltInKeywords.class.getSimpleName(), method.getName(), TestCaseEntityUtil
-                            .getKeywordJavaDocText(WebUiBuiltInKeywords.class.getName(), method.getName(), null)));
+                            .getKeywordJavaDocText(WebUiBuiltInKeywords.class.getName(), method.getName())));
         }
         return validationActions;
     }
@@ -147,7 +146,7 @@ public class HTMLActionUtil {
             }
             synchronizeActions.add(new HTMLSynchronizeAction(method.getName(), WebUiBuiltInKeywords.class.getName(),
                     WebUiBuiltInKeywords.class.getSimpleName(), method.getName(), TestCaseEntityUtil
-                            .getKeywordJavaDocText(WebUiBuiltInKeywords.class.getName(), method.getName(), null)));
+                            .getKeywordJavaDocText(WebUiBuiltInKeywords.class.getName(), method.getName())));
         }
         return synchronizeActions;
     }

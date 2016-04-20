@@ -91,6 +91,21 @@ public abstract class AbstractLogRecord implements ILogRecord {
         }
 
         setMessage(childRecords.get(childRecords.size() - 1).getMessage());
+        
+        for (int index = childRecords.size() - 1; index >= 0; index--) {
+            ILogRecord messageRecord = childRecords.get(index);
+            if (!(messageRecord instanceof MessageLogRecord)) {
+                continue;
+            }
+            TestStatusValue logRecordStatusValue = messageRecord.getStatus().getStatusValue();
+            
+            if (logRecordStatusValue == TestStatusValue.ERROR || logRecordStatusValue == TestStatusValue.FAILED
+                    || logRecordStatusValue == TestStatusValue.INCOMPLETE) {
+                testStatus.setStatusValue(logRecordStatusValue);
+                setMessage(messageRecord.getMessage());
+                return testStatus;
+            }
+        }
 
         for (ILogRecord logRecord : getChildRecords()) {
             if (!(logRecord instanceof TestCaseLogRecord && ((TestCaseLogRecord) logRecord).isOptional())) {
@@ -99,7 +114,7 @@ public abstract class AbstractLogRecord implements ILogRecord {
                         || logRecordStatusValue == TestStatusValue.INCOMPLETE) {
                     testStatus.setStatusValue(logRecordStatusValue);
                     setMessage(logRecord.getMessage());
-                    break;
+                    return testStatus;
                 }
             }
         }

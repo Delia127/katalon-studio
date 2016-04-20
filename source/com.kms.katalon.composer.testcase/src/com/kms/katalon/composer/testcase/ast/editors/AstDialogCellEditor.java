@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.dialogs.AbstractDialogCellEditor;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.testcase.ast.dialogs.AstBuilderDialog;
+import com.kms.katalon.composer.testcase.ast.dialogs.IAstDialogBuilder;
 
 public abstract class AstDialogCellEditor extends AbstractDialogCellEditor {
 
@@ -32,7 +32,7 @@ public abstract class AstDialogCellEditor extends AbstractDialogCellEditor {
     @Override
     protected Object openDialogBox(Control cellEditorWindow) {
         try {
-            AstBuilderDialog dialog = getDialog(Display.getCurrent().getActiveShell());
+            IAstDialogBuilder dialog = getDialog(Display.getCurrent().getActiveShell());
             if (dialog != null && dialog.open() == Window.OK) {
                 return dialog.getReturnValue();
             }
@@ -42,5 +42,5 @@ public abstract class AstDialogCellEditor extends AbstractDialogCellEditor {
         return null;
     }
 
-    protected abstract AstBuilderDialog getDialog(Shell shell);
+    protected abstract IAstDialogBuilder getDialog(Shell shell);
 }

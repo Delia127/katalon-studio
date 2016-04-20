@@ -8,10 +8,4 @@ public class DeclarationExpressionWrapper extends BinaryExpressionWrapper {
     public DeclarationExpressionWrapper(DeclarationExpression declarationExpression, ASTNodeWrapper parentNodeWrapper) {
         super(declarationExpression, parentNodeWrapper);
     }
-
-    @Override
-    public String getText() {
-        return super.getText();
-    }
-
 }

@@ -15,19 +15,15 @@ import java.util.Set;
 import org.apache.commons.io.FilenameUtils;
 
 import com.kms.katalon.constants.GlobalStringConstants;
-import com.kms.katalon.dal.exception.TestDataReferredException;
 import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.dal.fileservice.FileServiceConstant;
 import com.kms.katalon.dal.fileservice.constants.StringConstants;
 import com.kms.katalon.entity.dal.exception.DuplicatedFileNameException;
-import com.kms.katalon.entity.dal.exception.EntityIsReferencedException;
 import com.kms.katalon.entity.dal.exception.NoEntityException;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
-import com.kms.katalon.entity.link.VariableLink;
-import com.kms.katalon.entity.link.VariableLink.VariableType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity.DataFileDriverType;
@@ -50,82 +46,24 @@ public class DataFileFileServiceManager {
      * @throws Exception
      */
     public static DataFileEntity addNewDataFile(FolderEntity parentFolder) throws Exception {
-        if (parentFolder != null) {
-            DataFileEntity newDataFile = new DataFileEntity();
-            newDataFile.setParentFolder(parentFolder);
-            String name = EntityService.getInstance().getAvailableName(parentFolder.getLocation(),
-                    StringConstants.MNG_NEW_TEST_DATA, true);
-            newDataFile.setName(name);
-            newDataFile.setParentFolder(parentFolder);
-            newDataFile.setDriver(DataFileDriverType.ExcelFile);
-            newDataFile.setDataSourceUrl(DataFileEntity.DEFAULT_DATA_SOURCE_URL);
-            newDataFile.setProject(parentFolder.getProject());
-            newDataFile.setDataFileGUID(Util.generateGuid());
-
-            EntityService.getInstance().saveEntity(newDataFile);
-            FolderFileServiceManager.refreshFolder(parentFolder);
-            return newDataFile;
-        }
-        return null;
-    }
-
-    /**
-     * check if a data file entity is referenced by any test case, test suite and job definition entity or not
-     * 
-     * @param dataFilePk
-     * @param projectPk
-     * @return the string contains information of all entities that refer to the data file entity, if none return empty
-     * string
-     * @throws Exception
-     */
-    private static String isDataFileReferred(DataFileEntity dataFile, List<TestSuiteEntity> testSuiteList,
-            boolean isForced) throws Exception {
-        if (dataFile == null) {
-            return "";
+        if (parentFolder == null) {
+            return null;
         }
 
-        StringBuilder referenceStringBuilder = new StringBuilder();
-        String dataFileId = dataFile.getRelativePathForUI().replace(File.separator,
-                GlobalStringConstants.ENTITY_ID_SEPERATOR);
-        TestDataReferredException exception = new TestDataReferredException("");
+        DataFileEntity newDataFile = new DataFileEntity();
+        newDataFile.setParentFolder(parentFolder);
+        String name = EntityService.getInstance().getAvailableName(parentFolder.getLocation(),
+                StringConstants.MNG_NEW_TEST_DATA, true);
+        newDataFile.setName(name);
+        newDataFile.setParentFolder(parentFolder);
+        newDataFile.setDriver(DataFileDriverType.ExcelFile);
+        newDataFile.setDataSourceUrl(DataFileEntity.DEFAULT_DATA_SOURCE_URL);
+        newDataFile.setProject(parentFolder.getProject());
+        newDataFile.setDataFileGUID(Util.generateGuid());
 
-        for (TestSuiteEntity testSuiteEntity : testSuiteList) {
-            boolean needToSave = false;
-            for (TestSuiteTestCaseLink testCaseLink : testSuiteEntity.getTestSuiteTestCaseLinks()) {
-
-                List<TestCaseTestDataLink> removedTestDataLinks = new ArrayList<TestCaseTestDataLink>();
-
-                for (TestCaseTestDataLink testDataLink : testCaseLink.getTestDataLinks()) {
-                    if (dataFileId.equals(testDataLink.getTestDataId())) {
-                        if (!isForced) {
-                            exception.addReference(testSuiteEntity, testCaseLink);
-                            break;
-                        } else {
-                            removedTestDataLinks.add(testDataLink);
-                            for (VariableLink variableLink : testCaseLink.getVariableLinks()) {
-                                variableLink.setTestDataLinkId("");
-                                variableLink.setType(VariableType.SCRIPT);
-                                variableLink.setValue("");
-                            }
-                        }
-                    }
-                }
-
-                if (isForced) {
-                    testCaseLink.getTestDataLinks().removeAll(removedTestDataLinks);
-                    needToSave = true;
-                }
-            }
-            if (needToSave) {
-                TestSuiteFileServiceManager.updateTestSuite(testSuiteEntity);
-            }
-        }
-
-        if (exception.getTestSuiteTestCaseLinkPairs().size() > 0) {
-            throw exception;
-        }
-
-        return referenceStringBuilder.toString();
+        EntityService.getInstance().saveEntity(newDataFile);
+        FolderFileServiceManager.refreshFolder(parentFolder);
+        return newDataFile;
     }
 
     /**
@@ -147,8 +85,7 @@ public class DataFileFileServiceManager {
 
         Map<String, List<TestSuiteTestCaseLink>> testDataReferences = new HashMap<String, List<TestSuiteTestCaseLink>>();
 
-        List<TestSuiteEntity> allTestSuites = FolderFileServiceManager
-                .getDescendantTestSuitesOfFolder(FolderFileServiceManager.getTestSuiteRoot(dataFileEntity.getProject()));
+        List<TestSuiteEntity> allTestSuites = FolderFileServiceManager.getDescendantTestSuitesOfFolder(FolderFileServiceManager.getTestSuiteRoot(dataFileEntity.getProject()));
 
         String dataFileId = dataFileEntity.getRelativePathForUI().replace(File.separator,
                 GlobalStringConstants.ENTITY_ID_SEPERATOR);
@@ -175,84 +112,33 @@ public class DataFileFileServiceManager {
     }
 
     /**
-     * Deletes the given data file entity and its file after checking it is referenced by others entities
+     * Deletes the given data file entity
      * 
-     * @param dataFilePk
-     * @param projectPk
+     * @param dataFile
      * @throws Exception
      */
     public static void deleteDataFile(DataFileEntity dataFile) throws Exception {
-        if (dataFile != null) {
-            String referenceString = isDataFileReferred(dataFile,
-                    FolderFileServiceManager.getDescendantTestSuitesOfFolder(FolderFileServiceManager
-                            .getTestSuiteRoot(dataFile.getProject())), true);
-            if (referenceString.equals("")) {
-                EntityFileServiceManager.delete(dataFile);
-
-                FolderEntity parentFolder = dataFile.getParentFolder();
-                FolderFileServiceManager.refreshFolder(parentFolder);
-            } else {
-                throw new EntityIsReferencedException(referenceString);
-            }
+        if (dataFile == null) {
+            return;
         }
+
+        EntityFileServiceManager.delete(dataFile);
+        FolderFileServiceManager.refreshFolder(dataFile.getParentFolder());
     }
 
     /**
-     * check if the given folder entity that's data file entities can be deleted or not
+     * Delete recursively folder data file entity and all its children
      * 
      * @param folder
-     * @param projectPk
-     * @return the string contains information of all entities that refer to its children data file entity, if none
-     * return empty string
-     * @throws Exception
-     */
-    private static String canDeleteDataFileFolder(FolderEntity folder, List<TestSuiteEntity> testSuiteList)
-            throws Exception {
-        String referenceString = "";
-        TestDataReferredException exception = new TestDataReferredException("");
-        for (FileEntity childEntity : FolderFileServiceManager.getChildren(folder)) {
-            try {
-                if (childEntity instanceof FolderEntity) {
-                    referenceString += canDeleteDataFileFolder((FolderEntity) childEntity, testSuiteList);
-                } else if (childEntity instanceof DataFileEntity) {
-                    referenceString += isDataFileReferred((DataFileEntity) childEntity, testSuiteList, true);
-                }
-            } catch (TestDataReferredException ex) {
-                exception.getTestSuiteTestCaseLinkPairs().addAll(ex.getTestSuiteTestCaseLinkPairs());
-            }
-        }
-        return referenceString;
-    }
-
-    /**
-     * check a folder data file entity could be deleted or not if it can be, call method delete recursively to delete it
-     * 
-     * @param folderPk
-     * @param projectPk
      * @throws Exception
      */
     public static void deteleDataFileFolder(FolderEntity folder) throws Exception {
-        if (folder != null) {
-            String referenceString = canDeleteDataFileFolder(folder,
-                    FolderFileServiceManager.getDescendantTestSuitesOfFolder(FolderFileServiceManager
-                            .getTestSuiteRoot(folder.getProject())));
-            if (referenceString.equals("")) {
-                deleteDataFileFolder(folder);
-                FolderFileServiceManager.refreshFolder(folder.getParentFolder());
-            } else {
-                throw new EntityIsReferencedException(referenceString);
-            }
+        if (folder == null) {
+            return;
         }
-    }
 
-    /**
-     * delete recursively folder data file entity and all its children
-     * 
-     * @param folderEntity
-     * @throws Exception
-     */
-    private static void deleteDataFileFolder(FolderEntity folderEntity) throws Exception {
-        EntityFileServiceManager.deleteFolder(folderEntity);
+        EntityFileServiceManager.deleteFolder(folder);
+        FolderFileServiceManager.refreshFolder(folder.getParentFolder());
     }
 
     /**
@@ -441,20 +327,20 @@ public class DataFileFileServiceManager {
             // update reference Location in testCases, testSuites and JobDef
             // that refer to dataFile Entity
             FolderEntity testSuiteRoot = FolderFileServiceManager.getTestSuiteRoot(project);
-            List<TestSuiteEntity> lstTestSuite = FolderFileServiceManager
-                    .getDescendantTestSuitesOfFolder(testSuiteRoot);
+            List<TestSuiteEntity> lstTestSuite = FolderFileServiceManager.getDescendantTestSuitesOfFolder(testSuiteRoot);
             File projectFile = new File(project.getLocation());
 
             String oldRelativeTdLocation = oldTestDataLocation.substring(projectFile.getParent().length() + 1);
             String oldTestDataId = FilenameUtils.removeExtension(oldRelativeTdLocation).replace(File.separator, "/");
 
-            String newTestDataId = newEntity.getRelativePathForUI().replace(File.separator, "/");
+            String newTestDataId = newEntity.getIdForDisplay();
             for (TestSuiteEntity testSuiteEntity : lstTestSuite) {
                 boolean save = false;
                 for (TestSuiteTestCaseLink testCaseLink : testSuiteEntity.getTestSuiteTestCaseLinks()) {
                     for (TestCaseTestDataLink testDataLink : testCaseLink.getTestDataLinks()) {
                         String testDataId = testDataLink.getTestDataId();
-                        if (testDataId == null || !oldTestDataId.equals(testDataId)) continue;
+                        if (testDataId == null || !oldTestDataId.equals(testDataId))
+                            continue;
 
                         testDataLink.setTestDataId(newTestDataId);
                         save = true;
@@ -610,8 +496,8 @@ public class DataFileFileServiceManager {
     public static DataFileEntity getByGUID(String guid, ProjectEntity project) throws Exception {
         File projectFolder = new File(project.getFolderLocation());
         if (projectFolder.exists() && projectFolder.isDirectory()) {
-            File dataFileFolder = new File(FileServiceConstant.getDataFileRootFolderLocation(projectFolder
-                    .getAbsolutePath()));
+            File dataFileFolder = new File(
+                    FileServiceConstant.getDataFileRootFolderLocation(projectFolder.getAbsolutePath()));
             if (dataFileFolder.exists() && dataFileFolder.isDirectory()) {
                 return getByGUID(dataFileFolder.getAbsolutePath(), guid);
             }
@@ -632,7 +518,8 @@ public class DataFileFileServiceManager {
         if (folder.exists() && folder.isDirectory()) {
             for (File file : folder.listFiles(EntityFileServiceManager.fileFilter)) {
                 if (file.isFile()
-                        && file.getName().toLowerCase()
+                        && file.getName()
+                                .toLowerCase()
                                 .endsWith(DataFileEntity.getTestDataFileExtension().toLowerCase())) {
                     DataFileEntity dataFile = getDataFile(file.getAbsolutePath());
                     if (dataFile.getDataFileGUID().equals(guid)) {
@@ -661,7 +548,7 @@ public class DataFileFileServiceManager {
             FolderEntity folderEntity, List<TestSuiteEntity> lstTestSuites) throws Exception {
 
         String oldFolderDisplayId = oldFolderLocation.replace(File.separator, "/") + "/";
-        String newFolderDisplayId = folderEntity.getRelativePathForUI().replace(File.separator, "/") + "/";
+        String newFolderDisplayId = folderEntity.getIdForDisplay() + "/";
         Set<TestSuiteEntity> lstTestSuitesWillSave = new HashSet<>();
 
         // update references in test suite.
@@ -669,7 +556,8 @@ public class DataFileFileServiceManager {
             for (TestSuiteTestCaseLink testCaseLink : testSuiteEntity.getTestSuiteTestCaseLinks()) {
                 for (TestCaseTestDataLink testDataLink : testCaseLink.getTestDataLinks()) {
                     String testDataId = testDataLink.getTestDataId();
-                    if (testDataId == null || !(testDataId.contains(oldFolderDisplayId))) continue;
+                    if (testDataId == null || !(testDataId.contains(oldFolderDisplayId)))
+                        continue;
 
                     testDataLink.setTestDataId(testDataId.replace(oldFolderDisplayId, newFolderDisplayId));
                     lstTestSuitesWillSave.add(testSuiteEntity);

@@ -6,10 +6,10 @@ import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.graphics.Image;
 
-import com.kms.katalon.composer.testcase.ast.treetable.AstInputEditableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.IAstInputEditableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstMethodTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstObjectEditableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstOutputEditableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.IAstObjectEditableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.IAstOutputEditableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 
@@ -51,18 +51,18 @@ public class AstTreeLabelProvider extends StyledCellLabelProvider {
             return ((treeTableNode instanceof AstStatementTreeTableNode) ? (getStringIndex(treeTableNode) + " - ") : "")
                     + treeTableNode.getItemText();
         case CLMN_OBJECT_IDX:
-            if (treeTableNode instanceof AstObjectEditableNode) {
-                return ((AstObjectEditableNode) treeTableNode).getTestObjectText();
+            if (treeTableNode instanceof IAstObjectEditableNode) {
+                return ((IAstObjectEditableNode) treeTableNode).getTestObjectText();
             }
             return "";
         case CLMN_INPUT_IDX:
-            if (treeTableNode instanceof AstInputEditableNode) {
-                return ((AstInputEditableNode) treeTableNode).getInputText();
+            if (treeTableNode instanceof IAstInputEditableNode) {
+                return ((IAstInputEditableNode) treeTableNode).getInputText();
             }
             return "";
         case CLMN_OUTPUT_IDX:
-            if (treeTableNode instanceof AstOutputEditableNode) {
-                return ((AstOutputEditableNode) treeTableNode).getOutputText();
+            if (treeTableNode instanceof IAstOutputEditableNode) {
+                return ((IAstOutputEditableNode) treeTableNode).getOutputText();
             }
             return "";
         case CLMN_DESCRIPTION_IDX:
@@ -107,18 +107,18 @@ public class AstTreeLabelProvider extends StyledCellLabelProvider {
         case CLMN_ITEM_IDX:
             return treeTableNode.getItemTooltipText();
         case CLMN_OBJECT_IDX:
-            if (treeTableNode instanceof AstObjectEditableNode) {
-                return ((AstObjectEditableNode) treeTableNode).getTestObjectTooltipText();
+            if (treeTableNode instanceof IAstObjectEditableNode) {
+                return ((IAstObjectEditableNode) treeTableNode).getTestObjectTooltipText();
             }
             return "";
         case CLMN_INPUT_IDX:
-            if (treeTableNode instanceof AstInputEditableNode) {
-                return ((AstInputEditableNode) treeTableNode).getInputTooltipText();
+            if (treeTableNode instanceof IAstInputEditableNode) {
+                return ((IAstInputEditableNode) treeTableNode).getInputTooltipText();
             }
             return "";
         case CLMN_OUTPUT_IDX:
-            if (treeTableNode instanceof AstOutputEditableNode) {
-                return ((AstOutputEditableNode) treeTableNode).getOutputTooltipText();
+            if (treeTableNode instanceof IAstOutputEditableNode) {
+                return ((IAstOutputEditableNode) treeTableNode).getOutputTooltipText();
             }
             return "";
         case CLMN_DESCRIPTION_IDX:

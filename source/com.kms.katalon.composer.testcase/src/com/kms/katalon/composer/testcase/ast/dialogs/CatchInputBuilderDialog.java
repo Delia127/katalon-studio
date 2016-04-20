@@ -15,7 +15,6 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.CatchStatementWrapper;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 
@@ -24,9 +23,6 @@ public class CatchInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
 
     public CatchInputBuilderDialog(Shell parentShell, CatchStatementWrapper catchStatement) {
         super(parentShell);
-        if (catchStatement == null) {
-            throw new IllegalArgumentException();
-        }
         this.catchStatement = catchStatement.clone();
     }
 
@@ -36,23 +32,18 @@ public class CatchInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
     }
 
     @Override
-    public void replaceObject(Object originalObject, Object newObject) {
-        if (originalObject == catchStatement.getExceptionType() && newObject instanceof ClassNodeWrapper) {
-            catchStatement.setExceptionType((ClassNodeWrapper) newObject);
-            refresh();
-        } else if (originalObject == catchStatement.getVariableName() && newObject instanceof String) {
-            catchStatement.setVariableName((String) newObject);
-            refresh();
-        }
-    }
-
-    @Override
     public String getDialogTitle() {
         return StringConstants.DIA_TITLE_CATCH_INPUT;
     }
 
     @Override
     protected void addTableColumns() {
+        addTableColumExceptionType();
+
+        addTableColumnVariableName();
+    }
+
+    private void addTableColumExceptionType() {
         TableViewerColumn tableViewerColumnExeptionType = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnExeptionType.getColumn().setText(StringConstants.DIA_COL_EXCEPTION_TYPE);
         tableViewerColumnExeptionType.getColumn().setWidth(200);
@@ -65,7 +56,7 @@ public class CatchInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
                 return StringUtils.EMPTY;
             }
         });
-        tableViewerColumnExeptionType.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this) {
+        tableViewerColumnExeptionType.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer) {
             @Override
             protected Object getValue(Object element) {
                 return super.getValue(catchStatement.getExceptionType());
@@ -86,7 +77,9 @@ public class CatchInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
                 return super.getCellEditor(catchStatement.getExceptionType());
             }
         });
+    }
 
+    private void addTableColumnVariableName() {
         TableViewerColumn tableViewerVariable = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerVariable.getColumn().setText(StringConstants.DIA_COL_VARIABLE_NAME);
         tableViewerVariable.getColumn().setWidth(200);
@@ -104,7 +97,7 @@ public class CatchInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
             @Override
             protected void setValue(Object element, Object value) {
                 if (value instanceof String) {
-                    replaceObject(catchStatement.getVariableName(), value);
+                    catchStatement.setVariableName((String) value);
                     getViewer().refresh();
                 }
             }
@@ -131,7 +124,7 @@ public class CatchInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
     }
 
     @Override
-    public void refresh() {
+    public void setInput() {
         List<ASTNodeWrapper> expressionList = new ArrayList<ASTNodeWrapper>();
         expressionList.add(catchStatement);
         tableViewer.setContentProvider(new ArrayContentProvider());

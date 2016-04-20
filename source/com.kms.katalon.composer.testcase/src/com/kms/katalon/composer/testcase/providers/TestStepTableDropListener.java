@@ -1,7 +1,12 @@
 package com.kms.katalon.composer.testcase.providers;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.dnd.DND;
@@ -17,9 +22,9 @@ import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
+import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.testcase.exceptions.GroovyParsingException;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
@@ -30,30 +35,30 @@ import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransferData;
-import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
-import com.kms.katalon.composer.testcase.util.AstTreeTableInputUtil;
+import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.entity.variable.VariableEntity;
 
 public class TestStepTableDropListener extends TreeDropTargetEffect {
 
     private TreeViewer treeViewer;
+
     private TestCasePart testCasePart;
 
     public TestStepTableDropListener(TreeViewer viewer, TestCasePart testCasePart) {
         super(viewer.getTree());
-        treeViewer = (TreeViewer) viewer;
+        this.treeViewer = viewer;
         this.testCasePart = testCasePart;
     }
 
     @Override
     public void dragOver(DropTargetEvent event) {
         event.feedback = DND.FEEDBACK_EXPAND | DND.FEEDBACK_SCROLL;
-        if (event.item != null) {
-            event.feedback |= getFeedBackByLocation(event.display.map(null, treeViewer.getTree(), event.x, event.y),
-                    (TreeItem) event.item);
+        if (event.item == null || !(event.item instanceof TreeItem)) {
+            return;
         }
+        event.feedback |= getFeedBackByLocation(event.display.map(null, treeViewer.getTree(), event.x, event.y),
+                (TreeItem) event.item);
     }
 
     private static int getFeedBackByLocation(Point point, TreeItem treeItem) {
@@ -75,109 +80,136 @@ public class TestStepTableDropListener extends TreeDropTargetEffect {
         try {
             event.detail = DND.DROP_COPY;
             if (event.data instanceof ITreeEntity[]) {
-                handleDropForTreeEntity(event);
+                handleDropForTreeEntity(event, (ITreeEntity[]) event.data);
             } else if (event.data instanceof IKeywordBrowserTreeEntity[]) {
-                handleDropForKeywordBrowserTreeEntity(event);
+                handleDropForKeywordBrowserTreeEntities(event, (IKeywordBrowserTreeEntity[]) event.data);
             } else if (event.data instanceof String) {
-                handleDropForScriptSnippet(event);
+                handleDropForScriptSnippet(event, (String) event.data);
             } else if (event.data instanceof ScriptTransferData[]) {
-                handleDropForScriptSnippet(event);
-                String testCaseId = ((ScriptTransferData[]) event.data)[0].getTestCaseId();
-                if (testCaseId.equals(testCasePart.getTestCase().getId())) {
-                    event.detail = DND.DROP_MOVE;
-                }
+                handleDropForScriptTransferData(event, (ScriptTransferData[]) event.data);
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error",
-                    "Error dropping on test step table: " + e.getMessage());
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR,
+                    StringConstants.ERR_CANNOT_DROP_ON_TEST_STEP_TABLE);
         }
     }
 
-    private void handleDropForScriptSnippet(DropTargetEvent event) throws Exception {
-        String snippet = null;
-        if (event.data instanceof String) {
-            snippet = (String) event.data;
-        } else if (event.data instanceof ScriptTransferData[]) {
-            snippet = ((ScriptTransferData[]) event.data)[0].getScriptSnippet();
+    private void handleDropForScriptTransferData(DropTargetEvent event, ScriptTransferData[] scriptTransferDatas)
+            throws GroovyParsingException {
+        if (scriptTransferDatas.length <= 0) {
+            return;
         }
+        ScriptTransferData firstScriptTransferData = scriptTransferDatas[0];
+        boolean dropSuccessfully = handleDropForScriptSnippet(event, firstScriptTransferData.getScriptSnippet());
+        if (!dropSuccessfully) {
+            return;
+        }
+        String testCaseId = firstScriptTransferData.getTestCaseId();
+        if (StringUtils.equals(testCaseId, testCasePart.getTestCase().getId())) {
+            event.detail = DND.DROP_MOVE;
+        }
+    }
+
+    private boolean handleDropForScriptSnippet(DropTargetEvent event, String snippet) throws GroovyParsingException {
         ScriptNodeWrapper scriptNode = GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(snippet);
         if (scriptNode == null) {
-            return;
+            return false;
         }
-        addNewStatementWrappersToTreeTable(event, scriptNode.getBlock().getStatements());
+        ArrayList<StatementWrapper> dropStatements = new ArrayList<StatementWrapper>(scriptNode.getBlock()
+                .getStatements());
+        return getTestCaseTreeTableInput().addNewAstObjects(dropStatements, getHoveredTreeTableNode(event),
+                getNodeAddType(event));
 
     }
 
-    private void handleDropForKeywordBrowserTreeEntity(DropTargetEvent event) throws Exception {
-        IKeywordBrowserTreeEntity[] treeEntities = (IKeywordBrowserTreeEntity[]) event.data;
+    private void handleDropForKeywordBrowserTreeEntities(DropTargetEvent event, IKeywordBrowserTreeEntity[] treeEntities)
+            throws Exception {
+        if (treeEntities == null || treeEntities.length <= 0) {
+            return;
+        }
         for (int i = 0; i < treeEntities.length; i++) {
             if (treeEntities[i] instanceof KeywordBrowserTreeEntity) {
-                KeywordBrowserTreeEntity keywordBrowserTreeEntity = (KeywordBrowserTreeEntity) treeEntities[i];
-                ExpressionStatementWrapper newStatementWrapper = null;
-                if (keywordBrowserTreeEntity.isCustom()) {
-                    newStatementWrapper = AstTreeTableInputUtil.createCustomKeywordMethodCall(
-                            keywordBrowserTreeEntity.getClassName(), keywordBrowserTreeEntity.getName(), null);
-                } else {
-                    newStatementWrapper = AstTreeTableInputUtil.createBuiltInKeywordMethodCall(
-                            keywordBrowserTreeEntity.getClassName(), keywordBrowserTreeEntity.getName(), null);
-                }
-                if (newStatementWrapper != null) {
-                    addNewStatementWrapperToTreeTable(event, newStatementWrapper);
-                }
-
+                handleDropForKeywordBrowserTreeEntity(event, (KeywordBrowserTreeEntity) treeEntities[i]);
             } else if (treeEntities[i] instanceof KeywordBrowserControlTreeEntity) {
-                KeywordBrowserControlTreeEntity keywordBrowserControlTreeEntity = (KeywordBrowserControlTreeEntity) treeEntities[i];
-                AstTreeTableNode node = getHoveredTreeTableNode(event);
-                NodeAddType addType = getNodeAddType(event);
-                getTestCaseTreeTableInput().addNewAstObject(keywordBrowserControlTreeEntity.getControlStatementId(), node,
-                        addType);
+                handleDropForKeywordBrowserControlEntity(event, (KeywordBrowserControlTreeEntity) treeEntities[i]);
             }
         }
     }
 
-    private void handleDropForTreeEntity(DropTargetEvent event) throws Exception {
-        ITreeEntity[] treeEntities = (ITreeEntity[]) event.data;
+    private void handleDropForKeywordBrowserControlEntity(DropTargetEvent event,
+            KeywordBrowserControlTreeEntity keywordBrowserControlTreeEntity) {
+        getTestCaseTreeTableInput().addNewAstObject(keywordBrowserControlTreeEntity.getControlStatementId(),
+                getHoveredTreeTableNode(event), getNodeAddType(event));
+    }
+
+    private void handleDropForKeywordBrowserTreeEntity(DropTargetEvent event,
+            KeywordBrowserTreeEntity keywordBrowserTreeEntity) {
+        addNewStatementWrapperToTreeTable(event,
+                createNewKeywordStatementFromKeywordBrowserEntity(keywordBrowserTreeEntity));
+    }
+
+    private ExpressionStatementWrapper createNewKeywordStatementFromKeywordBrowserEntity(
+            KeywordBrowserTreeEntity keywordBrowserTreeEntity) {
+        if (keywordBrowserTreeEntity.isCustom()) {
+            return AstKeywordsInputUtil.createNewCustomKeywordStatement(keywordBrowserTreeEntity.getClassName(),
+                    keywordBrowserTreeEntity.getName());
+        }
+        return AstKeywordsInputUtil.createBuiltInKeywordStatement(keywordBrowserTreeEntity.getClassName(),
+                keywordBrowserTreeEntity.getName());
+    }
+
+    private void handleDropForTreeEntity(DropTargetEvent event, ITreeEntity[] treeEntities) throws Exception {
+        Set<TestCaseEntity> calledTestCases = collectCallTestCasesFromTreeEntities(treeEntities);
+        if (calledTestCases.isEmpty()) {
+            return;
+        }
+        getTestCaseTreeTableInput().addCallTestCases(getHoveredTreeTableNode(event), getNodeAddType(event),
+                calledTestCases.toArray(new TestCaseEntity[calledTestCases.size()]));
+    }
+
+    private Set<TestCaseEntity> collectCallTestCasesFromTreeEntities(ITreeEntity[] treeEntities) throws Exception {
+        if (treeEntities == null || treeEntities.length <= 0) {
+            return Collections.emptySet();
+        }
+        TestCaseTreeTableInput treeTableInput = getTestCaseTreeTableInput();
+        Set<TestCaseEntity> callTestCases = new LinkedHashSet<TestCaseEntity>();
         for (int i = 0; i < treeEntities.length; i++) {
             if (treeEntities[i] instanceof TestCaseTreeEntity) {
-                TestCaseEntity droppedTestCase = (TestCaseEntity) treeEntities[i].getObject();
-                dropTestCaseIntoTree(event, droppedTestCase);
+                TestCaseEntity testCase = ((TestCaseTreeEntity) treeEntities[i]).getObject();
+                if (treeTableInput.validateTestCase(testCase)) {
+                    callTestCases.add(testCase);
+                }
 
             } else if (treeEntities[i] instanceof FolderTreeEntity) {
-                for (TestCaseEntity droppedTestCase : TestCaseEntityUtil
-                        .getTestCasesFromFolderTree((FolderTreeEntity) treeEntities[i])) {
-                    dropTestCaseIntoTree(event, droppedTestCase);
+                List<TestCaseEntity> testCases = TestCaseEntityUtil.getTestCasesFromFolderTree((FolderTreeEntity) treeEntities[i]);
+                for (TestCaseEntity testCase : testCases) {
+                    if (treeTableInput.validateTestCase(testCase)) {
+                        callTestCases.add(testCase);
+                    }
                 }
             }
         }
+        return callTestCases;
     }
 
-    private void dropTestCaseIntoTree(DropTargetEvent event, TestCaseEntity dropedTestCase) throws Exception {
-        if (!testCasePart.getTreeTableInput().qualify(dropedTestCase))
-            return;
-
-        ExpressionStatementWrapper statement = AstEntityInputUtil.generateCallTestCaseExpresionStatement(dropedTestCase, null);
-        List<VariableEntity> variableEntities = TestCaseTreeTableInput
-                .getCallTestCaseVariables((ArgumentListExpressionWrapper) ((MethodCallExpressionWrapper) statement
-                        .getExpression()).getArguments());
-        testCasePart.addVariables(variableEntities.toArray(new VariableEntity[0]));
-        addNewStatementWrapperToTreeTable(event, statement);
+    protected boolean addNewStatementWrapperToTreeTable(DropTargetEvent event, StatementWrapper statement) {
+        if (statement == null) {
+            return false;
+        }
+        return getTestCaseTreeTableInput().addNewAstObject(statement, getHoveredTreeTableNode(event),
+                getNodeAddType(event));
     }
 
-    protected void addNewStatementWrapperToTreeTable(DropTargetEvent event, StatementWrapper statement) throws Exception {
-        AstTreeTableNode node = getHoveredTreeTableNode(event);
-        NodeAddType addType = getNodeAddType(event);
-        getTestCaseTreeTableInput().addNewAstObject(statement, node, addType);
-    }
-
-    private NodeAddType getNodeAddType(DropTargetEvent event) throws Exception {
-        switch (getFeedBackByLocation(event.display.map(null, treeViewer.getTree(), event.x, event.y), (TreeItem) event.item)) {
-        case DND.FEEDBACK_INSERT_BEFORE:
-            return NodeAddType.InserBefore;
-        case DND.FEEDBACK_INSERT_AFTER:
-            return NodeAddType.InserAfter;
-        default:
-            return NodeAddType.Add;
+    private NodeAddType getNodeAddType(DropTargetEvent event) {
+        switch (getFeedBackByLocation(event.display.map(null, treeViewer.getTree(), event.x, event.y),
+                (TreeItem) event.item)) {
+            case DND.FEEDBACK_INSERT_BEFORE:
+                return NodeAddType.InserBefore;
+            case DND.FEEDBACK_INSERT_AFTER:
+                return NodeAddType.InserAfter;
+            default:
+                return NodeAddType.Add;
         }
     }
 
@@ -189,11 +221,5 @@ public class TestStepTableDropListener extends TreeDropTargetEffect {
 
     protected TestCaseTreeTableInput getTestCaseTreeTableInput() {
         return testCasePart.getTreeTableInput();
-    }
-
-    protected void addNewStatementWrappersToTreeTable(DropTargetEvent event, List<StatementWrapper> statements) throws Exception {
-        AstTreeTableNode node = getHoveredTreeTableNode(event);
-        NodeAddType addType = getNodeAddType(event);
-        getTestCaseTreeTableInput().addNewAstObjects(statements, node, addType);
     }
 }

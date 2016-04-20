@@ -1,9 +1,5 @@
 package com.kms.katalon.composer.testcase.ast.dialogs;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -15,9 +11,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 
 import com.kms.katalon.composer.testcase.constants.StringConstants;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.CaseStatementWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
+import com.kms.katalon.composer.testcase.providers.AstContentProviderAdapter;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
@@ -36,9 +32,6 @@ public class CaseInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
 
     public CaseInputBuilderDialog(Shell parentShell, CaseStatementWrapper caseStatement) {
         super(parentShell);
-        if (caseStatement == null) {
-            throw new IllegalArgumentException();
-        }
         this.caseStatement = caseStatement.clone();
     }
 
@@ -55,24 +48,22 @@ public class CaseInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
     }
 
     @Override
-    public void refresh() {
-        List<ExpressionWrapper> expressionList = new ArrayList<ExpressionWrapper>();
-        expressionList.add(caseStatement.getExpression());
-        tableViewer.setContentProvider(new ArrayContentProvider());
-        tableViewer.setInput(expressionList);
+    public void setInput() {
+        tableViewer.setContentProvider(new AstContentProviderAdapter() {
+            @Override
+            public Object[] getElements(Object inputElement) {
+                if (inputElement == caseStatement) {
+                    return new Object[] { caseStatement.getExpression() };
+                }
+                return new Object[0];
+            }
+        });
+        tableViewer.setInput(caseStatement);
     }
 
     @Override
     public CaseStatementWrapper getReturnValue() {
         return caseStatement;
-    }
-
-    @Override
-    public void replaceObject(Object orginalObject, Object newObject) {
-        if (orginalObject == caseStatement.getExpression() && newObject instanceof ExpressionWrapper) {
-            caseStatement.setExpression((ExpressionWrapper) newObject);
-            refresh();
-        }
     }
 
     @Override
@@ -100,13 +91,13 @@ public class CaseInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
         tableViewerColumnValueType.getColumn().setWidth(100);
         tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider());
         tableViewerColumnValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer,
-                defaultInputValueTypes, this));
+                defaultInputValueTypes));
 
         TableViewerColumn tableViewerColumnValue = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnValue.getColumn().setText(StringConstants.DIA_COL_VALUE);
         tableViewerColumnValue.getColumn().setWidth(300);
         tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider());
-        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this));
+        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer));
 
     }
 }

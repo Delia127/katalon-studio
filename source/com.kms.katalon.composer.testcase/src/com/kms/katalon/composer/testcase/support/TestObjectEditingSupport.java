@@ -7,7 +7,7 @@ import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TreeViewer;
 
 import com.kms.katalon.composer.testcase.ast.treetable.AstCallTestCaseKeywordTreeTableNode;
-import com.kms.katalon.composer.testcase.ast.treetable.AstObjectEditableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.IAstObjectEditableNode;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
 import com.kms.katalon.entity.variable.VariableEntity;
 
@@ -23,22 +23,22 @@ public class TestObjectEditingSupport extends EditingSupport {
 
     @Override
     protected CellEditor getCellEditor(Object element) {
-        return ((AstObjectEditableNode) element).getCellEditorForTestObject(treeViewer.getTree());
+        return ((IAstObjectEditableNode) element).getCellEditorForTestObject(treeViewer.getTree());
     }
 
     @Override
     protected boolean canEdit(Object element) {
-        return (element instanceof AstObjectEditableNode && ((AstObjectEditableNode) element).canEditTestObject());
+        return (element instanceof IAstObjectEditableNode && ((IAstObjectEditableNode) element).canEditTestObject());
     }
 
     @Override
     protected Object getValue(Object element) {
-        return ((AstObjectEditableNode) element).getTestObject();
+        return ((IAstObjectEditableNode) element).getTestObject();
     }
 
     @Override
     protected void setValue(Object element, Object value) {
-        if (!((AstObjectEditableNode) element).setTestObject(value)) {
+        if (!((IAstObjectEditableNode) element).setTestObject(value)) {
             return;
         }
         if (element instanceof AstCallTestCaseKeywordTreeTableNode) {

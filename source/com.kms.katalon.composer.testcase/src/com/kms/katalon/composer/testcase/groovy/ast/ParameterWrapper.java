@@ -44,15 +44,15 @@ public class ParameterWrapper extends AnnonatedNodeWrapper {
         return modifiers;
     }
 
-    public void setModifiers(int modifiers) {
-        this.modifiers = modifiers;
-    }
-
     public ClassNodeWrapper getType() {
         return type;
     }
 
     public void setType(ClassNodeWrapper type) {
+        if (type == null) {
+            return;
+        }
+        type.setParent(this);
         this.type = type;
     }
 
@@ -66,10 +66,6 @@ public class ParameterWrapper extends AnnonatedNodeWrapper {
 
     public ExpressionWrapper getInitialExpression() {
         return initialExpression;
-    }
-
-    public void setInitialExpression(ExpressionWrapper initialExpression) {
-        this.initialExpression = initialExpression;
     }
 
     @Override
@@ -91,5 +87,10 @@ public class ParameterWrapper extends AnnonatedNodeWrapper {
         astNodeWrappers.addAll(super.getAstChildren());
         astNodeWrappers.add(initialExpression);
         return astNodeWrappers;
+    }
+
+    @Override
+    public ParameterWrapper clone() {
+        return new ParameterWrapper(this, getParent());
     }
 }

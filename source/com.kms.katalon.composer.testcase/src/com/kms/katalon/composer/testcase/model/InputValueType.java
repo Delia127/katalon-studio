@@ -10,7 +10,6 @@ import com.kms.katalon.composer.testcase.ast.editors.PropertyTypeSelectionDialog
 import com.kms.katalon.composer.testcase.ast.editors.VariableTypeSelectionDialogCellEditor;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BinaryExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BooleanExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ClassExpressionWrapper;
@@ -25,11 +24,32 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.RangeExpressionW
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.VariableExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ThrowStatementWrapper;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
-import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
+import com.kms.katalon.composer.testcase.util.AstValueUtil;
 
 public enum InputValueType {
-    String, Number, Boolean, Null, Variable, MethodCall, List, Map, ClosureList, Condition, Binary, Range, Property,
-    GlobalVariable, TestDataValue, TestCase, TestObject, TestData, Class, This, Throwable, Keys, Key;
+    String,
+    Number,
+    Boolean,
+    Null,
+    Variable,
+    MethodCall,
+    List,
+    Map,
+    ClosureList,
+    Condition,
+    Binary,
+    Range,
+    Property,
+    GlobalVariable,
+    TestDataValue,
+    TestCase,
+    TestObject,
+    TestData,
+    Class,
+    This,
+    Throwable,
+    Keys,
+    Key;
 
     private static final java.lang.String THIS_VARIABLE = "this";
 
@@ -46,114 +66,131 @@ public enum InputValueType {
 
     public CellEditor getCellEditorForValue(Composite parent, Object astObject) {
         switch (this) {
-        case Binary:
-            return AstTreeTableValueUtil.getCellEditorForBinaryExpression(parent, (BinaryExpressionWrapper) astObject);
-        case Boolean:
-            return AstTreeTableValueUtil.getCellEditorForBooleanConstantExpression(parent);
-        case Class:
-            if (astObject instanceof ClassExpressionWrapper) {
-                return new ClassExpressionTypeSelectionDialogCellEditor(parent, ((ClassExpressionWrapper) astObject).getText());
-            } else if (astObject instanceof VariableExpressionWrapper) {
-                return new VariableTypeSelectionDialogCellEditor(parent, ((VariableExpressionWrapper) astObject).getText());
-            } else if (astObject instanceof PropertyExpressionWrapper) {
-                return new PropertyTypeSelectionDialogCellEditor(parent, ((PropertyExpressionWrapper) astObject).getText());
-            } else if (astObject instanceof ClassNodeWrapper) {
-                return new ClassNodeTypeSelectionDialogCellEditor(parent, ((ClassNodeWrapper) astObject).getName());
-            }
-            return null;
-        case ClosureList:
-            return AstTreeTableValueUtil.getCellEditorForClosureListExpression(parent, (ClosureListExpressionWrapper) astObject);
-        case Condition:
-            return AstTreeTableValueUtil.getCellEditorForBooleanExpression(parent, (BooleanExpressionWrapper) astObject);
-        case GlobalVariable:
-            return AstTreeTableValueUtil.getCellEditorForGlobalVariableExpression(parent);
-        case List:
-            return AstTreeTableValueUtil.getCellEditorForListExpression(parent, (ListExpressionWrapper) astObject);
-        case Map:
-            return AstTreeTableValueUtil.getCellEditorForMapExpression(parent, (MapExpressionWrapper) astObject);
-        case MethodCall:
-            return AstTreeTableValueUtil.getCellEditorForMethodCallExpression(parent, (MethodCallExpressionWrapper) astObject);
-        case Number:
-            return AstTreeTableValueUtil.getCellEditorForNumberConstantExpression(parent);
-        case Property:
-            return AstTreeTableValueUtil.getCellEditorForPropertyExpression(parent, (PropertyExpressionWrapper) astObject);
-        case Range:
-            return AstTreeTableValueUtil.getCellEditorForRangeExpression(parent, (RangeExpressionWrapper) astObject);
-        case String:
-            return AstTreeTableValueUtil.getCellEditorForStringConstantExpression(parent);
-        case TestCase:
-            return AstTreeTableValueUtil.getCellEditorForCallTestCase(parent, (MethodCallExpressionWrapper) astObject);
-        case TestData:
-            return AstTreeTableValueUtil.getCellEditorForTestData(parent, (MethodCallExpressionWrapper) astObject);
-        case TestDataValue:
-            return AstTreeTableValueUtil.getCellEditorForTestDataValue(parent, (MethodCallExpressionWrapper) astObject);
-        case TestObject:
-            return AstTreeTableValueUtil.getCellEditorForTestObject(parent, (MethodCallExpressionWrapper) astObject);
-        case Throwable:
-            return AstTreeTableValueUtil.getCellEditorForThrowable(parent, (ConstructorCallExpressionWrapper) astObject);
-        case Variable:
-            return AstTreeTableValueUtil.getCellEditorForVariableExpression(parent, (VariableExpressionWrapper) astObject);
-        case Key:
-            return AstTreeTableValueUtil.getCellEditorForKeyExpression(parent);
-        case Keys:
-            return AstTreeTableValueUtil.getCellEditorForKeysExpression(parent, (MethodCallExpressionWrapper) astObject);
-        default:
-            return null;
+            case Binary:
+                return AstValueUtil.getCellEditorForBinaryExpression(parent,
+                        (BinaryExpressionWrapper) astObject);
+            case Boolean:
+                return AstValueUtil.getCellEditorForBooleanConstantExpression(parent);
+            case Class:
+                return getCellEditorForClass(parent, astObject);
+            case ClosureList:
+                return AstValueUtil.getCellEditorForClosureListExpression(parent,
+                        (ClosureListExpressionWrapper) astObject);
+            case Condition:
+                return AstValueUtil.getCellEditorForBooleanExpression(parent,
+                        (BooleanExpressionWrapper) astObject);
+            case GlobalVariable:
+                return AstValueUtil.getCellEditorForGlobalVariableExpression(parent);
+            case List:
+                return AstValueUtil.getCellEditorForListExpression(parent, (ListExpressionWrapper) astObject);
+            case Map:
+                return AstValueUtil.getCellEditorForMapExpression(parent, (MapExpressionWrapper) astObject);
+            case MethodCall:
+                return AstValueUtil.getCellEditorForMethodCallExpression(parent,
+                        (MethodCallExpressionWrapper) astObject);
+            case Number:
+                return AstValueUtil.getCellEditorForNumberConstantExpression(parent);
+            case Property:
+                return AstValueUtil.getCellEditorForPropertyExpression(parent,
+                        (PropertyExpressionWrapper) astObject);
+            case Range:
+                return AstValueUtil.getCellEditorForRangeExpression(parent, (RangeExpressionWrapper) astObject);
+            case String:
+                return AstValueUtil.getCellEditorForStringConstantExpression(parent);
+            case TestCase:
+                return AstValueUtil.getCellEditorForCallTestCase(parent,
+                        (MethodCallExpressionWrapper) astObject);
+            case TestData:
+                return AstValueUtil.getCellEditorForTestData(parent, (MethodCallExpressionWrapper) astObject);
+            case TestDataValue:
+                return AstValueUtil.getCellEditorForTestDataValue(parent,
+                        (MethodCallExpressionWrapper) astObject);
+            case TestObject:
+                return AstValueUtil.getCellEditorForTestObject(parent, (MethodCallExpressionWrapper) astObject);
+            case Throwable:
+                return AstValueUtil.getCellEditorForThrowable(parent,
+                        (ConstructorCallExpressionWrapper) astObject);
+            case Variable:
+                return AstValueUtil.getCellEditorForVariableExpression(parent,
+                        (VariableExpressionWrapper) astObject);
+            case Key:
+                return AstValueUtil.getCellEditorForKeyExpression(parent);
+            case Keys:
+                return AstValueUtil.getCellEditorForKeysExpression(parent,
+                        (MethodCallExpressionWrapper) astObject);
+            default:
+                return null;
         }
+    }
+
+    private CellEditor getCellEditorForClass(Composite parent, Object astObject) {
+        if (astObject instanceof ClassExpressionWrapper) {
+            return new ClassExpressionTypeSelectionDialogCellEditor(parent,
+                    ((ClassExpressionWrapper) astObject).getText());
+        } else if (astObject instanceof VariableExpressionWrapper) {
+            return new VariableTypeSelectionDialogCellEditor(parent,
+                    ((VariableExpressionWrapper) astObject).getText());
+        } else if (astObject instanceof PropertyExpressionWrapper) {
+            return new PropertyTypeSelectionDialogCellEditor(parent,
+                    ((PropertyExpressionWrapper) astObject).getText());
+        } else if (astObject instanceof ClassNodeWrapper) {
+            return new ClassNodeTypeSelectionDialogCellEditor(parent, ((ClassNodeWrapper) astObject).getName());
+        }
+        return null;
     }
 
     public Object getNewValue(ASTNodeWrapper parent) {
         switch (this) {
-        case String:
-            return new ConstantExpressionWrapper("", parent);
-        case Number:
-            return new ConstantExpressionWrapper(0, parent);
-        case Boolean:
-            return new ConstantExpressionWrapper(true, parent);
-        case Null:
-            return new ConstantExpressionWrapper(parent);
-        case Binary:
-            return new BinaryExpressionWrapper(parent);
-        case Variable:
-            return new VariableExpressionWrapper(parent);
-        case MethodCall:
-            return new MethodCallExpressionWrapper(parent);
-        case Condition:
-            return new BooleanExpressionWrapper(parent);
-        case List:
-            return new ListExpressionWrapper(parent);
-        case Map:
-            return new MapExpressionWrapper(parent);
-        case ClosureList:
-            return new ClosureListExpressionWrapper(parent);
-        case Range:
-            return new RangeExpressionWrapper(parent);
-        case Property:
-            return new PropertyExpressionWrapper(parent);
-        case GlobalVariable:
-            return new PropertyExpressionWrapper(InputValueType.GlobalVariable.name(), null, parent);
-        case TestObject:
-            return AstEntityInputUtil.generateObjectMethodCall(null, parent);
-        case Class:
-            return new ClassExpressionWrapper(String.class, parent);
-        case TestDataValue:
-            return AstEntityInputUtil.getNewTestDataValueExpression(null, 1, 1, parent);
-        case TestData:
-            return AstEntityInputUtil.getNewTestDataExpression(null, parent);
-        case TestCase:
-            return AstEntityInputUtil.getNewCallTestCaseExpression(null, parent);
-        case This:
-            return new VariableExpressionWrapper(THIS_VARIABLE, parent);
-        case Throwable:
-            return new ConstructorCallExpressionWrapper(ThrowStatementWrapper.DEFAULT_THROW_TYPE, parent);
-        case Key:
-            parent.getScriptClass().addImport(Keys.class);
-            return new PropertyExpressionWrapper(Keys.class.getSimpleName(), "ENTER", parent);
-        case Keys:
-            parent.getScriptClass().addImport(Keys.class);
-            return new MethodCallExpressionWrapper(Keys.class, "chord", parent);
-        default:
-            return new ConstantExpressionWrapper(parent);
+            case String:
+                return new ConstantExpressionWrapper("", parent);
+            case Number:
+                return new ConstantExpressionWrapper(0, parent);
+            case Boolean:
+                return new ConstantExpressionWrapper(true, parent);
+            case Null:
+                return new ConstantExpressionWrapper(parent);
+            case Binary:
+                return new BinaryExpressionWrapper(parent);
+            case Variable:
+                return new VariableExpressionWrapper(parent);
+            case MethodCall:
+                return new MethodCallExpressionWrapper(parent);
+            case Condition:
+                return new BooleanExpressionWrapper(parent);
+            case List:
+                return new ListExpressionWrapper(parent);
+            case Map:
+                return new MapExpressionWrapper(parent);
+            case ClosureList:
+                return new ClosureListExpressionWrapper(parent);
+            case Range:
+                return new RangeExpressionWrapper(parent);
+            case Property:
+                return new PropertyExpressionWrapper(parent);
+            case GlobalVariable:
+                return new PropertyExpressionWrapper(InputValueType.GlobalVariable.name(), parent);
+            case TestObject:
+                return AstEntityInputUtil.createNewFindTestObjectMethodCall(parent);
+            case Class:
+                return new ClassExpressionWrapper(String.class, parent);
+            case TestDataValue:
+                return AstEntityInputUtil.createNewGetTestDataValueExpression(null, 1, 1, parent);
+            case TestData:
+                return AstEntityInputUtil.createNewFindTestDataExpression(null, parent);
+            case TestCase:
+                return AstEntityInputUtil.createNewFindTestCaseMethodCall(null, parent);
+            case This:
+                return new VariableExpressionWrapper(THIS_VARIABLE, parent);
+            case Throwable:
+                return new ConstructorCallExpressionWrapper(ThrowStatementWrapper.DEFAULT_THROW_TYPE, parent);
+            case Key:
+                parent.getScriptClass().addImport(Keys.class);
+                return new PropertyExpressionWrapper(Keys.class.getSimpleName(), "ENTER", parent);
+            case Keys:
+                parent.getScriptClass().addImport(Keys.class);
+                return new MethodCallExpressionWrapper(Keys.class, "chord", parent);
+            default:
+                return new ConstantExpressionWrapper(parent);
         }
     }
 
@@ -170,19 +207,28 @@ public enum InputValueType {
             return "";
         }
         if (astObject instanceof MethodCallExpressionWrapper) {
-            MethodCallExpressionWrapper methodCall = (MethodCallExpressionWrapper) astObject;
-            if (AstEntityInputUtil.isCallTestCaseArgument(methodCall)) {
-                return AstEntityInputUtil.getTextValueForTestCaseArgument(methodCall);
-            } else if (AstEntityInputUtil.isCallTestCaseMethod(methodCall)) {
-                return ((ArgumentListExpressionWrapper) methodCall.getArguments()).getExpressions().get(0).getText();
-            } else if (AstEntityInputUtil.isObjectArgument(methodCall)) {
-                return AstEntityInputUtil.getTextValueForTestObjectArgument(methodCall);
-            } else if (AstEntityInputUtil.isTestDataArgument(methodCall)) {
-                return AstEntityInputUtil.getTextValueForTestDataArgument(methodCall);
-            } else if (AstEntityInputUtil.isTestDataValueArgument(methodCall)) {
-                return AstEntityInputUtil.getTextValueForTestDataValueArgument(methodCall);
-            }
+            return getValueToDisplayForMethodCall(astObject);
         }
         return ((ASTNodeWrapper) astObject).getText();
+    }
+
+    private String getValueToDisplayForMethodCall(Object astObject) {
+        MethodCallExpressionWrapper methodCall = (MethodCallExpressionWrapper) astObject;
+        if (AstEntityInputUtil.isFindTestCaseMethodCall(methodCall)) {
+            return AstEntityInputUtil.getTextValueForTestCaseArgument(methodCall);
+        }
+        if (AstEntityInputUtil.isCallTestCaseMethodCall(methodCall)) {
+            return (methodCall.getArguments()).getExpression(0).getText();
+        }
+        if (AstEntityInputUtil.isFindTestObjectMethodCall(methodCall)) {
+            return AstEntityInputUtil.getTextValueForTestObjectArgument(methodCall);
+        }
+        if (AstEntityInputUtil.isFindTestDataMethodCall(methodCall)) {
+            return AstEntityInputUtil.getTextValueForTestDataArgument(methodCall);
+        }
+        if (AstEntityInputUtil.isGetTestDataValueMethodCall(methodCall)) {
+            return AstEntityInputUtil.getTextValueForTestDataValueArgument(methodCall);
+        }
+        return methodCall.getText();
     }
 }

@@ -157,8 +157,10 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_TAB_VARIABLE = "Variables";
     public static final String PA_TAB_INTEGRATION = "Integration";
     public static final String PA_ERROR_MSG_PLS_FIX_ERROR_IN_SCRIPT = "There are errors in the script. Please fix it before switching to manual mode.";
+    public static final String PARSING_SCRIPT_PROGRESS_NAME = "Parsing script";
     public static final String PA_ERROR_MSG_UNABLE_TO_SAVE_PART = "Unable to save part.";
     public static final String WARN_TITLE = WARN;
+    public static final String PA_ACTION_FORMAT = "Format";
 
     // TestCasePart
     public static final String PA_TOOLBAR_RECORD = "Record";
@@ -184,43 +186,10 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_COL_OUTPUT = OUTPUT;
     public static final String PA_COL_DESCRIPTION = DESCRIPTION;
     public static final String PA_ERROR_MSG_FAILED_TO_LOAD_TEST_CASE = "Failed to load Test Case.";
-    public static final String PA_ERROR_MSG_CANNOT_ADD_STATEMENTS = "Cannot add statements.";
-    public static final String PA_ERROR_MSG_CANNOT_ADD_STATEMENT = "Cannot add statement.";
-    public static final String PA_ERROR_MSG_CANNOT_ADD_KEYWORD = "Cannot add keyword.";
     public static final String PA_ERROR_MSG_NO_CUSTOM_KEYWORD = "There is no custom keyword.";
-    public static final String PA_ERROR_MSG_CANNOT_ADD_IF_STATEMENT = "Cannot add IF statement.";
-    public static final String PA_ERROR_MSG_CANNOT_ADD_ELSE_STATEMENT = "Cannot add ELSE statement.";
-    public static final String PA_ERROR_MSG_CANNOT_ADD_ELSE_IF_STATEMENT = "Cannot add ELSE IF statement.";
-    public static final String PA_ERROR_MSG_CANNOT_ADD_WHILE_STATEMENT = "Cannot add WHILE statement.";
-    public static final String PA_ERROR_MSG_CANNOT_ADD_FOR_STATEMENT = "Cannot add FOR statement.";
-    public static final String PA_ERROR_MSG_CANNOT_ADD_BINARY_STATEMENT = "Cannot add BINARY statement.";
-    public static final String PA_ERROR_MSG_CANNOT_ADD_ASSERT_STATEMENT = "Cannot add ASSERT statement.";
-    public static final String PA_ERROR_MSG_CANNOT_ADD_BREAK_STATEMENT = "Cannot add BREAK statement.";
-    public static final String PA_ERROR_MSG_CANNOT_ADD_CONTINUE_STATEMENT = "Cannot add CONTINUE statement.";
-    public static final String PA_ERROR_MSG_CANNOT_ADD_RETURN_STATEMENT = "Cannot add RETURN statement.";
-    public static final String PA_ERROR_MSG_CANNOT_ADD_SWITCH_STATEMENT = "Cannot add SWITCH statement.";
-    public static final String PA_ERROR_MSG_CANNOT_ADD_CASE_STATEMENT = "Cannot add CASE statement.";
-    public static final String PA_ERROR_MSG_CANNOT_ADD_DEFAULT_STATEMENT = "Cannot add DEFAULT statement.";
-    public static final String PA_ERROR_MSG_CANNOT_ADD_TRY_STATEMENT = "Cannot add TRY statement.";
-    public static final String PA_ERROR_MSG_CANNOT_ADD_CATCH_STATEMENT = "Cannot add CATCH statement.";
-    public static final String PA_ERROR_MSG_CANNOT_ADD_FINALLY_STATEMENT = "Cannot add FINALLY statement.";
-    public static final String PA_ERROR_MSG_CANNOT_ADD_THROW_STATEMENT = "Cannot add THROW statement.";
-    public static final String PA_ERROR_MSG_CANNOT_ADD_METHOD_CALL_STATEMENT = "Cannot add METHOD CALL statement.";
-    public static final String PA_ERROR_MSG_CANNOT_CHANGE_FAILURE_HANDLING = "Cannot change failure handling.";
-    public static final String PA_ERROR_MSG_CANNOT_REMOVE_STATEMENT = "Cannot remove statement.";
-    public static final String PA_ERROR_MSG_CANNOT_MOVE_STATEMENT_UP = "Cannot move statement up.";
-    public static final String PA_ERROR_MSG_CANNOT_MOVE_STATEMENT_DOWN = "Cannot move statement down.";
-    public static final String PA_ERROR_MSG_UNABLE_TO_CALL_TEST_CASE = "Unable to call Test Case(s).";
     public static final String PA_ERROR_MSG_TEST_CASE_CANNOT_CALL_ITSELF = "Test Case cannot call itself.";
-    public static final String PA_ERROR_MSG_CANNOT_ADD_CALL_TESTCASE = "Cannot add Call Test Case.";
-    public static final String PA_ERROR_MSG_CANNOT_COPY = "Cannot copy.";
-    public static final String PA_ERROR_MSG_CANNOT_CUT = "Cannot cut.";
-    public static final String PA_ERROR_MSG_CANNOT_PASTE = "Cannot paste.";
-    public static final String PA_ERROR_MSG_CANNOT_COMMENT = "Cannot comment.";
-    public static final String PA_ERROR_MSG_CANNOT_UNCOMMENT = "Cannot uncomment.";
-    public static final String PA_ERROR_MSG_CANNOT_ADD_DESCRIPTION = "Cannot add description";
-    public static final String PA_ERROR_MSG_CANNOT_ADD_METHOD = "Cannot add method";
-
+    public static final String PA_ERROR_MSG_UNABLE_TO_CALL_TEST_CASE = "Unable to call Test Case(s).";
+    
     // TestCaseVariablePart
     public static final String PA_COL_NO = NO_;
     public static final String PA_COL_NAME = NAME;
@@ -240,11 +209,20 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PREF_BTN_GEN_VAR_WITH_DEFAULT_VAL = "Generate variable with default value";
     public static final String PREF_BTN_GEN_VAR_WITH_THE_SAME_NAME = "Generate variable with the same name as the exposed variable of the called test case";
     public static final String PREF_BTN_EXPOSE_VARS_AUTO = "Expose variables automatically after choosing the called test case";
+    public static final String PREF_BTN_DEFAULT_VIEW_MANUAL = "In Manual View";
+    public static final String PREF_BTN_DEFAULT_VIEW_SCRIPT = "In Script View";
     public static final String PREF_LBL_DEFAULT_FAILURE_HANDLING = "Default Failure Handling";
     public static final String PREF_LBL_DEFAULT_KEYWORD_TYPE = "Default Keyword Type";
     public static final String PREF_GRP_DEFAULT_KEYWORD = "Default Keyword";
+    public static final String PREF_GRP_TEST_CASE_DEFAULT_VIEW = "Initially open Test Case";
     public static final String PREF_LBL_KEYWORK_TYPE = "Keyword Type";
     public static final String PREF_LBL_KEYWORK_NAME = "Keyword Name";
+    
+    //ManualPreferencePage
+    public static final String PREF_MANUAL_GRP_LINE_WRAPPING = "Line Wrapping settings";
+    public static final String PREF_MANUAL_BTN_ENABLE_LINE_WRAPPING = "Allow Line Wrapping";
+    public static final String PREF_MANUAL_LBL_LINE_WIDTH = "Maximum line width:";
+    public static final String PREF_MANUAL_MSG_UNABLE_TO_UPDATE = "Unable to update preferences for manual mode";
 
     // AstAssertStatementTreeTableNode
     public static final String TREE_ASSERT_STATEMENT = "Assert Statement";
@@ -330,4 +308,7 @@ public class StringConstants extends GlobalStringConstants {
     // KeysInputBuilderDialog
     public static final String KEYS_BUILDER_DIALOG_TITLE = "Keys Builder";
     public static final String KEYS_BUILDER_TABLE_COLUMN_TYPE_LABEL = "Type";
+    
+    // TestStepTableDropListener
+    public static final String ERR_CANNOT_DROP_ON_TEST_STEP_TABLE = "Unable to drop on test step table";
 }

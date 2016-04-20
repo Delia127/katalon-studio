@@ -35,12 +35,14 @@ public class KeywordController extends EntityController {
     public List<KeywordClass> getBuiltInKeywordClasses() {
         return BuiltInMethodNodeFactory.getKeywordClasses();
     }
+
     public KeywordClass getBuiltInKeywordClassByName(String builtInKeywordClassName) {
         return BuiltInMethodNodeFactory.findClass(builtInKeywordClassName);
     }
 
     public boolean isCustomKeywordClass(String className) {
-        if (className == null || className.isEmpty()) return false;
+        if (className == null || className.isEmpty())
+            return false;
         return CustomMethodNodeFactory.getInstance().isCustomKeywordClass(className);
     }
 
@@ -59,17 +61,17 @@ public class KeywordController extends EntityController {
         return BuiltInMethodNodeFactory.getFilteredMethods(builtInKeywordClassName);
     }
 
-    public List<MethodNode> getCustomKeywords(ProjectEntity project) throws Exception {
+    public List<MethodNode> getCustomKeywords(ProjectEntity project) {
         return CustomKeywordParser.getInstance().getAllMethodNodes(GroovyUtil.getCustomKeywordLibFolder(project));
     }
 
-    public MethodNode getCustomKeywordByName(String className, String methodName, ProjectEntity project)
-            throws Exception {
+    public MethodNode getCustomKeywordByName(String className, String methodName, ProjectEntity project) {
         List<MethodNode> methodNodes = getCustomKeywords(project);
         if (methodNodes != null && methodNodes.size() > 0) {
             for (MethodNode methodNode : methodNodes) {
-                if ((methodNode.getDeclaringClass().getNameWithoutPackage().equals(className) || methodNode
-                        .getDeclaringClass().getName().equals(className))
+                if ((methodNode.getDeclaringClass().getNameWithoutPackage().equals(className) || methodNode.getDeclaringClass()
+                        .getName()
+                        .equals(className))
                         && methodNode.getName().equals(getRawCustomKeywordName(methodName))) {
                     return methodNode;
                 }

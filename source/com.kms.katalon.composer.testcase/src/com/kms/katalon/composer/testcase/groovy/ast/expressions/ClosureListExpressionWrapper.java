@@ -11,9 +11,13 @@ import com.kms.katalon.composer.testcase.groovy.ast.TokenWrapper;
 
 public class ClosureListExpressionWrapper extends ListExpressionWrapper {
     private static final int DEFAULT_INCREASEMENT = 1;
+
     private static final int DEFAULT_END_NUMBER = 0;
+
     private static final int DEFAULT_START_NUMBER = 0;
+
     private static final int DEFAULT_SOURCE_NUMBER = -1;
+
     private static final String DEFAULT_VARIABLE_NAME = "index";
 
     public ClosureListExpressionWrapper(ASTNodeWrapper parentNodeWrapper) {
@@ -50,8 +54,9 @@ public class ClosureListExpressionWrapper extends ListExpressionWrapper {
     public ClosureListExpressionWrapper(List<ExpressionWrapper> expressions, ASTNodeWrapper parentNodeWrapper) {
         super(expressions, parentNodeWrapper);
     }
-    
-    public ClosureListExpressionWrapper(ClosureListExpressionWrapper closureListExpressionWrapper, ASTNodeWrapper parentNodeWrapper) {
+
+    public ClosureListExpressionWrapper(ClosureListExpressionWrapper closureListExpressionWrapper,
+            ASTNodeWrapper parentNodeWrapper) {
         super(closureListExpressionWrapper, parentNodeWrapper);
     }
 

@@ -14,9 +14,11 @@ import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.builder.AstBuilder;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
+import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilePhase;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.testcase.exceptions.GroovyParsingException;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTHasBlock;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.AnnotationNodeWrapper;
@@ -79,10 +81,10 @@ import com.kms.katalon.composer.testcase.groovy.ast.statements.SynchronizedState
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ThrowStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.TryCatchStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.WhileStatementWrapper;
+import static com.kms.katalon.composer.testcase.preferences.ManualPreferenceValueInitializer.getMaximumLineWidth;
+import static com.kms.katalon.composer.testcase.preferences.ManualPreferenceValueInitializer.isLineWrappingEnabled;
 
 public class GroovyWrapperParser {
-    private static final int MAX_LINE_LENGTH = 100;
-
     private static final String DEFAULT_INDENT_INCREASEMENT = "    ";
 
     public static final String[] GROOVY_IMPORTED_PACKAGES = { "java.io", "java.lang", "java.net", "java.util",
@@ -93,9 +95,13 @@ public class GroovyWrapperParser {
     private List<ClassNodeWrapper> importedTypes = new ArrayList<ClassNodeWrapper>();
 
     private Stack<String> classNameStack = new Stack<String>();
+
     private String currentIndent = "";
+
     private boolean readyToIndent = false;
+
     private StringBuilder stringBuilder;
+
     private boolean needLineBreak = false;
 
     public GroovyWrapperParser(StringBuilder stringBuilder) {
@@ -308,8 +314,7 @@ public class GroovyWrapperParser {
             }
         } else {
             if (declarationExpressionWrapper.getLeftExpression() instanceof VariableExpressionWrapper) {
-                VariableExpressionWrapper variableExpressionWrapper = (VariableExpressionWrapper) declarationExpressionWrapper
-                        .getLeftExpression();
+                VariableExpressionWrapper variableExpressionWrapper = (VariableExpressionWrapper) declarationExpressionWrapper.getLeftExpression();
                 parseType(variableExpressionWrapper.getOriginType());
                 print(" " + variableExpressionWrapper.getName());
             } else {
@@ -688,7 +693,7 @@ public class GroovyWrapperParser {
     }
 
     private void parseDescription(StatementWrapper statementWrapper) {
-        if (statementWrapper.getDescription() != null && !statementWrapper.getDescription().isEmpty()) {
+        if (statementWrapper.hasDescription()) {
             printString(statementWrapper.getDescription());
             printLineBreak();
         }
@@ -767,19 +772,19 @@ public class GroovyWrapperParser {
         printLineBreak();
 
         String lastIndent = increaseIndent();
-        for (CaseStatementWrapper caseStatementWrapper : switchStatementWrapper.getCaseStatements()) {
+        for (CaseStatementWrapper caseStatementWrapper : switchStatementWrapper.getComplexChildStatements()) {
             parseCase(caseStatementWrapper);
             printLineBreak();
         }
 
-        if (switchStatementWrapper.getDefaultStatement() != null) {
-            preParseASTNode(switchStatementWrapper.getDefaultStatement());
+        if (switchStatementWrapper.hasLastStatement()) {
+            preParseASTNode(switchStatementWrapper.getLastStatement());
             print("default:");
             printLineBreak();
 
             String lastInnerIndent = increaseIndent();
-            parseBlock(switchStatementWrapper.getDefaultStatement());
-            postParseASTNode(switchStatementWrapper.getDefaultStatement());
+            parseASTHasBlock(switchStatementWrapper.getLastStatement());
+            postParseASTNode(switchStatementWrapper.getLastStatement());
             resetIndent(lastInnerIndent);
         }
         resetIndent(lastIndent);
@@ -823,20 +828,20 @@ public class GroovyWrapperParser {
         printLineBreak();
         print("}");
         printLineBreak();
-        for (CatchStatementWrapper catchStatementWrapper : tryCatchStatementWrapper.getCatchStatements()) {
+        for (CatchStatementWrapper catchStatementWrapper : tryCatchStatementWrapper.getComplexChildStatements()) {
             parseCatch(catchStatementWrapper);
         }
-        if (tryCatchStatementWrapper.getFinallyStatement() != null) {
-            preParseASTNode(tryCatchStatementWrapper.getFinallyStatement());
+        if (tryCatchStatementWrapper.hasLastStatement()) {
+            preParseASTNode(tryCatchStatementWrapper.getLastStatement());
             print("finally { ");
             printLineBreak();
 
             lastIndent = increaseIndent();
-            parseBlock(tryCatchStatementWrapper.getFinallyStatement());
+            parseASTHasBlock(tryCatchStatementWrapper.getLastStatement());
             resetIndent(lastIndent);
             printLineBreak();
             print("}");
-            postParseASTNode(tryCatchStatementWrapper.getFinallyStatement());
+            postParseASTNode(tryCatchStatementWrapper.getLastStatement());
             printLineBreak();
         }
         postParseASTNode(tryCatchStatementWrapper);
@@ -888,7 +893,7 @@ public class GroovyWrapperParser {
         print("}");
         postParseASTNode(ifStatementWrapper);
 
-        for (ElseIfStatementWrapper elseIfStatement : ifStatementWrapper.getElseIfStatements()) {
+        for (ElseIfStatementWrapper elseIfStatement : ifStatementWrapper.getComplexChildStatements()) {
             preParseASTNode(elseIfStatement);
             printBlankSpace();
             print("else if");
@@ -905,19 +910,19 @@ public class GroovyWrapperParser {
             print("}");
             postParseASTNode(elseIfStatement);
         }
-        if (ifStatementWrapper.getElseStatement() != null) {
-            preParseASTNode(ifStatementWrapper.getElseStatement());
+        if (ifStatementWrapper.hasLastStatement()) {
+            preParseASTNode(ifStatementWrapper.getLastStatement());
             printBlankSpace();
             print("else {");
             printLineBreak();
 
             lastIndent = increaseIndent();
-            parseBlock(ifStatementWrapper.getElseStatement());
+            parseASTHasBlock(ifStatementWrapper.getLastStatement());
             resetIndent(lastIndent);
 
             printLineBreak();
             print("}");
-            postParseASTNode(ifStatementWrapper.getElseStatement());
+            postParseASTNode(ifStatementWrapper.getLastStatement());
         }
         printLineBreak();
     }
@@ -1091,8 +1096,8 @@ public class GroovyWrapperParser {
                 numDimensions++;
             }
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(classNode.getComponentType() == null ? Object.class.getSimpleName() : classNode
-                    .getComponentType().getNameWithoutPackage());
+            stringBuilder.append(classNode.getComponentType() == null ? Object.class.getSimpleName()
+                    : classNode.getComponentType().getNameWithoutPackage());
             for (int i = 0; i < numDimensions; i++) {
                 stringBuilder.append("[]");
             }
@@ -1251,7 +1256,13 @@ public class GroovyWrapperParser {
         }
     }
 
-    public static ScriptNodeWrapper parseGroovyScriptIntoNodeWrapper(String scriptContent) throws Exception {
+    public static ScriptNodeWrapper parseGroovyScriptIntoNodeWrapper(String scriptContent)
+            throws GroovyParsingException {
+        return parseGroovyScriptIntoNodeWrapper(scriptContent, null);
+    }
+
+    public static ScriptNodeWrapper parseGroovyScriptIntoNodeWrapper(String scriptContent, String testCaseId)
+            throws GroovyParsingException {
         if (scriptContent == null) {
             return null;
         }
@@ -1259,17 +1270,27 @@ public class GroovyWrapperParser {
         if (scriptContent.isEmpty()) {
             return null;
         }
-        List<ASTNode> resultNodes = new AstBuilder().buildFromString(CompilePhase.CONVERSION, false, scriptContent);
-        for (ASTNode resultNode : resultNodes) {
-            if (resultNode instanceof ClassNode && ((ClassNode) resultNode).isScript()) {
-                return new ScriptNodeWrapper((ClassNode) resultNode);
+        try {
+            List<ASTNode> resultNodes = new AstBuilder().buildFromString(CompilePhase.CONVERSION, false, scriptContent);
+            for (ASTNode resultNode : resultNodes) {
+                if (resultNode instanceof ClassNode && ((ClassNode) resultNode).isScript()) {
+                    return new ScriptNodeWrapper(testCaseId, (ClassNode) resultNode);
+                }
             }
+        } catch (CompilationFailedException e) {
+            throw new GroovyParsingException(e);
         }
         return null;
     }
 
-    public static StatementWrapper parseGroovyScriptAndGetFirstStatement(String scriptContent) throws Exception {
-        ScriptNodeWrapper script = parseGroovyScriptIntoNodeWrapper(scriptContent);
+    public static StatementWrapper parseGroovyScriptAndGetFirstStatement(String scriptContent) {
+        ScriptNodeWrapper script;
+        try {
+            script = parseGroovyScriptIntoNodeWrapper(scriptContent);
+        } catch (GroovyParsingException e) {
+            LoggerSingleton.logError(e);
+            return null;
+        }
         if (script == null) {
             return null;
         }
@@ -1278,13 +1299,18 @@ public class GroovyWrapperParser {
         }
         return null;
     }
-
+    
     public static ExpressionWrapper parseGroovyScriptAndGetFirstExpression(String scriptContent) {
-        ScriptNodeWrapper script = null;
+        return parseGroovyScriptAndGetFirstExpression(scriptContent, null);
+    }
+
+    public static ExpressionWrapper parseGroovyScriptAndGetFirstExpression(String scriptContent, String testCaseId) {
+        ScriptNodeWrapper script;
         try {
-            script = parseGroovyScriptIntoNodeWrapper(scriptContent);
-        } catch (Exception e) {
+            script = parseGroovyScriptIntoNodeWrapper(scriptContent, testCaseId);
+        } catch (GroovyParsingException e) {
             LoggerSingleton.logError(e);
+            return null;
         }
         if (script == null) {
             return null;
@@ -1340,7 +1366,7 @@ public class GroovyWrapperParser {
     }
 
     private void checkWrapLongLine() {
-        if (getLastLineLength() > MAX_LINE_LENGTH) {
+        if (isLineWrappingEnabled() && getLastLineLength() > getMaximumLineWidth()) {
             needLineBreak = true;
         }
     }
@@ -1355,7 +1381,7 @@ public class GroovyWrapperParser {
         return lastLine.length();
     }
 
-    public void parseGroovyAstIntoScript(ScriptNodeWrapper script) throws Exception {
+    public void parseGroovyAstIntoScript(ScriptNodeWrapper script) {
         importedTypes.clear();
         for (ImportNodeWrapper importNodeWrapper : script.getImports()) {
             parseImport(importNodeWrapper);

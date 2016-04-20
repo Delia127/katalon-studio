@@ -7,10 +7,8 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 
 import com.kms.katalon.dal.IReportDataProvider;
-import com.kms.katalon.dal.ITestCaseDataProvider;
 import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.dal.fileservice.FileServiceConstant;
-import com.kms.katalon.dal.fileservice.dataprovider.setting.FileServiceDataProviderSetting;
 import com.kms.katalon.dal.fileservice.manager.FolderFileServiceManager;
 import com.kms.katalon.dal.fileservice.manager.ReportFileServiceManager;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -23,10 +21,7 @@ public class ReportFileServiceDataProvider implements IReportDataProvider {
 
     @Override
     public String getLogDirectory(TestCaseEntity testCase) throws Exception {
-        ITestCaseDataProvider testCaseProvider = (new FileServiceDataProviderSetting()).getTestCaseDataProvider();
-        File testCaseLogDir = new File(FileServiceConstant.TEMP_DIR + File.separator
-                + testCaseProvider.getIdForDisplay(testCase));
-
+        File testCaseLogDir = new File(FileServiceConstant.TEMP_DIR + File.separator + testCase.getIdForDisplay());
         ReportFileServiceManager.ensureFolderExist(testCaseLogDir);
         return testCaseLogDir.getAbsolutePath();
     }

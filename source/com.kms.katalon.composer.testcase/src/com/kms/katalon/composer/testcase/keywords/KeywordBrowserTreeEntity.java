@@ -38,7 +38,7 @@ public class KeywordBrowserTreeEntity implements IKeywordBrowserTreeEntity {
         if (isCustom || project == null) {
             return getName();
         }
-        String keywordJavaDoc = TestCaseEntityUtil.getKeywordJavaDocText(fullClassName, keywordName, null);
+        String keywordJavaDoc = TestCaseEntityUtil.getKeywordJavaDocText(fullClassName, keywordName);
         if (keywordJavaDoc.isEmpty()) {
             return TreeEntityUtil.getReadableKeywordName(getName());
         } else {

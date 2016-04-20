@@ -10,11 +10,15 @@ import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BooleanExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
-import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
 
 public class AssertStatementWrapper extends StatementWrapper {
     private BooleanExpressionWrapper booleanExpression;
+
     private ExpressionWrapper messageExpression;
+    
+    public AssertStatementWrapper() {
+        this(null);
+    }
 
     public AssertStatementWrapper(ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
@@ -24,8 +28,8 @@ public class AssertStatementWrapper extends StatementWrapper {
     public AssertStatementWrapper(AssertStatement assertStatement, ASTNodeWrapper parentNodeWrapper) {
         super(assertStatement, parentNodeWrapper);
         booleanExpression = new BooleanExpressionWrapper(assertStatement.getBooleanExpression(), this);
-        messageExpression = ASTNodeWrapHelper
-                .getExpressionNodeWrapperFromExpression(assertStatement.getMessageExpression(), this);
+        messageExpression = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(
+                assertStatement.getMessageExpression(), this);
     }
 
     public AssertStatementWrapper(AssertStatementWrapper assertStatementWrapper, ASTNodeWrapper parentNodeWrapper) {
@@ -39,6 +43,10 @@ public class AssertStatementWrapper extends StatementWrapper {
     }
 
     public void setBooleanExpression(BooleanExpressionWrapper booleanExpression) {
+        if (booleanExpression == null) {
+            return;
+        }
+        booleanExpression.setParent(this);
         this.booleanExpression = booleanExpression;
     }
 
@@ -92,11 +100,15 @@ public class AssertStatementWrapper extends StatementWrapper {
 
     @Override
     public boolean updateInputFrom(ASTNodeWrapper input) {
-        if (input instanceof BooleanExpressionWrapper
-                && !AstTreeTableValueUtil.compareAstNode(input, this.getBooleanExpression())) {
+        if (input instanceof BooleanExpressionWrapper && !this.getBooleanExpression().isEqualsTo(input)) {
             this.setBooleanExpression((BooleanExpressionWrapper) input);
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean isInputEditatble() {
+        return true;
     }
 }

@@ -42,14 +42,15 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
-import com.kms.katalon.composer.testcase.ast.editors.TypeSelectionDialogCellEditor;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.testcase.editors.TypeSelectionDialogCellEditor;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.AnnotationNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.MethodNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ParameterWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.BlockStatementWrapper;
+import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.core.annotation.SetUp;
 import com.kms.katalon.core.annotation.TearDown;
 import com.kms.katalon.core.annotation.TearDownIfError;
@@ -57,20 +58,31 @@ import com.kms.katalon.core.annotation.TearDownIfFailed;
 import com.kms.katalon.core.annotation.TearDownIfPassed;
 
 @SuppressWarnings("restriction")
-public class MethodObjectBuilderDialog extends Dialog implements AstBuilderDialog {
+public class MethodObjectBuilderDialog extends Dialog implements IAstDialogBuilder {
     private static final String NEW_PARAM_DEFAULT_NAME = "param";
+
     private MethodObjectBuilderDialog _instance;
 
     private Text returnTypeText, methodNameText;
+
     private TableViewer tableViewer;
+
     private Button btnSetup, btnTearDown, btnTearDownIfFailed, btnTearDownIfError, btnTearDownIfPassed;
+
     private ClassNodeWrapper returnTypeNode;
+
     private String methodName;
+
     private List<ParameterWrapper> parameterList = new ArrayList<ParameterWrapper>();
+
     private int modifiers;
+
     private List<ClassNodeWrapper> exceptionList = new ArrayList<ClassNodeWrapper>();
+
     private BlockStatementWrapper code;
+
     private boolean isSetup, isTearDown, isTearDownIfFailed, isTearDownIfError, isTearDownIfPassed;
+
     private MethodNodeWrapper tempMethod = null;
 
     public MethodObjectBuilderDialog(Shell parentShell, MethodNodeWrapper methodNode, ASTNodeWrapper parent) {
@@ -95,21 +107,11 @@ public class MethodObjectBuilderDialog extends Dialog implements AstBuilderDialo
             exceptionList.add(exceptionNode);
         }
         code = methodNode.getBlock();
-        if (methodNode.getAnnotationByClass(SetUp.class) != null) {
-            isSetup = true;
-        }
-        if (methodNode.getAnnotationByClass(TearDown.class) != null) {
-            isTearDown = true;
-        }
-        if (methodNode.getAnnotationByClass(TearDownIfFailed.class) != null) {
-            isTearDownIfFailed = true;
-        }
-        if (methodNode.getAnnotationByClass(TearDownIfError.class) != null) {
-            isTearDownIfError = true;
-        }
-        if (methodNode.getAnnotationByClass(TearDownIfPassed.class) != null) {
-            isTearDownIfPassed = true;
-        }
+        isSetup = methodNode.getAnnotationByClass(SetUp.class) != null;
+        isTearDown = methodNode.getAnnotationByClass(TearDown.class) != null;
+        isTearDownIfFailed = methodNode.getAnnotationByClass(TearDownIfFailed.class) != null;
+        isTearDownIfError = methodNode.getAnnotationByClass(TearDownIfError.class) != null;
+        isTearDownIfPassed = methodNode.getAnnotationByClass(TearDownIfPassed.class) != null;
     }
 
     @Override
@@ -117,11 +119,115 @@ public class MethodObjectBuilderDialog extends Dialog implements AstBuilderDialo
         Composite container = (Composite) super.createDialogArea(parent);
         container.setLayout(new GridLayout(1, false));
 
+        createInfoComposite(container);
+
+        createTableComposite(container);
+
+        refresh();
+        return container;
+    }
+
+    private void createInfoComposite(Composite container) {
         Composite infoComposite = new Composite(container, SWT.NONE);
         infoComposite.setLayout(new GridLayout(2, false));
         infoComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-        Composite nameComposite = new Composite(infoComposite, SWT.NONE);
+        createNameComposite(infoComposite);
+
+        Composite returnTypeComposite = addReturnTypeComposite(infoComposite);
+
+        // add blank label for layout
+        new Label(returnTypeComposite, SWT.NONE);
+        new Label(infoComposite, SWT.NONE);
+
+        btnTearDownIfPassed = new Button(infoComposite, SWT.CHECK);
+        GridData gd_btnCheckButton = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        gd_btnCheckButton.horizontalIndent = 5;
+        btnTearDownIfPassed.setLayoutData(gd_btnCheckButton);
+        btnTearDownIfPassed.setText(StringConstants.PA_LBL_TEAR_DOWN_PASSED_BUTTON);
+        btnTearDownIfPassed.setSelection(isTearDownIfPassed);
+        btnTearDownIfPassed.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                isTearDownIfPassed = btnTearDownIfPassed.getSelection();
+            }
+        });
+    }
+
+    private Composite addReturnTypeComposite(Composite parent) {
+        Composite returnTypeComposite = new Composite(parent, SWT.NONE);
+        GridData returnTypeGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+        returnTypeGridData.minimumWidth = 250;
+        returnTypeComposite.setLayoutData(returnTypeGridData);
+        GridLayout returnTypeGridLayout = new GridLayout(3, false);
+        returnTypeGridLayout.verticalSpacing = 20;
+        returnTypeComposite.setLayout(returnTypeGridLayout);
+
+        Label returnTypeLabel = new Label(returnTypeComposite, SWT.NONE);
+        returnTypeLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+        returnTypeLabel.setText(StringConstants.PA_LBL_RETURN_TYPE);
+
+        returnTypeText = new Text(returnTypeComposite, SWT.BORDER);
+        GridData gd_returnTypeText = new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1);
+        gd_returnTypeText.heightHint = 20;
+        returnTypeText.setEditable(false);
+        returnTypeText.setLayoutData(gd_returnTypeText);
+
+        Button returnTypeBrowseButton = new Button(returnTypeComposite, SWT.NONE);
+        returnTypeBrowseButton.setText(StringConstants.PA_LBL_RETURN_TYPE_BROWSE_BUTTON);
+        GridData gd_returnTypeBrowseButton = new GridData(SWT.FILL, SWT.CENTER, false, true, 1, 1);
+        gd_returnTypeBrowseButton.minimumWidth = 100;
+        gd_returnTypeBrowseButton.widthHint = 30;
+        returnTypeBrowseButton.setLayoutData(gd_returnTypeBrowseButton);
+        returnTypeBrowseButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                OpenTypeSelectionDialog dialog = new OpenTypeSelectionDialog(Display.getCurrent().getActiveShell(),
+                        false, PlatformUI.getWorkbench().getProgressService(), null, IJavaSearchConstants.TYPE);
+                dialog.setTitle(JavaUIMessages.OpenTypeAction_dialogTitle);
+                dialog.setMessage(JavaUIMessages.OpenTypeAction_dialogMessage);
+                if (returnTypeNode != null) {
+                    dialog.setInitialPattern(returnTypeNode.getName());
+                }
+                if (dialog.open() != Window.OK || dialog.getResult().length != 1
+                        || !(dialog.getResult()[0] instanceof IType)) {
+                    return;
+                }
+
+                Class<?> newClass = getClassFromIType((IType) dialog.getResult()[0]);
+                if (newClass != null) {
+                    returnTypeNode = new ClassNodeWrapper(newClass, tempMethod);
+                    refresh();
+                }
+            }
+
+        });
+
+        btnTearDownIfFailed = new Button(returnTypeComposite, SWT.CHECK);
+        btnTearDownIfFailed.setText(StringConstants.PA_LBL_TEAR_DOWN_FAILED_BUTTON);
+        btnTearDownIfFailed.setSelection(isTearDownIfFailed);
+        btnTearDownIfFailed.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                isTearDownIfFailed = btnTearDownIfFailed.getSelection();
+            }
+        });
+
+        btnTearDownIfError = new Button(returnTypeComposite, SWT.CHECK);
+        btnTearDownIfError.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
+        btnTearDownIfError.setText(StringConstants.PA_LBL_TEAR_DOWN_ERROR_BUTTON);
+        btnTearDownIfError.setSelection(isTearDownIfError);
+        btnTearDownIfError.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                isTearDownIfError = btnTearDownIfError.getSelection();
+            }
+        });
+        return returnTypeComposite;
+    }
+
+    private void createNameComposite(Composite parent) {
+        Composite nameComposite = new Composite(parent, SWT.NONE);
         GridData namGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
         namGridData.minimumWidth = 250;
         nameComposite.setLayoutData(namGridData);
@@ -164,108 +270,10 @@ public class MethodObjectBuilderDialog extends Dialog implements AstBuilderDialo
                 isTearDown = btnTearDown.getSelection();
             }
         });
-
-        Composite returnTypeComposite = new Composite(infoComposite, SWT.NONE);
-        GridData returnTypeGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-        returnTypeGridData.minimumWidth = 250;
-        returnTypeComposite.setLayoutData(returnTypeGridData);
-        GridLayout returnTypeGridLayout = new GridLayout(3, false);
-        returnTypeGridLayout.verticalSpacing = 20;
-        returnTypeComposite.setLayout(returnTypeGridLayout);
-
-        Label returnTypeLabel = new Label(returnTypeComposite, SWT.NONE);
-        returnTypeLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-        returnTypeLabel.setText(StringConstants.PA_LBL_RETURN_TYPE);
-
-        returnTypeText = new Text(returnTypeComposite, SWT.BORDER);
-        GridData gd_returnTypeText = new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1);
-        gd_returnTypeText.heightHint = 20;
-        returnTypeText.setEditable(false);
-        returnTypeText.setLayoutData(gd_returnTypeText);
-
-        Button returnTypeBrowseButton = new Button(returnTypeComposite, SWT.NONE);
-        returnTypeBrowseButton.setText(StringConstants.PA_LBL_RETURN_TYPE_BROWSE_BUTTON);
-        GridData gd_returnTypeBrowseButton = new GridData(SWT.FILL, SWT.CENTER, false, true, 1, 1);
-        gd_returnTypeBrowseButton.minimumWidth = 100;
-        gd_returnTypeBrowseButton.widthHint = 30;
-        returnTypeBrowseButton.setLayoutData(gd_returnTypeBrowseButton);
-        returnTypeBrowseButton.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                OpenTypeSelectionDialog dialog = new OpenTypeSelectionDialog(Display.getCurrent().getActiveShell(),
-                        false, PlatformUI.getWorkbench().getProgressService(), null, IJavaSearchConstants.TYPE);
-                dialog.setTitle(JavaUIMessages.OpenTypeAction_dialogTitle);
-                dialog.setMessage(JavaUIMessages.OpenTypeAction_dialogMessage);
-                if (returnTypeNode != null) {
-                    dialog.setInitialPattern(returnTypeNode.getName());
-                }
-                if (dialog.open() != Window.OK || dialog.getResult().length != 1
-                        || !(dialog.getResult()[0] instanceof IType)) {
-                    return;
-                }
-
-                Class<?> newClass = getNewClassFromIType((IType) dialog.getResult()[0]);
-                if (newClass != null) {
-                    returnTypeNode = new ClassNodeWrapper(newClass, tempMethod);
-                    refresh();
-                }
-            }
-
-        });
-
-        btnTearDownIfFailed = new Button(returnTypeComposite, SWT.CHECK);
-        btnTearDownIfFailed.setText(StringConstants.PA_LBL_TEAR_DOWN_FAILED_BUTTON);
-        btnTearDownIfFailed.setSelection(isTearDownIfFailed);
-        btnTearDownIfFailed.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                isTearDownIfFailed = btnTearDownIfFailed.getSelection();
-            }
-        });
-
-        btnTearDownIfError = new Button(returnTypeComposite, SWT.CHECK);
-        btnTearDownIfError.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
-        btnTearDownIfError.setText(StringConstants.PA_LBL_TEAR_DOWN_ERROR_BUTTON);
-        btnTearDownIfError.setSelection(isTearDownIfError);
-        btnTearDownIfError.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                isTearDownIfError = btnTearDownIfError.getSelection();
-            }
-        });
-
-        // add blank label for layout
-        new Label(returnTypeComposite, SWT.NONE);
-        new Label(infoComposite, SWT.NONE);
-
-        btnTearDownIfPassed = new Button(infoComposite, SWT.CHECK);
-        GridData gd_btnCheckButton = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gd_btnCheckButton.horizontalIndent = 5;
-        btnTearDownIfPassed.setLayoutData(gd_btnCheckButton);
-        btnTearDownIfPassed.setText(StringConstants.PA_LBL_TEAR_DOWN_PASSED_BUTTON);
-        btnTearDownIfPassed.setSelection(isTearDownIfPassed);
-        btnTearDownIfPassed.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                isTearDownIfPassed = btnTearDownIfPassed.getSelection();
-            }
-        });
-
-        createTableComposite(container);
-
-        refresh();
-        return container;
     }
 
-    protected Class<?> getNewClassFromIType(IType type) {
-        Class<?> newClass = null;
-        try {
-            newClass = Class.forName(type.getFullyQualifiedName());
-            return newClass;
-        } catch (ClassNotFoundException e1) {
-            // do nothing
-        }
-        return null;
+    protected Class<?> getClassFromIType(IType type) {
+        return AstKeywordsInputUtil.loadType(type.getFullyQualifiedName(), tempMethod.getScriptClass());
     }
 
     protected void createTableComposite(Composite container) {
@@ -281,62 +289,16 @@ public class MethodObjectBuilderDialog extends Dialog implements AstBuilderDialo
 
         ColumnViewerUtil.setTableActivation(tableViewer);
 
-        TableViewerColumn tableViewerColumnParamType = new TableViewerColumn(tableViewer, SWT.NONE);
-        tableViewerColumnParamType.getColumn().setText(StringConstants.DIA_COL_PARAM_TYPE);
-        tableViewerColumnParamType.getColumn().setWidth(335);
-        tableViewerColumnParamType.setLabelProvider(new ColumnLabelProvider() {
-            @Override
-            public String getText(Object element) {
-                if (element instanceof ParameterWrapper) {
-                    ParameterWrapper parameter = (ParameterWrapper) element;
-                    return parameter.getType().getName();
-                }
-                return StringUtils.EMPTY;
-            }
-        });
-        tableViewerColumnParamType.setEditingSupport(new EditingSupport(tableViewer) {
-            @Override
-            protected void setValue(Object element, Object value) {
-                if (element instanceof ParameterWrapper && value instanceof IType) {
-                    ParameterWrapper oldParameterWrapper = (ParameterWrapper) element;
-                    int parameterIndex = parameterList.indexOf(oldParameterWrapper);
-                    if (parameterIndex >= 0 && parameterIndex < parameterList.size()) {
-                        Class<?> newClass = getNewClassFromIType((IType) value);
-                        if (newClass != null) {
-                            parameterList.set(parameterIndex,
-                                    new ParameterWrapper(newClass, oldParameterWrapper.getName(), tempMethod));
-                            refresh();
-                        }
-                    }
-                }
-            }
+        addTableColumns();
+    }
 
-            @Override
-            protected Object getValue(Object element) {
-                if (element instanceof ParameterWrapper) {
-                    return ((ParameterWrapper) element).getType().getName();
-                }
-                return "";
-            }
+    private void addTableColumns() {
+        addTableColumnParamType();
 
-            @Override
-            protected CellEditor getCellEditor(Object element) {
-                if (element instanceof ParameterWrapper) {
-                    return new TypeSelectionDialogCellEditor(tableViewer.getTable(), ((ParameterWrapper) element)
-                            .getType().getName());
-                }
-                return null;
-            }
+        addTableColumnParamName();
+    }
 
-            @Override
-            protected boolean canEdit(Object element) {
-                if (element instanceof ParameterWrapper) {
-                    return true;
-                }
-                return false;
-            }
-        });
-
+    private void addTableColumnParamName() {
         TableViewerColumn tableViewerColumnParamName = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnParamName.getColumn().setText(StringConstants.DIA_COL_PARAM_NAME);
         tableViewerColumnParamName.getColumn().setWidth(335);
@@ -387,6 +349,64 @@ public class MethodObjectBuilderDialog extends Dialog implements AstBuilderDialo
         });
     }
 
+    private void addTableColumnParamType() {
+        TableViewerColumn tableViewerColumnParamType = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnParamType.getColumn().setText(StringConstants.DIA_COL_PARAM_TYPE);
+        tableViewerColumnParamType.getColumn().setWidth(335);
+        tableViewerColumnParamType.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                if (element instanceof ParameterWrapper) {
+                    ParameterWrapper parameter = (ParameterWrapper) element;
+                    return parameter.getType().getName();
+                }
+                return StringUtils.EMPTY;
+            }
+        });
+        tableViewerColumnParamType.setEditingSupport(new EditingSupport(tableViewer) {
+            @Override
+            protected void setValue(Object element, Object value) {
+                if (element instanceof ParameterWrapper && value instanceof IType) {
+                    ParameterWrapper oldParameterWrapper = (ParameterWrapper) element;
+                    int parameterIndex = parameterList.indexOf(oldParameterWrapper);
+                    if (parameterIndex >= 0 && parameterIndex < parameterList.size()) {
+                        Class<?> newClass = getClassFromIType((IType) value);
+                        if (newClass != null) {
+                            parameterList.set(parameterIndex,
+                                    new ParameterWrapper(newClass, oldParameterWrapper.getName(), tempMethod));
+                            refresh();
+                        }
+                    }
+                }
+            }
+
+            @Override
+            protected Object getValue(Object element) {
+                if (element instanceof ParameterWrapper) {
+                    return ((ParameterWrapper) element).getType().getName();
+                }
+                return "";
+            }
+
+            @Override
+            protected CellEditor getCellEditor(Object element) {
+                if (element instanceof ParameterWrapper) {
+                    return new TypeSelectionDialogCellEditor(tableViewer.getTable(),
+                            ((ParameterWrapper) element).getType().getName());
+                }
+                return null;
+            }
+
+            @Override
+            protected boolean canEdit(Object element) {
+                if (element instanceof ParameterWrapper) {
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
     public void refresh() {
         methodNameText.setText(methodName != null ? methodName : "");
         returnTypeText.setText(returnTypeNode != null ? returnTypeNode.getName() : "");
@@ -396,6 +416,46 @@ public class MethodObjectBuilderDialog extends Dialog implements AstBuilderDialo
     }
 
     protected void createButtonsForButtonBar(Composite parent) {
+        createInsertButton(parent);
+
+        createRemoveButton(parent);
+        createOKButton(parent);
+        createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+    }
+
+    private void createOKButton(Composite parent) {
+        Button btnOK = createButton(parent, 102, IDialogConstants.OK_LABEL, true);
+        btnOK.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (verify()) {
+                    _instance.close();
+                }
+            }
+        });
+    }
+
+    private void createRemoveButton(Composite parent) {
+        Button btnRemove = createButton(parent, 200, StringConstants.DIA_BTN_REMOVE, false);
+        btnRemove.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                List<ParameterWrapper> removeParameterWrappers = new ArrayList<ParameterWrapper>();
+                for (int index : tableViewer.getTable().getSelectionIndices()) {
+                    if (index >= 0 && index < parameterList.size()) {
+                        removeParameterWrappers.add(parameterList.get(index));
+                    }
+                }
+                for (ParameterWrapper parameter : removeParameterWrappers) {
+                    parameterList.remove(parameter);
+                }
+                tableViewer.refresh();
+            }
+        });
+    }
+
+    private void createInsertButton(Composite parent) {
         Button btnInsert = createButton(parent, 100, StringConstants.DIA_BTN_INSERT, true);
         btnInsert.addSelectionListener(new SelectionAdapter() {
 
@@ -413,34 +473,6 @@ public class MethodObjectBuilderDialog extends Dialog implements AstBuilderDialo
                 tableViewer.getTable().setSelection(selectionIndex + 1);
             }
         });
-
-        Button btnRemove = createButton(parent, 200, StringConstants.DIA_BTN_REMOVE, false);
-        btnRemove.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                List<ParameterWrapper> removeParameterWrappers = new ArrayList<ParameterWrapper>();
-                for (int index : tableViewer.getTable().getSelectionIndices()) {
-                    if (index >= 0 && index < parameterList.size()) {
-                        removeParameterWrappers.add(parameterList.get(index));
-                    }
-                }
-                for (ParameterWrapper parameter : removeParameterWrappers) {
-                    parameterList.remove(parameter);
-                }
-                tableViewer.refresh();
-            }
-        });
-        Button btnOK = createButton(parent, 102, IDialogConstants.OK_LABEL, true);
-        btnOK.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                if (verify()) {
-                    _instance.close();
-                }
-            }
-        });
-        createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
     }
 
     protected boolean verify() {
@@ -460,7 +492,7 @@ public class MethodObjectBuilderDialog extends Dialog implements AstBuilderDialo
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText(StringConstants.DIA_TITLE_METHOD_BUILDER);
+        newShell.setText(getDialogTitle());
     }
 
     public MethodNodeWrapper getReturnValue() {
@@ -483,7 +515,7 @@ public class MethodObjectBuilderDialog extends Dialog implements AstBuilderDialo
         if (toogleValue && method.getAnnotationByClass(annotationClass) == null) {
             method.addAnnotation(new AnnotationNodeWrapper(annotationClass, method));
         } else if (!toogleValue && method.getAnnotationByClass(annotationClass) != null) {
-            method.getAnnotations().remove(method.getAnnotationByClass(annotationClass));
+            method.removeAnnotation(method.getAnnotationByClass(annotationClass));
         }
     }
 
@@ -493,6 +525,7 @@ public class MethodObjectBuilderDialog extends Dialog implements AstBuilderDialo
     }
 
     static final Collator englishCollator = Collator.getInstance(Locale.ENGLISH);
+
     static final String keywords[] = { "abstract", "assert", "boolean", "break", "byte", "case", "catch", "char",
             "class", "const", "continue", "default", "do", "double", "else", "extends", "false", "final", "finally",
             "float", "for", "goto", "if", "implements", "import", "instanceof", "int", "interface", "long", "native",
@@ -504,13 +537,7 @@ public class MethodObjectBuilderDialog extends Dialog implements AstBuilderDialo
         return (Arrays.binarySearch(keywords, keyword, englishCollator) >= 0);
     }
 
-    @Override
     public String getDialogTitle() {
         return StringConstants.DIA_TITLE_METHOD_BUILDER;
-    }
-
-    @Override
-    public void replaceObject(Object orginalObject, Object newObject) {
-        // Do no thing for this dialog
     }
 }

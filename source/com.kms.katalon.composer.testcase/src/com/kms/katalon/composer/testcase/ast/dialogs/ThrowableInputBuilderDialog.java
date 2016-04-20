@@ -16,7 +16,6 @@ import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstructorCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.TupleExpressionWrapper;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 
@@ -29,41 +28,31 @@ public class ThrowableInputBuilderDialog extends AbstractAstBuilderWithTableDial
 
     public ThrowableInputBuilderDialog(Shell parentShell, ConstructorCallExpressionWrapper constructorCallExpression) {
         super(parentShell);
-        if (constructorCallExpression == null
-                || !(constructorCallExpression.getArguments() instanceof TupleExpressionWrapper)
-                || ((TupleExpressionWrapper) constructorCallExpression.getArguments()).getExpressions().isEmpty()) {
-            throw new IllegalArgumentException();
-        }
         this.constructorCallExpression = constructorCallExpression.clone();
     }
 
     @Override
-    public void refresh() {
+    public void setInput() {
         tableViewer.setContentProvider(new ArrayContentProvider());
         List<ASTNodeWrapper> expressionList = new ArrayList<ASTNodeWrapper>();
-        expressionList.add(constructorCallExpression.getType());
-        expressionList.add(((TupleExpressionWrapper) this.constructorCallExpression.getArguments()).getExpressions()
-                .get(0));
+        expressionList.add(getExceptionType());
+        expressionList.add(getVariableName());
         tableViewer.setInput(expressionList);
         tableViewer.refresh();
     }
 
-    @Override
-    public ConstructorCallExpressionWrapper getReturnValue() {
-        return constructorCallExpression;
+    private ClassNodeWrapper getExceptionType() {
+        return constructorCallExpression.getType();
+    }
+
+    private ExpressionWrapper getVariableName() {
+        return constructorCallExpression.getArguments().getExpressions()
+                .get(0);
     }
 
     @Override
-    public void replaceObject(Object originalObject, Object newObject) {
-        if (originalObject == constructorCallExpression.getType() && newObject instanceof ClassNodeWrapper) {
-            constructorCallExpression.setType((ClassNodeWrapper) newObject);
-            refresh();
-        } else if (originalObject == ((TupleExpressionWrapper) this.constructorCallExpression.getArguments())
-                .getExpressions().get(0) && newObject instanceof ExpressionWrapper) {
-            ((TupleExpressionWrapper) constructorCallExpression.getArguments()).getExpressions().set(0,
-                    (ExpressionWrapper) newObject);
-            refresh();
-        }
+    public ASTNodeWrapper getReturnValue() {
+        return constructorCallExpression;
     }
 
     @Override
@@ -80,10 +69,9 @@ public class ThrowableInputBuilderDialog extends AbstractAstBuilderWithTableDial
         tableViewerColumnObject.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                if (element == constructorCallExpression.getType()) {
+                if (element == getExceptionType()) {
                     return THROWABLE_TYPE;
-                } else if (element == ((TupleExpressionWrapper) constructorCallExpression.getArguments())
-                        .getExpressions().get(0)) {
+                } else if (element == getVariableName()) {
                     return MESSAGE;
                 }
                 return StringUtils.EMPTY;
@@ -95,6 +83,6 @@ public class ThrowableInputBuilderDialog extends AbstractAstBuilderWithTableDial
         tblclmnNewColumnValue.setText(StringConstants.DIA_COL_VALUE);
         tblclmnNewColumnValue.setWidth(500);
         tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider());
-        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer, this));
+        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer));
     }
 }

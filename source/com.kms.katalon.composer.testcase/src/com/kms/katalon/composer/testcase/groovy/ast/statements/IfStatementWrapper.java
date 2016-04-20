@@ -8,45 +8,41 @@ import org.codehaus.groovy.ast.stmt.EmptyStatement;
 import org.codehaus.groovy.ast.stmt.IfStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
 
+import com.kms.katalon.composer.testcase.groovy.ast.ASTHasBlock;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BooleanExpressionWrapper;
-import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
 
-public class IfStatementWrapper extends CompositeStatementWrapper {
-    private BlockStatementWrapper code;
-    private BooleanExpressionWrapper booleanExpression;
-    private List<ElseIfStatementWrapper> elseIfStatements = new ArrayList<ElseIfStatementWrapper>();
-    private BlockStatementWrapper elseStatement;
+public class IfStatementWrapper extends ComplexStatementWrapper<ElseIfStatementWrapper, ElseStatementWrapper> implements
+        ASTHasBlock {
+    private BlockStatementWrapper block = new BlockStatementWrapper(this);
+
+    private BooleanExpressionWrapper expression;
+    
+    public IfStatementWrapper() {
+        this(null);
+    }
 
     public IfStatementWrapper(ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
-        this.booleanExpression = new BooleanExpressionWrapper(this);
-        this.code = new BlockStatementWrapper(parentNodeWrapper);
+        this.expression = new BooleanExpressionWrapper(this);
     }
 
     public IfStatementWrapper(BooleanExpressionWrapper booleanExpression, ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
-        this.booleanExpression = booleanExpression;
-        this.code = new BlockStatementWrapper(parentNodeWrapper);
+        this.expression = new BooleanExpressionWrapper(booleanExpression, this);
     }
 
     public IfStatementWrapper(IfStatement ifStatement, ASTNodeWrapper parentNodeWrapper) {
         super(ifStatement, parentNodeWrapper);
-        this.booleanExpression = new BooleanExpressionWrapper(ifStatement.getBooleanExpression(), this);
-        this.code = new BlockStatementWrapper((BlockStatement) ifStatement.getIfBlock(), this);
+        this.expression = new BooleanExpressionWrapper(ifStatement.getBooleanExpression(), this);
+        this.block = new BlockStatementWrapper((BlockStatement) ifStatement.getIfBlock(), this);
         getStatementNodeWrappersFromIfStatement(ifStatement.getElseBlock());
     }
 
     public IfStatementWrapper(IfStatementWrapper ifStatementWrapper, ASTNodeWrapper parentNodeWrapper) {
         super(ifStatementWrapper, parentNodeWrapper);
-        this.booleanExpression = new BooleanExpressionWrapper(ifStatementWrapper.getBooleanExpression(), this);
-        this.code = new BlockStatementWrapper(ifStatementWrapper.getBlock(), this);
-        for (ElseIfStatementWrapper elseIfStatement : ifStatementWrapper.getElseIfStatements()) {
-            elseIfStatements.add(new ElseIfStatementWrapper(elseIfStatement, this));
-        }
-        if (ifStatementWrapper.getElseStatement() != null) {
-            elseStatement = new BlockStatementWrapper(ifStatementWrapper.getElseStatement(), this);
-        }
+        this.expression = new BooleanExpressionWrapper(ifStatementWrapper.getBooleanExpression(), this);
+        this.block = new BlockStatementWrapper(ifStatementWrapper.getBlock(), this);
     }
 
     private void getStatementNodeWrappersFromIfStatement(Statement statement) {
@@ -55,87 +51,30 @@ public class IfStatementWrapper extends CompositeStatementWrapper {
         }
         if (statement instanceof IfStatement) {
             IfStatement elseIfStatement = (IfStatement) statement;
-            elseIfStatements.add(new ElseIfStatementWrapper(elseIfStatement, this));
+            addComplexChildStatement(new ElseIfStatementWrapper(elseIfStatement, this));
             getStatementNodeWrappersFromIfStatement(elseIfStatement.getElseBlock());
+            return;
         }
         if (statement instanceof BlockStatement) {
-            elseStatement = new BlockStatementWrapper((BlockStatement) statement, this);
+            setLastStatement(new ElseStatementWrapper((BlockStatement) statement, this));
         }
     }
 
     public BooleanExpressionWrapper getBooleanExpression() {
-        return booleanExpression;
+        return (BooleanExpressionWrapper) expression;
     }
 
     public void setBooleanExpression(BooleanExpressionWrapper booleanExpression) {
-        this.booleanExpression = booleanExpression;
+        if (booleanExpression == null) {
+            return;
+        }
+        booleanExpression.setParent(this);
+        this.expression = booleanExpression;
     }
 
     @Override
     public String getText() {
-        return "if (" + getBooleanExpression().getText() + ")";
-    }
-
-    @Override
-    public boolean hasAstChildren() {
-        return true;
-    }
-
-    public List<ElseIfStatementWrapper> getElseIfStatements() {
-        return elseIfStatements;
-    }
-
-    public void setElseIfStatements(List<ElseIfStatementWrapper> elseIfStatements) {
-        this.elseIfStatements = elseIfStatements;
-    }
-    
-    public void addElseIfStatement(ElseIfStatementWrapper elseIfStatement) {
-        elseIfStatements.add(elseIfStatement);
-    }
-
-    public boolean addElseIfStatement(ElseIfStatementWrapper elseIfStatement, int index) {
-        if (index < 0 || index > elseIfStatements.size()) {
-            return false;
-        }
-        elseIfStatements.add(index, elseIfStatement);
-        return true;
-    }
-
-    public boolean removeElseIfStatement(int index) {
-        if (index < 0 || index >= elseIfStatements.size()) {
-            return false;
-        }
-        elseIfStatements.remove(index);
-        return true;
-    }
-
-    public boolean removeElseIfStatement(ElseIfStatementWrapper elseIfStatement) {
-        return elseIfStatements.remove(elseIfStatement);
-    }
-
-    public BlockStatementWrapper getElseStatement() {
-        return elseStatement;
-    }
-
-    public void setElseStatement(BlockStatementWrapper elseStatement) {
-        this.elseStatement = elseStatement;
-    }
-
-    @Override
-    public List<? extends ASTNodeWrapper> getAstChildren() {
-        List<ASTNodeWrapper> astNodeWrappers = new ArrayList<ASTNodeWrapper>();
-        astNodeWrappers.add(booleanExpression);
-        astNodeWrappers.add(code);
-        astNodeWrappers.addAll(elseIfStatements);
-        if (elseStatement != null) {
-            astNodeWrappers.add(elseStatement);
-        }
-        return astNodeWrappers;
-    }
-
-    @Override
-    public BlockStatementWrapper getBlock() {
-        return code;
+        return "if (" + getInputText() + ")";
     }
 
     @Override
@@ -144,23 +83,92 @@ public class IfStatementWrapper extends CompositeStatementWrapper {
     }
 
     @Override
-    public ASTNodeWrapper getInput() {
-        return this.getBooleanExpression();
+    public BlockStatementWrapper getBlock() {
+        return block;
+    }
+
+    @Override
+    public boolean hasAstChildren() {
+        return true;
+    }
+
+    @Override
+    public List<? extends ASTNodeWrapper> getAstChildren() {
+        List<ASTNodeWrapper> astNodeWrappers = new ArrayList<ASTNodeWrapper>();
+        astNodeWrappers.add(expression);
+        astNodeWrappers.add(block);
+        return astNodeWrappers;
+    }
+
+    @Override
+    public BooleanExpressionWrapper getInput() {
+        return getBooleanExpression();
+    }
+
+    @Override
+    public boolean isInputEditatble() {
+        return true;
     }
 
     @Override
     public String getInputText() {
-        return getInput().getText();
+        return getBooleanExpression().getText();
     }
 
     @Override
     public boolean updateInputFrom(ASTNodeWrapper input) {
-        if (input instanceof BooleanExpressionWrapper && !AstTreeTableValueUtil.compareAstNode(input, this.getBooleanExpression())) {
-            this.setBooleanExpression((BooleanExpressionWrapper) input);
+        if (input instanceof BooleanExpressionWrapper && !getBooleanExpression().isEqualsTo(input)) {
+            setBooleanExpression((BooleanExpressionWrapper) input);
             return true;
         }
-
         return false;
     }
 
+    @Override
+    public boolean isChildAssignble(ASTNodeWrapper nodeWrapper) {
+        return (nodeWrapper instanceof ElseIfStatementWrapper || nodeWrapper instanceof ElseStatementWrapper || getBlock().isChildAssignble(nodeWrapper));
+    }
+
+    @Override
+    public boolean addChild(ASTNodeWrapper childObject) {
+        if (childObject instanceof ElseIfStatementWrapper) {
+            addComplexChildStatement((ElseIfStatementWrapper) childObject);
+            return true;
+        }
+        if (childObject instanceof ElseStatementWrapper) {
+            return setLastStatement((ElseStatementWrapper) childObject);
+        }
+        return getBlock().addChild(childObject);
+    }
+
+    @Override
+    public boolean addChild(ASTNodeWrapper childObject, int index) {
+        if (childObject instanceof ElseIfStatementWrapper) {
+            return addComplexChildStatement((ElseIfStatementWrapper) childObject, index);
+        }
+        if (childObject instanceof ElseStatementWrapper) {
+            return setLastStatement((ElseStatementWrapper) childObject);
+        }
+        return getBlock().addChild(childObject, index);
+    }
+
+    @Override
+    public boolean removeChild(ASTNodeWrapper childObject) {
+        if (childObject instanceof ElseIfStatementWrapper) {
+            return removeComplexChildStatement((ElseIfStatementWrapper) childObject);
+        } else if (childObject == lastStatement) {
+            return removeLastStatement();
+        }
+        return getBlock().removeChild(childObject);
+    }
+
+    @Override
+    public int indexOf(ASTNodeWrapper childObject) {
+        if (childObject instanceof ElseIfStatementWrapper) {
+            return indexOf((ElseIfStatementWrapper) childObject);
+        } else if (childObject == lastStatement) {
+            return 0;
+        }
+        return getBlock().indexOf(childObject);
+    }
 }

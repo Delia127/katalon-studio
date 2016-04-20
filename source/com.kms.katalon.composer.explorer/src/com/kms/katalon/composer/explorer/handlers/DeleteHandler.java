@@ -1,93 +1,81 @@
 package com.kms.katalon.composer.explorer.handlers;
 
+import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
+import static java.text.MessageFormat.format;
+import static org.eclipse.jface.dialogs.MessageDialog.openQuestion;
+
 import java.lang.reflect.InvocationTargetException;
-import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.IHandler;
-import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.e4.core.di.annotations.CanExecute;
-import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.handlers.HandlerUtil;
 
-import com.kms.katalon.composer.components.event.EventBrokerSingleton;
-import com.kms.katalon.composer.components.impl.dialogs.YesNoAllOptions;
-import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.components.services.SelectionServiceSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.constants.StringConstants;
 import com.kms.katalon.composer.explorer.handlers.deletion.AbstractDeleteReferredEntityHandler;
 import com.kms.katalon.composer.explorer.handlers.deletion.DeleteEntityHandlerFactory;
 import com.kms.katalon.composer.explorer.handlers.deletion.IDeleteEntityHandler;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.constants.IdConstants;
 
-public class DeleteHandler implements IHandler {
+public class DeleteHandler extends AbstractHandler {
 
-    @CanExecute
-    public static boolean canExecute(ESelectionService selectionService) {
-        if (selectionService.getSelection(IdConstants.EXPLORER_PART_ID) instanceof Object[]) {
-            Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-            for (Object entity : selectedObjects) {
-                if (entity instanceof ITreeEntity) {
-                    try {
-                        return ((ITreeEntity) entity).isRemoveable();
-                    } catch (Exception e) {
-                        LoggerSingleton.logError(e);
-                    }
-                }
-            }
-            return true;
+    @Override
+    public boolean canExecute() {
+        Object[] selectedObjects = getSelection();
+        if (selectedObjects == null) {
+            return false;
         }
-        return false;
-    }
-
-    @Execute
-    public static void execute(ESelectionService selectionService, IEventBroker eventBroker) {
-        if (selectionService != null && selectionService.getSelection(IdConstants.EXPLORER_PART_ID) != null) {
-            delete(eventBroker, (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID), true);
-        }
-    }
-
-    public static void delete(IEventBroker eventBroker, Object[] objects, boolean needConfirm) {
         try {
-            if (needConfirm) {
-                boolean canDelete = false;
-                String message = "";
-                if (objects.length == 1 && objects[0] instanceof ITreeEntity) {
-                    message = MessageFormat.format(StringConstants.HAND_DELETE_CONFIRM_MSG,
-                            ((ITreeEntity) objects[0]).getTypeName() + " '" + ((ITreeEntity) objects[0]).getText()
-                                    + "'");
-                } else if (objects.length > 1) {
-                    message = MessageFormat.format(StringConstants.HAND_MULTI_DELETE_CONFIRM_MSG, objects.length);
+            for (Object entity : selectedObjects) {
+                if (!(entity instanceof ITreeEntity)) {
+                    continue;
                 }
-                canDelete = MessageDialog.openQuestion(Display.getCurrent().getActiveShell(),
-                        StringConstants.HAND_DELETE_TITLE, message);
-                if (canDelete) {
-                    delete(eventBroker, objects);
+                if (!((ITreeEntity) entity).isRemoveable()) {
+                    return false;
                 }
-            } else {
-                delete(eventBroker, objects);
             }
         } catch (Exception e) {
-            LoggerSingleton.logError(e);
+            logError(e);
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void execute() {
+        Object[] selectedObjects = getSelection();
+        if (selectedObjects == null) {
+            return;
+        }
+
+        delete(selectedObjects, true);
+    }
+
+    private void delete(Object[] objects, boolean needConfirm) {
+        try {
+            if (!needConfirm) {
+                delete(objects);
+                return;
+            }
+
+            String message = format(StringConstants.HAND_MULTI_DELETE_CONFIRM_MSG, objects.length);
+            if (objects.length == 1 && objects[0] instanceof ITreeEntity) {
+                message = format(StringConstants.HAND_DELETE_CONFIRM_MSG, ((ITreeEntity) objects[0]).getTypeName()
+                        + " '" + ((ITreeEntity) objects[0]).getText() + "'");
+            }
+            if (openQuestion(Display.getCurrent().getActiveShell(), StringConstants.HAND_DELETE_TITLE, message)) {
+                delete(objects);
+            }
+        } catch (Exception e) {
+            logError(e);
         }
     }
 
-    private static void delete(final IEventBroker eventBroker, final Object[] objects)
-            throws InvocationTargetException, InterruptedException {
+    private void delete(final Object[] objects) throws InvocationTargetException, InterruptedException {
         ProgressMonitorDialog dialog = new ProgressMonitorDialog(Display.getCurrent().getActiveShell());
         dialog.run(true, true, new IRunnableWithProgress() {
             @Override
@@ -95,21 +83,14 @@ public class DeleteHandler implements IHandler {
                 try {
                     monitor.beginTask("Deleting items...", objects.length + 1);
                     Set<ITreeEntity> parentSetEntities = new HashSet<ITreeEntity>();
-
-                    // Used for deletion options when an AbstractDeleteEntityDialog opened.
-                    YesNoAllOptions[] availabelDeletionOptions = null;
-
-                    YesNoAllOptions globalDeletionOption = YesNoAllOptions.NO;
-
-                    if (objects.length == 1 && !(objects[0] instanceof FolderTreeEntity)) {
-                        availabelDeletionOptions = new YesNoAllOptions[] { YesNoAllOptions.YES, YesNoAllOptions.NO };
-                    } else {
-                        availabelDeletionOptions = YesNoAllOptions.values();
-                    }
-
+                    boolean showYesNoToAllOptions = objects.length > 1;
                     for (Object selectedItem : objects) {
                         if (monitor.isCanceled()) {
                             return;
+                        }
+
+                        if (!(selectedItem instanceof ITreeEntity)) {
+                            continue;
                         }
 
                         final ITreeEntity treeEntity = (ITreeEntity) selectedItem;
@@ -128,35 +109,20 @@ public class DeleteHandler implements IHandler {
                             continue;
                         }
 
-                        if (selectedItem instanceof ITreeEntity) {
-                            IDeleteEntityHandler handler = DeleteEntityHandlerFactory.getInstance().getDeleteHandler(
-                                    treeEntity.getClass());
-                            if (handler == null) {
-                                continue;
-                            }
+                        IDeleteEntityHandler handler = DeleteEntityHandlerFactory.getInstance().getDeleteHandler(
+                                treeEntity.getClass());
+                        if (handler == null) {
+                            continue;
+                        }
 
-                            // prepare for entity's deletion handler
-                            if (handler instanceof AbstractDeleteReferredEntityHandler) {
-                                AbstractDeleteReferredEntityHandler deletePreferenceHandler = (AbstractDeleteReferredEntityHandler) handler;
-                                deletePreferenceHandler.setDeletePreferenceOption(globalDeletionOption);
-                                deletePreferenceHandler.setAvailableDeletionOptions(availabelDeletionOptions);
-                            }
+                        if (handler instanceof AbstractDeleteReferredEntityHandler) {
+                            ((AbstractDeleteReferredEntityHandler) handler).setNeedYesNoToAllButtons(showYesNoToAllOptions);
+                        }
 
-                            try {
-                                handler.execute(treeEntity, subMonitor);
-                            } catch (Exception ex) {
-                                LoggerSingleton.logError(ex);
-                            }
-                            // Store the confirmation of "Yes to all" or "No to all" for all previous entity
-                            if (handler instanceof AbstractDeleteReferredEntityHandler) {
-                                AbstractDeleteReferredEntityHandler deletePreferenceHandler = (AbstractDeleteReferredEntityHandler) handler;
-                                YesNoAllOptions handlerDeletionOption = deletePreferenceHandler
-                                        .getDeletePreferenceOption();
-                                if (handlerDeletionOption == YesNoAllOptions.YES_TO_ALL
-                                        || handlerDeletionOption == YesNoAllOptions.NO_TO_ALL) {
-                                    globalDeletionOption = handlerDeletionOption;
-                                }
-                            }
+                        try {
+                            handler.execute(treeEntity, subMonitor);
+                        } catch (Exception e) {
+                            logError(e);
                         }
                     }
 
@@ -167,41 +133,10 @@ public class DeleteHandler implements IHandler {
                     monitor.worked(1);
                 } finally {
                     monitor.done();
+                    eventBroker.post(EventConstants.EXPLORER_RESET_USER_RESPONSE_FOR_DELETION, StringConstants.EMPTY);
                 }
             }
         });
-
     }
 
-    @Override
-    public void addHandlerListener(IHandlerListener handlerListener) {
-    }
-
-    @Override
-    public void dispose() {
-    }
-
-    @Override
-    public Object execute(ExecutionEvent event) throws ExecutionException {
-        String activePartId = HandlerUtil.getActivePartId(event);
-        if (activePartId != null && activePartId.equals(IdConstants.EXPLORER_PART_ID)) {
-            execute(SelectionServiceSingleton.getInstance().getSelectionService(), EventBrokerSingleton.getInstance()
-                    .getEventBroker());
-        }
-        return null;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return canExecute(SelectionServiceSingleton.getInstance().getSelectionService());
-    }
-
-    @Override
-    public boolean isHandled() {
-        return true;
-    }
-
-    @Override
-    public void removeHandlerListener(IHandlerListener handlerListener) {
-    }
 }

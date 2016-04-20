@@ -8,28 +8,27 @@ import org.codehaus.groovy.ast.stmt.WhileStatement;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BooleanExpressionWrapper;
-import com.kms.katalon.composer.testcase.util.AstTreeTableValueUtil;
 
 public class WhileStatementWrapper extends CompositeStatementWrapper {
     private BooleanExpressionWrapper booleanExpression;
-    private BlockStatementWrapper loopBlock;
 
+    public WhileStatementWrapper() {
+        this(null);
+    }
+    
     public WhileStatementWrapper(ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
         this.booleanExpression = new BooleanExpressionWrapper(this);
-        this.loopBlock = new BlockStatementWrapper(this);
     }
 
     public WhileStatementWrapper(WhileStatement whileStatement, ASTNodeWrapper parentNodeWrapper) {
-        super(whileStatement, parentNodeWrapper);
+        super(whileStatement, (BlockStatement) whileStatement.getLoopBlock(), parentNodeWrapper);
         this.booleanExpression = new BooleanExpressionWrapper(whileStatement.getBooleanExpression(), this);
-        this.loopBlock = new BlockStatementWrapper((BlockStatement) whileStatement.getLoopBlock(), this);
     }
 
     public WhileStatementWrapper(WhileStatementWrapper whileStatementWrapper, ASTNodeWrapper parentNodeWrapper) {
         super(whileStatementWrapper, parentNodeWrapper);
         this.booleanExpression = new BooleanExpressionWrapper(whileStatementWrapper.getBooleanExpression(), this);
-        this.loopBlock = new BlockStatementWrapper(whileStatementWrapper.getBlock(), this);
     }
 
     public BooleanExpressionWrapper getBooleanExpression() {
@@ -37,6 +36,10 @@ public class WhileStatementWrapper extends CompositeStatementWrapper {
     }
 
     public void setBooleanExpression(BooleanExpressionWrapper booleanExpression) {
+        if (booleanExpression == null) {
+            return;
+        }
+        booleanExpression.setParent(this);
         this.booleanExpression = booleanExpression;
     }
 
@@ -54,13 +57,8 @@ public class WhileStatementWrapper extends CompositeStatementWrapper {
     public List<? extends ASTNodeWrapper> getAstChildren() {
         List<ASTNodeWrapper> astNodeWrappers = new ArrayList<ASTNodeWrapper>();
         astNodeWrappers.add(booleanExpression);
-        astNodeWrappers.add(loopBlock);
+        astNodeWrappers.addAll(super.getAstChildren());
         return astNodeWrappers;
-    }
-
-    @Override
-    public BlockStatementWrapper getBlock() {
-        return loopBlock;
     }
 
     @Override
@@ -69,20 +67,24 @@ public class WhileStatementWrapper extends CompositeStatementWrapper {
     }
 
     @Override
+    public boolean isInputEditatble() {
+        return true;
+    }
+
+    @Override
     public ASTNodeWrapper getInput() {
-        return this.getBooleanExpression();
+        return getBooleanExpression();
     }
 
     @Override
     public String getInputText() {
-        return this.getInput().getText();
+        return getInput().getText();
     }
 
     @Override
     public boolean updateInputFrom(ASTNodeWrapper input) {
-        if (input instanceof BooleanExpressionWrapper
-                && !AstTreeTableValueUtil.compareAstNode(input, this.getBooleanExpression())) {
-            this.setBooleanExpression((BooleanExpressionWrapper) input);
+        if (input instanceof BooleanExpressionWrapper && !getBooleanExpression().isEqualsTo(input)) {
+            setBooleanExpression((BooleanExpressionWrapper) input);
             return true;
         }
         return false;

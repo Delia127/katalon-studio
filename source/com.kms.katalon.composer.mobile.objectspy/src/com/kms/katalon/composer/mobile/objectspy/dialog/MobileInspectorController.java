@@ -1,8 +1,5 @@
 package com.kms.katalon.composer.mobile.objectspy.dialog;
 
-import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.ios.IOSDriver;
-
 import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -22,7 +19,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
-import com.google.gson.Gson;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.mobile.constants.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
@@ -40,6 +36,9 @@ import com.kms.katalon.execution.configuration.impl.DefaultExecutionSetting;
 import com.kms.katalon.execution.mobile.driver.MobileDriverConnector;
 import com.kms.katalon.execution.mobile.util.MobileExecutionUtil;
 import com.kms.katalon.execution.util.ExecutionUtil;
+
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.ios.IOSDriver;
 
 public class MobileInspectorController {
 
@@ -82,15 +81,8 @@ public class MobileInspectorController {
                     driverConnectors));
             RunConfiguration.setAppiumLogFilePath(projectDir + File.separator + "appium.log");
 
-            switch (os) {
-            case ANDROID:
-                MobileDriverFactory.startAndroidDriver(deviceId, appFile, uninstallAfterCloseApp);
-                break;
-            case IOS:
-                MobileDriverFactory.startIosDriver(deviceId, appFile, uninstallAfterCloseApp);
-                break;
-            }
-
+            MobileDriverFactory.startMobileDriver(os, deviceId, appFile, uninstallAfterCloseApp);
+            
             driver = MobileDriverFactory.getDriver();
     }
 
@@ -142,9 +134,7 @@ public class MobileInspectorController {
                 @SuppressWarnings("unchecked")
                 Map<Object, Object> map = (Map<Object, Object>) driver
                         .executeScript("UIATarget.localTarget().frontMostApp().getTree()");
-                Gson gson = new Gson();
-                JSONObject jsonObject = new JSONObject(gson.toJson(map));
-                // JSONObject jsonObject = new JSONObject(map);
+                JSONObject jsonObject = new JSONObject(map);
                 renderTree(jsonObject, htmlMobileElementRootNode);
             } else {
                 String pageSource = driver.getPageSource();

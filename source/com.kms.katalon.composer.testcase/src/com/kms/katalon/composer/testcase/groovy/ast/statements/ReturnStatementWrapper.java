@@ -8,6 +8,10 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrappe
 
 public class ReturnStatementWrapper extends StatementWrapper {
     private ExpressionWrapper expression;
+    
+    public ReturnStatementWrapper() {
+        this(null);
+    }
 
     public ReturnStatementWrapper(ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
@@ -29,6 +33,10 @@ public class ReturnStatementWrapper extends StatementWrapper {
     }
 
     public void setExpression(ExpressionWrapper expression) {
+        if (expression == null) {
+            return;
+        }
+        expression.setParent(this);
         this.expression = expression;
     }
 
@@ -40,6 +48,36 @@ public class ReturnStatementWrapper extends StatementWrapper {
     @Override
     public ReturnStatementWrapper clone() {
         return new ReturnStatementWrapper(this, getParent());
+    }
+    
+    @Override
+    public boolean isInputEditatble() {
+        return true;
+    }
+
+    @Override
+    public String getInputText() {
+        if (expression == null) {
+            return "";
+        }
+        return expression.getText();
+    }
+
+    @Override
+    public ASTNodeWrapper getInput() {
+        return expression;
+    }
+
+    @Override
+    public boolean updateInputFrom(ASTNodeWrapper input) {
+        if (input == null || !(input instanceof ExpressionWrapper)) {
+            return false;
+        }
+        if (expression.isEqualsTo(input)) {
+            return false;
+        }
+        setExpression((ExpressionWrapper) input);
+        return true;
     }
 
 }

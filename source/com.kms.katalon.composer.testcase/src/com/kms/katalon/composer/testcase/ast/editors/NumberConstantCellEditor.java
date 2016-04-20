@@ -18,7 +18,7 @@ public class NumberConstantCellEditor extends NumberCellEditor {
     protected void doSetValue(Object value) {
         Assert.isTrue(value instanceof ConstantExpressionWrapper
                 && ((ConstantExpressionWrapper) value).getValue() instanceof Number);
-        constantExpression = (ConstantExpressionWrapper) value;
+        constantExpression = ((ConstantExpressionWrapper) value).clone();
         super.doSetValue(String.valueOf(((ConstantExpressionWrapper) value).getValue()));
     }
 

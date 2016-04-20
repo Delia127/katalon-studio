@@ -41,26 +41,14 @@ public class TernaryExpressionWrapper extends ExpressionWrapper {
         return booleanExpression;
     }
 
-    public void setBooleanExpression(BooleanExpressionWrapper booleanExpression) {
-        this.booleanExpression = booleanExpression;
-    }
-
     public ExpressionWrapper getTrueExpression() {
         return trueExpression;
-    }
-
-    public void setTrueExpression(ExpressionWrapper trueExpression) {
-        this.trueExpression = trueExpression;
     }
 
     public ExpressionWrapper getFalseExpression() {
         return falseExpression;
     }
-
-    public void setFalseExpression(ExpressionWrapper falseExpression) {
-        this.falseExpression = falseExpression;
-    }
-
+    
     @Override
     public String getText() {
         return "(" + booleanExpression.getText() + ") ? " + trueExpression.getText() + " : "
