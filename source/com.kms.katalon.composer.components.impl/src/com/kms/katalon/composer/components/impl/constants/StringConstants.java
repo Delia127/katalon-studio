@@ -23,6 +23,10 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_IMAGE_SEARCH_TOOLTIP = SEARCH;
     public static final String DIA_IMAGE_CLOSE_SEARCH_TOOLTIP = CLEAR;
     public static final String DIA_KEYWORD_SEARCH_ALL = "all";
+    
+    // MultiStatusErrorDialog
+    public static final String DIA_TITLE_DETAILS = "Details";
+    public static final String DIA_TITLE_REASON = "Reason:";
 
     // FolderTreeEntity
     public static final String TREE_FOLDER_TYPE_NAME = FOLDER;
