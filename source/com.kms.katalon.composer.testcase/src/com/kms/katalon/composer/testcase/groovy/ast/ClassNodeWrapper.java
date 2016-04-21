@@ -3,6 +3,7 @@ package com.kms.katalon.composer.testcase.groovy.ast;
 import groovyjarjarasm.asm.Opcodes;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.FieldNode;
 import org.codehaus.groovy.ast.ImportNode;
 import org.codehaus.groovy.ast.MethodNode;
+import org.codehaus.groovy.ast.ModuleNode;
 
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 
@@ -64,12 +66,40 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
                 genericsTypes[index] = new GenericsTypeWrapper(classNode.getGenericsTypes()[index], this);
             }
         }
-        imports.clear();
         if (classNode.getModule() != null) {
-            for (ImportNode importNode : classNode.getModule().getImports()) {
-                imports.add(new ImportNodeWrapper(importNode, this));
-            }
+            copyImports(classNode);
         }
+        copyMethods(classNode);
+        copyFields(classNode);
+    }
+
+    private void copyFields(ClassNode classNode) {
+        fields.clear();
+        for (FieldNode fieldNode : classNode.getFields()) {
+            if (fieldNode.getLineNumber() < 0) {
+                continue;
+            }
+            fields.add(new FieldNodeWrapper(fieldNode, this));
+        }
+    }
+
+    private void copyMethods(ClassNode classNode) {
+        methods.clear();
+        for (MethodNode method : classNode.getMethods()) {
+            if (method.getLineNumber() < 0 || ("run".equals(method.getName()))) {
+                continue;
+            }
+            methods.add(new MethodNodeWrapper(method, this));
+        }
+    }
+
+    private void copyImports(ClassNode classNode) {
+        imports.clear();
+        ModuleNode module = classNode.getModule();
+        addImportNodeWrappers(module.getImports());
+        addImportNodeWrappers(module.getStaticImports().values());
+        addImportNodeWrappers(module.getStarImports());
+        addImportNodeWrappers(module.getStaticStarImports().values());
         // sort import base on start line
         Collections.sort(imports, new Comparator<ImportNodeWrapper>() {
             @Override
@@ -78,19 +108,11 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
             }
 
         });
-        methods.clear();
-        for (MethodNode method : classNode.getMethods()) {
-            if (method.getLineNumber() < 0 || method.getName().equals("run")) {
-                continue;
-            }
-            methods.add(new MethodNodeWrapper(method, this));
-        }
-        fields.clear();
-        for (FieldNode fieldNode : classNode.getFields()) {
-            if (fieldNode.getLineNumber() < 0) {
-                continue;
-            }
-            fields.add(new FieldNodeWrapper(fieldNode, this));
+    }
+
+    private void addImportNodeWrappers(Collection<ImportNode> importsList) {
+        for (ImportNode importNode : importsList) {
+            imports.add(new ImportNodeWrapper(importNode, this));
         }
     }
 
