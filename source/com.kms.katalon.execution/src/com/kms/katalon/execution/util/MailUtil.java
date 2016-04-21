@@ -17,6 +17,7 @@ import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailAttachment;
@@ -109,9 +110,9 @@ public class MailUtil {
         Integer failed = (Integer) suitesSummaryForEmail.get(0)[2];
         Integer error = (Integer) suitesSummaryForEmail.get(0)[3];
         // Integer incomplete = (Integer) suitesSummaryForEmail.get(0)[4];
-        String hostName = String.valueOf(suitesSummaryForEmail.get(0)[5]);
-        String os = String.valueOf(suitesSummaryForEmail.get(0)[6]);
-        String browser = String.valueOf(suitesSummaryForEmail.get(0)[7]);
+        String hostName = ObjectUtils.toString(suitesSummaryForEmail.get(0)[5]);
+        String os = ObjectUtils.toString(suitesSummaryForEmail.get(0)[6]);
+        String browser = ObjectUtils.toString(suitesSummaryForEmail.get(0)[7]);
 
         // Prepare email message
         String htmlMessage = MessageFormat.format(EMAIL_HTML_TEMPLATE, hostName, os, browser, suiteName, passed,
