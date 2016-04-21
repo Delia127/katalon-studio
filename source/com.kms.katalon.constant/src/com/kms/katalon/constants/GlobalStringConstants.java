@@ -92,6 +92,8 @@ public class GlobalStringConstants {
 
     public static final String EMPTY = "";
 
+    public static final String PROPERTIES = "Properties";
+
     // Dialog Title
     public static final String CONFIRMATION = "Confirmation";
 

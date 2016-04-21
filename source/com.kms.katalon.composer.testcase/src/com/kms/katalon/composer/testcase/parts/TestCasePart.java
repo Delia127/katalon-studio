@@ -14,9 +14,7 @@ import org.eclipse.e4.ui.model.application.ui.MGenericTile;
 import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.action.ToolBarManager;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TreeColumnLayout;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -33,8 +31,6 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -44,24 +40,18 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.TreeItem;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.composer.components.impl.control.ImageButton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPart;
-import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.composer.testcase.ast.treetable.AstMethodTreeTableNode;
@@ -96,33 +86,15 @@ import com.kms.katalon.entity.variable.VariableEntity;
 
 public class TestCasePart implements IComposerPart, EventHandler {
 
-    private Text textTestCaseName;
-
-    private Text textTestCaseDescription;
-
-    private Text textTestCaseComment;
-
-    private Text textTestCaseTag;
-
-    private Text lblTestCaseIDContain;
-
-    private Composite compositeManual, compositeToolbar, compositeMain, compositeInformation, compositeDetails,
-            compositeInformationHeader, compositeTable, compositeVisualizer, compositeInformationDetails,
-            compositeSteps;
-
-    private ImageButton btnExpandVisualizer, btnExpandGeneralInformation;
+    private Composite compositeManual;
 
     private ToolItem tltmRecord, tltmAddStep, tltmInsertStep, tltmRemoveStep, tltmUp, tltmDown;
-
-    private boolean isInfoExpanded, isVisualExpanded;
 
     TreeViewer treeTable;
 
     private MPart mPart;
 
     private TestCaseTreeTableInput treeTableInput;
-
-    private Composite composite;
 
     public MPart getMPart() {
         return mPart;
@@ -134,16 +106,6 @@ public class TestCasePart implements IComposerPart, EventHandler {
     private TestCaseSelectionListener selectionListener;
 
     private TestCaseCompositePart parentTestCaseCompositePart;
-
-    private Listener layoutGeneralCompositeListener = new Listener() {
-
-        @Override
-        public void handleEvent(org.eclipse.swt.widgets.Event event) {
-            layoutGeneralComposite();
-        }
-    };
-
-    private Label lblGeneralInformation;
 
     @PostConstruct
     public void init(Composite parent, MPart mpart) {
@@ -161,57 +123,6 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
         registerEventBrokerListeners();
         createControls(parent);
-        updateInput();
-        registerControlModifyListener();
-    }
-
-    private void layoutGeneralComposite() {
-        updateCompositeInfoLayOut();
-    }
-
-    private void registerControlModifyListener() {
-        lblGeneralInformation.addListener(SWT.MouseDown, layoutGeneralCompositeListener);
-        btnExpandGeneralInformation.addListener(SWT.MouseDown, layoutGeneralCompositeListener);
-
-        textTestCaseName.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                String text = ((Text) e.getSource()).getText();
-                getTestCase().setName(text);
-                setDirty(true);
-            }
-        });
-
-        textTestCaseTag.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                String text = ((Text) e.getSource()).getText();
-                getTestCase().setTag(text);
-                setDirty(true);
-            }
-        });
-
-        textTestCaseDescription.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                String text = ((Text) e.getSource()).getText();
-                getTestCase().setDescription(text);
-                setDirty(true);
-            }
-        });
-
-        textTestCaseComment.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                String text = ((Text) e.getSource()).getText();
-                getTestCase().setComment(text);
-                setDirty(true);
-            }
-        });
     }
 
     @Focus
@@ -236,9 +147,6 @@ public class TestCasePart implements IComposerPart, EventHandler {
     }
 
     private void createControls(Composite parent) {
-        isInfoExpanded = true;
-        isVisualExpanded = true;
-
         parent.setLayout(new FillLayout(SWT.HORIZONTAL));
         createTabManual(parent);
     }
@@ -247,23 +155,24 @@ public class TestCasePart implements IComposerPart, EventHandler {
         compositeManual = new Composite(parent, SWT.NONE);
         compositeManual.setLayout(new GridLayout(1, false));
 
-        createTestCaseManualToolbar();
+        createTestCaseManualToolbar(compositeManual);
 
-        compositeMain = new Composite(compositeManual, SWT.NONE);
+        Composite compositeMain = new Composite(compositeManual, SWT.NONE);
         GridLayout glCompositeMain = new GridLayout(1, false);
         glCompositeMain.marginWidth = 0;
         glCompositeMain.marginHeight = 0;
         compositeMain.setLayout(glCompositeMain);
         compositeMain.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        createTestCaseManualInfoControls();
+        Composite compositeDetails = new Composite(compositeMain, SWT.NONE);
+        compositeDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        compositeDetails.setLayout(new FormLayout());
 
-        createTestCaseManualDetailsControls();
+        createTestCaseManualTableControls(compositeDetails);
     }
 
-    private void createTestCaseManualToolbar() {
-        compositeToolbar = new Composite(compositeManual, SWT.NONE);
-        compositeToolbar.setBackground(ColorUtil.getCompositeBackgroundColor());
+    private void createTestCaseManualToolbar(Composite parent) {
+        Composite compositeToolbar = new Composite(parent, SWT.NONE);
         compositeToolbar.setLayout(new FillLayout(SWT.HORIZONTAL));
         GridData gd_compositeToolbar = new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1);
         gd_compositeToolbar.exclude = true;
@@ -277,130 +186,8 @@ public class TestCasePart implements IComposerPart, EventHandler {
         tltmRecord.setToolTipText(StringConstants.PA_TOOLBAR_TIP_RECORD_TEST);
     }
 
-    private void createTestCaseManualInfoControls() {
-
-        compositeInformation = new Composite(compositeMain, SWT.NONE);
-        compositeInformation.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        compositeInformation.setBackground(ColorUtil.getCompositeBackgroundColor());
-        GridLayout glCompositeInformation = new GridLayout(1, false);
-        glCompositeInformation.marginHeight = 0;
-        glCompositeInformation.marginWidth = 0;
-        glCompositeInformation.verticalSpacing = 0;
-        compositeInformation.setLayout(glCompositeInformation);
-
-        compositeInformationHeader = new Composite(compositeInformation, SWT.NONE);
-        GridLayout glCompositeInformationHeader = new GridLayout(2, false);
-        glCompositeInformationHeader.marginWidth = 0;
-        glCompositeInformationHeader.marginHeight = 0;
-        compositeInformationHeader.setLayout(glCompositeInformationHeader);
-        compositeInformationHeader.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        compositeInformationHeader.setCursor(compositeInformationHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
-
-        btnExpandGeneralInformation = new ImageButton(compositeInformationHeader, SWT.NONE);
-        btnExpandGeneralInformation.setImage(ImageConstants.IMG_16_ARROW_UP_BLACK);
-
-        lblGeneralInformation = new Label(compositeInformationHeader, SWT.NONE);
-        lblGeneralInformation.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        lblGeneralInformation.setText(StringConstants.PA_LBL_GENERAL_INFO);
-        lblGeneralInformation.setFont(JFaceResources.getFontRegistry().getBold(""));
-
-        compositeInformationDetails = new Composite(compositeInformation, SWT.NONE);
-        GridLayout glCompositeInformationDetails = new GridLayout(3, true);
-        glCompositeInformationDetails.marginWidth = 40;
-        glCompositeInformationDetails.horizontalSpacing = 30;
-        compositeInformationDetails.setLayout(glCompositeInformationDetails);
-        compositeInformationDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        compositeInformationDetails.setBounds(0, 0, 64, 64);
-
-        Composite compositeIDAndName = new Composite(compositeInformationDetails, SWT.NONE);
-        GridData gd_compositeIDAndName = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-        gd_compositeIDAndName.minimumWidth = 250;
-        compositeIDAndName.setLayoutData(gd_compositeIDAndName);
-        GridLayout glCompositeIDAndName = new GridLayout(2, false);
-        glCompositeIDAndName.verticalSpacing = 10;
-        compositeIDAndName.setLayout(glCompositeIDAndName);
-
-        Label lblTestCaseID = new Label(compositeIDAndName, SWT.NONE);
-        lblTestCaseID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-        lblTestCaseID.setText(StringConstants.PA_LBL_ID);
-
-        lblTestCaseIDContain = new Text(compositeIDAndName, SWT.BORDER);
-        lblTestCaseIDContain.setEditable(false);
-        GridData gd_lblTestCaseIDContain = new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1);
-        gd_lblTestCaseIDContain.heightHint = 20;
-        lblTestCaseIDContain.setLayoutData(gd_lblTestCaseIDContain);
-
-        Label lblTestCaseName = new Label(compositeIDAndName, SWT.NONE);
-        lblTestCaseName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-        lblTestCaseName.setText(StringConstants.PA_LBL_NAME);
-
-        textTestCaseName = new Text(compositeIDAndName, SWT.BORDER);
-        GridData gdTextTestCaseName = new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1);
-        gdTextTestCaseName.heightHint = 20;
-        textTestCaseName.setLayoutData(gdTextTestCaseName);
-
-        Composite compositeCommendAndTag = new Composite(compositeInformationDetails, SWT.NONE);
-        GridData gd_compositeCommendAndTag = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-        gd_compositeCommendAndTag.minimumWidth = 250;
-        compositeCommendAndTag.setLayoutData(gd_compositeCommendAndTag);
-        GridLayout glCompositeCommendAndTag = new GridLayout(2, false);
-        glCompositeCommendAndTag.verticalSpacing = 10;
-        compositeCommendAndTag.setLayout(glCompositeCommendAndTag);
-
-        Label lblTestDataId = new Label(compositeCommendAndTag, SWT.NONE);
-        lblTestDataId.setText(StringConstants.PA_LBL_COMMENT);
-
-        composite = new Composite(compositeCommendAndTag, SWT.NONE);
-        composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        GridLayout glComposite = new GridLayout(1, false);
-        glComposite.marginWidth = 0;
-        glComposite.marginHeight = 0;
-        glComposite.horizontalSpacing = 1;
-        composite.setLayout(glComposite);
-
-        textTestCaseComment = new Text(composite, SWT.BORDER);
-        GridData gdTextTestCaseComment = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-        gdTextTestCaseComment.heightHint = 20;
-        textTestCaseComment.setLayoutData(gdTextTestCaseComment);
-
-        Label lblTestCaseTag = new Label(compositeCommendAndTag, SWT.NONE);
-        lblTestCaseTag.setText(StringConstants.PA_LBL_TAG);
-
-        textTestCaseTag = new Text(compositeCommendAndTag, SWT.BORDER);
-        GridData gdTextTag = new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1);
-        gdTextTag.heightHint = 20;
-        textTestCaseTag.setLayoutData(gdTextTag);
-
-        Composite compositeDescription = new Composite(compositeInformationDetails, SWT.NONE);
-        compositeDescription.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        compositeDescription.setLayout(new GridLayout(2, false));
-
-        Label lblDescription = new Label(compositeDescription, SWT.NONE);
-        lblDescription.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, true, 1, 1));
-        lblDescription.setText(StringConstants.PA_LBL_DESCRIPTION);
-
-        textTestCaseDescription = new Text(compositeDescription, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.WRAP);
-        GridData gdTextDescription = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2);
-        gdTextDescription.heightHint = 60;
-        textTestCaseDescription.setLayoutData(gdTextDescription);
-
-        Label lblSupport = new Label(compositeDescription, SWT.NONE);
-        lblSupport.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
-    }
-
-    private void createTestCaseManualDetailsControls() {
-        compositeDetails = new Composite(compositeMain, SWT.NONE);
-        compositeDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        compositeDetails.setLayout(new FormLayout());
-        compositeDetails.setBackground(ColorUtil.getCompositeBackgroundColor());
-
-        createTestCaseManualTableControls();
-
-        // createTestCaseManualVisualizer();
-    }
-
-    private void createTestCaseManualTableControls() {
-        compositeSteps = new Composite(compositeDetails, SWT.NONE);
+    private void createTestCaseManualTableControls(Composite parent) {
+        Composite compositeSteps = new Composite(parent, SWT.NONE);
         compositeSteps.setLayoutData(new FormData());
         GridLayout glCompositeSteps = new GridLayout(1, false);
         glCompositeSteps.marginWidth = 0;
@@ -469,7 +256,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
         tltmDown.setImage(ImageConstants.IMG_24_DOWN);
         tltmDown.addSelectionListener(selectionListener);
 
-        compositeTable = new Composite(compositeSteps, SWT.NONE);
+        Composite compositeTable = new Composite(compositeSteps, SWT.NONE);
         compositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
         treeTable = new TreeViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
@@ -708,79 +495,6 @@ public class TestCasePart implements IComposerPart, EventHandler {
         dt.addDropListener(new TestStepTableDropListener(treeTable, this));
     }
 
-    // private void createTestCaseManualVisualizer() {
-    // compositeVisualizer = new Composite(compositeDetails, SWT.BORDER);
-    // GridLayout glCompositeVisualizer = new GridLayout(1, false);
-    // glCompositeVisualizer.marginHeight = 0;
-    // glCompositeVisualizer.marginWidth = 0;
-    // compositeVisualizer.setLayout(glCompositeVisualizer);
-    // FormData fd_compositeVisualizer = new FormData();
-    // fd_compositeVisualizer.bottom = new FormAttachment(100);
-    // fd_compositeVisualizer.right = new FormAttachment(100);
-    // fd_compositeVisualizer.top = new FormAttachment(0);
-    // fd_compositeVisualizer.left = new FormAttachment(compositeSteps);
-    //
-    // compositeVisualizer.setLayoutData(fd_compositeVisualizer);
-    //
-    // Composite compositeVisualizerHeader = new Composite(compositeVisualizer,
-    // SWT.NONE);
-    // compositeVisualizerHeader.setBackground(new Color(Display.getCurrent(),
-    // 67, 81, 90));
-    // compositeVisualizerHeader.setLayoutData(new GridData(SWT.FILL, SWT.TOP,
-    // false, false, 1, 1));
-    // GridLayout glCompositeVisualizerHeader = new GridLayout(2, false);
-    // glCompositeVisualizerHeader.marginHeight = 0;
-    // glCompositeVisualizerHeader.marginWidth = 0;
-    // compositeVisualizerHeader.setLayout(glCompositeVisualizerHeader);
-    //
-    // btnExpandVisualizer = new Button(compositeVisualizerHeader, SWT.FLAT);
-    // btnExpandVisualizer.setText(">>");
-    // btnExpandVisualizer.setForeground(ColorUtil.getTextWhiteColor());
-    // btnExpandVisualizer.setBackground(new Color(Display.getCurrent(), 67, 81,
-    // 90));
-    //
-    // Label lblVisualizerHeader = new Label(compositeVisualizerHeader,
-    // SWT.NONE);
-    // lblVisualizerHeader.setForeground(ColorUtil.getTextWhiteColor());
-    // lblVisualizerHeader.setText("Visualizer");
-    //
-    // Composite compositeVisualizerContent = new Composite(compositeVisualizer,
-    // SWT.NONE);
-    // compositeVisualizerContent.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
-    // true, true, 1, 1));
-    //
-    // btnExpandVisualizer.addSelectionListener(selectionListener);
-    // }
-
-    public void updateInput() {
-        try {
-            TestCaseEntity testCase = getTestCase();
-            // update info of TestCase
-            String dispID = testCase.getIdForDisplay().replace("\\", "/");
-            lblTestCaseIDContain.setText(dispID);
-
-            if (testCase.getName() != null) {
-                textTestCaseName.setText(testCase.getName());
-            }
-
-            if (testCase.getDescription() != null) {
-                textTestCaseDescription.setText(testCase.getDescription());
-            }
-
-            if (testCase.getComment() != null) {
-                textTestCaseComment.setText(testCase.getComment());
-            }
-
-            if (testCase.getTag() != null) {
-                textTestCaseTag.setText(testCase.getTag());
-            }
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_FAILED_TO_LOAD_TEST_CASE);
-        }
-    }
-
     public void setDirty(boolean isDirty) {
         if (mPart != null) {
             mPart.setDirty(isDirty);
@@ -919,14 +633,6 @@ public class TestCasePart implements IComposerPart, EventHandler {
         treeTableInput.addNewAstObjects(statements, treeTableInput.getSelectedNode(), addType);
     }
 
-    public void performButtonSelected(Button button) {
-        if (button.equals(btnExpandGeneralInformation)) {
-            updateCompositeInfoLayOut();
-        } else if (button.equals(btnExpandVisualizer)) {
-            updateCompositeDetailsLayout();
-        }
-    }
-
     private void changeKeywordFailureHandling(FailureHandling failureHandling) {
         treeTableInput.changeFailureHandling(failureHandling);
     }
@@ -953,49 +659,6 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
     private void pasteTestStep() {
         treeTableInput.paste(treeTableInput.getSelectedNode(), NodeAddType.Add);
-    }
-
-    private void updateCompositeDetailsLayout() {
-        if (isVisualExpanded) {
-            ((FormData) compositeSteps.getLayoutData()).right = new FormAttachment(100, 100,
-                    -btnExpandVisualizer.getBounds().width - compositeVisualizer.getBorderWidth());
-        } else {
-            ((FormData) compositeSteps.getLayoutData()).right = new FormAttachment(100, 100, -250);
-
-        }
-        Display.getDefault().timerExec(50, new Runnable() {
-
-            @Override
-            public void run() {
-                compositeDetails.layout();
-            }
-        });
-        isVisualExpanded = !isVisualExpanded;
-    }
-
-    private void updateCompositeInfoLayOut() {
-        Display.getDefault().timerExec(50, new Runnable() {
-            @Override
-            public void run() {
-                compositeInformationDetails.setVisible(!isInfoExpanded);
-                if (isInfoExpanded) {
-                    ((GridData) compositeInformationDetails.getLayoutData()).exclude = true;
-                    compositeInformation.setSize(compositeInformation.getSize().x, compositeInformation.getSize().y
-                            - compositeDetails.getSize().y);
-                } else {
-                    ((GridData) compositeInformationDetails.getLayoutData()).exclude = false;
-                }
-                compositeInformation.layout(true, true);
-                compositeInformation.getParent().layout();
-                isInfoExpanded = !isInfoExpanded;
-
-                if (isInfoExpanded) {
-                    btnExpandGeneralInformation.setImage(ImageConstants.IMG_16_ARROW_UP_BLACK);
-                } else {
-                    btnExpandGeneralInformation.setImage(ImageConstants.IMG_16_ARROW_DOWN_BLACK);
-                }
-            }
-        });
     }
 
     public TestCaseEntity getTestCase() {

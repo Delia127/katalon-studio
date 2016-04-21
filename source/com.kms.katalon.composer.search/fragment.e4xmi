@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ASCII"?>
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_JvW48ARUEeWZgKMs1tsotg">
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_rLIp4AXNEeWKnJme11lFhg" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_rLIp4AXNEeWKnJme11lFhg" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu" positionInList="after:com.kms.katalon.composer.explorer.popupmenu.refresh">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_Jif0cAXPEeWKnJme11lFhg" elementId="com.kms.katalon.composer.search.dynamicmenucontribution.showpreferences" label="Show Preferences" contributionURI="bundleclass://com.kms.katalon.composer.search/com.kms.katalon.composer.search.view.contribution.SearchMenuContribution"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_L2CZ0AXOEeWKnJme11lFhg" featurename="commands" parentElementId="com.kms.katalon.composer.application">

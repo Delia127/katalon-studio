@@ -607,7 +607,6 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
     private void dispose() {
         MPartStack mStackPart = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
         mStackPart.getChildren().remove(compositePart);
-        eventBroker.unsubscribe(childTestCasePart);
         eventBroker.unsubscribe(this);
     }
 
@@ -658,7 +657,6 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         boolean isAnyChildDirty = isAnyChildDirty();
 
         // refresh child parts
-        childTestCasePart.updateInput();
         childTestCaseVariablesPart.loadVariables();
         if (childTestCasePart.getTreeTableInput() == null) {
             setScriptContentToManual();
