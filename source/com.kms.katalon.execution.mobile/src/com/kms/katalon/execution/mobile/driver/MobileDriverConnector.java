@@ -7,9 +7,13 @@ import java.util.Map;
 import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.core.mobile.keyword.MobileDriverFactory;
 import com.kms.katalon.execution.configuration.AbstractDriverConnector;
+import com.kms.katalon.execution.mobile.constants.MobilePreferenceConstants;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
+import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
 public abstract class MobileDriverConnector extends AbstractDriverConnector {
+    private static final String APPIUM_LOG_FILE_NAME = "appium.log";
+
     protected MobileDeviceInfo device;
 
     public MobileDriverConnector(String configurationFolderPath) throws IOException {
@@ -20,7 +24,7 @@ public abstract class MobileDriverConnector extends AbstractDriverConnector {
         super(configurationFolderPath);
         setDevice(device);
     }
-    
+
     public String getDeviceId() {
         if (device == null) {
             return "";
@@ -39,9 +43,15 @@ public abstract class MobileDriverConnector extends AbstractDriverConnector {
     @Override
     public Map<String, Object> getSystemProperties() {
         Map<String, Object> systemProperties = super.getSystemProperties();
-        systemProperties.put(MobileDriverFactory.APPIUM_LOG_PROPERTY, "appium.log");
+        systemProperties.put(MobileDriverFactory.APPIUM_LOG_PROPERTY, APPIUM_LOG_FILE_NAME);
+        systemProperties.put(MobileDriverFactory.APPIUM_DIRECTORY, getAppiumDirectory());
         setDeviceSystemProperties(systemProperties);
         return systemProperties;
+    }
+
+    private Object getAppiumDirectory() {
+        return PreferenceStoreManager.getPreferenceStore(MobilePreferenceConstants.MOBILE_QUALIFIER).getString(
+                MobilePreferenceConstants.MOBILE_APPIUM_DIRECTORY);
     }
 
     private void setDeviceSystemProperties(Map<String, Object> systemProperties) {

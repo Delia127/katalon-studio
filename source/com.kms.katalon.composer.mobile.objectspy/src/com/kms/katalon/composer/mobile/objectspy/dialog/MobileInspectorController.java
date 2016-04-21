@@ -49,6 +49,8 @@ import com.kms.katalon.execution.util.ExecutionUtil;
 
 public class MobileInspectorController {
 
+    private static final int SERVER_START_TIMEOUT = 60;
+
     private AppiumDriver<?> driver;
 
     public MobileInspectorController() throws Exception {
@@ -91,10 +93,22 @@ public class MobileInspectorController {
                 driverConnectors));
         RunConfiguration.setAppiumLogFilePath(projectDir + File.separator + "appium.log");
 
-        MobileDriverFactory.startMobileDriver(mobileDeviceInfo.getDeviceId(), mobileDriverType, appFile,
+        MobileDriverFactory.startAppiumServerJS(SERVER_START_TIMEOUT,
+                getAdditionalEnvironmentVariables(mobileDriverType));
+        MobileDriverFactory.createMobileDriver(mobileDriverType, mobileDeviceInfo.getDeviceId(), appFile,
                 uninstallAfterCloseApp);
 
         driver = MobileDriverFactory.getDriver();
+    }
+
+    private Map<String, String> getAdditionalEnvironmentVariables(MobileDriverType mobileDriverType) throws IOException {
+        if (mobileDriverType == MobileDriverType.ANDROID_DRIVER) {
+            return AndroidDeviceInfo.getAndroidAdditionalEnvironmentVariables();
+        }
+        if (mobileDriverType == MobileDriverType.IOS_DRIVER) {
+            return IosDeviceInfo.getIosAdditionalEnvironmentVariables();
+        }
+        return new HashMap<String, String>();
     }
 
     private static MobileDriverType getMobileDriverType(MobileDeviceInfo mobileDeviceInfo) {
@@ -129,11 +143,13 @@ public class MobileInspectorController {
         try {
             if (driver == null) {
                 return false;
-            } else {
-                driver.quit();
-                driver = null;
             }
-        } catch (Exception e) {}
+            driver.quit();
+            MobileDriverFactory.quitServer();
+            driver = null;
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
         return true;
     }
 

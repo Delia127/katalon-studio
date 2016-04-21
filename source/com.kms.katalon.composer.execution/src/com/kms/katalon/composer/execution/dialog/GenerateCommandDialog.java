@@ -600,6 +600,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         return devicesNameList;
     }
 
+
     @Override
     protected void buttonPressed(int buttonId) {
         switch (buttonId) {

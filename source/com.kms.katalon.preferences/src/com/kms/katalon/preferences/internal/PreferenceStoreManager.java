@@ -20,7 +20,7 @@ public class PreferenceStoreManager {
         }
         return initialPreferenceStore(qualifier);
     }
-
+    
     private static ScopedPreferenceStore initialPreferenceStore(String qualifier) {
         ScopedPreferenceStore pref = new ScopedPreferenceStore(InstanceScope.INSTANCE, qualifier);
         loadedPreferenceStore.put(pref);

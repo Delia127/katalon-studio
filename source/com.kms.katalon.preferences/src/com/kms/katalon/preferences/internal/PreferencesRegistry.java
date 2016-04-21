@@ -108,7 +108,9 @@ public class PreferencesRegistry {
                         continue;
                     }
                     page = (PreferencePage) object;
-                    setPreferenceStore(bundleId, page);
+                    if (page.getPreferenceStore() == null) {
+                        setPreferenceStore(bundleId, page);
+                    }
 
                 } catch (ClassNotFoundException e) {
                     logger.error(e);
@@ -179,6 +181,7 @@ public class PreferencesRegistry {
     }
 
     private void setPreferenceStore(String bundleId, PreferencePage page) {
+        
         // Affect preference store to this page if this is a
         // PreferencePage, else, must manage it internally
         // Set the issue#1 on github :
