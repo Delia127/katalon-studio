@@ -8,15 +8,16 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
+import com.kms.katalon.core.mobile.exception.MobileSetupException;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.StringConsoleOption;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.mobile.configuration.MobileRunConfiguration;
+import com.kms.katalon.execution.mobile.configuration.providers.MobileDeviceProvider;
 import com.kms.katalon.execution.mobile.constants.StringConstants;
-import com.kms.katalon.execution.mobile.driver.MobileDevice;
-import com.kms.katalon.execution.mobile.util.MobileExecutionUtil;
+import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 
 public abstract class MobileRunConfigurationContributor implements IRunConfigurationContributor {
     private String deviceName;
@@ -40,7 +41,12 @@ public abstract class MobileRunConfigurationContributor implements IRunConfigura
             throw new ExecutionException(StringConstants.MOBILE_ERR_NO_DEVICE_NAME_AVAILABLE);
         }
         MobileRunConfiguration runConfiguration = getMobileRunConfiguration(projectDir);
-        MobileDevice device = MobileExecutionUtil.getDevice(getMobileDriverType(), deviceName);
+        MobileDeviceInfo device = null;
+        try {   
+            device = MobileDeviceProvider.getDevice(getMobileDriverType(), deviceName);
+        } catch (MobileSetupException e) {
+            throw new ExecutionException(e.getMessage());
+        }
         if (device == null) {
             throw new ExecutionException(MessageFormat.format(
                     StringConstants.MOBILE_ERR_CANNOT_FIND_DEVICE_WITH_NAME_X, deviceName));

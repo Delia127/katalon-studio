@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.mobile.dialog;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
@@ -14,12 +13,12 @@ import org.eclipse.swt.widgets.Shell;
 import com.kms.katalon.composer.mobile.component.DeviceSelectionComposite;
 import com.kms.katalon.composer.mobile.constants.StringConstants;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
-import com.kms.katalon.execution.mobile.driver.MobileDevice;
+import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 
 public class DeviceSelectionDialog extends TitleAreaDialog {
     private MobileDriverType platform;
     private DeviceSelectionComposite deviceSelectionComposite;
-    private MobileDevice device;
+    private MobileDeviceInfo device;
 
     public DeviceSelectionDialog(Shell parentShell, MobileDriverType platform) {
         super(parentShell);
@@ -41,7 +40,7 @@ public class DeviceSelectionDialog extends TitleAreaDialog {
     }
 
     private void updateStatus() {
-        super.getButton(OK).setEnabled(!StringUtils.isBlank(deviceSelectionComposite.getSelectedDeviceId()));
+        super.getButton(OK).setEnabled(deviceSelectionComposite.getSelectedDevice() != null);
     }
 
     @Override
@@ -68,7 +67,7 @@ public class DeviceSelectionDialog extends TitleAreaDialog {
         super.okPressed();
     }
 
-    public MobileDevice getDevice() {
+    public MobileDeviceInfo getDevice() {
         return device;
     }
 }

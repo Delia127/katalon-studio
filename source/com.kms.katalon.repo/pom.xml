@@ -139,6 +139,12 @@
 								<artifact>
 									<id>net.sf.jopt-simple:jopt-simple:5.0</id>
 								</artifact>
+								<artifact>
+									<id>commons-collections:commons-collections:3.2.2</id>
+								</artifact>
+								<artifact>
+									<id>commons-validator:commons-validator:1.5.0</id>
+								</artifact>
 							</artifacts>
 						</configuration>
 					</execution>

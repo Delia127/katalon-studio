@@ -87,7 +87,8 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener {
 
                     launchRemoved = false;
 
-                    ILaunch expectedLaunch = new IDELaunchShorcut().launch(scriptFile, mode);
+                    ILaunch expectedLaunch = new IDELaunchShorcut().launch(scriptFile, mode,
+                            runConfig.getAdditionalEnvironmentVariables());
 
                     launch = (launchRemoved) ? null : expectedLaunch;
                 }
@@ -220,8 +221,8 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener {
     }
 
     /**
-     * Handles the case that user cancels the launch progress. </br> Called in the phase that our launch is not returned
-     * at {@link #launch()}.
+     * Handles the case that user cancels the launch progress. </br> Called in
+     * the phase that our launch is not returned at {@link #launch()}.
      */
     @Override
     public void launchRemoved(ILaunch launch) {

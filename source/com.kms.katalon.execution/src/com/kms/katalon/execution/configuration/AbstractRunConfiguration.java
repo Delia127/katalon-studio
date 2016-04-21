@@ -2,6 +2,7 @@ package com.kms.katalon.execution.configuration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -151,5 +152,10 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         Gson gsonObj = new Gson();
         String strJson = gsonObj.toJson(getProperties());
         FileUtils.writeStringToFile(settingFile, strJson);
+    }
+    
+    @Override
+    public Map<String, String> getAdditionalEnvironmentVariables() throws IOException {
+        return new HashMap<>();
     }
 }

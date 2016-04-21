@@ -7,15 +7,15 @@ import java.util.Map;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.configuration.IDriverConnector;
-import com.kms.katalon.execution.mobile.driver.MobileDevice;
+import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 import com.kms.katalon.execution.mobile.driver.MobileDriverConnector;
 
 public abstract class MobileRunConfiguration extends AbstractRunConfiguration {
     protected MobileDriverConnector mobileDriverConnector;
-    protected String projectDir;    
-    
-    public MobileRunConfiguration(String projectDir, MobileDriverConnector mobileDriverConnector)
-            throws IOException {
+
+    protected String projectDir;
+
+    public MobileRunConfiguration(String projectDir, MobileDriverConnector mobileDriverConnector) throws IOException {
         super();
         this.mobileDriverConnector = mobileDriverConnector;
         this.projectDir = projectDir;
@@ -33,11 +33,11 @@ public abstract class MobileRunConfiguration extends AbstractRunConfiguration {
         return super.getName() + " - " + mobileDriverConnector.getDeviceId();
     }
 
-    public void setDevice(MobileDevice device) {
+    public void setDevice(MobileDeviceInfo device) {
         mobileDriverConnector.setDevice(device);
     }
-    
-    public MobileDevice getDevice() {
+
+    public MobileDeviceInfo getDevice() {
         return mobileDriverConnector.getDevice();
     }
 }

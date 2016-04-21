@@ -228,10 +228,16 @@ public class RunConfiguration {
         return settingFilePath;
     }
 
+    public static String getLogFolderPath() {
+        String logFilePath = RunConfiguration.getSettingFilePath();
+        return (logFilePath != null) ? new File(logFilePath).getParentFile().getAbsolutePath() : "";
+    }
+
     public static String getAppiumLogFilePath() {
         if (StringUtils.isBlank(localAppiumDriverStores.get())) {
-            localAppiumDriverStores.set(RunConfiguration.getDriverSystemProperty(
-                    StringConstants.CONF_PROPERTY_MOBILE_DRIVER, StringConstants.CONF_APPIUM_LOG_FILE));
+            String appiumLogFilePath = getLogFolderPath() + File.separator + RunConfiguration.getDriverSystemProperty(
+                    StringConstants.CONF_PROPERTY_MOBILE_DRIVER, StringConstants.CONF_APPIUM_LOG_FILE);
+            localAppiumDriverStores.set(appiumLogFilePath);
         }
         return localAppiumDriverStores.get();
     }
