@@ -1,5 +1,8 @@
 package com.kms.katalon.custom.keyword;
 
+import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.core.testobject.TestObject;
+
 public class KeywordParameter {
     private String name;
     private Class<?> type;
@@ -23,5 +26,17 @@ public class KeywordParameter {
 
     public void setType(Class<?> type) {
         this.type = type;
+    }
+    
+    public boolean isHTMLParam() {
+        return !isTestObjectParam() && !isFailureHandlingParam();
+    }
+
+    public boolean isTestObjectParam() {
+        return TestObject.class.getName().equals(getType().getName());
+    }
+
+    public boolean isFailureHandlingParam() {
+        return FailureHandling.class.getName().equals(getType().getName());
     }
 }

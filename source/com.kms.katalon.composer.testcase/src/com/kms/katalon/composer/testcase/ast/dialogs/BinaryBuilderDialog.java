@@ -14,6 +14,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.TokenWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BinaryExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.providers.AstContentProviderAdapter;
+import com.kms.katalon.composer.testcase.model.InputValueTypeUtil;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
@@ -26,9 +27,7 @@ public class BinaryBuilderDialog extends AbstractAstBuilderWithTableDialog {
 
     private static final String LEFT_EXPRESSION_LABEL = "Left Expression";
 
-    private static final InputValueType[] defaultValueTypes = { InputValueType.String, InputValueType.Number,
-            InputValueType.Boolean, InputValueType.Null, InputValueType.Variable, InputValueType.MethodCall,
-            InputValueType.Binary, InputValueType.GlobalVariable, InputValueType.TestDataValue, InputValueType.Property };
+    private static final InputValueType[] defaultValueTypes = InputValueTypeUtil.getValueTypeOptions(InputValueType.Binary);
 
     private BinaryExpressionWrapper binaryExpressionWrapper;
 

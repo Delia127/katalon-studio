@@ -26,7 +26,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.statements.ThrowStatementWra
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstValueUtil;
 
-public enum InputValueType {
+public enum InputValueType implements InputValueEditorProvider {
     String,
     Number,
     Boolean,
@@ -138,7 +138,7 @@ public enum InputValueType {
         }
         return null;
     }
-
+    
     public Object getNewValue(ASTNodeWrapper parent) {
         switch (this) {
             case String:
@@ -230,5 +230,15 @@ public enum InputValueType {
             return AstEntityInputUtil.getTextValueForTestDataValueArgument(methodCall);
         }
         return methodCall.getText();
+    }
+    
+    @Override
+    public Object newValue() {
+        return getNewValue(null);
+    }
+
+    @Override
+    public ASTNodeWrapper toASTNodeWrapper(Object rawValue) {
+        return (rawValue instanceof ASTNodeWrapper) ? (ASTNodeWrapper) rawValue : null;
     }
 }

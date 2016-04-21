@@ -21,6 +21,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpres
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.PropertyExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputParameter;
 import com.kms.katalon.composer.testcase.model.InputValueType;
+import com.kms.katalon.composer.testcase.model.InputValueTypeUtil;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
@@ -33,11 +34,7 @@ import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 public class ArgumentInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
-    private final InputValueType[] defaultInputValueTypes = { InputValueType.String, InputValueType.Number,
-            InputValueType.Boolean, InputValueType.Null, InputValueType.Variable, InputValueType.GlobalVariable,
-            InputValueType.TestDataValue, InputValueType.Binary, InputValueType.Condition, InputValueType.TestCase,
-            InputValueType.TestData, InputValueType.TestObject, InputValueType.MethodCall, InputValueType.Property,
-            InputValueType.List, InputValueType.Map, InputValueType.Keys };
+    private final InputValueType[] defaultInputValueTypes = InputValueTypeUtil.getValueTypeOptions(InputValueTypeUtil.ARGUMENT_OPTIONS);
 
     private List<InputParameter> inputParameters;
 
