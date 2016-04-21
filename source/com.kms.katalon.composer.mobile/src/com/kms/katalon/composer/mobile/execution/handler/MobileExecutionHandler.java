@@ -14,12 +14,12 @@ import com.kms.katalon.composer.mobile.constants.StringConstants;
 import com.kms.katalon.composer.mobile.dialog.DeviceSelectionDialog;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
-import com.kms.katalon.core.mobile.exception.MobileSetupException;
 import com.kms.katalon.execution.mobile.configuration.providers.MobileDeviceProvider;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 import com.kms.katalon.execution.mobile.driver.AndroidDriverConnector;
 import com.kms.katalon.execution.mobile.driver.IosDriverConnector;
 import com.kms.katalon.execution.mobile.exception.DeviceNameNotFoundException;
+import com.kms.katalon.execution.mobile.exception.MobileSetupException;
 
 public abstract class MobileExecutionHandler extends AbstractExecutionHandler {
     protected static MobileDeviceInfo getDevice(MobileDriverType platform) {

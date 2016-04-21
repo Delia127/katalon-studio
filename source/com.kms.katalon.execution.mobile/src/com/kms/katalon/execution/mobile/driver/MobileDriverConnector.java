@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.kms.katalon.core.mobile.constants.StringConstants;
-import com.kms.katalon.core.mobile.keyword.MobileDriverFactory;
 import com.kms.katalon.execution.configuration.AbstractDriverConnector;
 import com.kms.katalon.execution.mobile.constants.MobilePreferenceConstants;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
@@ -43,8 +42,8 @@ public abstract class MobileDriverConnector extends AbstractDriverConnector {
     @Override
     public Map<String, Object> getSystemProperties() {
         Map<String, Object> systemProperties = super.getSystemProperties();
-        systemProperties.put(MobileDriverFactory.APPIUM_LOG_PROPERTY, APPIUM_LOG_FILE_NAME);
-        systemProperties.put(MobileDriverFactory.APPIUM_DIRECTORY, getAppiumDirectory());
+        systemProperties.put(StringConstants.CONF_APPIUM_LOG_FILE, APPIUM_LOG_FILE_NAME);
+        systemProperties.put(StringConstants.CONF_APPIUM_DIRECTORY, getAppiumDirectory());
         setDeviceSystemProperties(systemProperties);
         return systemProperties;
     }
