@@ -32,14 +32,35 @@ import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class TestCaseEntityUtil {
+    /**
+     * Copy Test Case properties without meta info (Comment, Tag, and Description) by default
+     * 
+     * @param src source Test Case Entity
+     * @param des destination Test Case Entity
+     * @see #copyTestCaseProperties(TestCaseEntity, TestCaseEntity, boolean)
+     */
     public static void copyTestCaseProperties(TestCaseEntity src, TestCaseEntity des) {
+        copyTestCaseProperties(src, des, true);
+    }
+
+    /**
+     * Copy Test Case properties
+     * 
+     * @param src source Test Case Entity
+     * @param des destination Test Case Entity
+     * @param ignoreMetaInfo ignore tag, description, and comment from copy
+     */
+    public static void copyTestCaseProperties(TestCaseEntity src, TestCaseEntity des, boolean ignoreMetaInfo) {
         des.setParentFolder(src.getParentFolder());
         des.setProject(src.getProject());
 
         des.setName(src.getName());
-        des.setComment(src.getComment());
-        des.setTag(src.getTag());
-        des.setDescription(src.getDescription());
+
+        if (!ignoreMetaInfo) {
+            des.setComment(src.getComment());
+            des.setTag(src.getTag());
+            des.setDescription(src.getDescription());
+        }
 
         des.getDataFileLocations().clear();
         des.getDataFiles().clear();
