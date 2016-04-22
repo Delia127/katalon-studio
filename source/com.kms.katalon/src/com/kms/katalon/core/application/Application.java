@@ -21,6 +21,7 @@ import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.application.ApplicationRunningMode.RunningMode;
 import com.kms.katalon.execution.console.ConsoleMain;
+import com.kms.katalon.util.ApplicationInfo;
 
 /**
  * This class controls all aspects of the application's execution
@@ -45,6 +46,7 @@ public class Application implements IApplication {
             return IApplication.EXIT_OK;
         }
 
+        ApplicationInfo.setAppInfoIntoUserHomeDir();
         final Map<?, ?> args = context.getArguments();
         final String[] appArgs = (String[]) args.get("application.args");
 
@@ -60,7 +62,7 @@ public class Application implements IApplication {
             default:
                 System.out.println(INVALID_RUNNING_MODE);
                 return IApplication.EXIT_OK;
-            
+
         }
 
     }

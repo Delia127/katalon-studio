@@ -84,6 +84,10 @@ public class TestSuiteLogRecord extends AbstractLogRecord {
         return (getRunData().containsKey(RunConfiguration.HOST_NAME)) ? getRunData().get(RunConfiguration.HOST_NAME) : "";
     }
 
+    public String getAppVersion() {
+        return (getRunData().containsKey(RunConfiguration.APP_VERSION)) ? getRunData().get(RunConfiguration.APP_VERSION) : "";
+    }
+
     public Map<String, String> getRunData() {
         return runData;
     }

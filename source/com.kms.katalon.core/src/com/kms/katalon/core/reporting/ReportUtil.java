@@ -25,6 +25,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
 
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XMLLoggerParser;
@@ -61,6 +62,8 @@ public class ReportUtil {
                 envInfoSb.append("{");
                 envInfoSb.append(String.format("\"host\" : \"%s\", ", suiteLogEntity.getHostName()));
                 envInfoSb.append(String.format("\"os\" : \"%s\", ", suiteLogEntity.getOs()));
+                envInfoSb.append(String.format("\"" + GlobalStringConstants.APP_VERSION + "\" : \"%s\", ",
+                        suiteLogEntity.getAppVersion()));
                 if (suiteLogEntity.getBrowser() != null && !suiteLogEntity.getBrowser().equals("")) {
                     if (suiteLogEntity.getRunData().containsKey("browser")) {
                         envInfoSb.append(String.format("\"browser\" : \"%s\",",
