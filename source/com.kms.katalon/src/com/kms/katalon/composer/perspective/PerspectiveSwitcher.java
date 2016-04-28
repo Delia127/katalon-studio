@@ -102,9 +102,8 @@ public class PerspectiveSwitcher {
 				ImageDescriptor image = ImageDescriptor.createFromURL(new URL(persp.getIconURI()));
 				if (image != null) {
 					tltmNewItem.setImage(image.createImage());
-				} else {
-					tltmNewItem.setText(persp.getLabel());
 				}
+				tltmNewItem.setText(persp.getLabel());
 
 			} catch (MalformedURLException e) {
 				tltmNewItem.setText(persp.getLabel());

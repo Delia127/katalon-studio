@@ -149,10 +149,12 @@ public abstract class Launcher implements ILauncher, IWatchdogListener {
             return;
         }
 
-        if (getStatus() != LauncherStatus.TERMINATED) {
+        if (getStatus() == LauncherStatus.RUNNING) {
             preExecutionComplete();
 
             setStatus(LauncherStatus.DONE);
+        } else {
+            setStatus(LauncherStatus.TERMINATED);
         }
 
         schedule();

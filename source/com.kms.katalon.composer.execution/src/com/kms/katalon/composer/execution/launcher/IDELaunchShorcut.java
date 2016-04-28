@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -19,12 +20,18 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.JavaRuntime;
 
+import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 
 public class IDELaunchShorcut extends GroovyScriptLaunchShortcut {
 
     public IDELaunchShorcut() {
         super();
+    }
+
+    @Override
+    public ILaunchConfigurationType getGroovyLaunchConfigType() {
+        return getLaunchManager().getLaunchConfigurationType(StringConstants.LAUNCH_CONFIGURATION_TYPE_ID);
     }
 
     @Override

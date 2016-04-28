@@ -6,7 +6,9 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.debug.internal.ui.commands.actions.StepIntoCommandHandler;
+import org.eclipse.debug.internal.ui.commands.actions.StepOverCommandHandler;
+import org.eclipse.debug.internal.ui.commands.actions.StepReturnCommandHandler;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -18,11 +20,12 @@ import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuFactory;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolItem;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
-import org.osgi.framework.BundleException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.handlers.IHandlerService;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.execution.debug.handler.ToggleBreakpointHandler;
 import com.kms.katalon.composer.execution.handlers.EvaluateDriverConnectorEditorContributionsHandler;
 import com.kms.katalon.composer.execution.menu.CustomExecutionMenuContribution;
 import com.kms.katalon.composer.execution.menu.ExecutionHandledMenuItem;
@@ -30,7 +33,16 @@ import com.kms.katalon.composer.execution.util.ComposerExecutionUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 
+@SuppressWarnings("restriction")
 public class TestExecutionAddon implements EventHandler {
+
+    private static final String TOGGLE_BREAKPOINT_COMMAND = "org.eclipse.debug.ui.commands.ToggleBreakpoint";
+
+    private static final String STEP_RETURN_COMMAND = "org.eclipse.debug.ui.commands.StepReturn";
+
+    private static final String STEP_OVER_COMMAND = "org.eclipse.debug.ui.commands.StepOver";
+
+    private static final String STEP_INTO_COMMAND = "org.eclipse.debug.ui.commands.StepInto";
 
     private static final String KATALON_COMPOSER_EXECUTION_BUNDLE_URI = "bundleclass://com.kms.katalon.composer.execution/";
 
@@ -39,8 +51,6 @@ public class TestExecutionAddon implements EventHandler {
     private static final String CUSTOM_RUN_MENU_ID = KATALON_COMPOSER_EXECUTION_ID + ".run.custom";
 
     private static final String CUSTOM_RUN_MENU_LABEL = "Custom";
-
-    private static final String RUN_TOOL_ITEM_ID = KATALON_COMPOSER_EXECUTION_ID + ".handledtoolitem.run";
 
     private static final String CUSTOM_RUN_CONFIG_CONTRIBUTOR_ID = CUSTOM_RUN_MENU_ID + ".contributor";
 
@@ -57,12 +67,13 @@ public class TestExecutionAddon implements EventHandler {
     public void initHandlers(IEventBroker eventBroker) {
         ContextInjectionFactory.make(EvaluateDriverConnectorEditorContributionsHandler.class, context);
         eventBroker.subscribe(EventConstants.WORKSPACE_CREATED, this);
-        initCustomRunConfigurationSubMenu();
+        initCustomRunConfigurationSubMenu(IdConstants.RUN_TOOL_ITEM_ID);
+        initCustomRunConfigurationSubMenu(IdConstants.DEBUG_TOOL_ITEM_ID);
     }
 
-    private void initCustomRunConfigurationSubMenu() {
-        MToolItem runToolItem = (MToolItem) modelService.find(RUN_TOOL_ITEM_ID, application);
-        MMenu menu = runToolItem.getMenu();
+    private void initCustomRunConfigurationSubMenu(String parentToolItemId) {
+        MToolItem parentToolItem = (MToolItem) modelService.find(parentToolItemId, application);
+        MMenu menu = parentToolItem.getMenu();
         MMenu subMenu = MMenuFactory.INSTANCE.createMenu();
         subMenu.setLabel(CUSTOM_RUN_MENU_LABEL);
         subMenu.setElementId(CUSTOM_RUN_MENU_ID);
@@ -80,18 +91,29 @@ public class TestExecutionAddon implements EventHandler {
     @Override
     public void handleEvent(Event event) {
         // init Debug context for workbench
-        if (event.getTopic().equals(EventConstants.WORKSPACE_CREATED)) {
-            try {
-                Platform.getBundle(KATALON_COMPOSER_EXECUTION_ID).start();
-                wrapExecutionMenuItemsProcessor();
-            } catch (BundleException e) {
-                LoggerSingleton.logError(e);
-            }
+        if (EventConstants.WORKSPACE_CREATED.equals(event.getTopic())) {
+            activeDefaultIconForExecution();
+            activeDebugHandlers();
         }
     }
 
-    private void wrapExecutionMenuItemsProcessor() {
-        MToolItem runToolItem = (MToolItem) modelService.find(IdConstants.EXECUTION_TOOL_ITEM_ID, application);
+    private void activeDefaultIconForExecution() {
+        wrapExecutionMenuItemsProcessor(IdConstants.RUN_TOOL_ITEM_ID);
+        wrapExecutionMenuItemsProcessor(IdConstants.DEBUG_TOOL_ITEM_ID);
+    }
+    
+    private void activeDebugHandlers() {
+        IHandlerService handlerService = (IHandlerService) PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+                .getService(IHandlerService.class);
+        handlerService.activateHandler(STEP_INTO_COMMAND, new StepIntoCommandHandler());
+        handlerService.activateHandler(STEP_OVER_COMMAND, new StepOverCommandHandler());
+        handlerService.activateHandler(STEP_RETURN_COMMAND, new StepReturnCommandHandler());
+        handlerService.activateHandler(TOGGLE_BREAKPOINT_COMMAND, new ToggleBreakpointHandler());
+    }
+
+
+    private void wrapExecutionMenuItemsProcessor(String menuItemId) {
+        MToolItem runToolItem = (MToolItem) modelService.find(menuItemId, application);
         if (runToolItem == null) return;
 
         MMenu menu = runToolItem.getMenu();

@@ -198,4 +198,8 @@ public class LauncherManager {
         }
         return null;
     }
+    
+    public List<ILauncher> getRunningLaunchers() {
+        return runningLaunchers;
+    }
 }

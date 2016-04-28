@@ -10,13 +10,17 @@
       </fragment>
    </extension>
    <extension
-         point="org.eclipse.debug.ui.debugModelPresentations">
-      <debugModelPresentation
-            class="com.kms.katalon.composer.execution.debug.DebugBreakpointView"
-            detailsViewerConfiguration="org.codehaus.groovy.eclipse.editor.GroovyConfiguration"
-            id="org.eclipse.jdt.debug">
-      </debugModelPresentation>
-   </extension>  
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="com.kms.katalon.composer.execution.debug.LaunchDelegate"
+            id="com.kms.katalon.composer.execution.scriptLaunchConfiguration"
+            modes="run, debug"
+            name="Katalon"
+            public="true"
+            sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
+            sourcePathComputerId="org.eclipse.jdt.launching.sourceLookup.javaSourcePathComputer">
+      </launchConfigurationType>
+   </extension>    
    <extension
          point="org.eclipse.debug.core.sourceLocators">
       <sourceLocator
@@ -26,18 +30,13 @@
       </sourceLocator>
    </extension>
    <extension
-         point="org.eclipse.debug.core.launchConfigurationTypes">
-      <launchConfigurationType
-            delegate="com.kms.katalon.composer.execution.debug.LaunchDelegate"
-            id="org.codehaus.groovy.eclipse.groovyScriptLaunchConfiguration"
-            modes="run, debug"
-            name="Katalon"
-            public="true"
-            sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
-            sourcePathComputerId="org.eclipse.jdt.launching.sourceLookup.javaSourcePathComputer">
-      </launchConfigurationType>
-   </extension>
-   
+         point="org.eclipse.debug.ui.debugModelPresentations">
+      <debugModelPresentation
+            class="com.kms.katalon.composer.execution.debug.DebugBreakpointView"
+            detailsViewerConfiguration="com.kms.katalon.composer.execution.debug.KatalonSourceViewerConfiguration"
+            id="org.eclipse.jdt.debug">
+      </debugModelPresentation>
+   </extension> 
 	<extension
          point="com.kms.katalon.preferences.PreferencePages">
       <page
@@ -82,5 +81,12 @@
             id="com.kms.katalon.composer.execution.settings.custom"
             name="Custom">
       </page>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.watchExpressionDelegates">
+      <watchExpressionDelegate
+            debugModel="org.eclipse.jdt.debug"
+            delegateClass="com.kms.katalon.composer.execution.debug.WatchExpressionDelegate">
+      </watchExpressionDelegate>
    </extension>
 </plugin>
