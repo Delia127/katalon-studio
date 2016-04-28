@@ -145,6 +145,18 @@
 								<artifact>
 									<id>commons-validator:commons-validator:1.5.0</id>
 								</artifact>
+								<artifact>
+									<!-- Apache Commons DbUtils -->
+									<id>commons-dbutils:commons-dbutils:1.6</id>
+								</artifact>
+								<artifact>
+									<!-- http://dev.mysql.com/downloads/connector/j/ -->
+									<id>mysql:mysql-connector-java:5.1.38</id>
+								</artifact>
+								<artifact>
+									<!-- http://go.microsoft.com/fwlink/?LinkId=245496 -->
+									<id>com.microsoft.sqlserver:sqljdbc4:4.1.5605.100</id>
+								</artifact>
 							</artifacts>
 						</configuration>
 					</execution>

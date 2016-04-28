@@ -9,6 +9,7 @@ Export-Package: com.kms.katalon.core.annotation,
  com.kms.katalon.core.ast,
  com.kms.katalon.core.configuration;uses:="com.kms.katalon.custom.driver",
  com.kms.katalon.core.constants,
+ com.kms.katalon.core.db,
  com.kms.katalon.core.driver;uses:="org.openqa.selenium",
  com.kms.katalon.core.exception,
  com.kms.katalon.core.export,
@@ -36,7 +37,10 @@ Require-Bundle: net.sf.supercsv.super-csv,
  org.apache.xmlbeans,
  com.kms.katalon.constant,
  com.google.gson,
- org.jsoup
+ org.jsoup,
+ com.mysql.jdbc,
+ com.microsoft.sqlserver.sqljdbc4,
+ org.apache.commons.dbutils
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Import-Package: com.google.common.io,
