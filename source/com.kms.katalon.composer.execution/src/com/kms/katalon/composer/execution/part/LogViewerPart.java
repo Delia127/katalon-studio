@@ -121,8 +121,6 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
 
     private ProgressBar progressBar;
 
-    private int maxValue;
-
     private Label lblNumTestcases, lblNumFailures, lblNumPasses, lblNumErrors;
 
     private Composite parentComposite;
@@ -202,22 +200,17 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
     }
 
     private void createLogViewerControl(Composite parent) {
-        isBusy = true;
-        try {
-            disposeChildrenFromIndex(parent, AFTER_STATUS_MENU_INDEX);
+        disposeChildrenFromIndex(parent, AFTER_STATUS_MENU_INDEX);
 
-            boolean showLogsAsTree = preferenceStore.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
+        boolean showLogsAsTree = preferenceStore.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
 
-            if (showLogsAsTree) {
-                createTreeCompositeContainer(parent);
-            } else {
-                createTableComposite(parent);
-            }
-            parent.layout(true);
-            updateMenuStatus(fMPart);
-        } finally {
-            isBusy = false;
+        if (showLogsAsTree) {
+            createTreeCompositeContainer(parent);
+        } else {
+            createTableComposite(parent);
         }
+        parent.layout(true);
+        updateMenuStatus(fMPart);
     }
 
     private void disposeChildrenFromIndex(Composite parent, int start) {
@@ -367,6 +360,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
         @Override
         public IStatus run(IProgressMonitor monitor) {
             try {
+                isBusy = true;
                 final int logSize = currentRecords.size();
                 monitor.beginTask(StringConstants.PA_LOADING_LOGS + "...", logSize + 1);
                 sync.syncExec(new Runnable() {
@@ -391,7 +385,6 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                     monitor.worked(1);
                 }
 
-                monitor.done();
                 return Status.OK_STATUS;
             } finally {
                 sync.syncExec(new Runnable() {
@@ -400,6 +393,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                         compositeTreeContainer.setRedraw(true);
                     }
                 });
+                monitor.done();
                 isBusy = false;
             }
         }
@@ -866,6 +860,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
             @Override
             public void run() {
                 progressBar.setSelection(0);
+                int maxValue = launcherWatched != null ? launcherWatched.getResult().getTotalTestCases() : 1;
                 progressBar.setMaximum(maxValue * INCREMENT);
                 lblNumTestcases.setText(Integer.toString(progressBar.getSelection()) + "/"
                         + Integer.toString(progressBar.getMaximum() / INCREMENT));
@@ -881,15 +876,11 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
     }
 
     private void addRecords(final List<XmlLogRecord> records) throws InterruptedException {
-        while (isBusy) {
-            // wait for refreshing records completely.
-            Thread.sleep(100);
-        }
+        waitForNotBusy();
 
         isBusy = true;
 
         try {
-
             boolean showLogsAsTree = preferenceStore
                     .getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
 
@@ -907,43 +898,62 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
         }
     }
 
-    private synchronized void changeObservedLauncher(Event event) throws Exception {
-        while (isBusy) {
-            Thread.sleep(100);
-        }
-
-        currentRecords.clear();
-        if (launcherWatched != null) {
-            launcherWatched.setObserved(false);
-            launcherWatched.removeListener(this);
-
-            launcherWatched = null;
-        }
-
-        Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-        if (object != null && object instanceof String) {
-            String launcherId = (String) object;
-            for (ILauncher launcher : LauncherManager.getInstance().getAllLaunchers()) {
-                if (launcher.getId().equals(launcherId)) {
-                    launcherWatched = (IDELauncher) launcher;
-                    break;
+    private synchronized void changeObservedLauncher(final Event event) throws Exception {
+        final IDELauncherListener launcherListener = this;
+        new Thread(new Runnable() {
+            private IDELauncher getWatchedLauncherFromEvent() {
+                Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+                if (!(object instanceof String)) {
+                    return null;
                 }
+                
+                String launcherId = (String) object;
+                for (ILauncher launcher : LauncherManager.getInstance().getAllLaunchers()) {
+                    if (launcher instanceof IDELauncher && launcher.getId().equals(launcherId)) {
+                        return (IDELauncher) launcher;
+                    }
+                }
+                
+                return null;
             }
-            maxValue = launcherWatched.getResult().getTotalTestCases();
-        }
+            
+            @Override
+            public void run() {
+                if (parentComposite == null || parentComposite.isDisposed()) {
+                    return;
+                }
+                waitForNotBusy();
 
-        resetProgressBar();
-        
-        if (launcherWatched != null) {
-            currentRecords.addAll(launcherWatched.getLogRecords());
-            launcherWatched.setObserved(true);
-            launcherWatched.addListener(this);
-            setSelectedConsoleView();
-            updateProgressBar();
-        }
-        createLogViewerControl(parentComposite);
+                currentRecords.clear();
+                if (launcherWatched != null) {
+                    launcherWatched.setObserved(false);
+                    launcherWatched.removeListener(launcherListener);
 
-        eventBroker.send(EventConstants.JOB_REFRESH, null);
+                    launcherWatched = null;
+                }
+
+                launcherWatched = getWatchedLauncherFromEvent();
+                
+                sync.syncExec(new Runnable() {
+                    
+                    @Override
+                    public void run() {
+                        resetProgressBar();
+                        
+                        if (launcherWatched != null) {
+                            currentRecords.addAll(launcherWatched.getLogRecords());
+                            launcherWatched.setObserved(true);
+                            launcherWatched.addListener(launcherListener);
+                            setSelectedConsoleView();
+                            updateProgressBar();
+                        }
+                        createLogViewerControl(parentComposite);
+
+                        eventBroker.send(EventConstants.JOB_REFRESH, null);
+                    }
+                });
+            }
+        }).start();
     }
 
     @Override
@@ -956,9 +966,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                     break;
                 }
                 case EventConstants.CONSOLE_LOG_CHANGE_VIEW_TYPE: {
-                    resetProgressBar();
-                    createLogViewerControl(parentComposite);
-                    updateProgressBar();
+                    startChangingLogViewerThread();
                     break;
                 }
                 case EventConstants.CONSOLE_LOG_WORD_WRAP: {
@@ -971,6 +979,37 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
             }
         } catch (Exception e) {
             logError(e);
+        }
+    }
+
+    private synchronized void startChangingLogViewerThread() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (parentComposite == null || parentComposite.isDisposed()) {
+                    return;
+                }
+                waitForNotBusy();
+                
+                sync.syncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        resetProgressBar();
+                        createLogViewerControl(parentComposite);
+                        updateProgressBar(); 
+                    }
+                });
+            }
+        }).start();
+    }
+    
+    private void waitForNotBusy() {
+        while (isBusy) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                //Ignored
+            }
         }
     }
 
