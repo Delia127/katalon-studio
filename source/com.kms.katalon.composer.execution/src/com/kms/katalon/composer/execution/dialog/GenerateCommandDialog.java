@@ -52,13 +52,13 @@ import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
+import com.kms.katalon.composer.execution.util.MobileDeviceUIProvider;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.application.Application;
-import com.kms.katalon.core.mobile.keyword.MobileDriverFactory;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -68,6 +68,7 @@ import com.kms.katalon.execution.console.ConsoleMain;
 import com.kms.katalon.execution.console.entity.OsgiConsoleOptionContributor;
 import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.entity.ReportLocationSetting;
+import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector.RemoteWebDriverConnectorType;
@@ -158,6 +159,8 @@ public class GenerateCommandDialog extends AbstractDialog {
     private static final String ARG_MOBILE_DEVICE_ID = DriverFactory.EXECUTED_MOBILE_DEVICE_ID;
 
     private static final String ARG_BROWSER_TYPE = ConsoleMain.BROWSER_TYPE_OPTION;
+
+    private List<MobileDeviceInfo> deviceInfos = new ArrayList<>();
 
     public GenerateCommandDialog(Shell parentShell, ProjectEntity project) {
         super(parentShell);
@@ -584,12 +587,17 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private String[] getMobileDevices() {
         String[] devices = new String[0];
-        try {
-            return MobileDriverFactory.getDevices().toArray(devices);
-        } catch (Exception e) {
-            logError(e);
-            return devices;
+        return getAllDevicesName().toArray(devices);
+    }
+
+    private List<String> getAllDevicesName() {
+        deviceInfos.clear();
+        deviceInfos.addAll(MobileDeviceUIProvider.getAllDevices());
+        List<String> devicesNameList = new ArrayList<String>();
+        for (MobileDeviceInfo deviceInfo : deviceInfos) {
+            devicesNameList.add(deviceInfo.getDeviceName());
         }
+        return devicesNameList;
     }
 
     @Override
@@ -616,7 +624,7 @@ public class GenerateCommandDialog extends AbstractDialog {
             dialog.setFilterPath(projectLocation());
             dialog.setFileName(defaultPropertyFileName);
             String result = dialog.open();
-            
+
             // User pressed cancel
             if (result == null) {
                 return;
@@ -692,8 +700,10 @@ public class GenerateCommandDialog extends AbstractDialog {
         }
 
         if (chkSendEmail.getSelection() && listMailRecipient.getItemCount() > 0) {
-            args.put(ARG_SEND_MAIL,
-                    getArgumentValueToSave(join(listMailRecipient.getItems(), MailUtil.EMAIL_SEPARATOR), generateCommandMode));
+            args.put(
+                    ARG_SEND_MAIL,
+                    getArgumentValueToSave(join(listMailRecipient.getItems(), MailUtil.EMAIL_SEPARATOR),
+                            generateCommandMode));
         }
 
         if (!StringUtils.equals(txtStatusDelay.getText(), defaultStatusDelay)) {
@@ -705,18 +715,21 @@ public class GenerateCommandDialog extends AbstractDialog {
         args.put(ARG_BROWSER_TYPE, getArgumentValueToSave(comboBrowser.getText(), generateCommandMode));
 
         if (browserTypeIs(WebUIDriverType.REMOTE_WEB_DRIVER)) {
-            args.put(ARG_REMOTE_WEB_DRIVER_URL, getArgumentValueToSave(txtRemoteWebDriverURL.getText(), generateCommandMode));
+            args.put(ARG_REMOTE_WEB_DRIVER_URL,
+                    getArgumentValueToSave(txtRemoteWebDriverURL.getText(), generateCommandMode));
             args.put(ARG_REMOTE_WEB_DRIVER_TYPE, comboRemoteWebDriverType.getText());
         }
 
         if (browserTypeIs(WebUIDriverType.ANDROID_DRIVER) || browserTypeIs(WebUIDriverType.IOS_DRIVER)) {
-            args.put(ARG_MOBILE_DEVICE_ID,
-                    getArgumentValueToSave(MobileDriverFactory.getDeviceId(comboMobileDevice.getText()), generateCommandMode));
+            args.put(
+                    ARG_MOBILE_DEVICE_ID,
+                    getArgumentValueToSave(deviceInfos.get(comboMobileDevice.getSelectionIndex()).getDeviceId(),
+                            generateCommandMode));
         }
 
         return args;
     }
-
+    
     private boolean browserTypeIs(WebUIDriverType type) {
         return StringUtils.equals(comboBrowser.getText(), type.toString());
     }

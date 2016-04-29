@@ -5,7 +5,8 @@ Bundle-SymbolicName: com.kms.katalon.execution;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: KMS
-Export-Package: com.kms.katalon.execution.collector,
+Export-Package: com.kms.katalon.execution.classpath,
+ com.kms.katalon.execution.collector,
  com.kms.katalon.execution.configuration,
  com.kms.katalon.execution.configuration.contributor,
  com.kms.katalon.execution.configuration.impl,

@@ -20,17 +20,24 @@ public class LaunchProcessor implements ILaunchProcessor {
     private static final String GROOVY_BUNDLE_NAME = "org.codehaus.groovy";
 
     private String[] fClasspaths;
+    
+    private Map<String, String> environmentVariables;
 
     public LaunchProcessor(String[] classPaths) {
+        this(classPaths, new HashMap<String, String>());
+    }
+    
+    public LaunchProcessor(String[] classPaths, Map<String, String> environmentVariables) {
         fClasspaths = classPaths;
+        this.environmentVariables = environmentVariables;
     }
 
     @Override
     public Process execute(File scripFile) throws IOException {
-
         ProcessBuilder pb = new ProcessBuilder("java", "-cp",
                 FilenameUtils.separatorsToSystem(getGroovyLibs()) + File.pathSeparator + getClasspaths(), STARTER_CLASS,
                 "--main", MAIN_CLASS, FilenameUtils.separatorsToSystem(scripFile.getAbsolutePath()));
+        pb.environment().putAll(getEnviromentVariables());
         return pb.start();
     }
 
@@ -41,11 +48,7 @@ public class LaunchProcessor implements ILaunchProcessor {
 
     @Override
     public Map<String, String> getEnviromentVariables() throws IOException {
-        Map<String, String> variables = new HashMap<String, String>();
-        variables.put("groovy_home",
-                getGroovyHome());
-
-        return variables;
+        return environmentVariables;
     }
 
     private String getGroovyHome() throws IOException {

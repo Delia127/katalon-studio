@@ -2,23 +2,35 @@ package com.kms.katalon.composer.mobile.execution.handler;
 
 import java.io.IOException;
 
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
+
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
+import com.kms.katalon.core.mobile.exception.MobileSetupException;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.mobile.configuration.IosRunConfiguration;
-import com.kms.katalon.execution.mobile.driver.MobileDevice;
+import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 
 public class IosExecutionHandler extends MobileExecutionHandler {
 
     protected IRunConfiguration getRunConfigurationForExecution(String projectDir) throws IOException,
             ExecutionException, InterruptedException {
-        MobileDevice deviceName = getDeviceForExecution(projectDir, MobileDriverType.IOS_DRIVER);
-        if (deviceName == null) {
+        MobileDeviceInfo device = null;
+        try {
+            device = getDeviceForExecution(projectDir, MobileDriverType.IOS_DRIVER);
+        } catch (MobileSetupException e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "Error", e.getClass().getName() + ": "
+                    + e.getMessage());
+        }
+        if (device == null) {
             return null;
         }
-        
+
         IosRunConfiguration runConfiguration = new IosRunConfiguration(projectDir);
-        runConfiguration.setDevice(deviceName);
+        runConfiguration.setDevice(device);
         return runConfiguration;
     }
 }

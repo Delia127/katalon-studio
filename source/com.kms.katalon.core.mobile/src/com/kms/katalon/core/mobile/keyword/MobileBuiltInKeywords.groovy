@@ -19,11 +19,9 @@ import org.openqa.selenium.OutputType
 import org.openqa.selenium.Point
 import org.openqa.selenium.ScreenOrientation
 import org.openqa.selenium.TimeoutException
-import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebDriverException
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.interactions.touch.TouchActions
-import org.openqa.selenium.remote.server.DriverFactory
 import org.openqa.selenium.support.ui.FluentWait
 
 import com.google.common.base.Function
@@ -36,22 +34,12 @@ import com.kms.katalon.core.keyword.KeywordMain
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.mobile.constants.StringConstants
 import com.kms.katalon.core.mobile.helper.MobileCommonHelper
-import com.kms.katalon.core.mobile.keyword.MobileDriverFactory.OsType
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 
 @CompileStatic
 public class MobileBuiltInKeywords extends BuiltinKeywords {
     private static final KeywordLogger logger = KeywordLogger.getInstance();
-
-    /**
-     * @deprecated<p>
-     * This property is deprecated and will be removed in future releases.<p>
-     * Use MobileDriverFactory.getDriver() instead
-     * @see com.kms.katalon.core.mobile.keyword.MobileDriverFactory#getDriver()
-     */
-    @Deprecated()
-    private static AppiumDriver driver;
 
     //Device name should be selected by user from a UI Form
     //private static String deviceName = "LGE Nexus 4 5.1.1";
@@ -71,7 +59,6 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         KeywordMain.runKeyword({
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_STARTING_APP_AT, appFile));
             MobileCommonHelper.initializeMobileDriver(appFile.toString(), uninstallAfterCloseApp);
-            driver = MobileDriverFactory.getDriver();
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_START_APP_AT, appFile));
         }, flowControl, MessageFormat.format(StringConstants.KW_MSG_UNABLE_TO_START_APP_AT, appFile))
     }
@@ -248,27 +235,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
     public static String getDeviceManufacturer(FailureHandling flowControl) throws StepFailedException {
         return KeywordMain.runKeyword({
-            String deviceId = MobileDriverFactory.getDeviceId(MobileDriverFactory.getDeviceName());
-            OsType deviceOs = MobileDriverFactory.getDeviceOs(deviceId);
-            String manufacturer = null;
-            switch (deviceOs) {
-                case OsType.IOS:
-                    manufacturer = StringConstants.KW_MANUFACTURER_APPLE;
-                    break;
-                case OsType.ANDROID:
-                    String adbPath = System.getenv("ANDROID_HOME") + File.separator + "platform-tools" + File.separator + "adb";
-                    String[] cmd = [adbPath, "-s", deviceId, "shell", "getprop", "ro.product.manufacturer"]
-                    ProcessBuilder pb = new ProcessBuilder(cmd);
-                    Process p = pb.start();
-                    p.waitFor();
-                    BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                    manufacturer = br.readLine();
-                    br.close();
-                    break;
-                default:
-                    KeywordMain.stepFailed(StringConstants.KW_MSG_UNSUPPORT_ACT_FOR_THIS_DEVICE, flowControl, null);
-                    return;
-            }
+            String manufacturer = MobileDriverFactory.getDeviceManufacturer();
             logger.logPassed(MessageFormat.format(StringConstants.KW_MSG_DEVICE_MANUFACTURER_IS, manufacturer));
             return manufacturer;
         }, flowControl, StringConstants.KW_MSG_CANNOT_GET_MANUFACTURER);
@@ -285,27 +252,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
     public static String getDeviceOS(FailureHandling flowControl) throws StepFailedException {
         return KeywordMain.runKeyword({
-            String deviceId = MobileDriverFactory.getDeviceId(MobileDriverFactory.getDeviceName());
-            OsType deviceOs = MobileDriverFactory.getDeviceOs(deviceId);
-            String osName = null;
-            switch (deviceOs) {
-                case OsType.IOS:
-                    osName = StringConstants.KW_OS_IOS;
-                    break;
-                case OsType.ANDROID:
-                    String adbPath = System.getenv("ANDROID_HOME") + File.separator + "platform-tools" + File.separator + "adb";
-                    String[] cmd = [adbPath, "-s", deviceId, "shell", "getprop", "net.bt.name"]
-                    ProcessBuilder pb = new ProcessBuilder(cmd);
-                    Process p = pb.start();
-                    p.waitFor();
-                    BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                    osName = br.readLine();
-                    br.close();
-                    break;
-                default:
-                    KeywordMain.stepFailed(StringConstants.KW_MSG_UNSUPPORT_ACT_FOR_THIS_DEVICE, flowControl, null);
-                    return;
-            }
+            String osName = MobileDriverFactory.getDeviceOS();
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_DEVICE_OS_NAME, osName));
             return osName;
         }, flowControl, StringConstants.KW_MSG_CANNOT_GET_OS_NAME);
@@ -322,7 +269,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
     public static String getDeviceOSVersion(FailureHandling flowControl) throws StepFailedException {
         return KeywordMain.runKeyword({
-            String osVersion = MobileCommonHelper.getDeviceOSVersion();
+            String osVersion = MobileDriverFactory.getDeviceOSVersion();
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_DEVICE_OS_VER_IS, osVersion));
             return osVersion;
         }, flowControl, StringConstants.KW_MSG_CANNOT_GET_OS_VER);
@@ -332,7 +279,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
     public static String getDeviceModel(FailureHandling flowControl) throws StepFailedException {
         return KeywordMain.runKeyword({
-            String model = MobileCommonHelper.getDeviceModel();
+            String model = MobileDriverFactory.getDeviceModel();
             logger.logPassed(model);
             return model;
         }, flowControl, StringConstants.KW_MSG_CANNOT_GET_DEVICE_MODEL);
@@ -387,7 +334,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
                     AndroidDriver androidDriver = (AndroidDriver) driver;
                     androidDriver.setNetworkConnection(new NetworkConnectionSetting(isTurnOn, !isTurnOn, !isTurnOn));
                 } else {
-                    String deviceModel = MobileCommonHelper.getDeviceModel();
+                    String deviceModel = MobileDriverFactory.getDeviceModel();
                     //ResourceBundle resourceBundle = ResourceBundle.getBundle("resource");
                     //String[] point = resourceBundle.getString(deviceModel).split(";");
                     if(MobileCommonHelper.deviceModels.get(deviceModel) == null){
@@ -427,7 +374,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static void runIOSAppInBackgroundAndWait(int seconds, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             AppiumDriver<?> driver = MobileDriverFactory.getDriver();
-            String osVersion = MobileCommonHelper.getDeviceOSVersion();
+            String osVersion = MobileDriverFactory.getDeviceOSVersion();
             int majorversion = Integer.parseInt(osVersion.split("\\.")[0]);
             if (majorversion >= 8) {
                 String command = String.format("UIATarget.localTarget().deactivateAppForDuration(%d);", (int)(seconds/2));
@@ -833,7 +780,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     private static boolean internalSwitchToNativeContext(AppiumDriver driver) {
         return internalSwitchToContext(driver, "NATIVE");
     }
-    
+
     @CompileStatic
     private static boolean internalSwitchToContext(AppiumDriver driver, String contextName) {
         try {
@@ -1148,7 +1095,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         , flowControl, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue)
         : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_ATTRIBUTE_VALUE)
     }
-    
+
     /**
      * Wait until the given web element has an attribute with the specific name
      * @param to
@@ -1163,7 +1110,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
     public static boolean waitForElementHasAttribute(TestObject to, String attributeName, int timeout, FailureHandling flowControl) {
-       KeywordMain.runKeyword({
+        KeywordMain.runKeyword({
             try {
                 KeywordHelper.checkTestObjectParameter(to);
                 KeywordLogger.getInstance().logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME);
@@ -1196,7 +1143,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         , flowControl, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
         : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_HAS_ATTRIBUTE)
     }
-    
+
     /**
      * Wait until the given web element doesn't have an attribute with the specific name
      * @param to
@@ -1211,7 +1158,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
     public static boolean waitForElementNotHasAttribute(TestObject to, String attributeName, int timeout, FailureHandling flowControl) {
-       KeywordMain.runKeyword({
+        KeywordMain.runKeyword({
             try {
                 KeywordHelper.checkTestObjectParameter(to);
                 KeywordLogger.getInstance().logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME);
@@ -1244,7 +1191,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         , flowControl, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_NOT_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
         : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_NOT_HAS_ATTRIBUTE)
     }
-    
+
     /**
      * Wait until the given web element has an attribute with the specific name and value
      * @param to
@@ -1261,7 +1208,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
     public static boolean waitForElementAttributeValue(TestObject to, String attributeName, String attributeValue, int timeout, FailureHandling flowControl) {
-       KeywordMain.runKeyword({
+        KeywordMain.runKeyword({
             try {
                 KeywordHelper.checkTestObjectParameter(to);
                 KeywordLogger.getInstance().logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME);

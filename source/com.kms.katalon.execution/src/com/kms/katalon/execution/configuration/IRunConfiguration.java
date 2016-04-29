@@ -24,5 +24,7 @@ public interface IRunConfiguration {
     
     public void generateExecutionProperties() throws IOException;
     
+    public Map<String, String> getAdditionalEnvironmentVariables() throws IOException;
+    
     public IRunConfiguration cloneConfig() throws IOException, ExecutionException;
 }

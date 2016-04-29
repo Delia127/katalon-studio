@@ -26,8 +26,8 @@ public class ConsoleLauncher extends ReportableLauncher {
     protected ILaunchProcess launch() throws ExecutionException {
         try {
             Process systemProcess = new LaunchProcessor(ClassPathResolver.getClassPaths(ProjectController.getInstance()
-                    .getCurrentProject())).execute(getRunConfig().getExecutionSetting().getScriptFile());
-
+                    .getCurrentProject()), runConfig.getAdditionalEnvironmentVariables()).execute(getRunConfig()
+                    .getExecutionSetting().getScriptFile());
             return new ConsoleProcess(systemProcess);
         } catch (IOException ex) {
             throw new ExecutionException(ex);

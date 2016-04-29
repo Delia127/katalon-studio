@@ -8,7 +8,7 @@ public class WebUiDriverCleaner implements IDriverCleaner {
 
     @Override
     public void cleanDriverAfterRunningTestCase() {
-        WebMobileDriverFactory.getInstance().quitServer();
+        WebMobileDriverFactory.quitServer();
     }
 
     @Override

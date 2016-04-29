@@ -74,7 +74,7 @@ public abstract class AbstractMobilePreferencePage extends DriverPreferencePage 
             driverConnector = driverPreferenceComposite.getResult();
             
             if (abstractMobileDriverConnector != null && deviceSelectionComposite != null) {
-                abstractMobileDriverConnector.setDeviceId(deviceSelectionComposite.getSelectedDeviceId());
+                abstractMobileDriverConnector.setDevice(deviceSelectionComposite.getSelectedDevice());
             }
             driverConnector.saveUserConfigProperties();
             return true;

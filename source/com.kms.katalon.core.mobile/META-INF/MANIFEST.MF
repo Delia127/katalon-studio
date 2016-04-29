@@ -12,9 +12,14 @@ Require-Bundle: org.codehaus.groovy,
  org.apache.commons.lang,
  com.google.gson,
  io.appium.java-client,
- com.kms.katalon.selenium-standalone;bundle-version="1.0.0"
+ com.kms.katalon.selenium-standalone;bundle-version="1.0.0",
+ org.eclipse.osgi,
+ org.eclipse.core.runtime,
+ org.apache.commons.lang3,
+ org.apache.commons.validator
 Export-Package: com.kms.katalon.core.mobile.constants,
  com.kms.katalon.core.mobile.contribution,
  com.kms.katalon.core.mobile.driver,
+ com.kms.katalon.core.mobile.exception,
  com.kms.katalon.core.mobile.keyword
 Bundle-ClassPath: .

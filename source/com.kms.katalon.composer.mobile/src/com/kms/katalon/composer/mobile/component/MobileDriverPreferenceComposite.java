@@ -31,14 +31,12 @@ public class MobileDriverPreferenceComposite extends DriverPreferenceComposite {
         deviceSelectionComposite = new DeviceSelectionComposite(deviceSelectionCompositeContainer, SWT.NONE,
                 (MobileDriverType) driverConnector.getDriverType());
         driverPropertyMapComposite = new DriverPropertyMapComposite(this);
-        
 
         deviceSelectionComposite.addDisposeListener(new DisposeListener() {
             @Override
             public void widgetDisposed(DisposeEvent e) {
                 if (driverConnector != null && deviceSelectionComposite != null) {
-                    ((MobileDriverConnector) driverConnector).setDeviceId(deviceSelectionComposite
-                            .getSelectedDeviceId());
+                    ((MobileDriverConnector) driverConnector).setDevice(deviceSelectionComposite.getSelectedDevice());
                 }
             }
         });

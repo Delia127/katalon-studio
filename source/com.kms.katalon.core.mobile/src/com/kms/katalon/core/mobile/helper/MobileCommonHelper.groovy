@@ -3,101 +3,22 @@ package com.kms.katalon.core.mobile.helper;
 import groovy.transform.CompileStatic
 import io.appium.java_client.AppiumDriver
 
+import org.openqa.selenium.NoSuchElementException
 import org.openqa.selenium.WebElement
 
-import com.kms.katalon.core.configuration.RunConfiguration
-import com.kms.katalon.core.exception.StepFailedException
-import com.kms.katalon.core.mobile.constants.StringConstants
 import com.kms.katalon.core.mobile.keyword.GUIObject
 import com.kms.katalon.core.mobile.keyword.MobileDriverFactory
-import com.kms.katalon.core.mobile.keyword.MobileDriverFactory.OsType
-
-import org.openqa.selenium.NoSuchElementException;
 
 public class MobileCommonHelper {
 
     @CompileStatic
     public static void initializeMobileDriver(String appFile, boolean uninstallAfterCloseApp) throws Exception {
-        String deviceId = MobileDriverFactory.getDeviceId(RunConfiguration.getStringProperty(MobileDriverFactory.EXECUTED_DEVICE_ID,
-            RunConfiguration.getDriverPreferencesProperties(MobileDriverFactory.MOBILE_DRIVER_PROPERTY)));
-		MobileDriverFactory.startMobileDriver(MobileDriverFactory.getDeviceOs(deviceId), deviceId, appFile, uninstallAfterCloseApp)
+        MobileDriverFactory.startMobileDriver(appFile, uninstallAfterCloseApp);
     }
 
     @CompileStatic
     public static void swipe(AppiumDriver driver, int startX, int startY, int endX, int endY){
         driver.swipe(startX, startY, endX, endY, 500);
-    }
-
-    @CompileStatic
-    public static String getDeviceModel() throws StepFailedException, IOException, InterruptedException {
-        String deviceId = MobileDriverFactory.getDeviceId(RunConfiguration.getStringProperty(MobileDriverFactory.EXECUTED_DEVICE_ID,
-            RunConfiguration.getDriverPreferencesProperties(MobileDriverFactory.MOBILE_DRIVER_PROPERTY)));
-        String model = null;
-        ProcessBuilder pb = new ProcessBuilder();
-        Process p = null;
-        BufferedReader br = null;
-        switch (MobileDriverFactory.getDeviceOs(deviceId)) {
-            case OsType.IOS:
-                pb.command("ideviceinfo", "-u", deviceId);
-                p = pb.start();
-                p.waitFor();
-                br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                while ((model = br.readLine()) != null) {
-                    if (model.contains("ProductType:")) {
-                        model = model.substring(model.lastIndexOf(':') + 1).trim();
-                        break;
-                    }
-                }
-                break;
-            case OsType.ANDROID:
-                String adbPath = System.getenv("ANDROID_HOME") + File.separator + "platform-tools" + File.separator + "adb";
-                pb.command(adbPath, "-s", deviceId, "shell", "getprop", "ro.product.model");
-                p = pb.start();
-                p.waitFor();
-                br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                model = br.readLine();
-                br.close();
-                break;
-            default:
-                throw new StepFailedException(StringConstants.KW_MSG_UNSUPPORT_ACT_FOR_THIS_DEVICE);
-        }
-        return model;
-    }
-    
-    @CompileStatic
-    public static String getDeviceOSVersion() throws StepFailedException, IOException, InterruptedException {
-        String deviceId = MobileDriverFactory.getDeviceId(RunConfiguration.getStringProperty(MobileDriverFactory.EXECUTED_DEVICE_ID,
-            RunConfiguration.getDriverPreferencesProperties(MobileDriverFactory.MOBILE_DRIVER_PROPERTY)));
-        String osVersion = null;
-        ProcessBuilder pb = new ProcessBuilder();
-        Process p = null;
-        BufferedReader br = null;
-        switch (MobileDriverFactory.getDeviceOs(deviceId)) {
-            case OsType.IOS:
-                pb.command("ideviceinfo", "-u", deviceId);
-                p = pb.start();
-                p.waitFor();
-                br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                while ((osVersion = br.readLine()) != null) {
-                    if (osVersion.contains("ProductVersion:")) {
-                        osVersion = osVersion.substring(osVersion.lastIndexOf(':') + 1).trim();
-                        break;
-                    }
-                }
-                break;
-            case OsType.ANDROID:
-                String adbPath = System.getenv("ANDROID_HOME") + File.separator + "platform-tools" + File.separator + "adb";
-                pb.command(adbPath, "-s", deviceId, "shell", "getprop", "ro.build.version.release");
-                p = pb.start();
-                p.waitFor();
-                br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                osVersion = br.readLine();
-                br.close();
-                break;
-            default:
-                throw new StepFailedException(StringConstants.KW_MSG_UNSUPPORT_ACT_FOR_THIS_DEVICE);
-        }
-        return osVersion;
     }
 
     //public static Map<String,String> configs = new HashMap<String, String>();
@@ -168,7 +89,7 @@ public class MobileCommonHelper {
         airPlaneButtonCoords.put("iPad mini 2", "265;905");
         airPlaneButtonCoords.put("iPad mini 3", "265;905");
     }
-    
+
     @CompileStatic
     public static String getAttributeValue(WebElement element, String attributeName) {
         switch (attributeName.toString()) {
