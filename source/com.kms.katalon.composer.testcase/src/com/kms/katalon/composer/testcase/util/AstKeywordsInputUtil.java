@@ -521,12 +521,12 @@ public class AstKeywordsInputUtil {
             return type;
         }
         for (ImportNodeWrapper importNode : classNode.getImports()) {
-            if (!importNode.getClassName().endsWith("." + typeName)) {
+            String className = importNode.getClassName();
+            if (className == null || !className.endsWith("." + typeName)) {
                 continue;
             }
             try {
-                type = classLoader.loadClass(importNode.getClassName());
-                return type;
+                return classLoader.loadClass(className);
             } catch (ClassNotFoundException ex) {
                 // cannot find class, continue
             }

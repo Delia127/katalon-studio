@@ -131,6 +131,11 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
                 displayString.append("; ");
             }
             ExpressionWrapper inputExpression = arguments.getExpression(i);
+            if (inputExpression == null) {
+                // TODO: Handle missing arguments for keyword
+                count++;
+                continue;
+            }
             InputValueType typeValue = AstValueUtil.getTypeValue(inputExpression);
             if (typeValue != null) {
                 displayString.append(typeValue.getValueToDisplay(inputExpression));
