@@ -514,4 +514,8 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String WEB_UI_PROPERTY_FILE_NAME = "com.kms.katalon.core.webui";
     public static final String KW_LOG_WEB_UI_PROPERTY_SETTING = "User set preference: [''{0}'', ''{1}'']";
     public static final String KW_LOG_FIREFOX_PROPERTY_SETTING = "User set firefox profile preference: [''{0}'', ''{1}'']";
+    
+    // WebMobileDriverFactory
+    public static final String APPIUM_START_EXCEPTION_APPIUM_DIRECTORY_NOT_SET = "Appium directory is not set. Please set it in Settings/Preferences/Mobile.";
+    public static final String APPIUM_START_EXCEPTION_APPIUM_DIRECTORY_INVALID_CANNOT_FIND_APPIUM_JS = "Appium directory is invalid: Cannot find appium.js file.";
 }

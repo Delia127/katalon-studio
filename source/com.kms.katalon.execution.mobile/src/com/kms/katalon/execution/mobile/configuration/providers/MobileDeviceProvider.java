@@ -33,6 +33,7 @@ public class MobileDeviceProvider {
 
     public static List<AndroidDeviceInfo> getAndroidDevices() throws MobileSetupException, IOException,
             InterruptedException {
+        AndroidDeviceInfo.makeAllAndroidSDKBinaryExecutable();
         String[] getDevicesCommand = new String[] { AndroidDeviceInfo.getADBPath(), "devices" };
         List<String> deviceIds = new ArrayList<String>();
         List<String> deviceResultLines = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(getDevicesCommand);

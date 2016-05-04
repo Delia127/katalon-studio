@@ -16,5 +16,7 @@ Require-Bundle: org.eclipse.osgi,
  com.kms.katalon.core.webui,
  com.kms.katalon.execution.mobile,
  com.kms.katalon.execution.webui,
- org.apache.commons.lang
+ org.apache.commons.lang,
+ com.kms.katalon.preferences,
+ org.eclipse.equinox.preferences
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7

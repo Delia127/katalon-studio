@@ -19,6 +19,11 @@
 		<product.linux64OutputDirectory>${project.build.directory}/products/${product.id}/linux/gtk/x86_64</product.linux64OutputDirectory>
 		<product.mac64OutputDirectory>${project.build.directory}/products/${product.id}/macosx/cocoa/x86_64</product.mac64OutputDirectory>
 		<product.resourcesDirectory>configuration/resources</product.resourcesDirectory>
+		<product.mac64ResourcesDirectory>configuration/macosx64_resources</product.mac64ResourcesDirectory>
+		<product.linux32ResourcesDirectory>configuration/linux32_resources</product.linux32ResourcesDirectory>
+		<product.linux64ResourcesDirectory>configuration/linux64_resources</product.linux64ResourcesDirectory>
+		<product.win32ResourcesDirectory>configuration/win32_resources</product.win32ResourcesDirectory>
+		<product.win64ResourcesDirectory>configuration/win64_resources</product.win64ResourcesDirectory>
 		<product.apidocDirectory>${product.resourcesDirectory}/apidocs</product.apidocDirectory>
 	</properties>
 
@@ -68,6 +73,9 @@
 								<resource>
 									<directory>${project.parent.build.directory}/${resourcesDiretory}</directory>
 								</resource>
+								<resource>
+									<directory>${project.parent.build.directory}/${win32ResourcesDirectory}</directory>
+								</resource>
 							</resources>
 						</configuration>
 					</execution>
@@ -83,6 +91,9 @@
 							<resources>
 								<resource>
 									<directory>${project.parent.build.directory}/${resourcesDiretory}</directory>
+								</resource>
+								<resource>
+									<directory>${project.parent.build.directory}/${win64ResourcesDirectory}</directory>
 								</resource>
 							</resources>
 						</configuration>
@@ -100,6 +111,9 @@
 								<resource>
 									<directory>${project.parent.build.directory}/${resourcesDiretory}</directory>
 								</resource>
+								<resource>
+									<directory>${project.parent.build.directory}/${linux32ResourcesDirectory}</directory>
+								</resource>
 							</resources>
 						</configuration>
 					</execution>
@@ -116,6 +130,9 @@
 								<resource>
 									<directory>${project.parent.build.directory}/${resourcesDiretory}</directory>
 								</resource>
+								<resource>
+									<directory>${project.parent.build.directory}/${linux64ResourcesDirectory}</directory>
+								</resource>
 							</resources>
 						</configuration>
 					</execution>
@@ -131,6 +148,9 @@
 							<resources>
 								<resource>
 									<directory>${project.parent.build.directory}/${resourcesDiretory}</directory>
+								</resource>
+								<resource>
+									<directory>${project.parent.build.directory}/${mac64ResourcesDirectory}</directory>
 								</resource>
 							</resources>
 						</configuration>

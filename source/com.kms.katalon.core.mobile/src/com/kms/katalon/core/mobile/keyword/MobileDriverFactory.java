@@ -13,10 +13,12 @@ import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.net.UrlChecker;
 import org.openqa.selenium.net.UrlChecker.TimeoutException;
@@ -55,6 +57,8 @@ public class MobileDriverFactory {
     public static final String EXECUTED_DEVICE_OS_VERSON = StringConstants.CONF_EXECUTED_DEVICE_OS_VERSON;
 
     public static final String APPIUM_LOG_PROPERTY = StringConstants.CONF_APPIUM_LOG_FILE;
+
+    public static final String APPIUM_DIRECTORY = StringConstants.CONF_APPIUM_DIRECTORY;
 
     private static final int DEFAULT_WEB_PROXY_PORT = 27753;
 
@@ -142,27 +146,60 @@ public class MobileDriverFactory {
         startAppiumServerJS(RunConfiguration.getTimeOut());
     }
 
-    private static void startAppiumServerJS(int timeout) throws AppiumStartException, IOException {
+    public static void startAppiumServerJS(int timeout, Map<String, String> environmentVariables)
+            throws AppiumStartException, IOException {
         if (localStorageAppiumServer.get() != null && localStorageAppiumServer.get().isRunning()) {
             return;
         }
-        String appiumHome = System.getenv("APPIUM_HOME");
-        String appium = appiumHome + "/bin/appium.js";
-        String appiumTemp = System.getProperty("java.io.tmpdir") + File.separator + "Katalon" + File.separator
-                + "Appium" + File.separator + "Temp" + System.currentTimeMillis();
+        String appium = findAppiumJS();
         int freePort = getFreePort();
         AppiumDriverLocalService service = AppiumDriverLocalService.buildService(new AppiumServiceBuilder().withArgument(
                 GeneralServerFlag.LOG_LEVEL, "info")
-                .withArgument(GeneralServerFlag.TEMP_DIRECTORY, appiumTemp)
+                .withArgument(GeneralServerFlag.TEMP_DIRECTORY, createAppiumTempFile())
                 .withArgument(GeneralServerFlag.SESSION_OVERRIDE)
                 .withAppiumJS(new File(appium))
                 .withIPAddress(DEFAULT_APPIUM_SERVER_ADDRESS)
                 .usingPort(freePort)
+                .withEnvironment(environmentVariables)
                 .withLogFile(new File(RunConfiguration.getAppiumLogFilePath()))
                 .withStartUpTimeOut(new Long(timeout), TimeUnit.SECONDS));
         service.start();
         localStorageAppiumServer.set(service);
         KeywordLogger.getInstance().logInfo("Appium server started on port " + freePort);
+    }
+
+    private static String createAppiumTempFile() {
+        return System.getProperty("java.io.tmpdir") + File.separator + "Katalon" + File.separator + "Appium"
+                + File.separator + "Temp" + System.currentTimeMillis();
+    }
+
+    private static String findAppiumJS() throws AppiumStartException {
+        String appiumHome = RunConfiguration.getAppiumDirectory();
+        if (StringUtils.isEmpty(appiumHome)) {
+            throw new AppiumStartException(StringConstants.APPIUM_START_EXCEPTION_APPIUM_DIRECTORY_NOT_SET);
+        }
+        String appium = getAppiumJSPathFromNPMBuild(appiumHome);
+        if (!new File(appium).exists()) {
+            appium = getAppiumJSPathFromAppiumGUI(appiumHome);
+        }
+        if (!new File(appium).exists()) {
+            throw new AppiumStartException(
+                    StringConstants.APPIUM_START_EXCEPTION_APPIUM_DIRECTORY_INVALID_CANNOT_FIND_APPIUM_JS);
+        }
+        return appium;
+    }
+
+    private static String getAppiumJSPathFromAppiumGUI(String appiumHome) {
+        String appiumFolderFromGUIAppium = appiumHome + File.separator + "node_modules" + File.separator + "appium";
+        return getAppiumJSPathFromNPMBuild(appiumFolderFromGUIAppium);
+    }
+
+    private static String getAppiumJSPathFromNPMBuild(String appiumHome) {
+        return appiumHome + File.separator + "bin" + File.separator + "appium.js";
+    }
+
+    private static void startAppiumServerJS(int timeout) throws AppiumStartException, IOException {
+        startAppiumServerJS(timeout, new HashMap<String, String>());
     }
 
     private static boolean isServerStarted(int timeToWait, URL url) {
@@ -234,20 +271,17 @@ public class MobileDriverFactory {
             localStorageAppiumServer.get().stop();
             localStorageAppiumServer.set(null);
         }
-        if (localStorageAppiumDriver.get() != null) {
-            localStorageAppiumDriver.get().quit();
-        }
         if (localStorageWebProxyProcess.get() != null) {
             localStorageWebProxyProcess.get().destroy();
             localStorageWebProxyProcess.set(null);
         }
+        closeDriver();
     }
-
+    
     public static MobileDriverType getMobileDriverType() {
         return MobileDriverType.valueOf(RunConfiguration.getDriverSystemProperty(
                 StringConstants.CONF_PROPERTY_MOBILE_DRIVER, EXECUTED_PLATFORM));
     }
-
     public static String getDevicePlatform() {
         return getMobileDriverType().toString();
     }
@@ -311,7 +345,7 @@ public class MobileDriverFactory {
         }
         return desireCapabilities;
     }
-
+    
     private static DesiredCapabilities createCapabilities(MobileDriverType osType, String deviceId, String appFile,
             boolean uninstallAfterCloseApp) {
 
@@ -337,7 +371,7 @@ public class MobileDriverFactory {
     }
 
     @SuppressWarnings("rawtypes")
-    private static void createMobileDriver(MobileDriverType osType, String deviceId, String appFile,
+    public static void createMobileDriver(MobileDriverType osType, String deviceId, String appFile,
             boolean uninstallAfterCloseApp) throws MobileDriverInitializeException, MalformedURLException {
         AppiumDriverLocalService appiumService = localStorageAppiumServer.get();
         if (appiumService == null) {

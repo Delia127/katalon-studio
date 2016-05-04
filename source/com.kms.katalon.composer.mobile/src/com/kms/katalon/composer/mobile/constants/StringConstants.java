@@ -18,4 +18,7 @@ public class StringConstants extends GlobalStringConstants {
 	
 	// MixedModeExecutionHandler
 	public static final String DIA_ERROR_NULL_DEVICE_BROWSER_NAME = "No device/browser is selected";
+	
+	//MobileSettingPreferencePage
+	public static final String PREF_LBL_APPIUM_DIRECTORY = "Appium Directory";
 }

@@ -235,11 +235,18 @@ public class RunConfiguration {
 
     public static String getAppiumLogFilePath() {
         if (StringUtils.isBlank(localAppiumDriverStores.get())) {
-            String appiumLogFilePath = getLogFolderPath() + File.separator + RunConfiguration.getDriverSystemProperty(
-                    StringConstants.CONF_PROPERTY_MOBILE_DRIVER, StringConstants.CONF_APPIUM_LOG_FILE);
+            String appiumLogFilePath = getLogFolderPath()
+                    + File.separator
+                    + RunConfiguration.getDriverSystemProperty(StringConstants.CONF_PROPERTY_MOBILE_DRIVER,
+                            StringConstants.CONF_APPIUM_LOG_FILE);
             localAppiumDriverStores.set(appiumLogFilePath);
         }
         return localAppiumDriverStores.get();
+    }
+
+    public static String getAppiumDirectory() {
+        return RunConfiguration.getDriverSystemProperty(StringConstants.CONF_PROPERTY_MOBILE_DRIVER,
+                StringConstants.CONF_APPIUM_DIRECTORY);
     }
 
     public static int getTimeOut() {
