@@ -37,7 +37,7 @@ public class ComposerExecutionUtil {
      */
     public static void updateDefaultLabelForRunDropDownItem(String defaultItemLabel) {
         MToolItem runToolItem = (MToolItem) ModelServiceSingleton.getInstance().getModelService()
-                .find(IdConstants.EXECUTION_TOOL_ITEM_ID, ApplicationSingleton.getInstance().getApplication());
+                .find(IdConstants.RUN_TOOL_ITEM_ID, ApplicationSingleton.getInstance().getApplication());
         if (runToolItem == null) return;
 
         final MMenu menu = runToolItem.getMenu();

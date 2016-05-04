@@ -39,6 +39,7 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.control.FocusableComposite;
 import com.kms.katalon.composer.components.impl.control.GifCLabel;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.execution.constants.ImageConstants;
@@ -138,25 +139,40 @@ public class JobViewerPart implements EventHandler {
         eventBroker.subscribe(EventConstants.JOB_REFRESH, this);
         eventBroker.subscribe(EventConstants.JOB_UPDATE_PROGRESS, this);
     }
+    
+    private void createLauncherIdComposite(Composite parent, final IDELauncher launcher) {
+        Composite launcherIdComposite = new FocusableComposite(parent, SWT.NONE);
+        launcherIdComposite.setBackground(parent.getBackground());
+        launcherIdComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        boolean isDebugMode = launcher.getMode() == LaunchMode.DEBUG;
+        GridLayout glLauncherId = new GridLayout(isDebugMode ? 2 : 1, false);
+        glLauncherId.marginWidth = 0;
+        glLauncherId.marginHeight = 0;
+        launcherIdComposite.setLayout(glLauncherId);
+        if (isDebugMode) {
+            Label lblDebugImage = new Label(launcherIdComposite, SWT.NONE);
+            lblDebugImage.setImage(ImageConstants.IMG_16_DEBUG);
+            lblDebugImage.setBackground(parent.getBackground());
+            lblDebugImage.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
+        }
+        Label lblId = new Label(launcherIdComposite, SWT.WRAP);
+        lblId.setText(launcher.getName());
+        lblId.setFont(JFaceResources.getFontRegistry().getBold(""));
+        lblId.setBackground(parent.getBackground());
+        lblId.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+    }
 
     private void createJobComposite(Composite composite, final IDELauncher launcher) throws Exception {
-
         final Composite compositeLauncher = new FocusableComposite(composite, SWT.BORDER);
-
+        compositeLauncher.setBackgroundMode(SWT.INHERIT_FORCE);
         compositeLauncher.setData(CONTROL_ID, launcher.getId());
 
         compositeLauncher.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         compositeLauncher.setBackground(ColorUtil.getWhiteBackgroundColor());
+        
         GridLayout glCompositeLauncher = new GridLayout(3, false);
         glCompositeLauncher.marginHeight = 0;
         compositeLauncher.setLayout(glCompositeLauncher);
-        MouseAdapter mouseAdapter = new MouseAdapter() {
-            public void mouseDown(MouseEvent event) {
-                compositeLauncher.setFocus();
-            }
-        };
-
-        compositeLauncher.addMouseListener(mouseAdapter);
 
         Label lblWatched = new Label(compositeLauncher, SWT.NONE);
         GridData gd_lblWatched = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -166,18 +182,13 @@ public class JobViewerPart implements EventHandler {
         if (!launcher.isObserved()) {
             lblWatched.setVisible(false);
         }
-        lblWatched.setBackground(compositeLauncher.getBackground());
 
-        Label lblId = new Label(compositeLauncher, SWT.WRAP);
-        lblId.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        lblId.setText(launcher.getName());
-        lblId.setFont(JFaceResources.getFontRegistry().getBold(""));
-        lblId.setBackground(compositeLauncher.getBackground());
-
+        createLauncherIdComposite(compositeLauncher, launcher);
+        
         Label lblProgressStatus = new Label(compositeLauncher, SWT.WRAP);
         lblProgressStatus.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
         lblProgressStatus.setText(launcher.getResult().getExecutedTestCases() + "/" + launcher.getResult().getTotalTestCases());
-        lblProgressStatus.setBackground(compositeLauncher.getBackground());
+        
         lblProgressStatus.setData(CONTROL_ID, LAUNCHER_PROGRESS_LABEL);
 
         if (launcher.getStatus() == LauncherStatus.RUNNING || launcher.getStatus() == LauncherStatus.SENDING_EMAIL) {
@@ -187,9 +198,6 @@ public class JobViewerPart implements EventHandler {
             GridData gd_lblLauncherStatus = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
             gd_lblLauncherStatus.widthHint = 30;
             lblLauncherStatus.setLayoutData(gd_lblLauncherStatus);
-            lblLauncherStatus.setBackground(compositeLauncher.getBackground());
-
-            lblLauncherStatus.addMouseListener(mouseAdapter);
         } else {
             Label lblLauncherStatus = new Label(compositeLauncher, SWT.NONE);
             GridData gd_lblLauncherStatus = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -200,7 +208,7 @@ public class JobViewerPart implements EventHandler {
                 case DONE:
                     lblLauncherStatus.setImage(IMG_DONE);
                     break;
-                case SUSPEND:
+                case SUSPENDED:
                     break;
                 case TERMINATED:
                     lblLauncherStatus.setImage(IMG_TERMINATE);
@@ -211,8 +219,6 @@ public class JobViewerPart implements EventHandler {
                 default:
                     break;
             }
-            lblLauncherStatus.setBackground(compositeLauncher.getBackground());
-            lblLauncherStatus.addMouseListener(mouseAdapter);
         }
 
         Label lblStatus = new Label(compositeLauncher, SWT.NONE);
@@ -222,28 +228,20 @@ public class JobViewerPart implements EventHandler {
         String driver = launcher.getRunConfig().getName();
 
         lblStatus.setText("<" + launcher.getStatus().toString() + ">" + " - " + driver);
-        lblStatus.setBackground(compositeLauncher.getBackground());
         new Label(compositeLauncher, SWT.NONE);
 
-        lblId.addMouseListener(mouseAdapter);
-        lblStatus.addMouseListener(mouseAdapter);
-        lblWatched.addMouseListener(mouseAdapter);
-
-        // lblLauncherStatus.addMouseListener(mouseAdapter);
-
         if (launcher.getStatus() == LauncherStatus.RUNNING || launcher.getStatus() == LauncherStatus.WAITING
-                || launcher.getStatus() == LauncherStatus.SUSPEND) {
+                || launcher.getStatus() == LauncherStatus.SUSPENDED) {
             new Label(compositeLauncher, SWT.NONE);
             ProgressBar progressBar = new ProgressBar(compositeLauncher, SWT.BORDER | SWT.SMOOTH);
             GridData gd_progressBar = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
             gd_progressBar.heightHint = 12;
             progressBar.setLayoutData(gd_progressBar);
-            progressBar.setBackground(compositeLauncher.getBackground());
             progressBar.setMinimum(0);
             progressBar.setMaximum(launcher.getResult().getTotalTestCases());
             progressBar.setSelection(launcher.getResult().getExecutedTestCases());
             progressBar.setData(CONTROL_ID, LAUNCHER_PROGRESS_BAR);
-            if (launcher.getStatus() == LauncherStatus.SUSPEND) {
+            if (launcher.getStatus() == LauncherStatus.SUSPENDED) {
                 progressBar.setState(SWT.PAUSED);
             }
 
@@ -253,11 +251,9 @@ public class JobViewerPart implements EventHandler {
             glCompositeLauncherToolbar.marginHeight = 0;
             compositeLauncherToolbar.setLayout(glCompositeLauncherToolbar);
             compositeLauncherToolbar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-            compositeLauncherToolbar.setBackground(compositeLauncher.getBackground());
 
             ToolBar toolBar = new ToolBar(compositeLauncherToolbar, SWT.FLAT | SWT.RIGHT);
             toolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-            toolBar.setBackground(compositeLauncher.getBackground());
 
             ToolItem tltmStop = new ToolItem(toolBar, SWT.NONE);
             tltmStop.setImage(IMG_STOP);
@@ -275,7 +271,7 @@ public class JobViewerPart implements EventHandler {
 
             ToolItem tltmPause = new ToolItem(toolBar, SWT.NONE);
 
-            if (launcher.getStatus() == LauncherStatus.SUSPEND) {
+            if (launcher.getStatus() == LauncherStatus.SUSPENDED) {
                 tltmPause.setImage(IMG_PLAY);
                 tltmPause.setToolTipText("Resume");
             } else if (launcher.getStatus() == LauncherStatus.RUNNING) {
@@ -287,26 +283,19 @@ public class JobViewerPart implements EventHandler {
             if (ideLauncher.getMode() == LaunchMode.RUN) {
                 tltmPause.setEnabled(false);
             }
-//
-//            tltmPause.addSelectionListener(new SelectionAdapter() {
-//                @SuppressWarnings("restriction")
-//                @Override
-//                public void widgetSelected(SelectionEvent e) {
-//                    try {
-//                        if (launcher.getStatus() == LauncherStatus.RUNNING) {
-//                            ideLauncher.suspend();
-//                        } else {
-//                            ideLauncher.resume();
-//                        }
-//
-//                        compositeLauncher.setFocus();
-//                    } catch (DebugException ex) {
-//                        LoggerSingleton.getInstance().getLogger().error(ex);
-//                    }
-//                }
-//            });
 
-            progressBar.addMouseListener(mouseAdapter);
+            tltmPause.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    if (launcher.getStatus() == LauncherStatus.RUNNING) {
+                        ideLauncher.suspend();
+                    } else {
+                        ideLauncher.resume();
+                    }
+
+                    compositeLauncher.setFocus();
+                }
+            });
         } else {
             glCompositeLauncher.marginBottom = 5;
         }
@@ -329,6 +318,14 @@ public class JobViewerPart implements EventHandler {
                     }
                 } catch (Exception ex) {
                     LoggerSingleton.getInstance().getLogger().error(ex);
+                }
+            }
+        });
+        
+        ControlUtils.recursivelyAddMouseListener(compositeLauncher, new MouseAdapter() {
+            public void mouseDown(MouseEvent event) {
+                if (compositeLauncher != null && !compositeLauncher.isDisposed()) {
+                    compositeLauncher.setFocus();
                 }
             }
         });

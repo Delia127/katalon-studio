@@ -26,7 +26,8 @@ public interface IdConstants {
     public static final String QUIT_COMMAND_ID = "com.kms.katalon.composer.quit";
 
     // Toolbar
-    public static final String EXECUTION_TOOL_ITEM_ID = "com.kms.katalon.composer.execution.handledtoolitem.run";
+    public static final String RUN_TOOL_ITEM_ID = "com.kms.katalon.composer.execution.handledtoolitem.run";
+    public static final String DEBUG_TOOL_ITEM_ID = "com.kms.katalon.composer.execution.handledtoolitem.debug";
 
     // Composer PartStack content
     public static final String COMPOSER_CONTENT_PARTSTACK_ID = "com.kms.katalon.composer.content";
@@ -90,6 +91,9 @@ public interface IdConstants {
     public static final String SEARCH_COMMAND_ID = "org.eclipse.search.ui.openSearchDialog";
 
     public static final String RESET_PERSPECTIVE_HANDLER_ID = "com.kms.katalon.composer.menu.handler.resetPerspective";
+    
+    // Parameter ID
+    public static final String RUN_MODE_PARAMETER_ID = "com.kms.katalon.composer.execution.runMode";
 
     // Open Recent Project Command id
     public static final String OPEN_RECENT_PROJECT_COMMAND_ID = "com.kms.katalon.composer.project.command.openrecentproject";

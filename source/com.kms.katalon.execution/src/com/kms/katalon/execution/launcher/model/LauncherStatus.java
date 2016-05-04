@@ -1,7 +1,7 @@
 package com.kms.katalon.execution.launcher.model;
 
 public enum LauncherStatus {
-    WAITING("Waiting"), SUSPEND("Suspend"), RUNNING("Running"), SENDING_EMAIL("Sending email"), TERMINATED("Terminated"), 
+    WAITING("Waiting"), SUSPENDED("Suspended"), RUNNING("Running"), SENDING_EMAIL("Sending email"), TERMINATED("Terminated"), 
     DONE("Done");
 
     private final String text;
