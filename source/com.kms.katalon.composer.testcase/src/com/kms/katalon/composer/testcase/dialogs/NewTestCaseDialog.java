@@ -19,8 +19,8 @@ public class NewTestCaseDialog extends CommonNewEntityDialog {
 
     private String tag;
 
-    public NewTestCaseDialog(Shell parentShell, FolderEntity parentFolder) {
-        super(parentShell, parentFolder);
+    public NewTestCaseDialog(Shell parentShell, FolderEntity parentFolder, String suggestedName) {
+        super(parentShell, parentFolder, suggestedName);
         setDialogTitle(StringConstants.DIA_TITLE_TEST_CASE);
         setDialogMsg(StringConstants.DIA_MSG_CREATE_NEW_TEST_CASE);
     }

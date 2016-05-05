@@ -27,7 +27,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -82,19 +81,15 @@ public class ObjectPropertyView implements EventHandler {
 
     private static final String[] FILTER_EXTS = { "*.gif; *.png; *.jpg" };
 
-    private Composite mainPage, mainComposite, layoutComposite;
-
-    private Composite compositeInfo, compositeInfoDetails, compositeObjectDetails;
-
     private ToolItem toolItemAdd, toolItemDelete, toolItemClear;
 
     private ObjectPropetiesTableViewer tableViewer;
 
-    private ImageButton btnExpandGeneralInformation, btnExpandIframeSetting;
+    private ImageButton btnExpandIframeSetting;
 
     private TableColumn trclmnColumnSelected;
 
-    private Text txtName, txtId, txtImage, txtDescriptions, txtParentObject;
+    private Text txtImage, txtParentObject;
 
     private Button btnBrowseImage, chkUseRelative;
 
@@ -104,26 +99,15 @@ public class ObjectPropertyView implements EventHandler {
 
     private WebElementEntity originalTestObject, cloneTestObject;
 
-    private boolean isInfoCompositeExpanded = true;
+    private boolean isSettingsExpanded = true;
 
-    private boolean isParentObjectCompositeExpanded = true;
-
-    private Label lblGeneralInformation, lblParentObjectHeader;
+    private Label lblSettings;
 
     private Composite compositeTable;
 
     private Button btnBrowseParentObj, chkUseParentObject;
 
-    private Composite compositeParentObjectArea, compositeParentObjectHeader, compositeParentObjectDetails,
-            compositeParentObject;
-
-    private Listener layoutGeneralCompositeListener = new Listener() {
-
-        @Override
-        public void handleEvent(org.eclipse.swt.widgets.Event event) {
-            layoutGeneralComposite();
-        }
-    };
+    private Composite compositeParentObject, compositeSettingsDetails, compositeSettings;
 
     private Listener layoutParentObjectCompositeListener = new Listener() {
 
@@ -132,8 +116,6 @@ public class ObjectPropertyView implements EventHandler {
             layoutParentObjectComposite();
         }
     };
-
-    private Composite composite;
 
     public ObjectPropertyView(IEventBroker eventBroker, MDirtyable dt) {
         this.eventBroker = eventBroker;
@@ -144,166 +126,26 @@ public class ObjectPropertyView implements EventHandler {
         eventBroker.subscribe(EventConstants.TEST_OBJECT_UPDATED, this);
     }
 
-    protected void layoutGeneralComposite() {
-        Display.getDefault().timerExec(10, new Runnable() {
-
-            @Override
-            public void run() {
-                isInfoCompositeExpanded = !isInfoCompositeExpanded;
-
-                compositeInfoDetails.setVisible(isInfoCompositeExpanded);
-                if (!isInfoCompositeExpanded) {
-                    ((GridData) compositeInfoDetails.getLayoutData()).exclude = true;
-                    compositeInfo.setSize(compositeInfo.getSize().x,
-                            compositeInfo.getSize().y - compositeObjectDetails.getSize().y);
-                } else {
-                    ((GridData) compositeInfoDetails.getLayoutData()).exclude = false;
-                }
-                compositeInfo.layout(true, true);
-                compositeInfo.getParent().layout();
-                redrawBtnExpandInfo();
-            }
-
-        });
-    }
-
     protected void layoutParentObjectComposite() {
         Display.getDefault().timerExec(10, new Runnable() {
 
             @Override
             public void run() {
-                isParentObjectCompositeExpanded = !isParentObjectCompositeExpanded;
+                isSettingsExpanded = !isSettingsExpanded;
 
-                compositeParentObjectDetails.setVisible(isParentObjectCompositeExpanded);
-                if (!isParentObjectCompositeExpanded) {
-                    ((GridData) compositeParentObjectDetails.getLayoutData()).exclude = true;
-                    compositeParentObject.setSize(compositeParentObject.getSize().x, compositeParentObject.getSize().y
-                            - compositeParentObjectDetails.getSize().y);
+                compositeSettingsDetails.setVisible(isSettingsExpanded);
+                if (!isSettingsExpanded) {
+                    ((GridData) compositeSettingsDetails.getLayoutData()).exclude = true;
+                    compositeSettings.setSize(compositeSettings.getSize().x, compositeSettings.getSize().y
+                            - compositeSettingsDetails.getSize().y);
                 } else {
-                    ((GridData) compositeParentObjectDetails.getLayoutData()).exclude = false;
+                    ((GridData) compositeSettingsDetails.getLayoutData()).exclude = false;
                 }
-                compositeParentObject.layout(true, true);
-                compositeParentObject.getParent().layout();
+                compositeSettings.layout(true, true);
+                compositeSettings.getParent().layout();
                 redrawBtnExpandParentObject();
             }
         });
-    }
-
-    void createLayout() {
-        FormLayout formLayout = new FormLayout();
-        layoutComposite.setLayout(formLayout);
-    }
-
-    private void createTestObjectInfoComposite() {
-        compositeInfo = new Composite(mainComposite, SWT.NONE);
-        GridLayout glCompositeInfo = new GridLayout(1, false);
-        glCompositeInfo.verticalSpacing = 0;
-        glCompositeInfo.marginWidth = 0;
-        glCompositeInfo.marginHeight = 0;
-        compositeInfo.setLayout(glCompositeInfo);
-        compositeInfo.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        compositeInfo.setBackground(ColorUtil.getCompositeBackgroundColor());
-
-        Composite compositeInfoHeader = new Composite(compositeInfo, SWT.NONE);
-        compositeInfoHeader.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        GridLayout glCompositeInfoHeader = new GridLayout(2, false);
-        glCompositeInfoHeader.marginWidth = 0;
-        glCompositeInfoHeader.marginHeight = 0;
-        compositeInfoHeader.setLayout(glCompositeInfoHeader);
-        compositeInfoHeader.setCursor(compositeInfoHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
-
-        btnExpandGeneralInformation = new ImageButton(compositeInfoHeader, SWT.NONE);
-        redrawBtnExpandInfo();
-
-        lblGeneralInformation = new Label(compositeInfoHeader, SWT.NONE);
-        lblGeneralInformation.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        lblGeneralInformation.setText(StringConstants.VIEW_LBL_INFO);
-        ControlUtils.setFontToBeBold(lblGeneralInformation);
-
-        compositeInfoDetails = new Composite(compositeInfo, SWT.NONE);
-        GridLayout glCompositeInfoDetails = new GridLayout(2, true);
-        glCompositeInfoDetails.marginRight = 40;
-        glCompositeInfoDetails.marginLeft = 40;
-        glCompositeInfoDetails.horizontalSpacing = 30;
-        glCompositeInfoDetails.marginHeight = 0;
-        glCompositeInfoDetails.marginWidth = 0;
-        compositeInfoDetails.setLayout(glCompositeInfoDetails);
-        compositeInfoDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-
-        Composite compositeInfoNameAndId = new Composite(compositeInfoDetails, SWT.NONE);
-        compositeInfoNameAndId.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        GridLayout glCompositeInfoNameAndId = new GridLayout(2, false);
-        glCompositeInfoNameAndId.verticalSpacing = ControlUtils.DF_VERTICAL_SPACING;
-        glCompositeInfoNameAndId.horizontalSpacing = ControlUtils.DF_HORIZONTAL_SPACING;
-        compositeInfoNameAndId.setLayout(glCompositeInfoNameAndId);
-
-        Label lblId = new Label(compositeInfoNameAndId, SWT.NONE);
-        lblId.setText(StringConstants.VIEW_LBL_ID);
-
-        txtId = new Text(compositeInfoNameAndId, SWT.BORDER | SWT.READ_ONLY);
-        GridData gdTxtID = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-        gdTxtID.heightHint = ControlUtils.DF_CONTROL_HEIGHT;
-        txtId.setLayoutData(gdTxtID);
-
-        Label lblName = new Label(compositeInfoNameAndId, SWT.NONE);
-        lblName.setText(StringConstants.VIEW_LBL_NAME);
-
-        txtName = new Text(compositeInfoNameAndId, SWT.BORDER);
-        GridData gdTxtName = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-        gdTxtName.heightHint = ControlUtils.DF_CONTROL_HEIGHT;
-        txtName.setLayoutData(gdTxtName);
-
-        Label lblImage = new Label(compositeInfoNameAndId, SWT.NONE);
-        lblImage.setText(StringConstants.VIEW_LBL_IMAGE);
-
-        Composite imgComposite = new Composite(compositeInfoNameAndId, SWT.NONE);
-        imgComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        GridLayout imgCompositeLayout = new GridLayout(2, false);
-        imgCompositeLayout.marginHeight = 0;
-        imgCompositeLayout.marginWidth = 0;
-        imgComposite.setLayout(imgCompositeLayout);
-
-        txtImage = new Text(imgComposite, SWT.BORDER | SWT.READ_ONLY);
-        GridData gdTxtImage = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-        gdTxtImage.heightHint = ControlUtils.DF_CONTROL_HEIGHT;
-
-        txtImage.setLayoutData(gdTxtImage);
-        txtImage.setEditable(false);
-
-        btnBrowseImage = new Button(imgComposite, SWT.FLAT);
-        btnBrowseImage.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false, 1, 1));
-        btnBrowseImage.setText(StringConstants.VIEW_BTN_BROWSE);
-        btnBrowseImage.setToolTipText(StringConstants.VIEW_BTN_TIP_BROWSE);
-
-        Composite imageUtilComp = new Composite(compositeInfoNameAndId, SWT.NONE);
-        imageUtilComp.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 2, 1));
-        GridLayout glImageUtilComp = new GridLayout(2, false);
-        glImageUtilComp.marginHeight = 0;
-        glImageUtilComp.marginWidth = 0;
-        imageUtilComp.setLayout(glImageUtilComp);
-
-        chkUseRelative = new Button(imageUtilComp, SWT.CHECK);
-        chkUseRelative.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, true, false, 1, 1));
-        chkUseRelative.setText(StringConstants.VIEW_CHKBOX_LBL_USE_RELATIVE_PATH);
-
-        Composite compositeInfoDescriptions = new Composite(compositeInfoDetails, SWT.NONE);
-        compositeInfoDescriptions.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        GridLayout glCompositeInfoDescriptions = new GridLayout(2, false);
-        glCompositeInfoDescriptions.horizontalSpacing = ControlUtils.DF_HORIZONTAL_SPACING;
-        compositeInfoDescriptions.setLayout(glCompositeInfoDescriptions);
-
-        Label lblDescription = new Label(compositeInfoDescriptions, SWT.NONE);
-        GridData gd_lblDescription = new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1);
-        gd_lblDescription.verticalIndent = 5;
-        lblDescription.setLayoutData(gd_lblDescription);
-        lblDescription.setText(StringConstants.VIEW_LBL_DESC);
-
-        txtDescriptions = new Text(compositeInfoDescriptions, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI);
-        GridData gdTextDescription = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 3);
-        gdTextDescription.heightHint = 45;
-        txtDescriptions.setLayoutData(gdTextDescription);
-        new Label(compositeInfoDescriptions, SWT.NONE);
-        new Label(compositeInfoDescriptions, SWT.NONE);
     }
 
     private void createTableToolbar() {
@@ -314,7 +156,7 @@ public class ObjectPropertyView implements EventHandler {
         compositeTableHeader.setLayout(fl_compositeTableHeader);
 
         Label lblObjectProperties = new Label(compositeTableHeader, SWT.NONE);
-        lblObjectProperties.setText("Object's Properties");
+        lblObjectProperties.setText(StringConstants.VIEW_LBL_OBJ_PROPERTIES);
         ControlUtils.setFontToBeBold(lblObjectProperties);
         Composite compositeTableToolBar = new Composite(compositeTable, SWT.NONE);
         compositeTableToolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -404,8 +246,8 @@ public class ObjectPropertyView implements EventHandler {
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
     }
 
-    private void createTestObjectDetailsComposite() {
-        compositeObjectDetails = new Composite(mainComposite, SWT.NONE);
+    private void createTestObjectDetailsComposite(Composite parent) {
+        Composite compositeObjectDetails = new Composite(parent, SWT.NONE);
         compositeObjectDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
         GridLayout glCompositeObjectDetails = new GridLayout(1, false);
@@ -414,7 +256,7 @@ public class ObjectPropertyView implements EventHandler {
         compositeObjectDetails.setLayout(glCompositeObjectDetails);
         compositeObjectDetails.setBackground(ColorUtil.getCompositeBackgroundColor());
 
-        createParentObjectComposite();
+        createSettingsComposite(compositeObjectDetails);
 
         compositeTable = new Composite(compositeObjectDetails, SWT.NONE);
         compositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -428,107 +270,99 @@ public class ObjectPropertyView implements EventHandler {
         createTableDetails();
     }
 
-    private void createParentObjectComposite() {
-        compositeParentObject = new Composite(compositeObjectDetails, SWT.NONE);
+    private void createSettingsComposite(Composite parent) {
+        compositeSettings = new Composite(parent, SWT.NONE);
         GridLayout glCompositeParentObject = new GridLayout(1, true);
         glCompositeParentObject.horizontalSpacing = 40;
         glCompositeParentObject.marginWidth = 0;
         glCompositeParentObject.marginHeight = 0;
-        compositeParentObject.setLayout(glCompositeParentObject);
-        compositeParentObject.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+        compositeSettings.setLayout(glCompositeParentObject);
+        compositeSettings.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
-        compositeParentObjectHeader = new Composite(compositeParentObject, SWT.NONE);
+        Composite compositeSettingsHeader = new Composite(compositeSettings, SWT.NONE);
         GridData gd_compositeParentObjectHeader = new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1);
         gd_compositeParentObjectHeader.horizontalIndent = -5;
-        compositeParentObjectHeader.setLayoutData(gd_compositeParentObjectHeader);
+        compositeSettingsHeader.setLayoutData(gd_compositeParentObjectHeader);
         GridLayout glCompositeParentObjectHeader = new GridLayout(2, false);
         glCompositeParentObjectHeader.marginHeight = 0;
         glCompositeParentObjectHeader.marginWidth = 0;
-        compositeParentObjectHeader.setLayout(glCompositeParentObjectHeader);
-        compositeParentObjectHeader
-                .setCursor(compositeParentObjectHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
+        compositeSettingsHeader.setLayout(glCompositeParentObjectHeader);
+        compositeSettingsHeader.setCursor(compositeSettingsHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
 
-        btnExpandIframeSetting = new ImageButton(compositeParentObjectHeader, SWT.PUSH);
+        btnExpandIframeSetting = new ImageButton(compositeSettingsHeader, SWT.PUSH);
         redrawBtnExpandParentObject();
 
-        lblParentObjectHeader = new Label(compositeParentObjectHeader, SWT.NONE);
-        lblParentObjectHeader.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        lblParentObjectHeader.setText("Settings");
-        ControlUtils.setFontToBeBold(lblParentObjectHeader);
+        lblSettings = new Label(compositeSettingsHeader, SWT.NONE);
+        lblSettings.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        lblSettings.setText(StringConstants.VIEW_LBL_SETTINGS);
+        ControlUtils.setFontToBeBold(lblSettings);
 
-        compositeParentObjectDetails = new Composite(compositeParentObject, SWT.NONE);
-        compositeParentObjectDetails.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+        compositeSettingsDetails = new Composite(compositeSettings, SWT.NONE);
+        compositeSettingsDetails.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
         GridLayout glCompositeParentObjectDetails = new GridLayout(2, true);
         glCompositeParentObjectDetails.marginWidth = 35;
         glCompositeParentObjectDetails.marginHeight = 0;
         glCompositeParentObjectDetails.verticalSpacing = ControlUtils.DF_HORIZONTAL_SPACING;
         glCompositeParentObjectDetails.horizontalSpacing = 40;
-        compositeParentObjectDetails.setLayout(glCompositeParentObjectDetails);
+        compositeSettingsDetails.setLayout(glCompositeParentObjectDetails);
 
-        chkUseParentObject = new Button(compositeParentObjectDetails, SWT.CHECK);
-        chkUseParentObject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        // Left column
+        Composite compositeSettingsLeft = new Composite(compositeSettingsDetails, SWT.NONE);
+        compositeSettingsLeft.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        compositeSettingsLeft.setLayout(new GridLayout(1, false));
+
+        chkUseParentObject = new Button(compositeSettingsLeft, SWT.CHECK);
+        chkUseParentObject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         chkUseParentObject.setText(StringConstants.VIEW_LBL_USE_IFRAME);
 
-        compositeParentObjectArea = new Composite(compositeParentObjectDetails, SWT.NONE);
-        compositeParentObjectArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        GridLayout glCompositeParentObjectArea = new GridLayout(2, false);
-        glCompositeParentObjectArea.horizontalSpacing = 30;
-        glCompositeParentObjectArea.marginHeight = 0;
-        glCompositeParentObjectArea.marginWidth = 0;
-        compositeParentObjectArea.setLayout(glCompositeParentObjectArea);
+        compositeParentObject = new Composite(compositeSettingsLeft, SWT.NONE);
+        compositeParentObject.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        GridLayout glSettingsLeft = new GridLayout(3, false);
+        glSettingsLeft.marginWidth = 0;
+        glSettingsLeft.marginHeight = 0;
+        compositeParentObject.setLayout(glSettingsLeft);
 
-        Label lblParentObjectID = new Label(compositeParentObjectArea, SWT.NONE);
-        GridData gdLblParentObjectID = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdLblParentObjectID.horizontalIndent = 5;
-        lblParentObjectID.setLayoutData(gdLblParentObjectID);
+        Label lblParentObjectID = new Label(compositeParentObject, SWT.NONE);
+        lblParentObjectID.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false, false, 1, 1));
         lblParentObjectID.setText(StringConstants.DIA_FIELD_TEST_OBJECT_ID);
 
-        composite = new Composite(compositeParentObjectArea, SWT.NONE);
-        composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        GridLayout glComposite = new GridLayout(2, false);
-        glComposite.marginWidth = 0;
-        glComposite.marginHeight = 0;
-        composite.setLayout(glComposite);
-
-        txtParentObject = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
-        GridData gdTxtParentObject = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        txtParentObject = new Text(compositeParentObject, SWT.BORDER | SWT.READ_ONLY);
+        GridData gdTxtParentObject = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         gdTxtParentObject.heightHint = ControlUtils.DF_CONTROL_HEIGHT;
         txtParentObject.setLayoutData(gdTxtParentObject);
 
-        btnBrowseParentObj = new Button(composite, SWT.FLAT);
-        btnBrowseParentObj.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+        btnBrowseParentObj = new Button(compositeParentObject, SWT.FLAT);
+        btnBrowseParentObj.setLayoutData(new GridData(SWT.TRAIL, SWT.FILL, false, false, 1, 1));
         btnBrowseParentObj.setText(StringConstants.BROWSE);
-        new Label(compositeParentObjectDetails, SWT.NONE);
+
+        // Right column
+        Composite compositeSettingsRight = new Composite(compositeSettingsDetails, SWT.NONE);
+        compositeSettingsRight.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        compositeSettingsRight.setLayout(new GridLayout(3, false));
+
+        new Label(compositeSettingsRight, SWT.NONE);
+        chkUseRelative = new Button(compositeSettingsRight, SWT.CHECK);
+        chkUseRelative.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
+        chkUseRelative.setText(StringConstants.VIEW_CHKBOX_LBL_USE_RELATIVE_PATH);
+
+        Label lblImage = new Label(compositeSettingsRight, SWT.NONE);
+        lblImage.setText(StringConstants.VIEW_LBL_IMAGE);
+
+        txtImage = new Text(compositeSettingsRight, SWT.BORDER | SWT.READ_ONLY);
+        GridData gdTxtImage = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        gdTxtImage.heightHint = ControlUtils.DF_CONTROL_HEIGHT;
+        txtImage.setLayoutData(gdTxtImage);
+        txtImage.setEditable(false);
+
+        btnBrowseImage = new Button(compositeSettingsRight, SWT.FLAT);
+        btnBrowseImage.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false, 1, 1));
+        btnBrowseImage.setText(StringConstants.VIEW_BTN_BROWSE);
+        btnBrowseImage.setToolTipText(StringConstants.VIEW_BTN_TIP_BROWSE);
     }
 
     private void hookControlSelectListerners() {
-        btnExpandGeneralInformation.addListener(SWT.MouseDown, layoutGeneralCompositeListener);
-        lblGeneralInformation.addListener(SWT.MouseDown, layoutGeneralCompositeListener);
-
         btnExpandIframeSetting.addListener(SWT.MouseDown, layoutParentObjectCompositeListener);
-        lblParentObjectHeader.addListener(SWT.MouseDown, layoutParentObjectCompositeListener);
-
-        txtName.addModifyListener(new ModifyListener() {
-            @Override
-            public void modifyText(ModifyEvent e) {
-                if (cloneTestObject != null) {
-                    cloneTestObject.setName(txtName.getText());
-                    dirtyable.setDirty(true);
-                }
-
-            }
-        });
-
-        txtDescriptions.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                if (cloneTestObject != null) {
-                    cloneTestObject.setDescription(txtDescriptions.getText());
-                    dirtyable.setDirty(true);
-                }
-            }
-        });
+        lblSettings.addListener(SWT.MouseDown, layoutParentObjectCompositeListener);
 
         txtImage.addModifyListener(new ModifyListener() {
 
@@ -557,8 +391,8 @@ public class ObjectPropertyView implements EventHandler {
                             txtImage.setText(PathUtil.relativeToAbsolutePath(thePath, projectFolder));
                         }
 
-                        File file = new File(chkUseRelative.getSelection() ? (projectFolder + File.separator + txtImage
-                                .getText()) : txtImage.getText());
+                        File file = new File(chkUseRelative.getSelection()
+                                ? (projectFolder + File.separator + txtImage.getText()) : txtImage.getText());
                         if (!file.exists() || !file.isFile()) {
                             MessageDialog.openWarning(null, StringConstants.WARN_TITLE,
                                     StringConstants.VIEW_WARN_FILE_NOT_FOUND);
@@ -635,7 +469,8 @@ public class ObjectPropertyView implements EventHandler {
                 dialog.setFilterPath(projectFolder);
 
                 String absolutePath = dialog.open();
-                if (absolutePath == null) return;
+                if (absolutePath == null)
+                    return;
                 if (chkUseRelative.getSelection()) {
                     String relPath = PathUtil.absoluteToRelativePath(absolutePath, projectFolder);
                     txtImage.setText(relPath);
@@ -664,7 +499,7 @@ public class ObjectPropertyView implements EventHandler {
     }
 
     private void enableParentObjectComposite(boolean enable) {
-        ControlUtils.recursiveSetEnabled(compositeParentObjectArea, enable);
+        ControlUtils.recursiveSetEnabled(compositeParentObject, enable);
     }
 
     private void performSelectParentObject() {
@@ -688,8 +523,8 @@ public class ObjectPropertyView implements EventHandler {
                 WebElementEntity currentParentWebElement = ObjectRepositoryController.getInstance()
                         .getWebElementByDisplayPk(currentParentObjectId);
                 if (currentParentWebElement != null) {
-                    dialog.setInitialSelection(new WebElementTreeEntity(currentParentWebElement, TreeEntityUtil
-                            .createSelectedTreeEntityHierachy(currentParentWebElement.getParentFolder(),
+                    dialog.setInitialSelection(new WebElementTreeEntity(currentParentWebElement,
+                            TreeEntityUtil.createSelectedTreeEntityHierachy(currentParentWebElement.getParentFolder(),
                                     objectRepoRootFolder)));
                 }
             }
@@ -711,33 +546,19 @@ public class ObjectPropertyView implements EventHandler {
     }
 
     private void createControlGroup(Composite parent) {
-
-        mainComposite = new Composite(parent, SWT.NONE);
+        Composite mainComposite = new Composite(parent, SWT.NONE);
         GridLayout glMainComposite = new GridLayout(1, false);
         glMainComposite.verticalSpacing = 10;
         mainComposite.setLayout(glMainComposite);
-        mainComposite.setBackground(ColorUtil.getExtraLightGrayBackgroundColor());
 
-        createTestObjectInfoComposite();
-
-        createTestObjectDetailsComposite();
+        createTestObjectDetailsComposite(mainComposite);
 
         hookControlSelectListerners();
     }
 
-    private void redrawBtnExpandInfo() {
-        btnExpandGeneralInformation.getParent().setRedraw(false);
-        if (isInfoCompositeExpanded) {
-            btnExpandGeneralInformation.setImage(ImageConstants.IMG_16_ARROW_UP_BLACK);
-        } else {
-            btnExpandGeneralInformation.setImage(ImageConstants.IMG_16_ARROW_DOWN_BLACK);
-        }
-        btnExpandGeneralInformation.getParent().setRedraw(true);
-    }
-
     private void redrawBtnExpandParentObject() {
         btnExpandIframeSetting.getParent().setRedraw(false);
-        if (isParentObjectCompositeExpanded) {
+        if (isSettingsExpanded) {
             btnExpandIframeSetting.setImage(ImageConstants.IMG_16_ARROW_UP_BLACK);
         } else {
             btnExpandIframeSetting.setImage(ImageConstants.IMG_16_ARROW_DOWN_BLACK);
@@ -750,14 +571,13 @@ public class ObjectPropertyView implements EventHandler {
      */
     public Composite createMainPage(Composite theParent) {
         // Create a two column page with a SashForm
-        mainPage = new Composite(theParent, SWT.NULL);
+        Composite mainPage = new Composite(theParent, SWT.NULL);
         mainPage.setLayout(new FillLayout());
         SashForm sash = new SashForm(mainPage, SWT.HORIZONTAL);
 
         // Create the "layout" and "control" columns
         // createLayoutGroup();
         createControlGroup(sash);
-        txtName.setFocus();
         return mainPage;
     }
 
@@ -770,15 +590,6 @@ public class ObjectPropertyView implements EventHandler {
 
     private void loadTestObject() {
         try {
-            String dispID = cloneTestObject.getIdForDisplay();
-            txtId.setText(dispID);
-
-            txtName.setText(cloneTestObject.getName());
-
-            if (cloneTestObject.getDescription() != null) {
-                txtDescriptions.setText(cloneTestObject.getDescription());
-            }
-
             if (cloneTestObject.getImagePath() != null) {
                 txtImage.setText(cloneTestObject.getImagePath());
             }

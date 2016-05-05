@@ -64,8 +64,6 @@ public class TestSuitePart implements EventHandler {
 
     private static final int MINIMUM_COMPOSITE_SIZE = 300;
 
-    private static final int MAX_HEIGHT_OF_TEXT_BOX = 20;
-
     @Inject
     protected EModelService modelService;
 
@@ -75,15 +73,13 @@ public class TestSuitePart implements EventHandler {
     @Inject
     private IEventBroker eventBroker;
 
-    private Composite compositeExecution, compositeMain, compositeInformation, compositeInformationHeader,
-            compositeInformationDetails;
+    private Composite compositeExecution, compositeMain;
 
     private ScrolledComposite compositeTablePart;
 
-    private boolean isGeneralInfoCompositeExpanded, isExecutionCompositeExpanded;
+    private boolean isExecutionCompositeExpanded;
 
-    private Text textTestSuiteName, textDescription, txtTestSuiteId, txtCreatedDate, txtLastUpdate, txtLastRun,
-            txtRerun, txtUserDefinePageLoadTimeout;
+    private Text txtLastRun, txtRerun, txtUserDefinePageLoadTimeout;
 
     private Link lblLastRun;
 
@@ -101,13 +97,13 @@ public class TestSuitePart implements EventHandler {
 
     private Composite compositeLastRunAndReRun;
 
-    private ImageButton btnExpandInformation, btnExpandExecutionComposite;
+    private ImageButton btnExpandExecutionComposite;
 
     private Button rerunTestCaseOnly;
 
     private TestSuiteCompositePart parentTestSuiteCompositePart;
 
-    private Label lblGeneralInformation, lblExecutionInformation;
+    private Label lblExecutionInformation;
 
     private TestSuitePartTestCaseView childrenView;
 
@@ -116,15 +112,6 @@ public class TestSuitePart implements EventHandler {
     private Composite parent;
 
     private boolean isLoading;
-
-    private Listener layoutGeneralCompositeListener = new Listener() {
-
-        @Override
-        public void handleEvent(org.eclipse.swt.widgets.Event event) {
-            isGeneralInfoCompositeExpanded = !isGeneralInfoCompositeExpanded;
-            layoutGeneralInfo();
-        }
-    };
 
     private Listener layoutExecutionCompositeListener = new Listener() {
 
@@ -160,7 +147,6 @@ public class TestSuitePart implements EventHandler {
 
         registerControlListeners();
 
-        layoutGeneralInfo();
         layoutExecutionInfo();
         childrenView.layout();
     }
@@ -170,7 +156,6 @@ public class TestSuitePart implements EventHandler {
     }
 
     private void initExpandedState() {
-        isGeneralInfoCompositeExpanded = false;
         isExecutionCompositeExpanded = false;
         childrenView.initExpandedState();
     }
@@ -196,26 +181,6 @@ public class TestSuitePart implements EventHandler {
         // this);
     }
 
-    private void layoutGeneralInfo() {
-        Display.getDefault().timerExec(10, new Runnable() {
-
-            @Override
-            public void run() {
-                compositeInformationDetails.setVisible(isGeneralInfoCompositeExpanded);
-                if (!isGeneralInfoCompositeExpanded) {
-                    ((GridData) compositeInformationDetails.getLayoutData()).exclude = true;
-                    compositeInformation.setSize(compositeInformation.getSize().x, compositeInformation.getSize().y
-                            - compositeTablePart.getSize().y - compositeExecution.getSize().y);
-                } else {
-                    ((GridData) compositeInformationDetails.getLayoutData()).exclude = false;
-                }
-                compositeInformation.layout(true, true);
-                compositeInformation.getParent().layout();
-                redrawBtnExpandGeneralInfo();
-            }
-        });
-    }
-
     private void layoutExecutionInfo() {
         Display.getDefault().timerExec(10, new Runnable() {
             @Override
@@ -236,28 +201,6 @@ public class TestSuitePart implements EventHandler {
     }
 
     private void registerControlListeners() {
-        textTestSuiteName.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                getTestSuite().setName(textTestSuiteName.getText());
-                setDirty(true);
-            }
-        });
-
-        textDescription.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                getTestSuite().setDescription(textDescription.getText());
-                setDirty(true);
-            }
-        });
-
-        btnExpandInformation.addListener(SWT.MouseDown, layoutGeneralCompositeListener);
-
-        lblGeneralInformation.addListener(SWT.MouseDown, layoutGeneralCompositeListener);
-
         btnAddMailRcp.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -437,26 +380,6 @@ public class TestSuitePart implements EventHandler {
     }
 
     private void loadTestSuiteInfo(final TestSuiteEntity testSuite) throws Exception {
-        String testSuiteIdForDisplay = testSuite.getIdForDisplay();
-
-        // binding name
-        textTestSuiteName.setText(testSuite.getName());
-
-        // binding description
-        if (testSuite.getDescription() != null) {
-            textDescription.setText(testSuite.getDescription());
-        }
-
-        txtTestSuiteId.setText(testSuiteIdForDisplay);
-
-        if (testSuite.getDateCreated() != null) {
-            txtCreatedDate.setText(testSuite.getDateCreated().toString());
-        }
-
-        if (testSuite.getDateModified() != null) {
-            txtLastUpdate.setText(testSuite.getDateModified().toString());
-        }
-
         if (testSuite.getLastRun() != null) {
             lblLastRun.setText("<A>" + StringConstants.PA_LBL_LAST_RUN + "</A>");
             lblLastRun.setToolTipText(StringConstants.PA_LBL_TIP_LAST_RUN);
@@ -498,136 +421,9 @@ public class TestSuitePart implements EventHandler {
         compositeMain.setLayout(glCompositeMain);
         compositeMain.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        createGeneralInformationComposite();
         createExecutionInformationComposite();
 
         compositeTablePart = childrenView.createCompositeTestCase(compositeMain);
-    }
-
-    private void createGeneralInformationComposite() {
-        compositeInformation = new Composite(compositeMain, SWT.NONE);
-        compositeInformation.setBackground(ColorUtil.getCompositeBackgroundColor());
-        compositeInformation.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        GridLayout glCompositeInformation = new GridLayout(1, false);
-        glCompositeInformation.marginWidth = 0;
-        glCompositeInformation.marginHeight = 0;
-        glCompositeInformation.verticalSpacing = 0;
-        compositeInformation.setLayout(glCompositeInformation);
-
-        compositeInformationHeader = new Composite(compositeInformation, SWT.NONE);
-        GridLayout glCompositeInformationHeader = new GridLayout(2, false);
-        glCompositeInformationHeader.marginWidth = 0;
-        glCompositeInformationHeader.marginHeight = 0;
-        compositeInformationHeader.setLayout(glCompositeInformationHeader);
-        compositeInformationHeader.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        compositeInformationHeader.setCursor(compositeInformationHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
-
-        btnExpandInformation = new ImageButton(compositeInformationHeader, SWT.NONE);
-        redrawBtnExpandGeneralInfo();
-
-        lblGeneralInformation = new Label(compositeInformationHeader, SWT.NONE);
-        lblGeneralInformation.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        lblGeneralInformation.setFont(JFaceResources.getFontRegistry().getBold(""));
-        lblGeneralInformation.setText("General Information");
-
-        compositeInformationDetails = new Composite(compositeInformation, SWT.NONE);
-        GridLayout glCompositeInformationDetails = new GridLayout(3, true);
-        glCompositeInformationDetails.marginLeft = 45;
-        glCompositeInformationDetails.horizontalSpacing = 40;
-        compositeInformationDetails.setLayout(glCompositeInformationDetails);
-        compositeInformationDetails.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
-
-        Composite compositeTestSuiteIdAndName = new Composite(compositeInformationDetails, SWT.NONE);
-        GridData gdCompositeIdAndName = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-        gdCompositeIdAndName.minimumWidth = MINIMUM_COMPOSITE_SIZE;
-        compositeTestSuiteIdAndName.setLayoutData(gdCompositeIdAndName);
-        GridLayout glCompositeIdAndName = new GridLayout(2, false);
-        glCompositeIdAndName.verticalSpacing = 10;
-        compositeTestSuiteIdAndName.setLayout(glCompositeIdAndName);
-
-        Label lblTestSuiteID = new Label(compositeTestSuiteIdAndName, SWT.NONE);
-        GridData gdLblTestSuiteID = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdLblTestSuiteID.widthHint = 50;
-        lblTestSuiteID.setLayoutData(gdLblTestSuiteID);
-        lblTestSuiteID.setText(StringConstants.PA_LBL_ID);
-
-        txtTestSuiteId = new Text(compositeTestSuiteIdAndName, SWT.BORDER | SWT.READ_ONLY);
-        GridData gdTxtTestSuiteId = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-        gdTxtTestSuiteId.heightHint = MAX_HEIGHT_OF_TEXT_BOX;
-        txtTestSuiteId.setLayoutData(gdTxtTestSuiteId);
-
-        Label lblTestSuiteName = new Label(compositeTestSuiteIdAndName, SWT.NONE);
-        GridData gdLblTestSuiteName = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdLblTestSuiteName.widthHint = 50;
-        lblTestSuiteName.setLayoutData(gdLblTestSuiteName);
-        lblTestSuiteName.setText(StringConstants.PA_LBL_NAME);
-
-        textTestSuiteName = new Text(compositeTestSuiteIdAndName, SWT.BORDER);
-        GridData gdTextTestSuiteName = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-        gdTextTestSuiteName.heightHint = MAX_HEIGHT_OF_TEXT_BOX;
-        textTestSuiteName.setLayoutData(gdTextTestSuiteName);
-
-        Composite compositeUpdateAndRun = new Composite(compositeInformationDetails, SWT.NONE);
-        GridData gdCompositeUpdateAndRun = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-        gdCompositeUpdateAndRun.minimumWidth = MINIMUM_COMPOSITE_SIZE;
-        compositeUpdateAndRun.setLayoutData(gdCompositeUpdateAndRun);
-        GridLayout glCompositeUpdateAndRun = new GridLayout(2, false);
-        glCompositeUpdateAndRun.verticalSpacing = 10;
-        compositeUpdateAndRun.setLayout(glCompositeUpdateAndRun);
-
-        Label lblCreatedDate = new Label(compositeUpdateAndRun, SWT.NONE);
-        GridData gdLblCreatedDate = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdLblCreatedDate.widthHint = 85;
-        lblCreatedDate.setLayoutData(gdLblCreatedDate);
-        lblCreatedDate.setText(StringConstants.PA_LBL_CREATED_DATE);
-
-        txtCreatedDate = new Text(compositeUpdateAndRun, SWT.BORDER | SWT.READ_ONLY);
-        GridData gdTxtCreatedDate = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-        gdTxtCreatedDate.heightHint = MAX_HEIGHT_OF_TEXT_BOX;
-        txtCreatedDate.setLayoutData(gdTxtCreatedDate);
-
-        Label lblLastUpdate = new Label(compositeUpdateAndRun, SWT.NONE);
-        lblLastUpdate.setText(StringConstants.PA_LBL_LAST_UPDATED);
-
-        txtLastUpdate = new Text(compositeUpdateAndRun, SWT.BORDER | SWT.READ_ONLY);
-        GridData gdTxtLastUpdate = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-        gdTxtLastUpdate.heightHint = MAX_HEIGHT_OF_TEXT_BOX;
-        txtLastUpdate.setLayoutData(gdTxtLastUpdate);
-
-        Composite compositeDescription = new Composite(compositeInformationDetails, SWT.NONE);
-        GridData gdCompositeDescription = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-        gdCompositeDescription.minimumWidth = MINIMUM_COMPOSITE_SIZE;
-        compositeDescription.setLayoutData(gdCompositeDescription);
-        GridLayout glCompositeDescription = new GridLayout(2, false);
-        glCompositeDescription.verticalSpacing = 10;
-        compositeDescription.setLayout(glCompositeDescription);
-
-        Label lblDescription = new Label(compositeDescription, SWT.NONE);
-        GridData gdLblDescription = new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1);
-        gdLblDescription.widthHint = 85;
-        gdLblDescription.heightHint = 20;
-        lblDescription.setLayoutData(gdLblDescription);
-        lblDescription.setText(StringConstants.PA_LBL_DESC);
-
-        textDescription = new Text(compositeDescription, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
-        GridData gdTextDescription = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2);
-        gdTextDescription.heightHint = 60;
-        textDescription.setLayoutData(gdTextDescription);
-
-        Label lblDescriptionSecondRow = new Label(compositeDescription, SWT.NONE);
-        GridData gdLblDescriptionSecondRow = new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1);
-        gdLblDescriptionSecondRow.heightHint = 20;
-        lblDescriptionSecondRow.setLayoutData(gdLblDescriptionSecondRow);
-    }
-
-    private void redrawBtnExpandGeneralInfo() {
-        btnExpandInformation.getParent().setRedraw(false);
-        if (isGeneralInfoCompositeExpanded) {
-            btnExpandInformation.setImage(ImageConstants.IMG_16_ARROW_UP_BLACK);
-        } else {
-            btnExpandInformation.setImage(ImageConstants.IMG_16_ARROW_DOWN_BLACK);
-        }
-        btnExpandInformation.getParent().setRedraw(true);
     }
 
     private void redrawBtnExpandExecutionInfo() {

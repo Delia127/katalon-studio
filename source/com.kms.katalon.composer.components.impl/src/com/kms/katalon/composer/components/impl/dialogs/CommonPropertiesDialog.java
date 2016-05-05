@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.components.impl.dialogs;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -111,7 +112,7 @@ public class CommonPropertiesDialog extends AbstractDialog {
         if (!isModified()) {
             return;
         }
-        getEntity().setDescription(txtDescription.getText());
+        getEntity().setDescription(StringUtils.trimToEmpty(txtDescription.getText()));
     }
 
     public FileEntity getEntity() {

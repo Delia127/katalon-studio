@@ -130,7 +130,7 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PA_COL_DESC = DESCRIPTION;
 
-    public static final String PA_LBL_LAST_UPDATED = "Last updated";
+    public static final String PA_LBL_LAST_UPDATED = "Modified date";
 
     public static final String PA_LBL_CREATED_DATE = "Created date";
 
@@ -244,4 +244,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_TITLE_TEST_CASE_BROWSER = "Test Case Browser";
 
     public static final String DIA_WARN_NO_TEST_CASE_SELECTION = "You haven't select test case yet. Please select your desired one(s)!";
+
+    // TestSuitePropertiesDialog
+    public static final String DIA_TITLE_TEST_SUITE_PROPERTIES = "Test Suite Properties";
+
 }

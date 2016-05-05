@@ -47,8 +47,6 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PA_ERROR_MSG_UNABLE_TO_SAVE_TEST_DATA = "Unable to save Test Data.";
 
-    public static final String PA_ERROR_REASON_TEST_DATA_EXISTED = "Test data ''{0}'' has already existed.";
-
     // ExcelTestDataPart
     public static final String PA_LBL_SHEET_NAME = "Sheet Name";
 
@@ -147,4 +145,9 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_COL_REFERENCED_BY = "Referenced by";
 
     public static final String DIA_COL_TEST_CASE_ID = "Test Case ID";
+
+    // TestDataPropertiesDialog
+    public static final String DIA_TITLE_TEST_DATA_PROPERTIES = "Test Data Properties";
+
+    public static final String DIA_LBL_DATA_TYPE = "Data Type";
 }
