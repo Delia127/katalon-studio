@@ -61,49 +61,55 @@ public class NewTestCaseHandler {
 		return false;
 	}
 
-	@Execute
-	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
-		try {
-			Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-			ITreeEntity parentTreeEntity = findParentTreeEntity(selectedObjects);
-			if (parentTreeEntity == null) {
-				if (testCaseTreeRoot != null) {
-					parentTreeEntity = testCaseTreeRoot;
-				} else {
-					return;
-				}
-			}
+    @Execute
+    public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
+        try {
+            Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
+            ITreeEntity parentTreeEntity = findParentTreeEntity(selectedObjects);
+            if (parentTreeEntity == null) {
+                if (testCaseTreeRoot == null) {
+                    return;
+                }
+                parentTreeEntity = testCaseTreeRoot;
+            }
 
-			if (parentTreeEntity != null) {
-				FolderEntity parentFolderEntity = (FolderEntity) parentTreeEntity.getObject();
-				String suggestedName = TestCaseController.getInstance().getAvailableTestCaseName(parentFolderEntity,
-						newDefaultName);
+            FolderEntity parentFolderEntity = (FolderEntity) parentTreeEntity.getObject();
+            TestCaseController tcController = TestCaseController.getInstance();
+            String suggestedName = tcController.getAvailableTestCaseName(parentFolderEntity, newDefaultName);
 
-				NewTestCaseDialog dialog = new NewTestCaseDialog(parentShell, parentFolderEntity);
-				dialog.setName(suggestedName);
-				dialog.open();
+            NewTestCaseDialog dialog = new NewTestCaseDialog(parentShell, parentFolderEntity);
+            dialog.setName(suggestedName);
 
-				if (dialog.getReturnCode() == Dialog.OK) {
-					TestCaseEntity testCaseEntity = TestCaseController.getInstance().addNewTestCase(parentFolderEntity,
-							dialog.getName());
+            if (dialog.open() != Dialog.OK) {
+                return;
+            }
 
-					if (testCaseEntity != null) {
-						eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
-						eventBroker.send(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, parentTreeEntity);
-						eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, new TestCaseTreeEntity(
-								testCaseEntity, parentTreeEntity));
-						eventBroker.send(EventConstants.TESTCASE_OPEN, testCaseEntity);
-					}
-				}
-			}
+            // create new test case
+            TestCaseEntity testCaseEntity = tcController.addNewTestCase(parentFolderEntity, dialog.getName());
 
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-			MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,
-					StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_CASE);
-		}
+            if (testCaseEntity == null) {
+                // no project
+                return;
+            }
 
-	}
+            // update test case properties
+            testCaseEntity.setTag(dialog.getTag());
+            testCaseEntity.setDescription(dialog.getDescription());
+            tcController.updateTestCase(testCaseEntity);
+
+            eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
+            eventBroker.send(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, parentTreeEntity);
+            eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, new TestCaseTreeEntity(testCaseEntity,
+                    parentTreeEntity));
+            eventBroker.send(EventConstants.TESTCASE_OPEN, testCaseEntity);
+
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,
+                    StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_CASE);
+        }
+
+    }
 
 	public static ITreeEntity findParentTreeEntity(Object[] selectedObjects) throws Exception {
 		if (selectedObjects != null) {
