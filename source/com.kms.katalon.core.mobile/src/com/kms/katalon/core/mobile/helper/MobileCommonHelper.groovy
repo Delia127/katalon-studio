@@ -10,12 +10,6 @@ import com.kms.katalon.core.mobile.keyword.GUIObject
 import com.kms.katalon.core.mobile.keyword.MobileDriverFactory
 
 public class MobileCommonHelper {
-
-    @CompileStatic
-    public static void initializeMobileDriver(String appFile, boolean uninstallAfterCloseApp) throws Exception {
-        MobileDriverFactory.startMobileDriver(appFile, uninstallAfterCloseApp);
-    }
-
     @CompileStatic
     public static void swipe(AppiumDriver driver, int startX, int startY, int endX, int endY){
         driver.swipe(startX, startY, endX, endY, 500);

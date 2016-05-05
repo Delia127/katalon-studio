@@ -34,7 +34,8 @@ Require-Bundle: org.eclipse.core.resources,
  com.kms.katalon.custom,
  com.kms.katalon.core,
  org.codehaus.groovy.eclipse.dsl,
- com.kms.katalon.selenium-standalone
+ com.kms.katalon.selenium-standalone,
+ com.kms.katalon.core.appium
 Export-Package: com.kms.katalon.groovy.constant,
  com.kms.katalon.groovy.util
 Import-Package: org.apache.commons.lang,

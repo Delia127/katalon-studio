@@ -26,11 +26,12 @@ import com.kms.katalon.composer.mobile.constants.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
 import com.kms.katalon.composer.mobile.objectspy.util.Util;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.appium.driver.AppiumDriverManager;
+import com.kms.katalon.core.appium.exception.AppiumStartException;
+import com.kms.katalon.core.appium.exception.IOSWebkitStartException;
+import com.kms.katalon.core.appium.exception.MobileDriverInitializeException;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
-import com.kms.katalon.core.mobile.exception.AppiumStartException;
-import com.kms.katalon.core.mobile.exception.IOSWebkitStartException;
-import com.kms.katalon.core.mobile.exception.MobileDriverInitializeException;
 import com.kms.katalon.core.mobile.keyword.AndroidProperties;
 import com.kms.katalon.core.mobile.keyword.GUIObject;
 import com.kms.katalon.core.mobile.keyword.IOSProperties;
@@ -93,12 +94,10 @@ public class MobileInspectorController {
                 driverConnectors));
         RunConfiguration.setAppiumLogFilePath(projectDir + File.separator + "appium.log");
 
-        MobileDriverFactory.startAppiumServerJS(SERVER_START_TIMEOUT,
+        AppiumDriverManager.startAppiumServerJS(SERVER_START_TIMEOUT,
                 getAdditionalEnvironmentVariables(mobileDriverType));
-        MobileDriverFactory.createMobileDriver(mobileDriverType, mobileDeviceInfo.getDeviceId(), appFile,
+        driver = MobileDriverFactory.startMobileDriver(mobileDriverType, mobileDeviceInfo.getDeviceId(), appFile,
                 uninstallAfterCloseApp);
-
-        driver = MobileDriverFactory.getDriver();
     }
 
     private Map<String, String> getAdditionalEnvironmentVariables(MobileDriverType mobileDriverType) throws IOException {
@@ -141,12 +140,7 @@ public class MobileInspectorController {
 
     public boolean closeApp() {
         try {
-            if (driver == null) {
-                return false;
-            }
-            driver.quit();
-            MobileDriverFactory.quitServer();
-            driver = null;
+            MobileDriverFactory.closeDriver();
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }

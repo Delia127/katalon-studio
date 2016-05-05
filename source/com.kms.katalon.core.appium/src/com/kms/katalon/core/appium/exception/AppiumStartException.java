@@ -1,4 +1,4 @@
-package com.kms.katalon.core.mobile.exception;
+package com.kms.katalon.core.appium.exception;
 
 import com.kms.katalon.core.util.ExceptionsUtil;
 

@@ -20,9 +20,9 @@ import org.eclipse.swt.widgets.Label;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.mobile.constants.StringConstants;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
-import com.kms.katalon.core.mobile.exception.MobileSetupException;
 import com.kms.katalon.execution.mobile.configuration.providers.MobileDeviceProvider;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
+import com.kms.katalon.execution.mobile.exception.MobileSetupException;
 
 public class DeviceSelectionComposite extends Composite {
     private Combo cbbDevices;

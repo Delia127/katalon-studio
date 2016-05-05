@@ -249,12 +249,9 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 
     public static final String KW_CATEGORIZE_TEXT = "Text";
 
+
     public static final String KW_CATEGORIZE_UTILITIES = "Utilities";
 
-    // MobileDriverType
-    public static final String ANDROID = "Android";
-
-    public static final String IOS = "iOS";
 
     public static final String CONF_EXECUTED_PLATFORM = XML_LOG_DEVICE_PLATFORM_PROPERTY;
 
