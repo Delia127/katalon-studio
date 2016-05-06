@@ -344,9 +344,15 @@ public class StringConstants {
     // alias of GlobalStringConstants.APP_INFO_FILE_LOCATION
     public static final String APP_INFO_FILE_LOCATION = System.getProperty("user.home") + File.separator + ".katalon"
             + File.separator + "application.properties";
-    
+
     // MobileDriverType
     public static final String ANDROID = "Android";
 
     public static final String IOS = "iOS";
+
+    // DatabaseConnection
+    public static final String EXC_CANNOT_LOAD_JDBC_DRIVER = "Cannot load JDBC driver: {0}";
+
+    // SqlRunner
+    public static final String EXC_DATABASE_CONNECTION_IS_CLOSED = "Database connection is closed.";
 }
