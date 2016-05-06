@@ -1,12 +1,15 @@
 package com.kms.katalon.core.configuration;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -14,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.constants.StringConstants;
 
 /**
@@ -56,6 +60,10 @@ public class RunConfiguration {
 
     public static final String EXCUTION_SOURCE_DESCRIPTION = StringConstants.CONF_PROPERTY_EXECUTION_SOURCE_DESCRIPTION;
 
+    public static final String APP_VERSION = GlobalStringConstants.APP_VERSION;
+
+    public static final String APP_INFO_FILE_LOCATION = StringConstants.APP_INFO_FILE_LOCATION;
+
     private static String settingFilePath;
 
     private static final ThreadLocal<Map<String, Object>> localExecutionSettingMapStorage = new ThreadLocal<Map<String, Object>>() {
@@ -76,6 +84,26 @@ public class RunConfiguration {
         @Override
         protected List<Object> initialValue() {
             return new ArrayList<Object>();
+        }
+    };
+
+    private static final ThreadLocal<Properties> applicationInfo = new ThreadLocal<Properties>() {
+        @Override
+        protected Properties initialValue() {
+            File appPropFile = new File(APP_INFO_FILE_LOCATION);
+            Properties appProp = new Properties();
+            if (!appPropFile.exists()) {
+                return appProp;
+            }
+
+            try {
+                appProp.load(new FileInputStream(appPropFile));
+            } catch (FileNotFoundException e) {
+                // do nothing
+            } catch (IOException e) {
+                // do nothing
+            }
+            return appProp;
         }
     };
 
@@ -200,12 +228,25 @@ public class RunConfiguration {
         return settingFilePath;
     }
 
+    public static String getLogFolderPath() {
+        String logFilePath = RunConfiguration.getSettingFilePath();
+        return (logFilePath != null) ? new File(logFilePath).getParentFile().getAbsolutePath() : "";
+    }
+
     public static String getAppiumLogFilePath() {
         if (StringUtils.isBlank(localAppiumDriverStores.get())) {
-            localAppiumDriverStores.set(RunConfiguration.getDriverSystemProperty(
-                    StringConstants.CONF_PROPERTY_MOBILE_DRIVER, StringConstants.CONF_APPIUM_LOG_FILE));
+            String appiumLogFilePath = getLogFolderPath()
+                    + File.separator
+                    + RunConfiguration.getDriverSystemProperty(StringConstants.CONF_PROPERTY_MOBILE_DRIVER,
+                            StringConstants.CONF_APPIUM_LOG_FILE);
+            localAppiumDriverStores.set(appiumLogFilePath);
         }
         return localAppiumDriverStores.get();
+    }
+
+    public static String getAppiumDirectory() {
+        return RunConfiguration.getDriverSystemProperty(StringConstants.CONF_PROPERTY_MOBILE_DRIVER,
+                StringConstants.CONF_APPIUM_DIRECTORY);
     }
 
     public static int getTimeOut() {
@@ -270,5 +311,14 @@ public class RunConfiguration {
         if (localDriverStorage.get().contains(driver)) {
             localDriverStorage.get().remove(driver);
         }
+    }
+
+    public static String getAppVersion() {
+        Properties appInfo = applicationInfo.get();
+        if (appInfo.isEmpty()) {
+            return GlobalStringConstants.UNKNOWN;
+        }
+        return appInfo.getProperty(GlobalStringConstants.APP_VERSION_NUMBER_KEY) + "."
+                + appInfo.getProperty(GlobalStringConstants.APP_BUILD_NUMBER_KEY);
     }
 }

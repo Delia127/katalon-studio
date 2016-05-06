@@ -8,12 +8,20 @@
     <elements xsi:type="commands:Command" xmi:id="_Z3Hl4OJWEeSyVPtKyNklew" elementId="com.kms.katalon.composer.execution.command.debug" commandName="" description="Debug"/>
     <elements xsi:type="commands:Command" xmi:id="_1Vr3wEvpEeWSR5dl8TkM5g" elementId="com.kms.katalon.composer.execution.command.execute" commandName="" description="Execute"/>
     <elements xsi:type="commands:Command" xmi:id="_V2XzcOd0EeWhlq_ETXxxuQ" elementId="com.kms.katalon.composer.execution.command.generateCommand" commandName="Generate Command"/>
+    <elements xsi:type="commands:Command" xmi:id="_kI3nMAh6EeaOHID5tXhDTg" elementId="org.eclipse.debug.ui.commands.StepInto" commandName="Step Into"/>
+    <elements xsi:type="commands:Command" xmi:id="_nW_wEAh6EeaOHID5tXhDTg" elementId="org.eclipse.debug.ui.commands.StepOver" commandName="Step Over"/>
+    <elements xsi:type="commands:Command" xmi:id="_nc8AAAh6EeaOHID5tXhDTg" elementId="org.eclipse.debug.ui.commands.StepReturn" commandName="Step Out"/>
+    <elements xsi:type="commands:Command" xmi:id="_nfeWoAh6EeaOHID5tXhDTg" elementId="org.eclipse.debug.ui.commands.ToggleBreakpoint" commandName="Toggle Breakpoint"/>
+    <elements xsi:type="commands:Command" xmi:id="_tNjTwAh6EeaOHID5tXhDTg" elementId="com.kms.katalon.composer.execution.command.skipAllBreakpoint" commandName="Skip All Breakpoints"/>
+    <elements xsi:type="commands:Command" xmi:id="_tecPcAh6EeaOHID5tXhDTg" elementId="com.kms.katalon.composer.execution.command.removeAllBreakpoint" commandName="Remove All Breakpoints"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_VxUzMEO7EeS6w-5VfP-05A" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Handler" xmi:id="_3df1IG74EeSqyYL0pZQV2Q" elementId="com.kms.katalon.composer.execution.handler.stopAllExecute" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.handlers.StopExecutingScriptHandler" command="_4raZwG74EeSqyYL0pZQV2Q"/>
-    <elements xsi:type="commands:Handler" xmi:id="_cIjdAOJWEeSyVPtKyNklew" elementId="com.kms.katalon.composer.execution.handler.debug" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.handlers.DebugHandler" command="_Z3Hl4OJWEeSyVPtKyNklew"/>
+    <elements xsi:type="commands:Handler" xmi:id="_cIjdAOJWEeSyVPtKyNklew" elementId="com.kms.katalon.composer.execution.handler.debug" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.handlers.ExecuteHandler" command="_Z3Hl4OJWEeSyVPtKyNklew"/>
     <elements xsi:type="commands:Handler" xmi:id="_TY6a0EvqEeWSR5dl8TkM5g" elementId="com.kms.katalon.composer.execution.handler.execute" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.handlers.ExecuteHandler" command="_1Vr3wEvpEeWSR5dl8TkM5g"/>
     <elements xsi:type="commands:Handler" xmi:id="_gqpOUOd0EeWhlq_ETXxxuQ" elementId="com.kms.katalon.composer.execution.handler.0" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.handlers.GenerateCommandHandler" command="_V2XzcOd0EeWhlq_ETXxxuQ"/>
+    <elements xsi:type="commands:Handler" xmi:id="_wsI-gAq_EeaDX_I50SXsNA" elementId="com.kms.katalon.composer.execution.handler.skipAllBreakpoints" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.debug.handler.SkipAllBreakpointHandler" command="_tNjTwAh6EeaOHID5tXhDTg"/>
+    <elements xsi:type="commands:Handler" xmi:id="_UauoQArIEea7RfDmXOohVw" elementId="com.kms.katalon.composer.execution.handler.removeAllBreakpoints" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.debug.handler.RemoveAllBreakpointHandler" command="_tecPcAh6EeaOHID5tXhDTg"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_2siakEO8EeS6w-5VfP-05A" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="last">
     <elements xsi:type="menu:HandledToolItem" xmi:id="_hGFVQGZHEeSy97efZ7yHrA" elementId="com.kms.katalon.composer.execution.handledtoolitem.run" label="" iconURI="platform:/plugin/com.kms.katalon.composer.execution/icons/play_28.png" tooltip="Run" command="_1Vr3wEvpEeWSR5dl8TkM5g">
@@ -21,12 +29,10 @@
       <tags>Opaque</tags>
       <menu xmi:id="_h1k4gGZHEeSy97efZ7yHrA" elementId="com.kms.katalon.composer.execution.menu.run" label="Run "/>
     </elements>
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_h09mMOJWEeSyVPtKyNklew" elementId="com.kms.katalon.composer.execution.handledtoolitem.debug" toBeRendered="false" visible="false" label="" iconURI="platform:/plugin/com.kms.katalon.composer.execution/icons/bug_28.png" tooltip="Debug" command="_Z3Hl4OJWEeSyVPtKyNklew">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_h09mMOJWEeSyVPtKyNklew" elementId="com.kms.katalon.composer.execution.handledtoolitem.debug" label="" iconURI="platform:/plugin/com.kms.katalon.composer.execution/icons/bug_28.png" tooltip="Debug" command="_Z3Hl4OJWEeSyVPtKyNklew">
       <tags>FORCE_TEXT</tags>
       <tags>Opaque</tags>
-      <menu xmi:id="_lev64OJXEeSyVPtKyNklew" elementId="com.kms.katalon.composer.execution.menu.debug" label="Debug">
-        <children xsi:type="menu:DynamicMenuContribution" xmi:id="_oHKuoOJXEeSyVPtKyNklew" elementId="com.kms.katalon.composer.execution.dynamicmenucontribution.debug" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.toolbar.DebugMenuContribution"/>
-      </menu>
+      <menu xmi:id="_lev64OJXEeSyVPtKyNklew" elementId="com.kms.katalon.composer.execution.menu.debug" label="Debug"/>
     </elements>
     <elements xsi:type="menu:HandledToolItem" xmi:id="_yvXSEG74EeSqyYL0pZQV2Q" elementId="com.kms.katalon.composer.execution.handledtoolitem.stop" label="" iconURI="platform:/plugin/com.kms.katalon.composer.execution/icons/stop_28.png" tooltip="Stop All" command="_4raZwG74EeSqyYL0pZQV2Q">
       <tags>FORCE_TEXT</tags>
@@ -52,6 +58,17 @@
       <toolbar xmi:id="_oMKcYN3CEeSP-ax1WxE4pw" elementId="com.kms.katalon.composer.execution.toolbar.0">
         <children xsi:type="menu:DirectToolItem" xmi:id="_pQPvkN3CEeSP-ax1WxE4pw" elementId="com.kms.katalon.composer.execution.directtoolitem.removeAllTerminated" label="" iconURI="platform:/plugin/com.kms.katalon.composer.execution/icons/clear_16.png" tooltip="Delete All Terminated Launches" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.handlers.CleanAllTerminatedHandler"/>
       </toolbar>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Rh3sUAh5EeaOHID5tXhDTg" featurename="children" parentElementId="com.kms.katalon.composer.menu" positionInList="after:com.kms.katalon.composer.menu.project">
+    <elements xsi:type="menu:Menu" xmi:id="_dzOwQAh5EeaOHID5tXhDTg" elementId="com.kms.katalon.composer.execution.menu.debug123" label="Debug">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_vX2dkAh5EeaOHID5tXhDTg" elementId="com.kms.katalon.composer.execution.handledmenuitem.debug.stepInto" label="Step Into" iconURI="platform:/plugin/org.eclipse.debug.ui/icons/full/elcl16/stepinto_co.gif" command="_kI3nMAh6EeaOHID5tXhDTg"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_1zMJUAh5EeaOHID5tXhDTg" elementId="com.kms.katalon.composer.execution.handledmenuitem.debug.stepOver" label="Step Over" iconURI="platform:/plugin/org.eclipse.debug.ui/icons/full/elcl16/stepover_co.gif" command="_nW_wEAh6EeaOHID5tXhDTg"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_2J5ZIAh5EeaOHID5tXhDTg" elementId="com.kms.katalon.composer.execution.handledmenuitem.debug.stepOut" label="Step Out" iconURI="platform:/plugin/org.eclipse.debug.ui/icons/full/elcl16/stepreturn_co.gif" command="_nc8AAAh6EeaOHID5tXhDTg"/>
+      <children xsi:type="menu:MenuSeparator" xmi:id="_6i-pIAqxEeaDX_I50SXsNA" elementId="com.kms.katalon.composer.execution.menuseparator.0"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_3fItwAh5EeaOHID5tXhDTg" elementId="com.kms.katalon.composer.execution.handledmenuitem.debug.toggleBreakPoint" label="Toggle Breakpoint" iconURI="platform:/plugin/org.eclipse.debug.ui/icons/full/obj16/brkp_obj.gif" command="_nfeWoAh6EeaOHID5tXhDTg"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_KhKNMAh6EeaOHID5tXhDTg" elementId="com.kms.katalon.composer.execution.handledmenuitem.debug.skipAllBreakPoints" label="Skip All Breakpoints" iconURI="platform:/plugin/org.eclipse.debug.ui/icons/full/elcl16/skip_brkp.gif" type="Check" command="_tNjTwAh6EeaOHID5tXhDTg"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_Kp4rYAh6EeaOHID5tXhDTg" elementId="com.kms.katalon.composer.execution.handledmenuitem.debug.removeAllBreakPoints" label="Remove All Breakpoints" iconURI="platform:/plugin/org.eclipse.debug.ui/icons/full/elcl16/rem_all_co.gif" command="_tecPcAh6EeaOHID5tXhDTg"/>
     </elements>
   </fragments>
 </fragment:ModelFragments>

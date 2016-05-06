@@ -11,6 +11,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrappe
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.providers.AstContentProviderAdapter;
+import com.kms.katalon.composer.testcase.model.InputValueTypeUtil;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
@@ -22,9 +23,8 @@ public class TestDataValueBuilderDialog extends AbstractAstBuilderWithTableDialo
     private static final String COLUMN = "Column";
 
     private static final String TEST_DATA = "Test Data";
-
-    private final InputValueType[] defaultInputValueTypes = { InputValueType.Variable, InputValueType.TestData,
-            InputValueType.String, InputValueType.Number, InputValueType.Boolean, InputValueType.Null };
+    
+    private final InputValueType[] defaultInputValueTypes = InputValueTypeUtil.getValueTypeOptions(InputValueType.TestDataValue);
 
     private MethodCallExpressionWrapper methodCallExpression;
 

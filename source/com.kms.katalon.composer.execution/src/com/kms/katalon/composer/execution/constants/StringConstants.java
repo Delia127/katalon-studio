@@ -34,6 +34,9 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String HAND_ACTIVATING_VIEWERS = "Activating viewers...";
 	public static final String HAND_BUILDING_SCRIPTS = "Building scripts...";
 
+    // ToggleBreakpointHandler
+    public static final String HAND_ERROR_MSG_CANNOT_TOGGLE_LINE_BREAKPOINT = "Cannot toggle line breakpoint";
+
 	// LogViewerPart
 	public static final String PA_COLLAPSE_ALL = "Collapse all";
 	public static final String PA_EXPAND_ALL = "Expand all";
@@ -196,4 +199,7 @@ public class StringConstants extends GlobalStringConstants {
 
     // TestSuiteSelectionDialog
     public static final String DIA_TITLE_TEST_SUITE_BROWSER = "Test Suite Browser";
+    
+    //LaunchDelegate
+    public static final String LAUNCH_CONFIGURATION_TYPE_ID = "com.kms.katalon.composer.execution.scriptLaunchConfiguration";
 }

@@ -360,6 +360,10 @@ function addExecutionEnvironmentInfo(environment_info) {
   		<td>OS:<td>
   		<td>{{html os}}<td>
   	</tr>
+  	<tr>
+  		<td>Katalon version:<td>
+  		<td>{{html katalonVersion}}<td>
+  	</tr>
   	
   	{{if browser}}
   	<tr>

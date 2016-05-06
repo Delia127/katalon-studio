@@ -3,7 +3,6 @@ package com.kms.katalon.composer.webui.recorder.dialog;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IStatus;
@@ -79,6 +78,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
+import com.kms.katalon.composer.webui.recorder.action.HTMLActionParamValueType;
 import com.kms.katalon.composer.webui.recorder.action.HTMLSynchronizeAction;
 import com.kms.katalon.composer.webui.recorder.action.HTMLValidationAction;
 import com.kms.katalon.composer.webui.recorder.action.IHTMLAction;
@@ -623,9 +623,9 @@ public class RecorderDialog extends Dialog implements EventHandler {
 
         TableColumnLayout tableLayout = new TableColumnLayout();
         tableLayout.setColumnData(tableViewerNo, new ColumnWeightData(0, 40));
-        tableLayout.setColumnData(tableColumnAction, new ColumnWeightData(20, 100));
-        tableLayout.setColumnData(tableColumnActionData, new ColumnWeightData(40, 100));
-        tableLayout.setColumnData(tableColumnElement, new ColumnWeightData(40, 100));
+        tableLayout.setColumnData(tableColumnAction, new ColumnWeightData(40, 150));
+        tableLayout.setColumnData(tableColumnActionData, new ColumnWeightData(30, 100));
+        tableLayout.setColumnData(tableColumnElement, new ColumnWeightData(30, 100));
 
         tableComposite.setLayout(tableLayout);
 
@@ -721,14 +721,13 @@ public class RecorderDialog extends Dialog implements EventHandler {
                             && actionMapping.getData() != null) {
                         StringBuilder displayString = new StringBuilder("[");
                         boolean isFirst = true;
-                        for (Object dataObject : actionMapping.getData()) {
+                        for (HTMLActionParamValueType dataObject : actionMapping.getData()) {
                             if (!isFirst) {
                                 displayString.append(", ");
                             } else {
                                 isFirst = false;
                             }
-                            displayString.append((dataObject instanceof String) ? "'" + (String) dataObject + "'"
-                                    : String.valueOf(dataObject));
+                            displayString.append(dataObject.getValueToDisplay());
                         }
                         displayString.append("]");
                         return displayString.toString();
@@ -741,9 +740,8 @@ public class RecorderDialog extends Dialog implements EventHandler {
         tableViewerColumnActionData.setEditingSupport(new EditingSupport(actionTableViewer) {
             @Override
             protected void setValue(Object element, Object value) {
-                if (value instanceof Object[]
-                        && !Arrays.equals(((HTMLActionMapping) element).getData(), (Object[]) value)) {
-                    ((HTMLActionMapping) element).setData((Object[]) value);
+                if (value instanceof HTMLActionParamValueType[]) {
+                    ((HTMLActionMapping) element).setData((HTMLActionParamValueType[]) value);
                     actionTableViewer.refresh(element);
                 }
             }
@@ -755,21 +753,13 @@ public class RecorderDialog extends Dialog implements EventHandler {
 
             @Override
             protected CellEditor getCellEditor(Object element) {
-                final List<String> propertyList = new ArrayList<String>();
                 final HTMLActionMapping actionMapping = (HTMLActionMapping) element;
-                HTMLElement targetElement = actionMapping.getTargetElement();
-                if (targetElement != null && targetElement.getAttributes() != null
-                        && !targetElement.getAttributes().isEmpty()) {
-                    for (Entry<String, String> entry : targetElement.getAttributes().entrySet()) {
-                        propertyList.add(entry.getKey());
-                    }
-                }
                 return new AbstractDialogCellEditor(actionTableViewer.getTable(),
                         actionMapping.getData() instanceof Object[] ? Arrays.toString(actionMapping.getData()) : "") {
                     @Override
                     protected Object openDialogBox(Control cellEditorWindow) {
                         HTMLActionDataBuilderDialog dialog = new HTMLActionDataBuilderDialog(getParentShell(),
-                                actionMapping.getAction().getParams(), actionMapping.getData(), propertyList);
+                                actionMapping);
                         int returnCode = dialog.open();
                         if (returnCode == Window.OK) {
                             return dialog.getActionData();
@@ -777,7 +767,6 @@ public class RecorderDialog extends Dialog implements EventHandler {
                         return null;
                     }
                 };
-                // }
             }
 
             @Override

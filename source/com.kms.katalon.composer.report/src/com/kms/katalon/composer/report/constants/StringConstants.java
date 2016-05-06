@@ -14,6 +14,8 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String LBL_EXECUTION_ENVIRONMENT = "Execution Infomation";
 	public static final String LBL_HOST_NAME = "Host name";
 	public static final String LBL_OS = "OS";
+	public static final String LBL_KATALON_VERSION = "Katalon version";
+	public static final String LBL_PLATFORM = "Platform";
 	public static final String LBL_BROWSER = "Browser";
 	public static final String LBL_SOURCE_NAME = "Source";
 	public static final String LBL_STATUS = "Status";

@@ -165,12 +165,7 @@ public class StringConstants extends GlobalStringConstants {
     // TestCasePart
     public static final String PA_TOOLBAR_RECORD = "Record";
     public static final String PA_TOOLBAR_TIP_RECORD_TEST = "Record test";
-    public static final String PA_LBL_GENERAL_INFO = "General Information";
-    public static final String PA_LBL_ID = ID;
     public static final String PA_LBL_NAME = NAME;
-    public static final String PA_LBL_COMMENT = COMMENT;
-    public static final String PA_LBL_TAG = TAG;
-    public static final String PA_LBL_DESCRIPTION = DESCRIPTION;
     public static final String PA_BTN_TIP_ADD = ADD;
     public static final String PA_BTN_TIP_INSERT = INSERT;
     public static final String PA_MENU_SUB_BEFORE = "Insert before";
@@ -185,7 +180,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_COL_INPUT = INPUT;
     public static final String PA_COL_OUTPUT = OUTPUT;
     public static final String PA_COL_DESCRIPTION = DESCRIPTION;
-    public static final String PA_ERROR_MSG_FAILED_TO_LOAD_TEST_CASE = "Failed to load Test Case.";
     public static final String PA_ERROR_MSG_NO_CUSTOM_KEYWORD = "There is no custom keyword.";
     public static final String PA_ERROR_MSG_TEST_CASE_CANNOT_CALL_ITSELF = "Test Case cannot call itself.";
     public static final String PA_ERROR_MSG_UNABLE_TO_CALL_TEST_CASE = "Unable to call Test Case(s).";
@@ -311,4 +305,7 @@ public class StringConstants extends GlobalStringConstants {
     
     // TestStepTableDropListener
     public static final String ERR_CANNOT_DROP_ON_TEST_STEP_TABLE = "Unable to drop on test step table";
+
+    // TestCasePropertiesDialog
+    public static final String DIA_TITLE_TEST_CASE_PROPERTIES = "Test Case Properties";
 }

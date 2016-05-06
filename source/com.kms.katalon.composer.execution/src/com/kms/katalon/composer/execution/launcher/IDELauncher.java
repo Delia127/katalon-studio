@@ -13,6 +13,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.SafeRunner;
+import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -21,6 +22,7 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.workbench.UIEvents;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -87,7 +89,8 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener {
 
                     launchRemoved = false;
 
-                    ILaunch expectedLaunch = new IDELaunchShorcut().launch(scriptFile, mode);
+                    ILaunch expectedLaunch = new IDELaunchShorcut().launch(scriptFile, mode,
+                            runConfig.getAdditionalEnvironmentVariables());
 
                     launch = (launchRemoved) ? null : expectedLaunch;
                 }
@@ -220,8 +223,8 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener {
     }
 
     /**
-     * Handles the case that user cancels the launch progress. </br> Called in the phase that our launch is not returned
-     * at {@link #launch()}.
+     * Handles the case that user cancels the launch progress. </br> Called in
+     * the phase that our launch is not returned at {@link #launch()}.
      */
     @Override
     public void launchRemoved(ILaunch launch) {
@@ -236,5 +239,29 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener {
 
     @Override
     public void launchChanged(ILaunch launch) {
+    }
+    
+    public void suspend() {
+        try {
+            getLaunch().getDebugTarget().suspend();
+            onSuspended();
+        } catch (DebugException e) {
+            LoggerSingleton.logError(e);
+        }
+    }
+    
+    public void onSuspended() {
+        setStatus(LauncherStatus.SUSPENDED);
+        onUpdateStatus();
+    }
+    
+    public void resume() {
+        try {
+            getLaunch().getDebugTarget().resume();
+            setStatus(LauncherStatus.RUNNING);
+            onUpdateStatus();
+        } catch (DebugException e) {
+            LoggerSingleton.logError(e);
+        }
     }
 }

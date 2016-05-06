@@ -1,11 +1,13 @@
 package com.kms.katalon.composer.mobile.objectspy.dialog;
 
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.ios.IOSDriver;
+
 import java.io.File;
+import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -26,88 +28,129 @@ import com.kms.katalon.composer.mobile.objectspy.util.Util;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
+import com.kms.katalon.core.mobile.exception.AppiumStartException;
+import com.kms.katalon.core.mobile.exception.IOSWebkitStartException;
+import com.kms.katalon.core.mobile.exception.MobileDriverInitializeException;
 import com.kms.katalon.core.mobile.keyword.AndroidProperties;
 import com.kms.katalon.core.mobile.keyword.GUIObject;
 import com.kms.katalon.core.mobile.keyword.IOSProperties;
 import com.kms.katalon.core.mobile.keyword.MobileDriverFactory;
-import com.kms.katalon.core.mobile.keyword.MobileDriverFactory.OsType;
+import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.configuration.impl.DefaultExecutionSetting;
+import com.kms.katalon.execution.exception.ExecutionException;
+import com.kms.katalon.execution.mobile.device.AndroidDeviceInfo;
+import com.kms.katalon.execution.mobile.device.IosDeviceInfo;
+import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
+import com.kms.katalon.execution.mobile.driver.AndroidDriverConnector;
+import com.kms.katalon.execution.mobile.driver.IosDriverConnector;
 import com.kms.katalon.execution.mobile.driver.MobileDriverConnector;
-import com.kms.katalon.execution.mobile.util.MobileExecutionUtil;
 import com.kms.katalon.execution.util.ExecutionUtil;
 
-import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.ios.IOSDriver;
-
 public class MobileInspectorController {
+
+    private static final int SERVER_START_TIMEOUT = 60;
 
     private AppiumDriver<?> driver;
 
     public MobileInspectorController() throws Exception {
     }
 
-    public void startMobileApp(String deviceId, String appFile, boolean uninstallAfterCloseApp) throws Exception {
-            if (driver != null) {
-                driver.quit();
-                Thread.sleep(2000);
-            }
-            String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+    public void startMobileApp(MobileDeviceInfo mobileDeviceInfo, String appFile, boolean uninstallAfterCloseApp)
+            throws ExecutionException, InterruptedException, IOException, AppiumStartException,
+            MobileDriverInitializeException, IOSWebkitStartException {
+        if (mobileDeviceInfo == null) {
+            return;
+        }
+        if (driver != null) {
+            driver.quit();
+            Thread.sleep(2000);
+        }
+        String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
 
-            OsType os = MobileDriverFactory.getDeviceOs(deviceId);
+        MobileDriverType mobileDriverType = getMobileDriverType(mobileDeviceInfo);
+        if (mobileDriverType == null) {
+            throw new ExecutionException(StringConstants.DIA_ERROR_MSG_OS_NOT_SUPPORT);
+        }
 
-            if (os == null) {
-                throw new Exception(StringConstants.DIA_ERROR_MSG_OS_NOT_SUPPORT);
-            }
+        MobileDriverConnector mobileDriverConnector = getMobileDriverConnector(mobileDriverType, projectDir);
 
-            MobileDriverConnector mobileDriverConnector = MobileExecutionUtil.getMobileDriverConnector(
-                    MobileDriverType.fromOsType(os), projectDir);
-            
-            if (mobileDriverConnector == null) {
-                throw new Exception(StringConstants.DIA_ERROR_MSG_OS_NOT_SUPPORT);        
-            }
-            
-            mobileDriverConnector = (MobileDriverConnector) mobileDriverConnector.clone();
-            
-            //Only use system properties in inspecting mode.
-            mobileDriverConnector.getUserConfigProperties().clear();
+        if (mobileDriverConnector == null) {
+            throw new ExecutionException(StringConstants.DIA_ERROR_MSG_OS_NOT_SUPPORT);
+        }
 
-            Map<String, IDriverConnector> driverConnectors = new HashMap<String, IDriverConnector>(1);
-            driverConnectors.put(MobileDriverFactory.MOBILE_DRIVER_PROPERTY, mobileDriverConnector);
-            DefaultExecutionSetting generalExecutionSetting = new DefaultExecutionSetting();
-            generalExecutionSetting.setTimeout(60);
+        mobileDriverConnector = (MobileDriverConnector) mobileDriverConnector.clone();
 
-            RunConfiguration.setExecutionSetting(ExecutionUtil.getExecutionProperties(generalExecutionSetting,
-                    driverConnectors));
-            RunConfiguration.setAppiumLogFilePath(projectDir + File.separator + "appium.log");
+        // Only use system properties in inspecting mode.
+        mobileDriverConnector.getUserConfigProperties().clear();
 
-            MobileDriverFactory.startMobileDriver(os, deviceId, appFile, uninstallAfterCloseApp);
-            
-            driver = MobileDriverFactory.getDriver();
+        Map<String, IDriverConnector> driverConnectors = new HashMap<String, IDriverConnector>(1);
+        driverConnectors.put(MobileDriverFactory.MOBILE_DRIVER_PROPERTY, mobileDriverConnector);
+        DefaultExecutionSetting generalExecutionSetting = new DefaultExecutionSetting();
+        generalExecutionSetting.setTimeout(60);
+
+        RunConfiguration.setExecutionSetting(ExecutionUtil.getExecutionProperties(generalExecutionSetting,
+                driverConnectors));
+        RunConfiguration.setAppiumLogFilePath(projectDir + File.separator + "appium.log");
+
+        MobileDriverFactory.startAppiumServerJS(SERVER_START_TIMEOUT,
+                getAdditionalEnvironmentVariables(mobileDriverType));
+        MobileDriverFactory.createMobileDriver(mobileDriverType, mobileDeviceInfo.getDeviceId(), appFile,
+                uninstallAfterCloseApp);
+
+        driver = MobileDriverFactory.getDriver();
+    }
+
+    private Map<String, String> getAdditionalEnvironmentVariables(MobileDriverType mobileDriverType) throws IOException {
+        if (mobileDriverType == MobileDriverType.ANDROID_DRIVER) {
+            return AndroidDeviceInfo.getAndroidAdditionalEnvironmentVariables();
+        }
+        if (mobileDriverType == MobileDriverType.IOS_DRIVER) {
+            return IosDeviceInfo.getIosAdditionalEnvironmentVariables();
+        }
+        return new HashMap<String, String>();
+    }
+
+    private static MobileDriverType getMobileDriverType(MobileDeviceInfo mobileDeviceInfo) {
+        if (mobileDeviceInfo == null) {
+            return null;
+        }
+        if (mobileDeviceInfo instanceof AndroidDeviceInfo) {
+            return MobileDriverType.ANDROID_DRIVER;
+        }
+        if (mobileDeviceInfo instanceof IosDeviceInfo) {
+            return MobileDriverType.IOS_DRIVER;
+        }
+        return null;
+    }
+
+    private static MobileDriverConnector getMobileDriverConnector(MobileDriverType mobileDriverType,
+            String projectDirectory) throws IOException {
+        switch (mobileDriverType) {
+            case ANDROID_DRIVER:
+                return new AndroidDriverConnector(getInternalSettingFolder(projectDirectory));
+            case IOS_DRIVER:
+                return new IosDriverConnector(getInternalSettingFolder(projectDirectory));
+        }
+        return null;
+    }
+
+    private static String getInternalSettingFolder(String projectDirectory) {
+        return projectDirectory + File.separator + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME;
     }
 
     public boolean closeApp() {
         try {
             if (driver == null) {
                 return false;
-            } else {
-                driver.quit();
-                driver = null;
             }
+            driver.quit();
+            MobileDriverFactory.quitServer();
+            driver = null;
         } catch (Exception e) {
+            LoggerSingleton.logError(e);
         }
         return true;
-    }
-
-    public List<String> getDevices() throws Exception {
-    	List<String> devices = new ArrayList<String>();
-        devices.addAll(MobileDriverFactory.getAndroidDevices().values());
-        devices.addAll(MobileDriverFactory.getIosDevices().values());
-        return devices;
-    }
-
-    public String getDeviceId(String deviceName) throws Exception {
-        return MobileDriverFactory.getDeviceId(deviceName);
     }
 
     public String captureScreenshot() throws Exception {
@@ -122,8 +165,7 @@ public class MobileInspectorController {
         FileUtils.copyFile(screenshot, new File(path));
         try {
             FileUtils.forceDelete(screenshot);
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
         return path;
     }
 
@@ -132,8 +174,7 @@ public class MobileInspectorController {
         try {
             if (driver instanceof IOSDriver) {
                 @SuppressWarnings("unchecked")
-                Map<Object, Object> map = (Map<Object, Object>) driver
-                        .executeScript("UIATarget.localTarget().frontMostApp().getTree()");
+                Map<Object, Object> map = (Map<Object, Object>) driver.executeScript("UIATarget.localTarget().frontMostApp().getTree()");
                 JSONObject jsonObject = new JSONObject(map);
                 renderTree(jsonObject, htmlMobileElementRootNode);
             } else {
@@ -395,12 +436,10 @@ public class MobileInspectorController {
      * propEntity.setValue(propValue); propEntity.setMatchCondition(WebElementProperty.defaultMatchCondition);
      * propEntity.setIsSelected(false); propEntity.setWebElement(parentWebElement);
      * propEntity.setBrowser(com.kms.katalon.service.model.TargetType.All); return propEntity; }
-     * 
      * public BaseTreeNode getRootWithElementByName(String searchText, BaseTreeNode root) { BaseTreeNode filteredNode =
      * new BaseTreeNode(root.getId(), root.getName(), root.getFullPath(), root.getNodeType());
      * filteredNode.setExtraInfo(root.getExtraInfo()); getNodeByName(root, filteredNode, searchText); return
      * filteredNode; }
-     * 
      * private boolean getNodeByName(BaseTreeNode node, BaseTreeNode filteredNode, String searchText) { boolean
      * existFilteredChild = false; for (int i = 0; i < node.getChildCount(); i++) { BaseTreeNode childNode =
      * node.getChildAt(i); BaseTreeNode filteredChildNode = cloneTreeNode(childNode); boolean exist =
@@ -408,14 +447,11 @@ public class MobileInspectorController {
      * filteredNode.addChildNode(filteredChildNode); existFilteredChild = true; } else { if
      * (childNode.getName().toLowerCase().contains(searchText.toLowerCase())) {
      * filteredNode.addChildNode(filteredChildNode); existFilteredChild = true; } } } return existFilteredChild; }
-     * 
      * private BaseTreeNode cloneTreeNode(BaseTreeNode node) { BaseTreeNode newNode = new BaseTreeNode(node.getId(),
      * node.getName(), node.getFullPath(), node.getNodeType()); newNode.setExtraInfo(node.getExtraInfo()); return
      * newNode; }
-     * 
      * public Folder getFolderByID(long id) throws Exception { return
      * dataRepository.getFolderRepository().getFolderbyId(id); }
-     * 
      * public WebElement getWebElementByID(long id) { return
      * dataRepository.getWebElementRepository().getWebElementByID(id); }
      */

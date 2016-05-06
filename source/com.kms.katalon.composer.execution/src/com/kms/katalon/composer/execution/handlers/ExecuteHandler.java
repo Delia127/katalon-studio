@@ -2,49 +2,41 @@ package com.kms.katalon.composer.execution.handlers;
 
 import java.io.IOException;
 
-import javax.inject.Inject;
-
-import org.eclipse.core.commands.ParameterizedCommand;
-import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.ui.model.application.ui.menu.MHandledMenuItem;
+import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.ui.model.application.ui.menu.MHandledToolItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
-import org.eclipse.e4.ui.model.application.ui.menu.impl.HandledToolItemImpl;
 
-import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.composer.execution.menu.ExecutionHandledMenuItem;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
 import com.kms.katalon.execution.util.ExecutionUtil;
 
 @SuppressWarnings("restriction")
 public class ExecuteHandler extends AbstractExecutionHandler {
-    @Inject
-    protected IEclipseContext context;
     
     protected IRunConfiguration getRunConfigurationForExecution(String projectDir) throws IOException {
         return null;
     }
 
-    @Override
-    public void execute() {
-        HandledToolItemImpl toolItem = (HandledToolItemImpl) modelService.find(IdConstants.EXECUTION_TOOL_ITEM_ID,
-                application);
-        if (toolItem == null || toolItem.getMenu() == null) {
-            return;
-        }
+    @Execute
+    public void execute(MHandledToolItem toolItem) {
         IRunConfigurationContributor defaultRunContributor = ExecutionUtil.getDefaultExecutionConfiguration();
         if (defaultRunContributor == null) {
             return;
         }
         for (MMenuElement menuItem : toolItem.getMenu().getChildren()) {
-            if (menuItem instanceof MHandledMenuItem) {
-                MHandledMenuItem handledMenuItem = (MHandledMenuItem) menuItem;
-                if (handledMenuItem.getLabel().contains(defaultRunContributor.getId())
-                        && handledMenuItem.getCommand() != null) {
-                    ParameterizedCommand executionCommand = commandService.createCommand(handledMenuItem.getCommand().getElementId(), null);
-                    handlerService.executeHandler(executionCommand);
-                    break;
-                }
+            if (!(menuItem instanceof ExecutionHandledMenuItem)) {
+                return;
+            }
+            
+            ExecutionHandledMenuItem handledMenuItem = (ExecutionHandledMenuItem) menuItem;
+            if (handledMenuItem.getLabel().contains(defaultRunContributor.getId())
+                    && handledMenuItem.getCommand() != null) {
+                handlerService.executeHandler(handledMenuItem.getParameterizedCommandFromMenuItem(commandService));
+                return;
             }
         }
     }
 }
+
+

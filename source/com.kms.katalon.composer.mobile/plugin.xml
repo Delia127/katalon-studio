@@ -42,4 +42,19 @@
 			driver.connector.editor="com.kms.katalon.composer.mobile.component.contributor.IosDriverEditorContributor">
 		  </client>
 	 </extension>
+	 
+	<extension
+         point="com.kms.katalon.preferences.PreferencePages">
+      <page
+            class="com.kms.katalon.composer.mobile.preferences.MobileSettingPreferencePage"
+            id="com.kms.katalon.composer.mobile.preferences"
+            name="Mobile">
+      </page>   
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.kms.katalon.composer.mobile.preferences.MobileSettingPreferenceDefaultValueInitializer">
+      </initializer>
+   </extension>
 </plugin>

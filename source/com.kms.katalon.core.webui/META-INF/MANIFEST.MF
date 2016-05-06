@@ -10,7 +10,8 @@ Require-Bundle: org.codehaus.groovy,
  org.apache.commons.io,
  com.kms.katalon.selenium-standalone;bundle-version="1.0.0",
  io.appium.java-client,
- org.apache.commons.lang
+ org.apache.commons.lang,
+ org.apache.commons.lang3
 Export-Package: com.kms.katalon.core.webui.constants,
  com.kms.katalon.core.webui.driver,
  com.kms.katalon.core.webui.keyword,

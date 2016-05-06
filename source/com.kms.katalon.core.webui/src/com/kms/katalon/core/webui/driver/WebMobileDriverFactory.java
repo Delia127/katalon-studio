@@ -3,44 +3,77 @@ package com.kms.katalon.core.webui.driver;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.remote.MobileCapabilityType;
+import io.appium.java_client.service.local.AppiumDriverLocalService;
+import io.appium.java_client.service.local.AppiumServiceBuilder;
+import io.appium.java_client.service.local.flags.AndroidServerFlag;
+import io.appium.java_client.service.local.flags.GeneralServerFlag;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.URL;
+import java.text.MessageFormat;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Platform;
+import org.openqa.selenium.net.UrlChecker;
+import org.openqa.selenium.net.UrlChecker.TimeoutException;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
-import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
+import com.kms.katalon.core.webui.constants.StringConstants;
+import com.kms.katalon.core.webui.exception.AppiumStartException;
+import com.kms.katalon.core.webui.exception.IOSWebkitStartException;
+import com.kms.katalon.core.webui.exception.MobileDriverInitializeException;
 
 public class WebMobileDriverFactory {
-    private static final String APPIUM_SERVER_URL_SUFFIX = "/wd/hub";
-    private static final String APPIUM_SERVER_URL_PREFIX = "http://127.0.0.1:";
-    private int appiumPort;
-    private Process appiumServer;
-    private Process webProxyServer;
+    private static final String DEFAULT_APPIUM_SERVER_ADDRESS = "127.0.0.1";
 
-    private static final ThreadLocal<WebMobileDriverFactory> localWebMobileDriverFactoryStorage = new ThreadLocal<WebMobileDriverFactory>() {
+    private static final String IOS_WEBKIT_DEBUG_PROXY_EXECUTABLE = "ios_webkit_debug_proxy";
+
+    public static final String MOBILE_DRIVER_PROPERTY = StringConstants.CONF_PROPERTY_MOBILE_DRIVER;
+
+    public static final String APPIUM_LOG_PROPERTY = StringConstants.CONF_APPIUM_LOG_FILE;
+
+    private static final int DEFAULT_WEB_PROXY_PORT = 27753;
+
+    private static final String IOS_WEBKIT_LOG_FILE_NAME = "appium-proxy-server.log";
+
+    private static final String MSG_START_IOS_WEBKIT_SUCCESS = "ios_webkit_debug_proxy server started on port "
+            + DEFAULT_WEB_PROXY_PORT;
+
+    private static final String LOCALHOST_PREFIX = "http://localhost:";
+
+    private static final ThreadLocal<Process> localStorageWebProxyProcess = new ThreadLocal<Process>() {
         @Override
-        protected WebMobileDriverFactory initialValue() {
-            return new WebMobileDriverFactory();
+        protected Process initialValue() {
+            return null;
         }
     };
 
-    private WebMobileDriverFactory() {
-    }
+    private static final ThreadLocal<AppiumDriverLocalService> localStorageAppiumServer = new ThreadLocal<AppiumDriverLocalService>() {
+        @Override
+        protected AppiumDriverLocalService initialValue() {
+            return null;
+        }
+    };
 
-    public static WebMobileDriverFactory getInstance() {
-        return localWebMobileDriverFactoryStorage.get();
-    }
+    private static final ThreadLocal<AppiumDriver<?>> localStorageAppiumDriver = new ThreadLocal<AppiumDriver<?>>() {
+        @Override
+        protected AppiumDriver<?> initialValue() {
+            return null;
+        }
+    };
 
-    private void cleanup() {
+    public static void cleanup() throws InterruptedException, IOException {
         String os = System.getProperty("os.name");
         if (os.toLowerCase().contains("win")) {
             killProcessOnWin("adb.exe");
@@ -50,124 +83,118 @@ public class WebMobileDriverFactory {
             killProcessOnMac("node");
             killProcessOnMac("instruments");
             killProcessOnMac("deviceconsole");
-            killProcessOnMac("ios_webkit_debug_proxy");
+            killProcessOnMac(IOS_WEBKIT_DEBUG_PROXY_EXECUTABLE);
         }
     }
 
-    private void killProcessOnWin(String processName) {
+    private static void killProcessOnWin(String processName) throws InterruptedException, IOException {
         ProcessBuilder pb = new ProcessBuilder("taskkill", "/f", "/im", processName, "/t");
-        try {
-            pb.start().waitFor();
-        } catch (Exception e) {
-            // LOGGER.error(e.getMessage(), e);
-        }
+        pb.start().waitFor();
     }
 
-    private void killProcessOnMac(String processName) {
+    private static void killProcessOnMac(String processName) throws InterruptedException, IOException {
         ProcessBuilder pb = new ProcessBuilder("killall", processName);
+        pb.start().waitFor();
+    }
+
+    private static void ensureWebProxyServerStarted(String deviceId) throws IOException, InterruptedException,
+            IOSWebkitStartException {
+        if (!isWebProxyServerStarted(1)) {
+            startWebProxyServer(deviceId);
+        }
+    }
+
+    public static void startMobileDriver(String deviceId, WebUIDriverType WebUIDriverType) throws AppiumStartException,
+            IOException, InterruptedException, MobileDriverInitializeException, IOSWebkitStartException {
+        ensureServicesStarted(WebUIDriverType, deviceId);
+        createMobileDriver(WebUIDriverType, deviceId);
+    }
+
+    private static void ensureServicesStarted(WebUIDriverType osType, String deviceId) throws IOException,
+            InterruptedException, AppiumStartException {
+        if (osType == WebUIDriverType.IOS_DRIVER) {
+            // Proxy server is optional
+            try {
+                ensureWebProxyServerStarted(deviceId);
+            } catch (IOException | InterruptedException | IOSWebkitStartException e) {
+                KeywordLogger.getInstance().logInfo(e.getMessage());
+            }
+        }
+        startAppiumServerJS(RunConfiguration.getTimeOut());
+    }
+
+    private static void startAppiumServerJS(int timeout) throws AppiumStartException, IOException {
+        if (localStorageAppiumServer.get() != null && localStorageAppiumServer.get().isRunning()) {
+            return;
+        }
+        String appium = findAppiumJS();
+        int freePort = getFreePort();
+        AppiumDriverLocalService service = AppiumDriverLocalService.buildService(new AppiumServiceBuilder().withArgument(
+                GeneralServerFlag.LOG_LEVEL, "info")
+                .withArgument(GeneralServerFlag.TEMP_DIRECTORY, createAppiumTempFile())
+                .withArgument(GeneralServerFlag.SESSION_OVERRIDE)
+                .withAppiumJS(new File(appium))
+                .withIPAddress(DEFAULT_APPIUM_SERVER_ADDRESS)
+                .usingPort(freePort)
+                .withArgument(GeneralServerFlag.CHROME_DRIVER_PORT, Integer.toString(getFreePort()))
+                .withArgument(AndroidServerFlag.BOOTSTRAP_PORT_NUMBER, Integer.toString(getFreePort()))
+                .withLogFile(new File(RunConfiguration.getAppiumLogFilePath()))
+                .withStartUpTimeOut(new Long(timeout), TimeUnit.SECONDS));
+        service.start();
+        localStorageAppiumServer.set(service);
+        KeywordLogger.getInstance().logInfo("Appium server started on port " + freePort);
+    }
+
+    private static String createAppiumTempFile() {
+        return System.getProperty("java.io.tmpdir") + File.separator + "Katalon" + File.separator + "Appium"
+                + File.separator + "Temp" + System.currentTimeMillis();
+    }
+
+    private static String findAppiumJS() throws AppiumStartException {
+        String appiumHome = RunConfiguration.getAppiumDirectory();
+        if (StringUtils.isEmpty(appiumHome)) {
+            throw new AppiumStartException(StringConstants.APPIUM_START_EXCEPTION_APPIUM_DIRECTORY_NOT_SET);
+        }
+        String appium = getAppiumJSPathFromNPMBuild(appiumHome);
+        if (!new File(appium).exists()) {
+            appium = getAppiumJSPathFromAppiumGUI(appiumHome);
+        }
+        if (!new File(appium).exists()) {
+            throw new AppiumStartException(
+                    StringConstants.APPIUM_START_EXCEPTION_APPIUM_DIRECTORY_INVALID_CANNOT_FIND_APPIUM_JS);
+        }
+        return appium;
+    }
+
+    private static String getAppiumJSPathFromAppiumGUI(String appiumHome) {
+        String appiumFolderFromGUIAppium = appiumHome + File.separator + "node_modules" + File.separator + "appium";
+        return getAppiumJSPathFromNPMBuild(appiumFolderFromGUIAppium);
+    }
+
+    private static String getAppiumJSPathFromNPMBuild(String appiumHome) {
+        return appiumHome + File.separator + "bin" + File.separator + "appium.js";
+    }
+
+    private static boolean isServerStarted(int timeToWait, URL url) {
         try {
-            pb.start().waitFor();
-        } catch (Exception e) {
-            // LOGGER.error(e.getMessage(), e);
-        }
-    }
-
-    AppiumDriver<?> getAndroidDriver(String deviceName) throws Exception {
-        if (!isServerStarted()) {
-            startAppiumServer();
-        }
-        DesiredCapabilities capabilities = WebDriverPropertyUtil.toDesireCapabilities(RunConfiguration
-                    .getDriverPreferencesProperties(DriverFactory.MOBILE_DRIVER_PROPERTY));
-        capabilities.setPlatform(Platform.ANDROID);
-        capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceName);
-        capabilities.setCapability(MobileCapabilityType.BROWSER_NAME, "Chrome");
-        capabilities.setCapability(MobileCapabilityType.UDID, deviceName);
-        
-        int time = 0;
-        long currentMilis = System.currentTimeMillis();
-        AppiumDriver<?> appiumDriver = null;
-        while (time < RunConfiguration.getTimeOut()) {
-            try {
-                appiumDriver = new SwipeableAndroidDriver(new URL(APPIUM_SERVER_URL_PREFIX + appiumPort
-                        + APPIUM_SERVER_URL_SUFFIX), capabilities);
-                return appiumDriver;
-            } catch (UnreachableBrowserException e) {
-                long newMilis = System.currentTimeMillis();
-                time += ((newMilis - currentMilis) / 1000);
-                currentMilis = newMilis;
-                continue;
-            }
-        }
-        throw new StepFailedException("Could not connect to appium server after " + RunConfiguration.getTimeOut()
-                + " seconds");
-    }
-
-    @SuppressWarnings("rawtypes")
-    AppiumDriver<?> getIosDriver(String deviceName) throws Exception {
-        cleanup();
-        if (!isWebProxyServerStarted()) {
-            startWebProxyServer(deviceName);
-        }
-        if (!isServerStarted()) {
-            startAppiumServer();
-        }
-        DesiredCapabilities capabilities = WebDriverPropertyUtil.toDesireCapabilities(RunConfiguration
-                .getDriverPreferencesProperties(DriverFactory.MOBILE_DRIVER_PROPERTY));
-        capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceName);
-        capabilities.setCapability(MobileCapabilityType.BROWSER_NAME, "Safari");
-        capabilities.setCapability(MobileCapabilityType.UDID, deviceName);
-        int time = 0;
-        long currentMilis = System.currentTimeMillis();
-        AppiumDriver<?> appiumDriver = null;
-        while (time < RunConfiguration.getTimeOut()) {
-            try {
-                appiumDriver = new IOSDriver(new URL(APPIUM_SERVER_URL_PREFIX + appiumPort + APPIUM_SERVER_URL_SUFFIX),
-                        capabilities);
-                return appiumDriver;
-            } catch (UnreachableBrowserException e) {
-                long newMilis = System.currentTimeMillis();
-                time += ((newMilis - currentMilis) / 1000);
-                currentMilis = newMilis;
-                continue;
-            }
-        }
-        throw new StepFailedException("Could not connect to appium server after " + RunConfiguration.getTimeOut()
-                + " seconds");
-    }
-
-    private boolean isServerStarted() {
-        if (appiumServer == null) {
-            return false;
-        } else {
-            try {
-                appiumServer.exitValue();
-                return false;
-            } catch (Exception e) {
-                // LOGGER.warn(e.getMessage(), e);
-                try {
-                    File appiumLogFile = new File(RunConfiguration.getAppiumLogFilePath());
-                    String logContent = FileUtils.readFileToString(appiumLogFile.getAbsoluteFile());
-                    if (logContent.contains("Console LogLevel: debug")) {
-                        return true;
-                    }
-                } catch (Exception e1) {
-                    // LOGGER.warn(e1.getMessage(), e1);
-                }
-            }
-        }
+            new UrlChecker().waitUntilAvailable(timeToWait, TimeUnit.SECONDS, url);
+            return true;
+        } catch (TimeoutException ex1) {}
         return false;
     }
 
-    private boolean isWebProxyServerStarted() {
-        if (webProxyServer == null) {
+    private static boolean isWebProxyServerStarted(int timeOut) {
+        if (localStorageWebProxyProcess.get() == null) {
             return false;
-        } else {
-            try {
-                webProxyServer.exitValue();
-                return false;
-            } catch (IllegalThreadStateException e) {
-                return true;
-            }
+        }
+        try {
+            localStorageWebProxyProcess.get().exitValue();
+            return false;
+        } catch (IllegalThreadStateException e) {}
+        try {
+            return isServerStarted(timeOut, new URL("http://localhost:" + DEFAULT_WEB_PROXY_PORT));
+        } catch (MalformedURLException e) {
+            return false;
         }
     }
 
@@ -188,42 +215,121 @@ public class WebMobileDriverFactory {
         return -1;
     }
 
-    private void startAppiumServer() throws Exception {
-        String appium = System.getenv("APPIUM_HOME") + File.separator + "bin" + File.separator + "appium.js";
-        String appiumTemp = System.getProperty("java.io.tmpdir") + File.separator + "Katalon" + File.separator
-                + "Appium" + File.separator + "Temp" + System.currentTimeMillis();
-        appiumPort = getFreePort();
-        String[] cmd = { "node", appium, "--command-timeout", "3600", "--tmp", appiumTemp, "-p",
-                String.valueOf(appiumPort), "--chromedriver-port", String.valueOf(getFreePort()) };
-        ProcessBuilder pb = new ProcessBuilder(cmd);
-        pb.redirectOutput(new File(RunConfiguration.getAppiumLogFilePath()));
-        appiumServer = pb.start();
-        while (!isServerStarted()) {
-        }
-        KeywordLogger.getInstance().logInfo("Appium server started on port " + appiumPort);
-    }
-
-    private void startWebProxyServer(String deviceId) throws Exception {
-        String webProxyServerLocation = "ios_webkit_debug_proxy";
-        int webProxyPort = 27753;
-        String[] webProxyServerCmd = { webProxyServerLocation, "-c", deviceId + ":" + webProxyPort };
+    /**
+     * Start proxy server, this server is optional
+     * 
+     * @param deviceId
+     * @throws Exception
+     */
+    private static void startWebProxyServer(String deviceId) throws IOException, InterruptedException,
+            IOSWebkitStartException {
+        String[] webProxyServerCmd = { IOS_WEBKIT_DEBUG_PROXY_EXECUTABLE, "-c", deviceId + ":" + DEFAULT_WEB_PROXY_PORT };
         ProcessBuilder webProxyServerProcessBuilder = new ProcessBuilder(webProxyServerCmd);
-        webProxyServerProcessBuilder.redirectOutput(new File(new File(RunConfiguration.getAppiumLogFilePath()).getParent()
-                + File.separator + "appium-proxy-server.log"));
-        webProxyServer = webProxyServerProcessBuilder.start();
-        while (!isWebProxyServerStarted()) {
+        webProxyServerProcessBuilder.redirectOutput(new File(
+                new File(RunConfiguration.getAppiumLogFilePath()).getParent() + File.separator
+                        + IOS_WEBKIT_LOG_FILE_NAME));
+
+        Process webProxyProcess = webProxyServerProcessBuilder.start();
+
+        // Check again if proxy server started
+        if (!isServerStarted(10, new URL(LOCALHOST_PREFIX + DEFAULT_WEB_PROXY_PORT))) {
+            throw new IOSWebkitStartException();
         }
-        KeywordLogger.getInstance().logInfo("ios_webkit_debug_proxy server started on port " + webProxyPort);
+        localStorageWebProxyProcess.set(webProxyProcess);
+        KeywordLogger.getInstance().logInfo(MSG_START_IOS_WEBKIT_SUCCESS);
     }
 
-    public void quitServer() {
-        if (appiumServer != null) {
-            appiumServer.destroy();
-            appiumServer = null;
+    public static void quitServer() {
+        if (localStorageAppiumServer.get() != null && localStorageAppiumServer.get().isRunning()) {
+            localStorageAppiumServer.get().stop();
+            localStorageAppiumServer.set(null);
         }
-        if (webProxyServer != null) {
-            webProxyServer.destroy();
-            webProxyServer = null;
+        if (localStorageWebProxyProcess.get() != null) {
+            localStorageWebProxyProcess.get().destroy();
+            localStorageWebProxyProcess.set(null);
         }
+        closeDriver();
+    }
+
+    public static AppiumDriver<?> getDriver() throws StepFailedException {
+        verifyWebDriverIsOpen();
+        return localStorageAppiumDriver.get();
+    }
+
+    private static void verifyWebDriverIsOpen() throws StepFailedException {
+        if (localStorageAppiumDriver.get() == null) {
+            throw new StepFailedException("No application is started yet.");
+        }
+    }
+
+    public static void closeDriver() {
+        AppiumDriver<?> webDriver = localStorageAppiumDriver.get();
+        if (null != webDriver && null != ((RemoteWebDriver) webDriver).getSessionId()) {
+            webDriver.quit();
+        }
+        RunConfiguration.removeDriver(webDriver);
+        localStorageAppiumDriver.set(null);
+    }
+
+    private static DesiredCapabilities toDesireCapabilities(Map<String, Object> propertyMap,
+            WebUIDriverType WebUIDriverType) {
+        DesiredCapabilities desireCapabilities = new DesiredCapabilities();
+        for (Entry<String, Object> property : propertyMap.entrySet()) {
+            KeywordLogger.getInstance().logInfo(
+                    MessageFormat.format(StringConstants.KW_LOG_WEB_UI_PROPERTY_SETTING, property.getKey(),
+                            property.getValue()));
+            desireCapabilities.setCapability(property.getKey(), property.getValue());
+        }
+        return desireCapabilities;
+    }
+
+    private static DesiredCapabilities createCapabilities(WebUIDriverType osType, String deviceId) {
+        DesiredCapabilities capabilities = new DesiredCapabilities();
+        Map<String, Object> driverPreferences = RunConfiguration.getDriverPreferencesProperties(MOBILE_DRIVER_PROPERTY);
+
+        if (driverPreferences != null && osType == WebUIDriverType.IOS_DRIVER) {
+            capabilities.merge(toDesireCapabilities(driverPreferences, WebUIDriverType.IOS_DRIVER));
+            capabilities.setCapability(MobileCapabilityType.BROWSER_NAME, "Safari");
+        } else if (driverPreferences != null && osType == WebUIDriverType.ANDROID_DRIVER) {
+            capabilities.merge(toDesireCapabilities(driverPreferences, WebUIDriverType.ANDROID_DRIVER));
+            capabilities.setPlatform(Platform.ANDROID);
+            capabilities.setCapability(MobileCapabilityType.BROWSER_NAME, "Chrome");
+        }
+        capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceId);
+        capabilities.setCapability("udid", deviceId);
+        capabilities.setCapability("newCommandTimeout", 1800);
+        // capabilities.setCapability("waitForAppScript", true);
+        return capabilities;
+    }
+
+    @SuppressWarnings("rawtypes")
+    private static void createMobileDriver(WebUIDriverType osType, String deviceId)
+            throws MobileDriverInitializeException, MalformedURLException {
+        AppiumDriverLocalService appiumService = localStorageAppiumServer.get();
+        if (appiumService == null) {
+            throw new MobileDriverInitializeException("Appium server is not started");
+        }
+        URL appiumServerUrl = new URL(appiumService.getUrl().toString());
+        DesiredCapabilities capabilities = createCapabilities(osType, deviceId);
+        int time = 0;
+        long currentMilis = System.currentTimeMillis();
+        AppiumDriver<?> appiumDriver = null;
+        while (time < RunConfiguration.getTimeOut()) {
+            try {
+                if (osType == WebUIDriverType.IOS_DRIVER) {
+                    appiumDriver = new IOSDriver(appiumServerUrl, capabilities);
+                } else if (osType == WebUIDriverType.ANDROID_DRIVER) {
+                    appiumDriver = new SwipeableAndroidDriver(appiumServerUrl, capabilities);
+                }
+                localStorageAppiumDriver.set(appiumDriver);
+                return;
+            } catch (UnreachableBrowserException e) {
+                long newMilis = System.currentTimeMillis();
+                time += ((newMilis - currentMilis) / 1000);
+                currentMilis = newMilis;
+            }
+        }
+        throw new MobileDriverInitializeException("Could not connect to appium server after "
+                + RunConfiguration.getTimeOut() + " seconds");
     }
 }

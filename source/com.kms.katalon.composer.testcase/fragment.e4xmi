@@ -25,4 +25,7 @@
       <tags>active</tags>
     </elements>
   </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_6o6kcP-tEeWhao183koH_Q" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu" positionInList="last">
+    <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_xFRJUP_AEeW5LcOFd178Ew" elementId="com.kms.katalon.composer.testcase.dynamicmenucontribution.properties" label="Properties" contributionURI="bundleclass://com.kms.katalon.composer.testcase/com.kms.katalon.composer.testcase.contribution.TestCasePropertiesDynamicMenuContribution"/>
+  </fragments>
 </fragment:ModelFragments>

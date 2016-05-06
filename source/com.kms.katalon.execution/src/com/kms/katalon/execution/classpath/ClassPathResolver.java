@@ -19,7 +19,7 @@ public class ClassPathResolver {
     }
 
     private static List<IBuildPath> getPlatformBuildPaths() throws IOException {
-        File configurationFolder = new File(FileLocator.resolve(Platform.getConfigurationLocation().getURL()).getFile());
+        File configurationFolder = getConfigurationFolder();
         File resourceLib = new File(configurationFolder, "resources/lib");
 
         if (!resourceLib.exists()) {
@@ -31,6 +31,10 @@ public class ClassPathResolver {
             pfBuildPaths.add(new BuildPathEntry(jarFile.getAbsolutePath()));
         }
         return pfBuildPaths;
+    }
+
+    public static File getConfigurationFolder() throws IOException {
+        return new File(FileLocator.resolve(Platform.getConfigurationLocation().getURL()).getFile());
     }
 
     private static List<String> getPlatformBuildPathLocs() throws IOException {

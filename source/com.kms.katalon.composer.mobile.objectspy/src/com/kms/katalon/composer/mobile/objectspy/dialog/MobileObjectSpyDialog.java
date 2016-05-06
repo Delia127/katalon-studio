@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -75,6 +76,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.tree.ITreeEntity;
+import com.kms.katalon.composer.execution.util.MobileDeviceUIProvider;
 import com.kms.katalon.composer.mobile.constants.ImageConstants;
 import com.kms.katalon.composer.mobile.constants.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
@@ -90,6 +92,7 @@ import com.kms.katalon.core.mobile.keyword.GUIObject;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 
 @SuppressWarnings("restriction")
 public class MobileObjectSpyDialog extends Dialog implements EventHandler {
@@ -133,6 +136,8 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
     private String IOS_FILTER_EXTS = "*.app;*.ipa";
 
     private MobileInspectorController inspectorController;
+
+    private List<MobileDeviceInfo> deviceInfos = new ArrayList<>();
 
     public MobileObjectSpyDialog(Shell parentShell, Logger logger, IEventBroker eventBroker,
             ESelectionService selectionService) throws Exception {
@@ -241,8 +246,7 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
         Label lblConfiguration = new Label(contentComposite, SWT.NONE);
         lblConfiguration.setFont(getFontBold(lblConfiguration));
-        lblConfiguration
-                .setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, glContentComposite.numColumns, 1));
+        lblConfiguration.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, glContentComposite.numColumns, 1));
         lblConfiguration.setText(StringConstants.DIA_LBL_CONFIGURATIONS);
 
         // Device Name
@@ -251,11 +255,7 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
         cbbDevices = new Combo(contentComposite, SWT.READ_ONLY);
         cbbDevices.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        try {
-            cbbDevices.setItems(inspectorController.getDevices().toArray(new String[] {}));
-        } catch (Exception ex) {
-            MessageDialog.openInformation(getParentShell(), "Info", "No device found");
-        }
+        cbbDevices.setItems(getAllDevicesName().toArray(new String[] {}));
 
         // Application Type
         Label typeLabel = new Label(contentComposite, SWT.NONE);
@@ -302,7 +302,8 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
                 dialog.setFilterNames(getFilterNames());
                 dialog.setFilterExtensions(getFilterExtensions());
                 String absolutePath = dialog.open();
-                if (absolutePath == null) return;
+                if (absolutePath == null)
+                    return;
                 txtAppFile.setText(absolutePath);
             }
         });
@@ -325,7 +326,8 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
             @Override
             public void keyReleased(KeyEvent e) {
-                if (selectedElement == null) return;
+                if (selectedElement == null)
+                    return;
                 switch (e.keyCode) {
                     case SWT.CR:
                         String objectName = txtObjectName.getText();
@@ -369,6 +371,16 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
         sashForm.setWeights(new int[] { 1, 1 });
 
         return container;
+    }
+
+    private List<String> getAllDevicesName() {
+        deviceInfos.clear();
+        deviceInfos.addAll(MobileDeviceUIProvider.getAllDevices());
+        List<String> devicesNameList = new ArrayList<String>();
+        for (MobileDeviceInfo deviceInfo : deviceInfos) {
+            devicesNameList.add(deviceInfo.getDeviceName());
+        }
+        return devicesNameList;
     }
 
     private Font getFontBold(Label label) {
@@ -657,9 +669,14 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
         btnStart.setEnabled(false);
 
         try {
-
-            final String deviceName = cbbDevices.getItem(cbbDevices.getSelectionIndex());
-            final String deviceId = inspectorController.getDeviceId(deviceName);
+            int selectedMobileDeviceIndex = cbbDevices.getSelectionIndex();
+            if (selectedMobileDeviceIndex < 0 || selectedMobileDeviceIndex >= deviceInfos.size()) {
+                return;
+            }
+            final MobileDeviceInfo selectDeviceInfo = deviceInfos.get(selectedMobileDeviceIndex);
+            if (selectDeviceInfo == null) {
+                return;
+            }
             final String appFile = txtAppFile.getText();
 
             ProgressMonitorDialog progressDlg = new ProgressMonitorDialog(Display.getCurrent().getActiveShell()) {
@@ -681,7 +698,7 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
                     monitor.beginTask(StringConstants.DIA_LBL_STATUS_APP_STARTING, IProgressMonitor.UNKNOWN);
                     try {
                         // Start application using MobileDriver
-                        inspectorController.startMobileApp(deviceId, appFile, false);
+                        inspectorController.startMobileApp(selectDeviceInfo, appFile, false);
                     } catch (Exception ex) {
                         logger.error(ex);
                         throw new InvocationTargetException(ex, ex.getMessage());
@@ -760,7 +777,7 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
             return false;
         }
         File appFile = new File(appFilePath);
-        
+
         if (appFile.isDirectory() && !appFile.getName().endsWith(".app")) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                     StringConstants.DIA_ERROR_MSG_APP_FILE_NOT_EXIST);

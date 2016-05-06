@@ -1,28 +1,29 @@
 package com.kms.katalon.composer.webui.recorder.action;
 
+import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.webui.recorder.util.HTMLActionUtil;
+import com.kms.katalon.groovy.util.GroovyStringUtil;
 import com.kms.katalon.objectspy.element.HTMLElement;
 
 public class HTMLActionMapping {
     private IHTMLAction action;
-    private Object[] paramDatas;
+    private HTMLActionParamValueType[] paramDatas;
     private HTMLElement targetElement;
     private String windowId;
 
     public HTMLActionMapping(IHTMLAction action, String recordedData, HTMLElement targetElement) {
-        paramDatas = new Object[action.getParams().length];
+        paramDatas = new HTMLActionParamValueType[action.getParams().length];
         for (int i = 0; i < action.getParams().length; i++) {
             if (action.getParams()[i].getClazz().isAssignableFrom(String.class)) {
-                paramDatas[i] = recordedData;
-            } else {
-                paramDatas[i] = null;
+                paramDatas[i] = HTMLActionParamValueType.newInstance(InputValueType.String,
+                        HTMLActionUtil.convertToExpressionWrapper(GroovyStringUtil.toGroovyStringFormat(recordedData)));
             }
         }
         this.setAction(action);
         this.setTargetElement(targetElement);
     }
 
-    public HTMLActionMapping(IHTMLAction action, Object[] data, HTMLElement targetElement) {
+    public HTMLActionMapping(IHTMLAction action, HTMLActionParamValueType[] data, HTMLElement targetElement) {
         this.setTargetElement(targetElement);
         this.setData(data);
         this.setAction(action);
@@ -33,11 +34,11 @@ public class HTMLActionMapping {
         this.setTargetElement(targetElement);
     }
 
-    public Object[] getData() {
+    public HTMLActionParamValueType[] getData() {
         return paramDatas;
     }
 
-    public void setData(Object[] paramDatas) {
+    public void setData(HTMLActionParamValueType[] paramDatas) {
         this.paramDatas = paramDatas;
     }
 

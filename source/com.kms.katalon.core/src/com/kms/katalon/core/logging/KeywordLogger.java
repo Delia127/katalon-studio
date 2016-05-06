@@ -135,6 +135,7 @@ public class KeywordLogger {
                         attributes));
         logRunData(RunConfiguration.HOST_NAME, RunConfiguration.getHostName());
         logRunData(RunConfiguration.HOST_OS, RunConfiguration.getOS());
+        logRunData(RunConfiguration.APP_VERSION, RunConfiguration.getAppVersion());
     }
 
     public void endSuite(String name, Map<String, String> attributes) {

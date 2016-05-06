@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang.ObjectUtils;
+import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -120,11 +122,17 @@ public abstract class AbstractExecutionHandler {
         }
         return false;
     }
+    
+    private LaunchMode getLaunchMode(ParameterizedCommand command) {
+        String launchModeAsString = ObjectUtils.toString(command.getParameterMap().get(
+                IdConstants.RUN_MODE_PARAMETER_ID));
+        return LaunchMode.fromText(launchModeAsString);
+    }
 
     @Execute
-    public void execute() {
+    public void execute(ParameterizedCommand command) {
         try {
-            execute(LaunchMode.RUN);
+            execute(getLaunchMode(command));
         } catch (ExecutionException e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR, e.getMessage());
         } catch (SWTException e) {
@@ -191,7 +199,7 @@ public abstract class AbstractExecutionHandler {
         }
     }
 
-    public static void executeTestCase(final TestCaseEntity testCase, final LaunchMode launchMode,
+    public void executeTestCase(final TestCaseEntity testCase, final LaunchMode launchMode,
             final IRunConfiguration runConfig) throws Exception {
         if (testCase != null) {
             Job job = new Job("Launching test case...") {
@@ -236,7 +244,7 @@ public abstract class AbstractExecutionHandler {
     // BrowserType browser,
     // final int pageLoadTimeout, final LaunchMode launchMode) throws Exception
     // {
-    public static void executeTestSuite(final TestSuiteEntity testSuite, final LaunchMode launchMode,
+    public void executeTestSuite(final TestSuiteEntity testSuite, final LaunchMode launchMode,
             final IRunConfiguration runConfig) throws Exception {
         if (testSuite == null) {
             return;

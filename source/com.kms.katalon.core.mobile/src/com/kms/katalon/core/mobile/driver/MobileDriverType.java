@@ -2,7 +2,6 @@ package com.kms.katalon.core.mobile.driver;
 
 import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.mobile.constants.StringConstants;
-import com.kms.katalon.core.mobile.keyword.MobileDriverFactory.OsType;
 
 public enum MobileDriverType implements DriverType {
 	IOS_DRIVER(StringConstants.IOS), ANDROID_DRIVER(StringConstants.ANDROID);
@@ -45,17 +44,6 @@ public enum MobileDriverType implements DriverType {
 			}
 		}
 		return null;
-	}
-	
-	public static MobileDriverType fromOsType(OsType osType) {
-	    switch (osType) {
-        case ANDROID:
-            return ANDROID_DRIVER;
-        case IOS:
-            return IOS_DRIVER;
-        default:
-            return null;
-	    }
 	}
 
 	@Override

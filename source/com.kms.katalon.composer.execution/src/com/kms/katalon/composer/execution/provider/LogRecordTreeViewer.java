@@ -111,6 +111,9 @@ public class LogRecordTreeViewer extends TreeViewer {
             case PASSED:
             case FAILED:
             case ERROR: {
+                if (currentParentTreeNode == null) {
+                    break;
+                }
                 currentParentTreeNode.setResult(record);
                 refresh(currentParentTreeNode);
 

@@ -8,6 +8,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.e4.core.di,
+ org.eclipse.jdt.ui,
  com.kms.katalon.entity,
  com.kms.katalon.constant,
  com.kms.katalon.controller,
@@ -54,13 +55,22 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.composer.explorer,
  com.kms.katalon.core.mobile,
  com.kms.katalon.execution.webui,
- com.kms.katalon.logging
+ com.kms.katalon.logging,
+ com.kms.katalon.execution.mobile,
+ org.eclipse.jdt.groovy.core,
+ org.eclipse.jface.text,
+ org.eclipse.ui.editors,
+ org.eclipse.ui,
+ org.codehaus.groovy,
+ org.eclipse.e4.ui.bindings
 Export-Package: com.kms.katalon.composer.execution.components,
  com.kms.katalon.composer.execution.components.contributor,
  com.kms.katalon.composer.execution.constants,
  com.kms.katalon.composer.execution.dialog,
  com.kms.katalon.composer.execution.handlers,
  com.kms.katalon.composer.execution.provider,
- com.kms.katalon.composer.execution.settings
+ com.kms.katalon.composer.execution.settings,
+ com.kms.katalon.composer.execution.util
 Import-Package: com.google.common.base,
  com.google.common.collect
+Bundle-Activator: com.kms.katalon.composer.execution.ExecutionComposerPlugin

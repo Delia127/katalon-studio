@@ -1,42 +1,69 @@
 package com.kms.katalon.execution.mobile.driver;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.core.mobile.keyword.MobileDriverFactory;
-import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.execution.configuration.AbstractDriverConnector;
+import com.kms.katalon.execution.mobile.constants.MobilePreferenceConstants;
+import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
+import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
 public abstract class MobileDriverConnector extends AbstractDriverConnector {
-    protected MobileDevice device;
-    private String configurationFolder;
-    
+    private static final String APPIUM_LOG_FILE_NAME = "appium.log";
+
+    protected MobileDeviceInfo device;
+
     public MobileDriverConnector(String configurationFolderPath) throws IOException {
-        super(configurationFolderPath);
-        configurationFolder = configurationFolderPath;
+        this(configurationFolderPath, null);
     }
 
-    public MobileDevice getDevice() {
+    public MobileDriverConnector(String configurationFolderPath, MobileDeviceInfo device) throws IOException {
+        super(configurationFolderPath);
+        setDevice(device);
+    }
+
+    public String getDeviceId() {
+        if (device == null) {
+            return "";
+        }
+        return device.getDeviceId();
+    }
+
+    public MobileDeviceInfo getDevice() {
         return device;
     }
 
-    public void setDevice(MobileDevice device) {
+    public void setDevice(MobileDeviceInfo device) {
         this.device = device;
-        if (device != null) {
-            driverProperties.put(StringConstants.CONF_EXECUTED_DEVICE_ID, device.getId());
-        }
     }
-    
+
     @Override
     public Map<String, Object> getSystemProperties() {
-       Map<String, Object> systemProperties = super.getSystemProperties();
-       String projectDir = configurationFolder.replace(File.separator
-               + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME, "");
-       systemProperties.put(MobileDriverFactory.APPIUM_LOG_PROPERTY, projectDir + File.separator + "appium.log");
-       return systemProperties;
+        Map<String, Object> systemProperties = super.getSystemProperties();
+        systemProperties.put(MobileDriverFactory.APPIUM_LOG_PROPERTY, APPIUM_LOG_FILE_NAME);
+        systemProperties.put(MobileDriverFactory.APPIUM_DIRECTORY, getAppiumDirectory());
+        setDeviceSystemProperties(systemProperties);
+        return systemProperties;
+    }
+
+    private Object getAppiumDirectory() {
+        return PreferenceStoreManager.getPreferenceStore(MobilePreferenceConstants.MOBILE_QUALIFIER).getString(
+                MobilePreferenceConstants.MOBILE_APPIUM_DIRECTORY);
+    }
+
+    private void setDeviceSystemProperties(Map<String, Object> systemProperties) {
+        if (device == null) {
+            return;
+        }
+        systemProperties.put(StringConstants.CONF_EXECUTED_DEVICE_ID, device.getDeviceId());
+        systemProperties.put(StringConstants.CONF_EXECUTED_DEVICE_NAME, device.getDeviceName());
+        systemProperties.put(StringConstants.CONF_EXECUTED_DEVICE_MANUFACTURER, device.getDeviceManufacturer());
+        systemProperties.put(StringConstants.CONF_EXECUTED_DEVICE_MODEL, device.getDeviceModel());
+        systemProperties.put(StringConstants.CONF_EXECUTED_DEVICE_OS, device.getDeviceOS());
+        systemProperties.put(StringConstants.CONF_EXECUTED_DEVICE_OS_VERSON, device.getDeviceOSVersion());
     }
 
     @Override
@@ -53,13 +80,5 @@ public abstract class MobileDriverConnector extends AbstractDriverConnector {
     public String toString() {
         Map<String, Object> tempMap = new LinkedHashMap<String, Object>(getUserConfigProperties());
         return tempMap.toString();
-    }
-
-    public String getDeviceId() {
-        return (String) driverProperties.get(StringConstants.CONF_EXECUTED_DEVICE_ID);
-    }
-
-    public void setDeviceId(String deviceId) {
-        driverProperties.put(StringConstants.CONF_EXECUTED_DEVICE_ID, deviceId);
     }
 }

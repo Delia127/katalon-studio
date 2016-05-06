@@ -19,6 +19,9 @@ public class ImageConstants {
 	public static final Image IMG_16_PAUSE = ImageUtil.loadImage(currentBundle, "/icons/pause_16.png");
 	public static final Image IMG_16_PLAY = ImageUtil.loadImage(currentBundle, "/icons/play_16.png");
 	public static final String PATH_16_LOADING = "/icons/loading_16.gif";	
+
+    public static final Image IMG_16_DEBUG = ImageUtil.loadImage(Platform.getBundle("org.eclipse.debug.ui"),
+            "/icons/full/eview16/debug_view.png");
 	
 	// LogViewerPart
 	public static final Image IMG_16_EXPAND_ALL = ImageUtil.loadImage(Platform.getBundle("org.eclipse.ui"), "icons/full/elcl16/expandall.png");

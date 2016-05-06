@@ -3,6 +3,7 @@ package com.kms.katalon.composer.components.impl.util;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
@@ -38,6 +39,16 @@ public class ControlUtils {
         } else {
             ctrl.setEnabled(enabled);
         }
+    }
+    
+    public static void recursivelyAddMouseListener(Control ctrl, MouseAdapter mouseAdapter) {
+        if (ctrl instanceof Composite) {
+            Composite comp = (Composite) ctrl;
+            for (Control c : comp.getChildren()) {
+                recursivelyAddMouseListener(c, mouseAdapter);
+            }
+        }
+        ctrl.addMouseListener(mouseAdapter);
     }
 
     public static void setFontToBeBold(Control ctrl) {
