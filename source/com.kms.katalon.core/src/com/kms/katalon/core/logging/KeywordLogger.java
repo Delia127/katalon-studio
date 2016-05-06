@@ -310,4 +310,12 @@ public class KeywordLogger {
     public void setPendingDescription(String stepDescription) {
         pendingDescription = stepDescription;
     }
+    
+    public void logNotRun(String message) {
+        logMessage(LogLevel.NOT_RUN, message);
+    }
+
+    public void logNotRun(String message, Map<String, String> attributes) {
+        logMessage(LogLevel.NOT_RUN, message, attributes);
+    }
 }
