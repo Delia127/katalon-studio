@@ -34,13 +34,6 @@ public class GroovyRefreshUtil {
         resource.refreshLocal(IResource.DEPTH_INFINITE, monitor);
     }
 
-    public static void refreshFolder(String folderRelativePath, ProjectEntity projectEntity, int depth)
-            throws CoreException {
-        IProject project = GroovyUtil.getGroovyProject(projectEntity);
-        IFolder resource = project.getFolder(folderRelativePath.replace(File.separator, "/"));
-        resource.refreshLocal(depth, new NullProgressMonitor());
-    }
-
     /**
      * Refresh or sync the file with system by the given relative eclipse path.
      * 
@@ -96,7 +89,7 @@ public class GroovyRefreshUtil {
 
     }
 
-    public static void updateScriptReferencesInTestCaseScripts(String oldScript, String newScript,
+    private static void updateScriptReferencesInTestCaseScripts(String oldScript, String newScript,
             ProjectEntity projectEntity) throws CoreException, IOException {
 
         IFolder testCaseRootFolder = GroovyUtil.getTestCaseScriptSourceFolder(projectEntity);
@@ -157,27 +150,6 @@ public class GroovyRefreshUtil {
             }
         }
         return affectedTestCases;
-    }
-
-    /**
-     * Has any reference data in Test Case scripts
-     * 
-     * @param ref a reference to looking for
-     * @param projectEntity Project Entity
-     * @return true if reference has been found in script. Otherwise, false will be returned.
-     * @throws CoreException
-     * @throws IOException
-     */
-    public static boolean hasRefInTestCaseScripts(String ref, ProjectEntity projectEntity) throws CoreException,
-            IOException {
-        IFolder testCaseRootFolder = GroovyUtil.getTestCaseScriptSourceFolder(projectEntity);
-        List<IFile> testCaseFiles = GroovyUtil.getAllScriptFiles(testCaseRootFolder);
-        for (IFile scriptFile : testCaseFiles) {
-            if (hasRefInTestCaseScript(ref, scriptFile)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**

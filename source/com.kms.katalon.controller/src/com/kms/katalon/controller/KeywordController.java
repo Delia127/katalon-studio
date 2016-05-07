@@ -1,6 +1,5 @@
 package com.kms.katalon.controller;
 
-import java.lang.reflect.Method;
 import java.util.List;
 
 import org.codehaus.groovy.ast.MethodNode;
@@ -121,12 +120,6 @@ public class KeywordController extends EntityController {
                 monitor.done();
             }
         }
-    }
-
-    public List<Method> getAllCustomKeywordsAsAst(ProjectEntity project) throws Exception {
-        IFolder srcFolder = GroovyUtil.getCustomKeywordSourceFolder(project);
-        return CustomKeywordParser.getInstance().parseAllCustomKeywordsIntoAst(
-                GroovyUtil.getProjectClasLoader(project), srcFolder);
     }
 
     public void parseCustomKeywordFile(IFile file, ProjectEntity project) throws Exception {

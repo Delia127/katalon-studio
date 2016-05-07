@@ -1,13 +1,10 @@
-package com.kms.katalon.groovy.helper;
-
+package com.kms.katalon.composer.util.groovy;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.rewrite.ImportRewrite;
-import org.eclipse.jdt.core.dom.rewrite.ImportRewrite.ImportRewriteContext;
-import org.eclipse.jdt.internal.corext.codemanipulation.ContextSensitiveImportRewriteContext;
 import org.eclipse.jdt.internal.corext.codemanipulation.StubUtility;
 import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.text.edits.TextEdit;
@@ -31,18 +28,8 @@ public class ImportsManager {
 		return fImportsRewrite.addImport(qualifiedTypeName);
 	}
 	
-	public String addImport(String qualifiedTypeName, int insertPosition) {
-		ImportRewriteContext context= new ContextSensitiveImportRewriteContext(fAstRoot, insertPosition, fImportsRewrite);
-		return fImportsRewrite.addImport(qualifiedTypeName, context);
-	}
-	
 	public String addImport(ITypeBinding typeBinding) {
 		return fImportsRewrite.addImport(typeBinding);
-	}
-	
-	public String addImport(ITypeBinding typeBinding, int insertPosition) {
-		ImportRewriteContext context= new ContextSensitiveImportRewriteContext(fAstRoot, insertPosition, fImportsRewrite);
-		return fImportsRewrite.addImport(typeBinding, context);
 	}
 	
 	public String addStaticImport(String declaringTypeName, String simpleName, boolean isField) {

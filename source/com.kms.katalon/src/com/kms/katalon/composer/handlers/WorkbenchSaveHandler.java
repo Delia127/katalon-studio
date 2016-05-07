@@ -18,8 +18,8 @@ import org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.YesNoCancel;
+import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.groovy.util.GroovyEditorUtil;
 
 @SuppressWarnings("restriction")
 public class WorkbenchSaveHandler extends PartServiceSaveHandler {

@@ -66,6 +66,8 @@ import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
+import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
+import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
@@ -74,7 +76,6 @@ import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
-import com.kms.katalon.groovy.util.GroovyEditorUtil;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 @SuppressWarnings("restriction")
@@ -323,7 +324,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                     monitor.done();
                 }
             });
-            
+
             if (parsingFailed) {
                 MessageDialog.openError(activeShell, StringConstants.ERROR_TITLE,
                         StringConstants.PA_ERROR_MSG_PLS_FIX_ERROR_IN_SCRIPT);
@@ -644,7 +645,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                 String testCaseEditorId = newCompositePartId + IdConstants.TEST_CASE_EDITOR_PART_ID_SUFFIX;
                 MPart editorPart = GroovyEditorUtil.createTestCaseEditorPart(ResourcesPlugin.getWorkspace()
                         .getRoot()
-                        .getFile(GroovyUtil.getGroovyScriptForTestCase(testCase).getPath()), partStack,
+                        .getFile(GroovyGuiUtil.getGroovyScriptForTestCase(testCase).getPath()), partStack,
                         testCaseEditorId, partService, CHILD_TEST_CASE_EDITOR_PART_INDEX);
                 partService.activate(editorPart);
                 initComponent();

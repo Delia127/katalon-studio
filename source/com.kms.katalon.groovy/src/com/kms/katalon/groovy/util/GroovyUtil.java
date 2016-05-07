@@ -6,10 +6,10 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -40,11 +40,7 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.ClasspathAttribute;
-import org.eclipse.jdt.launching.JavaRuntime;
-import org.eclipse.jdt.ui.refactoring.RenameSupport;
 import org.eclipse.osgi.util.ManifestElement;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IFileEditorInput;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
@@ -52,15 +48,12 @@ import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.appium.driver.AppiumDriverManager;
-import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.core.keyword.IKeywordContributor;
 import com.kms.katalon.core.keyword.KeywordContributorCollection;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.groovy.constant.GroovyConstants;
-import com.kms.katalon.groovy.helper.GroovyCompilationHelper;
-import com.kms.katalon.groovy.model.ImportType;
 import com.kms.katalon.selenium.TempClass;
 
 @SuppressWarnings("restriction")
@@ -95,8 +88,11 @@ public class GroovyUtil {
 
     private static final String DRIVERS_FOLDER_NAME = "Drivers";
 
+    private static final String JDT_LAUNCHING = "org.eclipse.jdt.launching.JRE_CONTAINER";
+
     public static IProject getGroovyProject(ProjectEntity projectEntity) {
-        return ResourcesPlugin.getWorkspace().getRoot()
+        return ResourcesPlugin.getWorkspace()
+                .getRoot()
                 .getProject(getProjectNameIdFromLocation(projectEntity.getLocation()));
     }
 
@@ -105,7 +101,7 @@ public class GroovyUtil {
     }
 
     public static IPackageFragment getPackageFragmentFromLocation(String pkgRelativeLocationToProject,
-            boolean isDefaultPackage, ProjectEntity projectEntity) throws Exception {
+            boolean isDefaultPackage, ProjectEntity projectEntity) throws CoreException {
         IFolder packageFolder = getGroovyProject(projectEntity).getFolder(pkgRelativeLocationToProject);
         packageFolder.refreshLocal(IResource.DEPTH_INFINITE, null);
         if (packageFolder != null && packageFolder.exists()) {
@@ -124,7 +120,7 @@ public class GroovyUtil {
     }
 
     public static void initGroovyProject(ProjectEntity projectEntity, FolderEntity testCaseRootFolder,
-            IProgressMonitor monitor) throws Exception {
+            IProgressMonitor monitor) throws CoreException, IOException, BundleException {
         SubProgressMonitor subProgressDescription = null;
         SubProgressMonitor subProgressClasspath = null;
         if (monitor != null) {
@@ -154,7 +150,7 @@ public class GroovyUtil {
     }
 
     public static void initGroovyProjectClassPath(ProjectEntity projectEntity, FolderEntity testCaseRootFolder,
-            boolean isNew, IProgressMonitor monitor) throws Exception {
+            boolean isNew, IProgressMonitor monitor) throws CoreException, IOException, BundleException {
         IProject groovyProject = getGroovyProject(projectEntity);
         groovyProject.refreshLocal(IResource.DEPTH_ONE, monitor);
 
@@ -214,7 +210,7 @@ public class GroovyUtil {
         List<IClasspathEntry> entries = new ArrayList<IClasspathEntry>();
 
         // add JRE to classpath
-        entries.add(JavaCore.newContainerEntry(JavaRuntime.getDefaultJREContainerEntry().getPath()));
+        entries.add(JavaCore.newContainerEntry(new Path(JDT_LAUNCHING)));
 
         // add source and output folder to classpath
         IPackageFragmentRoot keywordPackageRoot = javaProject.getPackageFragmentRoot(keywordSourceFolder);
@@ -231,7 +227,8 @@ public class GroovyUtil {
         // add groovy plugin to classpath
         Bundle bundle = Platform.getBundle(GROOVY_BUNDLE_ID);
         if (bundle != null) {
-            String groovyLocation = bundle.getLocation().replace(BUNDLE_LOCATION_PREFIX, "")
+            String groovyLocation = bundle.getLocation()
+                    .replace(BUNDLE_LOCATION_PREFIX, "")
                     .replace(BUNDLE_LOCATION_INITIAL_PREFIX, "");
             if (groovyLocation.startsWith(GROOVY_BUNDLE_PLUGIN_FOLDER_NAME)) {
                 groovyLocation = Platform.getInstallLocation().getURL().getPath() + groovyLocation;
@@ -280,11 +277,13 @@ public class GroovyUtil {
 
     private static void addClassPathOfCoreBundleToJavaProject(List<IClasspathEntry> entries, Bundle coreBundle)
             throws IOException, BundleException {
-        if (coreBundle == null) return;
+        if (coreBundle == null)
+            return;
 
         File customBundleFile = FileLocator.getBundleFile(coreBundle).getAbsoluteFile();
 
-        if (customBundleFile == null || !customBundleFile.exists()) return;
+        if (customBundleFile == null || !customBundleFile.exists())
+            return;
 
         if (customBundleFile.isDirectory()) { // built by IDE
             addSourceFolderToClassPath(customBundleFile, entries);
@@ -416,15 +415,19 @@ public class GroovyUtil {
     private static boolean checkRequiredBundleLocation(File requiredBundleLocation, List<IClasspathEntry> entries) {
         String bundleName = FilenameUtils.getBaseName(requiredBundleLocation.getName());
 
-        if (bundleName == null || bundleName.isEmpty()) return false;
+        if (bundleName == null || bundleName.isEmpty())
+            return false;
 
         if (bundleName.contains("_")) {
             bundleName = bundleName.split("_")[0];
-            if (bundleName == null || bundleName.isEmpty()) return false;
+            if (bundleName == null || bundleName.isEmpty())
+                return false;
         }
 
-        if ("org.eclipse.core.runtime".equalsIgnoreCase(bundleName)) return false;
-        if ("com.kms.katalon.custom".equalsIgnoreCase(bundleName)) return false;
+        if ("org.eclipse.core.runtime".equalsIgnoreCase(bundleName))
+            return false;
+        if ("com.kms.katalon.custom".equalsIgnoreCase(bundleName))
+            return false;
 
         for (IClasspathEntry childEntry : entries) {
             if ((childEntry.getPath() != null) && (childEntry.getEntryKind() == IClasspathEntry.CPE_LIBRARY)
@@ -474,7 +477,8 @@ public class GroovyUtil {
         return getGroovyProject(projectEntity).getFolder(KEYWORD_SOURCE_FOLDER_NAME);
     }
 
-    public static List<IPackageFragment> getAllPackageInKeywordFolder(ProjectEntity projectEntity) throws Exception {
+    public static List<IPackageFragment> getAllPackageInKeywordFolder(ProjectEntity projectEntity)
+            throws JavaModelException {
         IProject groovyProject = getGroovyProject(projectEntity);
         List<IPackageFragment> packageFragments = new ArrayList<IPackageFragment>();
         IPackageFragmentRoot root = JavaCore.create(groovyProject).getPackageFragmentRoot(
@@ -495,19 +499,22 @@ public class GroovyUtil {
         return packageFragments;
     }
 
-    public static IPackageFragment getDefaultPackageForKeyword(ProjectEntity projectEntity) throws Exception {
+    public static IPackageFragment getDefaultPackageForKeyword(ProjectEntity projectEntity) {
         IProject groovyProject = getGroovyProject(projectEntity);
         return JavaCore.create(groovyProject)
-                .getPackageFragmentRoot(groovyProject.getFolder(KEYWORD_SOURCE_FOLDER_NAME)).getPackageFragment("");
+                .getPackageFragmentRoot(groovyProject.getFolder(KEYWORD_SOURCE_FOLDER_NAME))
+                .getPackageFragment("");
     }
 
-    public static IPackageFragment getDefaultPackageForTestCase(ProjectEntity projectEntity) throws Exception {
+    public static IPackageFragment getDefaultPackageForTestCase(ProjectEntity projectEntity) {
         IProject groovyProject = getGroovyProject(projectEntity);
         return JavaCore.create(groovyProject)
-                .getPackageFragmentRoot(groovyProject.getFolder(TEST_SCRIPT_SOURCE_FOLDER_NAME)).getPackageFragment("");
+                .getPackageFragmentRoot(groovyProject.getFolder(TEST_SCRIPT_SOURCE_FOLDER_NAME))
+                .getPackageFragment("");
     }
 
-    public static List<ICompilationUnit> getAllGroovyClasses(IPackageFragment packageFragment) throws Exception {
+    public static List<ICompilationUnit> getAllGroovyClasses(IPackageFragment packageFragment)
+            throws JavaModelException {
         List<ICompilationUnit> groovyClassFiles = new ArrayList<ICompilationUnit>();
         for (IJavaElement javaElement : packageFragment.getChildren()) {
             if (javaElement instanceof GroovyCompilationUnit) {
@@ -517,7 +524,8 @@ public class GroovyUtil {
         return groovyClassFiles;
     }
 
-    public static void openGroovyProject(ProjectEntity projectEntity, FolderEntity testCaseRootFolder) throws Exception {
+    public static void openGroovyProject(ProjectEntity projectEntity, FolderEntity testCaseRootFolder)
+            throws CoreException, IOException, BundleException {
         initGroovyProject(projectEntity, testCaseRootFolder, null);
         IProject groovyProject = getGroovyProject(projectEntity);
         if (groovyProject.exists() && !groovyProject.isOpen()) {
@@ -535,12 +543,6 @@ public class GroovyUtil {
         return groovyProject.getFolder(TEST_SCRIPT_SOURCE_FOLDER_NAME);
     }
 
-    public static String getTestCaseIdByEditor(ProjectEntity projectEntity, IEditorPart editor) {
-        IFileEditorInput input = (IFileEditorInput) editor.getEditorInput();
-        String editorPath = input.getFile().getRawLocation().toFile().getAbsolutePath();
-        return getTestCaseIdByScriptPath(editorPath, projectEntity);
-    }
-
     public static String getTestCaseIdByScriptPath(String scriptFilePath, ProjectEntity projectEntity) {
         String testCaseScriptFolderPath = (new File(scriptFilePath)).getParent();
 
@@ -556,7 +558,7 @@ public class GroovyUtil {
     }
 
     public static void copyPackage(IPackageFragment packageFragment, FolderEntity targetFolder, String newName)
-            throws Exception {
+            throws JavaModelException {
         IProject groovyProject = getGroovyProject(targetFolder.getProject());
         IPackageFragmentRoot packageFragmentRoot = JavaCore.create(groovyProject).getPackageFragmentRoot(
                 groovyProject.getFolder(KEYWORD_SOURCE_FOLDER_NAME));
@@ -564,14 +566,14 @@ public class GroovyUtil {
     }
 
     public static void copyKeyword(IFile keywordFile, IPackageFragment targetPackageFragment, String newName)
-            throws Exception {
+            throws JavaModelException {
         GroovyCompilationUnit compilationUnit = (GroovyCompilationUnit) JavaCore.create(keywordFile);
         compilationUnit.copy(targetPackageFragment, null, newName != null ? newName
                 + GroovyConstants.GROOVY_FILE_EXTENSION : newName, false, null);
     }
 
     public static void moveKeyword(IFile keywordFile, IPackageFragment targetPackageFragment, String newName)
-            throws Exception {
+            throws JavaModelException {
         GroovyCompilationUnit compilationUnit = (GroovyCompilationUnit) JavaCore.create(keywordFile);
         compilationUnit.move(targetPackageFragment, null, newName != null ? newName
                 + GroovyConstants.GROOVY_FILE_EXTENSION : newName, false, null);
@@ -579,11 +581,6 @@ public class GroovyUtil {
 
     public static String getGroovyClassName(TestCaseEntity testCase) {
         return "Script" + System.currentTimeMillis();
-    }
-
-    public static ICompilationUnit createGroovyScriptForCustomKeyword(IPackageFragment parentPackage, String typeName)
-            throws Exception {
-        return GroovyCompilationHelper.createGroovyType(parentPackage, typeName, false, ImportType.KEYWORD_IMPORTS);
     }
 
     public static String getScriptPackageRelativePathForFolder(FolderEntity folder) {
@@ -652,57 +649,7 @@ public class GroovyUtil {
         return testCaseFolderFile;
     }
 
-    public static IPackageFragment getParentPackageForTestCase(TestCaseEntity testCase, IProject groovyProject)
-            throws Exception {
-        // IFolder testCaseSourceFolder =
-        // groovyProject.getFolder(getScriptPackageRelativePathForTestCase(testCase));
-        //
-        // IFolder parentSourceFolder = (IFolder)
-        // testCaseSourceFolder.getParent();
-        // parentSourceFolder.refreshLocal(IResource.DEPTH_ONE, null);
-        //
-        // if (!testCaseSourceFolder.exists()) {
-        // createTestCaseFolder(testCaseSourceFolder, parentSourceFolder,
-        // testCase);
-        // }
-        //
-        // testCaseSourceFolder.refreshLocal(IResource.DEPTH_INFINITE, null);
-        //
-        // IJavaProject javaProject =
-        // JavaCore.create(groovyProject).getJavaProject();
-        // IPackageFragmentRoot testCasePackageRoot =
-        // javaProject.getPackageFragmentRoot(testCaseSourceFolder);
-        // if (!testCasePackageRoot.exists()) {
-        // testCasePackageRoot.createPackageFragment(PackageFragment.DEFAULT_PACKAGE_NAME,
-        // true, null);
-        // String testCaseClassName = getScriptNameForTestCase(testCase);
-        // if (testCaseClassName != null) {
-        //
-        // IFolder outputTestCaseFolder =
-        // getTestCaseRootOutputFolder(groovyProject).getFolder(testCaseClassName);
-        // if (!outputTestCaseFolder.exists()) {
-        // outputTestCaseFolder.create(true, true, null);
-        // }
-        //
-        // IClasspathEntry classPathEntry =
-        // JavaCore.newSourceEntry(testCasePackageRoot.getPath(), new Path[] {},
-        // new Path[] {}, outputTestCaseFolder.getFullPath());
-        // List<IClasspathEntry> entries = new ArrayList<IClasspathEntry>();
-        // entries.addAll(Arrays.asList(javaProject.getRawClasspath()));
-        // entries.add(classPathEntry);
-        //
-        // javaProject.setRawClasspath(entries.toArray(new IClasspathEntry[0]),
-        // null);
-        // javaProject.getProject().refreshLocal(IResource.DEPTH_INFINITE,
-        // null);
-        // }
-        // }
-        // return
-        // testCasePackageRoot.getPackageFragment(PackageFragment.DEFAULT_PACKAGE_NAME);
-        return null;
-    }
-
-    public static String getScriptNameForTestCase(TestCaseEntity testCase) throws Exception {
+    public static String getScriptNameForTestCase(TestCaseEntity testCase) {
         File testCaseFolderFile = new File(getScriptPackageAbsolutePathForTestCase(testCase));
         if (testCaseFolderFile.exists() && testCaseFolderFile.isDirectory()) {
             for (File file : testCaseFolderFile.listFiles()) {
@@ -715,50 +662,26 @@ public class GroovyUtil {
         return null;
     }
 
-    public static ICompilationUnit getGroovyScriptForTestCase(TestCaseEntity testCase) throws Exception {
-        getTestCaseScriptFolder(testCase);
-        IProject groovyProject = getGroovyProject(testCase.getProject());
+    public static void updateTestCasePasted(TestCaseEntity updatedTestCase) throws IOException, CoreException {
+        // Ensure new folder for script file
+        getTestCaseScriptFolder(updatedTestCase);
 
-        String parentRelativeFolder = getScriptPackageRelativePathForTestCase(testCase);
-        IFolder parentFolder = groovyProject.getFolder(parentRelativeFolder);
-        if (!parentFolder.exists()) {
-            parentFolder.getParent().refreshLocal(IResource.DEPTH_ONE, null);
-        }
-        parentFolder.refreshLocal(IResource.DEPTH_ONE, null);
-        String scriptFileName = getScriptNameForTestCase(testCase);
-        IFile scriptFile = null;
-
+        IProject groovyProject = getGroovyProject(updatedTestCase.getProject());
+        IFolder testCaseScriptFolder = groovyProject.getFolder(getScriptPackageRelativePathForTestCase(updatedTestCase));
+        String scriptFileName = getScriptNameForTestCase(updatedTestCase);
         if (scriptFileName == null) {
-            scriptFileName = getGroovyClassName(testCase);
-            scriptFile = parentFolder.getFile(scriptFileName + GroovyConstants.GROOVY_FILE_EXTENSION);
+            scriptFileName = getGroovyClassName(updatedTestCase);
+        }
+        IFile scriptFile = testCaseScriptFolder.getFile(scriptFileName + GroovyConstants.GROOVY_FILE_EXTENSION);
+        if (!scriptFile.exists()) {
             scriptFile.getLocation().toFile().createNewFile();
-
-            GroovyCompilationUnit newCompilationunit = (GroovyCompilationUnit) GroovyCompilationHelper
-                    .createGroovyType(getDefaultPackageForTestCase(testCase.getProject()), scriptFileName);
-            StringBuilder importBuilder = new StringBuilder();
-            GroovyParser parser = new GroovyParser(importBuilder);
-            parser.parseGroovyAstIntoScript(Arrays.asList(newCompilationunit.getModuleNode().getClasses().get(0)));
-            FileUtils.writeStringToFile(scriptFile.getLocation().toFile(), importBuilder.toString());
             scriptFile.refreshLocal(IResource.DEPTH_ZERO, null);
-            newCompilationunit.getResource().delete(true, null);
-        } else {
-            scriptFile = parentFolder.getFile(scriptFileName + GroovyConstants.GROOVY_FILE_EXTENSION);
         }
-
-        return JavaCore.createCompilationUnitFrom(scriptFile);
-    }
-
-    public static void updateTestCasePasted(TestCaseEntity updatedTestCase) throws Exception {
-        ICompilationUnit compilationUnit = getGroovyScriptForTestCase(updatedTestCase);
-        if (compilationUnit != null && compilationUnit.getResource() instanceof IFile
-                && updatedTestCase.getScriptContents() != null) {
-            IFile scriptFile = (IFile) compilationUnit.getResource();
-            scriptFile.setContents(new ByteArrayInputStream(updatedTestCase.getScriptContents()), true, false, null);
-        }
+        scriptFile.setContents(new ByteArrayInputStream(updatedTestCase.getScriptContents()), true, false, null);
     }
 
     public static void updateTestCaseFolderDeleted(FolderEntity folder, FolderEntity testCaseRootProject)
-            throws Exception {
+            throws CoreException {
         IFolder scriptFolder = getGroovyProject(folder.getProject()).getFolder(getRelativePathForFolder(folder));
         if (scriptFolder.exists()) {
             scriptFolder.delete(true, null);
@@ -767,50 +690,38 @@ public class GroovyUtil {
     }
 
     public static void updateTestCaseDeleted(TestCaseEntity testCase, FolderEntity testCaseRootProject)
-            throws Exception {
+            throws CoreException {
         try {
-            IFile scriptFile = ResourcesPlugin.getWorkspace().getRoot()
-                    .getFile(GroovyUtil.getGroovyScriptForTestCase(testCase).getPath());
-            if (scriptFile != null && scriptFile.getParent() instanceof IFolder) {
-                IFolder folder = (IFolder) scriptFile.getParent();
-                folder.delete(true, null);
-                folder.getParent().refreshLocal(IResource.DEPTH_INFINITE, null);
-            }
+            IProject groovyProject = getGroovyProject(testCase.getProject());
+            IFolder folder = groovyProject.getFolder(getScriptPackageRelativePathForTestCase(testCase));
+            folder.delete(true, null);
+            folder.getParent().refreshLocal(IResource.DEPTH_INFINITE, null);
         } catch (JavaModelException ex) {
             return;
         }
-
     }
 
-    public static RenameSupport getRenameSupportForRenamingGroovyClass(IPackageFragment parentPackage,
-            IFile compilationFile) throws Exception {
-        return RenameSupport.create(parentPackage.getCompilationUnit(compilationFile.getName()), null,
-                RenameSupport.UPDATE_REFERENCES);
-    }
-
-    public static URLClassLoader getProjectClasLoader(ProjectEntity projectEntity) throws Exception {
-        IJavaProject project = JavaCore.create(getGroovyProject(projectEntity));
-        String[] classPathEntries = JavaRuntime.computeDefaultRuntimeClassPath(project);
-        List<URL> urlList = new ArrayList<URL>();
+    public static URLClassLoader getProjectClasLoader(IJavaProject project, String[] classPathEntries)
+            throws MalformedURLException {
+        GroovyClassLoader groovyClassLoader = new GroovyClassLoader(project.getClass().getClassLoader());
         for (int i = 0; i < classPathEntries.length; i++) {
             String entry = classPathEntries[i];
             IPath path = new Path(entry);
             URL url = path.toFile().toURI().toURL();
-            urlList.add(url);
-        }
-        GroovyClassLoader groovyClassLoader = new GroovyClassLoader(project.getClass().getClassLoader());
-        for (URL url : urlList) {
             groovyClassLoader.addURL(url);
         }
         return groovyClassLoader;
     }
 
-    public static void loadScriptContentIntoTestCase(TestCaseEntity testCase) throws Exception {
+    public static void loadScriptContentIntoTestCase(TestCaseEntity testCase) throws CoreException, IOException {
         if (testCase == null) {
             return;
         }
-        IFile scriptFile = ResourcesPlugin.getWorkspace().getRoot()
-                .getFile(getGroovyScriptForTestCase(testCase).getPath());
+
+        IProject groovyProject = getGroovyProject(testCase.getProject());
+        IFolder testCaseScriptFolder = groovyProject.getFolder(getScriptPackageRelativePathForTestCase(testCase));
+        String scriptFileName = getScriptNameForTestCase(testCase);
+        IFile scriptFile = testCaseScriptFolder.getFile(scriptFileName + GroovyConstants.GROOVY_FILE_EXTENSION);
         if (scriptFile != null && scriptFile.exists()) {
             InputStream scriptInputStream = scriptFile.getContents();
             try {
@@ -823,7 +734,7 @@ public class GroovyUtil {
         }
     }
 
-    public static IFile getTempScriptIFile(File scriptFile, ProjectEntity project) throws Exception {
+    public static IFile getTempScriptIFile(File scriptFile, ProjectEntity project) throws CoreException {
         IFolder libFolder = GroovyUtil.getCustomKeywordLibFolder(project);
         for (IResource resource : libFolder.members()) {
             if (resource instanceof IFile
@@ -847,18 +758,16 @@ public class GroovyUtil {
     }
 
     public static void refreshScriptTestCaseClasspath(ProjectEntity projectEntity, FolderEntity testCaseFolder)
-            throws Exception {
+            throws CoreException {
         IProject groovyProject = getGroovyProject(projectEntity);
-        IFolder scriptFolderOfTestCaseFolder = groovyProject
-                .getFolder(getScriptPackageRelativePathForFolder(testCaseFolder));
+        IFolder scriptFolderOfTestCaseFolder = groovyProject.getFolder(getScriptPackageRelativePathForFolder(testCaseFolder));
         scriptFolderOfTestCaseFolder.refreshLocal(IResource.DEPTH_ONE, null);
     }
 
     public static void refreshInfiniteScriptTestCaseClasspath(ProjectEntity projectEntity, FolderEntity testCaseFolder,
-            IProgressMonitor monitor) throws Exception {
+            IProgressMonitor monitor) throws CoreException {
         IProject groovyProject = getGroovyProject(projectEntity);
-        IFolder scriptFolderOfTestCaseFolder = groovyProject
-                .getFolder(getScriptPackageRelativePathForFolder(testCaseFolder));
+        IFolder scriptFolderOfTestCaseFolder = groovyProject.getFolder(getScriptPackageRelativePathForFolder(testCaseFolder));
         scriptFolderOfTestCaseFolder.refreshLocal(IResource.DEPTH_INFINITE, monitor);
     }
 

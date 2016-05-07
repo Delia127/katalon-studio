@@ -1,22 +1,19 @@
-package com.kms.katalon.groovy.helper;
+package com.kms.katalon.composer.util.groovy;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IImportDeclaration;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -24,29 +21,19 @@ import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.formatter.CodeFormatter;
-import org.eclipse.jdt.core.refactoring.IJavaRefactorings;
-import org.eclipse.jdt.core.refactoring.descriptors.RenameJavaElementDescriptor;
 import org.eclipse.jdt.internal.corext.codemanipulation.StubUtility;
 import org.eclipse.jdt.internal.corext.dom.ASTNodes;
-import org.eclipse.jdt.internal.corext.refactoring.rename.RenamingNameSuggestor;
 import org.eclipse.jdt.internal.corext.util.CodeFormatterUtil;
 import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.jdt.internal.corext.util.Strings;
-import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.javaeditor.ASTProvider;
-import org.eclipse.jdt.internal.ui.refactoring.DelegateUIHelper;
-import org.eclipse.jdt.internal.ui.refactoring.reorg.RenameRefactoringWizard;
 import org.eclipse.jdt.ui.CodeGeneration;
-import org.eclipse.jface.dialogs.IDialogSettings;
-import org.eclipse.ltk.core.refactoring.RefactoringCore;
-import org.eclipse.ltk.ui.refactoring.RefactoringWizardPage;
 import org.eclipse.text.edits.DeleteEdit;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
 
 import com.kms.katalon.core.annotation.Keyword;
 import com.kms.katalon.groovy.constant.GroovyConstants;
-import com.kms.katalon.groovy.model.ImportType;
 
 @SuppressWarnings("restriction")
 public class GroovyCompilationHelper {
@@ -59,7 +46,7 @@ public class GroovyCompilationHelper {
     }
 
     private static String constructCUContent(ICompilationUnit cu, String typeContent, String lineDelimiter)
-            throws Exception {
+            throws CoreException {
         IPackageFragment pack = (IPackageFragment) cu.getParent();
         String content = CodeGeneration.getCompilationUnitContent(cu, null, null, typeContent, lineDelimiter);
         if (content != null) {
@@ -99,7 +86,7 @@ public class GroovyCompilationHelper {
     }
 
     private static String constructTypeStub(String typeName, ICompilationUnit parentCU, ImportsManager imports,
-            String lineDelimiter) throws Exception {
+            String lineDelimiter) throws CoreException {
         StringBuffer buf = new StringBuffer();
 
         int modifiers = Flags.AccPublic;
@@ -126,7 +113,7 @@ public class GroovyCompilationHelper {
 
     @SuppressWarnings("unchecked")
     private static void removeUnusedImports(ICompilationUnit cu, Set<String> existingImports, boolean needsSave)
-            throws Exception {
+            throws CoreException {
         ASTParser parser = ASTParser.newParser(ASTProvider.SHARED_AST_LEVEL);
         parser.setSource(cu);
         parser.setResolveBindings(true);
@@ -180,12 +167,12 @@ public class GroovyCompilationHelper {
         imports.create(needsSave, null);
     }
 
-    public static String getCompilationUnitName(String typeName) {
+    private static String getCompilationUnitName(String typeName) {
         return typeName + GroovyConstants.GROOVY_FILE_EXTENSION;
     }
 
-    private static ICompilationUnit createType(IPackageFragment parentPackage, String typeName,
-            ImportType type) throws Exception {
+    private static ICompilationUnit createType(IPackageFragment parentPackage, String typeName, ImportType type)
+            throws CoreException {
         boolean needsSave;
         ICompilationUnit connectedCU = null;
         try {
@@ -214,20 +201,19 @@ public class GroovyCompilationHelper {
 
             CompilationUnit astRoot = createASTForImports(parentCU);
             existingImports = getExistingImports(astRoot);
-            
+
             imports = null;
             switch (type) {
-            case SCRIPTS_IMPORTS:
-                imports = addImports(parentPackage, typeName, astRoot);
-                break;
-            case KEYWORD_IMPORTS:
-                imports = addImportsForCustomKeyword(parentPackage, typeName, astRoot);
-                break;
-            default:
-                imports = new ImportsManager(astRoot);
-                break;
+                case SCRIPTS_IMPORTS:
+                    imports = addImports(parentPackage, typeName, astRoot);
+                    break;
+                case KEYWORD_IMPORTS:
+                    imports = addImportsForCustomKeyword(parentPackage, typeName, astRoot);
+                    break;
+                default:
+                    imports = new ImportsManager(astRoot);
+                    break;
             }
-            
 
             String typeContent = constructTypeStub(typeName, parentCU, imports, lineDelimiter);
 
@@ -285,7 +271,7 @@ public class GroovyCompilationHelper {
         return connectedCU;
     }
 
-    protected static ImportsManager addImports(IPackageFragment parentPackage, String typeName, CompilationUnit astRoot) {
+    private static ImportsManager addImports(IPackageFragment parentPackage, String typeName, CompilationUnit astRoot) {
         ImportsManager imports;
         imports = new ImportsManager(astRoot);
         // add an import that will be removed again. Having this import solves
@@ -297,23 +283,24 @@ public class GroovyCompilationHelper {
         return imports;
     }
 
-    protected static ImportsManager addImportsForCustomKeyword(IPackageFragment parentPackage, String typeName,
+    private static ImportsManager addImportsForCustomKeyword(IPackageFragment parentPackage, String typeName,
             CompilationUnit astRoot) {
         ImportsManager imports = addImports(parentPackage, typeName, astRoot);
         imports.addImport(Keyword.class.getName());
         return imports;
     }
 
-    public static ICompilationUnit createGroovyType(IPackageFragment parentPackage, String typeName) throws Exception {
+    public static ICompilationUnit createGroovyType(IPackageFragment parentPackage, String typeName)
+            throws CoreException {
         return createGroovyType(parentPackage, typeName, true, ImportType.SCRIPTS_IMPORTS);
     }
 
     public static ICompilationUnit createGroovyType(IPackageFragment parentPackage, String typeName,
-            boolean noClassDeclaration, ImportType importType) throws Exception {
+            boolean noClassDeclaration, ImportType importType) throws CoreException {
+
         createType(parentPackage, typeName, importType);
-        
-        GroovyCompilationUnit unit = (GroovyCompilationUnit) parentPackage
-                .getCompilationUnit(getCompilationUnitName(typeName));
+
+        GroovyCompilationUnit unit = (GroovyCompilationUnit) parentPackage.getCompilationUnit(getCompilationUnitName(typeName));
         try {
             unit.becomeWorkingCopy(null);
 
@@ -355,116 +342,5 @@ public class GroovyCompilationHelper {
             }
         }
         return unit;
-    }
-
-    public static RenameJavaElementDescriptor createRenameDescriptor(IJavaElement javaElement, String newName)
-            throws JavaModelException {
-        String contributionId;
-        // see RefactoringExecutionStarter#createRenameSupport(..):
-        int elementType = javaElement.getElementType();
-        switch (elementType) {
-        case IJavaElement.JAVA_PROJECT:
-            contributionId = IJavaRefactorings.RENAME_JAVA_PROJECT;
-            break;
-        case IJavaElement.PACKAGE_FRAGMENT_ROOT:
-            contributionId = IJavaRefactorings.RENAME_SOURCE_FOLDER;
-            break;
-        case IJavaElement.PACKAGE_FRAGMENT:
-            contributionId = IJavaRefactorings.RENAME_PACKAGE;
-            break;
-        case IJavaElement.COMPILATION_UNIT:
-            contributionId = IJavaRefactorings.RENAME_COMPILATION_UNIT;
-            break;
-        case IJavaElement.TYPE:
-            contributionId = IJavaRefactorings.RENAME_TYPE;
-            break;
-        case IJavaElement.METHOD:
-            final IMethod method = (IMethod) javaElement;
-            if (method.isConstructor())
-                return createRenameDescriptor(method.getDeclaringType(), newName);
-            else
-                contributionId = IJavaRefactorings.RENAME_METHOD;
-            break;
-        case IJavaElement.FIELD:
-            IField field = (IField) javaElement;
-            if (field.isEnumConstant())
-                contributionId = IJavaRefactorings.RENAME_ENUM_CONSTANT;
-            else
-                contributionId = IJavaRefactorings.RENAME_FIELD;
-            break;
-        case IJavaElement.TYPE_PARAMETER:
-            contributionId = IJavaRefactorings.RENAME_TYPE_PARAMETER;
-            break;
-        case IJavaElement.LOCAL_VARIABLE:
-            contributionId = IJavaRefactorings.RENAME_LOCAL_VARIABLE;
-            break;
-        default:
-            return null;
-        }
-
-        RenameJavaElementDescriptor descriptor = (RenameJavaElementDescriptor) RefactoringCore
-                .getRefactoringContribution(contributionId).createDescriptor();
-        descriptor.setJavaElement(javaElement);
-        descriptor.setNewName(newName);
-        if (elementType != IJavaElement.PACKAGE_FRAGMENT_ROOT)
-            descriptor.setUpdateReferences(true);
-
-        IDialogSettings javaSettings = JavaPlugin.getDefault().getDialogSettings();
-        IDialogSettings refactoringSettings = javaSettings.getSection(RefactoringWizardPage.REFACTORING_SETTINGS); // TODO:
-                                                                                                                   // undocumented
-                                                                                                                   // API
-        if (refactoringSettings == null) {
-            refactoringSettings = javaSettings.addNewSection(RefactoringWizardPage.REFACTORING_SETTINGS);
-        }
-
-        switch (elementType) {
-        case IJavaElement.METHOD:
-        case IJavaElement.FIELD:
-            descriptor.setDeprecateDelegate(refactoringSettings.getBoolean(DelegateUIHelper.DELEGATE_DEPRECATION));
-            descriptor.setKeepOriginal(refactoringSettings.getBoolean(DelegateUIHelper.DELEGATE_UPDATING));
-        }
-        switch (elementType) {
-        case IJavaElement.TYPE:
-            // case IJavaElement.COMPILATION_UNIT: // TODO
-            descriptor.setUpdateSimilarDeclarations(refactoringSettings
-                    .getBoolean(RenameRefactoringWizard.TYPE_UPDATE_SIMILAR_ELEMENTS));
-            int strategy;
-            try {
-                strategy = refactoringSettings.getInt(RenameRefactoringWizard.TYPE_SIMILAR_MATCH_STRATEGY);
-            } catch (NumberFormatException e) {
-                strategy = RenamingNameSuggestor.STRATEGY_EXACT;
-            }
-            descriptor.setMatchStrategy(strategy);
-        }
-        switch (elementType) {
-        case IJavaElement.PACKAGE_FRAGMENT:
-            descriptor.setUpdateHierarchy(refactoringSettings
-                    .getBoolean(RenameRefactoringWizard.PACKAGE_RENAME_SUBPACKAGES));
-        }
-        switch (elementType) {
-        case IJavaElement.PACKAGE_FRAGMENT:
-        case IJavaElement.TYPE:
-            String fileNamePatterns = refactoringSettings.get(RenameRefactoringWizard.QUALIFIED_NAMES_PATTERNS);
-            if (fileNamePatterns != null && fileNamePatterns.length() != 0) {
-                descriptor.setFileNamePatterns(fileNamePatterns);
-                boolean updateQualifiedNames = refactoringSettings
-                        .getBoolean(RenameRefactoringWizard.UPDATE_QUALIFIED_NAMES);
-                descriptor.setUpdateQualifiedNames(updateQualifiedNames);
-            }
-        }
-        switch (elementType) {
-        case IJavaElement.PACKAGE_FRAGMENT:
-        case IJavaElement.TYPE:
-        case IJavaElement.FIELD:
-            boolean updateTextualOccurrences = refactoringSettings
-                    .getBoolean(RenameRefactoringWizard.UPDATE_TEXTUAL_MATCHES);
-            descriptor.setUpdateTextualOccurrences(updateTextualOccurrences);
-        }
-        switch (elementType) {
-        case IJavaElement.FIELD:
-            descriptor.setRenameGetters(refactoringSettings.getBoolean(RenameRefactoringWizard.FIELD_RENAME_GETTER));
-            descriptor.setRenameSetters(refactoringSettings.getBoolean(RenameRefactoringWizard.FIELD_RENAME_SETTER));
-        }
-        return descriptor;
     }
 }

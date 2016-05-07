@@ -31,6 +31,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStateme
 import com.kms.katalon.composer.testcase.model.InputParameter;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
+import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.ast.GroovyParser;
@@ -39,7 +40,6 @@ import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.custom.keyword.KeywordMethod;
 import com.kms.katalon.custom.keyword.KeywordParameter;
-import com.kms.katalon.groovy.util.GroovyUtil;
 
 /**
  * Utility class to process ast input classes for keywords
@@ -491,7 +491,7 @@ public class AstKeywordsInputUtil {
         }
         URLClassLoader classLoader = null;
         try {
-            classLoader = GroovyUtil.getProjectClasLoader(ProjectController.getInstance().getCurrentProject());
+            classLoader = GroovyGuiUtil.getProjectClasLoader(ProjectController.getInstance().getCurrentProject());
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             // find nothing, continue
