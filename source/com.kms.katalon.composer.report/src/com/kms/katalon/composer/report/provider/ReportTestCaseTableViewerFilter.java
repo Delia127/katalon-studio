@@ -48,7 +48,7 @@ public class ReportTestCaseTableViewerFilter extends ViewerFilter {
         return (getLogValue((ILogRecord) element) & getFilterValue()) != 0;
     }
 
-    private int getLogValue(ILogRecord logRecord) {
+    protected int getLogValue(ILogRecord logRecord) {
         if (logRecord.getStatus() == null) {
             return INFO;
         }
@@ -69,7 +69,7 @@ public class ReportTestCaseTableViewerFilter extends ViewerFilter {
         }
     }
 
-    private int getFilterValue() {
+    protected int getFilterValue() {
         int filterInfo = (showInfo) ? INFO : 0;
         int filterPassed = (showPassed) ? PASSED : 0;
         int filterFailed = (showFailed) ? FAILED : 0;

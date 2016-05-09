@@ -16,6 +16,8 @@ public interface ExecutionPreferenceConstants extends PreferenceConstants {
     public static final String EXECUTION_SHOW_ERROR_LOGS = "log.showErrors";
 
     public static final String EXECUTION_SHOW_WARNING_LOGS = "log.showWarning";
+    
+    public static final String EXECUTION_SHOW_NOT_RUN_LOGS = "log.showNotRun";
 
     public static final String EXECUTION_SHOW_LOGS_AS_TREE = "log.treeView";
 

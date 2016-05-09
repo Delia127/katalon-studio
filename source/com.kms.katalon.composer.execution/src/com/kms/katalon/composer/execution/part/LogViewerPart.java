@@ -134,7 +134,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
     private StyledText txtStartTime, txtEndTime, txtEslapedTime, txtMessage;
 
     private ToolItem btnShowAllLogs, btnShowInfoLogs, btnShowPassedLogs, btnShowFailedLogs, btnShowErrorLogs,
-            btnShowWarningLogs;
+            btnShowWarningLogs, btnShowNotRunLogs;
 
     private List<XmlLogRecord> currentRecords;
 
@@ -657,6 +657,12 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
         btnShowWarningLogs.setText(StringConstants.PA_TIP_WARNING);
         btnShowWarningLogs.setToolTipText(StringConstants.PA_TIP_WARNING);
         btnShowWarningLogs.setImage(ImageConstants.IMG_16_LOGVIEW_WARNING);
+        
+        btnShowNotRunLogs = new ToolItem(toolBar, SWT.CHECK);
+        btnShowNotRunLogs.setData(StringConstants.ID, ExecutionPreferenceConstants.EXECUTION_SHOW_NOT_RUN_LOGS);
+        btnShowNotRunLogs.setText(StringConstants.PA_TIP_NOT_RUN);
+        btnShowNotRunLogs.setToolTipText(StringConstants.PA_TIP_NOT_RUN);
+        btnShowNotRunLogs.setImage(ImageConstants.IMG_16_LOGVIEW_NOT_RUN);
 
         SelectionAdapter logFilterSelectionAdapter = new SelectionAdapter() {
             @Override
@@ -671,6 +677,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
         btnShowFailedLogs.addSelectionListener(logFilterSelectionAdapter);
         btnShowErrorLogs.addSelectionListener(logFilterSelectionAdapter);
         btnShowWarningLogs.addSelectionListener(logFilterSelectionAdapter);
+        btnShowNotRunLogs.addSelectionListener(logFilterSelectionAdapter);
 
         updateTableButtons();
     }
@@ -701,6 +708,8 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                 .getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_ERROR_LOGS));
         btnShowWarningLogs.setSelection(preferenceStore
                 .getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_WARNING_LOGS));
+        btnShowNotRunLogs.setSelection(preferenceStore
+                .getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_NOT_RUN_LOGS));
     }
 
     private void createTableCompositeDetails(Composite container) {

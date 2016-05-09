@@ -6,9 +6,13 @@ import org.eclipse.jface.viewers.Viewer;
 import com.kms.katalon.composer.report.preference.ReportPreferenceInitializer;
 import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.MessageLogRecord;
+import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 
 public class ReportTestStepTableViewerFilter extends ReportTestCaseTableViewerFilter {
-
+    public static final int NOT_RUN    = 1 << 6;
+    
+    private boolean showNotRun;
+    
     @Override
     public boolean select(Viewer viewer, Object parentElement, Object element) {
         if (parentElement instanceof ILogRecord
@@ -60,6 +64,28 @@ public class ReportTestStepTableViewerFilter extends ReportTestCaseTableViewerFi
             }
         }
         return isMatched;
+    }
+    
+    @Override
+    protected int getLogValue(ILogRecord logRecord) {
+        if (logRecord.getStatus().getStatusValue() == TestStatusValue.NOT_RUN) {
+            return NOT_RUN;
+        }
+        return super.getLogValue(logRecord);
+    }
+    
+    @Override
+    protected int getFilterValue() {
+        int filterNotRun = showNotRun ? NOT_RUN : 0;
+        return super.getFilterValue() | (filterNotRun & NOT_RUN);
+    }
+
+    public boolean isNotRunShown() {
+        return showNotRun;
+    }
+
+    public void showNotRun(boolean showNotRun) {
+        this.showNotRun = showNotRun;
     }
 
 }

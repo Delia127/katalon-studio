@@ -28,10 +28,13 @@ public class LogRecordTreeViewerLabelProvider extends StyledCellLabelProvider {
                     LogLevel resultLevel = LogLevel.valueOf(logParentNode.getResult().getLevel());
                     if (resultLevel == LogLevel.PASSED) {
                         return ImageConstants.IMG_16_LOGVIEW_PASSED;
-                    } else if (resultLevel == LogLevel.FAILED) {
+                    }if (resultLevel == LogLevel.FAILED) {
                         return ImageConstants.IMG_16_LOGVIEW_FAILED;
                     } else if (resultLevel == LogLevel.ERROR) {
                         return ImageConstants.IMG_16_LOGVIEW_ERROR;
+                    }  else if (resultLevel == LogLevel.NOT_RUN) {
+                        // TODO: Re-factor for removing else if ( change to switch maybe )
+                        return ImageConstants.IMG_16_LOGVIEW_NOT_RUN;
                     }
                 } else if (logParentNode.getParent() == null) {
                     return com.kms.katalon.composer.components.impl.constants.ImageConstants.IMG_16_TEST_SUITE;

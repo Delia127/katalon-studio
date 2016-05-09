@@ -366,7 +366,7 @@ public class AstTestStepTransformation implements ASTTransformation {
                 new ClassExpression(new ClassNode(KeywordLogger.class)), KEYWORD_LOGGER_GET_INSTANCE_METHOD_NAME,
                 new ArgumentListExpression());
         List<Expression> expressionArguments = new ArrayList<Expression>();
-        expressionArguments.add(new ConstantExpression(keywordName));
+        expressionArguments.add(new ConstantExpression("NOT_RUN: " + keywordName));
         return new ExpressionStatement(new MethodCallExpression(loggerGetInstanceMethodCall,
                 KEYWORD_LOGGER_LOG_NOT_RUN_METHOD_NAME, new ArgumentListExpression(expressionArguments)));
     }
