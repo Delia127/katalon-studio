@@ -12,6 +12,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String ADAP_MENU_CONTEXT_COPY = COPY;
     public static final String ADAP_MENU_CONTEXT_CUT = CUT;
     public static final String ADAP_MENU_CONTEXT_PASTE = PASTE;
+    public static final String ADAP_MENU_CONTEXT_DISABLE = "Disable";
+    public static final String ADAP_MENU_CONTEXT_ENABLE = "Enable";
     public static final String ADAP_MENU_CONTEXT_CHANGE_TO_STATEMENTS = "Change to statements";
     public static final String ADAP_MENU_CONTEXT_CHANGE_TO_COMMENTS = "Change to comments";
     public static final String ADAP_MENU_CONTEXT_CHANGE_FAILURE_HANDLING = "Change failure handling";

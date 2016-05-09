@@ -2,6 +2,7 @@ package com.kms.katalon.core.ast;
 
 import groovy.transform.CompileStatic
 
+import org.apache.commons.lang.StringUtils
 import org.codehaus.groovy.ast.ASTNode
 import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassNode
@@ -52,8 +53,6 @@ public class AstTestStepTransformation implements ASTTransformation {
     private static final String RUN_METHOD_NAME = "run"
 
     private static final String COMMENT_STATEMENT_KEYWORD_NAME = "Comment";
-
-    public static final String NOT_RUN_LABEL = "not_run";
 
     private static final String KEYWORD_LOGGER_LOG_NOT_RUN_METHOD_NAME = "logNotRun";
 
@@ -242,11 +241,13 @@ public class AstTestStepTransformation implements ASTTransformation {
                 index++;
                 continue;
             }
-            
+
             String keywordName = getKeywordNameForStatement(statement);
+            boolean isStatementDisabledFlag = false;
             if (!(statement instanceof BlockStatement)) {
                 if (!commentStatementsStack.isEmpty()) {
                     Statement descriptionStatement = commentStatementsStack.pop();
+                    isStatementDisabledFlag |= isStatementDisabled(descriptionStatement);
                     String commentContent = getComment(descriptionStatement);
                     blockStatement.getStatements().add(index, new ExpressionStatement(createNewAddDescriptionMethodCall(commentContent)));
                     index += (popCommentStatements(commentStatementsStack, blockStatement, index, indexMap, nestedLevel) + 1);
@@ -254,13 +255,19 @@ public class AstTestStepTransformation implements ASTTransformation {
                 blockStatement.getStatements().add(index, new ExpressionStatement(createNewStartKeywordMethodCall(keywordName, statement, indexMap, nestedLevel)));
                 index++;
             }
-            if (NOT_RUN_LABEL.equals(statement.getStatementLabel())) {
+            isStatementDisabledFlag |= isStatementDisabled(statement);
+            if (isStatementDisabledFlag) {
                 statementList.set(statementList.indexOf(statement), createNewNotRunLogMethodCallStatement(keywordName));
             } else {
                 visit(statement, new Stack<Statement>(), indexMap, nestedLevel + 1);
             }
             index++;
         }
+    }
+    
+    @CompileStatic
+    private static boolean isStatementDisabled(Statement statement) {
+        return StringUtils.startsWith(statement.getStatementLabel(), StringConstants.NOT_RUN_LABEL);
     }
 
     @CompileStatic

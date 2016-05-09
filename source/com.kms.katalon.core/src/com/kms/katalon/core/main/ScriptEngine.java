@@ -45,21 +45,56 @@ public class ScriptEngine extends GroovyScriptEngine {
         return "Script" + (++counter) + "." + StringConstants.SCRIPT_FILE_EXT;
     }
 
+    // Parse this temporary class without caching
     public Object runScript(final String scriptText, Binding binding) throws ResourceException, ScriptException {
-        // Parse this temporary class without caching
-        return run(getGroovyCodeSource(scriptText, generateScriptName()), binding, false);
+        return run(getGroovyCodeSource(scriptText, generateScriptName()), binding, true);
     }
 
-    public Object runScript(final String className, final String methodName, Object args, Binding binding)
-            throws ResourceException, ScriptException, ClassNotFoundException {
+    // Parse this class as script text
+    public Object runScriptAsRawText(final String scriptText, String className, Binding binding)
+            throws ResourceException, ScriptException {
+        String processedScriptText = preProcessScriptBeforeBuild(scriptText);
+        return run(getGroovyCodeSource(processedScriptText, className), binding, true);
+    }
 
+    public Object runScriptMethodAsRawText(final String scriptText, final String className, final String methodName,
+            Object args, Binding binding) throws ResourceException, ScriptException, ClassNotFoundException {
+        String processedScriptText = preProcessScriptBeforeBuild(scriptText);
+        return getScript(getGroovyCodeSource(processedScriptText, className), binding, true).invokeMethod(methodName,
+                args);
+    }
+
+    public Object runScriptMethodAsRawText(final String scriptText, final String className, final String methodName,
+            Binding binding) throws ResourceException, ScriptException, ClassNotFoundException {
+        String processedScriptText = preProcessScriptBeforeBuild(scriptText);
+        return getScript(getGroovyCodeSource(processedScriptText, className), binding, true).invokeMethod(methodName,
+                null);
+    }
+
+    private String preProcessScriptBeforeBuild(String scriptText) {
+        return processNotRunLabels(scriptText);
+    }
+
+    private String processNotRunLabels(String scriptText) {
+        String notRunLabel = StringConstants.NOT_RUN_LABEL;
+        String notRunLabelSearchString = notRunLabel + ":";
+        int generatedIndex = 0;
+        while (scriptText.indexOf(notRunLabelSearchString) != -1) {
+            scriptText = scriptText.replaceFirst(notRunLabelSearchString, notRunLabel + "_"
+                    + generatedIndex + ":");
+            generatedIndex++;
+        }
+        return scriptText;
+    }
+
+    public Object runScriptMethod(final String className, final String methodName, Object args, Binding binding)
+            throws ResourceException, ScriptException, ClassNotFoundException {
         return getScript(getGroovyClassLoader().loadClass(className), binding, true).invokeMethod(methodName, args);
     }
-    
-    public Object runScript(final String className, final String methodName, Binding binding)
-            throws ResourceException, ScriptException, ClassNotFoundException {
 
-        return runScript(className, methodName, null, binding);
+    public Object runScriptMethod(final String className, final String methodName, Binding binding)
+            throws ResourceException, ScriptException, ClassNotFoundException {
+        return runScriptMethod(className, methodName, null, binding);
     }
 
     public Object runScript(final File file, Binding binding) throws ResourceException, ScriptException {
