@@ -15,6 +15,7 @@ public enum LogLevel {
     ERROR(1006),
     ABORTED(1009),
     INCOMPLETE(1010),
+    NOT_RUN(999),
     RUN_DATA(2000);
     
     private final int value;
