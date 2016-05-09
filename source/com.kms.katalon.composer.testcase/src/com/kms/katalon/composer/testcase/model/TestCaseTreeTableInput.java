@@ -32,6 +32,7 @@ import com.kms.katalon.composer.testcase.ast.dialogs.MethodObjectBuilderDialog;
 import com.kms.katalon.composer.testcase.ast.treetable.AstAbstractKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstMethodTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstScriptTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
@@ -694,6 +695,45 @@ public class TestCaseTreeTableInput {
         } catch (GroovyParsingException e) {
             LoggerSingleton.logError(e);
         }
+    }
+
+    public void disable() {
+        disable(getSelectedNodes());
+    }
+
+    public void disable(List<AstTreeTableNode> treeTableNodes) {
+        toogleDisabledMode(treeTableNodes, true);
+    }
+
+    public void enable() {
+        enable(getSelectedNodes());
+    }
+
+    public void enable(List<AstTreeTableNode> treeTableNodes) {
+        toogleDisabledMode(treeTableNodes, false);
+    }
+
+    private void toogleDisabledMode(List<AstTreeTableNode> treeTableNodes, boolean isDisableMode) {
+        if (treeTableNodes == null || treeTableNodes.isEmpty()) {
+            return;
+        }
+        AstTreeTableNode topItem = getTopItem();
+        Object[] expandedElements = saveExpandedState();
+        for (AstTreeTableNode treeTableNode : treeTableNodes) {
+            if (!(treeTableNode instanceof AstStatementTreeTableNode)
+                    || !((AstStatementTreeTableNode) treeTableNode).canBeDisabled()) {
+                continue;
+            }
+            AstStatementTreeTableNode statementNode = (AstStatementTreeTableNode) treeTableNode;
+            boolean changeFlag = (isDisableMode) ? statementNode.disable() : statementNode.enable();
+            if (changeFlag) {
+                treeTableViewer.update(statementNode, null);
+                setDirty(true);
+            }
+        }
+        reloadExpandedState(expandedElements);
+        setTopItem(topItem);
+        treeTableViewer.setSelection(null);
     }
 
     public boolean isChanged() {

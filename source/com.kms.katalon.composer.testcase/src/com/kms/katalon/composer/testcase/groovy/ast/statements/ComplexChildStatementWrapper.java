@@ -9,7 +9,7 @@ public abstract class ComplexChildStatementWrapper extends CompositeStatementWra
     public ComplexChildStatementWrapper() {
         this(null);
     }
-    
+
     public ComplexChildStatementWrapper(ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
     }
@@ -67,4 +67,9 @@ public abstract class ComplexChildStatementWrapper extends CompositeStatementWra
     }
 
     protected abstract boolean isAstNodeBelongToParentComplex(ASTNodeWrapper astNode);
+
+    @Override
+    public boolean canHaveLabel() {
+        return false;
+    }
 }

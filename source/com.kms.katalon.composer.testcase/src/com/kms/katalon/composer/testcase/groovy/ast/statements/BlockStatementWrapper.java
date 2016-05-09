@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
@@ -12,6 +13,7 @@ import org.codehaus.groovy.ast.stmt.Statement;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapHelper;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.CommentWrapper;
+import com.kms.katalon.core.constants.StringConstants;
 
 /**
  * Base class for any statement contains list of statements
@@ -209,6 +211,10 @@ public class BlockStatementWrapper extends StatementWrapper {
                 }
                 if (pendingDescriptionStatement != null) {
                     statementWrapper.setDescription(getDecriptionStatementValue(pendingDescriptionStatement));
+                    if (StringUtils.equals(StringConstants.NOT_RUN_LABEL,
+                            pendingDescriptionStatement.getStatementLabel())) {
+                        statementWrapper.disable();
+                    }
                     pendingDescriptionStatement = null;
                 }
                 statements.add(statementWrapper);
@@ -219,6 +225,11 @@ public class BlockStatementWrapper extends StatementWrapper {
                     parentNode));
         }
         return statements;
+    }
+
+    @Override
+    public boolean canHaveLabel() {
+        return false;
     }
 
 }

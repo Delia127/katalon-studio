@@ -1246,7 +1246,11 @@ public class GroovyWrapperParser {
             parseComments(node.getPreceddingComments());
         }
         if (node instanceof StatementWrapper) {
-            parseDescription((StatementWrapper) node);
+            StatementWrapper statement = (StatementWrapper) node;
+            parseDescription(statement);
+            if (statement.canHaveLabel() && !StringUtils.isEmpty(statement.getLabel())) {
+                print(statement.getLabel() + ": ");
+            }
         }
     }
 

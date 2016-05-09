@@ -115,4 +115,8 @@ public class ColorUtil {
     public static Color getWarningForegroudColor() {
         return new Color(Display.getCurrent(), 255, 128, 0);
     }
+    
+    public static Color getDisabledItemBackgroundColor() {
+        return Display.getCurrent().getSystemColor(SWT.COLOR_GRAY);
+    }
 }

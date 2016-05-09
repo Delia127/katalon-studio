@@ -355,4 +355,7 @@ public class StringConstants {
 
     // SqlRunner
     public static final String EXC_DATABASE_CONNECTION_IS_CLOSED = "Database connection is closed.";
+    
+    // AstTestStepTransformation
+    public static final String NOT_RUN_LABEL = "not_run";
 }

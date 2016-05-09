@@ -61,4 +61,20 @@ public class AstStatementTreeTableNode extends AstAbstractTreeTableNode {
     public boolean setDescription(String description) {
         return statement.setDescription(description);
     }
+    
+    public boolean canBeDisabled() {
+        return statement.canHaveLabel();
+    }
+    
+    public boolean disable() {
+        return statement.disable();
+    }
+    
+    public boolean enable() {
+        return statement.enable();
+    }
+
+    public boolean isDisabled() {
+        return statement.isDisabled();
+    }
 }
