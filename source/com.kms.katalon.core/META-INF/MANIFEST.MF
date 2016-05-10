@@ -40,7 +40,9 @@ Require-Bundle: net.sf.supercsv.super-csv,
  org.jsoup,
  com.mysql.jdbc,
  com.microsoft.sqlserver.sqljdbc4,
- org.apache.commons.dbutils
+ org.apache.commons.dbutils,
+ com.oracle.jdbc.ojdbc7,
+ org.postgresql.jdbc41
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Import-Package: com.google.common.io,

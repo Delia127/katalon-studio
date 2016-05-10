@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.kms.katalon.core.constants.StringConstants;
@@ -13,6 +14,7 @@ import com.kms.katalon.core.constants.StringConstants;
 public abstract class AbstractTestData implements TestData {
 
     protected String sourceUrl;
+
     protected boolean hasHeaders;
 
     protected AbstractTestData(String sourceUrl, boolean hasHeaders) {
@@ -65,22 +67,32 @@ public abstract class AbstractTestData implements TestData {
 
     @Override
     public final String getValue(int columnIndex, int rowIndex) throws IOException {
+        return ObjectUtils.toString(getObjectValue(columnIndex, rowIndex));
+    }
+
+    @Override
+    public final String getValue(String columnName, int rowIndex) throws IOException {
+        return ObjectUtils.toString(getObjectValue(columnName, rowIndex));
+    }
+
+    @Override
+    public final Object getObjectValue(int columnIndex, int rowIndex) throws IOException {
         verifyColumnIndex(columnIndex);
         verifyRowIndex(rowIndex);
         return internallyGetValue(columnIndex - BASE_INDEX, rowIndex - BASE_INDEX);
     }
 
     @Override
-    public final String getValue(String columnName, int rowIndex) throws IOException {
+    public final Object getObjectValue(String columnName, int rowIndex) throws IOException {
         verifyRowIndex(rowIndex);
         verifyColumnName(columnName);
         return internallyGetValue(columnName, rowIndex - BASE_INDEX);
     }
 
-    protected abstract String internallyGetValue(int columnIndex, int rowIndex) throws IOException;
+    protected abstract Object internallyGetValue(int columnIndex, int rowIndex) throws IOException;
 
-    protected abstract String internallyGetValue(String columnName, int rowIndex) throws IOException;
-    
+    protected abstract Object internallyGetValue(String columnName, int rowIndex) throws IOException;
+
     protected int getHeaderRowIdx() {
         return hasHeaders ? 1 : 0;
     }
@@ -89,7 +101,7 @@ public abstract class AbstractTestData implements TestData {
     public void activeHeaders(boolean active) throws IOException {
         hasHeaders = active;
     }
-    
+
     private String getAvailableColumnNames(String[] columnNames) {
         if (!hasHeaders || ArrayUtils.isEmpty(columnNames)) {
             return "{}";

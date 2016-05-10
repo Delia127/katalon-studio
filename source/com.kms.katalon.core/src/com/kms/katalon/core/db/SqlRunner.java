@@ -7,7 +7,6 @@ import java.sql.SQLException;
 
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.ResultSetHandler;
 
 import com.kms.katalon.core.constants.StringConstants;
 
@@ -107,9 +106,12 @@ public class SqlRunner implements AutoCloseable {
      * @param resultSetHandler The handler that converts the results into an object.
      * @return The object returned by the handler.
      * @throws SQLException
-     * @see {@link org.apache.commons.dbutils.QueryRunner#query(Connection, String, ResultSetHandler, Object...)}
+     * @see {@link ListResultSetHandler}
      */
-    public <T> T query(ResultSetHandler<T> resultSetHandler) throws SQLException {
+    public <T> T query(ListResultSetHandler<T> resultSetHandler) throws SQLException {
+        if (params == null) {
+            return queryRunner.query(connection, query, resultSetHandler);
+        }
         return queryRunner.query(connection, query, resultSetHandler, params);
     }
 
@@ -121,5 +123,13 @@ public class SqlRunner implements AutoCloseable {
     @Override
     public void close() {
         DbUtils.closeQuietly(connection);
+    }
+
+    public boolean isConnectionAlive() {
+        try {
+            return connection != null && !connection.isClosed();
+        } catch (SQLException e) {
+            return false;
+        }
     }
 }

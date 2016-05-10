@@ -12,6 +12,11 @@
         <xml-element java-attribute="internalDataColumns"/>
         <xml-transient java-attribute="data"/>
         <xml-element java-attribute="encriptData" name="data"/>
+        <xml-element java-attribute="usingGlobalDBSetting" />
+        <xml-element java-attribute="secureUserAccount" />
+        <xml-element java-attribute="user" />
+        <xml-element java-attribute="password" />
+        <xml-element java-attribute="query" />
       </java-attributes>
     </java-type>
   </java-types>
