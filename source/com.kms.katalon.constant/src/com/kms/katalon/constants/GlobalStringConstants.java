@@ -115,6 +115,8 @@ public class GlobalStringConstants {
     public static final String ERROR = "Error";
 
     public static final String INCOMPLETE = "Incomplete";
+    
+    public static final String NOT_RUN = "Not Run";
 
     // Tool-bar
     public static final String FOLDER = "Folder";

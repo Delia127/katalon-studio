@@ -5,12 +5,16 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.model.FailureHandling;
 
 public class TestStepLogRecord extends AbstractLogRecord {
     private List<String> arguments;
+
     private String attachment;
+
     private FailureHandling flowControl;
+
     private int index;
 
     public TestStepLogRecord(String name) {
@@ -42,6 +46,10 @@ public class TestStepLogRecord extends AbstractLogRecord {
 
         if (childRecords == null || childRecords.size() == 0) {
             return testStatus;
+        }
+
+        if (childRecords.size() == 1 && childRecords.get(0).getStatus().getStatusValue() == TestStatusValue.NOT_RUN) {
+            testStatus.setStatusValue(TestStatusValue.NOT_RUN);
         }
 
         setMessage(childRecords.get(childRecords.size() - 1).getMessage());

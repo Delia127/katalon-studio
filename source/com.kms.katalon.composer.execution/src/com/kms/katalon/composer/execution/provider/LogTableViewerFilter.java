@@ -23,6 +23,8 @@ public class LogTableViewerFilter extends ViewerFilter {
     public static final int ERROR = 1 << 4;
 
     public static final int WARNING = 1 << 5;
+    
+    public static final int NOT_RUN = 1 << 6;
 
     @Override
     public boolean select(Viewer viewer, Object parentElement, Object element) {
@@ -38,9 +40,10 @@ public class LogTableViewerFilter extends ViewerFilter {
         int showFailedLogs = store.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_FAILED_LOGS) ? FAILED : 0;
         int showIncompleteLogs = store.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_ERROR_LOGS) ? ERROR : 0;
         int showWarningLogs = store.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_WARNING_LOGS) ? WARNING : 0;
+        int showNotRunLogs = store.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_NOT_RUN_LOGS) ? NOT_RUN : 0;
 
         return (showAllLogs & ALL) | (showInfoLogs & INFO) | (showPassedLogs & PASSED) | (showFailedLogs & FAILED)
-                | (showIncompleteLogs & ERROR) | (showWarningLogs & WARNING);
+                | (showIncompleteLogs & ERROR) | (showWarningLogs & WARNING) | (showNotRunLogs & NOT_RUN);
     }
 
     private int evaluteLog(XmlLogRecord record) {
@@ -56,6 +59,9 @@ public class LogTableViewerFilter extends ViewerFilter {
             value |= ERROR;
         } else if (level == LogLevel.WARNING) {
             value |= WARNING;
+        }  else if (level == LogLevel.NOT_RUN) {
+            // TODO: Re-factor for return immediately without else-if
+            value |= NOT_RUN;
         }
         return value;
     }
