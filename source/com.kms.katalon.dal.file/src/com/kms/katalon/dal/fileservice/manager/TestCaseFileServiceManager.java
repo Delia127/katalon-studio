@@ -9,7 +9,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
 
 import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.dal.fileservice.FileServiceConstant;
@@ -29,6 +28,7 @@ import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.util.Util;
 import com.kms.katalon.entity.variable.VariableEntity;
+import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.groovy.util.GroovyRefreshUtil;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
@@ -309,24 +309,28 @@ public class TestCaseFileServiceManager {
     }
 
     public static TestCaseEntity moveTestCase(TestCaseEntity testCase, FolderEntity destinationFolder) throws Exception {
+
         EntityService.getInstance().validateName(testCase.getName());
         String oldTestCaseLocation = testCase.getLocation();
-        IFolder oldScriptFolderFile = (IFolder) ResourcesPlugin.getWorkspace()
-                .getRoot()
-                .getFile(GroovyUtil.getGroovyScriptForTestCase(testCase).getPath())
-                .getParent();
-        // refactorCallingTestCaseIfRenameTestCase(project, testCase,
-        // oldTestCaseLocation);
+        File oldTestCaseScriptFolder = new File(testCase.getProject().getFolderLocation() + File.separator
+                + GroovyUtil.getScriptPackageRelativePathForTestCase(testCase));
 
         TestCaseEntity newTestCase = EntityFileServiceManager.move(testCase, destinationFolder);
 
+        // If move .tc file success
         if (!newTestCase.getLocation().equals(oldTestCaseLocation)) {
             refactorReferencingTestSuites(destinationFolder.getProject(), testCase, oldTestCaseLocation);
-            GroovyUtil.updateTestCasePasted(testCase);
-            if (oldScriptFolderFile != null && oldScriptFolderFile.exists()) {
-                oldScriptFolderFile.delete(true, null);
+            File newTestCaseScriptFolder = new File(newTestCase.getProject().getFolderLocation() + File.separator
+                    + GroovyUtil.getScriptPackageRelativePathForTestCase(newTestCase));
+            // Ensure new folder for script file created
+            newTestCaseScriptFolder.mkdirs();
+            for (File groovyFile : oldTestCaseScriptFolder.listFiles()) {
+                if (groovyFile.isFile() && groovyFile.getName().endsWith(GroovyConstants.GROOVY_FILE_EXTENSION)) {
+                    FileUtils.moveFileToDirectory(groovyFile, newTestCaseScriptFolder, false);
+                }
             }
-
+            // Delete old script folder
+            FileUtils.deleteQuietly(oldTestCaseScriptFolder);
         }
         return testCase;
     }

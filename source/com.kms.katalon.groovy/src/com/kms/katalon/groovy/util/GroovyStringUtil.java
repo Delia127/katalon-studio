@@ -14,11 +14,6 @@ public class GroovyStringUtil {
                 : rawString;
     }
 
-    public static String unescapeGroovy(String rawString) {
-        return StringUtils.isNotEmpty(rawString) ? StringEscapeUtils.unescapeJava(rawString).replace("\\'", "'")
-                : rawString;
-    }
-
     /**
      * Get Keyword/Package relative location to current project.
      * <p>

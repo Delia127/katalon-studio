@@ -32,6 +32,7 @@ import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.constants.ExplorerPreferenceConstants;
+import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
@@ -42,7 +43,6 @@ import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
-import com.kms.katalon.groovy.util.GroovyEditorUtil;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class LinkEditorHandler implements EventHandler {

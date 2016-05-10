@@ -30,9 +30,9 @@ import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.PartServiceSingleton;
 import com.kms.katalon.composer.parts.MultipleTabsCompositePart;
+import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.StringConstants;
-import com.kms.katalon.groovy.util.GroovyEditorUtil;
 
 @SuppressWarnings("restriction")
 public class SaveHandler implements IHandler {

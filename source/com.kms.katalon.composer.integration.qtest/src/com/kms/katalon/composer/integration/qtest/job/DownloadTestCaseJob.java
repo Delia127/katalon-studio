@@ -30,6 +30,7 @@ import com.kms.katalon.composer.integration.qtest.dialog.TestCaseTreeDownloadedP
 import com.kms.katalon.composer.integration.qtest.dialog.model.DownloadedPreviewTreeNode;
 import com.kms.katalon.composer.integration.qtest.dialog.model.ModuleDownloadedPreviewTreeNode;
 import com.kms.katalon.composer.integration.qtest.dialog.model.TestCaseDownloadedPreviewTreeNode;
+import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.TestCaseController;
@@ -51,10 +52,15 @@ import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 public class DownloadTestCaseJob extends QTestJob {
 
     private UISynchronize sync;
+
     private Object[] selectedElements;
+
     private QTestModule qTestSelectedModule;
+
     private boolean isMonitorCanceled;
+
     private boolean isMergeFolderConfirmed;
+
     private boolean isMergeTestCaseConfimed;
 
     private IQTestCredential credential;
@@ -115,8 +121,7 @@ public class DownloadTestCaseJob extends QTestJob {
             if (selectedElements != null && selectedElements.length > 0) {
                 if (folderIntegratedEntity == null) {
                     // create new integrated entity for test case root
-                    folderIntegratedEntity = QTestIntegrationFolderManager
-                            .getFolderIntegratedEntityByQTestModule(qTestSelectedModule);
+                    folderIntegratedEntity = QTestIntegrationFolderManager.getFolderIntegratedEntityByQTestModule(qTestSelectedModule);
                     folderEntity.getIntegratedEntities().add(folderIntegratedEntity);
                     FolderController.getInstance().saveFolder(folderEntity);
                 }
@@ -156,8 +161,8 @@ public class DownloadTestCaseJob extends QTestJob {
         sync.syncExec(new Runnable() {
             @Override
             public void run() {
-                TestCaseTreeDownloadedPreviewDialog dialog = new TestCaseTreeDownloadedPreviewDialog(Display
-                        .getDefault().getActiveShell(), folderEntity, qTestSelectedModule);
+                TestCaseTreeDownloadedPreviewDialog dialog = new TestCaseTreeDownloadedPreviewDialog(
+                        Display.getDefault().getActiveShell(), folderEntity, qTestSelectedModule);
 
                 if (dialog.open() == Dialog.OK) {
                     selectedElements = dialog.selectedElements();
@@ -177,8 +182,8 @@ public class DownloadTestCaseJob extends QTestJob {
         sync.syncExec(new Runnable() {
             @Override
             public void run() {
-                TestCaseRootSelectionDialog testCaseRootSelectionDialog = new TestCaseRootSelectionDialog(Display
-                        .getDefault().getActiveShell(), moduleRoot, false);
+                TestCaseRootSelectionDialog testCaseRootSelectionDialog = new TestCaseRootSelectionDialog(
+                        Display.getDefault().getActiveShell(), moduleRoot, false);
                 if (testCaseRootSelectionDialog.open() == Dialog.OK) {
                     qTestSelectedModule = testCaseRootSelectionDialog.getSelectedModule();
                 } else {
@@ -233,8 +238,7 @@ public class DownloadTestCaseJob extends QTestJob {
      */
     private void addIntegratedEntityToFolder(FolderEntity folderEntity, ModuleDownloadedPreviewTreeNode moduleTree)
             throws Exception {
-        IntegratedEntity newIntegratedEntity = QTestIntegrationFolderManager
-                .getFolderIntegratedEntityByQTestModule(moduleTree.getModule());
+        IntegratedEntity newIntegratedEntity = QTestIntegrationFolderManager.getFolderIntegratedEntityByQTestModule(moduleTree.getModule());
         folderEntity.getIntegratedEntities().add(newIntegratedEntity);
 
         moduleTree.setFolderEntity(folderEntity);
@@ -259,8 +263,7 @@ public class DownloadTestCaseJob extends QTestJob {
             qTestCase.setVersionId(QTestIntegrationTestCaseManager.getTestCaseVersionId(credential,
                     qTestProject.getId(), qTestCase.getId()));
         }
-        IntegratedEntity newIntegratedEntity = QTestIntegrationTestCaseManager
-                .getIntegratedEntityByQTestTestCase(testCaseTree.getTestCase());
+        IntegratedEntity newIntegratedEntity = QTestIntegrationTestCaseManager.getIntegratedEntityByQTestTestCase(testCaseTree.getTestCase());
         testCaseEntity.getIntegratedEntities().add(newIntegratedEntity);
 
         TestCaseController.getInstance().updateTestCase(testCaseEntity);
@@ -295,8 +298,7 @@ public class DownloadTestCaseJob extends QTestJob {
                         parentFolder.getId() + File.separator + treeItem.getName());
 
                 if (existingFolder != null) {
-                    IntegratedEntity existingIntegratedFolderEntity = QTestIntegrationUtil
-                            .getIntegratedEntity(existingFolder);
+                    IntegratedEntity existingIntegratedFolderEntity = QTestIntegrationUtil.getIntegratedEntity(existingFolder);
 
                     if (existingIntegratedFolderEntity == null) {
                         // They are duplicated but can be merged, let users
@@ -325,8 +327,7 @@ public class DownloadTestCaseJob extends QTestJob {
                             + TestCaseEntity.getTestCaseFileExtension());
 
             if (existingTestCase != null) {
-                IntegratedEntity existingIntegratedTestCaseEntity = QTestIntegrationUtil
-                        .getIntegratedEntity(existingTestCase);
+                IntegratedEntity existingIntegratedTestCaseEntity = QTestIntegrationUtil.getIntegratedEntity(existingTestCase);
                 if (existingIntegratedTestCaseEntity == null) {
                     // They are duplicated but can be merged, let users decide
                     // to merge or not
@@ -339,8 +340,7 @@ public class DownloadTestCaseJob extends QTestJob {
 
                 // notify to the opening part of existing test case that it has
                 // been updated.
-                EventBrokerSingleton
-                        .getInstance()
+                EventBrokerSingleton.getInstance()
                         .getEventBroker()
                         .post(EventConstants.TESTCASE_UPDATED,
                                 new Object[] { existingTestCase.getId(), existingTestCase });
@@ -363,7 +363,7 @@ public class DownloadTestCaseJob extends QTestJob {
      */
     private void addDescriptionForTestCase(QTestProject qTestProject, QTestTestCase qTestCase,
             TestCaseEntity testCaseEntity) throws Exception {
-        GroovyCompilationUnit unit = (GroovyCompilationUnit) GroovyUtil.getGroovyScriptForTestCase(testCaseEntity);
+        GroovyCompilationUnit unit = (GroovyCompilationUnit) GroovyGuiUtil.getGroovyScriptForTestCase(testCaseEntity);
 
         ClassNode clazzNode = unit.getModuleNode().getClasses().get(0);
         Statement statement = clazzNode.getMethods("run").get(0).getCode();

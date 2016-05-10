@@ -1,4 +1,4 @@
-package com.kms.katalon.groovy.util;
+package com.kms.katalon.composer.util.groovy;
 
 import org.codehaus.groovy.ast.builder.AstBuilder;
 import org.codehaus.groovy.control.CompilePhase;
@@ -36,7 +36,8 @@ import org.eclipse.ui.part.FileEditorInput;
 
 @SuppressWarnings("restriction")
 public class GroovyEditorUtil {
-    public static final String GROOVY_EDITOR_URI = "org.codehaus.groovy.eclipse.editor.GroovyEditor";
+
+	private static final String GROOVY_EDITOR_URI = "org.codehaus.groovy.eclipse.editor.GroovyEditor";
 
     public static MPart createTestCaseEditorPart(IFile scriptFile, MPartStack parentPartStack, String testCaseEditorId,
             EPartService partService, int index) throws Exception {

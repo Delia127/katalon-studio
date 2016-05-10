@@ -11,10 +11,10 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.groovy.util.GroovyEditorUtil;
 
 public class EditorSavedHandler implements EventHandler {
     @Inject

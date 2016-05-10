@@ -95,7 +95,9 @@ public class GroovyParser {
     private List<ClassNode> importedTypes = new ArrayList<ClassNode>();
 
     private Stack<String> classNameStack = new Stack<String>();
+
     private String currentIndent = "";
+
     private boolean readyToIndent = false;
 
     private StringBuilder stringBuilder;
@@ -1074,8 +1076,7 @@ public class GroovyParser {
                 // of the constructor, unless on constant
                 Expression initialValueExpression = fieldNode.getInitialValueExpression();
                 if (initialValueExpression instanceof ConstantExpression) {
-                    initialValueExpression = Verifier
-                            .transformToPrimitiveConstantIfPossible((ConstantExpression) initialValueExpression);
+                    initialValueExpression = Verifier.transformToPrimitiveConstantIfPossible((ConstantExpression) initialValueExpression);
                 }
                 ClassNode type = initialValueExpression.getType();
                 if (Modifier.isStatic(fieldNode.getModifiers()) && Modifier.isFinal(fieldNode.getModifiers())
@@ -1209,7 +1210,7 @@ public class GroovyParser {
         readyToIndent = true;
     }
 
-    public void parseGroovyAstIntoScript(List<? extends ASTNode> astNodes) throws Exception {
+    public void parseGroovyAstIntoScript(List<? extends ASTNode> astNodes) {
         importedTypes.clear();
 
         parsePackageAndImport(astNodes);
