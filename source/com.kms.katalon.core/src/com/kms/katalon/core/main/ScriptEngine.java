@@ -15,6 +15,8 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -75,16 +77,18 @@ public class ScriptEngine extends GroovyScriptEngine {
         return processNotRunLabels(scriptText);
     }
 
-    private String processNotRunLabels(String scriptText) {
+    private static String processNotRunLabels(String scriptText) {
         String notRunLabel = StringConstants.NOT_RUN_LABEL;
         String notRunLabelSearchString = notRunLabel + ":";
+        String notRunLabelPrefix = notRunLabel + "_";
+        Matcher m = Pattern.compile(notRunLabelSearchString).matcher(scriptText);
+        StringBuffer sb = new StringBuffer();
         int generatedIndex = 0;
-        while (scriptText.indexOf(notRunLabelSearchString) != -1) {
-            scriptText = scriptText.replaceFirst(notRunLabelSearchString, notRunLabel + "_"
-                    + generatedIndex + ":");
-            generatedIndex++;
+        while (m.find()) {
+            m.appendReplacement(sb, notRunLabelPrefix + (generatedIndex++) + ":");
         }
-        return scriptText;
+        m.appendTail(sb);
+        return sb.toString();
     }
 
     public Object runScriptMethod(final String className, final String methodName, Object args, Binding binding)
