@@ -89,6 +89,10 @@ h2 {
 	color: #FF8000 !important;
     /*	color: #444444 !important;	*/
 }
+.not_run {
+    color:#808080 !important;
+}
+
 /* Top right header */
 #top-right-header {
     position: fixed;
@@ -1187,7 +1191,8 @@ window.testdata = function () {
     //var STATUSES = ['PASSED', 'FAILED', 'INFO', 'ERROR'];
     //var LEVELS = STATUSES;
     
-    var STATUSES = ['PASSED', 'FAILED', 'INCOMPLETE', 'ERROR', 'INFO'];
+    var STATUSES = ['PASSED', 'FAILED', 'INCOMPLETE', 'ERROR', 'INFO', 'WARNING', 'NOT_RUN'];
+
     var LEVELS = STATUSES;
     
     var KEYWORDS = ['KEYWORD', 'SETUP', 'TEARDOWN', 'FOR', 'VAR'];
@@ -1323,29 +1328,23 @@ window.testdata = function () {
         return metadata;
     }
     function suiteStats(stats) {
-		if(stats.length == 4){
-			return {
-				total: stats[0],
-				totalPassed: stats[1],
-				totalFailed: stats[2],
-				totalError: stats[3],
-				critical: stats[2],
-				criticalPassed: stats[3],
-				criticalFailed: stats[2] - stats[3]
-			};		
+    	sum_stats = {};
+		if(stats.length >= 4){
+			sum_stats.total = stats[0];
+			sum_stats.totalPassed = stats[1];
+			sum_stats.totalFailed = stats[2];
+			sum_stats.totalError = stats[3];
+			sum_stats.critical = stats[2];
+			sum_stats.criticalPassed = stats[3];
+			sum_stats.criticalFailed = stats[2] - stats[3];	
 		}
-		else if(stats.length == 5){
-			return {
-				total: stats[0],
-				totalPassed: stats[1],
-				totalFailed: stats[2],
-				totalError: stats[3],
-				critical: stats[2],
-				criticalPassed: stats[3],
-				criticalFailed: stats[2] - stats[3],
-				totalIncomplete: stats[4]
-			};		
+		if(stats.length >= 5){
+			sum_stats.totalIncomplete = stats[4];		
 		}
+		if(stats.length >= 6){
+			sum_stats.totalNotRun = stats[5];		
+		}
+		return sum_stats;
     }
     function Populator(items, strings, creator) {
         return {
