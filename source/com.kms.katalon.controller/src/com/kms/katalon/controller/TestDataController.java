@@ -34,15 +34,15 @@ public class TestDataController extends EntityController {
     }
 
     public DataFileEntity addDataFile(Object parentEntity) throws Exception {
-        return dataProviderSetting.getDataFileDataProvider().addNewDataFile(getFolder(parentEntity));
+        return getDataProviderSetting().getDataFileDataProvider().addNewDataFile(getFolder(parentEntity));
     }
 
     public DataFileEntity saveDataFile(DataFileEntity newDataFile, FolderEntity parentFolder) throws Exception {
-        return dataProviderSetting.getDataFileDataProvider().saveDataFile(newDataFile);
+        return getDataProviderSetting().getDataFileDataProvider().saveDataFile(newDataFile);
     }
 
     public List<DataFileEntity> getDataFileFromParentFolder(FolderEntity parentFolder) throws Exception {
-        return dataProviderSetting.getDataFileDataProvider().getDataFileByFolder(parentFolder);
+        return getDataProviderSetting().getDataFileDataProvider().getDataFileByFolder(parentFolder);
     }
 
     private FolderEntity getFolder(Object parentEntity) throws Exception {
@@ -56,24 +56,24 @@ public class TestDataController extends EntityController {
     }
 
     public DataFileEntity copyDataFile(DataFileEntity dataFile, FolderEntity targetFolder) throws Exception {
-        return dataProviderSetting.getDataFileDataProvider().copyDataFile(dataFile, targetFolder);
+        return getDataProviderSetting().getDataFileDataProvider().copyDataFile(dataFile, targetFolder);
     }
 
     public DataFileEntity moveDataFile(DataFileEntity dataFile, FolderEntity targetFolder) throws Exception {
-        return dataProviderSetting.getDataFileDataProvider().moveDataFile(dataFile, targetFolder);
+        return getDataProviderSetting().getDataFileDataProvider().moveDataFile(dataFile, targetFolder);
     }
 
     public void deleteDataFile(DataFileEntity dataFile) throws Exception {
-        dataProviderSetting.getDataFileDataProvider().deleteDataFile(dataFile);
+        getDataProviderSetting().getDataFileDataProvider().deleteDataFile(dataFile);
     }
 
     public DataFileEntity updateDataFile(DataFilePropertyInputEntity dataFileInputProperties) throws Exception {
-        return dataProviderSetting.getDataFileDataProvider().updateDataFileProperty(dataFileInputProperties);
+        return getDataProviderSetting().getDataFileDataProvider().updateDataFileProperty(dataFileInputProperties);
     }
 
     public DataFileEntity updateDataFile(InternalDataFilePropertyEntity internalDataFileInputProperties)
             throws Exception {
-        return dataProviderSetting.getDataFileDataProvider().updateInternalDataFileProperty(
+        return getDataProviderSetting().getDataFileDataProvider().updateInternalDataFileProperty(
                 internalDataFileInputProperties);
 
     }
@@ -81,7 +81,7 @@ public class TestDataController extends EntityController {
     public DataFileEntity renameDataFile(DataFileEntity dataFile, String newName) throws Exception {
         DataFilePropertyInputEntity dataFileInputProperties = new DataFilePropertyInputEntity(dataFile);
         dataFileInputProperties.setName(newName);
-        return dataProviderSetting.getDataFileDataProvider().updateDataFileProperty(dataFileInputProperties);
+        return getDataProviderSetting().getDataFileDataProvider().updateDataFileProperty(dataFileInputProperties);
     }
 
     /**
@@ -94,7 +94,7 @@ public class TestDataController extends EntityController {
      */
     @Deprecated
     public String getIdForDisplay(DataFileEntity entity) throws Exception {
-        return dataProviderSetting.getDataFileDataProvider().getIdForDisplay(entity)
+        return getDataProviderSetting().getDataFileDataProvider().getIdForDisplay(entity)
                 .replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPERATOR);
     }
 
@@ -102,7 +102,7 @@ public class TestDataController extends EntityController {
         List<DataFileEntity> sibblingDataFiles = getDataFileFromParentFolder(dataFile.getParentFolder());
         List<String> sibblingName = new ArrayList<String>();
         for (DataFileEntity sibblingDataFile : sibblingDataFiles) {
-            if (!dataProviderSetting.getEntityPk(sibblingDataFile).equals(dataProviderSetting.getEntityPk(dataFile))) {
+            if (!getDataProviderSetting().getEntityPk(sibblingDataFile).equals(getDataProviderSetting().getEntityPk(dataFile))) {
                 sibblingName.add(sibblingDataFile.getName());
             }
         }
@@ -110,7 +110,7 @@ public class TestDataController extends EntityController {
     }
 
     public String getAvailableTestDataName(FolderEntity parentFolder, String name) throws Exception {
-        return dataProviderSetting.getDataFileDataProvider().getAvailableDataFileName(parentFolder, name);
+        return getDataProviderSetting().getDataFileDataProvider().getAvailableDataFileName(parentFolder, name);
     }
 
     /**
@@ -122,17 +122,17 @@ public class TestDataController extends EntityController {
      * @throws Exception
      */
     public boolean validateTestDataName(FolderEntity parentFolder, String name) throws Exception {
-        return dataProviderSetting.getDataFileDataProvider().validateDataFileName(parentFolder, name);
+        return getDataProviderSetting().getDataFileDataProvider().validateDataFileName(parentFolder, name);
     }
 
     public DataFileEntity getTestDataByDisplayId(String displayId) throws Exception {
         String relativePathWithoutExtensions = displayId.replace(GlobalStringConstants.ENTITY_ID_SEPERATOR,
                 File.separator);
-        return dataProviderSetting.getDataFileDataProvider().getDataFileByDisplayId(relativePathWithoutExtensions);
+        return getDataProviderSetting().getDataFileDataProvider().getDataFileByDisplayId(relativePathWithoutExtensions);
     }
 
     public DataFileEntity getTestData(String pk) throws Exception {
-        return dataProviderSetting.getDataFileDataProvider().getDataFile(pk);
+        return getDataProviderSetting().getDataFileDataProvider().getDataFile(pk);
     }
 
     public String getTestDataDisplayIdByPk(String pk, String projectLocation) {
@@ -142,7 +142,7 @@ public class TestDataController extends EntityController {
 
     public Map<String, List<TestSuiteTestCaseLink>> getTestDataReferences(DataFileEntity dataFileEntity)
             throws Exception {
-        return dataProviderSetting.getDataFileDataProvider().getTestDataReferences(dataFileEntity);
+        return getDataProviderSetting().getDataFileDataProvider().getTestDataReferences(dataFileEntity);
     }
 
     public void reloadTestData(DataFileEntity testData, Entity entity) throws Exception {

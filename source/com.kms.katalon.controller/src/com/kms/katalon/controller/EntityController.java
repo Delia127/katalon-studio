@@ -1,17 +1,28 @@
 package com.kms.katalon.controller;
 
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+
 import com.kms.katalon.dal.setting.IDataProviderSetting;
 
 public abstract class EntityController {
-	protected static IDataProviderSetting dataProviderSetting;
-	
-	protected EntityController() {};
-	
-	protected static IDataProviderSetting getDataProviderSetting() {
-		return dataProviderSetting;
-	}
-	
-	public static void setDataProviderSetting(IDataProviderSetting dataProviderSetting) {
-		EntityController.dataProviderSetting = dataProviderSetting;
-	}
+    private static IDataProviderSetting dataProviderSetting;
+
+    protected EntityController() {
+    };
+
+    protected static IDataProviderSetting getDataProviderSetting() {
+        if (dataProviderSetting == null) {
+            initDataProviderSetting();
+        }
+        return dataProviderSetting;
+    }
+
+    private static void initDataProviderSetting() {
+        BundleContext bundleContext = FrameworkUtil.getBundle(EntityController.class).getBundleContext();
+        IEclipseContext eclipseContext = EclipseContextFactory.getServiceContext(bundleContext);
+        dataProviderSetting = eclipseContext.get(IDataProviderSetting.class);
+    }
 }

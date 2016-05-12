@@ -28,7 +28,7 @@ public class ImportProjectAsNewProjectController extends AbstractImportControlle
 		projectImportingInfomation.setCurrentProject(project);
 		projectImportingInfomation.setImportGUID(guid);
 		projectImportingInfomation.setImportDirectory(new File(directory));
-		ProjectEntity newProject = dataProviderSetting.getImportDataProvider().importProject(projectImportingInfomation, null);
+		ProjectEntity newProject = getDataProviderSetting().getImportDataProvider().importProject(projectImportingInfomation, null);
 		if (newProject != null) {
 			return true;
 		}

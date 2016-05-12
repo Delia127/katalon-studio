@@ -45,9 +45,9 @@ public class TestCaseController extends EntityController {
             } else if (selectionObject instanceof TestCaseEntity) {
                 parentFolder = ((TestCaseEntity) selectionObject).getParentFolder();
             } else {
-                parentFolder = dataProviderSetting.getFolderDataProvider().getTestCaseRoot(projectEntity);
+                parentFolder = getDataProviderSetting().getFolderDataProvider().getTestCaseRoot(projectEntity);
             }
-            return dataProviderSetting.getTestCaseDataProvider().addNewTestCase(parentFolder, testCaseName);
+            return getDataProviderSetting().getTestCaseDataProvider().addNewTestCase(parentFolder, testCaseName);
 
         }
         return null;
@@ -55,23 +55,23 @@ public class TestCaseController extends EntityController {
     }
 
     public TestCaseEntity getTestCase(String testCasePK) throws Exception {
-        return dataProviderSetting.getTestCaseDataProvider().getTestCase(testCasePK);
+        return getDataProviderSetting().getTestCaseDataProvider().getTestCase(testCasePK);
     }
 
     public void deleteTestCase(TestCaseEntity testCase) throws Exception {
-        dataProviderSetting.getTestCaseDataProvider().deleteTestCase(testCase);
+        getDataProviderSetting().getTestCaseDataProvider().deleteTestCase(testCase);
     }
 
     public TestCaseEntity updateTestCase(TestCaseEntity testCase) throws Exception {
-        return dataProviderSetting.getTestCaseDataProvider().updateTestCase(testCase);
+        return getDataProviderSetting().getTestCaseDataProvider().updateTestCase(testCase);
     }
 
     public TestCaseEntity copyTestCase(TestCaseEntity testCaseEntity, FolderEntity destinationFolder) throws Exception {
-        return dataProviderSetting.getTestCaseDataProvider().copyTestCase(testCaseEntity, destinationFolder);
+        return getDataProviderSetting().getTestCaseDataProvider().copyTestCase(testCaseEntity, destinationFolder);
     }
 
     public TestCaseEntity moveTestCase(TestCaseEntity testCaseEntity, FolderEntity destinationFolder) throws Exception {
-        return dataProviderSetting.getTestCaseDataProvider().moveTestCase(testCaseEntity, destinationFolder);
+        return getDataProviderSetting().getTestCaseDataProvider().moveTestCase(testCaseEntity, destinationFolder);
     }
 
     public List<String> getSibblingTestCaseNames(TestCaseEntity testCase) throws Exception {
@@ -79,7 +79,7 @@ public class TestCaseController extends EntityController {
                 testCase.getParentFolder());
         List<String> sibblingName = new ArrayList<String>();
         for (TestCaseEntity sibblingTestCase : sibblingTestCases) {
-            if (!dataProviderSetting.getEntityPk(sibblingTestCase).equals(dataProviderSetting.getEntityPk(testCase))) {
+            if (!getDataProviderSetting().getEntityPk(sibblingTestCase).equals(getDataProviderSetting().getEntityPk(testCase))) {
                 sibblingName.add(sibblingTestCase.getName());
             }
         }
@@ -87,7 +87,7 @@ public class TestCaseController extends EntityController {
     }
 
     public TestCaseEntity getTestCaseByDisplayId(String testCaseDisplayId) throws Exception {
-        return dataProviderSetting.getTestCaseDataProvider().getTestCaseByDisplayId(testCaseDisplayId);
+        return getDataProviderSetting().getTestCaseDataProvider().getTestCaseByDisplayId(testCaseDisplayId);
     }
 
     public String getGroovyClassName(TestCaseEntity testCase) {
@@ -139,11 +139,11 @@ public class TestCaseController extends EntityController {
     }
 
     public String getAvailableTestCaseName(FolderEntity parentFolder, String name) throws Exception {
-        return dataProviderSetting.getTestCaseDataProvider().getAvailableTestCaseName(parentFolder, name);
+        return getDataProviderSetting().getTestCaseDataProvider().getAvailableTestCaseName(parentFolder, name);
     }
 
     public TestCaseEntity getTestCaseByScriptName(String scriptFileName) throws Exception {
-        return dataProviderSetting.getTestCaseDataProvider().getTestCaseByScriptFileName(scriptFileName);
+        return getDataProviderSetting().getTestCaseDataProvider().getTestCaseByScriptFileName(scriptFileName);
     }
 
     /**
@@ -154,7 +154,7 @@ public class TestCaseController extends EntityController {
      * @throws Exception
      */
     public TestCaseEntity getTestCaseByScriptFilePath(String scriptFilePath) throws Exception {
-        return dataProviderSetting.getTestCaseDataProvider().getTestCaseByScriptFilePath(scriptFilePath);
+        return getDataProviderSetting().getTestCaseDataProvider().getTestCaseByScriptFilePath(scriptFilePath);
     }
 
     /**
@@ -165,7 +165,7 @@ public class TestCaseController extends EntityController {
      */
     public List<TestSuiteEntity> getTestCaseReferences(TestCaseEntity testCase) {
         try {
-            return dataProviderSetting.getTestCaseDataProvider().getTestCaseReferences(testCase);
+            return getDataProviderSetting().getTestCaseDataProvider().getTestCaseReferences(testCase);
         } catch (Exception ex) {
             return Collections.emptyList();
         }

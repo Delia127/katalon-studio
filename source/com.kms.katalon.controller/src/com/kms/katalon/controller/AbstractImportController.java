@@ -40,12 +40,12 @@ public abstract class AbstractImportController extends EntityController implemen
 
 	@Override
 	public void cancel() throws Exception {
-		dataProviderSetting.getImportDataProvider().cancelImport(guid);
+		getDataProviderSetting().getImportDataProvider().cancelImport(guid);
 	}
 
 	@Override
 	public int getProgress() throws Exception {
-		return dataProviderSetting.getImportDataProvider().getImportProgress(guid);
+		return getDataProviderSetting().getImportDataProvider().getImportProgress(guid);
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public abstract class AbstractImportController extends EntityController implemen
 			Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
 			if (object != null && object instanceof ImportDuplicateEntityResult) {
 				try {
-					dataProviderSetting.getImportDataProvider().setImportDuplicateEntityResult(
+					getDataProviderSetting().getImportDataProvider().setImportDuplicateEntityResult(
 							(ImportDuplicateEntityResult) object, guid);
 				} catch (Exception e) {
 					logger.error(e);
