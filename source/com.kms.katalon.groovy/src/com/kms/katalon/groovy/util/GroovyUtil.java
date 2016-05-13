@@ -6,6 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -27,6 +28,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -718,19 +720,16 @@ public class GroovyUtil {
             return;
         }
 
-        IProject groovyProject = getGroovyProject(testCase.getProject());
-        IFolder testCaseScriptFolder = groovyProject.getFolder(getScriptPackageRelativePathForTestCase(testCase));
+        ProjectEntity project = testCase.getProject();
+        String scriptFolderPath = project.getFolderLocation() + File.separator
+                + getScriptPackageRelativePathForTestCase(testCase);
         String scriptFileName = getScriptNameForTestCase(testCase);
-        IFile scriptFile = testCaseScriptFolder.getFile(scriptFileName + GroovyConstants.GROOVY_FILE_EXTENSION);
-        if (scriptFile != null && scriptFile.exists()) {
-            InputStream scriptInputStream = scriptFile.getContents();
-            try {
-                testCase.setScriptContents(IOUtils.toByteArray(scriptInputStream));
-            } finally {
-                if (scriptInputStream != null) {
-                    scriptInputStream.close();
-                }
-            }
+        File scriptFile = new File(scriptFolderPath + File.separator + scriptFileName + GroovyConstants.GROOVY_FILE_EXTENSION);
+        if (!scriptFile.exists()) {
+            return;
+        }
+        try (StringReader stringReader = new StringReader(FileUtils.readFileToString(scriptFile))) {
+            testCase.setScriptContents(IOUtils.toByteArray(stringReader));
         }
     }
 
@@ -804,6 +803,7 @@ public class GroovyUtil {
     }
 
     public static List<IFile> getAllScriptFiles(IFolder parentFolder) throws CoreException {
+        parentFolder.refreshLocal(IResource.DEPTH_INFINITE, null);
         List<IFile> listTestCaseFiles = new ArrayList<IFile>();
         for (IResource childResource : parentFolder.members()) {
             if (childResource instanceof IFile) {
