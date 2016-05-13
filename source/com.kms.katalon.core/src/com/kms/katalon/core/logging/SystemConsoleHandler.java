@@ -18,7 +18,7 @@ public class SystemConsoleHandler extends ConsoleHandler {
 				recordAppend += "- ";
 
 				return XMLLoggerParser.getRecordDate(record) + recordLevel + recordAppend
-						+ XMLLoggerParser.unescapeString(record.getMessage()) + "\r\n";
+						+ record.getMessage() + "\r\n";
 			}
 		};
 		setFormatter(formatter);
