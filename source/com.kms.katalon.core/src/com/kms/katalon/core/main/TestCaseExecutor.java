@@ -190,14 +190,13 @@ public class TestCaseExecutor {
     }
 
     private Object runScript(File scriptFile) throws ResourceException, ScriptException, IOException {
-        return engine.runScriptAsRawText(FileUtils.readFileToString(scriptFile),
-                scriptFile.getName(), variableBinding);
+        return engine.runScriptAsRawText(FileUtils.readFileToString(scriptFile), scriptFile.getName(), variableBinding);
     }
-    
-    private void runMethod(File scriptFile, String methodName) throws ResourceException, ScriptException, ClassNotFoundException,
-            IOException {
-        engine.runScriptMethodAsRawText(FileUtils.readFileToString(scriptFile),
-                scriptFile.getName(), methodName, variableBinding);
+
+    private void runMethod(File scriptFile, String methodName) throws ResourceException, ScriptException,
+            ClassNotFoundException, IOException {
+        engine.runScriptMethodAsRawText(FileUtils.readFileToString(scriptFile), scriptFile.getName(), methodName,
+                variableBinding);
     }
 
     private Map<String, String> getTestCaseProperties(TestCaseBinding testCaseBinding, TestCase testCase) {
@@ -288,14 +287,17 @@ public class TestCaseExecutor {
         }
 
         logger.logInfo(methodNodeWrapper.getStartMessage());
+        int count = 1;
         for (MethodNode method : methodList) {
-            runMethod(method.getName(), methodNodeWrapper.isIgnoredIfFailed());
+            runMethod(method.getName(), count++, methodNodeWrapper.isIgnoredIfFailed());
         }
     }
 
-    private void runMethod(String methodName, boolean ignoreIfFailed) {
+    private void runMethod(String methodName, int index, boolean ignoreIfFailed) {
         Stack<KeywordStackElement> keywordStack = new Stack<KeywordStackElement>();
-        logger.startKeyword(methodName, null, keywordStack);
+        Map<String, String> startKeywordAttributeMap = new HashMap<String, String>();
+        startKeywordAttributeMap.put(StringConstants.XML_LOG_STEP_INDEX, String.valueOf(index));
+        logger.startKeyword(methodName, startKeywordAttributeMap, keywordStack);
         try {
             runMethod(getScriptFile(), methodName);
             endAllUnfinishedKeywords(keywordStack);
