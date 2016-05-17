@@ -18,8 +18,9 @@ public class CommonNewEntityDialog extends AbstractEntityDialog {
 
     private String description;
 
-    public CommonNewEntityDialog(Shell parentShell, FolderEntity parentFolder) {
+    public CommonNewEntityDialog(Shell parentShell, FolderEntity parentFolder, String suggestedName) {
         super(parentShell, parentFolder);
+        setName(suggestedName);
     }
 
     @Override

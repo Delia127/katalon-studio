@@ -47,14 +47,7 @@ public class NewTestSuiteHandler {
 
     @CanExecute
     private boolean canExecute() {
-        try {
-            if (ProjectController.getInstance().getCurrentProject() != null) {
-                return true;
-            }
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-        }
-        return false;
+        return ProjectController.getInstance().getCurrentProject() != null;
     }
 
     @Execute
@@ -63,36 +56,40 @@ public class NewTestSuiteHandler {
             Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
             ITreeEntity parentTreeEntity = findParentTreeEntity(selectedObjects);
             if (parentTreeEntity == null) {
+                if (testSuiteTreeRoot == null) {
+                    return;
+                }
                 parentTreeEntity = testSuiteTreeRoot;
             }
 
-            if (parentTreeEntity != null) {
-                FolderEntity parentFolderEntity = (FolderEntity) parentTreeEntity.getObject();
-                String suggestedName = TestSuiteController.getInstance().getAvailableTestSuiteName(parentFolderEntity,
-                        newDefaultName);
-
-                NewTestSuiteDialog dialog = new NewTestSuiteDialog(parentShell, parentFolderEntity);
-                dialog.setName(suggestedName);
-                dialog.open();
-
-                if (dialog.getReturnCode() == Dialog.OK) {
-                    TestSuiteEntity testSuite = TestSuiteController.getInstance().addNewTestSuite(parentFolderEntity,
-                            dialog.getName());
-
-                    testSuite.setMailRecipient(getDefaultEmail());
-
-                    TestSuiteController.getInstance().updateTestSuite(testSuite);
-
-                    if (testSuite != null) {
-                        eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
-                        eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, new TestSuiteTreeEntity(testSuite,
-                                parentTreeEntity));
-                        eventBroker.post(EventConstants.TEST_SUITE_OPEN, testSuite);
-
-                        // partService.saveAll(true);
-                    }
-                }
+            if (parentTreeEntity == null) {
+                return;
             }
+
+            FolderEntity parentFolderEntity = (FolderEntity) parentTreeEntity.getObject();
+            TestSuiteController tsController = TestSuiteController.getInstance();
+            String suggestedName = tsController.getAvailableTestSuiteName(parentFolderEntity, newDefaultName);
+
+            NewTestSuiteDialog dialog = new NewTestSuiteDialog(parentShell, parentFolderEntity, suggestedName);
+            if (dialog.open() != Dialog.OK) {
+                return;
+            }
+
+            // create test suite
+            TestSuiteEntity testSuite = tsController.addNewTestSuite(parentFolderEntity, dialog.getName());
+            if (testSuite == null) {
+                return;
+            }
+
+            // update test suite properties
+            testSuite.setDescription(dialog.getDescription());
+            testSuite.setMailRecipient(getDefaultEmail());
+            tsController.updateTestSuite(testSuite);
+
+            eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
+            eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, new TestSuiteTreeEntity(testSuite,
+                    parentTreeEntity));
+            eventBroker.post(EventConstants.TEST_SUITE_OPEN, testSuite);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,

@@ -11,27 +11,27 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
-import com.kms.katalon.composer.components.impl.dialogs.AbstractEntityDialog;
+import com.kms.katalon.composer.components.impl.dialogs.CommonNewEntityDialog;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 
-public class NewTestDataDialog extends AbstractEntityDialog {
+public class NewTestDataDialog extends CommonNewEntityDialog {
 
     private String dataSource = DataFileEntity.DataFileDriverType.stringValues()[0];
 
     private Combo cbDataSourceType;
 
-    public NewTestDataDialog(Shell parentShell, FolderEntity parentFolder) {
-        super(parentShell, parentFolder);
+    public NewTestDataDialog(Shell parentShell, FolderEntity parentFolder, String suggestedName) {
+        super(parentShell, parentFolder, suggestedName);
         setDialogTitle(StringConstants.VIEW_TITLE_TEST_DATA);
         setDialogMsg(StringConstants.VIEW_MSG_CREATE_NEW_TEST_DATA);
     }
 
     @Override
-    public Control createDialogBodyArea(Composite parent) {
-        super.createDialogBodyArea(parent);
-        return createDataSourceTypeControl(container, 2);
+    protected Control createEntityCustomControl(Composite parent, int column, int span) {
+        createDataSourceTypeControl(parent, column);
+        return super.createEntityCustomControl(parent, column, span);
     }
 
     private Control createDataSourceTypeControl(Composite parent, int column) {

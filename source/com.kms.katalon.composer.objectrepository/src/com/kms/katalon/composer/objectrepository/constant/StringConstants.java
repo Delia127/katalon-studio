@@ -51,11 +51,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String VIEW_COL_MATCH_COND = "Match Condition";
     public static final String VIEW_COL_VALUE = VALUE;
     public static final String VIEW_COL_CHKBOX = "Detect object by?";
-    public static final String VIEW_LBL_INFO = INFORMATION;
-    public static final String VIEW_LBL_ID = ID;
     public static final String VIEW_LBL_IMAGE = IMAGE;
-    public static final String VIEW_LBL_DESC = DESCRIPTION;
-    public static final String VIEW_CHKBOX_LBL_USE_RELATIVE_PATH = "Use relative path";
+    public static final String VIEW_CHKBOX_LBL_USE_RELATIVE_PATH = "Use relative path for image";
     public static final String VIEW_BTN_BROWSE = BROWSE;
     public static final String VIEW_BTN_TIP_BROWSE = "Browse to select image file";
     public static final String VIEW_LBL_ADD = ADD;
@@ -68,6 +65,9 @@ public class StringConstants extends GlobalStringConstants {
     public static final String VIEW_ERROR_REASON_OBJ_PROP_EXISTED = "Duplicated test object property name ''{0}''";
     public static final String VIEW_LBL_USE_IFRAME = "Use below object as parent iframe of this object";
     public static final String VIEW_WARN_FILE_NOT_FOUND = "File not found. Please choose another file.";
+    public static final String VIEW_LBL_SETTINGS = "Settings";
+    public static final String VIEW_LBL_OBJ_PROPERTIES = "Object's Properties";
+    public static final String VIEW_TITLE_TEST_OBJ_PROPERTIES = "Test Object Properties";
 
     // TestObjectReferencesDialog
     public static final String DIA_MSG_HEADER_TEST_OBJECT_REFERENCES = "Test object ''{0}'' has been referred by some test "

@@ -20,4 +20,7 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_MtbjYCKWEeSxutcJDiJB_g" featurename="addons" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="application:Addon" xmi:id="_SBfeACKWEeSxutcJDiJB_g" elementId="com.kms.katalon.composer.testsuite.addon.inject" contributionURI="bundleclass://com.kms.katalon.composer.testsuite/com.kms.katalon.composer.testsuite.addons.TestSuiteInjectionManagerAddon"/>
   </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_QLUtQBNHEeati-jeKlb2vw" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu" positionInList="last">
+    <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_R6fk0BNHEeati-jeKlb2vw" elementId="com.kms.katalon.composer.testsuite.dynamicmenucontribution.properties" label="Properties" contributionURI="bundleclass://com.kms.katalon.composer.testsuite/com.kms.katalon.composer.testsuite.menu.TestSuitePropertiesDynamicMenuContribution"/>
+  </fragments>
 </fragment:ModelFragments>
