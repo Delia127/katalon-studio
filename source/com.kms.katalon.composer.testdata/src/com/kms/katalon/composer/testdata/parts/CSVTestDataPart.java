@@ -47,7 +47,6 @@ import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.core.testdata.CSVData;
 import com.kms.katalon.core.testdata.reader.CSVSeparator;
 import com.kms.katalon.core.util.PathUtil;
-import com.kms.katalon.entity.dal.exception.DuplicatedFileNameException;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity.DataFileDriverType;
 import com.kms.katalon.entity.testdata.DataFilePropertyInputEntity;
@@ -471,28 +470,18 @@ public class CSVTestDataPart extends TestDataMainPart {
     public void save() {
         try {
             enableToReload = false;
-            String oldPk = originalDataFile.getId();
-            String oldName = originalDataFile.getName();
-            String oldIdForDisplay = originalDataFile.getIdForDisplay();
-            originalDataFile = updateDataFileProperty(originalDataFile.getLocation(), txtName.getText(),
-                    txtDesc.getText(), DataFileDriverType.CSV, txtFileName.getText(), chckEnableHeader.getSelection(), 
-                    cbSeperator.getText(), chckIsRelativePath.getSelection());
+            originalDataFile = updateDataFileProperty(originalDataFile.getLocation(), originalDataFile.getName(),
+                    originalDataFile.getDescription(), DataFileDriverType.CSV, txtFileName.getText(),
+                    chckEnableHeader.getSelection(), cbSeperator.getText(), chckIsRelativePath.getSelection());
 
             updateDataFile(originalDataFile);
             dirtyable.setDirty(false);
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);
-            if (!StringUtils.equalsIgnoreCase(oldName, originalDataFile.getName())) {
-                eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-                        originalDataFile.getIdForDisplay() });
-            }
-            sendTestDataUpdatedEvent(oldPk);
-        } catch (DuplicatedFileNameException e) {
-            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_TEST_DATA,
-                    MessageFormat.format(StringConstants.PA_ERROR_REASON_TEST_DATA_EXISTED, txtName.getText()));
+            sendTestDataUpdatedEvent(originalDataFile.getId());
         } catch (Exception e) {
             LoggerSingleton.logError(e);
-            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_TEST_DATA, e
-                    .getClass().getSimpleName());
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_TEST_DATA,
+                    e.getClass().getSimpleName());
         } finally {
             enableToReload = true;
         }

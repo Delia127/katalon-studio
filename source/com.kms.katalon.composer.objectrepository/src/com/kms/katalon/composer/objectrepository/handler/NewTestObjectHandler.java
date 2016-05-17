@@ -66,42 +66,52 @@ public class NewTestObjectHandler {
 		}
 	}
 
-	@Execute
-	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
-		try {
-		    Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-			if (selectedObjects != null) {
-				ITreeEntity parentTreeEntity = getParentTreeEntity(selectedObjects);
-				if (parentTreeEntity == null) {
-					parentTreeEntity = objectRepositoryTreeRoot;
-				}
-				if (parentTreeEntity != null && parentTreeEntity.getObject() instanceof FolderEntity) {
-					FolderEntity parentFolderEntity = (FolderEntity) parentTreeEntity.getObject();
-					String suggestedName = ObjectRepositoryController.getInstance().getAvailableWebElementName(parentFolderEntity, newDefaultName);
+    @Execute
+    public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
+        try {
+            Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
+            if (selectedObjects == null) {
+                return;
+            }
 
-					NewTestObjectDialog dialog = new NewTestObjectDialog(parentShell, parentFolderEntity);
-					dialog.setName(suggestedName);
-					dialog.open();
+            ITreeEntity parentTreeEntity = getParentTreeEntity(selectedObjects);
+            if (parentTreeEntity == null) {
+                if (objectRepositoryTreeRoot == null) {
+                    return;
+                }
+                parentTreeEntity = objectRepositoryTreeRoot;
+            }
 
-					if (dialog.getReturnCode() == Dialog.OK) {
-						WebElementEntity webElement = ObjectRepositoryController.getInstance().addNewWebElement(
-								parentFolderEntity, dialog.getName());
+            FolderEntity parentFolderEntity = (FolderEntity) parentTreeEntity.getObject();
+            ObjectRepositoryController toController = ObjectRepositoryController.getInstance();
+            String suggestedName = toController.getAvailableWebElementName(parentFolderEntity, newDefaultName);
 
-						if (webElement != null) {
-							eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
-							eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, new WebElementTreeEntity(
-									webElement, parentTreeEntity));
-							eventBroker.post(EventConstants.TEST_OBJECT_OPEN, webElement);
-						}
-					}
-				}
-			}
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-			MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE, 
-					StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_OBJ);
-		}
-	}
+            NewTestObjectDialog dialog = new NewTestObjectDialog(parentShell, parentFolderEntity, suggestedName);
+            if (dialog.open() != Dialog.OK) {
+                return;
+            }
+
+            // create test object
+            WebElementEntity webElement = toController.addNewWebElement(parentFolderEntity, dialog.getName());
+
+            if (webElement == null) {
+                return;
+            }
+
+            // update its property
+            webElement.setDescription(dialog.getDescription());
+            toController.updateWebElement(webElement);
+
+            eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
+            eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, new WebElementTreeEntity(webElement,
+                    parentTreeEntity));
+            eventBroker.post(EventConstants.TEST_OBJECT_OPEN, webElement);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,
+                    StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_OBJ);
+        }
+    }
 
 	public static ITreeEntity getParentTreeEntity(Object[] selectedObjects) throws Exception {
 		for (Object object : selectedObjects) {

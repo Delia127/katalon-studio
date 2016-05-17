@@ -77,9 +77,7 @@ public class NewTestCaseHandler {
             TestCaseController tcController = TestCaseController.getInstance();
             String suggestedName = tcController.getAvailableTestCaseName(parentFolderEntity, newDefaultName);
 
-            NewTestCaseDialog dialog = new NewTestCaseDialog(parentShell, parentFolderEntity);
-            dialog.setName(suggestedName);
-
+            NewTestCaseDialog dialog = new NewTestCaseDialog(parentShell, parentFolderEntity, suggestedName);
             if (dialog.open() != Dialog.OK) {
                 return;
             }

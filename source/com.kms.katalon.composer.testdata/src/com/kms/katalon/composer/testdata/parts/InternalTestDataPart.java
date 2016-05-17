@@ -1,13 +1,11 @@
 package com.kms.katalon.composer.testdata.parts;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -46,7 +44,6 @@ import com.kms.katalon.composer.testdata.constants.StringConstants;
 import com.kms.katalon.composer.testdata.views.NewTestDataColumnDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.TestDataController;
-import com.kms.katalon.entity.dal.exception.DuplicatedFileNameException;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity.DataFileDriverType;
 import com.kms.katalon.entity.testdata.InternalDataColumnEntity;
@@ -405,27 +402,17 @@ public class InternalTestDataPart extends TestDataMainPart {
         }
 
         try {
-            String oldPk = originalDataFile.getId();
-            String oldName = originalDataFile.getName();
-            String oldIdForDisplay = originalDataFile.getIdForDisplay();
-            originalDataFile = updateInternalDataFileProperty(originalDataFile.getLocation(), txtName.getText(),
-                    txtDesc.getText(), originalDataFile.getDriver(), originalDataFile.getDataSourceUrl(), "",
-                    originalDataFile.getTableDataName(), headers, datas);
+            originalDataFile = updateInternalDataFileProperty(originalDataFile.getLocation(),
+                    originalDataFile.getName(), originalDataFile.getDescription(), originalDataFile.getDriver(),
+                    originalDataFile.getDataSourceUrl(), "", originalDataFile.getTableDataName(), headers, datas);
             updateDataFile(originalDataFile);
             dirtyable.setDirty(false);
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);
-            if (!StringUtils.equalsIgnoreCase(oldName, originalDataFile.getName())) {
-                eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-                        originalDataFile.getIdForDisplay() });
-            }
-            sendTestDataUpdatedEvent(oldPk);
-        } catch (DuplicatedFileNameException e) {
-            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_TEST_DATA,
-                    MessageFormat.format(StringConstants.PA_ERROR_REASON_TEST_DATA_EXISTED, txtName.getText()));
+            sendTestDataUpdatedEvent(originalDataFile.getId());
         } catch (Exception e) {
             LoggerSingleton.logError(e);
-            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_TEST_DATA, e
-                    .getClass().getSimpleName());
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_TEST_DATA,
+                    e.getClass().getSimpleName());
         }
     }
 

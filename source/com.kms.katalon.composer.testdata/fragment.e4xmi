@@ -20,4 +20,7 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_I9IpACkiEeSovtUyBOitzw" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu.new" positionInList="">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_ACwXcD-pEeSqW-o8jtXO1g" elementId="com.kms.katalon.composer.testdata.popupmenu.new.dynamicmenucontribution" contributionURI="bundleclass://com.kms.katalon.composer.testdata/com.kms.katalon.composer.testdata.menu.NewTestDataPopupMenuContribution"/>
   </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_N1VREBKpEeati-jeKlb2vw" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu" positionInList="last">
+    <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_Snta8BKpEeati-jeKlb2vw" elementId="com.kms.katalon.composer.testdata.dynamicmenucontribution.properties" label="Properties" contributionURI="bundleclass://com.kms.katalon.composer.testdata/com.kms.katalon.composer.testdata.menu.TestDataPropertiesDynamicMenuContribution"/>
+  </fragments>
 </fragment:ModelFragments>

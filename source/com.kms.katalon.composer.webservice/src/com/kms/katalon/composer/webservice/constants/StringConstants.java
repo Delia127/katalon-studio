@@ -16,11 +16,7 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String COMMAND_ID_ADD_WEBSERVICE_REQ = "com.kms.katalon.composer.webservice.command.add";
 
 	// RequestObjectPart
-	public static final String PA_TITLE_INFO = INFORMATION;
 	public static final String PA_TITLE_HTTP = "HTTP";
-	public static final String PA_LBL_ID = ID;
-	public static final String PA_LBL_DESC = DESCRIPTION;
-	public static final String PA_LBL_NAME = NAME;
 	public static final String PA_LBL_HTTP_HEADER = "HTTP Header";
 	public static final String PA_LBL_HTTP_BODY = "HTTP Body";
 	public static final String VIEW_ERROR_MSG_FAILED_TO_LOAD_OBJ_REPOSITORY = "Failed to load Object Repository";

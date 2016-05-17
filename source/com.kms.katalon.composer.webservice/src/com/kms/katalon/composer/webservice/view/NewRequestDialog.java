@@ -11,27 +11,27 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
-import com.kms.katalon.composer.components.impl.dialogs.AbstractEntityDialog;
+import com.kms.katalon.composer.components.impl.dialogs.CommonNewEntityDialog;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
-public class NewRequestDialog extends AbstractEntityDialog {
+public class NewRequestDialog extends CommonNewEntityDialog {
 
     private String webServiveType = WebServiceRequestEntity.SERVICE_TYPES[0];
 
     private Combo cbbRequestType;
 
-    public NewRequestDialog(Shell parentShell, FolderEntity parentFolder) {
-        super(parentShell, parentFolder);
+    public NewRequestDialog(Shell parentShell, FolderEntity parentFolder, String suggestedName) {
+        super(parentShell, parentFolder, suggestedName);
         setDialogTitle(StringConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ);
         setDialogMsg(StringConstants.VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ);
     }
 
     @Override
-    public Control createDialogBodyArea(Composite parent) {
-        super.createDialogBodyArea(parent);
-        return createRequestTypeControl(container, 2);
+    protected Control createEntityCustomControl(Composite parent, int column, int span) {
+        createRequestTypeControl(parent, column);
+        return super.createEntityCustomControl(parent, column, span);
     }
 
     private Control createRequestTypeControl(Composite parent, int column) {
