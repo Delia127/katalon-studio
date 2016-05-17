@@ -361,6 +361,9 @@ public class ReportUtil {
         testCaseLogRecord.setDescription(xmlLogRecord.getProperties().containsKey(
                 StringConstants.XML_LOG_DESCRIPTION_PROPERTY) ? xmlLogRecord.getProperties().get(
                 StringConstants.XML_LOG_DESCRIPTION_PROPERTY) : "");
+        testCaseLogRecord.setOptional(xmlLogRecord.getProperties().containsKey(
+                StringConstants.XML_LOG_IS_OPTIONAL) ? Boolean.valueOf(xmlLogRecord.getProperties().get(
+                StringConstants.XML_LOG_IS_OPTIONAL)) : false);
         Object object = stack.peekLast();
         if (object instanceof TestSuiteLogRecord || object instanceof TestStepLogRecord) {
             ((ILogRecord) object).addChildRecord(testCaseLogRecord);

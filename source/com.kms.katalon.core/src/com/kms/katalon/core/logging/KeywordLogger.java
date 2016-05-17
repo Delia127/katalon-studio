@@ -143,8 +143,7 @@ public class KeywordLogger {
                 new XmlLogRecord(LogLevel.END.getLevel(), StringConstants.LOG_END_SUITE + " : " + name, nestedLevel, attributes));
     }
 
-    public void startTest(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack,
-            boolean isOptional) {
+    public void startTest(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
         nestedLevel++;
         getLogger()
                 .log(new XmlLogRecord(LogLevel.START.getLevel(), StringConstants.LOG_START_TEST + " : " + name, nestedLevel,
