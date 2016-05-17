@@ -194,6 +194,7 @@ public class TestCaseExecutor {
 
     private void runMethod(File scriptFile, String methodName) throws ResourceException, ScriptException,
             ClassNotFoundException, IOException {
+        engine.setConfig(getConfigForExecutingScript());
         engine.runScriptMethodAsRawText(FileUtils.readFileToString(scriptFile), scriptFile.getName(), methodName,
                 variableBinding);
     }
