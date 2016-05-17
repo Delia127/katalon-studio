@@ -1,8 +1,10 @@
 package com.kms.katalon.composer.testcase.groovy.ast.expressions;
 
+import org.codehaus.groovy.ast.ClassHelper;
 import org.codehaus.groovy.ast.expr.GStringExpression;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
 
 public class GStringExpressionWrapper extends ExpressionWrapper {
     private String verbatimText;
@@ -15,6 +17,7 @@ public class GStringExpressionWrapper extends ExpressionWrapper {
     public GStringExpressionWrapper(String verbatimText, ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
         this.verbatimText = verbatimText;
+        this.type = new ClassNodeWrapper(ClassHelper.GSTRING_TYPE, this);
     }
     
     public GStringExpressionWrapper(GStringExpressionWrapper gStringExpressionWrapper, ASTNodeWrapper parentNodeWrapper) {

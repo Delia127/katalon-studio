@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.testcase.groovy.ast;
 
+import groovy.lang.Script;
 import groovyjarjarasm.asm.Opcodes;
 
 import java.util.ArrayList;
@@ -53,6 +54,7 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
         this.nameWithoutPackage = classNode.getNameWithoutPackage();
         this.isSuper = classNode == ClassNode.SUPER;
         this.isThis = classNode == ClassNode.THIS;
+        this.typeClass = Script.class;
         if (!classNode.isScript()) {
             this.typeClass = AstKeywordsInputUtil.loadType(classNode.getName(), null);
         }
