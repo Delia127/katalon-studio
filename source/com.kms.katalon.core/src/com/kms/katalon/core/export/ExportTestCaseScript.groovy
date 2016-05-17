@@ -56,7 +56,7 @@ public abstract class ExportTestCaseScript {
 
 		List<Throwable> parentErrors = ErrorCollector.getCollector().getCoppiedErrors();
 		Stack<KeywordStackElement> keywordStack = new Stack<KeywordStackElement>();
-		KeywordLogger.getInstance().startTest(testCaseId, null, keywordStack, false)
+		KeywordLogger.getInstance().startTest(testCaseId, null, keywordStack)
 		try {
 			beforeRunMethods = ExportTestCaseHelper.findAllMethodForClassWithAnotation(exportScriptClass, SetUp);
 			afterRunMethods = ExportTestCaseHelper.findAllMethodForClassWithAnotation(exportScriptClass, TearDown);
