@@ -31,4 +31,9 @@ public abstract class ComplexLastStatementWrapper extends CompositeStatementWrap
     public boolean canHaveDescription() {
         return false;
     }
+    
+    @Override
+    public boolean canHaveLabel() {
+        return false;
+    }
 }

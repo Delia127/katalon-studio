@@ -58,7 +58,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static void startApplication(String appFile, boolean uninstallAfterCloseApp, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_STARTING_APP_AT, appFile));
-            MobileCommonHelper.initializeMobileDriver(appFile.toString(), uninstallAfterCloseApp);
+            MobileDriverFactory.startMobileDriver(appFile.toString(), uninstallAfterCloseApp);
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_START_APP_AT, appFile));
         }, flowControl, MessageFormat.format(StringConstants.KW_MSG_UNABLE_TO_START_APP_AT, appFile))
     }
@@ -73,7 +73,6 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static void closeApplication(FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             MobileDriverFactory.closeDriver();
-            MobileDriverFactory.quitServer();
             logger.logPassed(StringConstants.KW_LOG_PASSED_CLOSE_APP);
         }, flowControl, StringConstants.KW_MSG_UNABLE_TO_CLOSE_APPLICATION)
     }

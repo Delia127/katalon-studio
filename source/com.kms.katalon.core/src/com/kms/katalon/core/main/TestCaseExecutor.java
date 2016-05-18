@@ -1,6 +1,8 @@
 package com.kms.katalon.core.main;
 
 import groovy.lang.Binding;
+import groovy.util.ResourceException;
+import groovy.util.ScriptException;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +15,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.groovy.control.CompilationFailedException;
@@ -42,7 +45,7 @@ import com.kms.katalon.core.util.ExceptionsUtil;
 
 public class TestCaseExecutor {
     private static KeywordLogger logger = KeywordLogger.getInstance();
-    
+
     private static ErrorCollector errorCollector = ErrorCollector.getCollector();
 
     private TestResult testCaseResult;
@@ -106,12 +109,12 @@ public class TestCaseExecutor {
         }
 
         try {
-            engine.parseClass(getScriptFile(), collectTestCaseVariables());
-            return true;
-        } catch (CompilationFailedException | IOException e) {
+            variableBinding = collectTestCaseVariables();
+        } catch (CompilationFailedException e) {
             onSetupError(e);
             return false;
         }
+        return true;
     }
 
     private boolean processSetupPhase() {
@@ -145,8 +148,7 @@ public class TestCaseExecutor {
     public TestResult execute(FailureHandling flowControl) {
         preExecution();
 
-        logger.startTest(testCase.getTestCaseId(), getTestCaseProperties(testCaseBinding, testCase), keywordStack,
-                flowControl == FailureHandling.OPTIONAL);
+        logger.startTest(testCase.getTestCaseId(), getTestCaseProperties(testCaseBinding, testCase, flowControl), keywordStack);
 
         accessMainPhase();
 
@@ -173,8 +175,7 @@ public class TestCaseExecutor {
             // Prepare configuration before execution
             engine.setConfig(getConfigForExecutingScript());
             setupContextClassLoader();
-
-            testCaseResult.setScriptResult(engine.runScript(getScriptFile(), variableBinding));
+            testCaseResult.setScriptResult(runScript(getScriptFile()));
         } catch (Throwable e) {
             logError(e, ExceptionsUtil.getMessageForThrowable(e));
             errorCollector.addError(e);
@@ -187,12 +188,24 @@ public class TestCaseExecutor {
         }
     }
 
-    private Map<String, String> getTestCaseProperties(TestCaseBinding testCaseBinding, TestCase testCase) {
+    private Object runScript(File scriptFile) throws ResourceException, ScriptException, IOException {
+        return engine.runScriptAsRawText(FileUtils.readFileToString(scriptFile), scriptFile.getName(), variableBinding);
+    }
+
+    private void runMethod(File scriptFile, String methodName) throws ResourceException, ScriptException,
+            ClassNotFoundException, IOException {
+        engine.setConfig(getConfigForExecutingScript());
+        engine.runScriptMethodAsRawText(FileUtils.readFileToString(scriptFile), scriptFile.getName(), methodName,
+                variableBinding);
+    }
+
+    private Map<String, String> getTestCaseProperties(TestCaseBinding testCaseBinding, TestCase testCase, FailureHandling flowControl) {
         Map<String, String> testProperties = new HashMap<String, String>();
-        testProperties.put("name", testCaseBinding.getTestCaseId());
-        testProperties.put("description", testCase.getDescription());
-        testProperties.put("id", testCase.getTestCaseId());
-        testProperties.put("source", testCase.getMetaFilePath());
+        testProperties.put(StringConstants.XML_LOG_NAME_PROPERTY, testCaseBinding.getTestCaseId());
+        testProperties.put(StringConstants.XML_LOG_DESCRIPTION_PROPERTY, testCase.getDescription());
+        testProperties.put(StringConstants.XML_LOG_ID_PROPERTY, testCase.getTestCaseId());
+        testProperties.put(StringConstants.XML_LOG_SOURCE_PROPERTY, testCase.getMetaFilePath());
+        testProperties.put(StringConstants.XML_LOG_IS_OPTIONAL, String.valueOf(flowControl == FailureHandling.OPTIONAL));
         return testProperties;
     }
 
@@ -218,7 +231,7 @@ public class TestCaseExecutor {
     }
 
     private Binding collectTestCaseVariables() {
-        variableBinding = new Binding();
+        Binding variableBinding = new Binding();
         engine.setConfig(getConfigForCollectingVariable());
 
         logger.logInfo(StringConstants.MAIN_LOG_INFO_START_EVALUATE_VARIABLE);
@@ -275,16 +288,19 @@ public class TestCaseExecutor {
         }
 
         logger.logInfo(methodNodeWrapper.getStartMessage());
+        int count = 1;
         for (MethodNode method : methodList) {
-            runMethod(method.getName(), methodNodeWrapper.isIgnoredIfFailed());
+            runMethod(method.getName(), count++, methodNodeWrapper.isIgnoredIfFailed());
         }
     }
 
-    private void runMethod(String methodName, boolean ignoreIfFailed) {
+    private void runMethod(String methodName, int index, boolean ignoreIfFailed) {
         Stack<KeywordStackElement> keywordStack = new Stack<KeywordStackElement>();
-        logger.startKeyword(methodName, null, keywordStack);
+        Map<String, String> startKeywordAttributeMap = new HashMap<String, String>();
+        startKeywordAttributeMap.put(StringConstants.XML_LOG_STEP_INDEX, String.valueOf(index));
+        logger.startKeyword(methodName, startKeywordAttributeMap, keywordStack);
         try {
-            engine.runScript(testCase.getGroovyScriptClassName(), methodName, variableBinding);
+            runMethod(getScriptFile(), methodName);
             endAllUnfinishedKeywords(keywordStack);
             logger.logPassed(MessageFormat.format(StringConstants.MAIN_LOG_PASSED_METHOD_COMPLETED, methodName));
         } catch (Throwable e) {

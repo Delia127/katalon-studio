@@ -3,6 +3,7 @@ package com.kms.katalon.composer.testcase.keywords;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,11 +13,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.core.resources.IFolder;
+
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.annotation.Keyword;
+import com.kms.katalon.custom.parser.CustomKeywordParser;
+import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class CustomKeywordFolderBrowserTreeEntity extends KeywordBrowserFolderTreeEntity {
     private static final String KEYWORD_OBJECT_ANNOTATION_METHOD = "keywordObject";
@@ -58,9 +65,14 @@ public class CustomKeywordFolderBrowserTreeEntity extends KeywordBrowserFolderTr
     private List<IKeywordBrowserTreeEntity> getKeywordByKeywordObject() throws Exception {
         List<IKeywordBrowserTreeEntity> childTreeEntityList = new ArrayList<IKeywordBrowserTreeEntity>();
         if (ProjectController.getInstance().getCurrentProject() != null) {
-            List<Method> allKeywordMethod = KeywordController.getInstance().getAllCustomKeywordsAsAst(
-                    ProjectController.getInstance().getCurrentProject());
+            ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
+            URLClassLoader classLoader = GroovyGuiUtil.getProjectClasLoader(projectEntity);
+            IFolder srcFolder = GroovyUtil.getCustomKeywordSourceFolder(projectEntity);
+            List<Method> allKeywordMethod = CustomKeywordParser.getInstance().parseAllCustomKeywordsIntoAst(
+            		classLoader, srcFolder);
+            
             Map<String, List<Method>> methodActionMap = new HashMap<String, List<Method>>();
+        	
             for (Method method : allKeywordMethod) {
                 String keywordObjectParameter = getKeywordObject(method);
                 if (keywordObjectParameter != null) {

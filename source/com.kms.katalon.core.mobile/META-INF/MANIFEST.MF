@@ -16,10 +16,10 @@ Require-Bundle: org.codehaus.groovy,
  org.eclipse.osgi,
  org.eclipse.core.runtime,
  org.apache.commons.lang3,
- org.apache.commons.validator
+ org.apache.commons.validator,
+ com.kms.katalon.core.appium
 Export-Package: com.kms.katalon.core.mobile.constants,
  com.kms.katalon.core.mobile.contribution,
  com.kms.katalon.core.mobile.driver,
- com.kms.katalon.core.mobile.exception,
  com.kms.katalon.core.mobile.keyword
 Bundle-ClassPath: .

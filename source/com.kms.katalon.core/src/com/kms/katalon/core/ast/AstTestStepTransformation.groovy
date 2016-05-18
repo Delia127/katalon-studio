@@ -2,6 +2,7 @@ package com.kms.katalon.core.ast;
 
 import groovy.transform.CompileStatic
 
+import org.apache.commons.lang.StringUtils
 import org.codehaus.groovy.ast.ASTNode
 import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassNode
@@ -53,6 +54,8 @@ public class AstTestStepTransformation implements ASTTransformation {
 
     private static final String COMMENT_STATEMENT_KEYWORD_NAME = "Comment";
 
+    private static final String KEYWORD_LOGGER_LOG_NOT_RUN_METHOD_NAME = "logNotRun";
+
     @CompileStatic
     public void visit(ASTNode[] astNodes, SourceUnit sourceUnit) {
         if (!(astNodes != null)
@@ -71,10 +74,15 @@ public class AstTestStepTransformation implements ASTTransformation {
             importNodes.add(importNode);
         }
         for (MethodNode method : annotatedClass.getMethods()) {
-            if (method.getName().equalsIgnoreCase(RUN_METHOD_NAME) && method.getCode() instanceof BlockStatement) {
+            if (isRealMethod(method)) {
                 visit((BlockStatement) method.getCode(), null, 1);
             }
         }
+    }
+    
+    @CompileStatic
+    private static boolean isRealMethod(MethodNode method) {
+        return (method.getLineNumber() >= 0 || RUN_METHOD_NAME.equals(method.getName())) && method.getCode() instanceof BlockStatement;
     }
 
     @CompileStatic
@@ -228,28 +236,43 @@ public class AstTestStepTransformation implements ASTTransformation {
                 index++;
             }
         }
+        List<Statement> statementList = blockStatement.getStatements();
         Stack<Statement> commentStatementsStack = new Stack<Statement>();
-        while (index < blockStatement.getStatements().size()) {
-            Statement statement = blockStatement.getStatements().get(index);
+        while (index < statementList.size()) {
+            Statement statement = statementList.get(index);
             String comment = getComment(statement);
             if (comment != null) {
                 commentStatementsStack.push(statement);
                 index++;
                 continue;
             }
+
+            String keywordName = getKeywordNameForStatement(statement);
+            boolean isStatementDisabledFlag = false;
             if (!(statement instanceof BlockStatement)) {
                 if (!commentStatementsStack.isEmpty()) {
                     Statement descriptionStatement = commentStatementsStack.pop();
+                    isStatementDisabledFlag |= isStatementDisabled(descriptionStatement);
                     String commentContent = getComment(descriptionStatement);
                     blockStatement.getStatements().add(index, new ExpressionStatement(createNewAddDescriptionMethodCall(commentContent)));
                     index += (popCommentStatements(commentStatementsStack, blockStatement, index, indexMap, nestedLevel) + 1);
                 }
-                String keywordName = getKeywordNameForStatement(statement);
                 blockStatement.getStatements().add(index, new ExpressionStatement(createNewStartKeywordMethodCall(keywordName, statement, indexMap, nestedLevel)));
+                index++;
             }
-            visit(statement, new Stack<Statement>(), indexMap, nestedLevel + 1);
-            index += 2;
+            isStatementDisabledFlag |= isStatementDisabled(statement);
+            if (isStatementDisabledFlag) {
+                statementList.set(statementList.indexOf(statement), createNewNotRunLogMethodCallStatement(keywordName));
+            } else {
+                visit(statement, new Stack<Statement>(), indexMap, nestedLevel + 1);
+            }
+            index++;
         }
+    }
+    
+    @CompileStatic
+    private static boolean isStatementDisabled(Statement statement) {
+        return StringUtils.startsWith(statement.getStatementLabel(), StringConstants.NOT_RUN_LABEL);
     }
 
     @CompileStatic
@@ -340,6 +363,17 @@ public class AstTestStepTransformation implements ASTTransformation {
         MethodCallExpression methodCall = new MethodCallExpression(loggerGetInstanceMethodCall,
                 StringConstants.LOG_START_KEYWORD_METHOD, new ArgumentListExpression(expressionArguments))
         return methodCall
+    }
+
+    @CompileStatic
+    private ExpressionStatement createNewNotRunLogMethodCallStatement(String keywordName) {
+        MethodCallExpression loggerGetInstanceMethodCall = new MethodCallExpression(
+                new ClassExpression(new ClassNode(KeywordLogger.class)), KEYWORD_LOGGER_GET_INSTANCE_METHOD_NAME,
+                new ArgumentListExpression());
+        List<Expression> expressionArguments = new ArrayList<Expression>();
+        expressionArguments.add(new ConstantExpression("NOT_RUN: " + keywordName));
+        return new ExpressionStatement(new MethodCallExpression(loggerGetInstanceMethodCall,
+                KEYWORD_LOGGER_LOG_NOT_RUN_METHOD_NAME, new ArgumentListExpression(expressionArguments)));
     }
 
     @CompileStatic

@@ -61,43 +61,47 @@ public class NewWebServiceRequestObjectHandler {
 		}
 	}
 
-	@Execute
-	public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object[] selectedObjects,
-			@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
-		try {
-			
-			if (selectedObjects != null) {
-                ITreeEntity parentTreeEntity = findParentTreeEntity(selectedObjects);
-                if (parentTreeEntity == null) {
-                    parentTreeEntity = objectRepositoryTreeRoot;
-                }
-                if (parentTreeEntity != null) {
-                    FolderEntity parentFolderEntity = (FolderEntity) parentTreeEntity.getObject();
-                    String suggestedName = ObjectRepositoryController.getInstance().getAvailableWebElementName(parentFolderEntity, 
-                    		StringConstants.HAND_NEW_REQUEST);                    		
-                    NewRequestDialog dialog = new NewRequestDialog(parentShell, parentFolderEntity);
-                    dialog.setName(suggestedName);
-                    dialog.open();
-
-                    if (dialog.getReturnCode() == Dialog.OK) {
-                    	WebServiceRequestEntity request = new WebServiceRequestEntity();
-                    	request.setName(dialog.getName());
-                    	request.setServiceType(dialog.getWebServiveType());
-                    	WebServiceRequestEntity requestEntity = ObjectRepositoryController.getInstance().addNewRequest(parentFolderEntity, request);
-                        eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
-                        eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, new WebElementTreeEntity(requestEntity, parentTreeEntity));
-                        eventBroker.post(EventConstants.WEBSERVICE_REQUEST_OBJECT_OPEN, requestEntity);
-                    }
-
-                }
+    @Execute
+    public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object[] selectedObjects,
+            @Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
+        try {
+            if (selectedObjects == null) {
+                return;
             }
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-			MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE, 
-					StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_NEW_REQ_OBJ);
-		}
-	}
-	
+            ITreeEntity parentTreeEntity = findParentTreeEntity(selectedObjects);
+            if (parentTreeEntity == null) {
+                if (objectRepositoryTreeRoot == null) {
+                    return;
+                }
+                parentTreeEntity = objectRepositoryTreeRoot;
+            }
+
+            FolderEntity parentFolderEntity = (FolderEntity) parentTreeEntity.getObject();
+            ObjectRepositoryController toController = ObjectRepositoryController.getInstance();
+            String suggestedName = toController.getAvailableWebElementName(parentFolderEntity,
+                    StringConstants.HAND_NEW_REQUEST);
+            NewRequestDialog dialog = new NewRequestDialog(parentShell, parentFolderEntity, suggestedName);
+            if (dialog.open() != Dialog.OK) {
+                return;
+            }
+
+            WebServiceRequestEntity request = new WebServiceRequestEntity();
+            request.setName(dialog.getName());
+            request.setServiceType(dialog.getWebServiveType());
+            request.setDescription(dialog.getDescription());
+            WebServiceRequestEntity requestEntity = toController.addNewRequest(parentFolderEntity, request);
+
+            eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
+            eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, new WebElementTreeEntity(requestEntity,
+                    parentTreeEntity));
+            eventBroker.post(EventConstants.WEBSERVICE_REQUEST_OBJECT_OPEN, requestEntity);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,
+                    StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_NEW_REQ_OBJ);
+        }
+    }
+
     public static ITreeEntity findParentTreeEntity(Object[] selectedObjects) throws Exception {
         if (selectedObjects != null) {
             for (Object entity : selectedObjects) {

@@ -32,6 +32,7 @@ public class ImageConstants {
 	public static final Image IMG_16_LOGVIEW_PASSED = ImageUtil.loadImage(currentBundle, "/icons/logview_passed_16.png");
 	public static final Image IMG_16_LOGVIEW_FAILED = ImageUtil.loadImage(currentBundle, "/icons/logview_failed_16.png");
 	public static final Image IMG_16_LOGVIEW_ERROR = ImageUtil.loadImage(currentBundle, "/icons/logview_error_16.png");
+	public static final Image IMG_16_LOGVIEW_NOT_RUN = ImageUtil.loadImage(currentBundle, "/icons/logview_not_run_16.png");
 	public static final Image IMG_16_LOGVIEW_WARNING = ImageUtil.loadImage(currentBundle, "/icons/logview_warning_16.png");
 	
 	// Other icons in fragment.e4xmi: play_28.png, stop_28.png, bug_28.png, log_26.png, progress_16.png, and trash_26.png

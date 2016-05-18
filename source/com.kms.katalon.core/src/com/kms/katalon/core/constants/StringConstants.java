@@ -236,6 +236,8 @@ public class StringConstants {
     public static final String XML_LOG_ID_PROPERTY = "id";
 
     public static final String XML_LOG_SOURCE_PROPERTY = "source";
+    
+    public static final String XML_LOG_IS_OPTIONAL = "isOptional";
 
     public static final String XML_LOG_BROWSER_TYPE_PROPERTY = "browserType";
 
@@ -344,4 +346,18 @@ public class StringConstants {
     // alias of GlobalStringConstants.APP_INFO_FILE_LOCATION
     public static final String APP_INFO_FILE_LOCATION = System.getProperty("user.home") + File.separator + ".katalon"
             + File.separator + "application.properties";
+
+    // MobileDriverType
+    public static final String ANDROID = "Android";
+
+    public static final String IOS = "iOS";
+
+    // DatabaseConnection
+    public static final String EXC_CANNOT_LOAD_JDBC_DRIVER = "Cannot load JDBC driver: {0}";
+
+    // SqlRunner
+    public static final String EXC_DATABASE_CONNECTION_IS_CLOSED = "Database connection is closed.";
+    
+    // AstTestStepTransformation
+    public static final String NOT_RUN_LABEL = "not_run";
 }

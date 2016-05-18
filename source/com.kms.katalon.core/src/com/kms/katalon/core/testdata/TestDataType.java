@@ -1,11 +1,7 @@
 package com.kms.katalon.core.testdata;
 
 public enum TestDataType {
-    EXCEL_FILE("ExcelFile"),
-    CSV_FILE("CSV"),
-    DATA_TABLE("DataTable"),
-    INTERNAL_DATA("InternalData");
-    
+    EXCEL_FILE("ExcelFile"), CSV_FILE("CSV"), DB_DATA("DBData"), INTERNAL_DATA("InternalData");
 
     private final String text;
 
@@ -17,7 +13,7 @@ public enum TestDataType {
     public String toString() {
         return text;
     }
-    
+
     public static TestDataType fromValue(String value) {
         for (TestDataType type : values()) {
             if (type.toString().equals(value)) {

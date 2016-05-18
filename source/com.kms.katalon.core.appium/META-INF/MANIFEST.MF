@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Appium Core for Katalon
+Bundle-SymbolicName: com.kms.katalon.core.appium;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: KMS
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ClassPath: .
+Require-Bundle: com.kms.katalon.selenium-standalone,
+ io.appium.java-client,
+ com.kms.katalon.core,
+ org.apache.commons.lang3
+Export-Package: com.kms.katalon.core.appium.driver,
+ com.kms.katalon.core.appium.exception

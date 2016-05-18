@@ -48,6 +48,8 @@ public class TreeTableMenuItemConstants {
 	public static final int CUT_MENU_ITEM_ID = 65;
 	public static final int PASTE_MENU_ITEM_ID = 66;
 	public static final int REMOVE_MENU_ITEM_ID = 67;
+	public static final int DISABLE_MENU_ITEM_ID = 68;
+	public static final int ENABLE_MENU_ITEM_ID = 69;
 	public static final int CALL_TEST_CASE_MENU_ITEM_ID = 70;
 	
 	public static final int METHOD_MENU_ITEM_ID = 72;

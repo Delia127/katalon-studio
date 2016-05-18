@@ -118,6 +118,10 @@ public class LogTableViewer extends TableViewer {
                     item.setBackground(ColorUtil.getWarningLogBackgroundColor());
                     item.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
                     break;
+                case NOT_RUN:
+                    item.setBackground(ColorUtil.getDisabledItemBackgroundColor());
+                    item.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
+                    break;
                 default:
                     break;
             }

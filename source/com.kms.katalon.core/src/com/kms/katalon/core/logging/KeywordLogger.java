@@ -93,11 +93,11 @@ public class KeywordLogger {
                 FileHandler fileHandler = new FileHandler(logFolder + File.separator + "execution%g.log",
                         MAXIMUM_LOG_FILE_SIZE, MAXIMUM_LOG_FILES, true);
                 
-                CustomXmlFormatter formatter = new CustomXmlFormatter();
-                fileHandler.setFormatter(formatter);
+                fileHandler.setFormatter(new CustomXmlFormatter());
                 logger.addHandler(fileHandler);
 
                 SocketHandler socketHandler = new SystemSocketHandler(getHostAddress(), getPort());
+                socketHandler.setFormatter(new CustomSocketLogFomatter());
                 logger.addHandler(socketHandler);
             } catch (SecurityException | IOException e) {
                 System.err.println("Unable to create logger. Root cause (" + e.getMessage() + ").");
@@ -143,8 +143,7 @@ public class KeywordLogger {
                 new XmlLogRecord(LogLevel.END.getLevel(), StringConstants.LOG_END_SUITE + " : " + name, nestedLevel, attributes));
     }
 
-    public void startTest(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack,
-            boolean isOptional) {
+    public void startTest(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
         nestedLevel++;
         getLogger()
                 .log(new XmlLogRecord(LogLevel.START.getLevel(), StringConstants.LOG_START_TEST + " : " + name, nestedLevel,
@@ -309,5 +308,13 @@ public class KeywordLogger {
 
     public void setPendingDescription(String stepDescription) {
         pendingDescription = stepDescription;
+    }
+    
+    public void logNotRun(String message) {
+        logMessage(LogLevel.NOT_RUN, message);
+    }
+
+    public void logNotRun(String message, Map<String, String> attributes) {
+        logMessage(LogLevel.NOT_RUN, message, attributes);
     }
 }

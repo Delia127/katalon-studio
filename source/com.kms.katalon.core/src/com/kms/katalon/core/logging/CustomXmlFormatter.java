@@ -43,7 +43,6 @@ public class CustomXmlFormatter extends XMLFormatter {
 
         if (record.getMessage() != null) {
             record.setMessage(formatString(record.getMessage()));
-            System.out.println(record.getMessage());
         }
 
         String formattedText = super.format(record);
@@ -57,7 +56,7 @@ public class CustomXmlFormatter extends XMLFormatter {
         return sbFormattedText.toString();
     }
 
-    private String formatString(String text) {
+    protected String formatString(String text) {
         return StringEscapeUtils.escapeXml(StringEscapeUtils.escapeJava(text));
     }
 }

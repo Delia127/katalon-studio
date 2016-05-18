@@ -22,6 +22,8 @@ import com.kms.katalon.entity.folder.FolderEntity;
 
 public class AbstractEntityDialog extends TitleAreaDialog {
 
+    private static final int BASE_NUMBER_COLUMN = 2;
+
     private String name = "";
 
     private String windowTitle = StringConstants.DIA_WINDOW_TITLE_NEW;
@@ -49,10 +51,13 @@ public class AbstractEntityDialog extends TitleAreaDialog {
     }
 
     @Override
-    protected Control createDialogArea(Composite parent) {
-        // Set window title for dialog
-        if (getShell() != null) getShell().setText(getWindowTitle());
+    protected void configureShell(Shell newShell) {
+        super.configureShell(newShell);
+        newShell.setText(getWindowTitle());
+    }
 
+    @Override
+    protected Control createDialogArea(Composite parent) {
         // Title and message area
         Composite area = (Composite) super.createDialogArea(parent);
 
@@ -71,8 +76,11 @@ public class AbstractEntityDialog extends TitleAreaDialog {
             container = new Composite(parent, SWT.NONE);
         }
         GridLayout gLayout = (GridLayout) container.getLayout();
-        int numColumns = (gLayout != null && gLayout.numColumns > 2) ? gLayout.numColumns : 2;
-        createEntityNameControl(container, numColumns, numColumns - 2);
+        int numColumns = (gLayout != null && gLayout.numColumns > BASE_NUMBER_COLUMN) ? gLayout.numColumns
+                : BASE_NUMBER_COLUMN;
+        int span = numColumns - BASE_NUMBER_COLUMN;
+        createEntityNameControl(container, numColumns, span);
+        createEntityCustomControl(container, numColumns, span);
         return container;
     }
 
@@ -97,6 +105,10 @@ public class AbstractEntityDialog extends TitleAreaDialog {
         if (span > 0) {
             createEmptySpace(parent, span);
         }
+        return parent;
+    }
+
+    protected Control createEntityCustomControl(Composite parent, int column, int span) {
         return parent;
     }
 
@@ -147,8 +159,7 @@ public class AbstractEntityDialog extends TitleAreaDialog {
 
     @Override
     protected Point getInitialSize() {
-        Point initSize = super.getInitialSize();
-        return new Point(initSize.x, 250);
+        return new Point(500, super.getInitialSize().y);
     }
 
     @Override

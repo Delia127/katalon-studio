@@ -65,46 +65,56 @@ public class NewTestDataHandler {
 		return false;
 	}
 
-	@Execute
-	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
-		try {
-			Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
+    @Execute
+    public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
+        try {
+            Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
 
-			ITreeEntity parentTreeEntity = findParentTreeEntity(selectedObjects);
-			if (parentTreeEntity == null) {
-				parentTreeEntity = testDataTreeRoot;
-			}
-			// if (parentTreeEntity != null && dialog.getDataSource() !=
-			// null) {
-			if (parentTreeEntity != null) {
-				FolderEntity parentFolderEntity = (FolderEntity) parentTreeEntity.getObject();
-				String suggestedName = TestDataController.getInstance().getAvailableTestDataName(parentFolderEntity,
-						StringConstants.HAND_NEW_TEST_DATA);
-				NewTestDataDialog dialog = new NewTestDataDialog(parentShell, parentFolderEntity);
-				dialog.setName(suggestedName);
-				dialog.open();
+            ITreeEntity parentTreeEntity = findParentTreeEntity(selectedObjects);
+            if (parentTreeEntity == null) {
+                if (testDataTreeRoot == null) {
+                    return;
+                }
+                parentTreeEntity = testDataTreeRoot;
+            }
 
-				if (dialog.getReturnCode() == Dialog.OK) {
-					DataFileEntity dataFile = TestDataController.getInstance()
-							.addDataFile(parentTreeEntity.getObject());
-					dataFile.setName(dialog.getName()); // New name, if user
-														// change it
-					dataFile.setDriver(DataFileDriverType.fromValue(dialog.getDataSource()));
-					dataFile.setContainsHeaders(true);
-					TestDataController.getInstance().saveDataFile(dataFile, dataFile.getParentFolder());
-					eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
-					eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, new TestDataTreeEntity(dataFile,
-							parentTreeEntity));
-					eventBroker.post(EventConstants.TEST_DATA_OPEN, dataFile);
-				}
-			}
+            if (parentTreeEntity == null) {
+                return;
+            }
 
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-			MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,
-					StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_DATA);
-		}
-	}
+            FolderEntity parentFolderEntity = (FolderEntity) parentTreeEntity.getObject();
+            TestDataController tdController = TestDataController.getInstance();
+            String suggestedName = tdController.getAvailableTestDataName(parentFolderEntity,
+                    StringConstants.HAND_NEW_TEST_DATA);
+            NewTestDataDialog dialog = new NewTestDataDialog(parentShell, parentFolderEntity, suggestedName);
+            if (dialog.open() != Dialog.OK) {
+                return;
+            }
+
+            // create test data
+            DataFileEntity dataFile = tdController.addDataFile(parentTreeEntity.getObject());
+
+            if (dataFile == null) {
+                return;
+            }
+
+            // update test data properties
+            dataFile.setName(dialog.getName());
+            dataFile.setDriver(DataFileDriverType.fromValue(dialog.getDataSource()));
+            dataFile.setContainsHeaders(true);
+            dataFile.setDescription(dialog.getDescription());
+            tdController.saveDataFile(dataFile, dataFile.getParentFolder());
+
+            eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
+            eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, new TestDataTreeEntity(dataFile,
+                    parentTreeEntity));
+            eventBroker.post(EventConstants.TEST_DATA_OPEN, dataFile);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,
+                    StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_DATA);
+        }
+    }
 
 	public static ITreeEntity findParentTreeEntity(Object[] selectedObjects) throws Exception {
 		if (selectedObjects != null) {

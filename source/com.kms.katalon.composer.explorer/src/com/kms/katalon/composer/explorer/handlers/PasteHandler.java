@@ -35,7 +35,8 @@ public class PasteHandler extends AbstractHandler {
 
             // Handle other entities from paste
             Transfer entityTransfer = entity.getEntityTransfer();
-            Object transferingObjects = clipboard.getContents(entityTransfer);
+            Object transferingObjects = entityTransfer != null ? clipboard.getContents(entityTransfer) : null;
+            
             if (entityTransfer == null || transferingObjects == null || !transferingObjects.getClass().isArray()
                     || ((Object[]) transferingObjects).length == 0
                     || !(((Object[]) transferingObjects)[0] instanceof ITreeEntity)) {

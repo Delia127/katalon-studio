@@ -60,6 +60,8 @@ public class ReportPartTestStepLabelProvider extends StyledCellLabelProvider {
             return ImageConstants.IMG_16_WARNING;
         case INFO:
             return ImageConstants.IMG_16_INFO;
+        case NOT_RUN:
+            return ImageConstants.IMG_16_NOT_RUN;
         default:
             return null;
         }

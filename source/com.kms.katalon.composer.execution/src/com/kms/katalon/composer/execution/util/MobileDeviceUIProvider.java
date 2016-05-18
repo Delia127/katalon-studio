@@ -7,9 +7,9 @@ import java.util.List;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
-import com.kms.katalon.core.mobile.exception.MobileSetupException;
 import com.kms.katalon.execution.mobile.configuration.providers.MobileDeviceProvider;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
+import com.kms.katalon.execution.mobile.exception.MobileSetupException;
 
 public class MobileDeviceUIProvider {
     private MobileDeviceUIProvider() {

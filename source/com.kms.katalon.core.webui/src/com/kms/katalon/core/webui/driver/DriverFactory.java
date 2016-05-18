@@ -43,33 +43,57 @@ import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
 
 public class DriverFactory {
     public static final String WEB_UI_DRIVER_PROPERTY = StringConstants.CONF_PROPERTY_WEBUI_DRIVER;
+
     public static final String MOBILE_DRIVER_PROPERTY = StringConstants.CONF_PROPERTY_MOBILE_DRIVER;
 
     public static final String APPIUM_LOG_PROPERTY = StringConstants.CONF_APPIUM_LOG_FILE;
+
     private static final String APPIUM_CAPABILITY_PLATFORM_NAME_ADROID = "android";
+
     private static final String APPIUM_CAPABILITY_PLATFORM_NAME_IOS = "ios";
+
     private static final String APPIUM_CAPABILITY_PLATFORM_NAME = "platformName";
+
     private static final String REMOTE_WEB_DRIVER_TYPE_APPIUM = "Appium";
+
     private static final String REMOTE_WEB_DRIVER_TYPE_SELENIUM = "Selenium";
+
     private static final String CHROME_DRIVER_PATH_PROPERTY_KEY = "webdriver.chrome.driver";
+
     private static final String IE_DRIVER_PATH_PROPERTY_KEY = "webdriver.ie.driver";
+
     // Temp error constant message for issues
     // https://code.google.com/p/selenium/issues/detail?id=7977
     private static final String JAVA_SCRIPT_ERROR_H_IS_NULL_MESSAGE = "[JavaScript Error: \"h is null\"";
+
     public static final String IE_DRIVER_PATH_PROPERTY = StringConstants.CONF_PROPERTY_IE_DRIVER_PATH;
+
     public static final String EDGE_DRIVER_PATH_PROPERTY = StringConstants.CONF_PROPERTY_EDGE_DRIVER_PATH;
+
     public static final String CHROME_DRIVER_PATH_PROPERTY = StringConstants.CONF_PROPERTY_CHROME_DRIVER_PATH;
+
     public static final String WAIT_FOR_IE_HANGING_PROPERTY = StringConstants.CONF_PROPERTY_WAIT_FOR_IE_HANGING;
+
     public static final String EXECUTED_BROWSER_PROPERTY = StringConstants.CONF_PROPERTY_EXECUTED_BROWSER;
+
     public static final String REMOTE_WEB_DRIVER_URL = StringConstants.CONF_PROPERTY_REMOTE_WEB_DRIVER_URL;
+
     public static final String REMOTE_WEB_DRIVER_TYPE = StringConstants.CONF_PROPERTY_REMOTE_WEB_DRIVER_TYPE;
+
     public static final String EXECUTED_MOBILE_PLATFORM = StringConstants.CONF_EXECUTED_PLATFORM;
+
     public static final String EXECUTED_MOBILE_DEVICE_ID = StringConstants.CONF_EXECUTED_DEVICE_ID;
+
     public static final String DEBUG_PORT = "debugPort";
+
     public static final String DEBUG_HOST = "debugHost";
+
     public static final String DEFAULT_FIREFOX_DEBUG_PORT = "10001";
+
     public static final String DEFAULT_CHROME_DEBUG_PORT = "10002";
+
     public static final String DEFAULT_DEBUG_HOST = "localhost";
+
     private static final int REMOTE_BROWSER_CONNECT_TIMEOUT = 60000;
 
     private static final ThreadLocal<WebDriver> localWebServerStorage = new ThreadLocal<WebDriver>() {
@@ -83,7 +107,8 @@ public class DriverFactory {
         @Override
         protected EdgeDriverService initialValue() {
             return new EdgeDriverService.Builder().usingDriverExecutable(new File(getEdgeDriverPath()))
-                    .usingAnyFreePort().build();
+                    .usingAnyFreePort()
+                    .build();
         }
     };
 
@@ -110,108 +135,107 @@ public class DriverFactory {
             KeywordLogger.getInstance().logInfo(
                     MessageFormat.format(StringConstants.XML_LOG_STARTING_DRIVER_X, driver.toString()));
 
-            Map<String, Object> driverPreferenceProps = RunConfiguration
-                    .getDriverPreferencesProperties(WEB_UI_DRIVER_PROPERTY);
+            Map<String, Object> driverPreferenceProps = RunConfiguration.getDriverPreferencesProperties(WEB_UI_DRIVER_PROPERTY);
             DesiredCapabilities desireCapibilities = null;
             if (driverPreferenceProps != null) {
                 desireCapibilities = WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps, driver);
             }
             WebDriver webDriver = null;
             switch (driver) {
-            case FIREFOX_DRIVER:
-                webDriver = new FirefoxDriver(desireCapibilities);
-                break;
-            case IE_DRIVER:
-                System.setProperty(IE_DRIVER_PATH_PROPERTY_KEY, getIEDriverPath());
-                webDriver = new InternetExplorerDriver(desireCapibilities);
-                break;
-            case SAFARI_DRIVER:
-                webDriver = new SafariDriver(desireCapibilities);
-                break;
-            case CHROME_DRIVER:
-                System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
-                webDriver = new ChromeDriver(desireCapibilities);
-                break;
-            case REMOTE_WEB_DRIVER:
-                String remoteWebServerUrl = getRemoteWebDriverServerUrl();
-                String remoteWebServerType = getRemoteWebDriverServerType();
-                if (remoteWebServerType == null) {
-                    remoteWebServerType = REMOTE_WEB_DRIVER_TYPE_SELENIUM;
-                }
-                KeywordLogger.getInstance().logInfo(
-                        MessageFormat.format(StringConstants.XML_LOG_CONNECTING_TO_REMOTE_WEB_SERVER_X_WITH_TYPE_Y,
-                                remoteWebServerUrl, remoteWebServerType));
-                if (remoteWebServerType.equals(REMOTE_WEB_DRIVER_TYPE_APPIUM)) {
-                    Object platformName = desireCapibilities.getCapability(APPIUM_CAPABILITY_PLATFORM_NAME);
-                    if (platformName == null) {
-                        throw new StepFailedException(MessageFormat.format(
-                                StringConstants.DRI_MISSING_PROPERTY_X_FOR_APPIUM_REMOTE_WEB_DRIVER,
-                                APPIUM_CAPABILITY_PLATFORM_NAME));
-                    }
-                    if (platformName instanceof String) {
-                        if (APPIUM_CAPABILITY_PLATFORM_NAME_ADROID.equalsIgnoreCase((String) platformName)) {
-                            webDriver = new SwipeableAndroidDriver(new URL(remoteWebServerUrl),
-                                    WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps,
-                                            DesiredCapabilities.android(), false));
-                        } else if (APPIUM_CAPABILITY_PLATFORM_NAME_IOS.equalsIgnoreCase((String) platformName)) {
-                            webDriver = new IOSDriver(new URL(remoteWebServerUrl),
-                                    WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps,
-                                            DesiredCapabilities.iphone(), false));
-                        } else {
-                            throw new StepFailedException(MessageFormat.format(
-                                    StringConstants.DRI_PLATFORM_NAME_X_IS_NOT_SUPPORTED_FOR_APPIUM_REMOTE_WEB_DRIVER,
-                                    platformName));
-                        }
-                    }
+                case FIREFOX_DRIVER:
+                    webDriver = new FirefoxDriver(desireCapibilities);
                     break;
-                }
-                webDriver = new RemoteWebDriver(new URL(remoteWebServerUrl), desireCapibilities);
-                break;
-            case ANDROID_DRIVER:
-            case IOS_DRIVER:
-                WebMobileDriverFactory.startMobileDriver(getMobileDeviceName(), driver);
-                webDriver = WebMobileDriverFactory.getDriver();
-                break;
-            case EDGE_DRIVER:
-                EdgeDriverService edgeService = localEdgeDriverServiceStorage.get();
-                if (!edgeService.isRunning()) {
-                    edgeService.start();
-                }
-                webDriver = new EdgeDriver(edgeService, WebDriverPropertyUtil.toDesireCapabilities(
-                        driverPreferenceProps, DesiredCapabilities.edge(), false));
-                break;
-            case REMOTE_FIREFOX_DRIVER:
-                String debugHost = RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, DEBUG_HOST,
-                        DriverFactory.DEFAULT_DEBUG_HOST);
-                String debugPort = RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, DEBUG_PORT,
-                        DriverFactory.DEFAULT_FIREFOX_DEBUG_PORT);
-                desireCapibilities.merge(DesiredCapabilities.firefox());
-                URL firefoxDriverUrl = new URL("http", debugHost, Integer.parseInt(debugPort), "/hub");
-                webDriver = new RemoteWebDriver(firefoxDriverUrl, desireCapibilities);
-                waitForRemoteBrowserReady(firefoxDriverUrl);
-                break;
-            case REMOTE_CHROME_DRIVER:
-                debugHost = RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, DEBUG_HOST,
-                        DriverFactory.DEFAULT_DEBUG_HOST);
-                debugPort = RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, DEBUG_PORT,
-                        DriverFactory.DEFAULT_CHROME_DEBUG_PORT);
-                System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
-                desireCapibilities.merge(DesiredCapabilities.chrome());
-                Map<String, Object> chromeOptions = new HashMap<String, Object>();
-                chromeOptions.put("debuggerAddress", debugHost + ":" + debugPort);
-                desireCapibilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
-                // Start Chrome-driver in background
-                int chromeDriverPort = determineNextFreePort(9515);
-                URL chromeDriverUrl = new URL("http", debugHost, chromeDriverPort, "/");
-                Runtime.getRuntime().exec(
-                        new String[] { System.getProperty(CHROME_DRIVER_PATH_PROPERTY_KEY),
-                                "--port=" + chromeDriverPort });
-                waitForRemoteBrowserReady(chromeDriverUrl);
-                webDriver = new RemoteWebDriver(chromeDriverUrl, desireCapibilities);
-                break;
-            default:
-                throw new StepFailedException(MessageFormat.format(StringConstants.DRI_ERROR_DRIVER_X_NOT_IMPLEMENTED,
-                        driver.getName()));
+                case IE_DRIVER:
+                    System.setProperty(IE_DRIVER_PATH_PROPERTY_KEY, getIEDriverPath());
+                    webDriver = new InternetExplorerDriver(desireCapibilities);
+                    break;
+                case SAFARI_DRIVER:
+                    webDriver = new SafariDriver(desireCapibilities);
+                    break;
+                case CHROME_DRIVER:
+                    System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
+                    webDriver = new ChromeDriver(desireCapibilities);
+                    break;
+                case REMOTE_WEB_DRIVER:
+                    String remoteWebServerUrl = getRemoteWebDriverServerUrl();
+                    String remoteWebServerType = getRemoteWebDriverServerType();
+                    if (remoteWebServerType == null) {
+                        remoteWebServerType = REMOTE_WEB_DRIVER_TYPE_SELENIUM;
+                    }
+                    KeywordLogger.getInstance().logInfo(
+                            MessageFormat.format(StringConstants.XML_LOG_CONNECTING_TO_REMOTE_WEB_SERVER_X_WITH_TYPE_Y,
+                                    remoteWebServerUrl, remoteWebServerType));
+                    if (remoteWebServerType.equals(REMOTE_WEB_DRIVER_TYPE_APPIUM)) {
+                        Object platformName = desireCapibilities.getCapability(APPIUM_CAPABILITY_PLATFORM_NAME);
+                        if (platformName == null) {
+                            throw new StepFailedException(MessageFormat.format(
+                                    StringConstants.DRI_MISSING_PROPERTY_X_FOR_APPIUM_REMOTE_WEB_DRIVER,
+                                    APPIUM_CAPABILITY_PLATFORM_NAME));
+                        }
+                        if (platformName instanceof String) {
+                            if (APPIUM_CAPABILITY_PLATFORM_NAME_ADROID.equalsIgnoreCase((String) platformName)) {
+                                webDriver = new SwipeableAndroidDriver(new URL(remoteWebServerUrl),
+                                        WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps,
+                                                DesiredCapabilities.android(), false));
+                            } else if (APPIUM_CAPABILITY_PLATFORM_NAME_IOS.equalsIgnoreCase((String) platformName)) {
+                                webDriver = new IOSDriver(new URL(remoteWebServerUrl),
+                                        WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps,
+                                                DesiredCapabilities.iphone(), false));
+                            } else {
+                                throw new StepFailedException(
+                                        MessageFormat.format(
+                                                StringConstants.DRI_PLATFORM_NAME_X_IS_NOT_SUPPORTED_FOR_APPIUM_REMOTE_WEB_DRIVER,
+                                                platformName));
+                            }
+                        }
+                        break;
+                    }
+                    webDriver = new RemoteWebDriver(new URL(remoteWebServerUrl), desireCapibilities);
+                    break;
+                case ANDROID_DRIVER:
+                case IOS_DRIVER:
+                    webDriver = WebMobileDriverFactory.createMobileDriver(driver, getMobileDeviceName());
+                    break;
+                case EDGE_DRIVER:
+                    EdgeDriverService edgeService = localEdgeDriverServiceStorage.get();
+                    if (!edgeService.isRunning()) {
+                        edgeService.start();
+                    }
+                    webDriver = new EdgeDriver(edgeService, WebDriverPropertyUtil.toDesireCapabilities(
+                            driverPreferenceProps, DesiredCapabilities.edge(), false));
+                    break;
+                case REMOTE_FIREFOX_DRIVER:
+                    String debugHost = RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, DEBUG_HOST,
+                            DriverFactory.DEFAULT_DEBUG_HOST);
+                    String debugPort = RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, DEBUG_PORT,
+                            DriverFactory.DEFAULT_FIREFOX_DEBUG_PORT);
+                    desireCapibilities.merge(DesiredCapabilities.firefox());
+                    URL firefoxDriverUrl = new URL("http", debugHost, Integer.parseInt(debugPort), "/hub");
+                    webDriver = new RemoteWebDriver(firefoxDriverUrl, desireCapibilities);
+                    waitForRemoteBrowserReady(firefoxDriverUrl);
+                    break;
+                case REMOTE_CHROME_DRIVER:
+                    debugHost = RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, DEBUG_HOST,
+                            DriverFactory.DEFAULT_DEBUG_HOST);
+                    debugPort = RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, DEBUG_PORT,
+                            DriverFactory.DEFAULT_CHROME_DEBUG_PORT);
+                    System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
+                    desireCapibilities.merge(DesiredCapabilities.chrome());
+                    Map<String, Object> chromeOptions = new HashMap<String, Object>();
+                    chromeOptions.put("debuggerAddress", debugHost + ":" + debugPort);
+                    desireCapibilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+                    // Start Chrome-driver in background
+                    int chromeDriverPort = determineNextFreePort(9515);
+                    URL chromeDriverUrl = new URL("http", debugHost, chromeDriverPort, "/");
+                    Runtime.getRuntime().exec(
+                            new String[] { System.getProperty(CHROME_DRIVER_PATH_PROPERTY_KEY),
+                                    "--port=" + chromeDriverPort });
+                    waitForRemoteBrowserReady(chromeDriverUrl);
+                    webDriver = new RemoteWebDriver(chromeDriverUrl, desireCapibilities);
+                    break;
+                default:
+                    throw new StepFailedException(MessageFormat.format(
+                            StringConstants.DRI_ERROR_DRIVER_X_NOT_IMPLEMENTED, driver.getName()));
             }
             localWebServerStorage.set(webDriver);
             RunConfiguration.storeDriver(webDriver);
@@ -231,8 +255,10 @@ public class DriverFactory {
         KeywordLogger logger = KeywordLogger.getInstance();
         logger.logRunData("sessionId", ((RemoteWebDriver) webDriver).getSessionId().toString());
         logger.logRunData("browser", WebUiCommonHelper.getBrowserAndVersion(webDriver));
-        logger.logRunData("platform", webDriver.getClass() == RemoteWebDriver.class ? ((RemoteWebDriver) webDriver)
-                .getCapabilities().getPlatform().toString() : System.getProperty("os.name"));
+        logger.logRunData("platform",
+                webDriver.getClass() == RemoteWebDriver.class ? ((RemoteWebDriver) webDriver).getCapabilities()
+                        .getPlatform()
+                        .toString() : System.getProperty("os.name"));
     }
 
     public static WebDriver openWebDriver(DriverType driver, String projectDir, Object options) throws Exception {
@@ -244,30 +270,30 @@ public class DriverFactory {
             WebDriver webDriver = null;
             WebUIDriverType webUIDriver = (WebUIDriverType) driver;
             switch (webUIDriver) {
-            case FIREFOX_DRIVER:
-                if (options instanceof FirefoxProfile) {
-                    webDriver = new FirefoxDriver((FirefoxProfile) options);
-                } else {
-                    webDriver = new FirefoxDriver();
-                }
-                break;
-            case IE_DRIVER:
-                System.setProperty(IE_DRIVER_PATH_PROPERTY_KEY, getIEDriverPath());
-                webDriver = new InternetExplorerDriver();
-                break;
-            case SAFARI_DRIVER:
-                webDriver = new SafariDriver();
-                break;
-            case CHROME_DRIVER:
-                System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
-                if (options instanceof DesiredCapabilities) {
-                    ChromeDriver chromeDriver = new ChromeDriver((DesiredCapabilities) options);
-                    return chromeDriver;
-                }
-                break;
-            default:
-                throw new StepFailedException(MessageFormat.format(StringConstants.DRI_ERROR_DRIVER_X_NOT_IMPLEMENTED,
-                        driver.getName()));
+                case FIREFOX_DRIVER:
+                    if (options instanceof FirefoxProfile) {
+                        webDriver = new FirefoxDriver((FirefoxProfile) options);
+                    } else {
+                        webDriver = new FirefoxDriver();
+                    }
+                    break;
+                case IE_DRIVER:
+                    System.setProperty(IE_DRIVER_PATH_PROPERTY_KEY, getIEDriverPath());
+                    webDriver = new InternetExplorerDriver();
+                    break;
+                case SAFARI_DRIVER:
+                    webDriver = new SafariDriver();
+                    break;
+                case CHROME_DRIVER:
+                    System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
+                    if (options instanceof DesiredCapabilities) {
+                        ChromeDriver chromeDriver = new ChromeDriver((DesiredCapabilities) options);
+                        return chromeDriver;
+                    }
+                    break;
+                default:
+                    throw new StepFailedException(MessageFormat.format(
+                            StringConstants.DRI_ERROR_DRIVER_X_NOT_IMPLEMENTED, driver.getName()));
             }
             localWebServerStorage.set(webDriver);
             setTimeout();
@@ -542,18 +568,18 @@ public class DriverFactory {
                 webDriver.quit();
                 WebUIDriverType driver = (WebUIDriverType) getExecutedBrowser();
                 switch (driver) {
-                case ANDROID_DRIVER:
-                case IOS_DRIVER:
-                    WebMobileDriverFactory.quitServer();
-                    break;
-                case EDGE_DRIVER:
-                    EdgeDriverService edgeDriverService = localEdgeDriverServiceStorage.get();
-                    if (edgeDriverService.isRunning()) {
-                        edgeDriverService.stop();
-                    }
-                    break;
-                default:
-                    break;
+                    case ANDROID_DRIVER:
+                    case IOS_DRIVER:
+                        WebMobileDriverFactory.closeDriver();
+                        break;
+                    case EDGE_DRIVER:
+                        EdgeDriverService edgeDriverService = localEdgeDriverServiceStorage.get();
+                        if (edgeDriverService.isRunning()) {
+                            edgeDriverService.stop();
+                        }
+                        break;
+                    default:
+                        break;
 
                 }
             } catch (UnreachableBrowserException e) {
@@ -583,8 +609,7 @@ public class DriverFactory {
 
             try {
                 Thread.sleep(100);
-            } catch (InterruptedException ignored) {
-            }
+            } catch (InterruptedException ignored) {}
         }
     }
 

@@ -78,12 +78,6 @@ public abstract class RequestObjectPart implements EventHandler, IComposerPart {
 
     protected ModifyListener modifyListener;
 
-    protected Text txtID;
-
-    protected Text txtName;
-
-    protected Text txtDescription;
-
     protected Text txtHttpBody;
 
     protected ParameterTable tblHttpHeader;
@@ -125,7 +119,6 @@ public abstract class RequestObjectPart implements EventHandler, IComposerPart {
         labelGridData.widthHint = 100;
 
         // Init UI
-        createEntityInfoComposite(mainComposite);
         createHttpComposite(mainComposite);
         createServiceInfoComposite(mainComposite);
 
@@ -195,62 +188,6 @@ public abstract class RequestObjectPart implements EventHandler, IComposerPart {
         eventBroker.unsubscribe(this);
         MPartStack mStackPart = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
         mStackPart.getChildren().remove(mPart);
-    }
-
-    private void createEntityInfoComposite(Composite mainComposite) {
-        ExpandableComposite entityComposite = new ExpandableComposite(mainComposite, StringConstants.PA_TITLE_INFO, 1,
-                true);
-        Composite generalInfoComposite = entityComposite.createControl();
-        GridLayout gl_compositeInfoDetails = new GridLayout(2, true);
-        gl_compositeInfoDetails.marginRight = 40;
-        gl_compositeInfoDetails.marginLeft = 40;
-        gl_compositeInfoDetails.marginBottom = 5;
-        gl_compositeInfoDetails.horizontalSpacing = 30;
-        gl_compositeInfoDetails.marginHeight = 0;
-        gl_compositeInfoDetails.marginWidth = 0;
-        generalInfoComposite.setLayout(gl_compositeInfoDetails);
-        generalInfoComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        generalInfoComposite.setBounds(0, 0, 64, 64);
-
-        Composite idNameComposite = new Composite(generalInfoComposite, SWT.NONE);
-        idNameComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        GridLayout glCompositeInfoNameAndId = new GridLayout(2, false);
-        glCompositeInfoNameAndId.verticalSpacing = 10;
-        idNameComposite.setLayout(glCompositeInfoNameAndId);
-
-        GridData idNameGridData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-        idNameGridData.heightHint = 20;
-
-        Label lblID = new Label(idNameComposite, SWT.LEFT);
-        lblID.setText(StringConstants.PA_LBL_ID);
-        lblID.setLayoutData(labelGridData);
-
-        txtID = new Text(idNameComposite, SWT.BORDER);
-        txtID.setLayoutData(idNameGridData);
-        txtID.setEditable(false);
-        txtID.addModifyListener(modifyListener);
-
-        Label lblName = new Label(idNameComposite, SWT.LEFT);
-        lblName.setText(StringConstants.PA_LBL_NAME);
-        lblName.setLayoutData(labelGridData);
-
-        txtName = new Text(idNameComposite, SWT.BORDER);
-        txtName.setLayoutData(idNameGridData);
-        txtName.addModifyListener(modifyListener);
-
-        Composite descComposite = new Composite(generalInfoComposite, SWT.NONE);
-        descComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        descComposite.setLayout(new GridLayout(2, false));
-
-        Label lblDesc = new Label(descComposite, SWT.LEFT);
-        lblDesc.setText(StringConstants.PA_LBL_DESC);
-        lblDesc.setLayoutData(labelGridData);
-
-        txtDescription = new Text(descComposite, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI);
-        GridData gdTextDescription = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2);
-        gdTextDescription.heightHint = 45;
-        txtDescription.setLayoutData(gdTextDescription);
-        txtDescription.addModifyListener(modifyListener);
     }
 
     private void createHttpComposite(Composite mainComposite) {
@@ -368,9 +305,6 @@ public abstract class RequestObjectPart implements EventHandler, IComposerPart {
      */
     protected void updateEntityBeforeSaved() {
         // Update object properties
-        originalWsObject.setName(txtName.getText());
-        originalWsObject.setDescription(txtDescription.getText());
-
         originalWsObject.setHttpBody(txtHttpBody.getText());
 
         tblHttpHeader.removeEmptyProperty();
@@ -378,17 +312,6 @@ public abstract class RequestObjectPart implements EventHandler, IComposerPart {
     }
 
     protected void showEntityFieldsToUi() {
-        String dispID = "";
-        try {
-            dispID = originalWsObject.getIdForDisplay();
-        } catch (Exception ex) {
-            MessageDialog
-                    .openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, ex.getMessage());
-        }
-        txtID.setText(dispID);
-        txtName.setText(originalWsObject.getName());
-        txtDescription.setText(originalWsObject.getDescription());
-
         txtHttpBody.setText(originalWsObject.getHttpBody());
 
         tempPropList = new ArrayList<WebElementPropertyEntity>(originalWsObject.getHttpHeaderProperties());
@@ -399,19 +322,10 @@ public abstract class RequestObjectPart implements EventHandler, IComposerPart {
 
     protected void save() {
         try {
-            String oldPk = originalWsObject.getId();
-            String oldName = originalWsObject.getName();
-            String oldIdForDisplay = originalWsObject.getIdForDisplay();
-
             updateEntityBeforeSaved();
             ObjectRepositoryController.getInstance().saveWebElement(originalWsObject);
 
-            // Notify if name has changed
-            if (!oldName.equalsIgnoreCase(txtName.getText())) {
-                eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-                        originalWsObject.getIdForDisplay() });
-            }
-            eventBroker.post(EventConstants.TEST_OBJECT_UPDATED, new Object[] { oldPk, originalWsObject });
+            eventBroker.post(EventConstants.TEST_OBJECT_UPDATED, new Object[] { originalWsObject.getId(), originalWsObject });
             eventBroker.post(EventConstants.EXPLORER_REFRESH, null);
             dirtyable.setDirty(false);
         } catch (Exception e1) {

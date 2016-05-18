@@ -75,7 +75,7 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 public class ReportPartTestLogView {
     private Button btnFilterTestStepInfo, btnFilterTestStepPassed, btnFilterTestStepFailed, btnFilterTestStepError,
-            btnFilterTestStepIncomplete, btnFilterTestStepWarning;
+            btnFilterTestStepIncomplete, btnFilterTestStepWarning, btnFilterTestStepNotRun;
     private Text txtTestLogSearch;
     private CLabel lblTestLogSearch, lblTestLogAdvancedSearch;
     private ReportTestStepTreeViewer treeViewerTestSteps;
@@ -225,6 +225,15 @@ public class ReportPartTestLogView {
                 updateSelectedTestStep(getSelectedTestStep());
             }
         });
+        
+        btnFilterTestStepNotRun.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                testStepFilter.showNotRun(btnFilterTestStepNotRun.getSelection());
+                treeViewerTestSteps.refresh(true);
+                updateSelectedTestStep(getSelectedTestStep());
+            }
+        });
 
         txtTestLogSearch.addKeyListener(new KeyAdapter() {
             @Override
@@ -366,7 +375,7 @@ public class ReportPartTestLogView {
 
         Composite compositeFilterDetails = new Composite(compositeTestLogFilter, SWT.NONE);
         compositeFilterDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 2, 1));
-        compositeFilterDetails.setLayout(new GridLayout(6, false));
+        compositeFilterDetails.setLayout(new GridLayout(7, false));
 
         btnFilterTestStepInfo = createFilteringButton(compositeFilterDetails, StringConstants.INFO,
                 ImageConstants.IMG_16_INFO, true);
@@ -380,6 +389,8 @@ public class ReportPartTestLogView {
                 ImageConstants.IMG_16_INCOMPLETE, true);
         btnFilterTestStepWarning = createFilteringButton(compositeFilterDetails, StringConstants.WARN,
                 ImageConstants.IMG_16_WARNING, true);
+        btnFilterTestStepNotRun = createFilteringButton(compositeFilterDetails, StringConstants.NOT_RUN,
+                ImageConstants.IMG_16_NOT_RUN, true);
 
         Composite compositeTestLogSearch = new Composite(compositeTestLogFilter, SWT.BORDER);
         compositeTestLogSearch.setBackground(ColorUtil.getWhiteBackgroundColor());
@@ -495,6 +506,7 @@ public class ReportPartTestLogView {
         testStepFilter.showError(btnFilterTestStepError.getSelection());
         testStepFilter.showIncomplete(btnFilterTestStepIncomplete.getSelection());
         testStepFilter.showWarning(btnFilterTestStepWarning.getSelection());
+        testStepFilter.showNotRun(btnFilterTestStepNotRun.getSelection());
     }
 
     private void createTestLogTabItem(CTabFolder tabFolder) {

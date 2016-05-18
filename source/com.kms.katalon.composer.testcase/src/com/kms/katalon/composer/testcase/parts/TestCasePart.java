@@ -379,6 +379,17 @@ public class TestCasePart implements IComposerPart, EventHandler {
                 pasteMenuItem.setID(TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID);
 
                 addFailureHandlingSubMenu(menu);
+                
+                MenuItem disableMenuItem = new MenuItem(menu, SWT.PUSH);
+                disableMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_DISABLE);
+                disableMenuItem.addSelectionListener(selectionListener);
+                disableMenuItem.setID(TreeTableMenuItemConstants.DISABLE_MENU_ITEM_ID);
+                
+                MenuItem enableMenuItem = new MenuItem(menu, SWT.PUSH);
+                enableMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_ENABLE);
+                enableMenuItem.addSelectionListener(selectionListener);
+                enableMenuItem.setID(TreeTableMenuItemConstants.ENABLE_MENU_ITEM_ID);
+                
                 treeTable.getTree().setMenu(menu);
             }
         });
@@ -623,6 +634,13 @@ public class TestCasePart implements IComposerPart, EventHandler {
                 break;
             case TreeTableMenuItemConstants.REMOVE_MENU_ITEM_ID:
                 removeTestStep();
+                break;
+            case TreeTableMenuItemConstants.ENABLE_MENU_ITEM_ID:
+                treeTableInput.enable();
+                break;
+            case TreeTableMenuItemConstants.DISABLE_MENU_ITEM_ID:
+                treeTableInput.disable();
+                break;
             default:
                 treeTableInput.addNewAstObject(menuItem.getID(), treeTableInput.getSelectedNode(), addType);
                 break;

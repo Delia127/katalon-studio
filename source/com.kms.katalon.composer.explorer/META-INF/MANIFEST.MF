@@ -32,9 +32,9 @@ Require-Bundle: com.kms.katalon.composer.components,
  com.kms.katalon.controller,
  com.kms.katalon.entity,
  org.eclipse.osgi.services,
- com.kms.katalon.groovy,
  org.eclipse.jdt.ui,
- org.eclipse.jdt.groovy.core
+ org.eclipse.jdt.groovy.core,
+ com.kms.katalon.composer.util
 Import-Package: javax.annotation;version="1.2.0",
  javax.inject;version="1.0.0",
  org.eclipse.jdt.core

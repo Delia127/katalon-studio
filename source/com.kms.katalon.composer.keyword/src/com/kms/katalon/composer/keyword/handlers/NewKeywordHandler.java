@@ -33,6 +33,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.keyword.constants.StringConstants;
 import com.kms.katalon.composer.keyword.dialogs.NewKeywordDialog;
+import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
@@ -108,8 +109,8 @@ public class NewKeywordHandler {
                     }
 
                     // create Keyword class
-                    ICompilationUnit createdCompilationUnit = GroovyUtil.createGroovyScriptForCustomKeyword(packageFragment,
-                            dialog.getName());
+                    ICompilationUnit createdCompilationUnit = GroovyGuiUtil.createGroovyScriptForCustomKeyword(
+                            packageFragment, dialog.getName());
 
                     if (createdCompilationUnit instanceof GroovyCompilationUnit
                             && createdCompilationUnit.getParent() instanceof IPackageFragment) {
