@@ -74,10 +74,15 @@ public class AstTestStepTransformation implements ASTTransformation {
             importNodes.add(importNode);
         }
         for (MethodNode method : annotatedClass.getMethods()) {
-            if (method.getName().equalsIgnoreCase(RUN_METHOD_NAME) && method.getCode() instanceof BlockStatement) {
+            if (isRealMethod(method)) {
                 visit((BlockStatement) method.getCode(), null, 1);
             }
         }
+    }
+    
+    @CompileStatic
+    private static boolean isRealMethod(MethodNode method) {
+        return (method.getLineNumber() >= 0 || RUN_METHOD_NAME.equals(method.getName())) && method.getCode() instanceof BlockStatement;
     }
 
     @CompileStatic

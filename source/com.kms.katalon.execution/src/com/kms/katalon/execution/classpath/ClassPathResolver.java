@@ -49,7 +49,7 @@ public class ClassPathResolver {
     public static String[] getClassPaths(ProjectEntity project) throws IOException {
         ProjectBuildPath prjBuildpath = new ProjectBuildPath(project);
 
-        List<String> classPathLocs = prjBuildpath.getBundleBuildPathLoc();
+        List<String> classPathLocs = prjBuildpath.getClassPaths();
         classPathLocs.addAll(getPlatformBuildPathLocs());
 
         return classPathLocs.toArray(new String[classPathLocs.size()]);

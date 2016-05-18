@@ -148,8 +148,7 @@ public class TestCaseExecutor {
     public TestResult execute(FailureHandling flowControl) {
         preExecution();
 
-        logger.startTest(testCase.getTestCaseId(), getTestCaseProperties(testCaseBinding, testCase), keywordStack,
-                flowControl == FailureHandling.OPTIONAL);
+        logger.startTest(testCase.getTestCaseId(), getTestCaseProperties(testCaseBinding, testCase, flowControl), keywordStack);
 
         accessMainPhase();
 
@@ -195,16 +194,18 @@ public class TestCaseExecutor {
 
     private void runMethod(File scriptFile, String methodName) throws ResourceException, ScriptException,
             ClassNotFoundException, IOException {
+        engine.setConfig(getConfigForExecutingScript());
         engine.runScriptMethodAsRawText(FileUtils.readFileToString(scriptFile), scriptFile.getName(), methodName,
                 variableBinding);
     }
 
-    private Map<String, String> getTestCaseProperties(TestCaseBinding testCaseBinding, TestCase testCase) {
+    private Map<String, String> getTestCaseProperties(TestCaseBinding testCaseBinding, TestCase testCase, FailureHandling flowControl) {
         Map<String, String> testProperties = new HashMap<String, String>();
-        testProperties.put("name", testCaseBinding.getTestCaseId());
-        testProperties.put("description", testCase.getDescription());
-        testProperties.put("id", testCase.getTestCaseId());
-        testProperties.put("source", testCase.getMetaFilePath());
+        testProperties.put(StringConstants.XML_LOG_NAME_PROPERTY, testCaseBinding.getTestCaseId());
+        testProperties.put(StringConstants.XML_LOG_DESCRIPTION_PROPERTY, testCase.getDescription());
+        testProperties.put(StringConstants.XML_LOG_ID_PROPERTY, testCase.getTestCaseId());
+        testProperties.put(StringConstants.XML_LOG_SOURCE_PROPERTY, testCase.getMetaFilePath());
+        testProperties.put(StringConstants.XML_LOG_IS_OPTIONAL, String.valueOf(flowControl == FailureHandling.OPTIONAL));
         return testProperties;
     }
 

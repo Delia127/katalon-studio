@@ -236,6 +236,8 @@ public class StringConstants {
     public static final String XML_LOG_ID_PROPERTY = "id";
 
     public static final String XML_LOG_SOURCE_PROPERTY = "source";
+    
+    public static final String XML_LOG_IS_OPTIONAL = "isOptional";
 
     public static final String XML_LOG_BROWSER_TYPE_PROPERTY = "browserType";
 

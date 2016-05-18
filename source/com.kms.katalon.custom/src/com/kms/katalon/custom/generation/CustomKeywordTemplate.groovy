@@ -95,7 +95,6 @@ def static "<%= key %>.<%= it.getName() %>"(<% it.getParameters().eachWithIndex 
             }
 
             if (IMMUTABLE_CLASS_NAME.equals(classNode.getClass().getName())
-                || classNode.isPrimaryClassNode()
                 || classNode.isGenericsPlaceHolder()) {
                 return ClassUtils.getShortCanonicalName(classNode.getUnresolvedName())
             }
@@ -130,7 +129,7 @@ def static "<%= key %>.<%= it.getName() %>"(<% it.getParameters().eachWithIndex 
     }
 
     private static String getFullClassName(ClassNode classNode) {
-        return getPackageNamePlusDot(classNode) + classNode.getNameWithoutPackage()
+        return getPackageNamePlusDot(classNode) + classNode.getNameWithoutPackage().replace('$', '.')
     }
 
     private static String getPackageNamePlusDot(ClassNode classNode) {
