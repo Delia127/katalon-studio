@@ -15,7 +15,7 @@ public class CustomEditorActivationStrategy extends ColumnViewerEditorActivation
      * 
      * @see {@link org.eclipse.swt.events.MouseEvent#button}
      */
-    private static final int RIGHT_MOUSE = 3;
+    private static final int LEFT_MOUSE = 1;
 
     private FocusCellOwnerDrawHighlighterForMultiSelection focusCellHighlighter;
 
@@ -30,10 +30,9 @@ public class CustomEditorActivationStrategy extends ColumnViewerEditorActivation
         switch (event.eventType) {
             case ColumnViewerEditorActivationEvent.MOUSE_CLICK_SELECTION:
                 Object viewerCell = event.getSource();
-                return (viewerCell instanceof ViewerCell && viewerCell.equals(focusCellHighlighter.getMarkedCell()));
+                return (viewerCell instanceof ViewerCell && viewerCell.equals(focusCellHighlighter.getMarkedCell()) && isLeftMouseClick(event.sourceEvent));
             case ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION:
-                EventObject source = event.sourceEvent;
-                return (!(source instanceof MouseEvent) || ((MouseEvent) source).button != RIGHT_MOUSE);
+                return isLeftMouseClick(event.sourceEvent);
             case ColumnViewerEditorActivationEvent.KEY_PRESSED:
                 return event.keyCode == SWT.CR;
             case ColumnViewerEditorActivationEvent.PROGRAMMATIC:
@@ -41,5 +40,9 @@ public class CustomEditorActivationStrategy extends ColumnViewerEditorActivation
         }
 
         return false;
+    }
+
+    protected boolean isLeftMouseClick(EventObject eventObject) {
+        return eventObject instanceof MouseEvent && ((MouseEvent) eventObject).button == LEFT_MOUSE;
     }
 }
