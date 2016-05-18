@@ -22,12 +22,26 @@ import com.kms.katalon.custom.keyword.KeywordMethod;
 import com.kms.katalon.custom.keyword.KeywordParameter;
 
 public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableNode {
+    
+    //Built-In keyword methods without FailureHandling, to show in drop-down list in test case manual mode 
+    //This list is being used many places, it should be initiated only once
+    private List<KeywordMethod> builtInKeywordMethods = new ArrayList<KeywordMethod>();
+
     public AstBuiltInKeywordTreeTableNode(ExpressionStatementWrapper methodCallStatement, AstTreeTableNode parentNode) {
         super(methodCallStatement, parentNode);
+        builtInKeywordMethods.addAll(getKeywords());
     }
 
     protected String getBuiltInKWClassSimpleName() {
         return methodCall.getObjectExpressionAsString();
+    }
+
+    private List<KeywordMethod> getKeywords() {
+        List<KeywordMethod> keywords = new ArrayList<KeywordMethod>();
+        for (KeywordMethod keywordMethod : getBuiltInKeywordMethods()) {
+            keywords.add(keywordMethod);
+        }
+        return keywords;
     }
 
     @Override
@@ -35,7 +49,7 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
         List<String> keywordNames = new ArrayList<String>();
         List<String> toolTips = new ArrayList<String>();
         String builtInKWClassSimpleName = getBuiltInKWClassSimpleName();
-        for (KeywordMethod keywordMethod : getBuiltInKeywordMethods()) {
+        for (KeywordMethod keywordMethod : builtInKeywordMethods) {
             keywordNames.add(TreeEntityUtil.getReadableKeywordName(keywordMethod.getName()));
             toolTips.add(TestCaseEntityUtil.getKeywordJavaDocText(builtInKWClassSimpleName, keywordMethod.getName()));
         }
@@ -46,9 +60,9 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
 
     @Override
     public Object getItem() {
-        for (KeywordMethod keywordMethod : getBuiltInKeywordMethods()) {
+        for (KeywordMethod keywordMethod : builtInKeywordMethods) {
             if (keywordMethod.getName().equals(getKeywordName())) {
-                return getBuiltInKeywordMethods().indexOf(keywordMethod);
+                return builtInKeywordMethods.indexOf(keywordMethod);
             }
         }
         return 0;
@@ -66,10 +80,10 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
 
     @Override
     public boolean setItem(Object item) {
-        if (!(item instanceof Integer) || (int) item < 0 || (int) item >= getBuiltInKeywordMethods().size()) {
+        if (!(item instanceof Integer) || (int) item < 0 || (int) item >= builtInKeywordMethods.size()) {
             return false;
         }
-        String newMethodName = getBuiltInKeywordMethods().get((int) item).getName();
+        String newMethodName = builtInKeywordMethods.get((int) item).getName();
         if (getKeywordName().equals(newMethodName)) {
             return false;
         }
@@ -86,7 +100,9 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
     @Override
     public boolean canEditInput() {
         KeywordMethod keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
-                getBuiltInKWClassSimpleName(), getKeywordName());
+                getBuiltInKWClassSimpleName(), getKeywordName(),
+                methodCall.getArguments().getArgumentListParameterTypes());
+
         if (keywordMethod == null || keywordMethod.getParameters().length == 0) {
             return false;
         }
@@ -106,7 +122,8 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
             return "";
         }
         KeywordMethod keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
-                getBuiltInKWClassSimpleName(), getKeywordName());
+                getBuiltInKWClassSimpleName(), getKeywordName(),
+                arguments.getArgumentListParameterTypes());
         if (keywordMethod == null) {
             return "";
         }
@@ -162,7 +179,8 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
         }
         List<?> inputParameters = (List<?>) input;
         KeywordMethod keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
-                getBuiltInKWClassSimpleName(), getKeywordName());
+                getBuiltInKWClassSimpleName(), getKeywordName(),
+                methodCall.getArguments().getArgumentListParameterTypes());
         if (keywordMethod == null) {
             return false;
         }
@@ -185,7 +203,8 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
     @Override
     protected int getObjectArgumentIndex() {
         KeywordMethod keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
-                getBuiltInKWClassSimpleName(), getKeywordName());
+                getBuiltInKWClassSimpleName(), getKeywordName(),
+                methodCall.getArguments().getArgumentListParameterTypes());
         if (keywordMethod == null) {
             return -1;
         }
@@ -200,7 +219,8 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
     @Override
     public boolean canEditOutput() {
         KeywordMethod keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
-                getBuiltInKWClassSimpleName(), getKeywordName());
+                getBuiltInKWClassSimpleName(), getKeywordName(),
+                methodCall.getArguments().getArgumentListParameterTypes());
         return isOutputNotVoid(keywordMethod);
     }
 
@@ -211,14 +231,21 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
     @Override
     protected Class<?> getOutputReturnType() {
         KeywordMethod keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
-                getBuiltInKWClassSimpleName(), getKeywordName());
+                getBuiltInKWClassSimpleName(), getKeywordName(),
+                methodCall.getArguments().getArgumentListParameterTypes());
         if (isOutputNotVoid(keywordMethod)) {
             return keywordMethod.getReturnType();
         }
         return null;
     }
 
+    /**
+     * Get built-in keywords without Failure Handling, these keyword methods will be shown in test case manual mode for
+     * user selection
+     * 
+     * @return list of keyword method
+     */
     private List<KeywordMethod> getBuiltInKeywordMethods() {
-        return KeywordController.getInstance().getBuiltInKeywords(getBuiltInKWClassSimpleName());
+        return KeywordController.getInstance().getBuiltInKeywords(getBuiltInKWClassSimpleName(), true);
     }
 }

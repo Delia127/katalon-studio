@@ -19,6 +19,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.constants.StringConstants;
+import com.kms.katalon.core.model.FailureHandling;
 
 /**
  * Provides access to execution properties and settings
@@ -64,6 +65,8 @@ public class RunConfiguration {
 
     public static final String APP_INFO_FILE_LOCATION = StringConstants.APP_INFO_FILE_LOCATION;
 
+    public static final String EXCUTION_DEFAULT_FAILURE_HANDLING = StringConstants.CONF_PROPERTY_DEFAULT_FAILURE_HANDLING;
+    
     private static String settingFilePath;
 
     private static final ThreadLocal<Map<String, Object>> localExecutionSettingMapStorage = new ThreadLocal<Map<String, Object>>() {
@@ -320,5 +323,14 @@ public class RunConfiguration {
         }
         return appInfo.getProperty(GlobalStringConstants.APP_VERSION_NUMBER_KEY) + "."
                 + appInfo.getProperty(GlobalStringConstants.APP_BUILD_NUMBER_KEY);
+    }
+    
+    public static FailureHandling getDefaultFailureHandling() {
+        try {
+            return FailureHandling.valueOf(getStringProperty(EXCUTION_DEFAULT_FAILURE_HANDLING,
+                    getExecutionGeneralProperties()));
+        } catch (NullPointerException | IllegalArgumentException e) {
+            return FailureHandling.STOP_ON_FAILURE;
+        }
     }
 }

@@ -44,4 +44,14 @@ public class ArgumentListExpressionWrapper extends TupleExpressionWrapper {
     public ExpressionWrapper copy(ASTNodeWrapper newParent) {
         return super.copy(newParent);
     }
+    
+    public String[] getArgumentListParameterTypes() {
+        String[] paramTypes = new String[this.getExpressions().size()];
+        for (int i = 0; i < this.getExpressions().size(); i++) {
+            ExpressionWrapper exWrapper = this.getExpression(i);
+            paramTypes[i] = exWrapper.getType().getTypeClass().getName();
+        }
+        return paramTypes;
+    }
+
 }

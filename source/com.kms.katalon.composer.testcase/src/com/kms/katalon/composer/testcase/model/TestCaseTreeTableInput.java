@@ -953,10 +953,19 @@ public class TestCaseTreeTableInput {
                 keywordClass.getName());
         StatementWrapper newBuiltinKeywordStatement = null;
         if (!StringUtils.isBlank(defaultSettingKeywordName)
-                && KeywordController.getInstance().getBuiltInKeywordByName(keywordClass.getName(),
-                        defaultSettingKeywordName) != null) {
-            newBuiltinKeywordStatement = AstKeywordsInputUtil.createBuiltInKeywordStatement(
+                && (KeywordController.getInstance().getBuiltInKeywordByName(keywordClass.getName(),
+                        defaultSettingKeywordName, null)) != null) {
+
+            MethodCallExpressionWrapper keywordMethodCallExpression = new MethodCallExpressionWrapper(
                     keywordClass.getSimpleName(), defaultSettingKeywordName);
+
+            AstKeywordsInputUtil.generateMethodCallArguments(
+                    keywordMethodCallExpression,
+                    KeywordController.getInstance().getBuiltInKeywordByName(keywordClass.getName(),
+                            defaultSettingKeywordName, null));
+
+            newBuiltinKeywordStatement = new ExpressionStatementWrapper(keywordMethodCallExpression, null);
+
         } else {
             newBuiltinKeywordStatement = AstKeywordsInputUtil.createBuiltInKeywordStatement(
                     keywordClass.getSimpleName(),

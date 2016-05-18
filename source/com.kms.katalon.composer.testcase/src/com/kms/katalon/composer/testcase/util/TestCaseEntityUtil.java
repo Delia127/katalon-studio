@@ -154,7 +154,7 @@ public class TestCaseEntityUtil {
                 IJavaProject javaProject = JavaCore.create(groovyProject);
                 IType builtinKeywordType = javaProject.findType(keywordType.getName());
                 List<KeywordMethod> builtInKeywordMethods = KeywordController.getInstance().getBuiltInKeywords(
-                        keywordClassName);
+                        keywordClassName, true);
                 for (KeywordMethod method : builtInKeywordMethods) {
                     IMethod builtInMethod = findBuiltinMethods(builtinKeywordType, method.getName(), javaProject);
                     if (builtInMethod != null) {
