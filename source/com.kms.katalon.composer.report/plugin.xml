@@ -21,5 +21,13 @@
             class="com.kms.katalon.composer.report.preference.ReportPreferenceInitializer">
       </initializer>
    </extension>
+   <extension
+         point="com.kms.katalon.preferences.ProjectSettingPages">
+      <page
+            class="com.kms.katalon.composer.report.preference.ReportSettingPage"
+            id="com.kms.katalon.composer.report.setting"
+            name="Report">
+      </page>
+   </extension>
 
 </plugin>

@@ -39,4 +39,12 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String DIA_ERROR_MSG_UNABLE_TO_UPDATE_ADVANCED_SEARCH = "Unable to update advanced search.";
 	public static final String DIA_LBL_INCLUDE_CHILD_LOGS = "Include child logs of matched parent results.";
 	
+    // ReportSettingPage
+    public static final String PAGE_LBL_TAKE_SCREENSHOT_SETTINGS = "Take Screenshot settings";
+    
+    public static final String PAGE_TXT_ENABLE_TAKE_SCREENSHOT = "Take Screenshot when execution failed";
+
+    public static final String PAGE_ERROR_MSG_UNABLE_TO_READ_SETTINGS = "Unable to read setting file.";
+
+    public static final String PAGE_ERROR_MSG_UNABLE_TO_UPDATE_SETTINGS = "Unable to update setting.";
 }
