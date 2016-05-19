@@ -16,15 +16,15 @@ import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MapEntryExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MapExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
-import com.kms.katalon.composer.testcase.model.InputValueTypeUtil;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.providers.UneditableTableCellLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
+import com.kms.katalon.composer.testcase.util.AstInputValueTypeOptionsProvider;
 
 public class MapInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
-    private final InputValueType[] defaultInputValueTypes = InputValueTypeUtil.getValueTypeOptions(InputValueType.Map);
+    private final InputValueType[] defaultInputValueTypes = AstInputValueTypeOptionsProvider.getInputValueTypeOptions(InputValueType.Map);
 
     private MapExpressionWrapper mapExpression;
 

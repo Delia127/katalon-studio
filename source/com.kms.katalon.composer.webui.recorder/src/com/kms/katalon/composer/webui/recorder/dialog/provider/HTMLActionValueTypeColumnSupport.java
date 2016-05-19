@@ -12,11 +12,12 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.testcase.model.InputValueEditorProvider;
-import com.kms.katalon.composer.testcase.model.InputValueTypeUtil;
+import com.kms.katalon.composer.testcase.util.AstInputValueTypeOptionsProvider;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionParamMapping;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionParamValueType;
 import com.kms.katalon.composer.webui.recorder.type.HTMLActionPropertyValueType;
 import com.kms.katalon.composer.webui.recorder.util.HTMLActionUtil;
+import com.kms.katalon.composer.webui.recorder.util.HTMLInputValueTypeProvider;
 
 public class HTMLActionValueTypeColumnSupport extends EditingSupport {
 
@@ -78,7 +79,7 @@ public class HTMLActionValueTypeColumnSupport extends EditingSupport {
 
     private void collectAvaiableEditorProviders() {
         availableEditorProviders = new ArrayList<>();
-        availableEditorProviders.addAll(Arrays.asList(InputValueTypeUtil.getValueTypeOptions(assignableType.getName())));
+        availableEditorProviders.addAll(Arrays.asList(AstInputValueTypeOptionsProvider.getInputValueTypeOptions(assignableType.getName())));
         if (additionalEditorProvider != null) {
             availableEditorProviders.add(additionalEditorProvider);
         }
@@ -113,7 +114,7 @@ public class HTMLActionValueTypeColumnSupport extends EditingSupport {
             return false;
         }
 
-        assignableType = InputValueTypeUtil.getAssignableValueType(getParamMapping(element).getActionParam()
+        assignableType = AstInputValueTypeOptionsProvider.getAssignableValueType(getParamMapping(element).getActionParam()
                 .getClazz());
 
         return assignableType != null;

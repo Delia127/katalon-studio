@@ -7,18 +7,18 @@ import org.eclipse.swt.widgets.Shell;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.SwitchStatementWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
-import com.kms.katalon.composer.testcase.model.InputValueTypeUtil;
 import com.kms.katalon.composer.testcase.providers.AstContentProviderAdapter;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.providers.UneditableTableCellLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
+import com.kms.katalon.composer.testcase.util.AstInputValueTypeOptionsProvider;
 
 public class SwitchInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
     private static final String EXPRESSION = "Expression";
 
-    private final InputValueType[] defaultInputValueTypes = InputValueTypeUtil.getValueTypeOptions(InputValueTypeUtil.SWITCH_OPTIONS);
+    private final InputValueType[] defaultInputValueTypes = AstInputValueTypeOptionsProvider.getInputValueTypeOptions(AstInputValueTypeOptionsProvider.SWITCH_OPTIONS);
 
     private SwitchStatementWrapper switchStatement;
 

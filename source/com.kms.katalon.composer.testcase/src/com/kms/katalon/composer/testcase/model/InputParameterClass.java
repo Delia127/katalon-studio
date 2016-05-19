@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
+import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
+import com.kms.katalon.core.model.FailureHandling;
 
 public class InputParameterClass {
     private String fullName;
@@ -153,4 +155,12 @@ public class InputParameterClass {
         }
         return Object.class.getSimpleName() + "[]";
     }
-}
+    
+    public Class<?> convertToClass() {
+        return AstKeywordsInputUtil.loadType(fullName, null);
+    }
+    
+    public boolean isFailureHandlingTypeClass() {
+        return getFullName().equals(FailureHandling.class.getName()) || getSimpleName().equals(FailureHandling.class.getSimpleName());
+    }
+} 

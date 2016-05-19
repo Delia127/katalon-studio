@@ -13,8 +13,8 @@ import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStateme
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueEditorProvider;
 import com.kms.katalon.composer.testcase.model.InputValueType;
-import com.kms.katalon.composer.testcase.model.InputValueTypeUtil;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
+import com.kms.katalon.composer.testcase.util.AstInputValueTypeOptionsProvider;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
 import com.kms.katalon.composer.webui.recorder.action.HTMLAction;
@@ -241,7 +241,7 @@ public class HTMLActionUtil {
                     ? existingParamDatas[i] : null;
 
             if (!isAssignableFromScript(existingParamData, action.getParams()[i])) {
-                InputValueEditorProvider valueType = InputValueTypeUtil.getAssignableValueType(action.getParams()[i].getClazz());
+                InputValueEditorProvider valueType = AstInputValueTypeOptionsProvider.getAssignableValueType(action.getParams()[i].getClazz());
                 if (valueType != null) {
                     existingParamData = HTMLActionParamValueType.newInstance(valueType);
                 }

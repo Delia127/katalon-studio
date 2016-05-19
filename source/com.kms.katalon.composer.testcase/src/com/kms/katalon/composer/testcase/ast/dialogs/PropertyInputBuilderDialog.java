@@ -19,15 +19,15 @@ import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.PropertyExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
-import com.kms.katalon.composer.testcase.model.InputValueTypeUtil;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
+import com.kms.katalon.composer.testcase.util.AstInputValueTypeOptionsProvider;
 
 public class PropertyInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
-    private final InputValueType[] defaultObjectInputValueTypes = InputValueTypeUtil.getValueTypeOptions(InputValueType.Property);
+    private final InputValueType[] defaultObjectInputValueTypes = AstInputValueTypeOptionsProvider.getInputValueTypeOptions(InputValueType.Property);
 
     private PropertyExpressionWrapper propertyExpression;
 
