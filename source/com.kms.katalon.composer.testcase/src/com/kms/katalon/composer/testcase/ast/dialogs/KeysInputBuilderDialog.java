@@ -1,7 +1,6 @@
 package com.kms.katalon.composer.testcase.ast.dialogs;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -20,6 +19,7 @@ import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.model.InputValueTypeUtil;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
+import com.kms.katalon.composer.testcase.providers.UneditableTableCellLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
 
@@ -97,7 +97,7 @@ public class KeysInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
         TableColumn tblclmnColumnNo = tableViewerColumnNo.getColumn();
         tblclmnColumnNo.setWidth(40);
         tblclmnColumnNo.setText(StringConstants.NO_);
-        tableViewerColumnNo.setLabelProvider(new ColumnLabelProvider() {
+        tableViewerColumnNo.setLabelProvider(new UneditableTableCellLabelProvider() {
             @Override
             public String getText(Object element) {
                 if (element instanceof ExpressionWrapper) {
