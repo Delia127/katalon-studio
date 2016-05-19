@@ -4,16 +4,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.codehaus.groovy.ast.ClassHelper;
 import org.codehaus.groovy.ast.expr.MapEntryExpression;
 import org.codehaus.groovy.ast.expr.MapExpression;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
 
 public class MapExpressionWrapper extends ExpressionWrapper {
     private List<MapEntryExpressionWrapper> mapEntryExpressions = new ArrayList<MapEntryExpressionWrapper>();
 
     public MapExpressionWrapper(ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
+        this.type = new ClassNodeWrapper(ClassHelper.MAP_TYPE, this);
     }
 
     public MapExpressionWrapper(List<MapEntryExpressionWrapper> mapEntryExpressions, ASTNodeWrapper parentNodeWrapper) {
@@ -28,6 +31,7 @@ public class MapExpressionWrapper extends ExpressionWrapper {
             mapEntryExpression.setParent(this);
         }
         this.mapEntryExpressions = mapEntryExpressions;
+        this.type = new ClassNodeWrapper(ClassHelper.MAP_TYPE, this);
     }
 
     public MapExpressionWrapper(MapExpression expression, ASTNodeWrapper parentNodeWrapper) {

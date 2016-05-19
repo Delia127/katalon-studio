@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.groovy.ast.ClassHelper;
 import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.expr.ListExpression;
 
@@ -12,6 +13,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapHelper;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
 
 public class ListExpressionWrapper extends ExpressionWrapper {
@@ -20,11 +22,13 @@ public class ListExpressionWrapper extends ExpressionWrapper {
 
     public ListExpressionWrapper(ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
+        this.type = new ClassNodeWrapper(ClassHelper.LIST_TYPE, this);
     }
 
     public ListExpressionWrapper(List<ExpressionWrapper> expressions, ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
         this.expressions = expressions;
+        this.type = new ClassNodeWrapper(ClassHelper.LIST_TYPE, this);
     }
 
     public ListExpressionWrapper(ListExpression listExpression, ASTNodeWrapper parentNodeWrapper) {

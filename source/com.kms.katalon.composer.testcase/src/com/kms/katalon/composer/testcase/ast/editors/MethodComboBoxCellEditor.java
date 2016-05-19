@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.testcase.ast.editors;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.ClassUtils;
+import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.swt.widgets.Composite;
@@ -17,16 +19,32 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpr
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 
 public class MethodComboBoxCellEditor extends ComboBoxCellEditor {
-    private Method[] methods;
+    private List<Method> methods = new ArrayList<Method>();
 
     public MethodComboBoxCellEditor(Composite parent, Class<?> type) {
         super(parent, new String[0]);
-        methods = type.getMethods();
-        String[] methodSignatures = new String[methods.length];
-        for (int index = 0; index < methods.length; index++) {
-            methodSignatures[index] = getMethodSignature(methods[index]);
+        if (type != null) {
+            pupulateMethodListWithTypeMethods(type);
+        } else {
+            populateMethodListWithGroovyDefaultMethods();
+        }
+        String[] methodSignatures = new String[methods.size()];
+        for (int index = 0; index < methods.size(); index++) {
+            methodSignatures[index] = getMethodSignature(methods.get(index));
         }
         setItems(methodSignatures);
+    }
+
+    private void pupulateMethodListWithTypeMethods(Class<?> type) {
+        for (Method method : type.getDeclaredMethods()) {
+            if (Modifier.isPublic(method.getModifiers()) && Modifier.isStatic(method.getModifiers())) {
+                methods.add(method);
+            }
+        }
+    }
+
+    private void populateMethodListWithGroovyDefaultMethods() {
+        pupulateMethodListWithTypeMethods(DefaultGroovyMethods.class);
     }
 
     /**
@@ -39,8 +57,8 @@ public class MethodComboBoxCellEditor extends ComboBoxCellEditor {
     protected void doSetValue(Object value) {
         Assert.isTrue(value instanceof MethodCallExpressionWrapper);
         MethodCallExpressionWrapper methodCall = (MethodCallExpressionWrapper) value;
-        for (int index = 0; index < methods.length; index++) {
-            if (compareMethodAndMethodCall(methods[index], methodCall)) {
+        for (int index = 0; index < methods.size(); index++) {
+            if (compareMethodAndMethodCall(methods.get(index), methodCall)) {
                 super.doSetValue(index);
                 return;
             }
@@ -59,10 +77,10 @@ public class MethodComboBoxCellEditor extends ComboBoxCellEditor {
     @Override
     protected Method doGetValue() {
         Integer selectionIndex = (Integer) super.doGetValue();
-        if (selectionIndex < 0 || selectionIndex >= methods.length) {
+        if (selectionIndex < 0 || selectionIndex >= methods.size()) {
             return null;
         }
-        return methods[selectionIndex];
+        return methods.get(selectionIndex);
     }
 
     public static String getMethodSignature(Method method) {
@@ -155,15 +173,19 @@ public class MethodComboBoxCellEditor extends ComboBoxCellEditor {
         }
         return type;
     }
-    
+
     public static List<Class<?>> getParamClasses(Method method) {
         if (method == null) {
             return Collections.emptyList();
         }
         List<Class<?>> parameterClasses = new ArrayList<Class<?>>();
         for (Type type : method.getGenericParameterTypes()) {
-            if (type instanceof Class<?> || isMapType(type)) {
+            if (type instanceof Class<?>) {
                 parameterClasses.add(((Class<?>) type));
+                continue;
+            }
+            if (isMapType(type)) {
+                parameterClasses.add(Map.class);
             }
         }
         return parameterClasses;

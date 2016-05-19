@@ -1,12 +1,14 @@
 package com.kms.katalon.composer.testcase.groovy.ast.expressions;
 
+import org.codehaus.groovy.ast.ClassHelper;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
 
 public class ConstantExpressionWrapper extends ExpressionWrapper {
     private Object value;
-    
+
     public ConstantExpressionWrapper() {
         this(null);
     }
@@ -14,7 +16,7 @@ public class ConstantExpressionWrapper extends ExpressionWrapper {
     public ConstantExpressionWrapper(ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
     }
-    
+
     public ConstantExpressionWrapper(Object value) {
         this(value, null);
     }
@@ -38,7 +40,7 @@ public class ConstantExpressionWrapper extends ExpressionWrapper {
     public Object getValue() {
         return value;
     }
-    
+
     public String getValueAsString() {
         return String.valueOf(value);
     }
@@ -47,7 +49,15 @@ public class ConstantExpressionWrapper extends ExpressionWrapper {
         this.value = value;
         if (value != null) {
             this.type.setType(value.getClass());
+            setValueType();
         }
+    }
+
+    private void setValueType() {
+        if (value == null) {
+            return;
+        }
+        setType(new ClassNodeWrapper(ClassHelper.make(value.getClass()), this));
     }
 
     @Override
@@ -74,7 +84,7 @@ public class ConstantExpressionWrapper extends ExpressionWrapper {
     public boolean isNumberExpression() {
         return value instanceof Number;
     }
-    
+
     public boolean isBooleanExpression() {
         return isTrueExpression() || isFalseExpression();
     }
