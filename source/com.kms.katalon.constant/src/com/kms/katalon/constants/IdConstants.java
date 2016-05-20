@@ -121,6 +121,8 @@ public interface IdConstants {
 
     public static final String COMPOSER_EXECUTION_BUNDLE_ID = "com.kms.katalon.composer.execution";
 
+    public static final String WORKBENCH_WINDOW_ID = "org.eclipse.ui.workbench";
+
     // Groovy
     public static final String GROOVY_EDITOR_URI = "org.codehaus.groovy.eclipse.editor.GroovyEditor";
 
