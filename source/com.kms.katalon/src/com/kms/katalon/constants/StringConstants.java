@@ -68,4 +68,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PAGE_RADIO_AUTO_RESTORE_PREV_SESSION = "Auto restore the previous session";
 
     public static final String PAGE_RADIO_AUTO_CLEAN_PREV_SESSION = "Open a clean session";
+
+    // LifeCycleManager
+    public static final String PREF_FIST_TIME_SETUP_COMPLETED = "firstTimeSetupCompleted";
 }
