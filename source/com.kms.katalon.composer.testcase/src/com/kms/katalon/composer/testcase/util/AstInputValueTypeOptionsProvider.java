@@ -1,8 +1,11 @@
 package com.kms.katalon.composer.testcase.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.common.collect.ImmutableMap;
 import com.kms.katalon.composer.testcase.model.InputParameterClass;
@@ -131,7 +134,7 @@ public class AstInputValueTypeOptionsProvider {
     public static InputValueType[] getInputValueTypeOptions(InputValueType inputValueType) {
         return valueTypeOptions.get(inputValueType.getName());
     }
-    
+
     public static InputValueType getAssignableValueType(Class<?> paramClass) {
         for (InputValueType inputValueType : argumentOptions) {
             if (inputValueType.isAssignableTo(paramClass)) {
@@ -158,6 +161,14 @@ public class AstInputValueTypeOptionsProvider {
         if (paramType == null) {
             return new InputValueType[0];
         }
-        return getAssignableInputValueTypes(paramType.convertToClass());
+        if (paramType.isFailureHandlingTypeClass()) {
+            return new InputValueType[] { InputValueType.Property };
+        }
+        Set<InputValueType> inputValueTypeList = new HashSet<InputValueType>(
+                Arrays.asList(getAssignableInputValueTypes(paramType.convertToClass())));
+        if (paramType.isArray()) {
+            inputValueTypeList.add(InputValueType.List);
+        }
+        return inputValueTypeList.toArray(new InputValueType[inputValueTypeList.size()]);
     }
 }

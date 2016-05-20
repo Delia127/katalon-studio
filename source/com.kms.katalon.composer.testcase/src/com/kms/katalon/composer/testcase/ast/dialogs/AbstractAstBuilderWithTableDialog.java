@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.testcase.ast.dialogs;
 
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -48,6 +49,7 @@ public abstract class AbstractAstBuilderWithTableDialog extends AbstractAstBuild
         container.setLayout(new GridLayout(1, false));
         tableViewer = createTable(container);
         addTableColumns();
+        ColumnViewerToolTipSupport.enableFor(tableViewer);
         setInput();
         return container;
     }
