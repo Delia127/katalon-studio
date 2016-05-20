@@ -7,7 +7,6 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -24,6 +23,7 @@ import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.model.InputValueTypeUtil;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
+import com.kms.katalon.composer.testcase.providers.UneditableTableCellLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
@@ -95,9 +95,9 @@ public class ArgumentInputBuilderDialog extends AbstractAstBuilderWithTableDialo
     protected void addTableColumns() {
         addTableColumnNo();
 
-        addTableColumnParamType();
-
         addTableColumnParam();
+
+        addTableColumnParamType();
 
         addTableColumnValueType();
 
@@ -219,7 +219,8 @@ public class ArgumentInputBuilderDialog extends AbstractAstBuilderWithTableDialo
 
             @Override
             protected boolean canEdit(Object element) {
-                return (element instanceof InputParameter && !((InputParameter) element).isFailureHandlingInputParameter() && super.canEdit(((InputParameter) element).getValue()));
+                return (element instanceof InputParameter
+                        && !((InputParameter) element).isFailureHandlingInputParameter() && super.canEdit(((InputParameter) element).getValue()));
             }
 
             @Override
@@ -233,7 +234,7 @@ public class ArgumentInputBuilderDialog extends AbstractAstBuilderWithTableDialo
         TableViewerColumn tableViewerColumnParam = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnParam.getColumn().setText(StringConstants.DIA_COL_PARAM);
         tableViewerColumnParam.getColumn().setWidth(100);
-        tableViewerColumnParam.setLabelProvider(new ColumnLabelProvider() {
+        tableViewerColumnParam.setLabelProvider(new UneditableTableCellLabelProvider() {
             @Override
             public String getText(Object element) {
                 if (element instanceof InputParameter && ((InputParameter) element).getParamName() != null) {
@@ -248,7 +249,7 @@ public class ArgumentInputBuilderDialog extends AbstractAstBuilderWithTableDialo
         TableViewerColumn tableViewerColumnParamType = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnParamType.getColumn().setText(StringConstants.DIA_COL_PARAM_TYPE);
         tableViewerColumnParamType.getColumn().setWidth(100);
-        tableViewerColumnParamType.setLabelProvider(new ColumnLabelProvider() {
+        tableViewerColumnParamType.setLabelProvider(new UneditableTableCellLabelProvider() {
             @Override
             public String getText(Object element) {
                 if (!(element instanceof InputParameter) || ((InputParameter) element).getParamType() == null) {
@@ -263,7 +264,7 @@ public class ArgumentInputBuilderDialog extends AbstractAstBuilderWithTableDialo
         TableViewerColumn tableViewerColumnNo = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnNo.getColumn().setText(StringConstants.DIA_COL_NO);
         tableViewerColumnNo.getColumn().setWidth(40);
-        tableViewerColumnNo.setLabelProvider(new ColumnLabelProvider() {
+        tableViewerColumnNo.setLabelProvider(new UneditableTableCellLabelProvider() {
             @Override
             public String getText(Object element) {
                 if (element instanceof InputParameter) {

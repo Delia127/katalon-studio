@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.testcase.ast.dialogs;
 
-import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
@@ -8,10 +7,11 @@ import org.eclipse.swt.widgets.Shell;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.SwitchStatementWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
-import com.kms.katalon.composer.testcase.providers.AstContentProviderAdapter;
 import com.kms.katalon.composer.testcase.model.InputValueTypeUtil;
+import com.kms.katalon.composer.testcase.providers.AstContentProviderAdapter;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
+import com.kms.katalon.composer.testcase.providers.UneditableTableCellLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
 
@@ -56,7 +56,7 @@ public class SwitchInputBuilderDialog extends AbstractAstBuilderWithTableDialog 
         TableViewerColumn tableViewerColumnObject = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnObject.getColumn().setText(StringConstants.DIA_COL_OBJ);
         tableViewerColumnObject.getColumn().setWidth(100);
-        tableViewerColumnObject.setLabelProvider(new ColumnLabelProvider() {
+        tableViewerColumnObject.setLabelProvider(new UneditableTableCellLabelProvider() {
             @Override
             public String getText(Object element) {
                 if (element == switchStatement.getExpression()) {

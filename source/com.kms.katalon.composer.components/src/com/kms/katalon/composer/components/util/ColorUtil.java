@@ -119,4 +119,8 @@ public class ColorUtil {
     public static Color getDisabledItemBackgroundColor() {
         return Display.getCurrent().getSystemColor(SWT.COLOR_GRAY);
     }
+    
+    public static Color getUnEditableTableCellBackgroundColor() {
+        return Display.getCurrent().getSystemColor(SWT.COLOR_GRAY);
+    }
 }

@@ -62,7 +62,7 @@ public class StringConstants extends GlobalStringConstants {
 
     // InputBuilderDialog
     public static final String DIA_TITLE_INPUT = INPUT;
-    public static final String DIA_COL_PARAM = "Param";
+    public static final String DIA_COL_PARAM = "Param Name";
     public static final String DIA_COL_PARAM_TYPE = "Param Type";
 
     // ListInputBuilderDialog

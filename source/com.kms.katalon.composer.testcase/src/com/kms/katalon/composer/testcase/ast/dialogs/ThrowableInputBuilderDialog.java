@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
@@ -17,6 +16,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstructorCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
+import com.kms.katalon.composer.testcase.providers.UneditableTableCellLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 
 public class ThrowableInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
@@ -66,7 +66,7 @@ public class ThrowableInputBuilderDialog extends AbstractAstBuilderWithTableDial
         TableColumn tblclmnNewColumnObject = tableViewerColumnObject.getColumn();
         tblclmnNewColumnObject.setWidth(100);
         tblclmnNewColumnObject.setText(StringConstants.DIA_COL_OBJ);
-        tableViewerColumnObject.setLabelProvider(new ColumnLabelProvider() {
+        tableViewerColumnObject.setLabelProvider(new UneditableTableCellLabelProvider() {
             @Override
             public String getText(Object element) {
                 if (element == getExceptionType()) {
