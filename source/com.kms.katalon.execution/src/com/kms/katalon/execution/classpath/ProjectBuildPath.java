@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.core.appium.driver.AppiumDriverManager;
 import com.kms.katalon.core.keyword.IKeywordContributor;
 import com.kms.katalon.core.keyword.KeywordContributorCollection;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -72,6 +73,7 @@ public class ProjectBuildPath {
         for (IKeywordContributor contributor : KeywordContributorCollection.getKeywordContributors()) {
             bundlePaths.add(new BundleBuildPath(FrameworkUtil.getBundle(contributor.getClass())));
         }
+        bundlePaths.add(new BundleBuildPath(FrameworkUtil.getBundle(AppiumDriverManager.class)));
         return bundlePaths;
     }
     

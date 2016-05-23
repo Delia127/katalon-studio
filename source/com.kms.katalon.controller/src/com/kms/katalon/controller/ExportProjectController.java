@@ -13,8 +13,8 @@ public class ExportProjectController extends AbstractExportController implements
 
 	@Override
 	public boolean execute() throws Exception {
-		return dataProviderSetting.getExportDataProvider().exportProject(
-				dataProviderSetting.getEntityPk(project), guid, directory);
+		return getDataProviderSetting().getExportDataProvider().exportProject(
+				getDataProviderSetting().getEntityPk(project), guid, directory);
 	}
 	
 	@Override

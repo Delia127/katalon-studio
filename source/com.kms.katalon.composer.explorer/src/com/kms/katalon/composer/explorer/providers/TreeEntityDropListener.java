@@ -16,12 +16,12 @@ import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
+import com.kms.katalon.composer.components.impl.util.EntityProcessingUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
-import com.kms.katalon.controller.util.EntityControllerUtil;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
@@ -89,23 +89,23 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
             }
 
             if (treeEntity instanceof TestCaseTreeEntity) {
-                TestCaseEntity movedTc = EntityControllerUtil.moveTestCase(
+                TestCaseEntity movedTc = EntityProcessingUtil.moveTestCase(
                         (TestCaseEntity) ((TestCaseTreeEntity) treeEntity).getObject(), targetFolder);
                 lastMovedTreeEntity = TreeEntityUtil.getTestCaseTreeEntity(movedTc, targetFolder.getProject());
             } else if (treeEntity instanceof FolderTreeEntity) {
-                FolderEntity movedFolder = EntityControllerUtil.moveFolder(
+                FolderEntity movedFolder = EntityProcessingUtil.moveFolder(
                         (FolderEntity) ((FolderTreeEntity) treeEntity).getObject(), targetFolder);
                 lastMovedTreeEntity = TreeEntityUtil.createSelectedTreeEntityHierachy(movedFolder, rootTargetFolder);
             } else if (treeEntity instanceof TestSuiteTreeEntity) {
-                TestSuiteEntity movedTs = EntityControllerUtil.moveTestSuite(
+                TestSuiteEntity movedTs = EntityProcessingUtil.moveTestSuite(
                         (TestSuiteEntity) ((TestSuiteTreeEntity) treeEntity).getObject(), targetFolder);
                 lastMovedTreeEntity = TreeEntityUtil.getTestSuiteTreeEntity(movedTs, targetFolder.getProject());
             } else if (treeEntity instanceof TestDataTreeEntity) {
-                DataFileEntity movedTd = EntityControllerUtil.moveTestData(
+                DataFileEntity movedTd = EntityProcessingUtil.moveTestData(
                         (DataFileEntity) ((TestDataTreeEntity) treeEntity).getObject(), targetFolder);
                 lastMovedTreeEntity = TreeEntityUtil.getTestDataTreeEntity(movedTd, targetFolder.getProject());
             } else if (treeEntity instanceof WebElementTreeEntity) {
-                WebElementEntity movedTo = EntityControllerUtil.moveTestObject(
+                WebElementEntity movedTo = EntityProcessingUtil.moveTestObject(
                         (WebElementEntity) ((WebElementTreeEntity) treeEntity).getObject(), targetFolder);
                 lastMovedTreeEntity = TreeEntityUtil.getWebElementTreeEntity(movedTo, targetFolder.getProject());
             }

@@ -2,13 +2,4 @@
 <plugin>
    <extension-point id="keyword" name="Keyword Contribution" schema="schema/keyword.exsd"/>
    <extension-point id="integration" name="Integration Contribution" schema="schema/integration.exsd"/>
-
-   <extension
-         id="com.kms.katalon.custom.fragment"
-         point="org.eclipse.e4.workbench.model">
-      <fragment
-            uri="fragment.e4xmi">
-      </fragment>
-   </extension>
-
 </plugin>

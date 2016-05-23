@@ -50,9 +50,9 @@ public class TestSuiteController extends EntityController {
                 } else if (selectionObject instanceof TestSuiteEntity) {
                     parentFolder = ((TestSuiteEntity) selectionObject).getParentFolder();
                 } else {
-                    parentFolder = dataProviderSetting.getFolderDataProvider().getTestSuiteRoot(projectEntity);
+                    parentFolder = getDataProviderSetting().getFolderDataProvider().getTestSuiteRoot(projectEntity);
                 }
-                return dataProviderSetting.getTestSuiteDataProvider().addNewTestSuite(parentFolder, testSuiteName,
+                return getDataProviderSetting().getTestSuiteDataProvider().addNewTestSuite(parentFolder, testSuiteName,
                         TestEnvironmentController.getInstance().getPageLoadTimeOutDefaultValue());
             }
         }
@@ -60,19 +60,19 @@ public class TestSuiteController extends EntityController {
     }
 
     public void deleteTestSuite(TestSuiteEntity testSuite) throws Exception {
-        dataProviderSetting.getTestSuiteDataProvider().deleteTestSuite(testSuite);
+        getDataProviderSetting().getTestSuiteDataProvider().deleteTestSuite(testSuite);
     }
 
     public synchronized TestSuiteEntity updateTestSuite(TestSuiteEntity testSuite) throws Exception {
-        return dataProviderSetting.getTestSuiteDataProvider().updateTestSuite(testSuite);
+        return getDataProviderSetting().getTestSuiteDataProvider().updateTestSuite(testSuite);
     }
 
     public TestSuiteEntity copyTestSuite(TestSuiteEntity testSuite, FolderEntity targetFolder) throws Exception {
-        return dataProviderSetting.getTestSuiteDataProvider().copyTestSuite(testSuite, targetFolder);
+        return getDataProviderSetting().getTestSuiteDataProvider().copyTestSuite(testSuite, targetFolder);
     }
 
     public TestSuiteEntity moveTestSuite(TestSuiteEntity testSuite, FolderEntity targetFolder) throws Exception {
-        return dataProviderSetting.getTestSuiteDataProvider().moveTestSuite(testSuite, targetFolder);
+        return getDataProviderSetting().getTestSuiteDataProvider().moveTestSuite(testSuite, targetFolder);
     }
 
     /**
@@ -85,7 +85,7 @@ public class TestSuiteController extends EntityController {
      */
     @Deprecated
     public String getIdForDisplay(TestSuiteEntity entity) throws Exception {
-        return dataProviderSetting.getTestSuiteDataProvider()
+        return getDataProviderSetting().getTestSuiteDataProvider()
                 .getIdForDisplay(entity)
                 .replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPERATOR);
     }
@@ -101,7 +101,7 @@ public class TestSuiteController extends EntityController {
         String testSuitePkWithDoubleBrackets = elementId.replaceFirst(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX, "");
         String testSuitePk = testSuitePkWithDoubleBrackets.substring(1, testSuitePkWithDoubleBrackets.length() - 1);
 
-        return dataProviderSetting.getTestSuiteDataProvider().getTestSuite(testSuitePk);
+        return getDataProviderSetting().getTestSuiteDataProvider().getTestSuite(testSuitePk);
     }
 
     public List<String> getSibblingTestSuiteNames(TestSuiteEntity testSuite) throws Exception {
@@ -109,8 +109,8 @@ public class TestSuiteController extends EntityController {
         List<String> sibblingName = new ArrayList<String>();
         for (FileEntity sibblingEntity : sibblingEntities) {
             if (sibblingEntity instanceof TestSuiteEntity
-                    && !dataProviderSetting.getEntityPk(sibblingEntity).equals(
-                            dataProviderSetting.getEntityPk(testSuite))) {
+                    && !getDataProviderSetting().getEntityPk(sibblingEntity).equals(
+                            getDataProviderSetting().getEntityPk(testSuite))) {
                 sibblingName.add(sibblingEntity.getName());
             }
         }
@@ -184,7 +184,7 @@ public class TestSuiteController extends EntityController {
     }
 
     public TestSuiteEntity getTestSuite(String testSuitePk) throws Exception {
-        return dataProviderSetting.getTestSuiteDataProvider().getTestSuite(testSuitePk);
+        return getDataProviderSetting().getTestSuiteDataProvider().getTestSuite(testSuitePk);
     }
 
     /**
@@ -202,11 +202,11 @@ public class TestSuiteController extends EntityController {
     }
 
     public String getAvailableTestSuiteName(FolderEntity parentFolder, String name) throws Exception {
-        return dataProviderSetting.getTestSuiteDataProvider().getAvailableTestSuiteName(parentFolder, name);
+        return getDataProviderSetting().getTestSuiteDataProvider().getAvailableTestSuiteName(parentFolder, name);
     }
 
     public TestSuiteTestCaseLink getTestCaseLink(String testCaseId, TestSuiteEntity testSuite) {
-        return dataProviderSetting.getTestSuiteDataProvider().getTestCaseLink(testSuite, testCaseId);
+        return getDataProviderSetting().getTestSuiteDataProvider().getTestCaseLink(testSuite, testCaseId);
     }
 
     public void reloadTestSuite(TestSuiteEntity testSuite, Entity entity) throws Exception {

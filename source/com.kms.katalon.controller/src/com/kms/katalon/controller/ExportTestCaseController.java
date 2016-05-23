@@ -22,8 +22,8 @@ public class ExportTestCaseController extends AbstractExportController implement
 	}
 	@Override
 	public boolean execute() throws Exception {
-		return dataProviderSetting.getExportDataProvider().exportProject(
-				dataProviderSetting.getEntityPk(project), guid, testCases, directory);
+		return getDataProviderSetting().getExportDataProvider().exportProject(
+				getDataProviderSetting().getEntityPk(project), guid, testCases, directory);
 	}
 
 }

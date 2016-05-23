@@ -16,11 +16,12 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.BundleException;
 
+import com.kms.katalon.addons.MacOSAddon;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.core.application.ApplicationRunningMode.RunningMode;
 import com.kms.katalon.execution.console.ConsoleMain;
+import com.kms.katalon.execution.launcher.model.LauncherResult;
 import com.kms.katalon.util.ApplicationInfo;
 
 /**
@@ -29,8 +30,6 @@ import com.kms.katalon.util.ApplicationInfo;
 
 public class Application implements IApplication {
     private static final String INVALID_RUNNING_MODE = "Invalid running mode.";
-
-    private static ConsoleMain consoleMain;
 
     public static final String RUN_MODE_OPTION = "runMode";
 
@@ -46,25 +45,26 @@ public class Application implements IApplication {
             return IApplication.EXIT_OK;
         }
 
-        ApplicationInfo.setAppInfoIntoUserHomeDir();
+        preRunInit();
         final Map<?, ?> args = context.getArguments();
         final String[] appArgs = (String[]) args.get("application.args");
 
         RunningModeParam runningModeParam = getRunningModeParamFromParam(parseOption(appArgs));
         switch (runningModeParam) {
             case CONSOLE:
-                ApplicationRunningMode runningMode = ApplicationRunningMode.getInstance();
-                runningMode.setRunnningMode(RunningMode.Console);
-                runningMode.setRunArguments(appArgs);
-                return runConsole();
+                return runConsole(appArgs);
             case GUI:
                 return runGUI();
             default:
                 System.out.println(INVALID_RUNNING_MODE);
                 return IApplication.EXIT_OK;
-
         }
 
+    }
+
+    private void preRunInit() {
+        ApplicationInfo.setAppInfoIntoUserHomeDir();
+        MacOSAddon.init();
     }
 
     private OptionSet parseOption(final String[] appArgs) {
@@ -76,29 +76,32 @@ public class Application implements IApplication {
     }
 
     private int runGUI() {
-        int returnCode = internalRun(false);
+        int returnCode = internalRunGUI();
         if (returnCode == PlatformUI.RETURN_RESTART) {
             return IApplication.EXIT_RESTART;
         }
         return IApplication.EXIT_OK;
     }
 
-    private int runConsole() {
-        consoleMain = new ConsoleMain();
-        internalRun(true);
+    private int runConsole(String[] arguments) {
+        // Set this to allow application to return it's own exit code instead of Eclipse's exit code
         System.setProperty(IApplicationContext.EXIT_DATA_PROPERTY, "");
-        return consoleMain.getReturnCode();
-
+        try {
+            return ConsoleMain.launch(arguments);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return LauncherResult.RETURN_CODE_ERROR;
+        }
     }
 
-    private int internalRun(boolean isConsole) {
+    private int internalRunGUI() {
         Display display = PlatformUI.createDisplay();
         try {
             return PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            clearSession(!isConsole);
+            clearSession();
             display.dispose();
         }
         return PlatformUI.RETURN_OK;
@@ -118,23 +121,19 @@ public class Application implements IApplication {
         return RunningModeParam.INVALID;
     }
 
-    public static ConsoleMain getConsoleMain() {
-        return consoleMain;
-    }
-
-    private void clearSession(boolean isNotConsoleMode) {
-        if (isNotConsoleMode
-                && !getPreferenceStore().getBoolean(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION)) {
-            // Clear workbench layout
-            File workbenchXmi = new File(Platform.getLocation().toString()
-                    + "/.metadata/.plugins/org.eclipse.e4.workbench/workbench.xmi");
-            if (workbenchXmi.exists()) {
-                workbenchXmi.delete();
-            }
-
-            // Clear working state of recent projects
-            ProjectController.getInstance().clearWorkingStateOfRecentProjects();
+    private void clearSession() {
+        if (getPreferenceStore().getBoolean(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION)) {
+            return;
         }
+        // Clear workbench layout
+        File workbenchXmi = new File(Platform.getLocation().toString()
+                + "/.metadata/.plugins/org.eclipse.e4.workbench/workbench.xmi");
+        if (workbenchXmi.exists()) {
+            workbenchXmi.delete();
+        }
+
+        // Clear working state of recent projects
+        ProjectController.getInstance().clearWorkingStateOfRecentProjects();
     }
 
     /*

@@ -22,10 +22,10 @@ public class EntityNameController extends EntityController implements Serializab
     }
 
     public String getAvailableName(String name, FolderEntity parentFolder, boolean isFolder) throws Exception {
-        return dataProviderSetting.getEntityNameProvider().getAvailableName(name, parentFolder, isFolder);
+        return getDataProviderSetting().getEntityNameProvider().getAvailableName(name, parentFolder, isFolder);
     }
 
     public void validateName(String name) throws Exception {
-        dataProviderSetting.getEntityNameProvider().validateName(name);
+        getDataProviderSetting().getEntityNameProvider().validateName(name);
     }
 }

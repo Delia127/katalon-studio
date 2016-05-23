@@ -28,7 +28,7 @@ public class GlobalVariableController extends EntityController {
     }
 
     public List<GlobalVariableEntity> getAllGlobalVariables(ProjectEntity project) throws Exception {
-        return dataProviderSetting.getGlobalVariableDataProvider().getAll(project.getLocation());
+        return getDataProviderSetting().getGlobalVariableDataProvider().getAll(project.getLocation());
     }
 
     public String[] getAllGlobalVariableNames(ProjectEntity project) throws Exception {
@@ -41,7 +41,7 @@ public class GlobalVariableController extends EntityController {
     }
 
     public void updateVariables(List<GlobalVariableEntity> glbVariableEntities, ProjectEntity project) throws Exception {
-        dataProviderSetting.getGlobalVariableDataProvider().updateVariables(glbVariableEntities, project.getLocation());
+        getDataProviderSetting().getGlobalVariableDataProvider().updateVariables(glbVariableEntities, project.getLocation());
         generateGlobalVariableLibFile(project, null);
     }
 

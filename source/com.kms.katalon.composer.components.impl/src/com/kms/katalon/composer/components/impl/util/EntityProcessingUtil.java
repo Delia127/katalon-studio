@@ -1,4 +1,4 @@
-package com.kms.katalon.controller.util;
+package com.kms.katalon.composer.components.impl.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
-public class EntityControllerUtil {
+public class EntityProcessingUtil {
     public static FolderEntity moveFolder(FolderEntity folder, FolderEntity targetFolder) throws Exception {
         if (targetFolder != null && folder != null && folder.getFolderType() == targetFolder.getFolderType()) {
 

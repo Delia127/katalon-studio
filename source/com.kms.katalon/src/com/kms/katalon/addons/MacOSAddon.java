@@ -5,10 +5,7 @@ import static java.text.MessageFormat.format;
 
 import java.io.IOException;
 
-import javax.annotation.PostConstruct;
-
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.e4.core.contexts.IEclipseContext;
 
 import com.kms.katalon.logging.LogManager;
 import com.kms.katalon.logging.LogMode;
@@ -25,8 +22,7 @@ public class MacOSAddon {
 
     private static final String PREF_VM_XML_VALUE_TPL = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<vmSettings defaultVM=\"57,org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType13,{0}\">\n<vmType id=\"org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType\">\n<vm id=\"{0}\" name=\"{1}\" path=\"{2}\"/>\n</vmType>\n</vmSettings>\n";
 
-    @PostConstruct
-    public void init(IEclipseContext eclipseContext) {
+    public static void init() {
         if (!Platform.OS_MACOSX.equals(Platform.getOS())) {
             return;
         }
@@ -34,7 +30,7 @@ public class MacOSAddon {
         useJavaHomeAsDefaultInstalledJRE();
     }
 
-    private void useJavaHomeAsDefaultInstalledJRE() {
+    private static void useJavaHomeAsDefaultInstalledJRE() {
         ScopedPreferenceStore prefStore = getPreferenceStore(ORG_ECLIPSE_JDT_LAUNCHING_PLUGIN_ID);
         if (prefStore.getBoolean(UPDATED_PREF_VM_XML_KEY)) {
             return;

@@ -40,7 +40,7 @@ public class ProjectController extends EntityController {
     }
 
     public ProjectEntity addNewProject(String name, String description, String projectLocation) throws Exception {
-        ProjectEntity newProject = dataProviderSetting.getProjectDataProvider().addNewProject(name, description,
+        ProjectEntity newProject = getDataProviderSetting().getProjectDataProvider().addNewProject(name, description,
                 TestEnvironmentController.getInstance().getPageLoadTimeOutDefaultValue(), projectLocation);
         addRecentProject(newProject);
         GlobalVariableController.getInstance().generateGlobalVariableLibFile(newProject, null);
@@ -52,7 +52,7 @@ public class ProjectController extends EntityController {
         try {
             if (monitor == null) monitor = new NullProgressMonitor();
 
-            ProjectEntity project = dataProviderSetting.getProjectDataProvider().getProjectWithoutClasspath(projectPk);
+            ProjectEntity project = getDataProviderSetting().getProjectDataProvider().getProjectWithoutClasspath(projectPk);
 
             if (project != null) {
                 monitor.beginTask("Initialzing project's working space...", 10);
@@ -74,7 +74,7 @@ public class ProjectController extends EntityController {
     }
 
     public ProjectEntity openProject(String projectPk) throws Exception {
-        ProjectEntity project = dataProviderSetting.getProjectDataProvider().getProject(projectPk);
+        ProjectEntity project = getDataProviderSetting().getProjectDataProvider().getProject(projectPk);
         if (project != null) {
             DataProviderState.getInstance().setCurrentProject(project);
             addRecentProject(project);
@@ -85,14 +85,14 @@ public class ProjectController extends EntityController {
     }
 
     public void closeProject(String projectPk, IProgressMonitor monitor) throws Exception {
-        ProjectEntity project = dataProviderSetting.getProjectDataProvider().getProjectWithoutClasspath(projectPk);
+        ProjectEntity project = getDataProviderSetting().getProjectDataProvider().getProjectWithoutClasspath(projectPk);
         if (project != null) {
             GroovyUtil.getGroovyProject(project).close(monitor);
         }
     }
 
     public void updateProject(String name, String description, String projectPk) throws Exception {
-        ProjectEntity project = dataProviderSetting.getProjectDataProvider().updateProject(name, description,
+        ProjectEntity project = getDataProviderSetting().getProjectDataProvider().updateProject(name, description,
                 projectPk, (short) 0);
         if (project != null) {
             addRecentProject(project);
@@ -101,14 +101,14 @@ public class ProjectController extends EntityController {
     }
 
     public void updateProject(ProjectEntity projectEntity) throws Exception {
-        dataProviderSetting.getProjectDataProvider().updateProject(projectEntity);
+        getDataProviderSetting().getProjectDataProvider().updateProject(projectEntity);
     }
 
     public void addRecentProject(ProjectEntity project) throws Exception {
         List<ProjectEntity> recentProjects = getRecentProjects();
         int existedProjectIndex = -1;
         for (int i = 0; i < recentProjects.size(); i++) {
-            if (dataProviderSetting.getEntityPk(project).equals(dataProviderSetting.getEntityPk(recentProjects.get(i)))) {
+            if (getDataProviderSetting().getEntityPk(project).equals(getDataProviderSetting().getEntityPk(recentProjects.get(i)))) {
                 existedProjectIndex = i;
                 break;
             }
@@ -137,7 +137,7 @@ public class ProjectController extends EntityController {
                     File projectFile = new File(recentProject.getLocation());
                     if (projectFolder.exists() && projectFolder.isDirectory() && projectFile.exists()
                             && projectFile.isFile()) {
-                        ProjectEntity project = dataProviderSetting.getProjectDataProvider()
+                        ProjectEntity project = getDataProviderSetting().getProjectDataProvider()
                                 .getProjectWithoutClasspath(projectFile.getAbsolutePath());
                         if (project.getName().equals(recentProject.getName())) {
                             resultList.add(recentProject);
@@ -189,16 +189,16 @@ public class ProjectController extends EntityController {
     }
 
     public boolean validateNewProjectName(String projectParentFolderName, String projectName) throws Exception {
-        return !dataProviderSetting.getProjectDataProvider().isDuplicationProjectName(projectName,
+        return !getDataProviderSetting().getProjectDataProvider().isDuplicationProjectName(projectName,
                 projectParentFolderName);
     }
 
     public String getTempDir() {
-        return dataProviderSetting.getProjectDataProvider().getSystemTempFolder();
+        return getDataProviderSetting().getProjectDataProvider().getSystemTempFolder();
     }
 
     public String getNonremovableTempDir() {
-        return new File(dataProviderSetting.getProjectDataProvider().getSystemTempFolder(), "non-removable")
+        return new File(getDataProviderSetting().getProjectDataProvider().getSystemTempFolder(), "non-removable")
                 .getAbsolutePath();
     }
 

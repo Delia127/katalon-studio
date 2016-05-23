@@ -32,6 +32,7 @@ import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
+import com.kms.katalon.composer.components.impl.util.EntityProcessingUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.transfer.TransferMoveFlag;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
@@ -42,7 +43,6 @@ import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.controller.TestSuiteController;
-import com.kms.katalon.controller.util.EntityControllerUtil;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
@@ -281,35 +281,35 @@ public class PasteFolderHandler {
     }
 
     private void moveTestCase(TestCaseEntity testCase, FolderEntity targetFolder) throws Exception {
-        TestCaseEntity movedTestCase = EntityControllerUtil.moveTestCase(testCase, targetFolder);
+        TestCaseEntity movedTestCase = EntityProcessingUtil.moveTestCase(testCase, targetFolder);
         if (movedTestCase != null) {
             lastPastedTreeEntity = new TestCaseTreeEntity(movedTestCase, parentPastedTreeEntity);
         }
     }
 
     private void moveFolder(FolderEntity folder, FolderEntity targetFolder) throws Exception {
-        FolderEntity movedFolder = EntityControllerUtil.moveFolder(folder, targetFolder);
+        FolderEntity movedFolder = EntityProcessingUtil.moveFolder(folder, targetFolder);
         if (movedFolder != null) {
             lastPastedTreeEntity = new FolderTreeEntity(movedFolder, parentPastedTreeEntity);
         }
     }
 
     private void moveTestSuite(TestSuiteEntity testSuite, FolderEntity targetFolder) throws Exception {
-        TestSuiteEntity movedTestSuite = EntityControllerUtil.moveTestSuite(testSuite, targetFolder);
+        TestSuiteEntity movedTestSuite = EntityProcessingUtil.moveTestSuite(testSuite, targetFolder);
         if (movedTestSuite != null) {
             lastPastedTreeEntity = new TestSuiteTreeEntity(movedTestSuite, parentPastedTreeEntity);
         }
     }
 
     private void moveTestData(DataFileEntity dataFile, FolderEntity targetFolder) throws Exception {
-        DataFileEntity movedTestData = EntityControllerUtil.moveTestData(dataFile, targetFolder);
+        DataFileEntity movedTestData = EntityProcessingUtil.moveTestData(dataFile, targetFolder);
         if (movedTestData != null) {
             lastPastedTreeEntity = new TestDataTreeEntity(movedTestData, parentPastedTreeEntity);
         }
     }
 
     private void moveTestObject(WebElementEntity webElement, FolderEntity targetFolder) throws Exception {
-        WebElementEntity movedTestObject = EntityControllerUtil.moveTestObject(webElement, targetFolder);
+        WebElementEntity movedTestObject = EntityProcessingUtil.moveTestObject(webElement, targetFolder);
         if (movedTestObject != null) {
             lastPastedTreeEntity = new WebElementTreeEntity(movedTestObject, parentPastedTreeEntity);
         }

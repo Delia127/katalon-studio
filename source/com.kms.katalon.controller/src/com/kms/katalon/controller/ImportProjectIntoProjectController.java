@@ -26,7 +26,7 @@ public class ImportProjectIntoProjectController extends AbstractImportController
 		projectImportingInfomation.setCurrentProject(project);
 		projectImportingInfomation.setImportGUID(guid);
 		projectImportingInfomation.setImportDirectory(new File(directory));
-		ProjectEntity mergedProject = dataProviderSetting.getImportDataProvider().importProject(
+		ProjectEntity mergedProject = getDataProviderSetting().getImportDataProvider().importProject(
 				projectImportingInfomation, propertyChangeListener);
 		if (mergedProject != null) {
 			return true;
@@ -35,7 +35,7 @@ public class ImportProjectIntoProjectController extends AbstractImportController
 	}
 	
 	public void setImportDuplicateEntityResult(ImportDuplicateEntityResult result) throws Exception {
-		dataProviderSetting.getImportDataProvider().setImportDuplicateEntityResult(
+	    getDataProviderSetting().getImportDataProvider().setImportDuplicateEntityResult(
 				result, guid);
 	}
 }

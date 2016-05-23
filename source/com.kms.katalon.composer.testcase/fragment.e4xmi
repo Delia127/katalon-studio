@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ASCII"?>
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_zwV80BlXEeSIJ-03SEjqTg">
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_1iB84BlXEeSIJ-03SEjqTg" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="after:com.kms.katalon.composer.toolbar.handledtoolitem.new.package">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_1iB84BlXEeSIJ-03SEjqTg" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="before:com.kms.katalon.composer.toolbar.testsuite.newtestsuite">
     <elements xsi:type="menu:HandledToolItem" xmi:id="_-UHdkBlXEeSIJ-03SEjqTg" elementId="com.kms.katalon.composer.toolbar.testcase.newtestcase" label="" iconURI="platform:/plugin/com.kms.katalon.composer.testcase/icons/new_test_case_28.png" tooltip="New Test Case" command="_HK4zYBrsEeSXreVpxhllQw">
       <tags>FORCE_TEXT</tags>
     </elements>

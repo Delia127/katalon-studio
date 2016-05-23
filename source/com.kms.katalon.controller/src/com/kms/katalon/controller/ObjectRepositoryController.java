@@ -31,33 +31,33 @@ public class ObjectRepositoryController extends EntityController {
     }
 
     public WebElementEntity addNewWebElement(FolderEntity parentFolder, String elementName) throws Exception {
-        return dataProviderSetting.getWebElementDataProvider().addNewWebElement(parentFolder, elementName);
+        return getDataProviderSetting().getWebElementDataProvider().addNewWebElement(parentFolder, elementName);
     }
 
     public WebElementEntity getWebElement(String elementPk) throws Exception {
-        return dataProviderSetting.getWebElementDataProvider().getWebElement(elementPk);
+        return getDataProviderSetting().getWebElementDataProvider().getWebElement(elementPk);
     }
 
     public WebElementEntity getWebElementByDisplayPk(String elementDisplayPk) throws Exception {
-        return dataProviderSetting.getWebElementDataProvider().getWebElement(
+        return getDataProviderSetting().getWebElementDataProvider().getWebElement(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation() + File.separator
                         + elementDisplayPk + WebElementEntity.getWebElementFileExtension());
     }
 
     public void importWebElement(List<SaveWebElementInfoEntity> entities) throws Exception {
-        dataProviderSetting.getWebElementDataProvider().importWebElement(entities);
+        getDataProviderSetting().getWebElementDataProvider().importWebElement(entities);
     }
 
     public FolderEntity importWebElementFolder(FolderEntity folder, FolderEntity parentFolder) throws Exception {
-        return dataProviderSetting.getWebElementDataProvider().importWebElementFolder(folder, parentFolder);
+        return getDataProviderSetting().getWebElementDataProvider().importWebElementFolder(folder, parentFolder);
     }
 
     public WebElementEntity importWebElement(WebElementEntity webElement, FolderEntity parentFolder) throws Exception {
-        return dataProviderSetting.getWebElementDataProvider().importWebElement(webElement, parentFolder);
+        return getDataProviderSetting().getWebElementDataProvider().importWebElement(webElement, parentFolder);
     }
 
     public void saveWebElement(WebElementEntity webElement) throws Exception {
-        dataProviderSetting.getWebElementDataProvider().updateWebElement(webElement);
+        getDataProviderSetting().getWebElementDataProvider().updateWebElement(webElement);
     }
 
     /**
@@ -70,33 +70,33 @@ public class ObjectRepositoryController extends EntityController {
      */
     @Deprecated
     public String getIdForDisplay(WebElementEntity entity) throws Exception {
-        return dataProviderSetting.getWebElementDataProvider().getIdForDisplay(entity)
+        return getDataProviderSetting().getWebElementDataProvider().getIdForDisplay(entity)
                 .replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPERATOR);
     }
 
     public WebElementEntity copyWebElement(WebElementEntity webElement, FolderEntity targetFolder) throws Exception {
-        return dataProviderSetting.getWebElementDataProvider().copyWebElement(webElement, targetFolder);
+        return getDataProviderSetting().getWebElementDataProvider().copyWebElement(webElement, targetFolder);
     }
 
     public WebElementEntity moveWebElement(WebElementEntity webElement, FolderEntity targetFolder) throws Exception {
-        return dataProviderSetting.getWebElementDataProvider().moveWebElement(webElement, targetFolder);
+        return getDataProviderSetting().getWebElementDataProvider().moveWebElement(webElement, targetFolder);
     }
 
     public void deleteWebElement(WebElementEntity webElement) throws Exception {
-        dataProviderSetting.getWebElementDataProvider().deleteWebElement(webElement);
+        getDataProviderSetting().getWebElementDataProvider().deleteWebElement(webElement);
     }
 
     public void updateWebElement(WebElementEntity webElement) throws Exception {
-        dataProviderSetting.getWebElementDataProvider().updateWebElement(webElement);
+        getDataProviderSetting().getWebElementDataProvider().updateWebElement(webElement);
     }
 
     public List<String> getSibblingWebElementNames(WebElementEntity webElement) throws Exception {
-        List<WebElementEntity> sibblingWebElements = dataProviderSetting.getWebElementDataProvider()
+        List<WebElementEntity> sibblingWebElements = getDataProviderSetting().getWebElementDataProvider()
                 .getChildWebElementsOfFolder(webElement.getParentFolder());
         List<String> sibblingName = new ArrayList<String>();
         for (WebElementEntity sibblingWebElement : sibblingWebElements) {
-            if (!dataProviderSetting.getEntityPk(sibblingWebElement)
-                    .equals(dataProviderSetting.getEntityPk(webElement))) {
+            if (!getDataProviderSetting().getEntityPk(sibblingWebElement)
+                    .equals(getDataProviderSetting().getEntityPk(webElement))) {
                 sibblingName.add(sibblingWebElement.getName());
             }
         }
@@ -104,22 +104,22 @@ public class ObjectRepositoryController extends EntityController {
     }
 
     public String getAvailableWebElementName(FolderEntity parentFolder, String name) throws Exception {
-        return dataProviderSetting.getWebElementDataProvider().getAvailableWebElementName(parentFolder, name);
+        return getDataProviderSetting().getWebElementDataProvider().getAvailableWebElementName(parentFolder, name);
     }
 
     public WebServiceRequestEntity addNewRequest(FolderEntity parentFolder, WebServiceRequestEntity request)
             throws Exception {
-        return dataProviderSetting.getWebElementDataProvider().addNewRequest(parentFolder, request);
+        return getDataProviderSetting().getWebElementDataProvider().addNewRequest(parentFolder, request);
     }
 
     public List<WebElementEntity> getTestObjectReferences(WebElementEntity webElement, ProjectEntity projectEntity)
             throws Exception {
-        return dataProviderSetting.getWebElementDataProvider().getWebElementPropertyByRefElement(
+        return getDataProviderSetting().getWebElementDataProvider().getWebElementPropertyByRefElement(
                 webElement.getIdForDisplay(), projectEntity, true);
     }
 
     public WebElementPropertyEntity getRefElementProperty(WebElementEntity webElement) {
-        return dataProviderSetting.getWebElementDataProvider().getRefElementProperty(webElement);
+        return getDataProviderSetting().getWebElementDataProvider().getRefElementProperty(webElement);
     }
 
     public void reloadTestObject(WebElementEntity testObject, Entity entity) throws Exception {

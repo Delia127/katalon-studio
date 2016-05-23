@@ -5,10 +5,9 @@ Bundle-SymbolicName: com.kms.katalon.dal;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Require-Bundle: com.kms.katalon.entity;bundle-version="1.0.0",
+Require-Bundle: com.kms.katalon.entity,
  com.kms.katalon.constant
 Export-Package: com.kms.katalon.dal,
  com.kms.katalon.dal.exception,
  com.kms.katalon.dal.setting,
  com.kms.katalon.dal.state
-Import-Package: com.google.gson.stream
