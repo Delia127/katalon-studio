@@ -104,14 +104,12 @@ public class WrapperToAstTreeConverter {
                 BinaryExpressionWrapper expression, AstTreeTableNode parentNode) {
             if (expression.getRightExpression() instanceof MethodCallExpressionWrapper) {
                 MethodCallExpressionWrapper methodCallExpression = (MethodCallExpressionWrapper) expression.getRightExpression();
-
                 if (isBuiltInKeywordMethodCall(methodCallExpression)) {
                     return new AstBuiltInKeywordTreeTableNode(statementWrapper, parentNode);
                 } else if (isCustomKeywordMethodCall(methodCallExpression)) {
                     return new AstCustomKeywordTreeTableNode(statementWrapper, parentNode);
                 }
             }
-
             return new AstInputEditableStatementTreeTableNode(statementWrapper, parentNode,
                     ImageConstants.IMG_16_BINARY, StringConstants.TREE_BINARY_STATEMENT);
         }

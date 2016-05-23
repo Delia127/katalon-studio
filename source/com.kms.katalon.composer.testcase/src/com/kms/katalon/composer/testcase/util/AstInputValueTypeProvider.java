@@ -14,6 +14,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.ClassExpressionW
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ClosureListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstructorCallExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.DeclarationExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MapExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
@@ -189,6 +190,7 @@ public class AstInputValueTypeProvider {
         inputClasses.put(PropertyExpressionWrapper.class.getSimpleName(), propertyValueTypeProvider);
         inputClasses.put(ClassExpressionWrapper.class.getSimpleName(), classValueTypeProvider);
         inputClasses.put(ConstructorCallExpressionWrapper.class.getSimpleName(), constructorCallValueTypeProvider);
+        inputClasses.put(DeclarationExpressionWrapper.class.getSimpleName(), binaryValueTypeProvider);
         
     }
 
