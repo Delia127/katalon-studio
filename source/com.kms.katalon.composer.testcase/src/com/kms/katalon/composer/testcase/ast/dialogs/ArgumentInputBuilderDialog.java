@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -20,7 +21,6 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpres
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.PropertyExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputParameter;
 import com.kms.katalon.composer.testcase.model.InputValueType;
-import com.kms.katalon.composer.testcase.model.InputValueTypeUtil;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.providers.UneditableTableCellLabelProvider;
@@ -29,13 +29,12 @@ import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnS
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.composer.testcase.util.AstValueUtil;
+import com.kms.katalon.composer.testcase.util.AstInputValueTypeOptionsProvider;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 public class ArgumentInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
-    private final InputValueType[] defaultInputValueTypes = InputValueTypeUtil.getValueTypeOptions(InputValueTypeUtil.ARGUMENT_OPTIONS);
-
     private List<InputParameter> inputParameters;
 
     private List<InputParameter> originalParameters;
@@ -178,56 +177,7 @@ public class ArgumentInputBuilderDialog extends AbstractAstBuilderWithTableDialo
             }
         });
 
-        tableViewerColumnValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(
-                tableViewer, defaultInputValueTypes) {
-            @Override
-            protected void setValue(Object element, Object value) {
-                if (!(value instanceof Integer) || (int) value < 0 || (int) value >= inputValueTypes.length) {
-                    return;
-                }
-                InputParameter inputParameter = (InputParameter) element;
-                InputValueType newValueType = inputValueTypes[(int) value];
-                InputValueType oldValueType = AstValueUtil.getTypeValue(inputParameter.getValue());
-                if (newValueType == oldValueType) {
-                    return;
-                }
-                ASTNodeWrapper newAstNode = (ASTNodeWrapper) newValueType.getNewValue(parent);
-                if (newValueType == InputValueType.Property) {
-                    newAstNode = AstKeywordsInputUtil.createPropertyExpressionForClass(inputParameter.getParamType()
-                            .getSimpleName(), parent);
-                }
-                if (newAstNode == null) {
-                    return;
-                }
-                if (inputParameter.getValue() instanceof ASTNodeWrapper) {
-                    ASTNodeWrapper oldAstNode = (ASTNodeWrapper) inputParameter.getValue();
-                    newAstNode.copyProperties(oldAstNode);
-                    newAstNode.setParent(oldAstNode.getParent());
-                }
-                inputParameter.setValue(newAstNode);
-                if (newAstNode instanceof MethodCallExpressionWrapper
-                        && AstEntityInputUtil.isFindTestCaseMethodCall((MethodCallExpressionWrapper) newAstNode)) {
-                    updateTestCaseBindingInputParameters((MethodCallExpressionWrapper) newAstNode);
-                }
-                getViewer().refresh();
-            }
-
-            @Override
-            protected Object getValue(Object element) {
-                return super.getValue(((InputParameter) element).getValue());
-            }
-
-            @Override
-            protected boolean canEdit(Object element) {
-                return (element instanceof InputParameter
-                        && !((InputParameter) element).isFailureHandlingInputParameter() && super.canEdit(((InputParameter) element).getValue()));
-            }
-
-            @Override
-            protected CellEditor getCellEditor(Object element) {
-                return super.getCellEditor(((InputParameter) element).getValue());
-            }
-        });
+        tableViewerColumnValueType.setEditingSupport(new MethodArgumentInputBuilderValueTypeColumnSupport(tableViewer));
     }
 
     private void addTableColumnParam() {
@@ -280,5 +230,67 @@ public class ArgumentInputBuilderDialog extends AbstractAstBuilderWithTableDialo
         tableViewer.setContentProvider(new ArrayContentProvider());
         tableViewer.setInput(inputParameters);
         tableViewer.refresh();
+    }
+    
+
+    private final class MethodArgumentInputBuilderValueTypeColumnSupport extends
+            AstInputBuilderValueTypeColumnSupport {
+        public MethodArgumentInputBuilderValueTypeColumnSupport(ColumnViewer viewer) {
+            super(viewer);
+        }
+
+        @Override
+        protected void setValue(Object element, Object value) {
+            if (!(value instanceof Integer) || (int) value < 0 || (int) value >= inputValueTypes.length) {
+                return;
+            }
+            InputParameter inputParameter = (InputParameter) element;
+            InputValueType newValueType = inputValueTypes[(int) value];
+            InputValueType oldValueType = AstValueUtil.getTypeValue(inputParameter.getValue());
+            if (newValueType == oldValueType) {
+                return;
+            }
+            ASTNodeWrapper newAstNode = (ASTNodeWrapper) newValueType.getNewValue(parent);
+            if (newValueType == InputValueType.Property) {
+                newAstNode = AstKeywordsInputUtil.createPropertyExpressionForClass(inputParameter.getParamType()
+                        .getSimpleName(), parent);
+            }
+            if (newAstNode == null) {
+                return;
+            }
+            if (inputParameter.getValue() instanceof ASTNodeWrapper) {
+                ASTNodeWrapper oldAstNode = (ASTNodeWrapper) inputParameter.getValue();
+                newAstNode.copyProperties(oldAstNode);
+                newAstNode.setParent(oldAstNode.getParent());
+            }
+            inputParameter.setValue(newAstNode);
+            if (newAstNode instanceof MethodCallExpressionWrapper
+                    && AstEntityInputUtil.isFindTestCaseMethodCall((MethodCallExpressionWrapper) newAstNode)) {
+                updateTestCaseBindingInputParameters((MethodCallExpressionWrapper) newAstNode);
+            }
+            getViewer().refresh();
+        }
+
+        @Override
+        protected Object getValue(Object element) {
+            return super.getValue(((InputParameter) element).getValue());
+        }
+
+        @Override
+        protected boolean canEdit(Object element) {
+            return (element instanceof InputParameter
+                    && !((InputParameter) element).isFailureHandlingInputParameter());
+        }
+
+        @Override
+        protected CellEditor getCellEditor(Object element) {
+            InputParameter inputParameter = (InputParameter) element;
+            inputValueTypes = AstInputValueTypeOptionsProvider.getAssignableInputValueTypes(inputParameter.getParamType());
+            if (inputParameter.getParamType().isFailureHandlingTypeClass()) {
+                inputValueTypes = new InputValueType[] { InputValueType.Property };
+            }
+            initReadableValueTypeNamesList();
+            return super.getCellEditor(inputParameter.getValue());
+        }
     }
 }

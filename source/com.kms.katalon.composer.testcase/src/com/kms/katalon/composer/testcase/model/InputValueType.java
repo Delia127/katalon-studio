@@ -1,9 +1,13 @@
 package com.kms.katalon.composer.testcase.model;
 
+import java.lang.reflect.Type;
+
+import org.apache.commons.lang.ClassUtils;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.openqa.selenium.Keys;
 
+import com.google.gson.internal.Primitives;
 import com.kms.katalon.composer.testcase.ast.editors.ClassExpressionTypeSelectionDialogCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.ClassNodeTypeSelectionDialogCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.PropertyTypeSelectionDialogCellEditor;
@@ -51,7 +55,7 @@ public enum InputValueType implements InputValueEditorProvider {
     Keys,
     Key;
 
-    private static final java.lang.String THIS_VARIABLE = "this";
+    private static final String THIS_VARIABLE = "this";
 
     public String getName() {
         return name();
@@ -67,8 +71,7 @@ public enum InputValueType implements InputValueEditorProvider {
     public CellEditor getCellEditorForValue(Composite parent, Object astObject) {
         switch (this) {
             case Binary:
-                return AstValueUtil.getCellEditorForBinaryExpression(parent,
-                        (BinaryExpressionWrapper) astObject);
+                return AstValueUtil.getCellEditorForBinaryExpression(parent, (BinaryExpressionWrapper) astObject);
             case Boolean:
                 return AstValueUtil.getCellEditorForBooleanConstantExpression(parent);
             case Class:
@@ -77,8 +80,7 @@ public enum InputValueType implements InputValueEditorProvider {
                 return AstValueUtil.getCellEditorForClosureListExpression(parent,
                         (ClosureListExpressionWrapper) astObject);
             case Condition:
-                return AstValueUtil.getCellEditorForBooleanExpression(parent,
-                        (BooleanExpressionWrapper) astObject);
+                return AstValueUtil.getCellEditorForBooleanExpression(parent, (BooleanExpressionWrapper) astObject);
             case GlobalVariable:
                 return AstValueUtil.getCellEditorForGlobalVariableExpression(parent);
             case List:
@@ -91,33 +93,27 @@ public enum InputValueType implements InputValueEditorProvider {
             case Number:
                 return AstValueUtil.getCellEditorForNumberConstantExpression(parent);
             case Property:
-                return AstValueUtil.getCellEditorForPropertyExpression(parent,
-                        (PropertyExpressionWrapper) astObject);
+                return AstValueUtil.getCellEditorForPropertyExpression(parent, (PropertyExpressionWrapper) astObject);
             case Range:
                 return AstValueUtil.getCellEditorForRangeExpression(parent, (RangeExpressionWrapper) astObject);
             case String:
                 return AstValueUtil.getCellEditorForStringConstantExpression(parent);
             case TestCase:
-                return AstValueUtil.getCellEditorForCallTestCase(parent,
-                        (MethodCallExpressionWrapper) astObject);
+                return AstValueUtil.getCellEditorForCallTestCase(parent, (MethodCallExpressionWrapper) astObject);
             case TestData:
                 return AstValueUtil.getCellEditorForTestData(parent, (MethodCallExpressionWrapper) astObject);
             case TestDataValue:
-                return AstValueUtil.getCellEditorForTestDataValue(parent,
-                        (MethodCallExpressionWrapper) astObject);
+                return AstValueUtil.getCellEditorForTestDataValue(parent, (MethodCallExpressionWrapper) astObject);
             case TestObject:
                 return AstValueUtil.getCellEditorForTestObject(parent, (MethodCallExpressionWrapper) astObject);
             case Throwable:
-                return AstValueUtil.getCellEditorForThrowable(parent,
-                        (ConstructorCallExpressionWrapper) astObject);
+                return AstValueUtil.getCellEditorForThrowable(parent, (ConstructorCallExpressionWrapper) astObject);
             case Variable:
-                return AstValueUtil.getCellEditorForVariableExpression(parent,
-                        (VariableExpressionWrapper) astObject);
+                return AstValueUtil.getCellEditorForVariableExpression(parent, (VariableExpressionWrapper) astObject);
             case Key:
                 return AstValueUtil.getCellEditorForKeyExpression(parent);
             case Keys:
-                return AstValueUtil.getCellEditorForKeysExpression(parent,
-                        (MethodCallExpressionWrapper) astObject);
+                return AstValueUtil.getCellEditorForKeysExpression(parent, (MethodCallExpressionWrapper) astObject);
             default:
                 return null;
         }
@@ -128,17 +124,15 @@ public enum InputValueType implements InputValueEditorProvider {
             return new ClassExpressionTypeSelectionDialogCellEditor(parent,
                     ((ClassExpressionWrapper) astObject).getText());
         } else if (astObject instanceof VariableExpressionWrapper) {
-            return new VariableTypeSelectionDialogCellEditor(parent,
-                    ((VariableExpressionWrapper) astObject).getText());
+            return new VariableTypeSelectionDialogCellEditor(parent, ((VariableExpressionWrapper) astObject).getText());
         } else if (astObject instanceof PropertyExpressionWrapper) {
-            return new PropertyTypeSelectionDialogCellEditor(parent,
-                    ((PropertyExpressionWrapper) astObject).getText());
+            return new PropertyTypeSelectionDialogCellEditor(parent, ((PropertyExpressionWrapper) astObject).getText());
         } else if (astObject instanceof ClassNodeWrapper) {
             return new ClassNodeTypeSelectionDialogCellEditor(parent, ((ClassNodeWrapper) astObject).getName());
         }
         return null;
     }
-    
+
     public Object getNewValue(ASTNodeWrapper parent) {
         switch (this) {
             case String:
@@ -231,7 +225,7 @@ public enum InputValueType implements InputValueEditorProvider {
         }
         return methodCall.getText();
     }
-    
+
     @Override
     public Object newValue() {
         return getNewValue(null);
@@ -240,5 +234,51 @@ public enum InputValueType implements InputValueEditorProvider {
     @Override
     public ASTNodeWrapper toASTNodeWrapper(Object rawValue) {
         return (rawValue instanceof ASTNodeWrapper) ? (ASTNodeWrapper) rawValue : null;
+    }
+
+    public boolean isAssignableTo(Class<?> paramType) {
+        switch (this) {
+            case String:
+            case Keys:
+            case TestDataValue:
+                return isClassAssignable(java.lang.String.class, paramType);
+            case Number:
+                return isClassAssignable(paramType, java.lang.Number.class);
+            case Condition:
+            case Boolean:
+                return isClassAssignable(java.lang.Boolean.class, paramType);
+            case Null:
+                return !paramType.isPrimitive() && isClassAssignable(java.lang.Boolean.class, paramType);
+            case Class:
+                return isClassAssignable(Type.class, paramType);
+            case List:
+                return isClassAssignable(java.util.List.class, paramType);
+            case Map:
+                return isClassAssignable(java.util.Map.class, paramType);
+            case TestCase:
+                return isClassAssignable(com.kms.katalon.core.testcase.TestCase.class, paramType);
+            case TestData:
+                return isClassAssignable(com.kms.katalon.core.testdata.TestData.class, paramType);
+            case TestObject:
+                return isClassAssignable(com.kms.katalon.core.testobject.TestObject.class, paramType);
+            case Binary:
+            case GlobalVariable:
+            case MethodCall:
+            case Property:
+            case Variable:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private static boolean isClassAssignable(Class<?> inputClass, Class<?> paramClass) {
+        if (inputClass == null || paramClass == null) {
+            return false;
+        }
+        if (paramClass.isPrimitive()) {
+            paramClass = Primitives.wrap(paramClass);
+        }
+        return ClassUtils.isAssignable(inputClass, paramClass, true);
     }
 }

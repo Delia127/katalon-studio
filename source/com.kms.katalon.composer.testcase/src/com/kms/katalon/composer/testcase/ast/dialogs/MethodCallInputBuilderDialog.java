@@ -24,16 +24,16 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrappe
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputParameter;
 import com.kms.katalon.composer.testcase.model.InputValueType;
-import com.kms.katalon.composer.testcase.model.InputValueTypeUtil;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
+import com.kms.katalon.composer.testcase.util.AstInputValueTypeOptionsProvider;
 
 public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
 
-    private final InputValueType[] defaultObjectValueTypes = InputValueTypeUtil.getValueTypeOptions(InputValueType.MethodCall);
+    private final InputValueType[] defaultObjectValueTypes = AstInputValueTypeOptionsProvider.getInputValueTypeOptions(InputValueType.MethodCall);
 
     private MethodCallExpressionWrapper methodCallExpression;
 

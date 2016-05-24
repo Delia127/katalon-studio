@@ -108,7 +108,6 @@ public class InputParameter {
     }
 
     public boolean isFailureHandlingInputParameter() {
-        return (getParamType().getFullName().equals(FailureHandling.class.getName())
-                && getValue() instanceof ExpressionWrapper && AstKeywordsInputUtil.isFailureHandlingExpression((ExpressionWrapper) getValue()));
+        return (getParamType().isFailureHandlingTypeClass() && getValue() instanceof ExpressionWrapper && AstKeywordsInputUtil.isFailureHandlingExpression((ExpressionWrapper) getValue()));
     }
 }

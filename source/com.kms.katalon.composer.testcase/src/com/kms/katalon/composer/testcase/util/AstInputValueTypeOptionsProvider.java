@@ -1,23 +1,29 @@
-package com.kms.katalon.composer.testcase.model;
+package com.kms.katalon.composer.testcase.util;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.internal.Primitives;
+import com.kms.katalon.composer.testcase.model.InputParameterClass;
+import com.kms.katalon.composer.testcase.model.InputValueType;
 
-public class InputValueTypeUtil {
-    
-    private InputValueTypeUtil() {
-        //Disable default constructor
+public class AstInputValueTypeOptionsProvider {
+
+    private AstInputValueTypeOptionsProvider() {
+        // Disable default constructor
     }
-    
+
     public static final String ARGUMENT_OPTIONS = "argument";
+
     public static final String CASE_OPTIONS = "case";
+
     public static final String FOR_OPTIONS = "for";
+
     public static final String SWITCH_OPTIONS = "switch";
+
     public static final String THROW_OPTIONS = "throw";
-    
+
     private static final InputValueType[] closureListOptions = { InputValueType.String, InputValueType.Number,
             InputValueType.Boolean, InputValueType.Null, InputValueType.Variable, InputValueType.GlobalVariable,
             InputValueType.TestDataValue, InputValueType.MethodCall, InputValueType.Binary, InputValueType.Property };
@@ -70,8 +76,7 @@ public class InputValueTypeUtil {
     private static final InputValueType[] variableOptions = { InputValueType.String, InputValueType.Number,
             InputValueType.Boolean, InputValueType.Null, InputValueType.GlobalVariable, InputValueType.TestDataValue,
             InputValueType.TestObject, InputValueType.TestData, InputValueType.Range, InputValueType.Property,
-            InputValueType.List,
-            InputValueType.Map };
+            InputValueType.List, InputValueType.Map };
 
     private static final InputValueType[] methodCallOptions = { InputValueType.Class, InputValueType.This,
             InputValueType.String, InputValueType.Number, InputValueType.Boolean, InputValueType.Null,
@@ -88,86 +93,71 @@ public class InputValueTypeUtil {
     private static final InputValueType[] throwOptions = { InputValueType.Throwable, InputValueType.Variable };
 
     private static final InputValueType[] stringOptions = { InputValueType.String, InputValueType.Null,
-            InputValueType.Variable, InputValueType.GlobalVariable,
-            InputValueType.TestDataValue, InputValueType.MethodCall, InputValueType.Binary, InputValueType.Property };
+            InputValueType.Variable, InputValueType.GlobalVariable, InputValueType.TestDataValue,
+            InputValueType.MethodCall, InputValueType.Binary, InputValueType.Property };
 
     private static final InputValueType[] numberOptions = { InputValueType.Number, InputValueType.Null,
-            InputValueType.Variable, InputValueType.GlobalVariable,
-            InputValueType.TestDataValue, InputValueType.MethodCall, InputValueType.Binary, InputValueType.Property };
+            InputValueType.Variable, InputValueType.GlobalVariable, InputValueType.TestDataValue,
+            InputValueType.MethodCall, InputValueType.Binary, InputValueType.Property };
 
     private static final InputValueType[] propertyOptions = { InputValueType.Class, InputValueType.Variable };
-    
+
     private static final Map<String, InputValueType[]> valueTypeOptions = ImmutableMap.<String, InputValueType[]> builder()
-            .put(InputValueType.ClosureList.getName()    , closureListOptions)
-            .put(ARGUMENT_OPTIONS                        , argumentOptions)
-            .put(InputValueType.GlobalVariable.getName() , globalVariableOptions)
-            .put(CASE_OPTIONS                            , caseOptions)
-            .put(FOR_OPTIONS                             , forOptions)
-            .put(InputValueType.Keys.getName()           , keysOptions)
-            .put(InputValueType.List.getName()           , listOptions)
-            .put(InputValueType.Map.getName()            , mapOptions)
-            .put(InputValueType.Range.getName()          , rangeOptions)
-            .put(SWITCH_OPTIONS                          , switchOptions)
-            .put(InputValueType.TestDataValue.getName()  , testDataValueOptions)
-            .put(InputValueType.Variable.getName()       , variableOptions)
-            .put(InputValueType.MethodCall.getName()     , methodCallOptions)
-            .put(InputValueType.Binary.getName()         , binaryOptions)
-            .put(InputValueType.Boolean.getName()        , booleanOptions)
-            .put(THROW_OPTIONS                           , throwOptions)
-            .put(InputValueType.String.getName()         , stringOptions)
-            .put(InputValueType.Number.getName()         , numberOptions)
-            .put(InputValueType.Property.getName()       , propertyOptions)
+            .put(InputValueType.ClosureList.getName(), closureListOptions)
+            .put(ARGUMENT_OPTIONS, argumentOptions)
+            .put(InputValueType.GlobalVariable.getName(), globalVariableOptions)
+            .put(CASE_OPTIONS, caseOptions)
+            .put(FOR_OPTIONS, forOptions)
+            .put(InputValueType.Keys.getName(), keysOptions)
+            .put(InputValueType.List.getName(), listOptions)
+            .put(InputValueType.Map.getName(), mapOptions)
+            .put(InputValueType.Range.getName(), rangeOptions)
+            .put(SWITCH_OPTIONS, switchOptions)
+            .put(InputValueType.TestDataValue.getName(), testDataValueOptions)
+            .put(InputValueType.Variable.getName(), variableOptions)
+            .put(InputValueType.MethodCall.getName(), methodCallOptions)
+            .put(InputValueType.Binary.getName(), binaryOptions)
+            .put(InputValueType.Boolean.getName(), booleanOptions)
+            .put(THROW_OPTIONS, throwOptions)
+            .put(InputValueType.String.getName(), stringOptions)
+            .put(InputValueType.Number.getName(), numberOptions)
+            .put(InputValueType.Property.getName(), propertyOptions)
             .build();
-    
-    public static InputValueType[] getValueTypeOptions(String name) {
+
+    public static InputValueType[] getInputValueTypeOptions(String name) {
         return valueTypeOptions.get(name);
     }
-    
-    public static InputValueType[] getValueTypeOptions(InputValueType inputValueType) {
+
+    public static InputValueType[] getInputValueTypeOptions(InputValueType inputValueType) {
         return valueTypeOptions.get(inputValueType.getName());
     }
     
-    public static InputValueType getAssignableValueType(Class<?> clazz) {
-        if (clazz == null) {
-            return null;
+    public static InputValueType getAssignableValueType(Class<?> paramClass) {
+        for (InputValueType inputValueType : argumentOptions) {
+            if (inputValueType.isAssignableTo(paramClass)) {
+                return inputValueType;
+            }
         }
-        
-        if (clazz.isPrimitive()) {
-            return getAssignableValueType(Primitives.wrap(clazz));
-        }
-        
-        if (String.class.isAssignableFrom(clazz)) {
-            return InputValueType.String;
-        }
-        
-        if (Number.class.isAssignableFrom(clazz)) {
-            return InputValueType.Number;
-        }
-        
-        if (Boolean.class.isAssignableFrom(clazz)) {
-            return InputValueType.Boolean;
-        }
-        
-        if (List.class.isAssignableFrom(clazz)) {
-            return InputValueType.List;
-        }
-        
-        if (Map.class.isAssignableFrom(clazz)) {
-            return InputValueType.Map;
-        }
-        
-        if (Throwable.class.isAssignableFrom(clazz)) {
-            return InputValueType.Throwable;
-        }
-        
-        if (clazz.isEnum()) {
-            return InputValueType.Property;
-        }
-        
-        if (Object.class.isAssignableFrom(clazz)) {
-            return InputValueType.Variable;
-        }
-        
         return null;
+    }
+
+    public static InputValueType[] getAssignableInputValueTypes(Class<?> paramClass) {
+        if (paramClass == null) {
+            return new InputValueType[0];
+        }
+        List<InputValueType> inputValueTypeList = new ArrayList<InputValueType>();
+        for (InputValueType inputValueType : argumentOptions) {
+            if (inputValueType.isAssignableTo(paramClass)) {
+                inputValueTypeList.add(inputValueType);
+            }
+        }
+        return inputValueTypeList.toArray(new InputValueType[inputValueTypeList.size()]);
+    }
+
+    public static InputValueType[] getAssignableInputValueTypes(InputParameterClass paramType) {
+        if (paramType == null) {
+            return new InputValueType[0];
+        }
+        return getAssignableInputValueTypes(paramType.convertToClass());
     }
 }
