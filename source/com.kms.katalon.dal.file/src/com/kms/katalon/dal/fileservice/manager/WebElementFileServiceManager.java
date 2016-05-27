@@ -19,7 +19,6 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
-import com.kms.katalon.entity.util.Util;
 import com.kms.katalon.groovy.util.GroovyRefreshUtil;
 
 public class WebElementFileServiceManager {
@@ -35,33 +34,22 @@ public class WebElementFileServiceManager {
     }
 
     /**
-     * Create new Test Object
+     * Save a NEW Test Object entity
      * 
-     * @param parentFolder
-     * @param defaultName
-     *            Test Object name. Default name (New Element) will be used if this null or empty
+     * @param newTestObject new WebElementEntity which is created by
+     * {@link #newTestObjectWithoutSave(FolderEntity, String)}
      * @return {@link WebElementEntity}
      * @throws Exception
      */
-    public static WebElementEntity addNewWebElement(FolderEntity parentFolder, String defaultName) throws Exception {
-        if (parentFolder != null) {
-            if (defaultName == null || defaultName.trim().equals("")) {
-                defaultName = StringConstants.MNG_NEW_ELEMENT;
-            }
-            String name = getAvailableWebElementName(parentFolder, defaultName);
-
-            WebElementEntity newWebElement = new WebElementEntity();
-            newWebElement.setName(name);
-            newWebElement.setParentFolder(parentFolder);
-            newWebElement.setElementGuidId(Util.generateGuid());
-            newWebElement.setProject(parentFolder.getProject());
-            EntityService.getInstance().saveEntity(newWebElement);
-
-            FolderFileServiceManager.refreshFolder(parentFolder);
-            return newWebElement;
+    public static WebElementEntity saveNewTestObject(WebElementEntity newTestObject) throws Exception {
+        if (newTestObject == null || newTestObject.getProject() == null || newTestObject.getParentFolder() == null) {
+            return null;
         }
-        return null;
 
+        EntityService.getInstance().saveEntity(newTestObject);
+        FolderFileServiceManager.refreshFolder(newTestObject.getParentFolder());
+
+        return newTestObject;
     }
 
     public static String getAvailableWebElementName(FolderEntity parentFolder, String name) throws Exception {
@@ -232,7 +220,7 @@ public class WebElementFileServiceManager {
         return (childWebElements.size() > num) ? childWebElements.subList(0, num) : childWebElements;
     }
 
-    public static WebElementEntity saveWebElement(WebElementEntity webElement) throws Exception {
+    public static WebElementEntity updateTestObject(WebElementEntity webElement) throws Exception {
         validateToRename(webElement);
         FolderFileServiceManager.refreshFolder(webElement.getParentFolder());
         return webElement;
@@ -544,4 +532,5 @@ public class WebElementFileServiceManager {
         }
         return null;
     }
+
 }

@@ -6,16 +6,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.kms.katalon.constants.GlobalStringConstants;
-import com.kms.katalon.dal.state.DataProviderState;
+import com.kms.katalon.controller.constants.StringConstants;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.testdata.DataFileEntity;
+import com.kms.katalon.entity.testdata.DataFileEntity.DataFileDriverType;
 import com.kms.katalon.entity.testdata.DataFilePropertyInputEntity;
 import com.kms.katalon.entity.testdata.InternalDataFilePropertyEntity;
+import com.kms.katalon.entity.util.Util;
 
 @Creatable
 public class TestDataController extends EntityController {
@@ -33,26 +36,72 @@ public class TestDataController extends EntityController {
         return (TestDataController) _instance;
     }
 
-    public DataFileEntity addDataFile(Object parentEntity) throws Exception {
-        return getDataProviderSetting().getDataFileDataProvider().addNewDataFile(getFolder(parentEntity));
+    /**
+     * Create and save new Test Data
+     * 
+     * @param parentFolder Parent folder entity
+     * @param testDataName Test Data name
+     * @return {@link DataFileEntity}
+     * @throws Exception
+     */
+    public DataFileEntity newTestData(FolderEntity parentFolder, String testDataName) throws Exception {
+        return saveNewTestData(newTestDataWithoutSave(parentFolder, testDataName));
     }
 
-    public DataFileEntity saveDataFile(DataFileEntity newDataFile, FolderEntity parentFolder) throws Exception {
-        return getDataProviderSetting().getDataFileDataProvider().saveDataFile(newDataFile);
+    /**
+     * Create new Test Data without save.
+     * 
+     * @param parentFolder Parent folder entity
+     * @param testDataName Test Data name
+     * @return {@link DataFileEntity}
+     * @throws Exception
+     */
+    public DataFileEntity newTestDataWithoutSave(FolderEntity parentFolder, String testDataName) throws Exception {
+        if (parentFolder == null) {
+            return null;
+        }
+
+        if (StringUtils.isBlank(testDataName)) {
+            testDataName = StringConstants.CTRL_NEW_TEST_DATA;
+        }
+
+        DataFileEntity newTestData = new DataFileEntity();
+        newTestData.setDataFileGUID(Util.generateGuid());
+        newTestData.setName(getAvailableTestDataName(parentFolder, testDataName));
+        newTestData.setParentFolder(parentFolder);
+        newTestData.setProject(parentFolder.getProject());
+        newTestData.setDriver(DataFileDriverType.ExcelFile);
+        newTestData.setDataSourceUrl(DataFileEntity.DEFAULT_DATA_SOURCE_URL);
+
+        return newTestData;
+    }
+
+    /**
+     * Save a NEW Test Data.<br>
+     * Please use {@link #updateTestData(DataFileEntity, FolderEntity)} if you want to save an existing Test Data.
+     * 
+     * @param newTestData the new Test Data which is created by {@link #newTestDataWithoutSave(FolderEntity, String)}
+     * @return {@link DataFileEntity} the saved Test Data
+     * @throws Exception
+     */
+    public DataFileEntity saveNewTestData(DataFileEntity newTestData) throws Exception {
+        return getDataProviderSetting().getDataFileDataProvider().saveNewTestData(newTestData);
+    }
+
+    /**
+     * Save an existing Test Data.
+     * 
+     * @param newDataFile Test Data
+     * @param parentFolder parent folder entity
+     * @return {@link DataFileEntity} the saved Test Data
+     * @throws Exception
+     */
+    public DataFileEntity updateTestData(DataFileEntity newDataFile, FolderEntity parentFolder) throws Exception {
+        return getDataProviderSetting().getDataFileDataProvider().updateTestData(newDataFile);
     }
 
     public List<DataFileEntity> getDataFileFromParentFolder(FolderEntity parentFolder) throws Exception {
         return getDataProviderSetting().getDataFileDataProvider().getDataFileByFolder(parentFolder);
-    }
-
-    private FolderEntity getFolder(Object parentEntity) throws Exception {
-        if (parentEntity instanceof FolderEntity) {
-            return (FolderEntity) parentEntity;
-        } else if (parentEntity instanceof DataFileEntity) {
-            return ((DataFileEntity) parentEntity).getParentFolder();
-        } else {
-            return FolderController.getInstance().getTestDataRoot(DataProviderState.getInstance().getCurrentProject());
-        }
     }
 
     public DataFileEntity copyDataFile(DataFileEntity dataFile, FolderEntity targetFolder) throws Exception {
@@ -94,7 +143,8 @@ public class TestDataController extends EntityController {
      */
     @Deprecated
     public String getIdForDisplay(DataFileEntity entity) throws Exception {
-        return getDataProviderSetting().getDataFileDataProvider().getIdForDisplay(entity)
+        return getDataProviderSetting().getDataFileDataProvider()
+                .getIdForDisplay(entity)
                 .replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPERATOR);
     }
 
@@ -102,7 +152,8 @@ public class TestDataController extends EntityController {
         List<DataFileEntity> sibblingDataFiles = getDataFileFromParentFolder(dataFile.getParentFolder());
         List<String> sibblingName = new ArrayList<String>();
         for (DataFileEntity sibblingDataFile : sibblingDataFiles) {
-            if (!getDataProviderSetting().getEntityPk(sibblingDataFile).equals(getDataProviderSetting().getEntityPk(dataFile))) {
+            if (!getDataProviderSetting().getEntityPk(sibblingDataFile).equals(
+                    getDataProviderSetting().getEntityPk(dataFile))) {
                 sibblingName.add(sibblingDataFile.getName());
             }
         }
@@ -136,7 +187,8 @@ public class TestDataController extends EntityController {
     }
 
     public String getTestDataDisplayIdByPk(String pk, String projectLocation) {
-        return FilenameUtils.removeExtension(pk).replace(projectLocation + File.separator, "")
+        return FilenameUtils.removeExtension(pk)
+                .replace(projectLocation + File.separator, "")
                 .replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPERATOR);
     }
 

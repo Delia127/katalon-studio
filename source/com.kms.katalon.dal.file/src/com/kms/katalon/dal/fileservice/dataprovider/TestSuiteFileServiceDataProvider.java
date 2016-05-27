@@ -8,35 +8,35 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class TestSuiteFileServiceDataProvider implements ITestSuiteDataProvider {
 
-	@Override
-	public TestSuiteEntity getTestSuite(String testSuitePk) throws Exception {
-		return TestSuiteFileServiceManager.getTestSuite(testSuitePk);
-	}
+    @Override
+    public TestSuiteEntity getTestSuite(String testSuitePk) throws Exception {
+        return TestSuiteFileServiceManager.getTestSuite(testSuitePk);
+    }
 
-	@Override
-	public void deleteTestSuite(TestSuiteEntity testSuite) throws Exception {
-		TestSuiteFileServiceManager.deleteTestSuite(testSuite);
-	}
+    @Override
+    public void deleteTestSuite(TestSuiteEntity testSuite) throws Exception {
+        TestSuiteFileServiceManager.deleteTestSuite(testSuite);
+    }
 
-	@Override
-	public TestSuiteEntity updateTestSuite(TestSuiteEntity testSuite) throws Exception {
-		return TestSuiteFileServiceManager.updateTestSuite(testSuite);
-	}
+    @Override
+    public TestSuiteEntity updateTestSuite(TestSuiteEntity testSuite) throws Exception {
+        return TestSuiteFileServiceManager.updateTestSuite(testSuite);
+    }
 
-	@Override
-	public TestSuiteEntity copyTestSuite(TestSuiteEntity testSuite, FolderEntity destinationFolder) throws Exception {
-		return TestSuiteFileServiceManager.copyTestSuite(testSuite, destinationFolder);	
-	}
+    @Override
+    public TestSuiteEntity copyTestSuite(TestSuiteEntity testSuite, FolderEntity destinationFolder) throws Exception {
+        return TestSuiteFileServiceManager.copyTestSuite(testSuite, destinationFolder);
+    }
 
-	@Override
-	public TestSuiteEntity moveTestSuite(TestSuiteEntity testSuite, FolderEntity destinationFolder) throws Exception {
-		return TestSuiteFileServiceManager.moveTestSuite(testSuite, destinationFolder);
-	}
+    @Override
+    public TestSuiteEntity moveTestSuite(TestSuiteEntity testSuite, FolderEntity destinationFolder) throws Exception {
+        return TestSuiteFileServiceManager.moveTestSuite(testSuite, destinationFolder);
+    }
 
-	@Override
-	public TestSuiteEntity addNewTestSuite(FolderEntity parentFolder, String testSuiteName, short timeOut) throws Exception {
-		return TestSuiteFileServiceManager.addNewTestSuite(parentFolder, testSuiteName, timeOut);
-	}
+    @Override
+    public TestSuiteEntity saveNewTestSuite(TestSuiteEntity newTestSuite) throws Exception {
+        return TestSuiteFileServiceManager.saveNewTestSuite(newTestSuite);
+    }
 
     @Override
     public String getIdForDisplay(TestSuiteEntity entity) throws Exception {
@@ -51,12 +51,11 @@ public class TestSuiteFileServiceDataProvider implements ITestSuiteDataProvider 
             }
         }
         return null;
-        
+
     }
 
-	@Override
-	public String getAvailableTestSuiteName(FolderEntity parentFolder, String name)
-			throws Exception {
-		return TestSuiteFileServiceManager.getAvailableTestSuiteName(parentFolder, name);
-	}
+    @Override
+    public String getAvailableTestSuiteName(FolderEntity parentFolder, String name) throws Exception {
+        return TestSuiteFileServiceManager.getAvailableTestSuiteName(parentFolder, name);
+    }
 }

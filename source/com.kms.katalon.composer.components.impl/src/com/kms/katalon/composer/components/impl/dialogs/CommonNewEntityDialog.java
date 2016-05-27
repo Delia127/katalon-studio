@@ -12,9 +12,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
+import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 
-public class CommonNewEntityDialog extends AbstractEntityDialog {
+public abstract class CommonNewEntityDialog<T extends FileEntity> extends AbstractEntityDialog {
+
+    protected T entity;
 
     private String description;
 
@@ -52,8 +55,26 @@ public class CommonNewEntityDialog extends AbstractEntityDialog {
         return parent;
     }
 
-    public String getDescription() {
-        return StringUtils.trimToEmpty(description);
+    public T getEntity() {
+        return entity;
+    }
+
+    /**
+     * Create new entity (without save)
+     */
+    protected abstract void createEntity();
+
+    protected void setEntityProperties() {
+        entity.setDescription(StringUtils.trimToEmpty(description));
+    }
+
+    @Override
+    protected void okPressed() {
+        createEntity();
+        if (entity != null) {
+            setEntityProperties();
+        }
+        super.okPressed();
     }
 
 }

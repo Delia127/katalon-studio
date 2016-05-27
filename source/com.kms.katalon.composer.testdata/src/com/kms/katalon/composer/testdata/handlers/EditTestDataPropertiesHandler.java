@@ -38,7 +38,7 @@ public class EditTestDataPropertiesHandler implements IHandler {
                 return;
             }
 
-            TestDataController.getInstance().saveDataFile(testData, testData.getParentFolder());
+            TestDataController.getInstance().updateTestData(testData, testData.getParentFolder());
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
