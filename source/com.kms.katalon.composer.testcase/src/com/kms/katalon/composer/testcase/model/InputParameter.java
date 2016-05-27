@@ -12,7 +12,6 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrappe
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ListExpressionWrapper;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
-import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCase;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.custom.keyword.KeywordParameter;
@@ -87,17 +86,23 @@ public class InputParameter {
     }
 
     public ExpressionWrapper getValueAsExpression() {
-        if (getValue() instanceof ExpressionWrapper) {
-            return (ExpressionWrapper) getValue();
-        }
         InputParameterClass paramClass = getParamType();
-        if (getValue() instanceof ListExpressionWrapper && paramClass.isArray()) {
-            ListExpressionWrapper listExpression = (ListExpressionWrapper) getValue();
-            return new CastExpressionWrapper(new ClassNode(new ClassNode(paramClass.getComponentType().getFullName(),
-                    paramClass.getModifiers(), new ClassNode(Object.class))), listExpression,
-                    listExpression.getParent());
+        Object inputValue = getValue();
+        if (inputValue instanceof ListExpressionWrapper && paramClass.isArray()) {
+            return getValueAsCastExpression(paramClass, inputValue);
+        }
+        if (inputValue instanceof ExpressionWrapper) {
+            return (ExpressionWrapper) inputValue;
         }
         return new ConstantExpressionWrapper();
+    }
+
+    private static ExpressionWrapper getValueAsCastExpression(InputParameterClass paramClass, Object inputValue) {
+        ListExpressionWrapper listExpression = (ListExpressionWrapper) inputValue;
+        ClassNode convertedTypeClass = new ClassNode(new ClassNode(paramClass.getComponentType().getFullName(),
+                paramClass.getModifiers(), new ClassNode(Object.class)));
+        return new CastExpressionWrapper(convertedTypeClass, listExpression,
+                listExpression.getParent());
     }
 
     public boolean isEditable() {

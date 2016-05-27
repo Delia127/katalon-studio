@@ -17,7 +17,6 @@ import com.kms.katalon.composer.webui.recorder.action.HTMLActionParamMapping;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionParamValueType;
 import com.kms.katalon.composer.webui.recorder.type.HTMLActionPropertyValueType;
 import com.kms.katalon.composer.webui.recorder.util.HTMLActionUtil;
-import com.kms.katalon.composer.webui.recorder.util.HTMLInputValueTypeProvider;
 
 public class HTMLActionValueTypeColumnSupport extends EditingSupport {
 
