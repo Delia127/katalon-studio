@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+	<extension
+         point="com.kms.katalon.preferences.PreferencePages">
+      <page
+            class="com.kms.katalon.objectspy.preferences.ObjectSpyPreferencePage"
+            id="com.kms.katalon.composer.webui.objectspy"
+            name="Object Spy">
+      </page>   
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.kms.katalon.objectspy.preferences.ObjectSpyPreferenceDefaultValueInitializer">
+      </initializer>
+   </extension>
+</plugin>

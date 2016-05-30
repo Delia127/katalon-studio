@@ -38,36 +38,56 @@ import com.kms.katalon.objectspy.util.WinRegistry;
 
 @SuppressWarnings("restriction")
 public class InspectSession implements Runnable {
-    private static final String LOAD_EXTENSION_CHROME_PREFIX = "load-extension=";
+    protected static final String LOAD_EXTENSION_CHROME_PREFIX = "load-extension=";
+
     private static final String OBJECT_SPY_ADD_ON_NAME = "Object Spy";
-    private static final String SERVER_URL_EXPRESSION_FOR_CHROME = "qAutomate_server_url = ''{0}''";
-    private static final String SERVER_FILE_FOR_CHROME = "server.js";
+
+    private static final String VARIABLE_INIT_EXPRESSION_FOR_CHROME = "katalonServerPort = ''{0}''" + "\r\n"
+            + "katalonOnOffStatus = true";
+
+    private static final String VARIABLE_INIT_FILE_FOR_CHROME = "chrome_variables_init.js";
+
     private static final String SERVER_URL_PREFERENCE_KEY = "serverUrl";
+
     private static final String SERVER_URL_FILE_NAME = "serverUrl.txt";
+
     private static final String OBJECT_SPY_APPLICATION_DATA_FOLDER = System.getProperty("user.home") + File.separator
             + "AppData" + File.separator + "Local" + File.separator + "KMS" + File.separator + "qAutomate"
             + File.separator + "ObjectSpy";
+
     protected static final String IE_ADDON_BHO_KEY = "{8CB0FB3A-8EFA-4F94-B605-F3427688F8C7}";
+
     protected static final String WINDOWS_32BIT_BHO_REGISTRY_KEY = "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\explorer\\Browser Helper Objects";
+
     protected static final String WINDOWS_BHO_REGISTRY_KEY = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\explorer\\Browser Helper Objects";
+
     protected static final String IE_ABSOLUTE_PATH = "C:\\Program Files\\Internet Explorer\\iexplore.exe";
+
     protected static final String IE_32BIT_ABSOLUTE_PATH = "C:\\Program Files (x86)\\Internet Explorer\\iexplore.exe";
+
     protected static final String CHROME_EXTENSION_RELATIVE_PATH = File.separator + "Chrome" + File.separator
             + OBJECT_SPY_ADD_ON_NAME;
+
     protected static final String FIREFOX_ADDON_RELATIVE_PATH = File.separator + "Firefox" + File.separator
             + "objectspy.xpi";
 
     protected String projectDir;
+
     protected boolean isRunFlag;
+
     protected WebDriver driver;
+
     protected Object options;
+
     protected WebUIDriverType webUiDriverType;
-    protected String serverUrl;
+
+    protected HTMLElementCaptureServer server;
+
     protected ProjectEntity currentProject;
 
-    public InspectSession(String serverUrl, WebUIDriverType webUiDriverType, ProjectEntity currentProject, Logger logger)
-            throws Exception {
-        this.serverUrl = serverUrl;
+    public InspectSession(HTMLElementCaptureServer server, WebUIDriverType webUiDriverType,
+            ProjectEntity currentProject, Logger logger) throws Exception {
+        this.server = server;
         this.webUiDriverType = webUiDriverType;
         this.currentProject = currentProject;
         isRunFlag = true;
@@ -99,13 +119,14 @@ public class InspectSession implements Runnable {
             ExtensionNotFoundException, BrowserNotSupportedException {
         projectDir = currentProject.getFolderLocation();
 
-        IDriverConnector webUIDriverConnector = WebUIExecutionUtil.getBrowserDriverConnector(webUIDriverType, projectDir);
+        IDriverConnector webUIDriverConnector = WebUIExecutionUtil.getBrowserDriverConnector(webUIDriverType,
+                projectDir);
         DefaultExecutionSetting executionSetting = new DefaultExecutionSetting();
         executionSetting.setTimeout(ExecutionUtil.getDefaultPageLoadTimeout());
-        
+
         Map<String, IDriverConnector> driverConnectors = new HashMap<String, IDriverConnector>(1);
         driverConnectors.put(DriverFactory.WEB_UI_DRIVER_PROPERTY, webUIDriverConnector);
-        
+
         RunConfiguration.setExecutionSetting(ExecutionUtil.getExecutionProperties(executionSetting, driverConnectors));
         options = createDriverOptions(webUIDriverType);
     }
@@ -135,7 +156,7 @@ public class InspectSession implements Runnable {
             settingFolder.mkdirs();
         }
         File serverSettingFile = new File(getIEApplicationServerSettingFile());
-        FileUtils.writeStringToFile(serverSettingFile, serverUrl);
+        FileUtils.writeStringToFile(serverSettingFile, server.getServerUrl());
 
         File ieExecutingFile = new File(IE_32BIT_ABSOLUTE_PATH);
         if (!ieExecutingFile.exists()) {
@@ -176,8 +197,7 @@ public class InspectSession implements Runnable {
                     continue;
                 }
             }
-        } catch (UnreachableBrowserException e) {
-        } catch (Exception e) {
+        } catch (UnreachableBrowserException e) {} catch (Exception e) {
             LoggerSingleton.logError(e);
         } finally {
             dispose();
@@ -198,7 +218,7 @@ public class InspectSession implements Runnable {
 
     protected FirefoxProfile createFireFoxProfile() throws IOException {
         FirefoxProfile firefoxProfile = WebDriverPropertyUtil.createDefaultFirefoxProfile();
-        firefoxProfile.setPreference(SERVER_URL_PREFERENCE_KEY, serverUrl);
+        firefoxProfile.setPreference(SERVER_URL_PREFERENCE_KEY, server.getServerUrl());
         File file = getFirefoxAddonFile();
         if (file != null) {
             firefoxProfile.addExtension(file);
@@ -211,16 +231,20 @@ public class InspectSession implements Runnable {
         if (chromeExtensionFolder == null || !chromeExtensionFolder.isDirectory() || !chromeExtensionFolder.exists()) {
             throw new ExtensionNotFoundException(getChromeExtensionPath(), WebUIDriverType.CHROME_DRIVER);
         }
-        File serverUrlScriptFile = new File(chromeExtensionFolder.getAbsolutePath() + File.separator
-                + SERVER_FILE_FOR_CHROME);
-        FileUtils.writeStringToFile(serverUrlScriptFile,
-                MessageFormat.format(SERVER_URL_EXPRESSION_FOR_CHROME, serverUrl), Charset.defaultCharset());
-
+        generateVariableInitFileForChrome(chromeExtensionFolder);
         ChromeOptions options = new ChromeOptions();
         options.addArguments(LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getAbsolutePath());
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability(ChromeOptions.CAPABILITY, options);
         return capabilities;
+    }
+
+    private void generateVariableInitFileForChrome(File chromeExtensionFolder) throws IOException {
+        File variableInitJSFile = new File(chromeExtensionFolder.getAbsolutePath() + File.separator
+                + VARIABLE_INIT_FILE_FOR_CHROME);
+        FileUtils.writeStringToFile(variableInitJSFile,
+                MessageFormat.format(VARIABLE_INIT_EXPRESSION_FOR_CHROME, String.valueOf(server.getServerPort())),
+                Charset.defaultCharset());
     }
 
     protected File getChromeExtensionFile() throws IOException {
@@ -255,8 +279,7 @@ public class InspectSession implements Runnable {
             if (serverSettingFile.exists()) {
                 serverSettingFile.delete();
             }
-        } catch (UnreachableBrowserException e) {
-        }
+        } catch (UnreachableBrowserException e) {}
     }
 
     public boolean isRunning() {
