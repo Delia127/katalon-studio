@@ -2,12 +2,6 @@ package com.kms.katalon.composer.handlers;
 
 import java.util.List;
 
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.IHandler;
-import org.eclipse.core.commands.IHandlerListener;
-import org.eclipse.e4.core.di.annotations.CanExecute;
-import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.advanced.MPerspectiveStack;
 import org.eclipse.e4.ui.model.application.ui.advanced.MPlaceholder;
@@ -19,14 +13,16 @@ import org.eclipse.search.internal.ui.OpenSearchDialogAction;
 import org.eclipse.ui.PlatformUI;
 
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
+import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
 import com.kms.katalon.composer.components.services.ModelServiceSingleton;
 import com.kms.katalon.composer.components.services.PartServiceSingleton;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 
 @SuppressWarnings("restriction")
-public class SearchHandler implements IHandler {
-    @CanExecute
+public class SearchHandler extends AbstractHandler {
+
+    @Override
     public boolean canExecute() {
         return ProjectController.getInstance().getCurrentProject() != null;
     }
@@ -49,8 +45,7 @@ public class SearchHandler implements IHandler {
         }
 
         // set current page of console partStack is search viewer
-        MPlaceholder searchViewPart = (MPlaceholder) modelService
-                .find(IdConstants.IDE_SEARCH_PART_ID, consolePartStack);
+        MPlaceholder searchViewPart = (MPlaceholder) modelService.find(IdConstants.IDE_SEARCH_PART_ID, consolePartStack);
 
         if (!consolePartStack.getChildren().contains(searchViewPart)) {
             partService.createPart(IdConstants.IDE_SEARCH_PART_ID);
@@ -69,40 +64,14 @@ public class SearchHandler implements IHandler {
         partService.activate((MPart) searchViewPart.getRef(), true);
     }
 
-    @Execute
-    public static void execute() {
-        if (ProjectController.getInstance().getCurrentProject() == null) return;
+    @Override
+    public void execute() {
+        if (ProjectController.getInstance().getCurrentProject() == null)
+            return;
         openSearchView();
 
         new OpenSearchDialogAction(PlatformUI.getWorkbench().getActiveWorkbenchWindow(),
                 "com.kms.katalon.composer.search.page").run();
     }
 
-    @Override
-    public void addHandlerListener(IHandlerListener handlerListener) {
-    }
-
-    @Override
-    public void dispose() {
-    }
-
-    @Override
-    public Object execute(ExecutionEvent event) throws ExecutionException {
-        execute();
-        return null;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return canExecute();
-    }
-
-    @Override
-    public boolean isHandled() {
-        return true;
-    }
-
-    @Override
-    public void removeHandlerListener(IHandlerListener handlerListener) {
-    }
 }

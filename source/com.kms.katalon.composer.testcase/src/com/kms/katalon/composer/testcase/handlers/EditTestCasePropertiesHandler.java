@@ -1,32 +1,34 @@
 package com.kms.katalon.composer.testcase.handlers;
 
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.IHandler;
-import org.eclipse.core.commands.IHandlerListener;
-import org.eclipse.e4.core.di.annotations.CanExecute;
-import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 
+import com.kms.katalon.composer.components.impl.handler.CommonEditPropertiesHandler;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.components.services.SelectionServiceSingleton;
 import com.kms.katalon.composer.testcase.dialogs.TestCasePropertiesDialog;
-import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
-public class EditTestCasePropertiesHandler implements IHandler {
+public class EditTestCasePropertiesHandler extends CommonEditPropertiesHandler<TestCaseTreeEntity> {
 
-    @CanExecute
-    public static boolean canExecute() {
-        return getFirstSelection() != null;
+    private static EditTestCasePropertiesHandler instance;
+
+    public static EditTestCasePropertiesHandler getInstance() {
+        if (instance == null) {
+            instance = new EditTestCasePropertiesHandler();
+        }
+        return instance;
     }
 
-    @Execute
+    @Override
+    public boolean canExecute() {
+        return getSingleSelection() != null;
+    }
+
+    @Override
     public void execute() {
-        TestCaseTreeEntity selectedObject = getFirstSelection();
+        TestCaseTreeEntity selectedObject = getSingleSelection();
         if (selectedObject == null) {
             return;
         }
@@ -45,50 +47,8 @@ public class EditTestCasePropertiesHandler implements IHandler {
     }
 
     @Override
-    public Object execute(ExecutionEvent event) throws ExecutionException {
-        execute();
-        return null;
-    }
-
-    private static TestCaseTreeEntity getFirstSelection() {
-        Object o = SelectionServiceSingleton.getInstance()
-                .getSelectionService()
-                .getSelection(IdConstants.EXPLORER_PART_ID);
-        if (o == null || !o.getClass().isArray() || ((Object[]) o).length != 1) {
-            return null;
-        }
-
-        Object selectedObject = ((Object[]) o)[0];
-        if (!(selectedObject instanceof TestCaseTreeEntity)) {
-            return null;
-        }
-
-        return (TestCaseTreeEntity) selectedObject;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return canExecute();
-    }
-
-    @Override
-    public boolean isHandled() {
-        return true;
-    }
-
-    @Override
-    public void addHandlerListener(IHandlerListener handlerListener) {
-        // do nothing
-    }
-
-    @Override
-    public void dispose() {
-        // do nothing
-    }
-
-    @Override
-    public void removeHandlerListener(IHandlerListener handlerListener) {
-        // do nothing
+    protected Class<TestCaseTreeEntity> getTreeEntityClass() {
+        return TestCaseTreeEntity.class;
     }
 
 }

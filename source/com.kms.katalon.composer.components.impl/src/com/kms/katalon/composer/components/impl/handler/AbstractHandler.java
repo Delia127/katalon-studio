@@ -1,29 +1,33 @@
-package com.kms.katalon.composer.explorer.handlers;
-
-import static org.eclipse.ui.handlers.HandlerUtil.getActivePartId;
+package com.kms.katalon.composer.components.impl.handler;
 
 import javax.inject.Inject;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.IHandler;
+import org.eclipse.core.commands.IHandler2;
 import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.services.PartServiceSingleton;
 import com.kms.katalon.composer.components.services.SelectionServiceSingleton;
-import com.kms.katalon.constants.IdConstants;
 
-public abstract class AbstractHandler implements IHandler {
+public abstract class AbstractHandler implements IHandler2 {
 
     @Inject
     protected IEventBroker eventBroker;
 
     @Inject
     protected ESelectionService selectionService;
+
+    @Inject
+    protected EPartService partService;
+
+    private ExecutionEvent executionEvent;
 
     public AbstractHandler() {
         if (eventBroker == null) {
@@ -32,6 +36,10 @@ public abstract class AbstractHandler implements IHandler {
 
         if (selectionService == null) {
             selectionService = SelectionServiceSingleton.getInstance().getSelectionService();
+        }
+
+        if (partService == null) {
+            partService = PartServiceSingleton.getInstance().getPartService();
         }
     }
 
@@ -42,35 +50,20 @@ public abstract class AbstractHandler implements IHandler {
     public abstract void execute();
 
     @Override
-    public Object execute(ExecutionEvent event) throws ExecutionException {
-        if (IdConstants.EXPLORER_PART_ID.equals(getActivePartId(event))) {
-            execute();
-        }
+    public final Object execute(ExecutionEvent executionEvent) throws ExecutionException {
+        setExecutionEvent(executionEvent);
+        execute();
         return null;
-    }
-
-    /**
-     * Get explorer selected Tree Entities with NULL and empty check
-     * 
-     * @return Object[] selected Tree Entities
-     */
-    protected Object[] getSelection() {
-        Object o = selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-        if (o == null || !o.getClass().isArray()) {
-            return null;
-        }
-
-        Object[] selectedObjects = (Object[]) o;
-        if (selectedObjects.length == 0) {
-            return null;
-        }
-
-        return selectedObjects;
     }
 
     @Override
     public boolean isEnabled() {
         return canExecute();
+    }
+
+    @Override
+    public void setEnabled(Object evaluationContext) {
+        // do nothing
     }
 
     @Override
@@ -80,14 +73,25 @@ public abstract class AbstractHandler implements IHandler {
 
     @Override
     public void addHandlerListener(IHandlerListener handlerListener) {
+        // do nothing
     }
 
     @Override
     public void removeHandlerListener(IHandlerListener handlerListener) {
+        // do nothing
     }
 
     @Override
     public void dispose() {
+        // do nothing
+    }
+
+    protected ExecutionEvent getExecutionEvent() {
+        return executionEvent;
+    }
+
+    private void setExecutionEvent(ExecutionEvent executionEvent) {
+        this.executionEvent = executionEvent;
     }
 
 }
