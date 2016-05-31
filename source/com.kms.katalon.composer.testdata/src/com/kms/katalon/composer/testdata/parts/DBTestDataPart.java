@@ -406,7 +406,7 @@ public class DBTestDataPart extends TestDataMainPart {
     @Persist
     public void save() {
         try {
-            TestDataController.getInstance().saveDataFile(originalDataFile, originalDataFile.getParentFolder());
+            TestDataController.getInstance().updateTestData(originalDataFile, originalDataFile.getParentFolder());
             dirtyable.setDirty(false);
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);
             sendTestDataUpdatedEvent(originalDataFile.getId());

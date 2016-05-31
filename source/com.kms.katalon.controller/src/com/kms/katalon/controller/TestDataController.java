@@ -14,7 +14,6 @@ import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.constants.StringConstants;
 import com.kms.katalon.core.db.DatabaseConnection;
 import com.kms.katalon.core.util.Base64;
-import com.kms.katalon.dal.state.DataProviderState;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
