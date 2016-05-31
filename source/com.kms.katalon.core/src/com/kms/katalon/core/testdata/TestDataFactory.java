@@ -3,20 +3,25 @@ package com.kms.katalon.core.testdata;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
+import com.kms.katalon.core.db.DatabaseConnection;
+import com.kms.katalon.core.db.DatabaseSettings;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
-import com.kms.katalon.core.testdata.reader.ExcelFactory;
 import com.kms.katalon.core.testdata.reader.CSVSeparator;
+import com.kms.katalon.core.testdata.reader.ExcelFactory;
+import com.kms.katalon.core.util.Base64;
 import com.kms.katalon.core.util.ExceptionsUtil;
 import com.kms.katalon.core.util.PathUtil;
 
@@ -35,6 +40,16 @@ public class TestDataFactory {
 	private static final String IS_RELATIVE_PATH_NODE = "isInternalPath";
 	private static final String ENCODER_CHARSET = "utf-8";
 	private static final KeywordLogger logger = KeywordLogger.getInstance();
+
+    private static final String NODE_GLOBAL_DB_SETTING = "usingGlobalDBSetting";
+
+    private static final String NODE_SECURE_USER_ACCOUNT = "secureUserAccount";
+
+    private static final String NODE_USER = "user";
+
+    private static final String NODE_PASSWORD = "password";
+
+    private static final String NODE_SQL_QUERY = "query";
 
 	public static TestData findTestData(String testDataId) throws IllegalArgumentException {
 		logger.logInfo(StringConstants.XML_LOG_TEST_DATA_CHECKING_TEST_DATA_ID);
@@ -70,6 +85,9 @@ public class TestDataFactory {
 			case CSV_FILE:
 				logger.logInfo(StringConstants.XML_LOG_TEST_DATA_READING_CSV_DATA);
 				return readCSVData(testDataElement, projectDir);
+			case DB_DATA:
+			    logger.logInfo(StringConstants.XML_LOG_TEST_DATA_READING_DB_DATA);
+			    return readDBData(testDataElement, projectDir);
 			default:
 				break;
 			}
@@ -175,4 +193,58 @@ public class TestDataFactory {
 				seperator.toString(), containsHeader ? "containing header" : "not containing header"));
 		return new CSVData(sourceUrl, containsHeader, seperator);
 	}
+
+    public static TestData readDBData(Element testDataElement, String projectDir) throws Exception {
+        validateTestDataElement(testDataElement, NODE_SQL_QUERY);
+        validateTestDataElement(testDataElement, NODE_GLOBAL_DB_SETTING);
+        validateTestDataElement(testDataElement, NODE_SECURE_USER_ACCOUNT);
+        validateTestDataElement(testDataElement, URL_NODE);
+
+        String query = testDataElement.element(NODE_SQL_QUERY).getText();
+        if (StringUtils.isBlank(query)) {
+            throw new IllegalArgumentException(StringConstants.XML_ERROR_TEST_DATA_SQL_QUERY_IS_BLANK);
+        }
+
+        boolean usingGlobalDBSetting = Boolean.parseBoolean(testDataElement.element(NODE_GLOBAL_DB_SETTING).getText());
+        if (usingGlobalDBSetting) {
+            DatabaseConnection dbConnection = new DatabaseSettings(getProjectDir()).getDatabaseConnection();
+            if (dbConnection == null) {
+                throw new IllegalArgumentException(MessageFormat.format(
+                        StringConstants.XML_ERROR_TEST_DATA_CONNECTION_IS_NULL,
+                        StringConstants.XML_ERROR_TEST_DATA_CONNECTION_URL_IS_BLANK));
+            }
+            return readDBData(dbConnection, query);
+        }
+
+        boolean secureUserAccount = Boolean.parseBoolean(testDataElement.element(NODE_SECURE_USER_ACCOUNT).getText());
+        String sourceUrl = testDataElement.element(URL_NODE).getText();
+        String user = null;
+        String password = null;
+
+        if (StringUtils.isBlank(sourceUrl)) {
+            throw new IllegalArgumentException(StringConstants.XML_ERROR_TEST_DATA_CONNECTION_URL_IS_BLANK);
+        }
+
+        if (secureUserAccount) {
+            validateTestDataElement(testDataElement, NODE_USER);
+            validateTestDataElement(testDataElement, NODE_PASSWORD);
+            user = testDataElement.element(NODE_USER).getText();
+            // decrypt password before use
+            password = Base64.decode(testDataElement.element(NODE_PASSWORD).getText());
+        }
+
+        return readDBData(new DatabaseConnection(sourceUrl, user, password), query);
+    }
+
+    private static TestData readDBData(DatabaseConnection dbConnection, String query) throws SQLException {
+        logger.logInfo(MessageFormat.format(StringConstants.XML_LOG_TEST_DATA_READING_DB_DATA_WITH_QUERY_X, query));
+        return new DBData(dbConnection, query);
+    }
+
+    private static void validateTestDataElement(Element testDataElement, String element) {
+        if (testDataElement.element(element) == null) {
+            throw new IllegalArgumentException(MessageFormat.format(
+                    StringConstants.XML_LOG_ERROR_TEST_DATA_MISSING_ELEMENT, element));
+        }
+    }
 }

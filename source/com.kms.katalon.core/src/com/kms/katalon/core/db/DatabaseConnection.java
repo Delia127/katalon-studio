@@ -3,35 +3,51 @@ package com.kms.katalon.core.db;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.text.MessageFormat;
 import java.util.Properties;
 
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.lang.StringUtils;
 
-import com.kms.katalon.core.constants.StringConstants;
-import com.kms.katalon.core.util.Base64;
-
 /**
  * Database Connection
  */
 public class DatabaseConnection {
-    private DatabaseType databaseType;
+    private static final String PASSWORD_PROPERTY = "password";
+
+    private static final String USER_PROPERTY = "user";
 
     private String connectionUrl;
 
     private Connection connection;
 
+    private String user;
+
+    private String password;
+
+    /**
+     * Database Connection with user and password included in URL
+     * 
+     * @param connectionUrl JDBC connection URL
+     */
+    public DatabaseConnection(String connectionUrl) {
+        this.connectionUrl = connectionUrl;
+    }
+
     /**
      * Database Connection
      * 
-     * @param databaseType {@link DatabaseType}
      * @param connectionUrl JDBC connection URL
-     * @see com.kms.katalon.core.db.DatabaseType
+     * @param user the name of the user
+     * @param password the plain text password
      */
-    public DatabaseConnection(DatabaseType databaseType, String connectionUrl) {
-        this.databaseType = databaseType;
-        this.connectionUrl = connectionUrl;
+    public DatabaseConnection(String connectionUrl, String user, String password) {
+        this(connectionUrl);
+        this.user = user;
+        this.password = password;
+    }
+
+    public String getConnectionUrl() {
+        return connectionUrl;
     }
 
     /**
@@ -41,40 +57,14 @@ public class DatabaseConnection {
      * @throws SQLException in case of failure
      */
     public Connection getConnection() throws SQLException {
-        return getConnection(new Properties());
-    }
-
-    /**
-     * Obtain a connection using the given user and password.
-     *
-     * @param user the name of the user
-     * @param password the password to use
-     * @return the obtained Connection
-     * @throws SQLException in case of failure
-     */
-    public Connection getConnection(String user, String password) throws SQLException {
-        return getConnection(user, password, false);
-    }
-
-    /**
-     * Obtain a connection using the given user and password.
-     *
-     * @param user the name of the user
-     * @param password the password to use
-     * @param isPasswordEncrypted if the given password is encrypted as base64, it will be decrypted
-     * @return the obtained Connection
-     * @throws SQLException in case of failure
-     * @see Base64#decode(String)
-     */
-    public Connection getConnection(String user, String password, boolean isPasswordEncrypted) throws SQLException {
         Properties properties = new Properties();
-        properties.setProperty("user", StringUtils.defaultString(user));
-
-        password = StringUtils.defaultString(password);
-        if (isPasswordEncrypted) {
-            password = Base64.decode(password);
+        // if user & password are specified, they will override the user and password in URL if found
+        if (user != null) {
+            properties.setProperty(USER_PROPERTY, user);
         }
-        properties.setProperty("password", password);
+        if (password != null) {
+            properties.setProperty(PASSWORD_PROPERTY, password);
+        }
         return getConnection(properties);
     }
 
@@ -86,8 +76,12 @@ public class DatabaseConnection {
      * @throws SQLException in case of failure
      * @see java.sql.DriverManager#getConnection(String, java.util.Properties)
      */
-    public Connection getConnection(Properties properties) throws SQLException {
-        loadJdbcDriver();
+    private Connection getConnection(Properties properties) throws SQLException {
+        if (isAlive()) {
+            return connection;
+        }
+
+        loadSuitableDatabaseDriver();
 
         connection = DriverManager.getConnection(connectionUrl, properties);
         // Disable auto commit
@@ -97,8 +91,34 @@ public class DatabaseConnection {
         return connection;
     }
 
-    public String getConnectionUrl() {
-        return connectionUrl;
+    /**
+     * This is a fallback function to load suitable supported database driver.<br>
+     * Since version 4.0, JDBC Drivers will be detected and loaded by connection URL.
+     */
+    private void loadSuitableDatabaseDriver() {
+        try {
+            if (StringUtils.startsWith(connectionUrl, "jdbc:mysql")) {
+                Class.forName("com.mysql.jdbc.Driver");
+                return;
+            }
+
+            if (StringUtils.startsWith(connectionUrl, "jdbc:sqlserver")) {
+                Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+                return;
+            }
+
+            if (StringUtils.startsWith(connectionUrl, "jdbc:oracle")) {
+                Class.forName("oracle.jdbc.OracleDriver");
+                return;
+            }
+
+            if (StringUtils.startsWith(connectionUrl, "jdbc:postgresql")) {
+                Class.forName("org.postgresql.Driver");
+                return;
+            }
+        } catch (ClassNotFoundException e) {
+            // do nothing
+        }
     }
 
     public boolean isAlive() {
@@ -114,12 +134,5 @@ public class DatabaseConnection {
      */
     public void close() {
         DbUtils.closeQuietly(connection);
-    }
-
-    private void loadJdbcDriver() throws SQLException {
-        if (!DbUtils.loadDriver(databaseType.getDriverClass())) {
-            throw new SQLException(MessageFormat.format(StringConstants.EXC_CANNOT_LOAD_JDBC_DRIVER,
-                    databaseType.getDriverClass()));
-        }
     }
 }

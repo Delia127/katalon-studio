@@ -1,6 +1,7 @@
 package com.kms.katalon.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,9 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.constants.StringConstants;
+import com.kms.katalon.core.db.DatabaseConnection;
+import com.kms.katalon.core.util.Base64;
+import com.kms.katalon.dal.state.DataProviderState;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
@@ -199,5 +203,24 @@ public class TestDataController extends EntityController {
 
     public void reloadTestData(DataFileEntity testData, Entity entity) throws Exception {
         entity = testData = getTestData(entity.getId());
+    }
+
+    public DatabaseConnection getDatabaseConnection(DataFileEntity testData) throws IOException {
+        if (testData.getDriver() != DataFileDriverType.DBData) {
+            return null;
+        }
+
+        if (testData.isUsingGlobalDBSetting()) {
+            return DatabaseController.getInstance().getGlobalDatabaseConnection();
+        }
+
+        String user = null;
+        String password = null;
+        if (testData.isSecureUserAccount()) {
+            user = testData.getUser();
+            password = Base64.decode(testData.getPassword());
+        }
+
+        return new DatabaseConnection(testData.getDataSourceUrl(), user, password);
     }
 }

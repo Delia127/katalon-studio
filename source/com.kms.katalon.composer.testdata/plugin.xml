@@ -20,5 +20,13 @@
             handler="com.kms.katalon.composer.testdata.handlers.DeleteTestDataFolderHandler">
       </client>
    </extension>
+   <extension
+         point="com.kms.katalon.preferences.ProjectSettingPages">
+         <page
+               class="com.kms.katalon.composer.testdata.settings.DatabasePreferencePage"
+               id="com.kms.katalon.composer.testdata.settings.database"
+               name="Database">
+         </page>
+   </extension>
 
 </plugin>
