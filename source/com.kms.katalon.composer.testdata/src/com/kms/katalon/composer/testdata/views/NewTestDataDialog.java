@@ -12,11 +12,14 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.CommonNewEntityDialog;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
+import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
+import com.kms.katalon.entity.testdata.DataFileEntity.DataFileDriverType;
 
-public class NewTestDataDialog extends CommonNewEntityDialog {
+public class NewTestDataDialog extends CommonNewEntityDialog<DataFileEntity> {
 
     private String dataSource = DataFileEntity.DataFileDriverType.stringValues()[0];
 
@@ -42,7 +45,7 @@ public class NewTestDataDialog extends CommonNewEntityDialog {
 
         cbDataSourceType = new Combo(parent, SWT.READ_ONLY);
         cbDataSourceType.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        cbDataSourceType.setItems(DataFileEntity.DataFileDriverType.stringValues());
+        cbDataSourceType.setItems(DataFileDriverType.stringValues());
         cbDataSourceType.select(0);
         cbDataSourceType.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
@@ -53,11 +56,23 @@ public class NewTestDataDialog extends CommonNewEntityDialog {
         return parent;
     }
 
-    public String getDataSource() {
-        return dataSource;
+    private void setDataSource(String dataSource) {
+        this.dataSource = dataSource;
     }
 
-    public void setDataSource(String dataSource) {
-        this.dataSource = dataSource;
+    @Override
+    protected void createEntity() {
+        try {
+            entity = TestDataController.getInstance().newTestDataWithoutSave(parentFolder, getName());
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
+
+    @Override
+    protected void setEntityProperties() {
+        super.setEntityProperties();
+        entity.setDriver(DataFileDriverType.fromValue(dataSource));
+        entity.setContainsHeaders(true);
     }
 }

@@ -10,7 +10,8 @@ import com.kms.katalon.entity.testdata.DataFilePropertyInputEntity;
 import com.kms.katalon.entity.testdata.InternalDataFilePropertyEntity;
 
 public interface IDataFileDataProvider {
-    public DataFileEntity addNewDataFile(FolderEntity parentFolder) throws Exception;
+
+    public DataFileEntity saveNewTestData(DataFileEntity newTestData) throws Exception;
 
     public String getAvailableDataFileName(FolderEntity parentFolder, String name) throws Exception;
 
@@ -24,7 +25,7 @@ public interface IDataFileDataProvider {
 
     public void deleteDataFile(DataFileEntity dataFile) throws Exception;
 
-    public DataFileEntity saveDataFile(DataFileEntity newDataFile) throws Exception;
+    public DataFileEntity updateTestData(DataFileEntity newDataFile) throws Exception;
 
     public DataFileEntity copyDataFile(DataFileEntity dataFile, FolderEntity destinationFolder) throws Exception;
 

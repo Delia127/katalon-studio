@@ -20,6 +20,7 @@ Require-Bundle: com.kms.katalon.constant,
  org.eclipse.e4.core.contexts,
  org.eclipse.e4.core.services,
  org.eclipse.osgi.services,
- org.eclipse.jdt.core
+ org.eclipse.jdt.core,
+ org.apache.commons.lang
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy

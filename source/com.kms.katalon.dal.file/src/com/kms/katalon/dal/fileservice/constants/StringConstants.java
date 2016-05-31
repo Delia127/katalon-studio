@@ -20,7 +20,6 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String DP_EXC_NAME_ALREADY_EXISTED = "Name already existed.";
 
 	// DataFileFileServiceManager
-	public static final String MNG_NEW_TEST_DATA = "New Test Data";
 	public static final String MNG_EXC_EXISTED_DATA_FILE_NAME = "Data File with name: {0} already existed";
 
 	// FolderFileServiceManager
@@ -31,14 +30,11 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String MNG_EXC_FAILED_TO_UPDATE_PROJ = "Failed to update project.";
 
 	// TestCaseFileServiceManager
-	public static final String MNG_NEW_TEST_CASE = "New Test Case";
 	public static final String MNG_EXC_EXISTED_TEST_CASE_NAME_INSENSITVE = "Test case with name: {0} already existed. Case sensitive for test case is no longer supported.";
 
 	// TestSuiteFileServiceManager
-	public static final String MNG_NEW_TEST_SUITE = "New Test Suite";
 	public static final String MNG_EXC_EXISTED_TEST_SUITE_NAME = "Test Suite with name: {0} already existed";
 
 	// WebElementFileServiceManager
-	public static final String MNG_NEW_ELEMENT = "New Element";
 	public static final String MNG_NEW_REQUEST = "New Request";
 }

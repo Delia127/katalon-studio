@@ -33,7 +33,6 @@ import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.testdata.DataFileEntity;
-import com.kms.katalon.entity.testdata.DataFileEntity.DataFileDriverType;
 
 public class NewTestDataHandler {
 
@@ -91,19 +90,14 @@ public class NewTestDataHandler {
                 return;
             }
 
-            // create test data
-            DataFileEntity dataFile = tdController.addDataFile(parentTreeEntity.getObject());
+            // save new test data
+            DataFileEntity dataFile = tdController.saveNewTestData(dialog.getEntity());
 
             if (dataFile == null) {
+                MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,
+                        StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_DATA);
                 return;
             }
-
-            // update test data properties
-            dataFile.setName(dialog.getName());
-            dataFile.setDriver(DataFileDriverType.fromValue(dialog.getDataSource()));
-            dataFile.setContainsHeaders(true);
-            dataFile.setDescription(dialog.getDescription());
-            tdController.saveDataFile(dataFile, dataFile.getParentFolder());
 
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
             eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, new TestDataTreeEntity(dataFile,

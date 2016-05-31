@@ -155,7 +155,7 @@ public class DeleteTestObjectHandler extends AbstractDeleteReferredEntityHandler
         for (WebElementEntity testObject : affectedTestObjects) {
             WebElementPropertyEntity refElement = toController.getRefElementProperty(testObject);
             testObject.getWebElementProperties().remove(refElement);
-            toController.updateWebElement(testObject);
+            toController.updateTestObject(testObject);
             eventBroker.post(EventConstants.TEST_OBJECT_UPDATED, new Object[] { testObject.getId(), testObject });
         }
     }

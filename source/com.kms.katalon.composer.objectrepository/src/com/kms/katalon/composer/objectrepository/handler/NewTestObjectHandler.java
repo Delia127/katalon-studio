@@ -91,16 +91,14 @@ public class NewTestObjectHandler {
                 return;
             }
 
-            // create test object
-            WebElementEntity webElement = toController.addNewWebElement(parentFolderEntity, dialog.getName());
+            // save test object
+            WebElementEntity webElement = toController.saveNewTestObject(dialog.getEntity());
 
             if (webElement == null) {
+                MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,
+                        StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_OBJ);
                 return;
             }
-
-            // update its property
-            webElement.setDescription(dialog.getDescription());
-            toController.updateWebElement(webElement);
 
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
             eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, new WebElementTreeEntity(webElement,

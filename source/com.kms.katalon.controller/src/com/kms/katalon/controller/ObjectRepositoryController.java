@@ -4,9 +4,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
-import com.kms.katalon.constants.GlobalStringConstants;
+import com.kms.katalon.controller.constants.StringConstants;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -14,6 +15,7 @@ import com.kms.katalon.entity.repository.SaveWebElementInfoEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.entity.util.Util;
 
 @Creatable
 public class ObjectRepositoryController extends EntityController {
@@ -30,8 +32,95 @@ public class ObjectRepositoryController extends EntityController {
         return (ObjectRepositoryController) _instance;
     }
 
-    public WebElementEntity addNewWebElement(FolderEntity parentFolder, String elementName) throws Exception {
-        return getDataProviderSetting().getWebElementDataProvider().addNewWebElement(parentFolder, elementName);
+    /**
+     * Create and save new Test Object
+     * 
+     * @param parentFolder
+     * @param testObjectName Test Object name. Default name (New Element) will be used if this null or empty
+     * @return {@link WebElementEntity}
+     * @throws Exception
+     */
+    public WebElementEntity newTestObject(FolderEntity parentFolder, String testObjectName) throws Exception {
+        return saveNewTestObject(newTestObjectWithoutSave(parentFolder, testObjectName));
+    }
+
+    /**
+     * Create and save new Web Service Test Object
+     * 
+     * @param parentFolder
+     * @param wsTestObjectName Web Service Test Object name. Default name (New Request) will be used if this null or
+     * empty
+     * @return {@link WebServiceRequestEntity}
+     * @throws Exception
+     */
+    public WebServiceRequestEntity newWSTestObject(FolderEntity parentFolder, String wsTestObjectName) throws Exception {
+        return (WebServiceRequestEntity) saveNewTestObject(newWSTestObjectWithoutSave(parentFolder, wsTestObjectName));
+    }
+
+    /**
+     * Create new Test Object without save
+     * 
+     * @param parentFolder
+     * @param testObjectName Test Object name. Default name (New Element) will be used if this null or empty
+     * @return {@link WebElementEntity}
+     * @throws Exception
+     */
+    public WebElementEntity newTestObjectWithoutSave(FolderEntity parentFolder, String testObjectName) throws Exception {
+        if (parentFolder == null) {
+            return null;
+        }
+
+        if (StringUtils.isBlank(testObjectName)) {
+            testObjectName = StringConstants.CTRL_NEW_TEST_OBJECT;
+        }
+
+        WebElementEntity newWebElement = new WebElementEntity();
+        newWebElement.setElementGuidId(Util.generateGuid());
+        newWebElement.setName(getAvailableWebElementName(parentFolder, testObjectName));
+        newWebElement.setParentFolder(parentFolder);
+        newWebElement.setProject(parentFolder.getProject());
+
+        return newWebElement;
+    }
+
+    /**
+     * Create new Web Service Test Object without save
+     * 
+     * @param parentFolder
+     * @param wsTestObjectName Web Service Test Object name. Default name (New Request) will be used if this null or
+     * empty
+     * @return {@link WebServiceRequestEntity}
+     * @throws Exception
+     */
+    public WebServiceRequestEntity newWSTestObjectWithoutSave(FolderEntity parentFolder, String wsTestObjectName)
+            throws Exception {
+        if (parentFolder == null) {
+            return null;
+        }
+
+        if (StringUtils.isBlank(wsTestObjectName)) {
+            wsTestObjectName = StringConstants.CTRL_NEW_WS_REQUEST;
+        }
+
+        WebServiceRequestEntity newWS = new WebServiceRequestEntity();
+        newWS.setElementGuidId(Util.generateGuid());
+        newWS.setName(getAvailableWebElementName(parentFolder, wsTestObjectName));
+        newWS.setParentFolder(parentFolder);
+        newWS.setProject(parentFolder.getProject());
+
+        return newWS;
+    }
+
+    /**
+     * Save a NEW Test Object or Web Service entity.<br>
+     * Please use {@link #saveWebElement(WebElementEntity)} if you want to save an existing one.
+     * 
+     * @param newTestObject new Test Object or Web Service Request
+     * @return {@link WebElementEntity}
+     * @throws Exception
+     */
+    public WebElementEntity saveNewTestObject(WebElementEntity newTestObject) throws Exception {
+        return getDataProviderSetting().getWebElementDataProvider().saveNewTestObject(newTestObject);
     }
 
     public WebElementEntity getWebElement(String elementPk) throws Exception {
@@ -56,24 +145,6 @@ public class ObjectRepositoryController extends EntityController {
         return getDataProviderSetting().getWebElementDataProvider().importWebElement(webElement, parentFolder);
     }
 
-    public void saveWebElement(WebElementEntity webElement) throws Exception {
-        getDataProviderSetting().getWebElementDataProvider().updateWebElement(webElement);
-    }
-
-    /**
-     * Get entity ID for display This function is deprecated. Please use {@link WebElementEntity#getIdForDisplay()}
-     * instead.
-     * 
-     * @param entity
-     * @return Test Object ID for display
-     * @throws Exception
-     */
-    @Deprecated
-    public String getIdForDisplay(WebElementEntity entity) throws Exception {
-        return getDataProviderSetting().getWebElementDataProvider().getIdForDisplay(entity)
-                .replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPERATOR);
-    }
-
     public WebElementEntity copyWebElement(WebElementEntity webElement, FolderEntity targetFolder) throws Exception {
         return getDataProviderSetting().getWebElementDataProvider().copyWebElement(webElement, targetFolder);
     }
@@ -86,8 +157,8 @@ public class ObjectRepositoryController extends EntityController {
         getDataProviderSetting().getWebElementDataProvider().deleteWebElement(webElement);
     }
 
-    public void updateWebElement(WebElementEntity webElement) throws Exception {
-        getDataProviderSetting().getWebElementDataProvider().updateWebElement(webElement);
+    public void updateTestObject(WebElementEntity webElement) throws Exception {
+        getDataProviderSetting().getWebElementDataProvider().updateTestObject(webElement);
     }
 
     public List<String> getSibblingWebElementNames(WebElementEntity webElement) throws Exception {
@@ -105,11 +176,6 @@ public class ObjectRepositoryController extends EntityController {
 
     public String getAvailableWebElementName(FolderEntity parentFolder, String name) throws Exception {
         return getDataProviderSetting().getWebElementDataProvider().getAvailableWebElementName(parentFolder, name);
-    }
-
-    public WebServiceRequestEntity addNewRequest(FolderEntity parentFolder, WebServiceRequestEntity request)
-            throws Exception {
-        return getDataProviderSetting().getWebElementDataProvider().addNewRequest(parentFolder, request);
     }
 
     public List<WebElementEntity> getTestObjectReferences(WebElementEntity webElement, ProjectEntity projectEntity)

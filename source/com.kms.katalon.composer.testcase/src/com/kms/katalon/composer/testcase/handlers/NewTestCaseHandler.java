@@ -83,30 +83,25 @@ public class NewTestCaseHandler {
             }
 
             // create new test case
-            TestCaseEntity testCaseEntity = tcController.addNewTestCase(parentFolderEntity, dialog.getName());
+            TestCaseEntity testCaseEntity = tcController.saveNewTestCase(dialog.getEntity());
 
             if (testCaseEntity == null) {
-                // no project
+                // No project found. This case won't happen but need to handle.
+                MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,
+                        StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_CASE);
                 return;
             }
-
-            // update test case properties
-            testCaseEntity.setTag(dialog.getTag());
-            testCaseEntity.setDescription(dialog.getDescription());
-            tcController.updateTestCase(testCaseEntity);
 
             eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
             eventBroker.send(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, parentTreeEntity);
             eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, new TestCaseTreeEntity(testCaseEntity,
                     parentTreeEntity));
             eventBroker.send(EventConstants.TESTCASE_OPEN, testCaseEntity);
-
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,
                     StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_CASE);
         }
-
     }
 
 	public static ITreeEntity findParentTreeEntity(Object[] selectedObjects) throws Exception {

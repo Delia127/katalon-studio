@@ -345,7 +345,7 @@ public class DownloadTestCaseJob extends QTestJob {
                         .post(EventConstants.TESTCASE_UPDATED,
                                 new Object[] { existingTestCase.getId(), existingTestCase });
             } else {
-                TestCaseEntity newTestCaseEntity = TestCaseController.getInstance().addNewTestCase(parentFolder,
+                TestCaseEntity newTestCaseEntity = TestCaseController.getInstance().newTestCase(parentFolder,
                         qTestCase.getName());
 
                 addDescriptionForTestCase(qTestProject, qTestCase, newTestCaseEntity);

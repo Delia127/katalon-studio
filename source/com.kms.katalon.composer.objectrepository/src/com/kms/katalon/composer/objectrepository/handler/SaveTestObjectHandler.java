@@ -28,7 +28,7 @@ public class SaveTestObjectHandler {
     private void getNotificationsFromTestObject(@UIEventTopic(EventConstants.TEST_OBJECT_SAVE) WebElementEntity entity) {
         if (entity != null) {
             try {
-            	ObjectRepositoryController.getInstance().saveWebElement(entity);
+            	ObjectRepositoryController.getInstance().updateTestObject(entity);
                 eventBroker.post(EventConstants.EXPLORER_REFRESH, entity);
             } catch (Exception e) {
                 LoggerSingleton.logError(e);

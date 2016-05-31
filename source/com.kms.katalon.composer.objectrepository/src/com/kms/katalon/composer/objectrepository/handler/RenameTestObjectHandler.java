@@ -62,7 +62,7 @@ public class RenameTestObjectHandler {
                         if (renameWizard.getNewNameValue() != null && !renameWizard.getNewNameValue().isEmpty()
                                 && !renameWizard.getNewNameValue().equals(oldName)) {
                             webElement.setName(renameWizard.getNewNameValue());
-                            ObjectRepositoryController.getInstance().updateWebElement(webElement);
+                            ObjectRepositoryController.getInstance().updateTestObject(webElement);
                             String newIdForDisplay = webElement.getIdForDisplay();
                             eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] {
                                     oldIdForDisplay, newIdForDisplay });

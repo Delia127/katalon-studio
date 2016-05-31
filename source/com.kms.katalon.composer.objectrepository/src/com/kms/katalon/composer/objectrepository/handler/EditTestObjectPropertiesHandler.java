@@ -38,7 +38,7 @@ public class EditTestObjectPropertiesHandler implements IHandler {
                 return;
             }
 
-            ObjectRepositoryController.getInstance().updateWebElement(dialog.getEntity());
+            ObjectRepositoryController.getInstance().updateTestObject(dialog.getEntity());
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }

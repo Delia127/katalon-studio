@@ -54,31 +54,23 @@ public class TestCaseFileServiceManager {
     }
 
     /**
-     * Create new Test Case
+     * Save a NEW Test Case entity.<br>
+     * Please use {@link #updateTestCase(TestCaseEntity)} if you want to save an existing Test Case.
      * 
-     * @param parentFolder
-     * @param defaultName Test Case name. Default name (New Test Case) will be used if this null or empty
+     * @param newTestCase new Test Case entity which is created by {@link #newTestCaseWithoutSave(FolderEntity, String)}
      * @return {@link TestCaseEntity}
      * @throws Exception
      */
-    public static TestCaseEntity addNewTestCase(FolderEntity parentFolder, String defaultName) throws Exception {
-        if (defaultName == null || defaultName.trim().equals("")) {
-            defaultName = StringConstants.MNG_NEW_TEST_CASE;
+    public static TestCaseEntity saveNewTestCase(TestCaseEntity newTestCase) throws Exception {
+        if (newTestCase == null || newTestCase.getProject() == null || newTestCase.getParentFolder() == null) {
+            return null;
         }
 
-        String name = getAvailableName(parentFolder, defaultName);
-
-        TestCaseEntity newTestCase = new TestCaseEntity();
-        newTestCase.setName(name);
-        newTestCase.setParentFolder(parentFolder);
-        newTestCase.setTestCaseGuid(Util.generateGuid());
-        newTestCase.setProject(parentFolder.getProject());
-
-        // Save test case
         EntityService.getInstance().saveEntity(newTestCase);
-
-        GroovyUtil.refreshScriptTestCaseClasspath(parentFolder.getProject(), parentFolder);
+        FolderEntity parentFolder = newTestCase.getParentFolder();
+        GroovyUtil.refreshScriptTestCaseClasspath(newTestCase.getProject(), parentFolder);
         FolderFileServiceManager.refreshFolder(parentFolder);
+
         return newTestCase;
     }
 

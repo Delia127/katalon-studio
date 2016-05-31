@@ -85,11 +85,12 @@ public class NewWebServiceRequestObjectHandler {
                 return;
             }
 
-            WebServiceRequestEntity request = new WebServiceRequestEntity();
-            request.setName(dialog.getName());
-            request.setServiceType(dialog.getWebServiveType());
-            request.setDescription(dialog.getDescription());
-            WebServiceRequestEntity requestEntity = toController.addNewRequest(parentFolderEntity, request);
+            WebServiceRequestEntity requestEntity = (WebServiceRequestEntity) toController.saveNewTestObject(dialog.getEntity());
+            if (requestEntity == null) {
+                MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,
+                        StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_NEW_REQ_OBJ);
+                return;
+            }
 
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
             eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, new WebElementTreeEntity(requestEntity,

@@ -12,11 +12,13 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.CommonNewEntityDialog;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
+import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
-public class NewRequestDialog extends CommonNewEntityDialog {
+public class NewRequestDialog extends CommonNewEntityDialog<WebServiceRequestEntity> {
 
     private String webServiveType = WebServiceRequestEntity.SERVICE_TYPES[0];
 
@@ -53,11 +55,23 @@ public class NewRequestDialog extends CommonNewEntityDialog {
         return parent;
     }
 
-    public String getWebServiveType() {
-        return webServiveType;
-    }
-
-    public void setWebServiveType(String webServiveType) {
+    private void setWebServiveType(String webServiveType) {
         this.webServiveType = webServiveType;
     }
+
+    @Override
+    protected void createEntity() {
+        try {
+            entity = ObjectRepositoryController.getInstance().newWSTestObjectWithoutSave(parentFolder, getName());
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
+
+    @Override
+    protected void setEntityProperties() {
+        super.setEntityProperties();
+        entity.setServiceType(webServiveType);
+    }
+
 }
