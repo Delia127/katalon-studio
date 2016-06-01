@@ -149,7 +149,7 @@ public class OpenProjectHandler {
                     monitor.worked(1);
 
                     TimeUnit.SECONDS.sleep(1);
-                    eventBroker.send(EventConstants.PROJECT_OPENED, null);
+                    eventBroker.post(EventConstants.PROJECT_OPENED, null);
                     return;
                 } catch (final Exception e) {
                     sync.syncExec(new Runnable() {
