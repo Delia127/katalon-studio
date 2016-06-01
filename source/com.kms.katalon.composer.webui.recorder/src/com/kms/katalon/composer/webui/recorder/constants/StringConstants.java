@@ -27,9 +27,16 @@ public class StringConstants extends GlobalStringConstants {
     public static final String JOB_GENERATE_SCRIPT_MESSAGE = "Generating scripts";
     public static final String JOB_ADDING_OBJECT = "Adding html elements into object repository";
     public static final String JOB_GENERATE_STATEMENT_MESSAGE = "Generating statements";
-    
     public static final String DIA_MENU_ADD_VALIDATION_POINT = "Add Validation Point";
     public static final String DIA_MENU_ADD_SYNCHRONIZE_POINT = "Add Synchronization Point";
+    public static final String INSTANT_BROWSER_PREFIX = "Instant ";
+    public static final String MENU_ITEM_INSTANT_BROWSERS = "Instant Browsers";
+    public static final String HAND_INSTANT_BROWSERS_DIA_TITLE = "Instant browser";
+    public static final String HAND_INSTANT_BROWSERS_DIA_MESSAGE = "Starting object spy inspection with instant browser ''{0}''. "
+            + "Please make sure you have installed the browser addon for object spy found in ''{1}'' and turn on the extension. "
+            + "Also, please make sure the port of the object spy addon and the port of this Katalon application (set in Menu/Preferences/Recorder) match.";
+    
+    public static final String DIA_INSTANT_BROWSER_CHROME_RECORDER_EXTENSION_PATH = "<Katalon build path>/Resources/extensions/Chrome/Recorder Packed";
 
 	// RecordHandler
 	public static final String HAND_ERROR_MSG_CANNOT_GEN_TEST_STEPS = "Cannot generate test steps.";
@@ -42,4 +49,7 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String COLUMN_DATA_PARAM_TYPE = "Param Type";
 	public static final String COLUMN_DATA_VALUE_TYPE = "Value Type";
 	public static final String COLUMN_DATA_VALUE = "Value";
+	
+	// RecorderPreferencePage
+	public static final String PREF_LBL_INSTANT_BROWSER_PORT = "Port for instant browsers";
 }
