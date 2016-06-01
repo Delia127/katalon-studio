@@ -3,18 +3,24 @@ package com.kms.katalon.composer.components.impl.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.ObjectUtils;
+import org.eclipse.e4.core.services.events.IEventBroker;
+
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestDataController;
+import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class EntityProcessingUtil {
@@ -44,8 +50,8 @@ public class EntityProcessingUtil {
                 }
             } else if (folder.getFolderType() == FolderType.TESTSUITE) {
                 for (Object child : allDescendantEntites) {
-                    if (child != null && child instanceof TestSuiteEntity) {
-                        lstDescendantEntityLocations.add(((TestSuiteEntity) child).getId());
+                    if (child != null && child instanceof FileEntity) {
+                        lstDescendantEntityLocations.add(((FileEntity) child).getId());
                     }
                 }
             } else if (folder.getFolderType() == FolderType.WEBELEMENT) {
@@ -181,6 +187,26 @@ public class EntityProcessingUtil {
                         .post(EventConstants.TEST_OBJECT_UPDATED, new Object[] { oldPk, webElement });
                 return webElement;
             }
+        }
+        return null;
+    }
+    
+    public static TestSuiteCollectionEntity moveTestSuiteCollection(TestSuiteCollectionEntity testSuiteCollection,
+            FolderEntity targetFolder) throws Exception {
+        if (testSuiteCollection == null || targetFolder == null) {
+            return null;
+        }
+        TestSuiteCollectionController testSuiteCollectionController = TestSuiteCollectionController.getInstance();
+        String oldPk = testSuiteCollection.getId();
+        String oldIdForDisplay = testSuiteCollection.getIdForDisplay();
+        testSuiteCollection = testSuiteCollectionController.moveTestSuiteCollection(testSuiteCollection, targetFolder);
+        String newPk = testSuiteCollection.getId();
+        if (!ObjectUtils.equals(oldPk, newPk)) {
+            IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
+            eventBroker.post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
+                    testSuiteCollection.getIdForDisplay() });
+            eventBroker.post(EventConstants.TEST_SUITE_COLLECTION_UPDATED, new Object[] { oldPk, testSuiteCollection });
+            return testSuiteCollection;
         }
         return null;
     }

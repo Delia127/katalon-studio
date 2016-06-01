@@ -6,15 +6,19 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.dal.IReportDataProvider;
+import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.dal.fileservice.FileServiceConstant;
 import com.kms.katalon.dal.fileservice.manager.FolderFileServiceManager;
 import com.kms.katalon.dal.fileservice.manager.ReportFileServiceManager;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class ReportFileServiceDataProvider implements IReportDataProvider {
@@ -96,5 +100,100 @@ public class ReportFileServiceDataProvider implements IReportDataProvider {
     public FolderEntity getReportFolder(TestSuiteEntity testSuite, ProjectEntity project) throws Exception {
         return FolderFileServiceManager.getFolder(ReportFileServiceManager.getReportFolderOfTestSuite(project,
                 testSuite));
+    }
+
+    private String getReportCollectionEntityLocation(ProjectEntity project, TestSuiteCollectionEntity entity)
+            throws DALException {
+        try {
+            return project.getFolderLocation()
+                    + File.separator
+                    + entity.getIdForDisplay()
+                            .replaceFirst(FileServiceConstant.TEST_SUITE_ROOT_FOLDER_NAME,
+                                    FileServiceConstant.REPORT_ROOT_FOLDER_NAME)
+                            .replace(GlobalStringConstants.ENTITY_ID_SEPERATOR, File.separator);
+        } catch (Exception e) {
+            throw new DALException(e);
+        }
+    }
+
+    @Override
+    public ReportCollectionEntity newReportCollectionEntity(ProjectEntity project, TestSuiteCollectionEntity tsEntity,
+            String newName) throws DALException {
+        try {
+
+            File folder = new File(getReportCollectionEntityLocation(project, tsEntity), newName);
+
+            if (!folder.exists()) {
+                folder.mkdirs();
+            }
+
+            FolderEntity parentFolder = FolderFileServiceManager.getFolder(folder.getAbsolutePath());
+
+            ReportCollectionEntity reportCollection = new ReportCollectionEntity();
+            reportCollection.setName(newName);
+            reportCollection.setParentFolder(parentFolder);
+            reportCollection.setProject(parentFolder.getProject());
+
+            return reportCollection;
+        } catch (Exception e) {
+            throw new DALException(e);
+        }
+    }
+
+    @Override
+    public ReportCollectionEntity getReportCollectionEntity(ProjectEntity project, TestSuiteCollectionEntity entity,
+            String reportName) throws DALException {
+        try {
+            FolderEntity parentFolder = FolderFileServiceManager.getFolder(getReportCollectionEntityLocation(project,
+                    entity) + File.separator + reportName);
+
+            return getReportCollectionEntity(parentFolder.getId() + File.separator + reportName
+                    + ReportCollectionEntity.FILE_EXTENSION);
+        } catch (Exception e) {
+            throw new DALException(e);
+        }
+    }
+
+    @Override
+    public ReportCollectionEntity getReportCollectionEntity(String id) throws DALException {
+        try {
+            ReportCollectionEntity reportCollection = (ReportCollectionEntity) getEntityService().getEntityByPath(id);
+
+            FolderEntity parentFolder = FolderFileServiceManager.getFolder(new File(id).getParent());
+
+            reportCollection.setParentFolder(parentFolder);
+            reportCollection.setProject(parentFolder.getProject());
+            return reportCollection;
+        } catch (Exception e) {
+            throw new DALException(e);
+        }
+    }
+
+    private EntityService getEntityService() throws DALException {
+        try {
+            return EntityService.getInstance();
+        } catch (Exception e) {
+            throw new DALException(e);
+        }
+    }
+
+    @Override
+    public void updateReportCollectionEntity(ReportCollectionEntity entity) throws DALException {
+        try {
+            getEntityService().saveEntity(entity, entity.getId());
+        } catch (Exception e) {
+            throw new DALException(e);
+        }
+    }
+
+    @Override
+    public void deleteReportCollection(ReportCollectionEntity reportCollection) throws DALException {
+        try {
+            EntityService.getInstance().deleteEntity(reportCollection);
+
+            FolderFileServiceManager.deleteFolder(reportCollection.getParentFolder());
+        } catch (Exception e) {
+            throw new DALException(e);
+        }
     }
 }

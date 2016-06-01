@@ -57,4 +57,10 @@
             class="com.kms.katalon.composer.mobile.preferences.MobileSettingPreferenceDefaultValueInitializer">
       </initializer>
    </extension>
+   <extension
+         point="com.kms.katalon.composer.testsuite.collection.testSuiteExecutionItem">
+      <client
+            item="com.kms.katalon.composer.mobile.execution.testsuite.MobileTestExecutionGroup">
+      </client>
+   </extension>
 </plugin>

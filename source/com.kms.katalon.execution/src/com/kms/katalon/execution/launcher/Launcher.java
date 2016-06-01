@@ -11,27 +11,51 @@ import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
-import com.kms.katalon.execution.launcher.model.LauncherResult;
-import com.kms.katalon.execution.launcher.model.LauncherStatus;
 import com.kms.katalon.execution.launcher.process.ILaunchProcess;
+import com.kms.katalon.execution.launcher.result.ILauncherResult;
+import com.kms.katalon.execution.launcher.result.LauncherResult;
+import com.kms.katalon.execution.launcher.result.LauncherStatus;
 import com.kms.katalon.execution.logging.IOutputStream;
 import com.kms.katalon.logging.LogUtil;
 
 public abstract class Launcher implements ILauncher, IWatchdogListener {
     protected IRunConfiguration runConfig;
+
     private LauncherStatus status;
+
     private ILauncherResult result;
 
     private IExecutedEntity executedEntity;
+
     protected Set<IWatcher> watchers;
+
     protected LaunchWatchdog watchdog;
 
     protected ILaunchProcess process;
-    
-    public Launcher(IRunConfiguration runConfig) {
+
+    private LauncherManager manager;
+
+    private Launcher() {
         status = LauncherStatus.WAITING;
         watchers = new HashSet<IWatcher>();
+    }
+
+    protected Launcher(IRunConfiguration runConfig) {
+        this();
         setRunConfig(runConfig);
+    }
+
+    protected Launcher(LauncherManager manager, IRunConfiguration runConfig) {
+        this(runConfig);
+        this.manager = manager;
+    }
+
+    protected LauncherManager getManager() {
+        return manager;
+    }
+
+    protected void setManager(LauncherManager manager) {
+        this.manager = manager;
     }
 
     public final String getId() {
@@ -42,7 +66,6 @@ public abstract class Launcher implements ILauncher, IWatchdogListener {
         return executedEntity.getSourceId() + " - " + getRunConfig().getName() + " - " + getId();
     }
 
-    @Override
     public IRunConfiguration getRunConfig() {
         return runConfig;
     }
@@ -128,7 +151,9 @@ public abstract class Launcher implements ILauncher, IWatchdogListener {
     @Override
     public void stop() {
         setStatus(LauncherStatus.TERMINATED);
-        watchdog.stop();
+        if (watchdog != null) {
+            watchdog.stop();
+        }
     }
 
     protected void setRunConfig(IRunConfiguration runConfig) {
@@ -138,8 +163,8 @@ public abstract class Launcher implements ILauncher, IWatchdogListener {
     }
 
     /**
-     * When <code>watchdog</code> completed that means the <code>process</code>
-     * is done or terminated. </p> This method is used for handling the phases
+     * When <code>watchdog</code> completed that means the <code>process</code> is done or terminated. </p> This method
+     * is used for handling the phases
      * that are after {@link LauncherStatus#RUNNING}. </br> Example: Preparing
      * report, sending email,... </p>
      */
@@ -178,7 +203,7 @@ public abstract class Launcher implements ILauncher, IWatchdogListener {
 
     protected void schedule() {
         try {
-            LauncherManager.getInstance().stopRunningAndSchedule(this);
+            manager.stopRunningAndSchedule(this);
         } catch (InterruptedException e) {
             LogUtil.logError(e);
         }

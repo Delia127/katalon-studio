@@ -11,6 +11,7 @@ import com.kms.katalon.dal.IReportDataProvider;
 import com.kms.katalon.dal.ITestCaseDataProvider;
 import com.kms.katalon.dal.ITestSuiteDataProvider;
 import com.kms.katalon.dal.IWebElementDataProvider;
+import com.kms.katalon.dal.TestSuiteCollectionDataProvider;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.PKType;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -23,6 +24,8 @@ public interface IDataProviderSetting {
 	public IFolderDataProvider getFolderDataProvider();
 
 	public ITestSuiteDataProvider getTestSuiteDataProvider();
+	
+    public TestSuiteCollectionDataProvider getTestSuiteCollectionDataProvider();
 
 	public IWebElementDataProvider getWebElementDataProvider();
 

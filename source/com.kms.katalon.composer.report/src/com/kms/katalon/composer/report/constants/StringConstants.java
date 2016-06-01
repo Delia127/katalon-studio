@@ -47,4 +47,12 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PAGE_ERROR_MSG_UNABLE_TO_READ_SETTINGS = "Unable to read setting file.";
 
     public static final String PAGE_ERROR_MSG_UNABLE_TO_UPDATE_SETTINGS = "Unable to update setting.";
+    
+    // ReportCollectionPart
+    public static final String REPORT_COLLECTION_LBL_ENVIRONMENT = "Environment";
+    public static final String REPORT_COLLECTION_COLUMN_FAILED_TEST = "Failed Tests / Total";
+    
+    // ReportActionColumnLabelProvider
+    public static final String PROVIDER_TOOLTIP_CLICK_TO_SEE_DETAILS = "Click to see details";
+    public static final String PROVIDER_TOOLTIP_SHOW_DETAILS = "Show details";
 }

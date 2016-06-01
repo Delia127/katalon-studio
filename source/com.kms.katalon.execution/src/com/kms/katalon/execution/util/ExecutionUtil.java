@@ -34,9 +34,10 @@ import com.kms.katalon.execution.configuration.IExecutionSetting;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
 import com.kms.katalon.execution.entity.DefaultRerunSetting;
+import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.entity.TestCaseExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
-import com.kms.katalon.execution.launcher.ILauncherResult;
+import com.kms.katalon.execution.launcher.result.ILauncherResult;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
@@ -204,14 +205,15 @@ public class ExecutionUtil {
         newExecutedEntity.setReportLocation(prevExecuted.getReportLocationSetting());
         newExecutedEntity.setTestDataMap(prevExecuted.getTestDataMap());
 
-        List<TestCaseExecutedEntity> prevTestCaseExecutedEntities = prevExecuted.getTestCaseExecutedEntities();
+        List<IExecutedEntity> prevTestCaseExecutedEntities = prevExecuted.getExecutedItems();
 
-        List<TestCaseExecutedEntity> newTestCaseExecutedEntities = new ArrayList<TestCaseExecutedEntity>();
+        List<IExecutedEntity> newTestCaseExecutedEntities = new ArrayList<IExecutedEntity>();
         if (prevExecuted.isRerunFailedTestCasesOnly()) {
             TestStatusValue[] prevResultValues = prevResult.getResultValues();
             int rsIdx = 0;
 
-            for (TestCaseExecutedEntity prevExecutedTC : prevTestCaseExecutedEntities) {
+            for (IExecutedEntity prevExecutedItem : prevTestCaseExecutedEntities) {
+                TestCaseExecutedEntity prevExecutedTC = (TestCaseExecutedEntity) prevExecutedItem;
                 for (int i = rsIdx; i < rsIdx + prevExecutedTC.getLoopTimes(); i++) {
                     if (prevResultValues[i] == TestStatusValue.FAILED || prevResultValues[i] == TestStatusValue.ERROR) {
                         newTestCaseExecutedEntities.add(prevExecutedTC);

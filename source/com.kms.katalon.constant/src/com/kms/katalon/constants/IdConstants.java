@@ -76,9 +76,16 @@ public interface IdConstants {
 
     // Test Data Part content
     public static final String TESTDATA_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".testdata";
+    
+    // Test Data Part content
+    public static final String TEST_SUITE_COLLECTION_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".testrun";
 
     // Report Part content
     public static final String REPORT_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".report";
+    
+    // Report Collection Part content
+    public static final String REPORT_COLLECTION_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID
+            + ".collectionReport";
 
     // Test Suite Part: key of TestSuiteEntity in content part
     public static final String TESTSUITE_CONTEXT_OBJECT_KEY = "testSuite";

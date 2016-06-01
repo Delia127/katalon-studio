@@ -7,20 +7,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 
+import com.kms.katalon.dal.IReportDataProvider;
 import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.dal.fileservice.FileServiceConstant;
 import com.kms.katalon.dal.fileservice.constants.StringConstants;
+import com.kms.katalon.dal.fileservice.dataprovider.setting.FileServiceDataProviderSetting;
 import com.kms.katalon.entity.dal.exception.DuplicatedFolderException;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -46,6 +49,7 @@ public class FolderFileServiceManager {
             initRootFolder(FileServiceConstant.getObjectRepositoryRootFolderLocation(project.getFolderLocation()));
             initRootFolder(FileServiceConstant.getKeywordRootFolderLocation(project.getFolderLocation()));
             initRootFolder(FileServiceConstant.getReportRootFolderLocation(project.getFolderLocation()));
+            initRootFolder(FileServiceConstant.getTestSuiteColelctionRootFolderLocation(project.getFolderLocation()));
         }
     }
 
@@ -119,6 +123,20 @@ public class FolderFileServiceManager {
             }
         }
         return null;
+    }
+    
+    public static FolderEntity getTestRunRoot(ProjectEntity project) throws Exception {
+        if (project == null) {
+            return null;
+        }
+        FolderEntity folder = getFolder(FileServiceConstant
+                .getTestSuiteColelctionRootFolderLocation(project.getFolderLocation()));
+        if (folder == null) {
+            return null;
+        }
+
+        folder.setProject(project);
+        return folder;
     }
 
     /**
@@ -199,13 +217,22 @@ public class FolderFileServiceManager {
                 boolean sortByDate = false;
                 for (File file : parentFolderFile.listFiles(EntityFileServiceManager.fileFilter)) {
                     if (file.isDirectory()) {
-                        if (FileUtils.directoryContains(file, new File(file, "execution0.log"))) {
-                            ReportEntity report = ReportFileServiceManager.getReportEntity(file.getAbsolutePath());
+                        File reportFile = new File(file, ReportEntity.DF_LOG_FILE_NAME);
+                        
+                        String folderName = FilenameUtils.getBaseName(file.getName());
+                        File reportCollectionFile = new File(file, folderName + ReportCollectionEntity.FILE_EXTENSION);
+                        IReportDataProvider reportDataProvider = new FileServiceDataProviderSetting().getReportDataProvider();
+                        if (reportFile.exists()) {
+                            ReportEntity report = reportDataProvider.getReportEntity(file.getAbsolutePath());
                             list.add(report);
                             sortByDate = true;
+                        } else if (reportCollectionFile.exists()) {
+                            ReportCollectionEntity report = reportDataProvider.getReportCollectionEntity(reportCollectionFile.getAbsolutePath());
+                            list.add(report);
+                            sortByDate = false;
                         } else {
                             FileEntity fileEntity = EntityFileServiceManager.get(file);
-                            if (fileEntity != null) {
+                            if (fileEntity != null && !getChildReportsOfFolder((FolderEntity) fileEntity).isEmpty()) {
                                 list.add(fileEntity);
                             }
                         }

@@ -28,6 +28,11 @@ public class RemoteWebRunConfigurationContributor extends WebUIRunConfigurationC
         public String getOption() {
             return DriverFactory.REMOTE_WEB_DRIVER_URL;
         }
+        
+        @Override
+        public boolean isRequired() {
+            return false;
+        };
     };
 
     public static final ConsoleOption<RemoteWebDriverConnectorType> REMOTE_WEB_DRIVER_CONNECTOR_TYPE_CONSOLE_OPTION = new AbstractConsoleOption<RemoteWebDriverConnectorType>() {
@@ -45,6 +50,11 @@ public class RemoteWebRunConfigurationContributor extends WebUIRunConfigurationC
         public String getDefaultArgumentValue() {
             return DEFAULT_REMOTE_WEB_DRIVER_CONNECTOR_TYPE.toString();
         }
+        
+        @Override
+        public boolean isRequired() {
+            return false;
+        };
     };
 
     @Override
@@ -54,13 +64,20 @@ public class RemoteWebRunConfigurationContributor extends WebUIRunConfigurationC
 
     @Override
     public IRunConfiguration getRunConfiguration(String projectDir) throws IOException, ExecutionException {
+        RemoteWebRunConfiguration runConfiguration = new RemoteWebRunConfiguration(projectDir);
+        
+        remoteWebDriverUrl = StringUtils.isNotBlank(remoteWebDriverUrl) ? remoteWebDriverUrl : runConfiguration
+                .getRemoteServerUrl();
+        remoteWebDriverType = remoteWebDriverType != null ? remoteWebDriverType : runConfiguration
+                .getRemoteWebDriverConnectorType();
+        
         if (StringUtils.isBlank(remoteWebDriverUrl)) {
             throw new ExecutionException(StringConstants.REMOTE_WEB_DRIVER_ERR_NO_URL_AVAILABLE);
         }
         if (remoteWebDriverType == null) {
             throw new ExecutionException(StringConstants.REMOTE_WEB_DRIVER_ERR_NO_TYPE_AVAILABLE);
         }
-        RemoteWebRunConfiguration runConfiguration = new RemoteWebRunConfiguration(projectDir);
+        
         runConfiguration.setRemoteServerUrl(remoteWebDriverUrl);
         runConfiguration.setRemoteWebDriverConnectorType(remoteWebDriverType);
         return runConfiguration;

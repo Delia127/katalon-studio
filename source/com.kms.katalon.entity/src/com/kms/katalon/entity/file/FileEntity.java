@@ -49,4 +49,8 @@ public abstract class FileEntity extends Entity implements IFileEntity {
     public String getIdForDisplay() {
         return getRelativePathForUI().replace(File.separator, StringConstants.ENTITY_ID_SEPERATOR);
     }
+
+    public File toFile() {
+        return new File(getId());
+    }
 }

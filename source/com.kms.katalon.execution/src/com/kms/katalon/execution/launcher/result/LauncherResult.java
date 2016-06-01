@@ -1,11 +1,10 @@
-package com.kms.katalon.execution.launcher.model;
+package com.kms.katalon.execution.launcher.result;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
 
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.execution.constants.StringConstants;
-import com.kms.katalon.execution.launcher.ILauncherResult;
 
 public class LauncherResult implements ILauncherResult {
     public static final int RETURN_CODE_PASSED = 0;

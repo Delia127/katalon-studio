@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Display;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.TestSuiteCollectionTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityProcessingUtil;
@@ -27,6 +28,7 @@ import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class TreeEntityDropListener extends TreeDropTargetEffect {
@@ -108,6 +110,10 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
                 WebElementEntity movedTo = EntityProcessingUtil.moveTestObject(
                         (WebElementEntity) ((WebElementTreeEntity) treeEntity).getObject(), targetFolder);
                 lastMovedTreeEntity = TreeEntityUtil.getWebElementTreeEntity(movedTo, targetFolder.getProject());
+            }  else if (treeEntity instanceof TestSuiteCollectionTreeEntity) {
+                TestSuiteCollectionEntity movedTo = EntityProcessingUtil.moveTestSuiteCollection(
+                        (TestSuiteCollectionEntity) ((TestSuiteCollectionTreeEntity) treeEntity).getObject(), targetFolder);
+                lastMovedTreeEntity = TreeEntityUtil.getTestRunTreeEntity(movedTo, targetFolder.getProject());
             }
             eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, treeEntity.getParent());
         }

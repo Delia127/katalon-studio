@@ -2,10 +2,13 @@ package com.kms.katalon.dal;
 
 import java.util.List;
 
+import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public interface IReportDataProvider {
@@ -27,4 +30,16 @@ public interface IReportDataProvider {
     public List<ReportEntity> listReportEntities(TestSuiteEntity testSuite, ProjectEntity project) throws Exception;
     
     public FolderEntity getReportFolder(TestSuiteEntity testSuite, ProjectEntity project) throws Exception;
+
+    ReportCollectionEntity getReportCollectionEntity(String id) throws DALException;
+
+    ReportCollectionEntity getReportCollectionEntity(ProjectEntity project, TestSuiteCollectionEntity entity,
+            String reportName) throws DALException;
+
+    void updateReportCollectionEntity(ReportCollectionEntity entity) throws DALException;
+
+    ReportCollectionEntity newReportCollectionEntity(ProjectEntity project, TestSuiteCollectionEntity tsEntity,
+            String newName) throws DALException;
+
+    void deleteReportCollection(ReportCollectionEntity reportCollection) throws DALException;
 }

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+	package-name="com.kms.katalon.entity.testsuite">
+	<java-types>
+		<java-type name="TestSuiteCollectionEntity">
+			<xml-root-element name="TestSuiteCollectionEntity" />
+			<java-attributes>				
+				<xml-element-ref java-attribute="testSuiteRunConfigurations">
+					<xml-element-wrapper type="TestSuiteRunConfiguration"
+						name="testSuiteRunConfigurations" />
+				</xml-element-ref>
+			</java-attributes>
+		</java-type>
+		<java-type name="TestSuiteRunConfiguration">
+			<xml-root-element name="TestSuiteRunConfiguration"/>
+			<java-attributes>
+				<xml-element java-attribute="testSuiteEntity" type="com.kms.katalon.entity.testsuite.TestSuiteEntity">
+					<xml-java-type-adapter value="com.kms.katalon.dal.fileservice.adapter.TestSuiteReferenceXmlAdapter"/>
+				</xml-element>
+			</java-attributes>
+		</java-type>
+	</java-types>
+</xml-bindings>

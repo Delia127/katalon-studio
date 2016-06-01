@@ -3,21 +3,21 @@ package com.kms.katalon.execution.generator;
 import groovy.text.GStringTemplateEngine
 import groovy.transform.CompileStatic
 
-import com.kms.katalon.core.configuration.RunConfiguration;
+import com.kms.katalon.core.configuration.RunConfiguration
 import com.kms.katalon.core.driver.DriverCleanerCollector
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.keyword.IKeywordContributor
-import com.kms.katalon.core.keyword.KeywordContributorCollection;
+import com.kms.katalon.core.keyword.KeywordContributorCollection
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.main.TestCaseMain
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.reporting.ReportUtil
 import com.kms.katalon.core.testcase.TestCaseBinding
 import com.kms.katalon.core.testdata.TestDataColumn
-import com.kms.katalon.custom.factory.BuiltInMethodNodeFactory
 import com.kms.katalon.entity.testsuite.TestSuiteEntity
-import com.kms.katalon.execution.configuration.IRunConfiguration;
-import com.kms.katalon.execution.entity.TestCaseExecutedEntity
+import com.kms.katalon.execution.configuration.IRunConfiguration
+import com.kms.katalon.execution.entity.IExecutedEntity
+import com.kms.katalon.execution.entity.TestCaseExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity
 import com.kms.katalon.execution.util.ExecutionUtil
 import com.kms.katalon.groovy.util.GroovyStringUtil
@@ -82,9 +82,9 @@ KeywordLogger.getInstance().endSuite('<%= testSuite.getName() %>', null)
         }
 
         List<String> testCaseIds = new ArrayList<String>();
-        for (TestCaseExecutedEntity testCaseExecutedEntity in testSuiteExecutedEntity.getTestCaseExecutedEntities()) {
-            for (int index = 0; index < testCaseExecutedEntity.getLoopTimes(); index++) {
-                testCaseIds.add(testCaseExecutedEntity.getTestCaseId())
+        for (IExecutedEntity testCaseExecutedEntity in testSuiteExecutedEntity.getExecutedItems()) {
+            for (int index = 0; index < ((TestCaseExecutedEntity) testCaseExecutedEntity).getLoopTimes(); index++) {
+                testCaseIds.add(testCaseExecutedEntity.getSourceId())
             }
         }
 

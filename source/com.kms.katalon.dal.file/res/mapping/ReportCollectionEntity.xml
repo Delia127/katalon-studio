@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+	package-name="com.kms.katalon.entity.report">
+	<java-types>
+		<java-type name="ReportCollectionEntity">
+			<xml-root-element name="ReportCollectionEntity" />
+			<java-attributes>
+				<xml-element-ref java-attribute="reportItemDescriptions">
+					<xml-element-wrapper type="ReportItemDescription"
+						name="reportItemDescriptions" />
+				</xml-element-ref>
+			</java-attributes>
+		</java-type>
+		<java-type name="ReportItemDescription">
+			<xml-root-element name="ReportItemDescription"/>
+			<java-attributes>
+			</java-attributes>
+		</java-type>
+	</java-types>
+</xml-bindings>

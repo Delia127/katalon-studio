@@ -1,4 +1,4 @@
-package com.kms.katalon.execution.launcher.model;
+package com.kms.katalon.execution.launcher.result;
 
 public enum LauncherStatus {
     WAITING("Waiting"), SUSPENDED("Suspended"), RUNNING("Running"), SENDING_EMAIL("Sending email"), TERMINATED("Terminated"), 

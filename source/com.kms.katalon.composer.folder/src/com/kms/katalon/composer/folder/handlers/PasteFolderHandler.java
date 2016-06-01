@@ -30,6 +30,7 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.TestSuiteCollectionTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityProcessingUtil;
@@ -42,12 +43,14 @@ import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestDataController;
+import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
@@ -145,6 +148,10 @@ public class PasteFolderHandler {
                         && targetFolder.getFolderType() == FolderType.KEYWORD) {
                     copyKeywordPackage((IPackageFragment) ((PackageTreeEntity) treeEntity).getObject(), targetFolder,
                             null);
+                } else if (treeEntity instanceof TestSuiteCollectionTreeEntity
+                        && targetFolder.getFolderType() == FolderType.TESTSUITE) {
+                    copyTestSuiteCollection((TestSuiteCollectionEntity) ((TestSuiteCollectionTreeEntity) treeEntity).getObject(),
+                            targetFolder);
                 }
                 GroovyUtil.getGroovyProject(targetFolder.getProject()).refreshLocal(IResource.DEPTH_INFINITE, null);
             }
@@ -168,6 +175,10 @@ public class PasteFolderHandler {
                     moveTestObject((WebElementEntity) ((WebElementTreeEntity) treeEntity).getObject(), targetFolder);
                 } else if (treeEntity instanceof PackageTreeEntity) {
                     moveKeywordPackage((IPackageFragment) ((PackageTreeEntity) treeEntity).getObject(), targetFolder);
+                } else if (treeEntity instanceof TestSuiteCollectionTreeEntity) {
+                    moveTestSuiteCollection(
+                            (TestSuiteCollectionEntity) ((TestSuiteCollectionTreeEntity) treeEntity).getObject(),
+                            targetFolder);
                 }
             }
             GroovyUtil.getGroovyProject(targetFolder.getProject()).refreshLocal(IResource.DEPTH_INFINITE, null);
@@ -246,6 +257,23 @@ public class PasteFolderHandler {
         }
     }
 
+    private void copyTestSuiteCollection(TestSuiteCollectionEntity testSuiteCollection, FolderEntity targetFolder)
+            throws Exception {
+        if (testSuiteCollection == null) {
+            return;
+        }
+        TestSuiteCollectionEntity copiedTestSuiteCollection = TestSuiteCollectionController.getInstance()
+                .copyTestSuiteCollection(testSuiteCollection, targetFolder);
+        if (copiedTestSuiteCollection != null) {
+            eventBroker.post(
+                    EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM,
+                    new Object[] { testSuiteCollection.getIdForDisplay(),
+                            copiedTestSuiteCollection.getIdForDisplay() });
+            lastPastedTreeEntity = new TestSuiteCollectionTreeEntity(copiedTestSuiteCollection,
+                    (FolderTreeEntity) parentPastedTreeEntity);
+        }
+    }
+
     private void copyTestObject(WebElementEntity webElement, FolderEntity targetFolder) throws Exception {
         if (webElement != null) {
             WebElementEntity copiedWebElement = ObjectRepositoryController.getInstance().copyWebElement(webElement,
@@ -317,5 +345,14 @@ public class PasteFolderHandler {
 
     private void moveKeywordPackage(IPackageFragment packageFragment, FolderEntity targetFolder) {
         // not allow moving package
+    }
+    
+    private void moveTestSuiteCollection(TestSuiteCollectionEntity dataFile, FolderEntity targetFolder)
+            throws Exception {
+        TestSuiteCollectionEntity movedTestSuiteCollection = EntityProcessingUtil.moveTestSuiteCollection(dataFile, targetFolder);
+        if (movedTestSuiteCollection != null) {
+            lastPastedTreeEntity = new TestSuiteCollectionTreeEntity(movedTestSuiteCollection,
+                    (FolderTreeEntity) parentPastedTreeEntity);
+        }
     }
 }

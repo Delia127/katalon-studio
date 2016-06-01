@@ -34,7 +34,6 @@ public class ProjectFileServiceManager {
 
         EntityService.getInstance().saveEntity(project);
         FolderFileServiceManager.initRootEntityFolders(project);
-        ReportFileServiceManager.initReportFolder(project.getFolderLocation());
         createSettingFolder(project);
 
         GroovyUtil.initGroovyProject(project,

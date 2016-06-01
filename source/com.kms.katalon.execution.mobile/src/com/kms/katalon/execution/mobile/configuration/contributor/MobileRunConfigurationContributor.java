@@ -1,5 +1,6 @@
 package com.kms.katalon.execution.mobile.configuration.contributor;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
+import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
@@ -17,6 +19,8 @@ import com.kms.katalon.execution.mobile.configuration.MobileRunConfiguration;
 import com.kms.katalon.execution.mobile.configuration.providers.MobileDeviceProvider;
 import com.kms.katalon.execution.mobile.constants.StringConstants;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
+import com.kms.katalon.execution.mobile.driver.AndroidDriverConnector;
+import com.kms.katalon.execution.mobile.driver.IosDriverConnector;
 import com.kms.katalon.execution.mobile.exception.MobileSetupException;
 
 public abstract class MobileRunConfigurationContributor implements IRunConfigurationContributor {
@@ -27,6 +31,11 @@ public abstract class MobileRunConfigurationContributor implements IRunConfigura
         public String getOption() {
             return com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_DEVICE_ID;
         }
+        
+        @Override
+        public boolean isRequired() {
+            return false;
+        };
     };
 
     @Override
@@ -37,6 +46,8 @@ public abstract class MobileRunConfigurationContributor implements IRunConfigura
     @Override
     public IRunConfiguration getRunConfiguration(String projectDir) throws IOException, ExecutionException,
             InterruptedException {
+        deviceName = StringUtils.isNotBlank(deviceName) ? deviceName : getDefaultDeviceId(projectDir,
+                getMobileDriverType());
         if (StringUtils.isBlank(deviceName)) {
             throw new ExecutionException(StringConstants.MOBILE_ERR_NO_DEVICE_NAME_AVAILABLE);
         }
@@ -75,4 +86,21 @@ public abstract class MobileRunConfigurationContributor implements IRunConfigura
     }
 
     protected abstract MobileDriverType getMobileDriverType();
+    
+    public static String getDefaultDeviceId(String projectDir, MobileDriverType platform) throws IOException {
+        String deviceId = null;
+        switch (platform) {
+            case ANDROID_DRIVER: {
+                deviceId = new AndroidDriverConnector(projectDir + File.separator
+                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME).getDeviceId();
+                break;
+            }
+            case IOS_DRIVER: {
+                deviceId = new IosDriverConnector(projectDir + File.separator
+                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME).getDeviceId();
+                break;
+            }
+        }
+        return deviceId;
+    }
 }

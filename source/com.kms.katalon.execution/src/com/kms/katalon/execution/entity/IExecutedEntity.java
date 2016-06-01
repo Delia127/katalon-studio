@@ -4,24 +4,26 @@ import java.util.List;
 import java.util.Map;
 
 public interface IExecutedEntity {
-    
+
+    String getId();
+
     /**
      * @return Name of the executed entity, used to write log
      */
     public String getSourceName();
 
     /**
-     * @return 
+     * @return
      */
     public String getSourceId();
 
     public String getSourceDescription();
-    
-    public int getTotalTestCases();
-    
-    public List<TestCaseExecutedEntity> getTestCaseExecutedEntities();
+
+    public List<IExecutedEntity> getExecutedItems();
+
+    int getTotalTestCases();
     
     public Map<String, Object> getAttributes();
-    
+
     public int mainTestCaseDepth();
 }

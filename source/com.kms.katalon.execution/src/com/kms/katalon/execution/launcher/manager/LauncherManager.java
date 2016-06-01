@@ -9,7 +9,7 @@ import java.util.List;
 
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.execution.launcher.ILauncher;
-import com.kms.katalon.execution.launcher.model.LauncherStatus;
+import com.kms.katalon.execution.launcher.result.LauncherStatus;
 
 public class LauncherManager {
     private static LauncherManager _instance;
@@ -17,7 +17,7 @@ public class LauncherManager {
     private List<ILauncher> waitingLaunchers;
     private List<ILauncher> teminatedLaunchers;
 
-    private LauncherManager() {
+    protected LauncherManager() {
         runningLaunchers = new ArrayList<ILauncher>();
         waitingLaunchers = new ArrayList<ILauncher>();
         teminatedLaunchers = new ArrayList<ILauncher>();
@@ -91,8 +91,8 @@ public class LauncherManager {
             @Override
             public int compare(ILauncher launcher1, ILauncher launcher2) {
                 try {
-                    String lcFolderName1 = launcher1.getRunConfig().getExecutionSetting().getFolderPath();
-                    String lcFolderName2 = launcher2.getRunConfig().getExecutionSetting().getFolderPath();
+                    String lcFolderName1 = launcher1.getId();
+                    String lcFolderName2 = launcher2.getId();
                     Date lcDate1 = ReportController.getInstance().getDateFromReportFolderName(lcFolderName1);
                     Date lcDate2 = ReportController.getInstance().getDateFromReportFolderName(lcFolderName2);
                     return lcDate1.after(lcDate2) ? 1 : -1;
@@ -114,7 +114,7 @@ public class LauncherManager {
     }
 
     // Let all the launcher run parallel for now
-    private boolean isLauncherReadyToRun(ILauncher launcher) {
+    protected boolean isLauncherReadyToRun(ILauncher launcher) {
         // if (runningLaunchers.size() > 0)
         // return false;
 
@@ -172,7 +172,7 @@ public class LauncherManager {
         addLauncherToTerminatedList(launcher);
     }
 
-    private void schedule() {
+    protected void schedule() {
         int index = 0;
         while (index < waitingLaunchers.size()) {
             ILauncher launcher = waitingLaunchers.get(index);

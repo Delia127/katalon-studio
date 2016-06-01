@@ -22,6 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
@@ -32,6 +33,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 
+import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.dal.exception.InvalidNameException;
 import com.kms.katalon.dal.fileservice.constants.StringConstants;
 import com.kms.katalon.dal.fileservice.manager.EntityFileServiceManager;
@@ -51,6 +53,8 @@ public final class EntityService {
     private Marshaller marshaller;
 
     private Unmarshaller unmarshaller;
+
+    private JAXBContext jaxbContext;
 
     private static final String BIDING_FILES_LOCATION = "res/mapping";
 
@@ -97,7 +101,6 @@ public final class EntityService {
         }
         System.setProperty("javax.xml.bind.context.factory", JAXBContextFactory.class.getName());
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, bindingFiles);
-        JAXBContext jaxbContext = null;
         jaxbContext = JAXBContext.newInstance(getEntityClasses(), properties);
         marshaller = jaxbContext.createMarshaller();
         unmarshaller = jaxbContext.createUnmarshaller();
@@ -120,7 +123,10 @@ public final class EntityService {
                 com.kms.katalon.entity.global.GlobalVariableEntity.class,
                 com.kms.katalon.entity.integration.IntegratedEntity.class,
                 com.kms.katalon.entity.file.IntegratedFileEntity.class,
-                com.kms.katalon.entity.report.ReportEntity.class };
+                com.kms.katalon.entity.report.ReportEntity.class, 
+                com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.class,
+                com.kms.katalon.dal.fileservice.adapter.TestSuiteReferenceXmlAdapter.class,
+                com.kms.katalon.entity.report.ReportCollectionEntity.class};
     }
 
     public Marshaller getMarshaller() {
@@ -326,5 +332,17 @@ public final class EntityService {
         } else {
             return false;
         }
+    }
+
+    public Unmarshaller newUnmarshaller() throws DALException {
+        try {
+            return jaxbContext.createUnmarshaller();
+        } catch (JAXBException e) {
+            throw new DALException(e);
+        }
+    }
+
+    public Unmarshaller changeUnmarshaller(Unmarshaller unmashaller) {
+        return this.unmarshaller = unmashaller;
     }
 }

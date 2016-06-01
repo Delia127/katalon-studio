@@ -1,4 +1,4 @@
-package com.kms.katalon.execution.launcher;
+package com.kms.katalon.execution.launcher.result;
 
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 

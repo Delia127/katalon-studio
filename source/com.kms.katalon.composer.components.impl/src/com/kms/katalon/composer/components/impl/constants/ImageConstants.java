@@ -36,6 +36,9 @@ public class ImageConstants {
 
     // ReportTreeEntity
     public static final Image IMG_16_REPORT = ImageUtil.loadImage(currentBundle, "/icons/report_16.png");
+    
+    // ReportCollectionTreeEntity
+    public static final Image IMG_16_REPORT_COLLECTION = ImageUtil.loadImage(currentBundle, "/icons/report_list_16.png");
 
     // TestCaseTreeEntity
     public static final Image IMG_16_TEST_CASE = ImageUtil.loadImage(currentBundle, "/icons/test_case_16.png");
@@ -45,6 +48,9 @@ public class ImageConstants {
 
     // TestSuiteTreeEntity
     public static final Image IMG_16_TEST_SUITE = ImageUtil.loadImage(currentBundle, "/icons/test_suite_16.png");
+    
+    // TestRunTreeEntity
+    public static final Image IMG_16_TEST_SUITE_COLLECTION = ImageUtil.loadImage(currentBundle, "/icons/test_suite_collection_16.png");
 
     // WebElementTreeEntity
     public static final Image IMG_16_TEST_OBJECT = ImageUtil.loadImage(currentBundle, "/icons/test_object_16.png");
