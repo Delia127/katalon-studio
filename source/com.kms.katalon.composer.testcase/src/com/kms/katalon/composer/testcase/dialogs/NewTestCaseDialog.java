@@ -12,10 +12,13 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.impl.dialogs.CommonNewEntityDialog;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.testcase.TestCaseEntity;
 
-public class NewTestCaseDialog extends CommonNewEntityDialog {
+public class NewTestCaseDialog extends CommonNewEntityDialog<TestCaseEntity> {
 
     private String tag;
 
@@ -49,8 +52,19 @@ public class NewTestCaseDialog extends CommonNewEntityDialog {
         return container;
     }
 
-    public String getTag() {
-        return StringUtils.trimToEmpty(tag);
+    @Override
+    protected void createEntity() {
+        try {
+            entity = TestCaseController.getInstance().newTestCaseWithoutSave(parentFolder, getName());
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
+
+    @Override
+    protected void setEntityProperties() {
+        super.setEntityProperties();
+        entity.setTag(StringUtils.trimToEmpty(tag));
     }
 
 }

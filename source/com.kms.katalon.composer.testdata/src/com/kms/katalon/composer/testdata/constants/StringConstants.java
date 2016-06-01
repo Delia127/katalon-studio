@@ -150,4 +150,80 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_TITLE_TEST_DATA_PROPERTIES = "Test Data Properties";
 
     public static final String DIA_LBL_DATA_TYPE = "Data Type";
+
+    // DBTestDataPart EditTestDataQueryDialog
+    public static final String DIA_LBL_SQL_QUERY = "SQL Query";
+
+    public static final String DIA_BTN_EDIT_QUERY = "Edit Query";
+
+    public static final String DIA_BTN_FETCH_DATA = "Fetch Data";
+
+    public static final String DIA_LBL_STATUS_PARTIALLY_LOADED_ON = "Partially loaded on {0}";
+
+    public static final String DIA_MSG_DATA_IS_TOO_LARGE_FOR_PREVIEW = "The responsive data from database is too large to display. The maximum data can be displayed is {0} for column and {1} for row.";
+
+    public static final String DIA_LBL_STATUS_LOADED_ON = "Loaded on {0}";
+
+    public static final String DIA_MSG_CANNOT_FETCH_DATA = "Cannot fetch data from database";
+
+    // EditTestDataQueryDialog
+    public static final String DIA_TITLE_DB_CONNECTION_QUERY_SETTINGS = "Database Connection and Query Settings";
+
+    public static final String DIA_GRP_DATABASE_CONNECTION = "Database Connection";
+
+    public static final String DIA_CHK_USE_GLOBAL_DB_SETTINGS = "Use global database connection settings";
+
+    public static final String DIA_CHK_SECURE_USER_PASSWORD = "Secure User and Password";
+
+    public static final String DIA_LBL_USER = "User";
+
+    public static final String DIA_LBL_PASSWORD = "Password";
+
+    public static final String DIA_LBL_CONNECTION_URL = "Connection URL";
+
+    public static final String DIA_BTN_TEST_CONNECTION = "Test Connection";
+
+    public static final String DIA_LBL_CONNECTION_URL_SAMPLE = "Connection URL Sample";
+
+    public static final String DIA_LNK_MYSQL = "MySQL";
+
+    public static final String DIA_LNK_SQL_SERVER = "SQL Server";
+
+    public static final String DIA_LNK_ORACLE_SQL = "Oracle SQL";
+
+    public static final String DIA_LNK_POSTGRESQL = "PostgreSQL";
+
+    public static final String DIA_LBL_CONNECTION_CLOSED = "Connection is closed.";
+
+    public static final String DIA_MSG_CONNECTION_EMPTY = "Database Connection settings are empty.";
+
+    public static final String DIA_LBL_TEST_STATUS_FAIL = "Connection failed! {0}";
+
+    public static final String DIA_LBL_TEST_STATUS_SUCCESS = "Connection successful!";
+
+    public static final String DIA_TITLE_STATUS_DETAILS = "Status Details";
+
+    public static final String DIA_LINK_MYSQL_DOC = "https://dev.mysql.com/doc/connectors/en/connector-j-reference-configuration-properties.html";
+
+    public static final String DIA_LINK_SQL_SERVER_DOC = "https://msdn.microsoft.com/en-us/library/ms378672(v=sql.110).aspx";
+
+    public static final String DIA_LINK_ORACLE_SQL_DOC = "http://docs.oracle.com/database/121/JJDBC/urls.htm";
+
+    public static final String DIA_LINK_POSTGRESQL_DOC = "https://jdbc.postgresql.org/documentation/head/connect.html";
+
+    public static final String DIA_TXT_MYSQL_SAMPLE_LINK = "jdbc:mysql://localhost:3306/DB_NAME";
+
+    public static final String DIA_TXT_SQL_SERVER_SAMPLE_LINK = "jdbc:sqlserver://localhost:1433;databaseName=DB_NAME";
+
+    public static final String DIA_TXT_ORACLE_SQL_SAMPLE_THIN_LINK = "jdbc:oracle:thin:@//localhost:1521/SERVICE_NAME";
+
+    public static final String DIA_TXT_ORACLE_SQL_SAMPLE_OCI_LINK = "jdbc:oracle:oci:@//localhost:1521:SID";
+
+    public static final String DIA_TXT_POSTGRESQL_SAMPLE_LINK = "jdbc:postgresql://localhost:5432/DB_NAME?currentSchema=SCHEMA";
+
+    // DatabasePreferencePage
+    public static final String DIA_MSG_UNABLE_TO_SAVE_DB_SETTING_PAGE = "Unable to save database settings.";
+
+    public static final String DIA_DB_SETTING_COMMENT = "Global Database Settings.\n@URL database connection URL.\n@SECURE_USER_ACCOUNT true if exclude USER & PASSWORD from URL. Otherwise, false.\n@USER username to access database.\n@PASSWORD encrypted password.";
+
 }

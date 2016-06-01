@@ -3,11 +3,13 @@ package com.kms.katalon.composer.testcase.groovy.ast.expressions;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codehaus.groovy.ast.ClassHelper;
 import org.codehaus.groovy.ast.expr.BooleanExpression;
 import org.codehaus.groovy.ast.expr.NotExpression;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapHelper;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
 
 public class BooleanExpressionWrapper extends ExpressionWrapper {
     private ExpressionWrapper expression;
@@ -23,6 +25,7 @@ public class BooleanExpressionWrapper extends ExpressionWrapper {
         super(parentNodeWrapper);
         this.expression = new ConstantExpressionWrapper(true, this);
         this.isReverse = false;
+        this.type = new ClassNodeWrapper(ClassHelper.boolean_TYPE, this);
     }
 
     public BooleanExpressionWrapper(BooleanExpression expression, ASTNodeWrapper parentNodeWrapper) {

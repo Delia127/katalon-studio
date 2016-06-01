@@ -6,11 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.dal.state.DataProviderState;
+import com.kms.katalon.controller.constants.StringConstants;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -21,6 +22,7 @@ import com.kms.katalon.entity.link.VariableLink.VariableType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.entity.util.Util;
 import com.kms.katalon.entity.variable.VariableEntity;
 
 @Creatable
@@ -39,40 +41,70 @@ public class TestSuiteController extends EntityController {
         return (TestSuiteController) _instance;
     }
 
-    public TestSuiteEntity addNewTestSuite(Object selectionObject, String testSuiteName) throws Exception {
-        if (selectionObject != null) {
-            ProjectEntity projectEntity = DataProviderState.getInstance().getCurrentProject();
-            if (projectEntity != null) {
-                FolderEntity parentFolder;
-                if (selectionObject instanceof FolderEntity) {
-                    parentFolder = ((FolderEntity) selectionObject);
+    /**
+     * Create and save new Test Suite
+     * 
+     * @param parentFolder Parent folder
+     * @param testSuiteName Test Suite name. Default name (New Test Suite) will be used if this null or empty
+     * @return {@link TestSuiteEntity} the saved Test Suite
+     * @throws Exception
+     */
+    public TestSuiteEntity newTestSuite(FolderEntity parentFolder, String testSuiteName) throws Exception {
+        return saveNewTestSuite(newTestSuiteWithoutSave(parentFolder, testSuiteName));
+    }
 
-                } else if (selectionObject instanceof TestSuiteEntity) {
-                    parentFolder = ((TestSuiteEntity) selectionObject).getParentFolder();
-                } else {
-                    parentFolder = dataProviderSetting.getFolderDataProvider().getTestSuiteRoot(projectEntity);
-                }
-                return dataProviderSetting.getTestSuiteDataProvider().addNewTestSuite(parentFolder, testSuiteName,
-                        TestEnvironmentController.getInstance().getPageLoadTimeOutDefaultValue());
-            }
+    /**
+     * Create a NEW Test Suite without save
+     * 
+     * @param parentFolder Parent folder
+     * @param testSuiteName Test Suite name. Default name (New Test Suite) will be used if this null or empty
+     * @return {@link TestSuiteEntity}
+     * @throws Exception
+     */
+    public TestSuiteEntity newTestSuiteWithoutSave(FolderEntity parentFolder, String testSuiteName) throws Exception {
+        if (parentFolder == null) {
+            return null;
         }
-        return null;
+
+        if (StringUtils.isBlank(testSuiteName)) {
+            testSuiteName = StringConstants.CTRL_NEW_TEST_SUITE;
+        }
+
+        TestSuiteEntity newTestSuite = new TestSuiteEntity();
+        newTestSuite.setTestSuiteGuid(Util.generateGuid());
+        newTestSuite.setName(getAvailableTestSuiteName(parentFolder, testSuiteName));
+        newTestSuite.setParentFolder(parentFolder);
+        newTestSuite.setProject(parentFolder.getProject());
+
+        return newTestSuite;
+    }
+
+    /**
+     * Save a NEW Test Suite.<br>
+     * Please user {@link #updateTestSuite(TestSuiteEntity)} if you want to save an existing Test Suite.
+     * 
+     * @param newTestSuite a new Test Suite which is created by {@link #newTestSuiteWithoutSave(FolderEntity, String)}
+     * @return {@link TestSuiteEntity} the saved Test Suite
+     * @throws Exception
+     */
+    public TestSuiteEntity saveNewTestSuite(TestSuiteEntity newTestSuite) throws Exception {
+        return getDataProviderSetting().getTestSuiteDataProvider().saveNewTestSuite(newTestSuite);
     }
 
     public void deleteTestSuite(TestSuiteEntity testSuite) throws Exception {
-        dataProviderSetting.getTestSuiteDataProvider().deleteTestSuite(testSuite);
+        getDataProviderSetting().getTestSuiteDataProvider().deleteTestSuite(testSuite);
     }
 
     public synchronized TestSuiteEntity updateTestSuite(TestSuiteEntity testSuite) throws Exception {
-        return dataProviderSetting.getTestSuiteDataProvider().updateTestSuite(testSuite);
+        return getDataProviderSetting().getTestSuiteDataProvider().updateTestSuite(testSuite);
     }
 
     public TestSuiteEntity copyTestSuite(TestSuiteEntity testSuite, FolderEntity targetFolder) throws Exception {
-        return dataProviderSetting.getTestSuiteDataProvider().copyTestSuite(testSuite, targetFolder);
+        return getDataProviderSetting().getTestSuiteDataProvider().copyTestSuite(testSuite, targetFolder);
     }
 
     public TestSuiteEntity moveTestSuite(TestSuiteEntity testSuite, FolderEntity targetFolder) throws Exception {
-        return dataProviderSetting.getTestSuiteDataProvider().moveTestSuite(testSuite, targetFolder);
+        return getDataProviderSetting().getTestSuiteDataProvider().moveTestSuite(testSuite, targetFolder);
     }
 
     /**
@@ -85,7 +117,7 @@ public class TestSuiteController extends EntityController {
      */
     @Deprecated
     public String getIdForDisplay(TestSuiteEntity entity) throws Exception {
-        return dataProviderSetting.getTestSuiteDataProvider()
+        return getDataProviderSetting().getTestSuiteDataProvider()
                 .getIdForDisplay(entity)
                 .replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPERATOR);
     }
@@ -101,7 +133,7 @@ public class TestSuiteController extends EntityController {
         String testSuitePkWithDoubleBrackets = elementId.replaceFirst(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX, "");
         String testSuitePk = testSuitePkWithDoubleBrackets.substring(1, testSuitePkWithDoubleBrackets.length() - 1);
 
-        return dataProviderSetting.getTestSuiteDataProvider().getTestSuite(testSuitePk);
+        return getDataProviderSetting().getTestSuiteDataProvider().getTestSuite(testSuitePk);
     }
 
     public List<String> getSibblingTestSuiteNames(TestSuiteEntity testSuite) throws Exception {
@@ -109,8 +141,8 @@ public class TestSuiteController extends EntityController {
         List<String> sibblingName = new ArrayList<String>();
         for (FileEntity sibblingEntity : sibblingEntities) {
             if (sibblingEntity instanceof TestSuiteEntity
-                    && !dataProviderSetting.getEntityPk(sibblingEntity).equals(
-                            dataProviderSetting.getEntityPk(testSuite))) {
+                    && !getDataProviderSetting().getEntityPk(sibblingEntity).equals(
+                            getDataProviderSetting().getEntityPk(testSuite))) {
                 sibblingName.add(sibblingEntity.getName());
             }
         }
@@ -136,7 +168,7 @@ public class TestSuiteController extends EntityController {
             return null;
         }
     }
-    
+
     public VariableEntity getVariable(String testCaseId, VariableLink variableLink) throws Exception {
         TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByDisplayId(testCaseId);
         return testCase != null ? TestCaseController.getInstance().getVariable(testCase, variableLink.getVariableId())
@@ -184,7 +216,7 @@ public class TestSuiteController extends EntityController {
     }
 
     public TestSuiteEntity getTestSuite(String testSuitePk) throws Exception {
-        return dataProviderSetting.getTestSuiteDataProvider().getTestSuite(testSuitePk);
+        return getDataProviderSetting().getTestSuiteDataProvider().getTestSuite(testSuitePk);
     }
 
     /**
@@ -202,11 +234,11 @@ public class TestSuiteController extends EntityController {
     }
 
     public String getAvailableTestSuiteName(FolderEntity parentFolder, String name) throws Exception {
-        return dataProviderSetting.getTestSuiteDataProvider().getAvailableTestSuiteName(parentFolder, name);
+        return getDataProviderSetting().getTestSuiteDataProvider().getAvailableTestSuiteName(parentFolder, name);
     }
 
     public TestSuiteTestCaseLink getTestCaseLink(String testCaseId, TestSuiteEntity testSuite) {
-        return dataProviderSetting.getTestSuiteDataProvider().getTestCaseLink(testSuite, testCaseId);
+        return getDataProviderSetting().getTestSuiteDataProvider().getTestCaseLink(testSuite, testCaseId);
     }
 
     public void reloadTestSuite(TestSuiteEntity testSuite, Entity entity) throws Exception {

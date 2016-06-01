@@ -21,10 +21,18 @@ public class AstInputBuilderValueTypeColumnSupport extends EditingSupport {
     public AstInputBuilderValueTypeColumnSupport(ColumnViewer viewer, InputValueType[] defaultInputValueTypes) {
         super(viewer);
         inputValueTypes = defaultInputValueTypes;
-        readableValueTypeNames = new String[defaultInputValueTypes.length];
-        for (int i = 0; i < defaultInputValueTypes.length; i++) {
-            readableValueTypeNames[i] = TreeEntityUtil.getReadableKeywordName(defaultInputValueTypes[i].getName());
+        initReadableValueTypeNamesList();
+    }
+
+    protected void initReadableValueTypeNamesList() {
+        readableValueTypeNames = new String[inputValueTypes.length];
+        for (int i = 0; i < inputValueTypes.length; i++) {
+            readableValueTypeNames[i] = TreeEntityUtil.getReadableKeywordName(inputValueTypes[i].getName());
         }
+    }
+    
+    protected AstInputBuilderValueTypeColumnSupport(ColumnViewer viewer) {
+        super(viewer);
     }
 
     @Override

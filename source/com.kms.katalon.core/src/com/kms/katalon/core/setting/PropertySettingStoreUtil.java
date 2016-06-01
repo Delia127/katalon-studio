@@ -13,13 +13,21 @@ import java.util.Properties;
 
 public class PropertySettingStoreUtil {
     private static final String SETTING_ROOT_FOLDER_NAME = "settings";
-    public static final String INTERNAL_SETTING_ROOT_FOLDER_NAME = SETTING_ROOT_FOLDER_NAME + File.separator + "internal";
-    public static final String EXTERNAL_SETTING_ROOT_FOLDER_NAME = SETTING_ROOT_FOLDER_NAME + File.separator + "external";
+
+    public static final String INTERNAL_SETTING_ROOT_FOLDER_NAME = SETTING_ROOT_FOLDER_NAME + File.separator
+            + "internal";
+
+    public static final String EXTERNAL_SETTING_ROOT_FOLDER_NAME = SETTING_ROOT_FOLDER_NAME + File.separator
+            + "external";
+
     public static final String PROPERTY_FILE_EXENSION = ".properties";
 
     private static final String BOOLEAN_REGEX = "^(true|false)$";
+
     private static final String INTEGER_REGEX = "^(-)?\\d+$";
+
     private static final String STRING_REGEX = "^\".+\"$";
+
     private static final String PROPERTY_NAME_REGEX = "^[a-zA-Z0-9\\.\\-_@\\*]+$";
 
     public static void addNewProperty(String key, String value, File propertyFile) throws IOException {
@@ -181,5 +189,49 @@ public class PropertySettingStoreUtil {
         if (name == null || name.isEmpty())
             return false;
         return name.matches(PROPERTY_NAME_REGEX);
+    }
+
+    public static Properties getExternalSettings(String projectFolderLocation, String settingName) throws IOException {
+        return getSettings(projectFolderLocation + File.separator + EXTERNAL_SETTING_ROOT_FOLDER_NAME + File.separator
+                + settingName + PROPERTY_FILE_EXENSION);
+    }
+
+    public static Properties getInternalSettings(String projectFolderLocation, String settingName) throws IOException {
+        return getSettings(projectFolderLocation + File.separator + INTERNAL_SETTING_ROOT_FOLDER_NAME + File.separator
+                + settingName + PROPERTY_FILE_EXENSION);
+    }
+
+    public static void saveExternalSettings(String projectFolderLocation, String settingName, Properties settings,
+            String comment) throws IOException {
+        saveSettings(settings, projectFolderLocation + File.separator + EXTERNAL_SETTING_ROOT_FOLDER_NAME
+                + File.separator + settingName + PROPERTY_FILE_EXENSION, comment);
+    }
+
+    public static void saveInternalSettings(String projectFolderLocation, String settingName, Properties settings,
+            String comment) throws IOException {
+        saveSettings(settings, projectFolderLocation + File.separator + INTERNAL_SETTING_ROOT_FOLDER_NAME
+                + File.separator + settingName + PROPERTY_FILE_EXENSION, comment);
+    }
+
+    private static Properties getSettings(String filePath) throws IOException {
+        File settingFile = new File(filePath);
+        if (!settingFile.exists()) {
+            settingFile.createNewFile();
+        }
+        try (FileInputStream fis = new FileInputStream(settingFile)) {
+            Properties settings = new Properties();
+            settings.load(fis);
+            return settings;
+        }
+    }
+
+    private static void saveSettings(Properties settings, String filePath, String comment) throws IOException {
+        File settingFile = new File(filePath);
+        if (!settingFile.exists()) {
+            settingFile.createNewFile();
+        }
+        try (FileOutputStream fos = new FileOutputStream(settingFile)) {
+            settings.store(fos, comment);
+        }
     }
 }

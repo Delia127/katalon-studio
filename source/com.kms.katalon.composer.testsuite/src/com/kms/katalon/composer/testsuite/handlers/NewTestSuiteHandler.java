@@ -1,7 +1,5 @@
 package com.kms.katalon.composer.testsuite.handlers;
 
-import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
-
 import java.util.List;
 
 import javax.inject.Inject;
@@ -26,7 +24,6 @@ import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.dialogs.NewTestSuiteDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -75,16 +72,13 @@ public class NewTestSuiteHandler {
                 return;
             }
 
-            // create test suite
-            TestSuiteEntity testSuite = tsController.addNewTestSuite(parentFolderEntity, dialog.getName());
+            // save new test suite
+            TestSuiteEntity testSuite = tsController.saveNewTestSuite(dialog.getEntity());
             if (testSuite == null) {
+                MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,
+                        StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_SUITE);
                 return;
             }
-
-            // update test suite properties
-            testSuite.setDescription(dialog.getDescription());
-            testSuite.setMailRecipient(getDefaultEmail());
-            tsController.updateTestSuite(testSuite);
 
             eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
             eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, new TestSuiteTreeEntity(testSuite,
@@ -134,11 +128,6 @@ public class NewTestSuiteHandler {
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
-    }
-
-    private String getDefaultEmail() {
-        return getPreferenceStore(PreferenceConstants.EXECUTION_QUALIFIER).getString(
-                PreferenceConstants.MAIL_CONFIG_REPORT_RECIPIENTS);
     }
 
 }

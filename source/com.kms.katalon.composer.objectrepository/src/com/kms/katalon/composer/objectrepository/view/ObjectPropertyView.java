@@ -678,7 +678,7 @@ public class ObjectPropertyView implements EventHandler {
             String oldIdForDisplay = originalTestObject.getIdForDisplay();
             copyObjectProperties(cloneTestObject, originalTestObject);
 
-            ObjectRepositoryController.getInstance().saveWebElement(originalTestObject);
+            ObjectRepositoryController.getInstance().updateTestObject(originalTestObject);
             changeOriginalTestObject(originalTestObject);
 
             if (!StringUtils.equalsIgnoreCase(temp.getName(), originalTestObject.getName())) {

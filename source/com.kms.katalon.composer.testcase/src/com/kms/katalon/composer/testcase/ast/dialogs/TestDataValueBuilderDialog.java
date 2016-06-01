@@ -1,7 +1,6 @@
 package com.kms.katalon.composer.testcase.ast.dialogs;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
@@ -11,11 +10,12 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrappe
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.providers.AstContentProviderAdapter;
-import com.kms.katalon.composer.testcase.model.InputValueTypeUtil;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
+import com.kms.katalon.composer.testcase.providers.UneditableTableCellLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
+import com.kms.katalon.composer.testcase.util.AstInputValueTypeOptionsProvider;
 
 public class TestDataValueBuilderDialog extends AbstractAstBuilderWithTableDialog {
     private static final String ROW = "Row";
@@ -24,7 +24,7 @@ public class TestDataValueBuilderDialog extends AbstractAstBuilderWithTableDialo
 
     private static final String TEST_DATA = "Test Data";
     
-    private final InputValueType[] defaultInputValueTypes = InputValueTypeUtil.getValueTypeOptions(InputValueType.TestDataValue);
+    private final InputValueType[] defaultInputValueTypes = AstInputValueTypeOptionsProvider.getInputValueTypeOptions(InputValueType.TestDataValue);
 
     private MethodCallExpressionWrapper methodCallExpression;
 
@@ -74,7 +74,7 @@ public class TestDataValueBuilderDialog extends AbstractAstBuilderWithTableDialo
         TableViewerColumn tableViewerColumnObject = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnObject.getColumn().setText(StringConstants.DIA_COL_OBJ);
         tableViewerColumnObject.getColumn().setWidth(100);
-        tableViewerColumnObject.setLabelProvider(new ColumnLabelProvider() {
+        tableViewerColumnObject.setLabelProvider(new UneditableTableCellLabelProvider() {
             @Override
             public String getText(Object element) {
                 if (element == getTestDataExpression()) {

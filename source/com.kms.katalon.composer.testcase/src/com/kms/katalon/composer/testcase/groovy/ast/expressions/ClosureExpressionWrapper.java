@@ -3,11 +3,13 @@ package com.kms.katalon.composer.testcase.groovy.ast.expressions;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codehaus.groovy.ast.ClassHelper;
 import org.codehaus.groovy.ast.expr.ClosureExpression;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ASTHasBlock;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ParameterWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.BlockStatementWrapper;
 
@@ -20,6 +22,7 @@ public class ClosureExpressionWrapper extends ExpressionWrapper implements ASTHa
         super(parentNodeWrapper);
         this.parameters = parameters;
         this.code = new BlockStatementWrapper(this);
+        this.type = new ClassNodeWrapper(ClassHelper.CLOSURE_TYPE, this);
     }
 
     public ClosureExpressionWrapper(ClosureExpression closureExpression, ASTNodeWrapper parentNodeWrapper) {

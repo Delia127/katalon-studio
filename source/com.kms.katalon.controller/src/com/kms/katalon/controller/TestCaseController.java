@@ -6,16 +6,15 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.kms.katalon.controller.constants.StringConstants;
-import com.kms.katalon.dal.state.DataProviderState;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.folder.FolderEntity;
-import com.kms.katalon.entity.folder.FolderEntity.FolderType;
-import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.entity.util.Util;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
@@ -34,44 +33,78 @@ public class TestCaseController extends EntityController {
         return (TestCaseController) _instance;
     }
 
-    public TestCaseEntity addNewTestCase(Object selectionObject, String testCaseName) throws Exception {
-        ProjectEntity projectEntity = DataProviderState.getInstance().getCurrentProject();
+    /**
+     * Create and save new Test Case
+     * 
+     * @param parentFolder parent folder
+     * @param testCaseName Test Case name
+     * @return {@link TestCaseEntity}
+     * @throws Exception
+     */
+    public TestCaseEntity newTestCase(FolderEntity parentFolder, String testCaseName) throws Exception {
+        return saveNewTestCase(newTestCaseWithoutSave(parentFolder, testCaseName));
+    }
 
-        if (projectEntity != null) {
-            FolderEntity parentFolder = null;
-            if (selectionObject instanceof FolderEntity
-                    && ((FolderEntity) selectionObject).getFolderType() == FolderType.TESTCASE) {
-                parentFolder = (FolderEntity) selectionObject;
-            } else if (selectionObject instanceof TestCaseEntity) {
-                parentFolder = ((TestCaseEntity) selectionObject).getParentFolder();
-            } else {
-                parentFolder = dataProviderSetting.getFolderDataProvider().getTestCaseRoot(projectEntity);
-            }
-            return dataProviderSetting.getTestCaseDataProvider().addNewTestCase(parentFolder, testCaseName);
-
+    /**
+     * Create new Test Case without save action
+     * 
+     * @param parentFolder
+     * @param defaultName Test Case name. Default name (New Test Case) will be used if this null or empty
+     * @return {@link TestCaseEntity}
+     * @throws Exception
+     */
+    public TestCaseEntity newTestCaseWithoutSave(FolderEntity parentFolder, String testCaseName) throws Exception {
+        if (parentFolder == null) {
+            return null;
         }
-        return null;
 
+        if (StringUtils.isBlank(testCaseName)) {
+            testCaseName = StringConstants.CTRL_NEW_TEST_CASE;
+        }
+
+        TestCaseEntity newTestCase = new TestCaseEntity();
+        newTestCase.setTestCaseGuid(Util.generateGuid());
+        newTestCase.setName(getAvailableTestCaseName(parentFolder, testCaseName));
+        newTestCase.setParentFolder(parentFolder);
+        newTestCase.setProject(parentFolder.getProject());
+
+        return newTestCase;
+    }
+
+    /**
+     * Save a NEW Test Case entity.<br>
+     * Please use {@link #updateTestCase(TestCaseEntity)} if you want to save an existing Test Case.
+     * 
+     * @param testCase new Test Case entity which is created by {@link #newTestCaseWithoutSave(FolderEntity, String)}
+     * @return {@link TestCaseEntity}
+     * @throws Exception
+     */
+    public TestCaseEntity saveNewTestCase(TestCaseEntity newTestCase) throws Exception {
+        if (newTestCase == null || newTestCase.getProject() == null || newTestCase.getParentFolder() == null) {
+            return null;
+        }
+
+        return getDataProviderSetting().getTestCaseDataProvider().saveNewTestCase(newTestCase);
     }
 
     public TestCaseEntity getTestCase(String testCasePK) throws Exception {
-        return dataProviderSetting.getTestCaseDataProvider().getTestCase(testCasePK);
+        return getDataProviderSetting().getTestCaseDataProvider().getTestCase(testCasePK);
     }
 
     public void deleteTestCase(TestCaseEntity testCase) throws Exception {
-        dataProviderSetting.getTestCaseDataProvider().deleteTestCase(testCase);
+        getDataProviderSetting().getTestCaseDataProvider().deleteTestCase(testCase);
     }
 
     public TestCaseEntity updateTestCase(TestCaseEntity testCase) throws Exception {
-        return dataProviderSetting.getTestCaseDataProvider().updateTestCase(testCase);
+        return getDataProviderSetting().getTestCaseDataProvider().updateTestCase(testCase);
     }
 
     public TestCaseEntity copyTestCase(TestCaseEntity testCaseEntity, FolderEntity destinationFolder) throws Exception {
-        return dataProviderSetting.getTestCaseDataProvider().copyTestCase(testCaseEntity, destinationFolder);
+        return getDataProviderSetting().getTestCaseDataProvider().copyTestCase(testCaseEntity, destinationFolder);
     }
 
     public TestCaseEntity moveTestCase(TestCaseEntity testCaseEntity, FolderEntity destinationFolder) throws Exception {
-        return dataProviderSetting.getTestCaseDataProvider().moveTestCase(testCaseEntity, destinationFolder);
+        return getDataProviderSetting().getTestCaseDataProvider().moveTestCase(testCaseEntity, destinationFolder);
     }
 
     public List<String> getSibblingTestCaseNames(TestCaseEntity testCase) throws Exception {
@@ -79,7 +112,7 @@ public class TestCaseController extends EntityController {
                 testCase.getParentFolder());
         List<String> sibblingName = new ArrayList<String>();
         for (TestCaseEntity sibblingTestCase : sibblingTestCases) {
-            if (!dataProviderSetting.getEntityPk(sibblingTestCase).equals(dataProviderSetting.getEntityPk(testCase))) {
+            if (!getDataProviderSetting().getEntityPk(sibblingTestCase).equals(getDataProviderSetting().getEntityPk(testCase))) {
                 sibblingName.add(sibblingTestCase.getName());
             }
         }
@@ -87,7 +120,7 @@ public class TestCaseController extends EntityController {
     }
 
     public TestCaseEntity getTestCaseByDisplayId(String testCaseDisplayId) throws Exception {
-        return dataProviderSetting.getTestCaseDataProvider().getTestCaseByDisplayId(testCaseDisplayId);
+        return getDataProviderSetting().getTestCaseDataProvider().getTestCaseByDisplayId(testCaseDisplayId);
     }
 
     public String getGroovyClassName(TestCaseEntity testCase) {
@@ -139,11 +172,11 @@ public class TestCaseController extends EntityController {
     }
 
     public String getAvailableTestCaseName(FolderEntity parentFolder, String name) throws Exception {
-        return dataProviderSetting.getTestCaseDataProvider().getAvailableTestCaseName(parentFolder, name);
+        return getDataProviderSetting().getTestCaseDataProvider().getAvailableTestCaseName(parentFolder, name);
     }
 
     public TestCaseEntity getTestCaseByScriptName(String scriptFileName) throws Exception {
-        return dataProviderSetting.getTestCaseDataProvider().getTestCaseByScriptFileName(scriptFileName);
+        return getDataProviderSetting().getTestCaseDataProvider().getTestCaseByScriptFileName(scriptFileName);
     }
 
     /**
@@ -154,7 +187,7 @@ public class TestCaseController extends EntityController {
      * @throws Exception
      */
     public TestCaseEntity getTestCaseByScriptFilePath(String scriptFilePath) throws Exception {
-        return dataProviderSetting.getTestCaseDataProvider().getTestCaseByScriptFilePath(scriptFilePath);
+        return getDataProviderSetting().getTestCaseDataProvider().getTestCaseByScriptFilePath(scriptFilePath);
     }
 
     /**
@@ -165,7 +198,7 @@ public class TestCaseController extends EntityController {
      */
     public List<TestSuiteEntity> getTestCaseReferences(TestCaseEntity testCase) {
         try {
-            return dataProviderSetting.getTestCaseDataProvider().getTestCaseReferences(testCase);
+            return getDataProviderSetting().getTestCaseDataProvider().getTestCaseReferences(testCase);
         } catch (Exception ex) {
             return Collections.emptyList();
         }

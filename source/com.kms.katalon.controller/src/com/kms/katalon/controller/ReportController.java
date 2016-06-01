@@ -36,7 +36,7 @@ public class ReportController extends EntityController {
     }
 
     public String getTestCaseLogFolder(TestCaseEntity testCase) throws Exception {
-        return dataProviderSetting.getReportDataProvider().getLogDirectory(testCase);
+        return getDataProviderSetting().getReportDataProvider().getLogDirectory(testCase);
     }
 
     /**
@@ -47,13 +47,13 @@ public class ReportController extends EntityController {
      * @throws Exception
      */
     public String generateReportFolder(TestCaseEntity testCase) throws Exception {
-        String testCaseRootLogFolder = dataProviderSetting.getReportDataProvider().getLogDirectory(
+        String testCaseRootLogFolder = getDataProviderSetting().getReportDataProvider().getLogDirectory(
                 (TestCaseEntity) testCase);
         return generateReportFolder(testCaseRootLogFolder);
     }
 
     public String generateReportFolder(TestSuiteEntity testSuite) throws Exception {
-        String testSuiteRootLogFolder = dataProviderSetting.getReportDataProvider().getLogDirectory(testSuite);
+        String testSuiteRootLogFolder = getDataProviderSetting().getReportDataProvider().getLogDirectory(testSuite);
         return generateReportFolder(testSuiteRootLogFolder);
     }
 
@@ -71,28 +71,28 @@ public class ReportController extends EntityController {
     }
 
     public File getLogFile(TestCaseEntity testCase, String reportFolderName) throws Exception {
-        String testCaseRootLogFolder = dataProviderSetting.getReportDataProvider().getLogDirectory(testCase);
+        String testCaseRootLogFolder = getDataProviderSetting().getReportDataProvider().getLogDirectory(testCase);
         File testCaseReportFolderAtRuntime = new File(testCaseRootLogFolder, reportFolderName);
 
         return new File(testCaseReportFolderAtRuntime, LOG_FILE_NAME);
     }
 
     public File getLogFile(TestSuiteEntity testSuite, String reportFolderName) throws Exception {
-        String testSuiteRootLogFolder = dataProviderSetting.getReportDataProvider().getLogDirectory(testSuite);
+        String testSuiteRootLogFolder = getDataProviderSetting().getReportDataProvider().getLogDirectory(testSuite);
         File testSuiteReportFolderAtRuntime = new File(testSuiteRootLogFolder, reportFolderName);
 
         return new File(testSuiteReportFolderAtRuntime, LOG_FILE_NAME);
     }
 
     public File getExecutionSettingFile(TestCaseEntity testCase, String reportFolderName) throws Exception {
-        String testCaseRootLogFolder = dataProviderSetting.getReportDataProvider().getLogDirectory(testCase);
+        String testCaseRootLogFolder = getDataProviderSetting().getReportDataProvider().getLogDirectory(testCase);
         File testCaseReportFolderAtRuntime = new File(testCaseRootLogFolder, reportFolderName);
 
         return new File(testCaseReportFolderAtRuntime, EXECUTION_SETTING_FILE_NAME);
     }
 
     public File getExecutionSettingFile(TestSuiteEntity testSuite, String reportFolderName) throws Exception {
-        String testSuiteRootLogFolder = dataProviderSetting.getReportDataProvider().getLogDirectory(testSuite);
+        String testSuiteRootLogFolder = getDataProviderSetting().getReportDataProvider().getLogDirectory(testSuite);
         File testSuiteReportFolderAtRuntime = new File(testSuiteRootLogFolder, reportFolderName);
 
         return new File(testSuiteReportFolderAtRuntime, EXECUTION_SETTING_FILE_NAME);
@@ -108,31 +108,31 @@ public class ReportController extends EntityController {
 
     public ReportEntity getReportEntity(TestSuiteEntity testSuite, String reportName) throws Exception {
         ProjectEntity project = ProjectController.getInstance().getCurrentProject();
-        return dataProviderSetting.getReportDataProvider().getReportEntity(project, testSuite, reportName);
+        return getDataProviderSetting().getReportDataProvider().getReportEntity(project, testSuite, reportName);
     }
 
     public ReportEntity getLastRunReportEntity(TestSuiteEntity testSuite) throws Exception {
         String reportName = dateFormat.format(testSuite.getLastRun()).toString();
         ProjectEntity project = ProjectController.getInstance().getCurrentProject();
-        return dataProviderSetting.getReportDataProvider().getReportEntity(project, testSuite, reportName);
+        return getDataProviderSetting().getReportDataProvider().getReportEntity(project, testSuite, reportName);
     }
 
     public void deleteReport(ReportEntity report) throws Exception {
-        dataProviderSetting.getReportDataProvider().deleteReport(report);
+        getDataProviderSetting().getReportDataProvider().deleteReport(report);
     }
 
     public ReportEntity getReportEntity(String reportPk) throws Exception {
-        return dataProviderSetting.getReportDataProvider().getReportEntity(reportPk);
+        return getDataProviderSetting().getReportDataProvider().getReportEntity(reportPk);
     }
 
     public ReportEntity getReportEntityByDisplayId(String reportDisplayId, ProjectEntity projectEntity)
             throws Exception {
         String reportPk = projectEntity.getFolderLocation() + File.separator + reportDisplayId;
-        return dataProviderSetting.getReportDataProvider().getReportEntity(reportPk);
+        return getDataProviderSetting().getReportDataProvider().getReportEntity(reportPk);
     }
 
     public ReportEntity updateReport(ReportEntity report) throws Exception {
-        return dataProviderSetting.getReportDataProvider().updateReport(report);
+        return getDataProviderSetting().getReportDataProvider().updateReport(report);
     }
 
     public TestSuiteEntity getTestSuiteByReport(ReportEntity report) throws Exception {
@@ -145,11 +145,11 @@ public class ReportController extends EntityController {
 
     public List<ReportEntity> listReportEntities(TestSuiteEntity testSuiteEntity, ProjectEntity projectEntity)
             throws Exception {
-        return dataProviderSetting.getReportDataProvider().listReportEntities(testSuiteEntity, projectEntity);
+        return getDataProviderSetting().getReportDataProvider().listReportEntities(testSuiteEntity, projectEntity);
     }
 
     public FolderEntity getReportFolder(TestSuiteEntity testSuiteEntity, ProjectEntity projectEntity) throws Exception {
-        return dataProviderSetting.getReportDataProvider().getReportFolder(testSuiteEntity, projectEntity);
+        return getDataProviderSetting().getReportDataProvider().getReportFolder(testSuiteEntity, projectEntity);
     }
 
     public String getTestSuiteFolderId(String reportFolderId) {

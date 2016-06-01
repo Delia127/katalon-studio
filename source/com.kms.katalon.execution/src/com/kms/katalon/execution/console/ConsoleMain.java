@@ -9,17 +9,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpecBuilder;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.PlatformUI;
 
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteController;
@@ -57,18 +54,19 @@ public class ConsoleMain {
     public static final int DEFAULT_SHOW_PROGRESS_DELAY = 15;
 
     public final static String SHOW_STATUS_DELAY_OPTION = "statusDelay";
+    
+    private ConsoleMain() {
+        // hide constructor
+    }
 
-    private int returnCode = LauncherResult.RETURN_CODE_PASSED;
-
-    public void launch(String[] arguments) {
-        OptionParser parser = new OptionParser(false);
-        parser.allowsUnrecognizedOptions();
-
-        // Accept properties file option
-        parser.accepts(PROPERTIES_FILE_OPTION).withRequiredArg().ofType(String.class);
-        // Accept all of katalon console arguments
-        acceptConsoleOptionList(parser, ConsoleOptionCollector.getInstance().getConsoleOptionList());
-
+    /**
+     * Launch the console execution process
+     * 
+     * @param arguments
+     * @return the exit code for the console execution
+     */
+    public static int launch(String[] arguments) {
+        OptionParser parser = createParser();
         try {
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
@@ -82,32 +80,48 @@ public class ConsoleMain {
 
             TestSuiteExecutedEntity testSuiteExecutedEntity = new TestSuiteExecutedEntity();
 
-            List<ConsoleOptionContributor> consoleOptionContributors = new ArrayList<ConsoleOptionContributor>();
-            consoleOptionContributors.add(testSuiteExecutedEntity);
-            populateConsoleOptionContributors(consoleOptionContributors);
+            List<ConsoleOptionContributor> consoleOptionContributors = populateConsoleOptionContributors(testSuiteExecutedEntity);
 
             setConsoleArgumentToConsoleValueMap(options, consoleOptionContributors, consoleOptionValueMap);
-
             preCheckForRequiredArgumentFromConsoleMapValue(TESTSUITE_ID_OPTION, consoleOptionValueMap);
             preCheckForRequiredArgumentFromConsoleMapValue(BROWSER_TYPE_OPTION, consoleOptionValueMap);
 
             TestSuiteEntity testSuite = getTestSuite(project, consoleOptionValueMap.get(TESTSUITE_ID_OPTION));
             testSuiteExecutedEntity.setTestSuite(testSuite);
-            
+
             // Set the arguments back to console options contributors
             returnConsoleArgumentToConsoleContributors(consoleOptionContributors, consoleOptionValueMap);
 
             IRunConfiguration runConfig = createRunConfiguration(project, testSuite,
                     consoleOptionValueMap.get(BROWSER_TYPE_OPTION));
 
-            startExecutionStatusThread(options);
-
             launchTestSuite(testSuite, runConfig, testSuiteExecutedEntity);
+
+            waitForExecutionToFinish(options);
+
+            List<ILauncher> consoleLaunchers = LauncherManager.getInstance().getSortedLaunchers();
+            int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
+            return exitCode;
         } catch (InvalidConsoleArgumentException e) {
-            handleInvalidArgument(e.getMessage());
+            System.out.println(e.getMessage());
+            return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
         } catch (Exception e) {
-            handleError(e);
+            System.out.println(e.getMessage());
+            return LauncherResult.RETURN_CODE_ERROR;
+        } finally {
+            LauncherManager.getInstance().removeAllTerminated();
         }
+    }
+
+    private static OptionParser createParser() {
+        OptionParser parser = new OptionParser(false);
+        parser.allowsUnrecognizedOptions();
+
+        // Accept properties file option
+        parser.accepts(PROPERTIES_FILE_OPTION).withRequiredArg().ofType(String.class);
+        // Accept all of katalon console arguments
+        acceptConsoleOptionList(parser, ConsoleOptionCollector.getInstance().getConsoleOptionList());
+        return parser;
     }
 
     private static ProjectEntity findProject(OptionSet options) throws Exception {
@@ -125,10 +139,13 @@ public class ConsoleMain {
         return getProject(projectPath);
     }
 
-    private static void populateConsoleOptionContributors(List<ConsoleOptionContributor> consoleOptionContributors) {
+    private static List<ConsoleOptionContributor> populateConsoleOptionContributors(TestSuiteExecutedEntity testSuiteExecutedEntity) {
+        List<ConsoleOptionContributor> consoleOptionContributors = new ArrayList<ConsoleOptionContributor>();
+        consoleOptionContributors.add(testSuiteExecutedEntity);
         consoleOptionContributors.add(new ConsoleMainOptionContributor());
         consoleOptionContributors.addAll(RunConfigurationCollector.getInstance().getConsoleOptionContributorList());
         consoleOptionContributors.addAll(ReportIntegrationFactory.getInstance().getConsoleOptionContributorList());
+        return consoleOptionContributors;
     }
 
     private static void setDefaultExecutionPropertiesOfProject(ProjectEntity project,
@@ -136,16 +153,6 @@ public class ConsoleMain {
         ConsoleOptionCollector.getInstance().writeDefaultPropertyFile(project);
         readPropertiesFileAndSetToConsoleOptionValueMap(project.getFolderLocation() + File.separator
                 + ConsoleOptionCollector.DEFAULT_EXECUTION_PROPERTY_FILE_NAME, consoleOptionValueMap);
-    }
-
-    private void handleError(Exception e) {
-        System.out.println(e.getMessage());
-        closeWorkbench(LauncherResult.RETURN_CODE_ERROR);
-    }
-
-    private void handleInvalidArgument(String message) {
-        System.out.println(message);
-        closeWorkbench(LauncherResult.RETURN_CODE_INVALID_ARGUMENT);
     }
 
     private static void setConsoleArgumentToConsoleValueMap(OptionSet options,
@@ -245,7 +252,7 @@ public class ConsoleMain {
         }
     }
 
-    private void startExecutionStatusThread(OptionSet options) {
+    private static void waitForExecutionToFinish(OptionSet options) {
         int progressDelay = DEFAULT_SHOW_PROGRESS_DELAY;
         if (options.has(SHOW_STATUS_DELAY_OPTION)) {
             String progressDelayString = String.valueOf(options.valueOf(SHOW_STATUS_DELAY_OPTION));
@@ -257,54 +264,45 @@ public class ConsoleMain {
                         SHOW_STATUS_DELAY_OPTION));
             }
         }
-        startExecutionStatusThread(progressDelay);
+        waitForExecutionToFinish(progressDelay);
     }
 
-    private void startExecutionStatusThread(final int showProgressDelay) {
+    private static void waitForExecutionToFinish(final int showProgressDelay) {
         final int progressDelayTimeInMiliseconds = ((showProgressDelay < 0) ? DEFAULT_SHOW_PROGRESS_DELAY
                 : showProgressDelay) * 1000;
-        Thread launcherStatusThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                do {
-                    printStatus();
-                    try {
-                        Thread.sleep(progressDelayTimeInMiliseconds);
-                    } catch (InterruptedException e) {
-                        // Thread interrupted, do nothing
-                    }
-                } while (LauncherManager.getInstance().isAnyLauncherRunning());
-                printStatus();
-                List<ILauncher> consoleLaunchers = LauncherManager.getInstance().getSortedLaunchers();
-                int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
-                closeWorkbench(exitCode);
+        do {
+            printStatus();
+            try {
+                Thread.sleep(progressDelayTimeInMiliseconds);
+            } catch (InterruptedException e) {
+                // Thread interrupted, do nothing
             }
+        } while (LauncherManager.getInstance().isAnyLauncherRunning());
+        printStatus();
+    }
 
-            private void printStatus() {
-                int consoleWidth = 80;
-                System.out.println();
-                for (int i = 0; i < consoleWidth; i++) {
-                    System.out.print(ARGUMENT_PREFIX);
-                }
-                System.out.println();
+    private static void printStatus() {
+        int consoleWidth = 80;
+        System.out.println();
+        for (int i = 0; i < consoleWidth; i++) {
+            System.out.print(ARGUMENT_PREFIX);
+        }
+        System.out.println();
 
-                for (ILauncher launcher : LauncherManager.getInstance().getSortedLaunchers()) {
-                    StringBuilder builder = new StringBuilder(launcher.getName());
-                    String launcherStatus = launcher.getResult().getExecutedTestCases() + "/"
-                            + launcher.getResult().getTotalTestCases();
-                    builder.append(launcherStatus);
-                    builder.insert(launcher.getName().length(),
-                            StringUtils.repeat(".", consoleWidth - builder.length() % consoleWidth));
-                    System.out.println(wrap(builder.toString(), consoleWidth));
-                }
+        for (ILauncher launcher : LauncherManager.getInstance().getSortedLaunchers()) {
+            StringBuilder builder = new StringBuilder(launcher.getName());
+            String launcherStatus = launcher.getResult().getExecutedTestCases() + "/"
+                    + launcher.getResult().getTotalTestCases();
+            builder.append(launcherStatus);
+            builder.insert(launcher.getName().length(),
+                    StringUtils.repeat(".", consoleWidth - builder.length() % consoleWidth));
+            System.out.println(wrap(builder.toString(), consoleWidth));
+        }
 
-                for (int i = 0; i < consoleWidth; i++) {
-                    System.out.print(ARGUMENT_PREFIX);
-                }
-                System.out.println("\n");
-            }
-        });
-        launcherStatusThread.start();
+        for (int i = 0; i < consoleWidth; i++) {
+            System.out.print(ARGUMENT_PREFIX);
+        }
+        System.out.println("\n");
     }
 
     private static String wrap(String longString, int maxWidth) {
@@ -321,39 +319,6 @@ public class ConsoleMain {
         }
         builder.append(longString.substring((multiplier - 1) * maxWidth, longString.length()));
         return builder.toString();
-    }
-
-    // For default, return error exit code
-    public void closeWorkbench() {
-        closeWorkbench(LauncherResult.RETURN_CODE_ERROR);
-    }
-
-    public void closeWorkbench(final int exitCode) {
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            // Thread interrupted, do nothing
-        }
-        LauncherManager.getInstance().removeAllTerminated();
-
-        returnCode = exitCode;
-
-        final IWorkbench workBench = PlatformUI.getWorkbench();
-        final Display display = workBench.getDisplay();
-        display.syncExec(new Runnable() {
-            public void run() {
-                if (display.isDisposed()) {
-                    return;
-                }
-                System.out.println(StringConstants.MNG_PRT_CLOSING_WORKBENCH);
-                workBench.close();
-                System.out.println(StringConstants.MNG_PRT_WORKBENCH_CLOSED);
-            }
-        });
-    }
-
-    public int getReturnCode() {
-        return returnCode;
     }
 
     private static void launchTestSuite(TestSuiteEntity testSuite, IRunConfiguration runConfig,

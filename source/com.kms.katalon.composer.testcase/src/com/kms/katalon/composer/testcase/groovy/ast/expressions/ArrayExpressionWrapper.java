@@ -60,6 +60,11 @@ public class ArrayExpressionWrapper extends ExpressionWrapper {
     public ClassNodeWrapper getElementType() {
         return elementType;
     }
+    
+    @Override
+    public ClassNodeWrapper getType() {
+        return getElementType();
+    }
 
     public List<ExpressionWrapper> getExpressions() {
         return Collections.unmodifiableList(expressions);

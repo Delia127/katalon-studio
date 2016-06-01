@@ -20,12 +20,12 @@ public abstract class AbstractExportController extends EntityController implemen
 
 	@Override
 	public void cancel() throws Exception {
-		dataProviderSetting.getExportDataProvider().cancelExport(guid);
+		getDataProviderSetting().getExportDataProvider().cancelExport(guid);
 	}
 
 	@Override
 	public int getProgress() throws Exception {
-		return dataProviderSetting.getExportDataProvider().getExportProgress(guid);
+		return getDataProviderSetting().getExportDataProvider().getExportProgress(guid);
 	}
 	
 	@Override

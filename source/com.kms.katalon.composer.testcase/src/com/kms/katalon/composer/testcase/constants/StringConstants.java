@@ -62,7 +62,7 @@ public class StringConstants extends GlobalStringConstants {
 
     // InputBuilderDialog
     public static final String DIA_TITLE_INPUT = INPUT;
-    public static final String DIA_COL_PARAM = "Param";
+    public static final String DIA_COL_PARAM = "Param Name";
     public static final String DIA_COL_PARAM_TYPE = "Param Type";
 
     // ListInputBuilderDialog
@@ -310,4 +310,9 @@ public class StringConstants extends GlobalStringConstants {
 
     // TestCasePropertiesDialog
     public static final String DIA_TITLE_TEST_CASE_PROPERTIES = "Test Case Properties";
+    
+    // ArgumentInputBuilderDialog
+    public static final String LP_WARN_MISSING_ARGUMENT_FOR_METHOD_CALL = "Missing input";
+    
+    public static final String LP_WARN_INVALID_ARGUMENT_X_FOR_METHOD_CALL_AVAILALE_ARE_Y = "Invalid input value type ''{0}'', possible input value types are ''{1}''";
 }

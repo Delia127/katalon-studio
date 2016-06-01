@@ -41,7 +41,7 @@ public class AbstractEntityDialog extends TitleAreaDialog {
 
     protected Composite container;
 
-    private FolderEntity parentFolder;
+    protected FolderEntity parentFolder;
 
     private boolean isFileEntity = true;
 

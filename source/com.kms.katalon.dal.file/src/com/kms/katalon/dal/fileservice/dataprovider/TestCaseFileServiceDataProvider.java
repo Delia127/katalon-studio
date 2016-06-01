@@ -10,9 +10,10 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class TestCaseFileServiceDataProvider implements ITestCaseDataProvider {
+
     @Override
-    public TestCaseEntity addNewTestCase(FolderEntity parentFolder, String testCaseName) throws Exception {
-        return TestCaseFileServiceManager.addNewTestCase(parentFolder, testCaseName);
+    public TestCaseEntity saveNewTestCase(TestCaseEntity newTestCase) throws Exception {
+        return TestCaseFileServiceManager.saveNewTestCase(newTestCase);
     }
 
     @Override

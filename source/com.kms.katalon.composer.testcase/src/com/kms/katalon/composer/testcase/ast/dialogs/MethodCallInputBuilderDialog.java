@@ -2,14 +2,15 @@ package com.kms.katalon.composer.testcase.ast.dialogs;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableColumn;
@@ -23,16 +24,16 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrappe
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputParameter;
 import com.kms.katalon.composer.testcase.model.InputValueType;
-import com.kms.katalon.composer.testcase.model.InputValueTypeUtil;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
+import com.kms.katalon.composer.testcase.util.AstInputValueTypeOptionsProvider;
 
 public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
 
-    private final InputValueType[] defaultObjectValueTypes = InputValueTypeUtil.getValueTypeOptions(InputValueType.MethodCall);
+    private final InputValueType[] defaultObjectValueTypes = AstInputValueTypeOptionsProvider.getInputValueTypeOptions(InputValueType.MethodCall);
 
     private MethodCallExpressionWrapper methodCallExpression;
 
@@ -159,11 +160,9 @@ public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDia
         });
 
         tableViewerColumnMethod.setEditingSupport(new EditingSupport(tableViewer) {
-            private Class<?> type = null;
-
             @Override
             protected void setValue(Object element, Object value) {
-                if (type != null && value instanceof Method) {
+                if (value instanceof Method) {
                     Method newMethod = (Method) value;
                     if (MethodComboBoxCellEditor.compareMethodAndMethodCall(newMethod, methodCallExpression)) {
                         return;
@@ -171,28 +170,17 @@ public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDia
                     methodCallExpression.setMethod(newMethod.getName());
                     AstKeywordsInputUtil.generateMethodCallArguments(methodCallExpression, newMethod);
                     getViewer().refresh();
-                } else if (value instanceof String) {
-                    methodCallExpression.setMethod((String) value);
-                    methodCallExpression.setArguments(new ArgumentListExpressionWrapper(methodCallExpression));
-                    getViewer().refresh();
                 }
             }
 
             @Override
             protected Object getValue(Object element) {
-                if (type != null) {
-                    return methodCallExpression;
-                }
-                return methodCallExpression.getMethodAsString();
+                return methodCallExpression;
             }
 
             @Override
             protected CellEditor getCellEditor(Object element) {
-                type = getObjectType(methodCallExpression);
-                if (type != null) {
-                    return new MethodComboBoxCellEditor(tableViewer.getTable(), type);
-                }
-                return new TextCellEditor(tableViewer.getTable());
+                return new MethodComboBoxCellEditor(tableViewer.getTable(), getObjectType(methodCallExpression));
             }
 
             @Override
@@ -241,7 +229,7 @@ public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDia
             protected Object getValue(Object element) {
                 Method method = findMethod(getObjectType(methodCallExpression), methodCallExpression);
                 if (method == null) {
-                    return null;
+                    return Collections.emptyList();
                 }
                 return AstKeywordsInputUtil.generateInputParameters(method,
                         (ArgumentListExpressionWrapper) methodCallExpression.getArguments());
@@ -274,18 +262,31 @@ public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDia
 
     public Class<?> getObjectType(MethodCallExpressionWrapper methodCall) {
         if (methodCall.getObjectExpression().getText().equals(MethodCallExpressionWrapper.THIS_VARIABLE)) {
-            return methodCall.getScriptClass().getTypeClass();
+            return null;
         }
         return AstKeywordsInputUtil.loadType(methodCall.getObjectExpression().getText(), methodCall.getScriptClass());
     }
 
     private static Method findMethod(Class<?> type, MethodCallExpressionWrapper methodCall) {
-        if (type == null || methodCall == null) {
+        if (methodCall == null) {
             return null;
         }
-        for (int index = 0; index < type.getMethods().length; index++) {
-            if (MethodComboBoxCellEditor.compareMethodAndMethodCall(type.getMethods()[index], methodCall)) {
-                return type.getMethods()[index];
+        Method method = null;
+        if (type != null) {
+            method = findMatchingMethod(type, methodCall);
+        }
+        if (method == null) {
+            return findMatchingMethod(DefaultGroovyMethods.class, methodCall);
+        }
+        return method;
+    }
+
+    private static Method findMatchingMethod(Class<?> type, MethodCallExpressionWrapper methodCall) {
+        Method[] methods = type.getMethods();
+        for (int index = 0; index < methods.length; index++) {
+            Method methodNode = methods[index];
+            if (MethodComboBoxCellEditor.compareMethodAndMethodCall(methodNode, methodCall)) {
+                return methodNode;
             }
         }
         return null;

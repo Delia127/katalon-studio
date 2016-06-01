@@ -3,20 +3,37 @@ package com.kms.katalon.controller.constants;
 import com.kms.katalon.constants.GlobalStringConstants;
 
 public class StringConstants extends GlobalStringConstants {
-	// AbstractExportController
-	public static final String CTRL_ERROR_MSG_CANNOT_EXPORT_PROJ = "Cannot export project.";
+    // AbstractExportController
+    public static final String CTRL_ERROR_MSG_CANNOT_EXPORT_PROJ = "Cannot export project.";
 
-	// AbstractImportController
-	public static final String CTRL_ERROR_MSG_CANNOT_IMPORT_PROJ = "Cannot import project.";
-	public static final String CTRL_TXT_IMPORTING_PROJ = "Importing project...";
+    // AbstractImportController
+    public static final String CTRL_ERROR_MSG_CANNOT_IMPORT_PROJ = "Cannot import project.";
 
-	// ExportProjectController
-	public static final String CTRL_TXT_EXPORT_PROJ = "Export project...";
+    public static final String CTRL_TXT_IMPORTING_PROJ = "Importing project...";
 
-	// ExportTestCaseController
-	public static final String CTRL_TXT_EXPORT_TEST_CASE = "Export Test Cases...";
+    // ExportProjectController
+    public static final String CTRL_TXT_EXPORT_PROJ = "Export project...";
 
-	// TestCaseController
-	public static final String CTRL_EXC_TEST_CASE_CANNOT_BE_NULL = "Test Case cannot be null";
-	public static final String CTRL_EXC_VAR_ID_CANNOT_BE_NULL = "Variable's ID cannot be null";
+    // ExportTestCaseController
+    public static final String CTRL_TXT_EXPORT_TEST_CASE = "Export Test Cases...";
+
+    // TestCaseController
+    public static final String CTRL_EXC_TEST_CASE_CANNOT_BE_NULL = "Test Case cannot be null";
+
+    public static final String CTRL_EXC_VAR_ID_CANNOT_BE_NULL = "Variable's ID cannot be null";
+
+    // TestCaseController
+    public static final String CTRL_NEW_TEST_CASE = "New Test Case";
+
+    // ObjectRepositoryController
+    public static final String CTRL_NEW_TEST_OBJECT = "New Element";
+
+    // WebServiceController
+    public static final String CTRL_NEW_WS_REQUEST = "New Request";
+
+    // TestDataController
+    public static final String CTRL_NEW_TEST_DATA = "New Test Data";
+
+    // TestSuiteController
+    public static final String CTRL_NEW_TEST_SUITE = "New Test Suite";
 }

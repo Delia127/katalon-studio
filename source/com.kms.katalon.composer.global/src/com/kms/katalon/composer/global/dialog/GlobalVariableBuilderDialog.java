@@ -35,14 +35,14 @@ import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.model.InputValueType;
-import com.kms.katalon.composer.testcase.model.InputValueTypeUtil;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
 import com.kms.katalon.composer.testcase.util.AstValueUtil;
+import com.kms.katalon.composer.testcase.util.AstInputValueTypeOptionsProvider;
 import com.kms.katalon.entity.global.GlobalVariableEntity;
 import com.kms.katalon.groovy.constant.GroovyConstants;
 
 public class GlobalVariableBuilderDialog extends AbstractDialog {
-    private static final InputValueType[] defaultInputValueTypes = InputValueTypeUtil.getValueTypeOptions(InputValueType.GlobalVariable);
+    private static final InputValueType[] defaultInputValueTypes = AstInputValueTypeOptionsProvider.getInputValueTypeOptions(InputValueType.GlobalVariable);
 
     public enum DialogType {
         NEW, EDIT

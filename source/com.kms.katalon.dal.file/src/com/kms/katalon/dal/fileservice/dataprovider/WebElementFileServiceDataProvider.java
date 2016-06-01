@@ -13,7 +13,6 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.SaveWebElementInfoEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
-import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
 public class WebElementFileServiceDataProvider implements IWebElementDataProvider {
 
@@ -43,7 +42,7 @@ public class WebElementFileServiceDataProvider implements IWebElementDataProvide
 			}
 		}
 		for (WebElementEntity webElementEntity : webElements) {
-			WebElementFileServiceManager.saveWebElement(webElementEntity);
+			WebElementFileServiceManager.updateTestObject(webElementEntity);
 		}
 	}
 
@@ -63,11 +62,6 @@ public class WebElementFileServiceDataProvider implements IWebElementDataProvide
 	}
 
 	@Override
-	public WebElementEntity addNewWebElement(FolderEntity parentFolder, String elementName) throws Exception {
-		return WebElementFileServiceManager.addNewWebElement(parentFolder, elementName);
-	}
-
-	@Override
 	public String getAvailableWebElementName(FolderEntity parentFolder, String name) throws Exception {
 		return WebElementFileServiceManager.getAvailableWebElementName(parentFolder, name);
 	}
@@ -78,13 +72,8 @@ public class WebElementFileServiceDataProvider implements IWebElementDataProvide
 	}
 
 	@Override
-	public void updateWebElement(WebElementEntity entity) throws Exception {
-		WebElementFileServiceManager.saveWebElement(entity);
-	}
-
-	@Override
-	public String getIdForDisplay(WebElementEntity entity) throws Exception {
-		return entity.getRelativePathForUI();
+	public void updateTestObject(WebElementEntity entity) throws Exception {
+		WebElementFileServiceManager.updateTestObject(entity);
 	}
 
 	@Override
@@ -104,11 +93,6 @@ public class WebElementFileServiceDataProvider implements IWebElementDataProvide
 		return FolderFileServiceManager.getChildWebElementsOfFolder(folder);
 	}
 
-	@Override
-	public WebServiceRequestEntity addNewRequest(FolderEntity parentFolder, WebServiceRequestEntity request) throws Exception {
-		return WebElementFileServiceManager.addNewRequest(parentFolder, request);
-	}
-
     @Override
     public List<WebElementEntity> getWebElementPropertyByRefElement(String refElement, ProjectEntity project,
             boolean isExactly) throws Exception {
@@ -118,5 +102,10 @@ public class WebElementFileServiceDataProvider implements IWebElementDataProvide
     @Override
     public WebElementPropertyEntity getRefElementProperty(WebElementEntity webElement) {
         return WebElementFileServiceManager.getRefElementProperty(webElement);
+    }
+
+    @Override
+    public WebElementEntity saveNewTestObject(WebElementEntity newTestObject) throws Exception {
+        return WebElementFileServiceManager.saveNewTestObject(newTestObject);
     }
 }

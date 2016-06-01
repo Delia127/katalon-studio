@@ -323,7 +323,7 @@ public abstract class RequestObjectPart implements EventHandler, IComposerPart {
     protected void save() {
         try {
             updateEntityBeforeSaved();
-            ObjectRepositoryController.getInstance().saveWebElement(originalWsObject);
+            ObjectRepositoryController.getInstance().updateTestObject(originalWsObject);
 
             eventBroker.post(EventConstants.TEST_OBJECT_UPDATED, new Object[] { originalWsObject.getId(), originalWsObject });
             eventBroker.post(EventConstants.EXPLORER_REFRESH, null);

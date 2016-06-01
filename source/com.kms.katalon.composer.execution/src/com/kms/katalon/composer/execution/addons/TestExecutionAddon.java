@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.execution.addons;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,7 @@ import org.eclipse.ui.handlers.IHandlerService;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.debug.handler.ToggleBreakpointHandler;
 import com.kms.katalon.composer.execution.handlers.EvaluateDriverConnectorEditorContributionsHandler;
 import com.kms.katalon.composer.execution.menu.CustomExecutionMenuContribution;
@@ -32,6 +34,8 @@ import com.kms.katalon.composer.execution.menu.ExecutionHandledMenuItem;
 import com.kms.katalon.composer.execution.util.ComposerExecutionUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.execution.collector.ConsoleOptionCollector;
 
 @SuppressWarnings("restriction")
 public class TestExecutionAddon implements EventHandler {
@@ -67,6 +71,7 @@ public class TestExecutionAddon implements EventHandler {
     public void initHandlers(IEventBroker eventBroker) {
         ContextInjectionFactory.make(EvaluateDriverConnectorEditorContributionsHandler.class, context);
         eventBroker.subscribe(EventConstants.WORKSPACE_CREATED, this);
+        eventBroker.subscribe(EventConstants.PROJECT_OPENED, this);
         initCustomRunConfigurationSubMenu(IdConstants.RUN_TOOL_ITEM_ID);
         initCustomRunConfigurationSubMenu(IdConstants.DEBUG_TOOL_ITEM_ID);
     }
@@ -94,6 +99,16 @@ public class TestExecutionAddon implements EventHandler {
         if (EventConstants.WORKSPACE_CREATED.equals(event.getTopic())) {
             activeDefaultIconForExecution();
             activeDebugHandlers();
+        } else if (EventConstants.PROJECT_OPENED.equals(event.getTopic())) {
+            writeDefaultConsolePropertyFile();
+        }
+    }
+
+    private void writeDefaultConsolePropertyFile() {
+        try {
+            ConsoleOptionCollector.getInstance().writeDefaultPropertyFile(ProjectController.getInstance().getCurrentProject());
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
         }
     }
 

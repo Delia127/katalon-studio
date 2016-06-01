@@ -2,7 +2,6 @@ package com.kms.katalon.composer.testcase.ast.dialogs;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -14,11 +13,12 @@ import com.kms.katalon.composer.testcase.groovy.ast.TokenWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BinaryExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.providers.AstContentProviderAdapter;
-import com.kms.katalon.composer.testcase.model.InputValueTypeUtil;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
+import com.kms.katalon.composer.testcase.providers.UneditableTableCellLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
+import com.kms.katalon.composer.testcase.util.AstInputValueTypeOptionsProvider;
 
 public class BinaryBuilderDialog extends AbstractAstBuilderWithTableDialog {
     private static final String OPERATOR_LABEL = "Operator";
@@ -27,7 +27,7 @@ public class BinaryBuilderDialog extends AbstractAstBuilderWithTableDialog {
 
     private static final String LEFT_EXPRESSION_LABEL = "Left Expression";
 
-    private static final InputValueType[] defaultValueTypes = InputValueTypeUtil.getValueTypeOptions(InputValueType.Binary);
+    private static final InputValueType[] defaultValueTypes = AstInputValueTypeOptionsProvider.getInputValueTypeOptions(InputValueType.Binary);
 
     private BinaryExpressionWrapper binaryExpressionWrapper;
 
@@ -56,7 +56,7 @@ public class BinaryBuilderDialog extends AbstractAstBuilderWithTableDialog {
         TableViewerColumn tableViewerColumnObject = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnObject.getColumn().setWidth(100);
         tableViewerColumnObject.getColumn().setText(StringConstants.DIA_COL_OBJ);
-        tableViewerColumnObject.setLabelProvider(new ColumnLabelProvider() {
+        tableViewerColumnObject.setLabelProvider(new UneditableTableCellLabelProvider() {
             @Override
             public String getText(Object element) {
                 if (element == binaryExpressionWrapper.getLeftExpression()) {

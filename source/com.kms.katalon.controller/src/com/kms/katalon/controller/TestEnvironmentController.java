@@ -7,12 +7,19 @@ import java.util.List;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
 
-import com.kms.katalon.common.Util;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.entity.testenvironment.TestEnvironmentEntity;
 
 @Creatable
 public class TestEnvironmentController extends EntityController {
+    public static final String[] PAGELOAD_TIMEOUT_VALUES = { "Default", "10", "30", "60", "90" };
+
+    public static final String PAGELOAD_TIMEOUT_DEFAULT = PAGELOAD_TIMEOUT_VALUES[0];
+
+    public static final short PAGELOAD_TIMEOUT_MIN_VALUE = 0;
+
+    public static final short PAGELOAD_TIMEOUT_MAX_VALUE = 9999;
+
     private static EntityController _instance;
 
     private TestEnvironmentController() {
@@ -32,7 +39,7 @@ public class TestEnvironmentController extends EntityController {
     }
 
     public String[] getPageLoadTimeOutValues() {
-        return Util.PAGELOAD_TIMEOUT_VALUES;
+        return PAGELOAD_TIMEOUT_VALUES;
     }
 
     public short getPageLoadTimeOutDefaultValue() {
@@ -41,14 +48,14 @@ public class TestEnvironmentController extends EntityController {
     }
 
     public short getPageLoadTimeOutMinimumValue() {
-        return Util.PAGELOAD_TIMEOUT_MIN_VALUE;
+        return PAGELOAD_TIMEOUT_MIN_VALUE;
     }
 
     public short getPageLoadTimeOutMaximumValue() {
-        return Util.PAGELOAD_TIMEOUT_MAX_VALUE;
+        return PAGELOAD_TIMEOUT_MAX_VALUE;
     }
 
     public String getPageLoadTimeOutDefaultValueByString() {
-        return Util.PAGELOAD_TIMEOUT_DEFAULT;
+        return PAGELOAD_TIMEOUT_DEFAULT;
     }
 }

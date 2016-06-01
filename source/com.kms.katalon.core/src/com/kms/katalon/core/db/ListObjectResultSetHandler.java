@@ -5,25 +5,21 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.dbutils.ResultSetHandler;
-
 /**
  * Transform <code>java.sql.ResultSet</code> data into <code>List&lt;List&lt;Object&gt;&gt;</code>
  * 
  * @see java.sql.ResultSet
  * @see org.apache.commons.dbutils.ResultSetHandler
  */
-public class ListObjectResultSetHandler implements ResultSetHandler<List<List<Object>>> {
+public class ListObjectResultSetHandler extends ListResultSetHandler<List<List<Object>>> {
 
     @Override
-    public List<List<Object>> handle(ResultSet rs) throws SQLException {
+    public List<List<Object>> convert(ResultSet rs) throws SQLException {
         List<List<Object>> result = new ArrayList<List<Object>>();
-        List<Object> row;
-        int cols = rs.getMetaData().getColumnCount();
         while (rs.next()) {
-            row = new ArrayList<Object>();
-            for (int i = 0; i < cols; i++) {
-                row.add(rs.getObject(i + 1));
+            List<Object> row = new ArrayList<Object>();
+            for (int i = 1; i <= getColumnCount(); i++) {
+                row.add(rs.getObject(i));
             }
             result.add(row);
         }

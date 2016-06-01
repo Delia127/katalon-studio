@@ -38,32 +38,22 @@ import com.kms.katalon.groovy.util.GroovyRefreshUtil;
 public class DataFileFileServiceManager {
 
     /**
-     * add a new child Data File to the specific folder and initialize its properties
+     * Save a NEW Test Data.<br>
+     * Please use {@link #updateTestData(DataFileEntity)} if you want to save an existing Test Data.
      * 
-     * @param parentFolderPk
-     * @param projectPk
-     * @return
+     * @param newTestData the new Test Data which is created by {@link #newTestDataWithoutSave(FolderEntity, String)}
+     * @return {@link DataFileEntity} the saved Test Data
      * @throws Exception
      */
-    public static DataFileEntity addNewDataFile(FolderEntity parentFolder) throws Exception {
-        if (parentFolder == null) {
+    public static DataFileEntity saveNewTestData(DataFileEntity newTestData) throws Exception {
+        if (newTestData == null || newTestData.getProject() == null || newTestData.getParentFolder() == null) {
             return null;
         }
 
-        DataFileEntity newDataFile = new DataFileEntity();
-        newDataFile.setParentFolder(parentFolder);
-        String name = EntityService.getInstance().getAvailableName(parentFolder.getLocation(),
-                StringConstants.MNG_NEW_TEST_DATA, true);
-        newDataFile.setName(name);
-        newDataFile.setParentFolder(parentFolder);
-        newDataFile.setDriver(DataFileDriverType.ExcelFile);
-        newDataFile.setDataSourceUrl(DataFileEntity.DEFAULT_DATA_SOURCE_URL);
-        newDataFile.setProject(parentFolder.getProject());
-        newDataFile.setDataFileGUID(Util.generateGuid());
+        EntityService.getInstance().saveEntity(newTestData);
+        FolderFileServiceManager.refreshFolder(newTestData.getParentFolder());
 
-        EntityService.getInstance().saveEntity(newDataFile);
-        FolderFileServiceManager.refreshFolder(parentFolder);
-        return newDataFile;
+        return newTestData;
     }
 
     /**
@@ -194,7 +184,7 @@ public class DataFileFileServiceManager {
      * @return
      * @throws Exception
      */
-    public static DataFileEntity saveDataFile(DataFileEntity newDataFile) throws Exception {
+    public static DataFileEntity updateTestData(DataFileEntity newDataFile) throws Exception {
 
         validateDataFile(newDataFile);
         // If renamed the name, clean up the old one on cache before saving the

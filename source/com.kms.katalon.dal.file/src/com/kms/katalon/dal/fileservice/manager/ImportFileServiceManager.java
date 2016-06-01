@@ -484,7 +484,7 @@ public class ImportFileServiceManager {
 				String oldGuid = duplicateWebElement.getElementGuidId();
 				duplicateWebElement.setElementGuidId(webElement.getElementGuidId());
 
-				newWebElement = WebElementFileServiceManager.saveWebElement(duplicateWebElement);
+				newWebElement = WebElementFileServiceManager.updateTestObject(duplicateWebElement);
 
 				updateWebElementPropertyRefElement(project, oldGuid, webElement);
 			}
@@ -521,7 +521,7 @@ public class ImportFileServiceManager {
 		WebElementEntity webElementEntity = WebElementFileServiceManager.getByGUID(guid, project);
 		if (webElementEntity != null) {
 			webElementEntity.setElementGuidId(Util.generateGuid());
-			WebElementFileServiceManager.saveWebElement(webElementEntity);
+			WebElementFileServiceManager.updateTestObject(webElementEntity);
 
 			updateWebElementPropertyRefElement(project, guid, webElementEntity);
 			return true;
@@ -538,7 +538,7 @@ public class ImportFileServiceManager {
 					property.setValue(webElementEntity.getElementGuidId());
 				}
 			}
-			WebElementFileServiceManager.saveWebElement(webElementWithRefElements);
+			WebElementFileServiceManager.updateTestObject(webElementWithRefElements);
 		}
 	}
 

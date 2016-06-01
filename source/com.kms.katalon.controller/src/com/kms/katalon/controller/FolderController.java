@@ -33,7 +33,7 @@ public class FolderController extends EntityController implements Serializable {
     }
 
     public List<FileEntity> getChildren(FolderEntity folder) throws Exception {
-        return dataProviderSetting.getFolderDataProvider().getChildren(folder);
+        return getDataProviderSetting().getFolderDataProvider().getChildren(folder);
     }
 
     /**
@@ -43,7 +43,7 @@ public class FolderController extends EntityController implements Serializable {
      * @return Returns list of test case entity
      */
     public List<TestCaseEntity> getTestCaseChildren(FolderEntity parentFolder) throws Exception {
-        List<FileEntity> childrenEntities = dataProviderSetting.getFolderDataProvider().getChildren(parentFolder);
+        List<FileEntity> childrenEntities = getDataProviderSetting().getFolderDataProvider().getChildren(parentFolder);
         List<TestCaseEntity> childrentTestCases = new ArrayList<TestCaseEntity>();
         for (FileEntity entity : childrenEntities) {
             if (entity instanceof TestCaseEntity) {
@@ -65,7 +65,7 @@ public class FolderController extends EntityController implements Serializable {
     }
 
     public List<FolderEntity> getChildFolders(FolderEntity parentFolder) throws Exception {
-        List<FileEntity> childrenEntities = dataProviderSetting.getFolderDataProvider().getChildren(parentFolder);
+        List<FileEntity> childrenEntities = getDataProviderSetting().getFolderDataProvider().getChildren(parentFolder);
         List<FolderEntity> childrentFolders = new ArrayList<FolderEntity>();
         for (FileEntity entity : childrenEntities) {
             if (entity instanceof FolderEntity) {
@@ -76,74 +76,74 @@ public class FolderController extends EntityController implements Serializable {
     }
 
     public FolderEntity getTestSuiteRoot(ProjectEntity project) throws Exception {
-        return dataProviderSetting.getFolderDataProvider().getTestSuiteRoot(project);
+        return getDataProviderSetting().getFolderDataProvider().getTestSuiteRoot(project);
     }
 
     public FolderEntity getTestCaseRoot(ProjectEntity project) throws Exception {
-        return dataProviderSetting.getFolderDataProvider().getTestCaseRoot(project);
+        return getDataProviderSetting().getFolderDataProvider().getTestCaseRoot(project);
     }
 
     public FolderEntity getTestDataRoot(ProjectEntity project) throws Exception {
-        return dataProviderSetting.getFolderDataProvider().getTestDataRoot(project);
+        return getDataProviderSetting().getFolderDataProvider().getTestDataRoot(project);
     }
 
     public FolderEntity getObjectRepositoryRoot(ProjectEntity project) throws Exception {
-        return dataProviderSetting.getFolderDataProvider().getObjectRepositoryRoot(project);
+        return getDataProviderSetting().getFolderDataProvider().getObjectRepositoryRoot(project);
     }
 
     public FolderEntity getKeywordRoot(ProjectEntity project) throws Exception {
-        return dataProviderSetting.getFolderDataProvider().getKeywordRoot(project);
+        return getDataProviderSetting().getFolderDataProvider().getKeywordRoot(project);
     }
 
     public FolderEntity getReportRoot(ProjectEntity project) throws Exception {
-        return dataProviderSetting.getFolderDataProvider().getReportRoot(project);
+        return getDataProviderSetting().getFolderDataProvider().getReportRoot(project);
     }
 
     public void deleteFolder(FolderEntity folder) throws Exception {
-        dataProviderSetting.getFolderDataProvider().deleteFolder(folder);
+        getDataProviderSetting().getFolderDataProvider().deleteFolder(folder);
     }
 
     public FolderEntity addNewFolder(FolderEntity parentFolder, String folderName) throws Exception {
         if (parentFolder != null) {
-            return dataProviderSetting.getFolderDataProvider().addNewFolder(parentFolder, folderName);
+            return getDataProviderSetting().getFolderDataProvider().addNewFolder(parentFolder, folderName);
         }
         return null;
     }
 
     public void updateFolderName(FolderEntity folder, String newName) throws Exception {
-        dataProviderSetting.getFolderDataProvider().updateFolderName(folder, newName);
+        getDataProviderSetting().getFolderDataProvider().updateFolderName(folder, newName);
     }
 
     public FolderEntity copyFolder(FolderEntity folder, FolderEntity targetFolder) throws Exception {
         if (targetFolder != null && folder != null && folder.getFolderType() == targetFolder.getFolderType()) {
-            return dataProviderSetting.getFolderDataProvider().copyFolder(folder, targetFolder);
+            return getDataProviderSetting().getFolderDataProvider().copyFolder(folder, targetFolder);
         }
         return null;
     }
 
     public FolderEntity moveFolder(FolderEntity folder, FolderEntity targetFolder) throws Exception {
         if (targetFolder != null && folder != null && folder.getFolderType() == targetFolder.getFolderType()) {
-            return dataProviderSetting.getFolderDataProvider().moveFolder(folder, targetFolder);
+            return getDataProviderSetting().getFolderDataProvider().moveFolder(folder, targetFolder);
         }
         return null;
     }
 
     public FolderEntity getFolder(String folderValue) throws Exception {
-        return dataProviderSetting.getFolderDataProvider().getFolder(folderValue);
+        return getDataProviderSetting().getFolderDataProvider().getFolder(folderValue);
     }
 
     public FolderEntity getFolderByDisplayId(ProjectEntity projectEntity, String folderDisplayId) throws Exception {
         if (folderDisplayId == null || folderDisplayId.isEmpty()) return null;
         String folderId = projectEntity.getFolderLocation() + File.separator
                 + folderDisplayId.replace(GlobalStringConstants.ENTITY_ID_SEPERATOR, File.separator);
-        return dataProviderSetting.getFolderDataProvider().getFolder(folderId);
+        return getDataProviderSetting().getFolderDataProvider().getFolder(folderId);
     }
 
     public List<String> getSibblingFolderNames(FolderEntity folder) throws Exception {
         List<FolderEntity> sibblingFolders = getChildFolders(folder.getParentFolder());
         List<String> sibblingName = new ArrayList<String>();
         for (FolderEntity sibblingFolder : sibblingFolders) {
-            if (!dataProviderSetting.getEntityPk(sibblingFolder).equals(dataProviderSetting.getEntityPk(folder))) {
+            if (!getDataProviderSetting().getEntityPk(sibblingFolder).equals(getDataProviderSetting().getEntityPk(folder))) {
                 sibblingName.add(sibblingFolder.getName());
             }
         }
@@ -169,7 +169,7 @@ public class FolderController extends EntityController implements Serializable {
     }
 
     public void refreshFolder(FolderEntity folder) throws Exception {
-        dataProviderSetting.getFolderDataProvider().refreshFolder(folder);
+        getDataProviderSetting().getFolderDataProvider().refreshFolder(folder);
     }
 
     /**
@@ -184,18 +184,18 @@ public class FolderController extends EntityController implements Serializable {
     }
 
     public void saveFolder(FolderEntity folder) throws Exception {
-        dataProviderSetting.getFolderDataProvider().saveFolder(folder);
+        getDataProviderSetting().getFolderDataProvider().saveFolder(folder);
     }
 
     public void saveParentFolderRecursively(FolderEntity folder) throws Exception {
-        dataProviderSetting.getFolderDataProvider().saveFolder(folder);
+        getDataProviderSetting().getFolderDataProvider().saveFolder(folder);
         if (folder.getParentFolder() != null) {
             saveParentFolderRecursively(folder.getParentFolder());
         }
     }
 
     public String getAvailableFolderName(FolderEntity parentFolder, String name) throws Exception {
-        return dataProviderSetting.getFolderDataProvider().getAvailableFolderName(parentFolder, name);
+        return getDataProviderSetting().getFolderDataProvider().getAvailableFolderName(parentFolder, name);
     }
 
 }

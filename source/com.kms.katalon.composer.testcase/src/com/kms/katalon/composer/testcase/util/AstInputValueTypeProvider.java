@@ -10,10 +10,12 @@ import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BinaryExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BooleanExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.CastExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ClassExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ClosureListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstructorCallExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.DeclarationExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MapExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
@@ -173,6 +175,16 @@ public class AstInputValueTypeProvider {
             return InputValueType.Null;
         }
     };
+    
+    private static final InputValueTypeProvider<CastExpressionWrapper> castExpressionValueTypeProvider = new InputValueTypeProvider<CastExpressionWrapper>() {
+        @Override
+        public InputValueType getInputValueType(CastExpressionWrapper castExpression) {
+            if (castExpression.getExpression() instanceof ListExpressionWrapper) {
+                return InputValueType.List;
+            }
+            return InputValueType.Null;
+        }
+    };
 
     static {
         inputClasses = new HashMap<>();
@@ -189,7 +201,8 @@ public class AstInputValueTypeProvider {
         inputClasses.put(PropertyExpressionWrapper.class.getSimpleName(), propertyValueTypeProvider);
         inputClasses.put(ClassExpressionWrapper.class.getSimpleName(), classValueTypeProvider);
         inputClasses.put(ConstructorCallExpressionWrapper.class.getSimpleName(), constructorCallValueTypeProvider);
-        
+        inputClasses.put(DeclarationExpressionWrapper.class.getSimpleName(), binaryValueTypeProvider);
+        inputClasses.put(CastExpressionWrapper.class.getSimpleName(), castExpressionValueTypeProvider);
     }
 
     @SuppressWarnings("unchecked")

@@ -37,6 +37,27 @@ public class DataFileEntity extends FileEntity {
 
     private String csvSeperator;
 
+    // Database properties
+    /**
+     * Using global database settings which declared in
+     * <code>[project_path]/settings/external/database.properties</code>
+     */
+    private boolean usingGlobalDBSetting;
+
+    /**
+     * Secure User Account indicates whether user & password are excluded in {@link #dataSourceUrl} or not.<br>
+     * If user & password are specified in {@link #dataSourceUrl}, they will be stored as plain text (without
+     * encryption).
+     */
+    private boolean secureUserAccount;
+
+    private String user;
+
+    /** Base64 encrypted password */
+    private String password;
+
+    private String query;
+
     public DataFileDriverType getDriver() {
         if (driver == null) {
             driver = DataFileDriverType.ExcelFile;
@@ -114,7 +135,7 @@ public class DataFileEntity extends FileEntity {
     }
 
     public enum DataFileDriverType {
-        ExcelFile("Excel File"), CSV("CSV File"), InternalData("Internal Data");
+        ExcelFile("Excel File"), CSV("CSV File"), DBData("Database Data"), InternalData("Internal Data");
 
         private String text;
 
@@ -201,6 +222,52 @@ public class DataFileEntity extends FileEntity {
         this.containsHeaders = containsHeaders;
     }
 
+    public boolean isUsingGlobalDBSetting() {
+        return usingGlobalDBSetting;
+    }
+
+    public void setUsingGlobalDBSetting(boolean usingGlobalDBSetting) {
+        this.usingGlobalDBSetting = usingGlobalDBSetting;
+    }
+
+    public boolean isSecureUserAccount() {
+        return secureUserAccount;
+    }
+
+    public void setSecureUserAccount(boolean secureUserAccount) {
+        this.secureUserAccount = secureUserAccount;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    /**
+     * @return Base64 encrypted password
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getQuery() {
+        if (query == null) {
+            query = StringUtils.EMPTY;
+        }
+        return query;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
+    }
+
     @Override
     public boolean equals(Object obj) {
         boolean isEquals = super.equals(obj);
@@ -209,6 +276,7 @@ public class DataFileEntity extends FileEntity {
         }
         DataFileEntity that = (DataFileEntity) obj;
         EqualsBuilder equalsBuilder = new EqualsBuilder().append(this.getDataFileGUID(), that.getDataFileGUID())
+                .append(this.getDriver(), that.getDriver())
                 .append(this.getDateCreated(), that.getDateCreated())
                 .append(this.getDateModified(), that.getDateModified())
                 .append(this.getDescription(), that.getDescription())
@@ -220,6 +288,11 @@ public class DataFileEntity extends FileEntity {
         if (this.getIsInternalPath() && equalsBuilder.isEquals()) {
             equalsBuilder.append(this.getData(), that.getData());
         }
+        equalsBuilder.append(this.isUsingGlobalDBSetting(), that.isUsingGlobalDBSetting())
+                .append(this.isSecureUserAccount(), that.isSecureUserAccount())
+                .append(this.getUser(), that.getUser())
+                .append(this.getPassword(), that.getPassword())
+                .append(this.getQuery(), that.getQuery());
         return isEquals && equalsBuilder.isEquals();
     }
 }

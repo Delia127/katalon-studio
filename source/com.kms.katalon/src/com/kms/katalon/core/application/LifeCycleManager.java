@@ -14,7 +14,9 @@ import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.modeling.ISaveHandler;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.search.ui.NewSearchUI;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.IWorkbenchPartReference;
@@ -32,8 +34,8 @@ import com.kms.katalon.composer.handlers.SearchHandler;
 import com.kms.katalon.composer.handlers.WorkbenchSaveHandler;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.core.application.ApplicationRunningMode.RunningMode;
-import com.kms.katalon.execution.console.ConsoleMain;
+import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 @SuppressWarnings("restriction")
@@ -46,14 +48,16 @@ public class LifeCycleManager {
     }
 
     protected void setupHandlers() {
-        IHandlerService handlerService = (IHandlerService) PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+        IHandlerService handlerService = (IHandlerService) PlatformUI.getWorkbench()
+                .getActiveWorkbenchWindow()
                 .getService(IHandlerService.class);
         handlerService.activateHandler(IWorkbenchCommandConstants.FILE_SAVE, new SaveHandler());
         handlerService.activateHandler(IWorkbenchCommandConstants.FILE_CLOSE, new CloseHandler());
         handlerService.activateHandler(IdConstants.SEARCH_COMMAND_ID, new SearchHandler());
         handlerService.activateHandler(IdConstants.RESET_PERSPECTIVE_HANDLER_ID, new ResetPerspectiveHandler());
 
-        MTrimmedWindow model = (MTrimmedWindow) PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+        MTrimmedWindow model = (MTrimmedWindow) PlatformUI.getWorkbench()
+                .getActiveWorkbenchWindow()
                 .getService(MTrimmedWindow.class);
         IEclipseContext context = model.getContext();
         context.set(ISaveHandler.class, new WorkbenchSaveHandler());
@@ -81,7 +85,8 @@ public class LifeCycleManager {
 
             @Override
             public void partClosed(IWorkbenchPartReference partRef) {
-                EventBrokerSingleton.getInstance().getEventBroker()
+                EventBrokerSingleton.getInstance()
+                        .getEventBroker()
                         .post(EventConstants.ECLIPSE_EDITOR_CLOSED, partRef.getPart(true));
             }
 
@@ -99,6 +104,32 @@ public class LifeCycleManager {
     }
 
     private void setupPreferences() {
+        setupResourcePlugin();
+
+        setupWorkbenchPlugin();
+    }
+
+    private void setupWorkbenchPlugin() {
+        ScopedPreferenceStore store = PreferenceStoreManager.getPreferenceStore(IdConstants.WORKBENCH_WINDOW_ID);
+
+        if (store.getBoolean(StringConstants.PREF_FIST_TIME_SETUP_COMPLETED)) {
+            return;
+        }
+
+        FontData defaultFont = JFaceResources.getTextFont().getFontData()[0];
+        defaultFont.setHeight(12);
+
+        store.setValue(JFaceResources.TEXT_FONT, defaultFont.toString());
+        store.setValue(StringConstants.PREF_FIST_TIME_SETUP_COMPLETED, true);
+
+        try {
+            store.save();
+        } catch (IOException e) {
+            logError(e);
+        }
+    }
+
+    private void setupResourcePlugin() {
         try {
             ScopedPreferenceStore runtimePrefStore = getPreferenceStore(ResourcesPlugin.PLUGIN_PREFERENCE_SCOPE);
             if (runtimePrefStore.getBoolean(ResourcesPlugin.PREF_AUTO_REFRESH)) {
@@ -111,18 +142,6 @@ public class LifeCycleManager {
             runtimePrefStore.save();
         } catch (IOException e) {
             logError(e);
-        }
-    }
-
-    private void startUpConsoleMode() throws Exception {
-        PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().setVisible(false);
-        ConsoleMain consoleMain = Application.getConsoleMain();
-        try {
-            consoleMain.launch(ApplicationRunningMode.getInstance().getRunArguments());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            consoleMain.closeWorkbench();
-            return;
         }
     }
 
@@ -149,19 +168,10 @@ public class LifeCycleManager {
         eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, new EventHandler() {
             @Override
             public void handleEvent(Event event) {
-                if (ApplicationRunningMode.getInstance().getRunnningMode() == RunningMode.Console) {
-                    // PlatformUI.getWorkbench().getDisplay().getActiveShell().setVisible(false);
-                    try {
-                        startUpConsoleMode();
-                    } catch (Exception e) {
-                        logError(e);
-                    }
-                } else if (ApplicationRunningMode.getInstance().getRunnningMode() == RunningMode.GUI) {
-                    try {
-                        startUpGUIMode();
-                    } catch (Exception e) {
-                        logError(e);
-                    }
+                try {
+                    startUpGUIMode();
+                } catch (Exception e) {
+                    logError(e);
                 }
             }
         });

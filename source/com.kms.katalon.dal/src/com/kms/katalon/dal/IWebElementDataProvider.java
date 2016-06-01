@@ -7,7 +7,6 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.SaveWebElementInfoEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
-import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
 /**
  * @author duyluong
@@ -22,13 +21,13 @@ public interface IWebElementDataProvider {
 
     public WebElementEntity getWebElement(String webElementValue) throws Exception;
 
-    public WebElementEntity addNewWebElement(FolderEntity parentFolder, String elementName) throws Exception;
+    public WebElementEntity saveNewTestObject(WebElementEntity newTestObject) throws Exception;
 
     public String getAvailableWebElementName(FolderEntity parentFolder, String name) throws Exception;
 
     public void deleteWebElement(WebElementEntity webElement) throws Exception;
 
-    public void updateWebElement(WebElementEntity webElement) throws Exception;
+    public void updateTestObject(WebElementEntity webElement) throws Exception;
 
     public List<WebElementEntity> getChildWebElementsOfFolder(FolderEntity folder) throws Exception;
 
@@ -36,11 +35,6 @@ public interface IWebElementDataProvider {
             throws Exception;
 
     public WebElementEntity moveWebElement(WebElementEntity webElement, FolderEntity destinationFolder)
-            throws Exception;
-
-    public String getIdForDisplay(WebElementEntity entity) throws Exception;
-
-    public WebServiceRequestEntity addNewRequest(FolderEntity parentFolder, WebServiceRequestEntity request)
             throws Exception;
 
     public List<WebElementEntity> getWebElementPropertyByRefElement(String refElement, ProjectEntity project,

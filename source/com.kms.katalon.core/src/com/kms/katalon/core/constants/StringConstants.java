@@ -288,9 +288,19 @@ public class StringConstants {
 
     public static final String XML_LOG_TEST_DATA_READING_CSV_DATA = "Test data is csv file, reading csv file";
 
+    public static final String XML_LOG_TEST_DATA_READING_DB_DATA = "Test data is database data, reading database data";
+
     public static final String XML_LOG_TEST_DATA_READING_EXCEL_DATA_WITH_SOURCE_X_SHEET_Y = "Reading excel file with source file ''{0}'' and sheet name ''{1}''";
 
     public static final String XML_LOG_TEST_DATA_READING_CSV_DATA_WITH_SOURCE_X_SEPERATOR_Y_AND_Z = "Reading csv file with source file ''{0}'', seperator ''{1}'' and ''{2}''";
+
+    public static final String XML_ERROR_TEST_DATA_CONNECTION_URL_IS_BLANK = "Database connection URL is blank";
+
+    public static final String XML_ERROR_TEST_DATA_CONNECTION_IS_NULL = "Database connection is null. Root cause: {0}";
+
+    public static final String XML_ERROR_TEST_DATA_SQL_QUERY_IS_BLANK = "Database connection URL is blank";
+
+    public static final String XML_LOG_TEST_DATA_READING_DB_DATA_WITH_QUERY_X = "Reading database data with query ''{0}''";
 
     // ExcelData
     public static final String XML_LOG_ERROR_SHEET_NAME_X_NOT_EXISTS = "Sheet with name ''{0}'' does not exists";
@@ -352,12 +362,12 @@ public class StringConstants {
 
     public static final String IOS = "iOS";
 
-    // DatabaseConnection
-    public static final String EXC_CANNOT_LOAD_JDBC_DRIVER = "Cannot load JDBC driver: {0}";
-
     // SqlRunner
     public static final String EXC_DATABASE_CONNECTION_IS_CLOSED = "Database connection is closed.";
-    
+
+    public static final String EXC_DATABASE_CONNECTION_IS_NULL = "Database connection is null.";
+
     // AstTestStepTransformation
     public static final String NOT_RUN_LABEL = "not_run";
+
 }

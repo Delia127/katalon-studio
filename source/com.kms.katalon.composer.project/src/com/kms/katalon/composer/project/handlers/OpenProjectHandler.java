@@ -1,18 +1,17 @@
 package com.kms.katalon.composer.project.handlers;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -20,9 +19,12 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
+import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
 
@@ -79,7 +81,7 @@ public class OpenProjectHandler {
                     if (projectFile != null) {
                         if (!CloseProjectHandler.closeCurrentProject(partService, modelService, application,
                                 eventBroker)) return;
-                        openProjectEventHandler(projectFile.getAbsolutePath());
+                        openProjectEventHandler(shell, projectFile.getAbsolutePath());
                     } else {
                         MessageDialog.openWarning(null, StringConstants.WARN_TITLE,
                                 StringConstants.HAND_WARN_MSG_NO_PROJ_FOUND);
@@ -95,11 +97,16 @@ public class OpenProjectHandler {
 
     @Inject
     @Optional
-    private void openProjectEventHandler(@UIEventTopic(EventConstants.PROJECT_OPEN) final String projectPk) {
-        Job job = new Job(StringConstants.HAND_OPEN_PROJ) {
+    private void openProjectEventHandler(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
+            @UIEventTopic(EventConstants.PROJECT_OPEN) final String projectPk) throws InvocationTargetException,
+            InterruptedException {
+        if (!CloseProjectHandler.closeCurrentProject(partService, modelService, application, eventBroker)) {
+            return;
+        }
 
+        new ProgressMonitorDialog(shell).run(false, false, new IRunnableWithProgress() {
             @Override
-            protected IStatus run(IProgressMonitor monitor) {
+            public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                 try {
                     monitor.beginTask(StringConstants.HAND_OPENING_PROJ, 10);
                     monitor.worked(1);
@@ -143,7 +150,7 @@ public class OpenProjectHandler {
 
                     TimeUnit.SECONDS.sleep(1);
                     eventBroker.send(EventConstants.PROJECT_OPENED, null);
-                    return Status.OK_STATUS;
+                    return;
                 } catch (final Exception e) {
                     sync.syncExec(new Runnable() {
 
@@ -154,17 +161,12 @@ public class OpenProjectHandler {
                         }
                     });
                     LoggerSingleton.logError(e);
-                    return Status.CANCEL_STATUS;
+                    return;
                 } finally {
                     monitor.done();
                 }
             }
-        };
-
-        if (CloseProjectHandler.closeCurrentProject(partService, modelService, application, eventBroker)) {
-            job.setUser(true);
-            job.schedule();
-        }
+        });
     }
 
     public static void updateProjectTitle(ProjectEntity projectEntity, EModelService modelService, MApplication app) {
