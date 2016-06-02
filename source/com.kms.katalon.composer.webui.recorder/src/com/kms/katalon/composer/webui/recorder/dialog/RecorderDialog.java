@@ -152,7 +152,7 @@ public class RecorderDialog extends Dialog implements EventHandler {
             if (session != null) {
                 session.stop();
             }
-            session = new RecordSession(server.getServerUrl(), webUiDriverType, ProjectController.getInstance()
+            session = new RecordSession(server, webUiDriverType, ProjectController.getInstance()
                     .getCurrentProject(), logger);
             new Thread(session).start();
 

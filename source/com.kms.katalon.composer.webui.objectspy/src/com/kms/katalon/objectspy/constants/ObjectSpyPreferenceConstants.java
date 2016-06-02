@@ -1,0 +1,8 @@
+package com.kms.katalon.objectspy.constants;
+
+public interface ObjectSpyPreferenceConstants {
+    // Composer WebUi ObjectSpy
+    public static final String WEBUI_OBJECTSPY_QUALIFIER = "com.kms.katalon.composer.webui.objectspy";
+
+    public static final String WEBUI_OBJECTSPY_INSTANT_BROWSER_PORT = "objectspy.instantBrowserPort";
+}

@@ -78,6 +78,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.objectspy.components.CapturedHTMLElementsComposite;
 import com.kms.katalon.objectspy.constants.ImageConstants;
+import com.kms.katalon.objectspy.constants.ObjectSpyPreferenceConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.core.HTMLElementCaptureServer;
 import com.kms.katalon.objectspy.core.InspectSession;
@@ -95,9 +96,11 @@ import com.kms.katalon.objectspy.exception.DOMException;
 import com.kms.katalon.objectspy.exception.IEAddonNotInstalledException;
 import com.kms.katalon.objectspy.util.DOMUtils;
 import com.kms.katalon.objectspy.util.HTMLElementUtil;
+import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
 @SuppressWarnings("restriction")
 public class ObjectSpyDialog extends Dialog implements EventHandler {
+
     private List<HTMLPageElement> elements;
 
     private CapturedHTMLElementsComposite capturedObjectComposite;
@@ -120,6 +123,8 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
 
     private ToolItem addElmtToObjRepoToolItem;
 
+    private ToolItem startBrowser;
+
     private IEventBroker eventBroker;
 
     private boolean isDisposed;
@@ -135,6 +140,8 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
     private Text txtXpathInput;
 
     private WebUIDriverType defaultBrowser = WebUIDriverType.FIREFOX_DRIVER;
+    
+    private boolean isInstant = false;
 
     /**
      * Create the dialog.
@@ -152,8 +159,6 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         registerEventHandler();
         isDisposed = false;
         elements = new ArrayList<HTMLPageElement>();
-        server = new HTMLElementCaptureServer(logger, eventBroker);
-        server.start();
     }
 
     protected void registerEventHandler() {
@@ -180,6 +185,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         toolbarComposite.setLayout(new GridLayout(2, false));
         toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
         addElementTreeToolbar(toolbarComposite);
+        addStartBrowserToolbar(toolbarComposite);
 
         Composite bodyComposite = (Composite) super.createDialogArea(mainContainer);
         bodyComposite.setLayout(new FillLayout(SWT.VERTICAL));
@@ -213,6 +219,114 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         hSashForm.setWeights(new int[] { 3, 8 });
 
         return mainContainer;
+    }
+
+    public void addStartBrowserToolbar(Composite toolbarComposite) {
+        final ToolBar startBrowserToolbar = new ToolBar(toolbarComposite, SWT.FLAT | SWT.RIGHT);
+        startBrowserToolbar.setLayout(new FillLayout(SWT.HORIZONTAL));
+        GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(true, false).applyTo(startBrowserToolbar);
+
+        startBrowser = new ToolItem(startBrowserToolbar, SWT.DROP_DOWN);
+        startBrowser.setImage(ImageConstants.IMG_24_OBJECT_SPY);
+
+        SelectionAdapter browserSelectionListener = new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                isInstant = false;
+                defaultBrowser = WebUIDriverType.fromStringValue(((MenuItem) e.getSource()).getText());
+                startBrowser();
+            }
+
+        };
+
+        final Menu menu = new Menu(getShell(), SWT.POP_UP);
+
+        final MenuItem startFirefox = new MenuItem(menu, SWT.PUSH);
+        startFirefox.setImage(ImageConstants.IMG_16_BROWSER_FIREFOX);
+        startFirefox.setText(WebUIDriverType.FIREFOX_DRIVER.toString());
+        startFirefox.addSelectionListener(browserSelectionListener);
+
+        final MenuItem startChrome = new MenuItem(menu, SWT.PUSH);
+        startChrome.setImage(ImageConstants.IMG_16_BROWSER_CHROME);
+        startChrome.setText(WebUIDriverType.CHROME_DRIVER.toString());
+        startChrome.addSelectionListener(browserSelectionListener);
+
+        if (Platform.getOS().equals(Platform.WS_WIN32)) {
+            MenuItem startIE = new MenuItem(menu, SWT.PUSH);
+            startIE.setImage(ImageConstants.IMG_16_BROWSER_IE);
+            startIE.setText(WebUIDriverType.IE_DRIVER.toString());
+            startIE.addSelectionListener(browserSelectionListener);
+        }
+
+        startBrowser.setText(StringConstants.DIA_BTN_START_BROWSER);
+        startBrowser.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                ToolItem item = (ToolItem) e.widget;
+                if (e.detail == SWT.ARROW) {
+                    Rectangle bounds = item.getBounds();
+                    Point point = item.getParent().toDisplay(bounds.x, bounds.y + bounds.height);
+                    menu.setLocation(point);
+                    menu.setVisible(true);
+                } else {
+                    startObjectSpy(defaultBrowser, isInstant);
+                }
+            }
+        });
+
+        addInstantBrowsersMenu(menu);
+    }
+
+    private int getInstantBrowsersPort() {
+        return PreferenceStoreManager.getPreferenceStore(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_QUALIFIER)
+                .getInt(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_INSTANT_BROWSER_PORT);
+    }
+
+    private void addInstantBrowsersMenu(Menu menu) {
+        final MenuItem instantBrowserMenuItem = new MenuItem(menu, SWT.CASCADE);
+        instantBrowserMenuItem.setText(StringConstants.MENU_ITEM_INSTANT_BROWSERS);
+
+        final Menu instantBrowserMenu = new Menu(menu);
+        instantBrowserMenuItem.setMenu(instantBrowserMenu);
+
+        final MenuItem startChrome = new MenuItem(instantBrowserMenu, SWT.PUSH);
+        startChrome.setImage(ImageConstants.IMG_16_BROWSER_CHROME);
+        startChrome.setText(WebUIDriverType.CHROME_DRIVER.toString());
+        startChrome.addSelectionListener(new InstantBrowserSelectionAdapter(WebUIDriverType.CHROME_DRIVER));
+    }
+
+    private final class InstantBrowserSelectionAdapter extends SelectionAdapter {
+        private WebUIDriverType driverType;
+
+        public InstantBrowserSelectionAdapter(WebUIDriverType driverType) {
+            this.driverType = driverType;
+        }
+
+        private String getExtensionFolderForInstantBrowser() {
+            if (driverType == WebUIDriverType.CHROME_DRIVER) {
+                return StringConstants.DIA_INSTANT_BROWSER_CHROME_OBJECT_SPY_EXTENSION_PATH;
+            }
+            return "";
+        }
+
+        @Override
+        public void widgetSelected(SelectionEvent event) {
+            try {
+                endInspectSession();
+                // TODO: after publishing extension to web store then change this to navigating to web store item
+                MessageDialog instantBrowserPortConfirm = new MessageDialog(getParentShell(),
+                        StringConstants.HAND_INSTANT_BROWSERS_DIA_TITLE, null, MessageFormat.format(
+                                StringConstants.HAND_INSTANT_BROWSERS_DIA_MESSAGE, driverType.toString(),
+                                getExtensionFolderForInstantBrowser()), MessageDialog.INFORMATION,
+                        new String[] { StringConstants.OK }, 0);
+                instantBrowserPortConfirm.open();
+                defaultBrowser = driverType;
+                isInstant = true;
+                startInstantBrowser();
+            } catch (Exception exception) {
+                LoggerSingleton.logError(exception);
+            }
+        }
     }
 
     private void createRightPanel(Composite htmlDomComposite) {
@@ -376,8 +490,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
     private NodeList evaluateXpath(final String xpath) throws XPathExpressionException {
         if (currentHTMLDocument != null) {
             XPathExpression xPathExpression = XPathFactory.newInstance().newXPath().compile(xpath);
-            return (NodeList) xPathExpression
-                    .evaluate(currentHTMLDocument.getDocumentElement(), XPathConstants.NODESET);
+            return (NodeList) xPathExpression.evaluate(currentHTMLDocument.getDocumentElement(), XPathConstants.NODESET);
         }
         return null;
     }
@@ -508,8 +621,8 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
     }
 
     private void setSelectedTreeItem(Object object) {
-        HTMLElementTreeContentProvider dataProvider = (HTMLElementTreeContentProvider) capturedObjectComposite
-                .getElementTreeViewer().getContentProvider();
+        HTMLElementTreeContentProvider dataProvider = (HTMLElementTreeContentProvider) capturedObjectComposite.getElementTreeViewer()
+                .getContentProvider();
         capturedObjectComposite.getElementTreeViewer().setSelection(
                 new TreeSelection(dataProvider.getTreePath(object)), true);
         capturedObjectComposite.getElementTreeViewer().setExpandedState(object, true);
@@ -647,61 +760,6 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                 }
             }
         });
-
-        final ToolBar startBrowserToolbar = new ToolBar(explorerComposite, SWT.FLAT | SWT.RIGHT);
-        startBrowserToolbar.setLayout(new FillLayout(SWT.HORIZONTAL));
-        GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(true, false).applyTo(startBrowserToolbar);
-
-        final ToolItem startBrowser = new ToolItem(startBrowserToolbar, SWT.DROP_DOWN);
-        startBrowser.setImage(ImageConstants.IMG_24_OBJECT_SPY);
-
-        SelectionAdapter browserSelectionListener = new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                defaultBrowser = WebUIDriverType.fromStringValue(((MenuItem) e.getSource()).getText());
-                changeBrowserName(startBrowser);
-                startBrowser();
-            }
-
-        };
-
-        final Menu menu = new Menu(getShell(), SWT.POP_UP);
-
-        final MenuItem startFirefox = new MenuItem(menu, SWT.PUSH);
-        startFirefox.setImage(ImageConstants.IMG_16_BROWSER_FIREFOX);
-        startFirefox.setText(WebUIDriverType.FIREFOX_DRIVER.toString());
-        startFirefox.addSelectionListener(browserSelectionListener);
-
-        final MenuItem startChrome = new MenuItem(menu, SWT.PUSH);
-        startChrome.setImage(ImageConstants.IMG_16_BROWSER_CHROME);
-        startChrome.setText(WebUIDriverType.CHROME_DRIVER.toString());
-        startChrome.addSelectionListener(browserSelectionListener);
-
-        if (Platform.getOS().equals(Platform.WS_WIN32)) {
-            MenuItem startIE = new MenuItem(menu, SWT.PUSH);
-            startIE.setImage(ImageConstants.IMG_16_BROWSER_IE);
-            startIE.setText(WebUIDriverType.IE_DRIVER.toString());
-            startIE.addSelectionListener(browserSelectionListener);
-        }
-
-        startBrowser.setText(StringConstants.DIA_BTN_START_BROWSER);
-        startBrowser.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                ToolItem item = (ToolItem) e.widget;
-                if (e.detail == SWT.ARROW) {
-                    Rectangle bounds = item.getBounds();
-                    Point point = item.getParent().toDisplay(bounds.x, bounds.y + bounds.height);
-                    menu.setLocation(point);
-                    menu.setVisible(true);
-                } else {
-                    changeBrowserName(item);
-                    startBrowser();
-                }
-            }
-        });
     }
 
     private void addElementToObjectRepository() throws Exception {
@@ -746,11 +804,15 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                 logger.error(e);
             }
         }
+        endInspectSession();
+        eventBroker.unsubscribe(this);
+        isDisposed = true;
+    }
+
+    private void endInspectSession() {
         if (session != null && session.isRunning()) {
             session.stop();
         }
-        eventBroker.unsubscribe(this);
-        isDisposed = true;
     }
 
     /**
@@ -778,8 +840,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         } else if (event.getTopic().equals(EventConstants.OBJECT_SPY_ELEMENT_DOM_MAP_ADDED)
                 && event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME) instanceof Object[]) {
             currentHTMLDocument = (Document) ((Object[]) event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME))[0];
-            HTMLRawElement bodyElement = (HTMLRawElement) ((Object[]) event
-                    .getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME))[1];
+            HTMLRawElement bodyElement = (HTMLRawElement) ((Object[]) event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME))[1];
             setTreeInput(domTreeViewer, new HTMLRawElement[] { bodyElement });
             refreshDomTree();
         } else if (event.getTopic().equals(EventConstants.OBJECT_SPY_TEST_OBJECT_ADDED)
@@ -820,8 +881,8 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         if (parentElement.getChildElements().contains(newElement)) {
             if (newElement instanceof HTMLFrameElement) {
                 HTMLFrameElement frameElement = (HTMLFrameElement) newElement;
-                HTMLFrameElement existingFrameElement = (HTMLFrameElement) (parentElement.getChildElements()
-                        .get(parentElement.getChildElements().indexOf(newElement)));
+                HTMLFrameElement existingFrameElement = (HTMLFrameElement) (parentElement.getChildElements().get(parentElement.getChildElements()
+                        .indexOf(newElement)));
                 addNewElement(existingFrameElement, frameElement.getChildElements().get(0), pageElement);
             }
         } else {
@@ -852,14 +913,15 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         return boldDescriptor.createFont(label.getDisplay());
     }
 
-    private void startBrowser() {
+    private void startObjectSpy(WebUIDriverType browser, boolean isInstant) {
         try {
-            if (session != null) {
-                session.stop();
+            changeBrowserToolItemName();
+            if (isInstant) {
+                startServerWithPort(getInstantBrowsersPort());
+                return;
             }
-            session = new InspectSession(server.getServerUrl(), defaultBrowser, ProjectController.getInstance()
-                    .getCurrentProject(), logger);
-            new Thread(session).start();
+            startServerWithPort(0);
+            startInspectSession(browser);
         } catch (IEAddonNotInstalledException ex) {
             MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, ex.getMessage());
         } catch (Exception ex) {
@@ -868,13 +930,51 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         }
     }
 
-    private void changeBrowserName(final ToolItem startBrowser) {
-        UISynchronizeService.getInstance().getSync().asyncExec(new Runnable() {
+    private void startInspectSession(WebUIDriverType browser) throws Exception {
+        if (session != null) {
+            session.stop();
+        }
+        session = new InspectSession(server, browser, ProjectController.getInstance().getCurrentProject(), logger);
+        new Thread(session).start();
+    }
 
+    private void startBrowser() {
+        startObjectSpy(defaultBrowser, false);
+    }
+
+    private void startInstantBrowser() {
+        startObjectSpy(defaultBrowser, true);
+    }
+
+    public void startServerWithPort(int port) throws Exception {
+        if (server != null && server.isStarted() && isCurrentServerPortUsable(port)) {
+            return;
+        }
+        if (server != null && server.isRunning()) {
+            server.stop();
+        }
+        server = new HTMLElementCaptureServer(port, logger, eventBroker);
+        server.start();
+    }
+
+    public boolean isCurrentServerPortUsable(int port) {
+        return port == 0 || port == server.getServerPort();
+    }
+
+    private void changeBrowserToolItemName() {
+        String string = defaultBrowser.toString();
+        if (isInstant) {
+            string = StringConstants.INSTANT_BROWSER_PREFIX;
+        }
+        changeBrowserName(string);
+    }
+
+    private void changeBrowserName(final String string) {
+        UISynchronizeService.getInstance().getSync().asyncExec(new Runnable() {
             @Override
             public void run() {
                 // Set browser name into toolbar item label
-                startBrowser.setText(defaultBrowser.toString());
+                startBrowser.setText(string);
                 // reload layout
                 startBrowser.getParent().getParent().layout(true, true);
             }

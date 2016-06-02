@@ -42,7 +42,9 @@ Require-Bundle: com.kms.katalon.core;bundle-version="1.0.0",
  org.eclipse.jdt.ui,
  com.kms.katalon.custom,
  com.kms.katalon.groovy;bundle-version="1.0.0",
- com.google.guava
+ com.google.guava,
+ com.kms.katalon.selenium-standalone,
+ org.apache.commons.io
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: org.eclipse.e4.core.services.log
 Bundle-ActivationPolicy: lazy

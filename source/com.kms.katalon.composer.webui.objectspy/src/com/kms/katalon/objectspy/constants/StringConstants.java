@@ -63,6 +63,18 @@ public class StringConstants extends GlobalStringConstants {
     public static final String WARNING_NO_ELEMENT_FOUND_FOR_XPATH = "No element found for given xpath";
     
     public static final String WARNING_NO_PAGE_LOADED = "No web page loaded. Please start your desired browser and navigate to the web page";
+    
+    public static final String MENU_ITEM_INSTANT_BROWSERS = "Instant Browsers";
+    
+    public static final String HAND_INSTANT_BROWSERS_DIA_TITLE = "Instant browser";
+    
+    public static final String HAND_INSTANT_BROWSERS_DIA_MESSAGE = "Starting object spy inspection with instant browser ''{0}''. "
+            + "Please make sure you have installed the browser addon for object spy found in ''{1}'' and turn on the extension. "
+            + "Also, please make sure the port of the object spy addon and the port of this Katalon application (set in Menu/Preferences/Object Spy) match.";
+    
+    public static final String DIA_INSTANT_BROWSER_CHROME_OBJECT_SPY_EXTENSION_PATH = "<Katalon build path>/Resources/extensions/Chrome/Object Spy Packed";
+    
+    public static final String INSTANT_BROWSER_PREFIX = "Instant ";
 
     // CheckboxTreeSelectionHelper
     public static final String TREE_ERROR_MSG_CONTENT_PROVIDER_IS_REQUIRED = "Content provider is required";
@@ -110,4 +122,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_MSG_PLS_SELECT_ELEMENT = "Please select elements to add to object repository";
 
     public static final String DIA_LBL_SELECT_A_DESTINATION_FOLDER = "Select a destination folder";
+    
+    public static final String PREF_LBL_INSTANT_BROWSER_PORT = "Port for instant browsers";
 }

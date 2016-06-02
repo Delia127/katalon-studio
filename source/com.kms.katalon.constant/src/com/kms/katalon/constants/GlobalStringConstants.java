@@ -243,4 +243,6 @@ public class GlobalStringConstants {
     public static final String APP_VERSION = "katalonVersion";
 
     public static final String UNKNOWN = "unkown";
+    
+    public static final String OK = "OK";
 }
