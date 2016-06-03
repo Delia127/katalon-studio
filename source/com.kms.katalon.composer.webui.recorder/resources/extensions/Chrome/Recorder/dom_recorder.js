@@ -161,9 +161,6 @@ function change(e) {
 	}
 	var elementTagName = selectedElement.tagName.toLowerCase();
 	var elementTypeName = selectedElement.type.toLowerCase();
-	console.log(elementTagName)
-	console.log(elementTypeName)
-	console.log(elementTagName != 'input')
 	var isRecorded = ((elementTagName != 'input') 
 		|| (elementTagName == 'input' && elementTypeName != 'radio' && elementTypeName != 'checkbox'));
 	if (!isRecorded) {

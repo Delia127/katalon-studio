@@ -32,11 +32,11 @@ public class StringConstants extends GlobalStringConstants {
     public static final String INSTANT_BROWSER_PREFIX = "Instant ";
     public static final String MENU_ITEM_INSTANT_BROWSERS = "Instant Browsers";
     public static final String HAND_INSTANT_BROWSERS_DIA_TITLE = "Instant browser";
-    public static final String HAND_INSTANT_BROWSERS_DIA_MESSAGE = "Starting object spy inspection with instant browser ''{0}''. "
-            + "Please make sure you have installed the browser addon for object spy found in ''{1}'' and turn on the extension. "
-            + "Also, please make sure the port of the object spy addon and the port of this Katalon application (set in Menu/Preferences/Recorder) match.";
-    
+    public static final String HAND_INSTANT_BROWSERS_DIA_MESSAGE = "Starting recorder with instant browser ''{0}''. " + 
+            "Please make sure you have installed the browser''s add-on for Recorder. Do you want go to the add-on store right now to get the add-on for Recorder ?";
+    public static final String HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE = "Don't show this dialog again";
     public static final String DIA_INSTANT_BROWSER_CHROME_RECORDER_EXTENSION_PATH = "<Katalon build path>/Resources/extensions/Chrome/Recorder Packed";
+    public static final String RECORDER_CHROME_ADDON_URL = "https://chrome.google.com/webstore/detail/katalon-recorder/bnaalgpdhfjepeanejkicnidgbpbmkhh";
 
 	// RecordHandler
 	public static final String HAND_ERROR_MSG_CANNOT_GEN_TEST_STEPS = "Cannot generate test steps.";
@@ -52,4 +52,5 @@ public class StringConstants extends GlobalStringConstants {
 	
 	// RecorderPreferencePage
 	public static final String PREF_LBL_INSTANT_BROWSER_PORT = "Port for instant browsers";
+	public static final String PREF_LBL_INSTANT_BROWSER_DO_NOT_SHOW_WARNING_DIALOG = "Do not show warning dialog when starting";
 }

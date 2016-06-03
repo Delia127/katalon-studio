@@ -1,5 +1,9 @@
 package com.kms.katalon.composer.webui.recorder.dialog;
 
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +17,7 @@ import org.eclipse.jdt.internal.ui.dialogs.StatusInfo;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.FontDescriptor;
@@ -100,10 +105,12 @@ import com.kms.katalon.objectspy.element.HTMLPageElement;
 import com.kms.katalon.objectspy.element.tree.HTMLElementLabelProvider;
 import com.kms.katalon.objectspy.element.tree.HTMLElementTreeContentProvider;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 @SuppressWarnings("restriction")
 public class RecorderDialog extends Dialog implements EventHandler {
 
+    private static final int ANY_PORT_NUMBER = 0;
     private static final String TABLE_COLUMN_ELEMENT_TITLE = StringConstants.DIA_COL_ELEMENT;
     private static final String TABLE_COLUMN_ACTION_DATA_TITLE = StringConstants.DIA_COL_ACTION_DATA;
     private static final String TABLE_COLUMN_ACTION_TITLE = StringConstants.DIA_COL_ACTION;
@@ -203,11 +210,11 @@ public class RecorderDialog extends Dialog implements EventHandler {
     }
     
     public boolean isCurrentServerPortUsable(int port) {
-        return port == 0 || port == server.getServerPort();
+        return port == ANY_PORT_NUMBER || port == server.getServerPort();
     }
 
     private void startServer() throws Exception {
-        startServer(0);
+        startServer(ANY_PORT_NUMBER);
     }
 
     class DropdownSelectionListener extends SelectionAdapter {
@@ -994,23 +1001,59 @@ public class RecorderDialog extends Dialog implements EventHandler {
         MenuItem menuItem = createBrowserMenuItem(browserMenu, webUIDriverType);
         menuItem.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent event) {
-             // TODO: after publishing extension to web store then change this to navigating to web store item
-                MessageDialog instantBrowserPortConfirm = new MessageDialog(getParentShell(),
-                        StringConstants.HAND_INSTANT_BROWSERS_DIA_TITLE, null, MessageFormat.format(
-                                StringConstants.HAND_INSTANT_BROWSERS_DIA_MESSAGE, webUIDriverType.toString(),
-                                getExtensionFolderForInstantBrowser()), MessageDialog.INFORMATION,
-                        new String[] { StringConstants.OK }, 0);
-                instantBrowserPortConfirm.open();
-                changeBrowser(webUIDriverType, true);
-                startBrowser(true);
+                try {
+                    if (!isNotShowingInstantBrowserDialog() && !showInstantBrowserDialog()) {
+                        return;
+                    }
+                    changeBrowser(webUIDriverType, true);
+                    startBrowser(true);
+                } catch (IOException | URISyntaxException e) {
+                    LoggerSingleton.logError(e);
+                }
             }
             
-            private String getExtensionFolderForInstantBrowser() {
-                if (webUIDriverType == WebUIDriverType.CHROME_DRIVER) {
-                    return StringConstants.DIA_INSTANT_BROWSER_CHROME_RECORDER_EXTENSION_PATH;
-                }
-                return "";
+            private boolean isNotShowingInstantBrowserDialog() {
+                return getPreferenceStore()
+                        .getBoolean(RecorderPreferenceConstants.WEBUI_RECORDER_INSTANT_BROWSER_DO_NOT_SHOW_AGAIN);
             }
+
+            private void setNotShowingInstantBrowserDialog(boolean toogleState) {
+                getPreferenceStore().setValue(
+                        RecorderPreferenceConstants.WEBUI_RECORDER_INSTANT_BROWSER_DO_NOT_SHOW_AGAIN, toogleState);
+            }
+
+            private ScopedPreferenceStore getPreferenceStore() {
+                return PreferenceStoreManager.getPreferenceStore(RecorderPreferenceConstants.WEBUI_RECORDER_QUALIFIER);
+            }
+            
+            private boolean showInstantBrowserDialog() throws IOException, URISyntaxException {
+                MessageDialogWithToggle messageDialogWithToggle = MessageDialogWithToggle.openYesNoCancelQuestion(
+                        getParentShell(), StringConstants.HAND_INSTANT_BROWSERS_DIA_TITLE,
+                        MessageFormat.format(StringConstants.HAND_INSTANT_BROWSERS_DIA_MESSAGE, webUIDriverType.toString()),
+                        StringConstants.HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE, false, null, null);
+                setNotShowingInstantBrowserDialog(messageDialogWithToggle.getToggleState());
+                int returnCode = messageDialogWithToggle.getReturnCode();
+                if (returnCode == IDialogConstants.NO_ID) {
+                    return true;
+                }
+                if (returnCode != IDialogConstants.YES_ID) {
+                    return false;
+                }
+                openBrowserToAddonUrl();
+                return true;
+            }
+            
+            private void openBrowserToAddonUrl() throws IOException, URISyntaxException {
+                String url = null;
+                if (webUIDriverType == WebUIDriverType.CHROME_DRIVER) {
+                    url = StringConstants.RECORDER_CHROME_ADDON_URL;
+                }
+                if (url == null || !Desktop.isDesktopSupported()) {
+                    return;
+                }
+                Desktop.getDesktop().browse(new URI(url));
+            }
+
         });
     }
     

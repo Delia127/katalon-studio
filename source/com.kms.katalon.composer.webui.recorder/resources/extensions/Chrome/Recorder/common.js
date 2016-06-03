@@ -7,8 +7,10 @@ function treeHTML(element, object, currentWindow) {
 	object["attributes"] = {};
 	if (element.attributes != null && element.attributes.length) {
 		for (var i = 0; i < element.attributes.length; i++) {
-			if ((element.attributes[i].value !== '') && (element.attributes[i].value != null) && (element.attributes[i].value !== 'null')) {
-				object["attributes"][element.attributes[i].nodeName] = element.attributes[i].value;
+			var elementAttribute = element.attributes[i];
+			var elementAttributeValue = elementAttribute.value;
+			if ((elementAttributeValue !== '') && (elementAttributeValue != null) && (elementAttributeValue !== 'null')) {
+				object["attributes"][elementAttribute.nodeName] = elementAttribute.value;
 			}
 		}
 	}
