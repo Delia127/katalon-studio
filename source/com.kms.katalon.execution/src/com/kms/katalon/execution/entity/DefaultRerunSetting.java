@@ -11,9 +11,9 @@ import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
 import com.kms.katalon.execution.console.entity.IntegerConsoleOption;
 
 public class DefaultRerunSetting implements Rerunnable, ConsoleOptionContributor {
-    private static final int DEFAULT_RERUN_TIME = 0;
+    public static final int DEFAULT_RERUN_TIME = 0;
     private static final int DEFAULT_PREVIOUS_RUN_TIME = 0;
-    private static final boolean DEFAULT_RERUN_FAILED_TEST_CASE_ONLY = false;
+    public static final boolean DEFAULT_RERUN_FAILED_TEST_CASE_ONLY = false;
 
     public final static String RETRY_OPTION = "retry";
     public final static String RETRY_FAIL_TEST_CASE_ONLY_OPTION = "retryFailedTestCases";

@@ -20,7 +20,9 @@ import com.kms.katalon.execution.exception.ExecutionException;
 public class RunConfigurationCollector {
     public static final String CUSTOM_EXECUTION_CONFIG_ROOT_FOLDER_RELATIVE_PATH = PropertySettingStoreUtil.EXTERNAL_SETTING_ROOT_FOLDER_NAME
             + File.separator + "execution";
+
     private static RunConfigurationCollector _instance;
+
     private List<IRunConfigurationContributor> runConfigurationContributors;
 
     private RunConfigurationCollector() {
@@ -46,10 +48,9 @@ public class RunConfigurationCollector {
                 return runConfigContributor_1.getPreferredOrder() - runConfigContributor_2.getPreferredOrder();
             }
         });
-        return runConfigurationContributors.toArray(new IRunConfigurationContributor[runConfigurationContributors
-                .size()]);
+        return runConfigurationContributors.toArray(new IRunConfigurationContributor[runConfigurationContributors.size()]);
     }
-    
+
     public List<ConsoleOptionContributor> getConsoleOptionContributorList() {
         return new ArrayList<ConsoleOptionContributor>(runConfigurationContributors);
     }
@@ -63,25 +64,11 @@ public class RunConfigurationCollector {
     }
 
     public CustomRunConfigurationContributor[] getAllCustomRunConfigurationContributors() {
-        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-        if (currentProject == null) {
-            return new CustomRunConfigurationContributor[0];
-        }
-
-        File customProfileSettingFolder = new File(currentProject.getFolderLocation() + File.separator
-                + CUSTOM_EXECUTION_CONFIG_ROOT_FOLDER_RELATIVE_PATH);
-        if (!customProfileSettingFolder.exists() || !customProfileSettingFolder.isDirectory()) {
-            return new CustomRunConfigurationContributor[0];
-        }
-
         List<IRunConfigurationContributor> customRunConfigContributorList = new ArrayList<IRunConfigurationContributor>();
-        for (File customProfile : customProfileSettingFolder.listFiles()) {
-            if (customProfile.isDirectory() && !customProfile.isHidden()) {
-                customRunConfigContributorList.add(new CustomRunConfigurationContributor(customProfile.getName()));
-            }
+        for (String id : getAllCustomRunConfigurationIds()) {
+            customRunConfigContributorList.add(new CustomRunConfigurationContributor(id));
         }
-        return customRunConfigContributorList
-                .toArray(new CustomRunConfigurationContributor[customRunConfigContributorList.size()]);
+        return customRunConfigContributorList.toArray(new CustomRunConfigurationContributor[customRunConfigContributorList.size()]);
     }
 
     public IRunConfiguration getRunConfiguration(String id, String projectDir) throws IOException, ExecutionException,
@@ -98,4 +85,29 @@ public class RunConfigurationCollector {
         }
         return null;
     }
+
+    /**
+     * @return String[] Custom run configuration IDs (names)
+     */
+    public String[] getAllCustomRunConfigurationIds() {
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+        if (currentProject == null) {
+            return new String[0];
+        }
+
+        File customProfileSettingFolder = new File(currentProject.getFolderLocation() + File.separator
+                + CUSTOM_EXECUTION_CONFIG_ROOT_FOLDER_RELATIVE_PATH);
+        if (!customProfileSettingFolder.exists() || !customProfileSettingFolder.isDirectory()) {
+            return new String[0];
+        }
+
+        List<String> customRunConfigIdList = new ArrayList<String>();
+        for (File customProfile : customProfileSettingFolder.listFiles()) {
+            if (customProfile.isDirectory() && !customProfile.isHidden()) {
+                customRunConfigIdList.add(customProfile.getName());
+            }
+        }
+        return customRunConfigIdList.toArray(new String[customRunConfigIdList.size()]);
+    }
+
 }

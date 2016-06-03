@@ -54,7 +54,7 @@ public class TestExecutionAddon implements EventHandler {
 
     private static final String CUSTOM_RUN_MENU_ID = KATALON_COMPOSER_EXECUTION_ID + ".run.custom";
 
-    private static final String CUSTOM_RUN_MENU_LABEL = "Custom";
+    public static final String CUSTOM_RUN_MENU_LABEL = "Custom";
 
     private static final String CUSTOM_RUN_CONFIG_CONTRIBUTOR_ID = CUSTOM_RUN_MENU_ID + ".contributor";
 
