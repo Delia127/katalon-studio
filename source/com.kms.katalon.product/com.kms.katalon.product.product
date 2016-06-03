@@ -20,6 +20,10 @@
 
    <windowImages i16="icons/branding_16.png" i32="icons/branding_32.png" i48="icons/branding_48.png" i64="icons/branding_64.png" i128="icons/branding_128.png" i256="icons/branding_256.png"/>
 
+   <splash
+      startupProgressRect="0,290,450,10"
+      startupMessageRect="5,270,445,20"
+      startupForegroundColor="404040" />
    <launcher name="katalon">
       <linux icon="icons/icon.xpm"/>
       <macosx icon="icons/icon.icns"/>
@@ -108,6 +112,7 @@
       <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="3" />
+      <property name="osgi.splashPath" value="platform:/base/configuration/resources" />
    </configurations>
 
 </product>
