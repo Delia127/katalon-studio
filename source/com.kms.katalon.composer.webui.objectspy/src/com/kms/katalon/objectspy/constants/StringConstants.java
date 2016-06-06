@@ -59,22 +59,25 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_LBL_HTML_DOM = "HTML DOM";
 
     public static final String DIA_TXT_SEARCH_PLACE_HOLDER = "Enter xpath expression to search...";
-    
+
     public static final String WARNING_NO_ELEMENT_FOUND_FOR_XPATH = "No element found for given xpath";
-    
+
     public static final String WARNING_NO_PAGE_LOADED = "No web page loaded. Please start your desired browser and navigate to the web page";
-    
+
     public static final String MENU_ITEM_INSTANT_BROWSERS = "Instant Browsers";
-    
+
     public static final String HAND_INSTANT_BROWSERS_DIA_TITLE = "Instant browser";
-    
+
     public static final String HAND_INSTANT_BROWSERS_DIA_MESSAGE = "Starting object spy inspection with instant browser ''{0}''. "
-            + "Please make sure you have installed the browser addon for object spy found in ''{1}'' and turn on the extension. "
-            + "Also, please make sure the port of the object spy addon and the port of this Katalon application (set in Menu/Preferences/Object Spy) match.";
-    
+            + "Please make sure you have installed the browser''s add-on for Object Spy. Do you want go to the add-on store right now to get the add-on for Object Spy ?";
+
     public static final String DIA_INSTANT_BROWSER_CHROME_OBJECT_SPY_EXTENSION_PATH = "<Katalon build path>/Resources/extensions/Chrome/Object Spy Packed";
     
+    public static final String OBJECT_SPY_CHROME_ADDON_URL = "https://chrome.google.com/webstore/detail/katalon-object-spy/gblkfilmbkbkjgpcoihaeghdindcanom";
+    
     public static final String INSTANT_BROWSER_PREFIX = "Instant ";
+
+    public static final String HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE = "Don't show this dialog again";
 
     // CheckboxTreeSelectionHelper
     public static final String TREE_ERROR_MSG_CONTENT_PROVIDER_IS_REQUIRED = "Content provider is required";
@@ -118,10 +121,12 @@ public class StringConstants extends GlobalStringConstants {
     public static final String NEW_FOLDER_DEFAULT_NAME = "New Folder";
 
     public static final String DIA_MSG_PLS_SELECT_A_FOLDER = "Please select a target folder";
-    
+
     public static final String DIA_MSG_PLS_SELECT_ELEMENT = "Please select elements to add to object repository";
 
     public static final String DIA_LBL_SELECT_A_DESTINATION_FOLDER = "Select a destination folder";
-    
+
     public static final String PREF_LBL_INSTANT_BROWSER_PORT = "Port for instant browsers";
+    
+    public static final String PREF_LBL_INSTANT_BROWSER_PORT_DO_NOT_SHOW_WARNING_DIALOG = "Do not show warning dialog when starting";
 }

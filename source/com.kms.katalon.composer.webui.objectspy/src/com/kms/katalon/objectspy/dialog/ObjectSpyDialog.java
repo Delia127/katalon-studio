@@ -1,5 +1,9 @@
 package com.kms.katalon.objectspy.dialog;
 
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +24,9 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -97,6 +103,7 @@ import com.kms.katalon.objectspy.exception.IEAddonNotInstalledException;
 import com.kms.katalon.objectspy.util.DOMUtils;
 import com.kms.katalon.objectspy.util.HTMLElementUtil;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 @SuppressWarnings("restriction")
 public class ObjectSpyDialog extends Dialog implements EventHandler {
@@ -140,7 +147,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
     private Text txtXpathInput;
 
     private WebUIDriverType defaultBrowser = WebUIDriverType.FIREFOX_DRIVER;
-    
+
     private boolean isInstant = false;
 
     /**
@@ -302,30 +309,61 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
             this.driverType = driverType;
         }
 
-        private String getExtensionFolderForInstantBrowser() {
-            if (driverType == WebUIDriverType.CHROME_DRIVER) {
-                return StringConstants.DIA_INSTANT_BROWSER_CHROME_OBJECT_SPY_EXTENSION_PATH;
-            }
-            return "";
+        private boolean isNotShowingInstantBrowserDialog() {
+            return getObjectSpyPreferenceStore()
+                    .getBoolean(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_INSTANT_BROWSER_DO_NOT_SHOW_AGAIN);
+        }
+
+        private void setNotShowingInstantBrowserDialog(boolean toogleState) {
+            getObjectSpyPreferenceStore().setValue(
+                    ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_INSTANT_BROWSER_DO_NOT_SHOW_AGAIN, toogleState);
+        }
+
+        private ScopedPreferenceStore getObjectSpyPreferenceStore() {
+            return PreferenceStoreManager.getPreferenceStore(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_QUALIFIER);
         }
 
         @Override
         public void widgetSelected(SelectionEvent event) {
             try {
                 endInspectSession();
-                // TODO: after publishing extension to web store then change this to navigating to web store item
-                MessageDialog instantBrowserPortConfirm = new MessageDialog(getParentShell(),
-                        StringConstants.HAND_INSTANT_BROWSERS_DIA_TITLE, null, MessageFormat.format(
-                                StringConstants.HAND_INSTANT_BROWSERS_DIA_MESSAGE, driverType.toString(),
-                                getExtensionFolderForInstantBrowser()), MessageDialog.INFORMATION,
-                        new String[] { StringConstants.OK }, 0);
-                instantBrowserPortConfirm.open();
+                if (!isNotShowingInstantBrowserDialog() && !showInstantBrowserDialog()) {
+                    return;
+                }
                 defaultBrowser = driverType;
                 isInstant = true;
                 startInstantBrowser();
             } catch (Exception exception) {
                 LoggerSingleton.logError(exception);
             }
+        }
+
+        private boolean showInstantBrowserDialog() throws IOException, URISyntaxException {
+            MessageDialogWithToggle messageDialogWithToggle = MessageDialogWithToggle.openYesNoCancelQuestion(
+                    getParentShell(), StringConstants.HAND_INSTANT_BROWSERS_DIA_TITLE,
+                    MessageFormat.format(StringConstants.HAND_INSTANT_BROWSERS_DIA_MESSAGE, driverType.toString()),
+                    StringConstants.HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE, false, null, null);
+            setNotShowingInstantBrowserDialog(messageDialogWithToggle.getToggleState());
+            int returnCode = messageDialogWithToggle.getReturnCode();
+            if (returnCode == IDialogConstants.NO_ID) {
+                return true;
+            }
+            if (returnCode != IDialogConstants.YES_ID) {
+                return false;
+            }
+            openBrowserToAddonUrl();
+            return true;
+        }
+
+        private void openBrowserToAddonUrl() throws IOException, URISyntaxException {
+            String url = null;
+            if (driverType == WebUIDriverType.CHROME_DRIVER) {
+                url = StringConstants.OBJECT_SPY_CHROME_ADDON_URL;
+            }
+            if (url == null || !Desktop.isDesktopSupported()) {
+                return;
+            }
+            Desktop.getDesktop().browse(new URI(url));
         }
     }
 

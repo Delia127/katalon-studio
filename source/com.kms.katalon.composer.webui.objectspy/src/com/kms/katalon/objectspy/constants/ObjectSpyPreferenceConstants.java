@@ -5,4 +5,6 @@ public interface ObjectSpyPreferenceConstants {
     public static final String WEBUI_OBJECTSPY_QUALIFIER = "com.kms.katalon.composer.webui.objectspy";
 
     public static final String WEBUI_OBJECTSPY_INSTANT_BROWSER_PORT = "objectspy.instantBrowserPort";
+    
+    public static final String WEBUI_OBJECTSPY_INSTANT_BROWSER_DO_NOT_SHOW_AGAIN = "objectspy.instantBrowser.doNotShowAgain";
 }
