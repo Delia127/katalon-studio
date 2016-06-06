@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.ast.stmt.CaseStatement;
+import org.codehaus.groovy.ast.stmt.Statement;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapHelper;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
@@ -15,7 +16,7 @@ public class CaseStatementWrapper extends ComplexChildStatementWrapper {
     protected ExpressionWrapper expression;
 
     public CaseStatementWrapper(CaseStatement caseStatement, SwitchStatementWrapper parentSwitchStatement) {
-        super(caseStatement, (BlockStatement) caseStatement.getCode(), parentSwitchStatement);
+        super(caseStatement, initCodeBlock(caseStatement), parentSwitchStatement);
         this.lastLineNumber = caseStatement.getCode().getLastLineNumber();
         this.lastColumnNumber = caseStatement.getCode().getColumnNumber();
         this.end = caseStatement.getEnd();
@@ -35,6 +36,16 @@ public class CaseStatementWrapper extends ComplexChildStatementWrapper {
 
     public CaseStatementWrapper() {
         this(null);
+    }
+    
+    private static BlockStatement initCodeBlock(CaseStatement caseStatement) {
+        Statement code = caseStatement.getCode();
+        if (code instanceof BlockStatement) {
+            return (BlockStatement) code;
+        }
+        BlockStatement block = new BlockStatement();
+        block.addStatement(code);
+        return block;
     }
 
     public void setExpression(ExpressionWrapper expression) {

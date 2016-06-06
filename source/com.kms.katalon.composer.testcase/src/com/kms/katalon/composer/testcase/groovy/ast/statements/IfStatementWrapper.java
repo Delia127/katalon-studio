@@ -35,8 +35,18 @@ public class IfStatementWrapper extends ComplexStatementWrapper<ElseIfStatementW
     public IfStatementWrapper(IfStatement ifStatement, ASTNodeWrapper parentNodeWrapper) {
         super(ifStatement, parentNodeWrapper);
         this.expression = new BooleanExpressionWrapper(ifStatement.getBooleanExpression(), this);
-        this.block = new BlockStatementWrapper((BlockStatement) ifStatement.getIfBlock(), this);
+        this.block = new BlockStatementWrapper(initIfBlock(ifStatement), this);
         getStatementNodeWrappersFromIfStatement(ifStatement.getElseBlock());
+    }
+    
+    private static BlockStatement initIfBlock(IfStatement ifStatement) {
+        Statement ifBlock = ifStatement.getIfBlock();
+        if (ifBlock instanceof BlockStatement) {
+            return (BlockStatement) ifBlock;
+        }
+        BlockStatement block = new BlockStatement();
+        block.addStatement(ifBlock);
+        return block;
     }
 
     public IfStatementWrapper(IfStatementWrapper ifStatementWrapper, ASTNodeWrapper parentNodeWrapper) {
@@ -57,7 +67,11 @@ public class IfStatementWrapper extends ComplexStatementWrapper<ElseIfStatementW
         }
         if (statement instanceof BlockStatement) {
             setLastStatement(new ElseStatementWrapper((BlockStatement) statement, this));
+            return;
         }
+        BlockStatement block = new BlockStatement();
+        block.addStatement(statement);
+        setLastStatement(new ElseStatementWrapper(block, this));
     }
 
     public BooleanExpressionWrapper getBooleanExpression() {

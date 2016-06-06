@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.ast.stmt.IfStatement;
+import org.codehaus.groovy.ast.stmt.Statement;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BooleanExpressionWrapper;
@@ -22,7 +23,7 @@ public class ElseIfStatementWrapper extends ComplexChildStatementWrapper {
     }
 
     public ElseIfStatementWrapper(IfStatement ifStatement, IfStatementWrapper parentNodeWrapper) {
-        super(ifStatement, (BlockStatement) ifStatement.getIfBlock(), parentNodeWrapper);
+        super(ifStatement, initIfBlock(ifStatement), parentNodeWrapper);
         this.expression = new BooleanExpressionWrapper(ifStatement.getBooleanExpression(), this);
         this.lineNumber = expression.getLineNumber();
         this.columnNumber = expression.getColumnNumber() - 1;
@@ -35,6 +36,16 @@ public class ElseIfStatementWrapper extends ComplexChildStatementWrapper {
     public ElseIfStatementWrapper(ElseIfStatementWrapper elseIfStatementWrapper, IfStatementWrapper parentNodeWrapper) {
         super(elseIfStatementWrapper, parentNodeWrapper);
         this.expression = new BooleanExpressionWrapper(elseIfStatementWrapper.getBooleanExpression(), this);
+    }
+    
+    private static BlockStatement initIfBlock(IfStatement ifStatement) {
+        Statement ifBlock = ifStatement.getIfBlock();
+        if (ifBlock instanceof BlockStatement) {
+            return (BlockStatement) ifBlock;
+        }
+        BlockStatement block = new BlockStatement();
+        block.addStatement(ifBlock);
+        return block;
     }
 
     public BooleanExpressionWrapper getBooleanExpression() {
