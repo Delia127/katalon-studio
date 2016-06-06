@@ -704,4 +704,8 @@ public class TestCasePart implements IComposerPart, EventHandler {
     public String getEntityId() {
         return getTestCase().getIdForDisplay();
     }
+    
+    public void addDefaultImports() {
+        treeTableInput.addDefaultImports();
+    }
 }

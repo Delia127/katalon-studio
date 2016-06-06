@@ -76,8 +76,12 @@ import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.core.testcase.TestCase;
 import com.kms.katalon.core.testcase.TestCaseFactory;
+import com.kms.katalon.core.testdata.TestData;
+import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.core.testobject.ObjectRepository;
+import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
@@ -944,10 +948,7 @@ public class TestCaseTreeTableInput {
         if (keywordClass == null) {
             return;
         }
-        addImport(keywordClass.getType());
-        addImport(ObjectRepository.class);
-        addImport(TestCaseFactory.class);
-        addImport(FailureHandling.class);
+        addDefaultImports();
         String defaultSettingKeywordName = TestCasePreferenceDefaultValueInitializer.getDefaultKeywords().get(
                 keywordClass.getName());
         StatementWrapper newBuiltinKeywordStatement = null;
@@ -964,15 +965,26 @@ public class TestCaseTreeTableInput {
         addNewAstObject(newBuiltinKeywordStatement, destinationNode, addType);
     }
 
+    public void addDefaultImports() {
+        for (KeywordClass keywordClass : KeywordController.getInstance().getBuiltInKeywordClasses()) {
+            addImport(keywordClass.getType());
+        }
+        addImport(ObjectRepository.class);
+        addImport(TestCaseFactory.class);
+        addImport(TestDataFactory.class);
+        addImport(FailureHandling.class);
+        addImport(TestCase.class);
+        addImport(TestData.class);
+        addImport(TestObject.class);
+    }
+
     public void addNewCustomKeyword(AstTreeTableNode destinationNode, NodeAddType addType) {
         StatementWrapper customKeywordStatement = AstKeywordsInputUtil.createNewCustomKeywordStatement();
         if (customKeywordStatement == null) {
             MessageDialog.openWarning(null, StringConstants.WARN_TITLE, StringConstants.PA_ERROR_MSG_NO_CUSTOM_KEYWORD);
             return;
         }
-        addImport(ObjectRepository.class);
-        addImport(TestCaseFactory.class);
-        addImport(FailureHandling.class);
+        addDefaultImports();
         addNewAstObject(customKeywordStatement, destinationNode, addType);
     }
 

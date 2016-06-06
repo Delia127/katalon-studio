@@ -62,8 +62,6 @@ import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.exceptions.GroovyParsingException;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
-import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
-import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
 import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
@@ -429,10 +427,6 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
 
     public VariableEntity[] getVariables() {
         return childTestCaseVariablesPart.getVariables();
-    }
-
-    public void addStatements(List<StatementWrapper> statements) {
-        childTestCasePart.addStatements(statements, NodeAddType.InserAfter);
     }
 
     private boolean validateInput() {
