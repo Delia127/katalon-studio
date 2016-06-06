@@ -213,7 +213,6 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
         tltmAddStep = new ToolItem(toolbar, SWT.DROP_DOWN);
         tltmAddStep.setText(StringConstants.PA_BTN_TIP_ADD);
-        tltmAddStep.setToolTipText(StringConstants.PA_BTN_TIP_ADD);
         tltmAddStep.setImage(ImageConstants.IMG_24_ADD);
         tltmAddStep.addSelectionListener(selectionListener);
 
@@ -223,7 +222,6 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
         tltmInsertStep = new ToolItem(toolbar, SWT.DROP_DOWN);
         tltmInsertStep.setText(StringConstants.PA_BTN_TIP_INSERT);
-        tltmInsertStep.setToolTipText(StringConstants.PA_BTN_TIP_INSERT);
         tltmInsertStep.setImage(ImageConstants.IMG_24_INSERT);
         tltmInsertStep.addSelectionListener(selectionListener);
 
@@ -240,19 +238,16 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
         tltmRemoveStep = new ToolItem(toolbar, SWT.NONE);
         tltmRemoveStep.setText(StringConstants.PA_BTN_TIP_REMOVE);
-        tltmRemoveStep.setToolTipText(StringConstants.PA_BTN_TIP_REMOVE);
         tltmRemoveStep.setImage(ImageConstants.IMG_24_REMOVE);
         tltmRemoveStep.addSelectionListener(selectionListener);
 
         tltmUp = new ToolItem(toolbar, SWT.NONE);
         tltmUp.setText(StringConstants.PA_BTN_TIP_MOVE_UP);
-        tltmUp.setToolTipText(StringConstants.PA_BTN_TIP_MOVE_UP);
         tltmUp.setImage(ImageConstants.IMG_24_UP);
         tltmUp.addSelectionListener(selectionListener);
 
         tltmDown = new ToolItem(toolbar, SWT.NONE);
         tltmDown.setText(StringConstants.PA_BTN_TIP_MOVE_DOWN);
-        tltmDown.setToolTipText(StringConstants.PA_BTN_TIP_MOVE_DOWN);
         tltmDown.setImage(ImageConstants.IMG_24_DOWN);
         tltmDown.addSelectionListener(selectionListener);
 
