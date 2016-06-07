@@ -12,7 +12,9 @@ import static org.apache.commons.lang.StringUtils.join;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +52,7 @@ import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.dialogs.AddMailRecipientDialog;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
+import com.kms.katalon.composer.execution.addons.TestExecutionAddon;
 import com.kms.katalon.composer.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.util.MobileDeviceUIProvider;
@@ -64,8 +67,10 @@ import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
+import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.console.ConsoleMain;
 import com.kms.katalon.execution.console.entity.OsgiConsoleOptionContributor;
+import com.kms.katalon.execution.entity.DefaultRerunSetting;
 import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.entity.ReportLocationSetting;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
@@ -94,6 +99,8 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private Text txtReportName;
 
+    private Text txtRetry;
+
     private Text txtStatusDelay;
 
     private Button btnBrowseTestSuite;
@@ -114,7 +121,11 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private Button chkKeepConsoleLog;
 
+    private Button chkRetryFailedTestCase;
+
     private Combo comboBrowser;
+
+    private Combo comboCustomExecution;
 
     private Combo comboRemoteWebDriverType;
 
@@ -129,6 +140,12 @@ public class GenerateCommandDialog extends AbstractDialog {
     private ProjectEntity project;
 
     private String defaultOutputReportLocation;
+
+    private static final String ZERO = "0";
+
+    private static final String BROWSER_TYPE_CUSTOM = TestExecutionAddon.CUSTOM_RUN_MENU_LABEL;
+
+    private static final String DEFAULT_RETRY_TIME = Integer.toString(DefaultRerunSetting.DEFAULT_RERUN_TIME);
 
     private static final String defaultStatusDelay = Integer.toString(ConsoleMain.DEFAULT_SHOW_PROGRESS_DELAY);
 
@@ -160,6 +177,10 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private static final String ARG_BROWSER_TYPE = ConsoleMain.BROWSER_TYPE_OPTION;
 
+    private static final String ARG_RETRY = DefaultRerunSetting.RETRY_OPTION;
+
+    private static final String ARG_RETRY_FAILED_TEST_CASES = DefaultRerunSetting.RETRY_FAIL_TEST_CASE_ONLY_OPTION;
+
     private List<MobileDeviceInfo> deviceInfos = new ArrayList<>();
 
     public GenerateCommandDialog(Shell parentShell, ProjectEntity project) {
@@ -179,7 +200,7 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(550, 600);
+        return new Point(550, super.getInitialSize().y);
     }
 
     @Override
@@ -190,7 +211,7 @@ public class GenerateCommandDialog extends AbstractDialog {
     @Override
     protected Control createDialogContainer(Composite parent) {
         Composite main = new Composite(parent, SWT.NONE);
-        GridLayout glMain = new GridLayout(1, false);
+        GridLayout glMain = new GridLayout();
         glMain.marginHeight = 0;
         glMain.marginWidth = 0;
         main.setLayout(glMain);
@@ -219,7 +240,7 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private void createPlatformPart(Composite parent) {
         Composite platformContainer = new Composite(parent, SWT.NONE);
-        platformContainer.setLayout(new GridLayout(1, false));
+        platformContainer.setLayout(new GridLayout());
         platformContainer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Group grpPlatform = new Group(platformContainer, SWT.NONE);
@@ -246,11 +267,17 @@ public class GenerateCommandDialog extends AbstractDialog {
 
         comboMobileDevice = new Combo(grpPlatform, SWT.READ_ONLY);
         comboMobileDevice.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+
+        Label lblCustomExecution = new Label(grpPlatform, SWT.NONE);
+        lblCustomExecution.setText(StringConstants.DIA_LBL_CUSTOM_EXECUTION);
+
+        comboCustomExecution = new Combo(grpPlatform, SWT.READ_ONLY);
+        comboCustomExecution.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
     }
 
     private void createReportConfigPart(Composite parent) {
         Composite reportConfigContainer = new Composite(parent, SWT.NONE);
-        reportConfigContainer.setLayout(new GridLayout(1, false));
+        reportConfigContainer.setLayout(new GridLayout());
         reportConfigContainer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Group grpReportConfigContainer = new Group(reportConfigContainer, SWT.NONE);
@@ -293,7 +320,7 @@ public class GenerateCommandDialog extends AbstractDialog {
 
         Composite mailRecipientsBtnContainer = new Composite(grpReportConfigContainer, SWT.NONE);
         mailRecipientsBtnContainer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-        GridLayout glMailRecipientsBtnContainer = new GridLayout(1, false);
+        GridLayout glMailRecipientsBtnContainer = new GridLayout();
         glMailRecipientsBtnContainer.marginHeight = 0;
         glMailRecipientsBtnContainer.marginWidth = 0;
         mailRecipientsBtnContainer.setLayout(glMailRecipientsBtnContainer);
@@ -313,7 +340,7 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private void createOptionsPart(Composite parent) {
         Composite optionsContainer = new Composite(parent, SWT.NONE);
-        optionsContainer.setLayout(new GridLayout(1, false));
+        optionsContainer.setLayout(new GridLayout());
         optionsContainer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Group grpOptionsContainer = new Group(optionsContainer, SWT.NONE);
@@ -329,8 +356,36 @@ public class GenerateCommandDialog extends AbstractDialog {
         chkKeepConsoleLog.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
         chkKeepConsoleLog.setText(StringConstants.DIA_CHK_KEEP_CONSOLE_LOG);
 
+        Composite compRetry = new Composite(grpOptionsContainer, SWT.NONE);
+        GridLayout glRetry = new GridLayout(4, false);
+        glRetry.marginWidth = 0;
+        glRetry.marginHeight = 0;
+        compRetry.setLayout(glRetry);
+        compRetry.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
+
+        Label lblRetry = new Label(compRetry, SWT.NONE);
+        lblRetry.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+        lblRetry.setText(StringConstants.DIA_LBL_RETRY_TEST_SUITE);
+        lblRetry.setToolTipText(com.kms.katalon.composer.testsuite.constants.StringConstants.PA_LBL_TOOLTIP_RETRY);
+
+        txtRetry = new Text(compRetry, SWT.BORDER | SWT.CENTER);
+        GridData gdTxtRetry = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        gdTxtRetry.widthHint = 30;
+        txtRetry.setLayoutData(gdTxtRetry);
+        txtRetry.setTextLimit(3);
+        txtRetry.setToolTipText(com.kms.katalon.composer.testsuite.constants.StringConstants.PA_LBL_TOOLTIP_RETRY);
+
+        Label lblRetry1 = new Label(compRetry, SWT.NONE);
+        lblRetry1.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+        lblRetry1.setText(StringConstants.DIA_LBL_RETRY_TIMES);
+
+        chkRetryFailedTestCase = new Button(compRetry, SWT.CHECK);
+        chkRetryFailedTestCase.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        chkRetryFailedTestCase.setText(StringConstants.DIA_CHK_FOR_FAILED_TEST_CASES);
+        chkRetryFailedTestCase.setToolTipText(com.kms.katalon.composer.testsuite.constants.StringConstants.PA_LBL_TOOLTIP_TEST_CASE_ONLY);
+
         Label lblUpdateStatusTiming = new Label(grpOptionsContainer, SWT.NONE);
-        lblUpdateStatusTiming.setText(StringConstants.DIA_LBL_UPDATE_EXECUTED_STATUS);
+        lblUpdateStatusTiming.setText(StringConstants.DIA_LBL_UPDATE_EXECUTION_STATUS);
 
         txtStatusDelay = new Text(grpOptionsContainer, SWT.BORDER | SWT.CENTER);
         GridData gdTxtUpdateStatusTiming = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -351,7 +406,9 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     @Override
     protected void setInput() {
-        comboBrowser.setItems(WebUIDriverType.stringValues());
+        List<String> browsers = new ArrayList<>(Arrays.asList(WebUIDriverType.stringValues()));
+        browsers.add(BROWSER_TYPE_CUSTOM);
+        comboBrowser.setItems(browsers.toArray(new String[0]));
 
         txtRemoteWebDriverURL.setEnabled(false);
         comboRemoteWebDriverType.setEnabled(false);
@@ -361,12 +418,17 @@ public class GenerateCommandDialog extends AbstractDialog {
         comboMobileDevice.setEnabled(false);
         comboMobileDevice.setItems(getMobileDevices());
 
+        comboCustomExecution.setEnabled(false);
+        comboCustomExecution.setItems(RunConfigurationCollector.getInstance().getAllCustomRunConfigurationIds());
+
         txtOutputLocation.setText(absoluteToRelativePath(defaultOutputReportLocation, projectLocation()));
         chkUseRelativePath.setSelection(true);
         txtReportName.setText(StringConstants.DIA_TXT_DEFAULT_REPORT_NAME);
         listMailRecipient.setEnabled(false);
         updateRecipientList();
         enableMailRecipientButtons(chkSendEmail.getSelection());
+        txtRetry.setText(DEFAULT_RETRY_TIME);
+        chkRetryFailedTestCase.setSelection(DefaultRerunSetting.DEFAULT_RERUN_FAILED_TEST_CASE_ONLY);
         txtStatusDelay.setText(defaultStatusDelay);
     }
 
@@ -409,9 +471,12 @@ public class GenerateCommandDialog extends AbstractDialog {
                     }
 
                     TestSuiteTreeEntity tsTreeEntity = (TestSuiteTreeEntity) result;
-                    txtTestSuite.setText(((TestSuiteEntity) tsTreeEntity.getObject()).getIdForDisplay());
+                    TestSuiteEntity testSuiteEntity = (TestSuiteEntity) tsTreeEntity.getObject();
+                    txtTestSuite.setText(testSuiteEntity.getIdForDisplay());
 
                     updateRecipientList();
+                    txtRetry.setText(Integer.toString(testSuiteEntity.getNumberOfRerun()));
+                    chkRetryFailedTestCase.setSelection(testSuiteEntity.isRerunFailedTestCasesOnly());
                 } catch (Exception e) {
                     logError(e);
                 }
@@ -422,11 +487,12 @@ public class GenerateCommandDialog extends AbstractDialog {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                boolean isRemoteWebDriverSelected = browserTypeIs(WebUIDriverType.REMOTE_WEB_DRIVER);
+                boolean isRemoteWebDriverSelected = browserTypeIs(WebUIDriverType.REMOTE_WEB_DRIVER.toString());
                 txtRemoteWebDriverURL.setEnabled(isRemoteWebDriverSelected);
                 comboRemoteWebDriverType.setEnabled(isRemoteWebDriverSelected);
-                comboMobileDevice.setEnabled(browserTypeIs(WebUIDriverType.ANDROID_DRIVER)
-                        || browserTypeIs(WebUIDriverType.IOS_DRIVER));
+                comboMobileDevice.setEnabled(browserTypeIs(WebUIDriverType.ANDROID_DRIVER.toString())
+                        || browserTypeIs(WebUIDriverType.IOS_DRIVER.toString()));
+                comboCustomExecution.setEnabled(browserTypeIs(BROWSER_TYPE_CUSTOM));
             }
         });
 
@@ -518,23 +584,37 @@ public class GenerateCommandDialog extends AbstractDialog {
             }
         });
 
-        txtStatusDelay.addVerifyListener(new VerifyListener() {
+        VerifyListener verifyNumberListener = new VerifyListener() {
 
             @Override
             public void verifyText(VerifyEvent e) {
                 // Number input only
                 if (!isNumeric(e.text)) {
                     e.doit = false;
-                    return;
                 }
+            }
+        };
+
+        txtRetry.addVerifyListener(verifyNumberListener);
+        txtRetry.addFocusListener(new FocusListener() {
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                correctNumberInput(txtRetry, DEFAULT_RETRY_TIME);
+            }
+
+            @Override
+            public void focusGained(FocusEvent e) {
+                txtRetry.selectAll();
             }
         });
 
+        txtStatusDelay.addVerifyListener(verifyNumberListener);
         txtStatusDelay.addFocusListener(new FocusListener() {
 
             @Override
             public void focusLost(FocusEvent e) {
-                correctStatusDelayInput();
+                correctNumberInput(txtStatusDelay, defaultStatusDelay);
             }
 
             @Override
@@ -544,18 +624,17 @@ public class GenerateCommandDialog extends AbstractDialog {
         });
     }
 
-    private void correctStatusDelayInput() {
-        String textNumber = txtStatusDelay.getText();
+    private void correctNumberInput(Text txtFieldNumber, String defaultValue) {
+        String textNumber = txtFieldNumber.getText();
         if (isBlank(textNumber)) {
             // Default set to default if no input
-            txtStatusDelay.setText(defaultStatusDelay);
+            txtFieldNumber.setText(defaultValue);
             return;
         }
 
-        if (textNumber.length() > 1 && textNumber.startsWith("0")) {
+        if (textNumber.length() > 1 && textNumber.startsWith(ZERO)) {
             // remove leading zeros in text number
-            String numberValue = Integer.valueOf(textNumber).toString();
-            txtStatusDelay.setText(numberValue);
+            txtFieldNumber.setText(Integer.valueOf(textNumber).toString());
         }
     }
 
@@ -599,7 +678,6 @@ public class GenerateCommandDialog extends AbstractDialog {
         }
         return devicesNameList;
     }
-
 
     @Override
     protected void buttonPressed(int buttonId) {
@@ -680,12 +758,12 @@ public class GenerateCommandDialog extends AbstractDialog {
             args.put(ARG_RUN_MODE, Application.RUN_MODE_OPTION_CONSOLE);
             if (chkDisplayConsoleLog.getSelection()) {
                 // OSGi argument
-                args.put(ARG_OSGI_CONSOLE_LOG, "");
+                args.put(ARG_OSGI_CONSOLE_LOG, StringConstants.EMPTY);
             }
 
             if (chkKeepConsoleLog.getSelection()) {
                 // OSGi argument
-                args.put(ARG_OSGI_NO_EXIT, "");
+                args.put(ARG_OSGI_NO_EXIT, StringConstants.EMPTY);
             }
         }
 
@@ -711,17 +789,26 @@ public class GenerateCommandDialog extends AbstractDialog {
             args.put(ARG_STATUS_DELAY, txtStatusDelay.getText());
         }
 
+        String numOfRetry = txtRetry.getText();
+        args.put(ARG_RETRY, numOfRetry);
+        if (!StringUtils.equals(numOfRetry, ZERO)) {
+            args.put(ARG_RETRY_FAILED_TEST_CASES, Boolean.toString(chkRetryFailedTestCase.getSelection()));
+        }
+
         args.put(ARG_TEST_SUITE_PATH, getArgumentValueToSave(txtTestSuite.getText(), generateCommandMode));
 
-        args.put(ARG_BROWSER_TYPE, getArgumentValueToSave(comboBrowser.getText(), generateCommandMode));
+        String browserType = browserTypeIs(BROWSER_TYPE_CUSTOM) ? comboCustomExecution.getText()
+                : comboBrowser.getText();
+        args.put(ARG_BROWSER_TYPE, getArgumentValueToSave(browserType, generateCommandMode));
 
-        if (browserTypeIs(WebUIDriverType.REMOTE_WEB_DRIVER)) {
+        if (browserTypeIs(WebUIDriverType.REMOTE_WEB_DRIVER.toString())) {
             args.put(ARG_REMOTE_WEB_DRIVER_URL,
                     getArgumentValueToSave(txtRemoteWebDriverURL.getText(), generateCommandMode));
             args.put(ARG_REMOTE_WEB_DRIVER_TYPE, comboRemoteWebDriverType.getText());
         }
 
-        if (browserTypeIs(WebUIDriverType.ANDROID_DRIVER) || browserTypeIs(WebUIDriverType.IOS_DRIVER)) {
+        if (browserTypeIs(WebUIDriverType.ANDROID_DRIVER.toString())
+                || browserTypeIs(WebUIDriverType.IOS_DRIVER.toString())) {
             args.put(
                     ARG_MOBILE_DEVICE_ID,
                     getArgumentValueToSave(deviceInfos.get(comboMobileDevice.getSelectionIndex()).getDeviceId(),
@@ -730,9 +817,9 @@ public class GenerateCommandDialog extends AbstractDialog {
 
         return args;
     }
-    
-    private boolean browserTypeIs(WebUIDriverType type) {
-        return StringUtils.equals(comboBrowser.getText(), type.toString());
+
+    private boolean browserTypeIs(String typeString) {
+        return StringUtils.equals(comboBrowser.getText(), typeString);
     }
 
     private String wrapArgName(String name) {
@@ -758,15 +845,26 @@ public class GenerateCommandDialog extends AbstractDialog {
         List<String> messages = new ArrayList<String>();
 
         if (isBlank(txtTestSuite.getText())) {
-            messages.add(StringConstants.DIA_MSG_PLS_SPECIFY_TEST_SUITE);
+            messages.add(MessageFormat.format(StringConstants.DIA_MSG_PLS_SPECIFY_X, StringConstants.TEST_SUITE));
+        }
+
+        if (isBlank(comboBrowser.getText())) {
+            messages.add(MessageFormat.format(StringConstants.DIA_MSG_PLS_SPECIFY_X, StringConstants.DIA_RADIO_BROWSER));
         }
 
         if (txtRemoteWebDriverURL.isEnabled() && isBlank(txtRemoteWebDriverURL.getText())) {
-            messages.add(StringConstants.DIA_MSG_PLS_SPECIFY_REMOTE_WEB_DRIVER_URL);
+            messages.add(MessageFormat.format(StringConstants.DIA_MSG_PLS_SPECIFY_X,
+                    StringConstants.DIA_REMOTE_WEB_DRIVER_URL));
         }
 
         if (comboMobileDevice.isEnabled() && comboMobileDevice.getSelectionIndex() == -1) {
-            messages.add(StringConstants.DIA_MSG_PLS_SELECT_MOBILE_DEVICE);
+            messages.add(MessageFormat.format(StringConstants.DIA_MSG_PLS_SPECIFY_X,
+                    StringConstants.DIA_RADIO_MOBILE_DEVICE));
+        }
+
+        if (comboCustomExecution.isEnabled() && comboCustomExecution.getSelectionIndex() == -1) {
+            messages.add(MessageFormat.format(StringConstants.DIA_MSG_PLS_SPECIFY_X,
+                    StringConstants.DIA_LBL_CUSTOM_EXECUTION));
         }
 
         if (!messages.isEmpty()) {
