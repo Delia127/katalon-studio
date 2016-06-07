@@ -243,7 +243,13 @@ public enum InputValueType implements InputValueEditorProvider {
             case TestDataValue:
                 return isClassAssignable(java.lang.String.class, paramType);
             case Number:
-                return isClassAssignable(paramType, java.lang.Number.class);
+                if (paramType.isPrimitive()) {
+                    paramType = ClassUtils.primitiveToWrapper(paramType);
+                }
+                return // Number can be assign to this param type
+                isClassAssignable(java.lang.Number.class, paramType) ||
+                // This param type is a subclass of Number
+                        isClassAssignable(paramType, java.lang.Number.class);
             case Condition:
             case Boolean:
                 return isClassAssignable(java.lang.Boolean.class, paramType);

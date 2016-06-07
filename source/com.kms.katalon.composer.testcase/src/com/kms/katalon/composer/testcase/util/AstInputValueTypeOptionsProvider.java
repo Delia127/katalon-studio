@@ -2,7 +2,7 @@ package com.kms.katalon.composer.testcase.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -164,7 +164,7 @@ public class AstInputValueTypeOptionsProvider {
         if (paramType.isFailureHandlingTypeClass()) {
             return new InputValueType[] { InputValueType.Property };
         }
-        Set<InputValueType> inputValueTypeList = new HashSet<InputValueType>(
+        Set<InputValueType> inputValueTypeList = new LinkedHashSet<InputValueType>(
                 Arrays.asList(getAssignableInputValueTypes(paramType.convertToClass())));
         if (paramType.isArray()) {
             inputValueTypeList.add(InputValueType.List);
