@@ -29,6 +29,8 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.VerifyEvent;
@@ -430,6 +432,12 @@ public class GenerateCommandDialog extends AbstractDialog {
         txtRetry.setText(DEFAULT_RETRY_TIME);
         chkRetryFailedTestCase.setSelection(DefaultRerunSetting.DEFAULT_RERUN_FAILED_TEST_CASE_ONLY);
         txtStatusDelay.setText(defaultStatusDelay);
+        enableRetryFailedTestCase();
+    }
+
+    private void enableRetryFailedTestCase() {
+        String retry = txtRetry.getText();
+        chkRetryFailedTestCase.setEnabled(!(ZERO.equals(retry) || retry.isEmpty()));
     }
 
     private void updateRecipientList() {
@@ -596,6 +604,13 @@ public class GenerateCommandDialog extends AbstractDialog {
         };
 
         txtRetry.addVerifyListener(verifyNumberListener);
+        txtRetry.addModifyListener(new ModifyListener() {
+
+            @Override
+            public void modifyText(ModifyEvent e) {
+                enableRetryFailedTestCase();
+            }
+        });
         txtRetry.addFocusListener(new FocusListener() {
 
             @Override
@@ -791,7 +806,7 @@ public class GenerateCommandDialog extends AbstractDialog {
 
         String numOfRetry = txtRetry.getText();
         args.put(ARG_RETRY, numOfRetry);
-        if (!StringUtils.equals(numOfRetry, ZERO)) {
+        if (!StringUtils.equals(numOfRetry, ZERO) && chkRetryFailedTestCase.isEnabled()) {
             args.put(ARG_RETRY_FAILED_TEST_CASES, Boolean.toString(chkRetryFailedTestCase.getSelection()));
         }
 
