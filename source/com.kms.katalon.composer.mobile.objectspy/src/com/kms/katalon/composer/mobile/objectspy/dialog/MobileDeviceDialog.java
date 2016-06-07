@@ -50,9 +50,11 @@ public class MobileDeviceDialog extends Dialog implements EventHandler {
 
     private Composite mainContainer;
 
-    private int DIALOG_WIDTH = 400;
+    private static final int DIALOG_WIDTH = 400;
 
-    private int DIALOG_HEIGHT = 600;
+    private static final int DIALOG_HEIGHT = 600;
+
+    public static final Point DIALOG_SIZE = new Point(DIALOG_WIDTH + 9, DIALOG_HEIGHT + 57);
 
     private float currentX = 0, currentY = 0, currentWidth = 0, currentHeight = 0;
 
@@ -69,9 +71,12 @@ public class MobileDeviceDialog extends Dialog implements EventHandler {
     private boolean isDisposed;
 
     private IEventBroker eventBroker;
+    
+    private Point initialLocation;
 
-    public MobileDeviceDialog(Shell parentShell, Logger logger, IEventBroker eventBroker) {
+    public MobileDeviceDialog(Shell parentShell, Point location, Logger logger, IEventBroker eventBroker) {
         super(parentShell);
+        this.initialLocation = location;
         setShellStyle(SWT.SHELL_TRIM | SWT.FILL | SWT.RESIZE);
         this.eventBroker = eventBroker;
         this.isDisposed = false;
@@ -165,7 +170,7 @@ public class MobileDeviceDialog extends Dialog implements EventHandler {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(DIALOG_WIDTH + 9, DIALOG_HEIGHT + 57);
+        return DIALOG_SIZE;
     }
 
     @Override
@@ -291,6 +296,11 @@ public class MobileDeviceDialog extends Dialog implements EventHandler {
             g.setColor(component.getBackground());
             g.fillRect(0, 0, getWidth(), getHeight());
         }
+    }
+    
+    @Override
+    protected Point getInitialLocation(Point initialSize) {
+        return initialLocation;
     }
 }
 
