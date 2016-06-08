@@ -34,7 +34,9 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressi
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
+import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
+import com.kms.katalon.composer.testcase.parts.TestCasePart;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
 import com.kms.katalon.composer.webui.recorder.constants.StringConstants;
@@ -106,6 +108,7 @@ public class RecordHandler {
             if (responseCode != Window.OK) {
                 return;
             }
+            final TestCasePart testCasePart = testCaseCompositePart.getChildTestCasePart();
             Job job = new Job(StringConstants.JOB_GENERATE_SCRIPT_MESSAGE) {
                 @Override
                 protected IStatus run(IProgressMonitor monitor) {
@@ -121,7 +124,8 @@ public class RecordHandler {
                             @Override
                             public void run() {
                                 try {
-                                    testCaseCompositePart.addStatements(generatedStatementWrappers);
+                                    testCasePart.addDefaultImports();
+                                    testCasePart.addStatements(generatedStatementWrappers, NodeAddType.InserAfter);
                                 } catch (Exception e) {
                                     LoggerSingleton.logError(e);
                                 }
