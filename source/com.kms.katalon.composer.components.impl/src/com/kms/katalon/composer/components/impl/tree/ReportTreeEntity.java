@@ -11,6 +11,7 @@ import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.entity.Entity;
+import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.report.ReportEntity;
 
 public class ReportTreeEntity extends AbstractTreeEntity {
@@ -54,8 +55,7 @@ public class ReportTreeEntity extends AbstractTreeEntity {
 
     @Override
     public String getCopyTag() throws Exception {
-        // return FolderType.REPORT.toString();
-        return null;
+        return FolderType.REPORT.toString();
     }
 
     @Override

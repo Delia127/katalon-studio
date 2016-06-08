@@ -7,7 +7,7 @@ public class TestDataPropertiesDynamicMenuContribution extends AbstractPropertie
 
     @Override
     protected boolean canShow() {
-        return EditTestDataPropertiesHandler.canExecute();
+        return EditTestDataPropertiesHandler.getInstance().canExecute();
     }
 
     @Override

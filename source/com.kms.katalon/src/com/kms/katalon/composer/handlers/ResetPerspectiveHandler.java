@@ -4,13 +4,7 @@ import java.util.Collection;
 
 import javax.inject.Inject;
 
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.IHandler;
-import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MElementContainer;
 import org.eclipse.e4.ui.model.application.ui.MUIElement;
@@ -21,6 +15,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 
+import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.services.PerspectiveRestoreService;
@@ -31,25 +26,29 @@ import com.kms.katalon.services.PerspectiveRestoreService;
  * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=404231#c6
  *
  */
-public class ResetPerspectiveHandler implements IHandler {
+public class ResetPerspectiveHandler extends AbstractHandler {
     @Inject
     private EModelService modelService;
 
     @Inject
     private MApplication application;
 
-    @Inject
-    private IEventBroker eventBroker;
-
     private MWindow window;
 
+    @Override
+    public boolean canExecute() {
+        return true;
+    }
+
     @SuppressWarnings("unchecked")
-    @Execute
+    @Override
     public void execute() {
         window = application.getChildren().get(0);
 
         MPerspective perspective = modelService.getActivePerspective(window);
-        if (perspective == null) return;
+        if (perspective == null) {
+            return;
+        }
 
         // get perspective stack
         MElementContainer<MUIElement> perspectiveParent = perspective.getParent();
@@ -58,7 +57,9 @@ public class ResetPerspectiveHandler implements IHandler {
         IEclipseContext appContext = application.getContext();
 
         PerspectiveRestoreService restoreService = appContext.get(PerspectiveRestoreService.class);
-        if (restoreService == null) return;
+        if (restoreService == null) {
+            return;
+        }
 
         // restore the old state (will only work if an add-on added an PerspectiveRestoreService implementation)
         MPerspective state = restoreService.reloadPerspective(perspective.getElementId(), window);
@@ -75,8 +76,7 @@ public class ResetPerspectiveHandler implements IHandler {
                 Collection<MPart> parts = partService.getParts();
 
                 // Relocate IComposerPart
-                MUIElement composerPartStack = modelService
-                        .find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
+                MUIElement composerPartStack = modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
                 MUIElement area = modelService.find(IdConstants.SHARE_AREA_ID, application);
 
                 // Move all opened entities back to composer area
@@ -129,8 +129,7 @@ public class ResetPerspectiveHandler implements IHandler {
         }
 
         // Global Variable Part
-        MPartStack rightOutlinePartStack = (MPartStack) modelService
-                .find(IdConstants.OUTLINE_PARTSTACK_ID, perspective);
+        MPartStack rightOutlinePartStack = (MPartStack) modelService.find(IdConstants.OUTLINE_PARTSTACK_ID, perspective);
         if (rightOutlinePartStack != null && rightOutlinePartStack.getChildren() != null
                 && !rightOutlinePartStack.getChildren().isEmpty()) {
             MPart globalVariablePart = (MPart) rightOutlinePartStack.getChildren().get(0);
@@ -138,31 +137,4 @@ public class ResetPerspectiveHandler implements IHandler {
         }
     }
 
-    @Override
-    public void addHandlerListener(IHandlerListener handlerListener) {
-    }
-
-    @Override
-    public void dispose() {
-    }
-
-    @Override
-    public Object execute(ExecutionEvent event) throws ExecutionException {
-        execute();
-        return null;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
-    @Override
-    public boolean isHandled() {
-        return true;
-    }
-
-    @Override
-    public void removeHandlerListener(IHandlerListener handlerListener) {
-    }
 }

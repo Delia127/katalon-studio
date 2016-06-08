@@ -14,6 +14,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Display;
 
+import com.kms.katalon.composer.components.impl.handler.CommonExplorerHandler;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.constants.StringConstants;
 import com.kms.katalon.composer.explorer.handlers.deletion.AbstractDeleteReferredEntityHandler;
@@ -21,12 +22,12 @@ import com.kms.katalon.composer.explorer.handlers.deletion.DeleteEntityHandlerFa
 import com.kms.katalon.composer.explorer.handlers.deletion.IDeleteEntityHandler;
 import com.kms.katalon.constants.EventConstants;
 
-public class DeleteHandler extends AbstractHandler {
+public class DeleteHandler extends CommonExplorerHandler {
 
     @Override
     public boolean canExecute() {
-        Object[] selectedObjects = getSelection();
-        if (selectedObjects == null) {
+        Object[] selectedObjects = getExplorerSelection();
+        if (selectedObjects.length == 0) {
             return false;
         }
         try {
@@ -47,8 +48,12 @@ public class DeleteHandler extends AbstractHandler {
 
     @Override
     public void execute() {
-        Object[] selectedObjects = getSelection();
-        if (selectedObjects == null) {
+        if (isExplorerPartNotActive()) {
+            return;
+        }
+
+        Object[] selectedObjects = getExplorerSelection();
+        if (selectedObjects.length == 0) {
             return;
         }
 
