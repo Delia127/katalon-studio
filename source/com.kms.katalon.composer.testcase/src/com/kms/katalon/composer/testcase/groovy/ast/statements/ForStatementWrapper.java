@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.ast.stmt.ForStatement;
+import org.codehaus.groovy.ast.stmt.Statement;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapHelper;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
@@ -33,10 +34,20 @@ public class ForStatementWrapper extends CompositeStatementWrapper {
     }
 
     public ForStatementWrapper(ForStatement forStatement, ASTNodeWrapper parentNodeWrapper) {
-        super(forStatement, (BlockStatement) forStatement.getLoopBlock(), parentNodeWrapper);
+        super(forStatement, initLoopBlock(forStatement), parentNodeWrapper);
         variable = new ParameterWrapper(forStatement.getVariable(), this);
         collectionExpression = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(
                 forStatement.getCollectionExpression(), this);
+    }
+
+    private static BlockStatement initLoopBlock(ForStatement forStatement) {
+        Statement loopBlock = forStatement.getLoopBlock();
+        if (loopBlock instanceof BlockStatement) {
+            return (BlockStatement) loopBlock;
+        }
+        BlockStatement block = new BlockStatement();
+        block.addStatement(loopBlock);
+        return block;
     }
 
     public ForStatementWrapper(ForStatementWrapper forStatementWrapper, ASTNodeWrapper parentNodeWrapper) {

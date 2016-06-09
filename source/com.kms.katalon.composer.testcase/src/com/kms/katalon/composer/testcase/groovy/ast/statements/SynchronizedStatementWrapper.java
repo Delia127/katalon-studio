@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.codehaus.groovy.ast.stmt.BlockStatement;
+import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.ast.stmt.SynchronizedStatement;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapHelper;
@@ -19,7 +20,7 @@ public class SynchronizedStatementWrapper extends CompositeStatementWrapper {
     }
 
     public SynchronizedStatementWrapper(SynchronizedStatement synchronizedStatement, ASTNodeWrapper parentNodeWrapper) {
-        super(synchronizedStatement, (BlockStatement) synchronizedStatement.getCode(), parentNodeWrapper);
+        super(synchronizedStatement, initCodeBlock(synchronizedStatement), parentNodeWrapper);
         this.expression = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(
                 synchronizedStatement.getExpression(), this);
     }
@@ -28,6 +29,16 @@ public class SynchronizedStatementWrapper extends CompositeStatementWrapper {
             ASTNodeWrapper parentNodeWrapper) {
         super(synchronizedStatementWrapper, parentNodeWrapper);
         this.expression = synchronizedStatementWrapper.getExpression().copy(this);
+    }
+    
+    private static BlockStatement initCodeBlock(SynchronizedStatement synchronizedStatement) {
+        Statement code = synchronizedStatement.getCode();
+        if (code instanceof BlockStatement) {
+            return (BlockStatement) code;
+        }
+        BlockStatement block = new BlockStatement();
+        block.addStatement(code);
+        return block;
     }
 
     public ExpressionWrapper getExpression() {

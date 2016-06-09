@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.codehaus.groovy.ast.stmt.BlockStatement;
+import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.ast.stmt.WhileStatement;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
@@ -22,13 +23,23 @@ public class WhileStatementWrapper extends CompositeStatementWrapper {
     }
 
     public WhileStatementWrapper(WhileStatement whileStatement, ASTNodeWrapper parentNodeWrapper) {
-        super(whileStatement, (BlockStatement) whileStatement.getLoopBlock(), parentNodeWrapper);
+        super(whileStatement, initLoopBlock(whileStatement), parentNodeWrapper);
         this.booleanExpression = new BooleanExpressionWrapper(whileStatement.getBooleanExpression(), this);
     }
 
     public WhileStatementWrapper(WhileStatementWrapper whileStatementWrapper, ASTNodeWrapper parentNodeWrapper) {
         super(whileStatementWrapper, parentNodeWrapper);
         this.booleanExpression = new BooleanExpressionWrapper(whileStatementWrapper.getBooleanExpression(), this);
+    }
+    
+    private static BlockStatement initLoopBlock(WhileStatement whileStatement) {
+        Statement loopBlock = whileStatement.getLoopBlock();
+        if (loopBlock instanceof BlockStatement) {
+            return (BlockStatement) loopBlock;
+        }
+        BlockStatement block = new BlockStatement();
+        block.addStatement(loopBlock);
+        return block;
     }
 
     public BooleanExpressionWrapper getBooleanExpression() {
