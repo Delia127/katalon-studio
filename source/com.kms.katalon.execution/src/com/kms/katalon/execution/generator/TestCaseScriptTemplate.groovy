@@ -25,7 +25,7 @@ class TestCaseScriptTemplate {
 <% driverCleaners.each { %>DriverCleanerCollector.getInstance().addDriverCleaner(new <%= it %>())
 <% } %>
 
-RunConfiguration.setExecutionSettingFile("<%= executionConfigFilePath %>")
+RunConfiguration.setExecutionSettingFile('<%= executionConfigFilePath %>')
 
 TestCaseMain.beforeStart()
 try {
