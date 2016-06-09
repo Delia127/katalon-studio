@@ -30,22 +30,16 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
         return methodCall.getObjectExpressionAsString();
     }
 
-    private List<String> getKeywordNames() {
-        List<String> keywordNames = new ArrayList<String>();
-        for (KeywordMethod keywordMethod : getBuiltInKeywordMethods()) {
-            keywordNames.add(TreeEntityUtil.getReadableKeywordName(keywordMethod.getName()));
-        }
-        return keywordNames;
-    }
-
-    private List<String> getKeywordToolTips() {
-        return TestCaseEntityUtil.getAllKeywordJavaDocText(getBuiltInKWClassSimpleName());
-    }
-
     @Override
     public CellEditor getCellEditorForItem(Composite parent) {
-        List<String> keywordNames = getKeywordNames();
-        List<String> toolTips = getKeywordToolTips();
+        List<String> keywordNames = new ArrayList<String>();
+        List<String> toolTips = new ArrayList<String>();
+        String builtInKWClassSimpleName = getBuiltInKWClassSimpleName();
+        for (KeywordMethod keywordMethod : getBuiltInKeywordMethods()) {
+            keywordNames.add(TreeEntityUtil.getReadableKeywordName(keywordMethod.getName()));
+            toolTips.add(TestCaseEntityUtil.getKeywordJavaDocText(builtInKWClassSimpleName, keywordMethod.getName()));
+        }
+
         return new ComboBoxCellEditorWithContentProposal(parent, keywordNames.toArray(new String[keywordNames.size()]),
                 toolTips.toArray(new String[toolTips.size()]));
     }

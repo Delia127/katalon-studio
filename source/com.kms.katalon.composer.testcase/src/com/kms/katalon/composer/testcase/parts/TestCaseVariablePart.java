@@ -108,7 +108,6 @@ public class TestCaseVariablePart {
             }
         });
         tltmAddVariable.setText(StringConstants.PA_BTN_TIP_ADD);
-        tltmAddVariable.setToolTipText(StringConstants.PA_BTN_TIP_ADD);
         tltmAddVariable.setImage(ImageConstants.IMG_24_ADD);
 
         final ToolItem tltmRemove = new ToolItem(toolBar, SWT.NONE);
@@ -119,13 +118,11 @@ public class TestCaseVariablePart {
             }
         });
         tltmRemove.setText(StringConstants.PA_BTN_TIP_REMOVE);
-        tltmRemove.setToolTipText(StringConstants.PA_BTN_TIP_REMOVE);
         tltmRemove.setImage(ImageConstants.IMG_24_REMOVE);
         tltmRemove.setEnabled(false);
 
         ToolItem tltmClear = new ToolItem(toolBar, SWT.NONE);
         tltmClear.setText(StringConstants.PA_BTN_TIP_CLEAR);
-        tltmClear.setToolTipText(StringConstants.PA_BTN_TIP_CLEAR);
         tltmClear.setImage(ImageConstants.IMG_24_CLEAR);
 
         tltmClear.addSelectionListener(new SelectionAdapter() {
@@ -137,7 +134,6 @@ public class TestCaseVariablePart {
 
         ToolItem tltmUp = new ToolItem(toolBar, SWT.NONE);
         tltmUp.setText(StringConstants.PA_BTN_TIP_MOVE_UP);
-        tltmUp.setToolTipText(StringConstants.PA_BTN_TIP_MOVE_UP);
         tltmUp.setImage(ImageConstants.IMG_24_UP);
         tltmUp.addSelectionListener(new SelectionAdapter() {
 
@@ -149,7 +145,6 @@ public class TestCaseVariablePart {
 
         ToolItem tltmDown = new ToolItem(toolBar, SWT.NONE);
         tltmDown.setText(StringConstants.PA_BTN_TIP_MOVE_DOWN);
-        tltmDown.setToolTipText(StringConstants.PA_BTN_TIP_MOVE_DOWN);
         tltmDown.setImage(ImageConstants.IMG_24_DOWN);
         tltmDown.addSelectionListener(new SelectionAdapter() {
 

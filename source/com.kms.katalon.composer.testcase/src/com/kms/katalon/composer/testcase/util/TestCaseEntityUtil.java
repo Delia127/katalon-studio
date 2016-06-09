@@ -168,10 +168,6 @@ public class TestCaseEntityUtil {
         }
     }
 
-    public static List<String> getAllKeywordJavaDocText(String keywordClassName) {
-        return new ArrayList<String>(getKeywordMethodJavaDocMap().get(keywordClassName).values());
-    }
-
     private static IMethod findBuiltinMethods(IType type, String methodName, IJavaProject javaProject)
             throws JavaModelException {
         for (IMethod keywordMethod : type.getMethods()) {
