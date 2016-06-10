@@ -3,10 +3,10 @@ package com.kms.katalon.core.keyword
 import groovy.transform.CompileStatic
 
 import com.kms.katalon.core.exception.StepFailedException
-import com.kms.katalon.core.logging.ErrorCollector;
+import com.kms.katalon.core.logging.ErrorCollector
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.model.FailureHandling
-import com.kms.katalon.core.util.ExceptionsUtil;
+import com.kms.katalon.core.util.ExceptionsUtil
 
 
 public class KeywordMain {
@@ -14,17 +14,18 @@ public class KeywordMain {
 
     @CompileStatic
     public static stepFailed(String message, FailureHandling flHandling, String reason, Map<String, String> attributes = null) throws StepFailedException {
-        StringBuilder failMessage = buildReasonMessage(message, reason)
+        String failedMessage = buildReasonMessage(message, reason).toString()
         switch (flHandling) {
             case FailureHandling.OPTIONAL:
-                logger.logWarning(failMessage.toString(), attributes);
+                logger.logWarning(failedMessage, attributes);
                 break;
             case FailureHandling.CONTINUE_ON_FAILURE:
-                logger.logFailed(failMessage.toString(), attributes);
-                ErrorCollector.getCollector().addError(new StepFailedException(failMessage.toString()));
+                logger.logFailed(failedMessage, attributes);
+                ErrorCollector.getCollector().addError(new StepFailedException(failedMessage));
                 break;
-            default:
-                throw new StepFailedException(failMessage.toString());
+            case FailureHandling.STOP_ON_FAILURE:
+                logger.logFailed(failedMessage, attributes);
+                throw new StepFailedException(failedMessage.toString());
         }
     }
 
@@ -40,15 +41,14 @@ public class KeywordMain {
     }
 
     @CompileStatic
-    public static runKeyword(Closure closure, FailureHandling flowControl, String errorMessage) {
+    public static runKeyword(Closure closure, FailureHandling flowControl, String errorMessage, boolean takeScreenShot = false) {
         try {
             return closure.call();
         } catch (Throwable e) {
-            if (!(e instanceof StepFailedException)) {
-                stepFailed(errorMessage, flowControl, ExceptionsUtil.getMessageForThrowable(e));
-            } else {
-                throw e;
+            if (e instanceof StepFailedException) {
+               throw e;
             }
+            stepFailed(errorMessage, flowControl, ExceptionsUtil.getMessageForThrowable(e));
         }
     }
 }

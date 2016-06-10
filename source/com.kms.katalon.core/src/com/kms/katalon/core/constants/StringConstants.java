@@ -347,6 +347,10 @@ public class StringConstants {
     public static final String CONF_PROPERTY_EXECUTION_PREFS_PROPERTY = "preferences";
 
     public static final String CONF_PROPERTY_EXECUTION_SYSTEM_PROPERTY = "system";
+    
+    public static final String CONF_PROPERTY_REPORT = "report";
+
+    public static final String CONF_PROPERTY_SCREEN_CAPTURE_OPTION = "screenCaptureOption";
 
     // TestCaseExecutor
     public static final String TEST_STEP_TRANSFORMATION_CLASS = "com.kms.katalon.core.ast.RequireAstTestStepTransformation";
@@ -370,4 +374,6 @@ public class StringConstants {
     // AstTestStepTransformation
     public static final String NOT_RUN_LABEL = "not_run";
 
+    // KeywordMain
+    public static final String KW_LOG_WARNING_CANNOT_TAKE_SCREENSHOT = "Cannot take screenshot (Root cause: {0})";
 }

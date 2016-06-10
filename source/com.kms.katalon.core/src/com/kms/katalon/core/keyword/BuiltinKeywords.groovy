@@ -19,6 +19,7 @@ import com.kms.katalon.core.main.TestResult
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testcase.TestCase
 import com.kms.katalon.core.testcase.TestCaseBinding
+import java.text.MessageFormat
 
 @CompileStatic
 public class BuiltinKeywords {
@@ -55,11 +56,12 @@ public class BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ACTUAL_TXT_MATCHED_EXPECTED_TXT, actualText, expectedText, regularExpressionLog));
                 return true;
             } else {
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_ACTUAL_TXT_NOT_MATCHED_EXPECTED_TXT, actualText, expectedText, regularExpressionLog), flowControl, null);
+                throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_ACTUAL_TXT_NOT_MATCHED_EXPECTED_TXT, actualText, expectedText, regularExpressionLog));
                 return false;
             }
         }
-        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_MATCHING_BETWEEN_TXTS, actualText, expectedText, regularExpressionLog))
+        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_MATCHING_BETWEEN_TXTS, actualText, 
+            expectedText, regularExpressionLog), true)
     }
 
 
@@ -83,14 +85,15 @@ public class BuiltinKeywords {
         return KeywordMain.runKeyword({
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_MATCHING_ACTUAL_TXT_W_EXPECTED_VAL, actualText, expectedText, regularExpressionLog));
             if (KeywordHelper.match(actualText, expectedText, isRegex)) {
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_TXTS_MATCHED_BUT_EXPECTED_UNMATCHED, actualText, expectedText, regularExpressionLog), flowControl, null);
+                throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_TXTS_MATCHED_BUT_EXPECTED_UNMATCHED, actualText, expectedText, regularExpressionLog));
                 return false;
             } else {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TXTS_UNMATCHED, actualText, expectedText, regularExpressionLog));
                 return true;
             }
         }
-        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_TXTS_ARE_UNMATCHED, actualText, expectedText, regularExpressionLog))
+        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_TXTS_ARE_UNMATCHED, actualText, expectedText, 
+            regularExpressionLog), true)
     }
 
 
@@ -116,15 +119,15 @@ public class BuiltinKeywords {
                 isEqual = actualObject == expectedObject;
             }
             if (!isEqual) {
-                KeywordMain.stepFailed(
-                        MessageFormat.format(StringConstants.KW_MSG_OBJECTS_ARE_NOT_EQUAL, String.valueOf(actualObject), String.valueOf(expectedObject)), flowControl, null);
-                return false;
+                throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_OBJECTS_ARE_NOT_EQUAL, 
+                    String.valueOf(actualObject), String.valueOf(expectedObject)))
             } else {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJECTS_ARE_EQUAL, String.valueOf(actualObject), String.valueOf(expectedObject)));
             }
             return isEqual;
         }
-        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJECTS_ARE_EQUAL, actualObject, expectedObject))
+        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJECTS_ARE_EQUAL, actualObject, 
+            expectedObject), true)
     }
 
 
@@ -151,14 +154,15 @@ public class BuiltinKeywords {
                 isEqual = actualObject == expectedObject;
             }
             if (isEqual) {
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJECTS_ARE_EQUAL, String.valueOf(actualObject), String.valueOf(expectedObject)), flowControl, null);
+                throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_OBJECTS_ARE_EQUAL, String.valueOf(actualObject), String.valueOf(expectedObject)));
                 return false;
             } else {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJECTS_ARE_NOT_EQUAL, String.valueOf(actualObject), String.valueOf(expectedObject)));
             }
             return !isEqual;
         }
-        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJECTS_ARE_NOT_EQUAL, actualObject, expectedObject))
+        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJECTS_ARE_NOT_EQUAL, actualObject, 
+            expectedObject), true)
     }
 
     /**
@@ -178,12 +182,13 @@ public class BuiltinKeywords {
             if (isGreaterThan) {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ACTUAL_NUM_IS_GREATER_THAN_EXPECTED_NUM, actualNumber, expectedNumber));
             } else {
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_ACTUAL_NUM_IS_NOT_GREATER_THAN_EXPECTED_NUM, actualNumber, expectedNumber), flowControl, null);
+                throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_ACTUAL_NUM_IS_NOT_GREATER_THAN_EXPECTED_NUM, actualNumber, expectedNumber));
                 return false;
             }
             return isGreaterThan;
         }
-        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_GREATER, actualNumber, expectedNumber))
+        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_GREATER, actualNumber, expectedNumber), 
+        , true)
     }
 
     /**
@@ -203,11 +208,12 @@ public class BuiltinKeywords {
             if (isGreaterThanOrEqual) {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ACTUAL_NUM_IS_GT_OR_EQ_TO_EXPECTED_NUM, actualNumber, expectedNumber));
             } else {
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_ACTUAL_NUM_IS_NOT_GT_OR_EQ_TO_EXPECTED_NUM, actualNumber, expectedNumber), flowControl, null);
+                throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_ACTUAL_NUM_IS_NOT_GT_OR_EQ_TO_EXPECTED_NUM, actualNumber, expectedNumber));
             }
             return isGreaterThanOrEqual;
         }
-        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_NUMS_ARE_GT_OR_EQ, actualNumber, expectedNumber))
+        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_NUMS_ARE_GT_OR_EQ, actualNumber, 
+            expectedNumber), true)
     }
 
     /**
@@ -227,12 +233,13 @@ public class BuiltinKeywords {
             if (isLessThan) {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ACTUAL_NUM_IS_LT_EXPECTED_NUM, actualNumber, expectedNumber));
             } else {
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_ACTUAL_NUM_IS_NOT_LT_EXPECTED_NUM, actualNumber, expectedNumber), flowControl, null);
+                throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_ACTUAL_NUM_IS_NOT_LT_EXPECTED_NUM, actualNumber, expectedNumber));
                 return false;
             }
             return isLessThan;
         }
-        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_LT, actualNumber, expectedNumber))
+        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_LT, actualNumber
+            , expectedNumber), true)
     }
 
     /**
@@ -252,12 +259,13 @@ public class BuiltinKeywords {
             if (isLessThanOrEqual) {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ACTUAL_NUM_IS_LT_OR_EQ_TO_EXPECTED_NUM, actualNumber, expectedNumber));
             } else {
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_ACTUAL_NUM_IS_NOT_LT_OR_EQ_EXPECTED_NUM, actualNumber, expectedNumber), flowControl, null);
+                throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_ACTUAL_NUM_IS_NOT_LT_OR_EQ_EXPECTED_NUM, actualNumber, expectedNumber));
                 return false;
             }
             return isLessThanOrEqual;
         }
-        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_LT_OR_EQ_TO, actualNumber, expectedNumber))
+        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_LT_OR_EQ_TO, actualNumber, 
+            expectedNumber), true)
     }
 
     /**
@@ -293,7 +301,8 @@ public class BuiltinKeywords {
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_CONCAT_STR_ARRAY, stringArrayValue, sb.toString()));
             return sb.toString();
         }
-        , flowControl, (stringArrayValue != null) ? MessageFormat.format(StringConstants.KW_CANNOT_CONCAT_STR_ARRAY, stringArrayValue) : StringConstants.KW_CANNOT_CONCAT)
+        , flowControl, (stringArrayValue != null) ? MessageFormat.format(StringConstants.KW_CANNOT_CONCAT_STR_ARRAY, 
+            stringArrayValue) : StringConstants.KW_CANNOT_CONCAT, true)
     }
 
     /**
@@ -321,11 +330,10 @@ public class BuiltinKeywords {
                         calledTestCase.getTestCaseId(), binding), flowControl);
                 switch (result.getTestStatus().getStatusValue()) {
                     case TestStatus.TestStatusValue.FAILED:
-                        KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_CALL_TC_FAILED, calledTestCase.getTestCaseId()), flowControl, result.getMessage());
+                        throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_CALL_TC_FAILED, calledTestCase.getTestCaseId()));
                         break;
                     case TestStatus.TestStatusValue.ERROR:
-                        KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_CALL_TC_X_FAILED_BECAUSE_OF_ERROR, calledTestCase.getTestCaseId()),
-                        flowControl, result.getMessage());
+                        throw new StepErrorException(MessageFormat.format(StringConstants.KW_MSG_CALL_TC_X_FAILED_BECAUSE_OF_ERROR, calledTestCase.getTestCaseId()));
                         break;
                     case TestStatus.TestStatusValue.PASSED:
                         logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_CALL_TC_X_SUCCESSFULLY, calledTestCase.getTestCaseId()));
@@ -342,7 +350,7 @@ public class BuiltinKeywords {
             }
         }
         , flowControl, (calledTestCase != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_CALL_TC_W_ID_X, calledTestCase.getTestCaseId())
-        : StringConstants.KW_MSG_CANNOT_CALL_TC)
+        : StringConstants.KW_MSG_CANNOT_CALL_TC, true)
     }
 
     /**
@@ -365,6 +373,6 @@ public class BuiltinKeywords {
             }
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_DELAYED_SEC, second));
         }
-        , flowControl, StringConstants.KW_MSG_CANNOT_DELAY_BROWSER)
+        , flowControl, StringConstants.KW_MSG_CANNOT_DELAY_BROWSER, true)
     }
 }

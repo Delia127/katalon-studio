@@ -22,6 +22,7 @@ Export-Package: com.kms.katalon.execution.classpath,
  com.kms.katalon.execution.launcher.model,
  com.kms.katalon.execution.launcher.process,
  com.kms.katalon.execution.logging,
+ com.kms.katalon.execution.setting,
  com.kms.katalon.execution.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: com.google.common.base,
