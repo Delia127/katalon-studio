@@ -338,4 +338,7 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     
     public static final String COMM_LOG_INFO_CHECKING_PERCENTAGE = "Checking percentage";
 
+    public static final String KW_MSG_FAILED_TO_UNLOCK_SCREEN = "Failed to unlock screen";
+    
+    public static final String KW_MSG_PASSED_TO_UNLOCK_SCREEN = "Screen unlocked";
 }

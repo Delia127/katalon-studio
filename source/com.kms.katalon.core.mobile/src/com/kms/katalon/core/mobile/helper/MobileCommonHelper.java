@@ -1,22 +1,25 @@
 package com.kms.katalon.core.mobile.helper;
 
-import groovy.transform.CompileStatic
-import io.appium.java_client.AppiumDriver
-import io.appium.java_client.android.AndroidDriver
+import groovy.transform.CompileStatic;
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
 
-import org.openqa.selenium.NoSuchElementException
-import org.openqa.selenium.WebElement
+import java.util.HashMap;
+import java.util.Map;
+
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebElement;
 
 import com.kms.katalon.core.mobile.keyword.AndroidProperties;
-import com.kms.katalon.core.mobile.keyword.GUIObject
-import com.kms.katalon.core.mobile.keyword.MobileDriverFactory
+import com.kms.katalon.core.mobile.keyword.GUIObject;
+import com.kms.katalon.core.mobile.keyword.MobileDriverFactory;
 
 public class MobileCommonHelper {
-    private static final String ATTRIBUTE_NAME_FOR_ANDROID_RESOURCE_ID = "resourceId"
+    private static final String ATTRIBUTE_NAME_FOR_ANDROID_RESOURCE_ID = "resourceId";
 
     private static final String ATTRIBUTE_NAME_FOR_ANDROID_CONTENT_DESC = "name";
     
-    @CompileStatic
+    @SuppressWarnings("rawtypes")
     public static void swipe(AppiumDriver driver, int startX, int startY, int endX, int endY){
         driver.swipe(startX, startY, endX, endY, 500);
     }
@@ -114,7 +117,7 @@ public class MobileCommonHelper {
                     return element.getAttribute(attributeName);
                 } catch (NoSuchElementException e) {
                     // attribute not found, return null
-                    return null
+                    return null;
                 }
         }
     }

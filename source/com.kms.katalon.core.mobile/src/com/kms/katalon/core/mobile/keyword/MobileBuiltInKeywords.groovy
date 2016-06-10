@@ -36,6 +36,7 @@ import com.kms.katalon.core.keyword.KeywordMain
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.mobile.constants.StringConstants
 import com.kms.katalon.core.mobile.helper.MobileCommonHelper
+import com.kms.katalon.core.mobile.helper.MobileDeviceCommonHelper
 import com.kms.katalon.core.mobile.helper.MobileElementCommonHelper
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
@@ -2113,5 +2114,37 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
     public static boolean verifyElementNotChecked(TestObject to, int timeout) throws StepFailedException {
         return verifyElementNotChecked(to, timeout, RunConfiguration.getDefaultFailureHandling());
+    }
+
+    /**
+     * Unlock device screen
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
+    public static void unlockScreen(FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            AppiumDriver<?> driver = getAnyAppiumDriver();
+            String context = driver.getContext();
+            try{
+                internalSwitchToNativeContext(driver);
+                MobileDeviceCommonHelper.unlockScreen(driver);
+
+            } finally {
+                driver.context(context)
+            }
+            logger.logPassed(StringConstants.KW_MSG_PASSED_TO_UNLOCK_SCREEN);
+        }, flowControl, StringConstants.KW_MSG_FAILED_TO_UNLOCK_SCREEN);
+    }
+    
+    /**
+     * Unlock device screen
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
+    public static void unlockScreen() throws StepFailedException {
+        unlockScreen(RunConfiguration.getDefaultFailureHandling());
     }
 }
