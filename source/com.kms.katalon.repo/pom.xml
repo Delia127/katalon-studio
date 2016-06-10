@@ -112,7 +112,7 @@
 									<id>wsdl4j:wsdl4j:1.6.2</id>
 								</artifact>
 								<artifact>
-									<id>io.appium:java-client:3.2.0</id>
+									<id>io.appium:java-client:3.4.1</id>
 									<transitive>false</transitive>
 								</artifact>
 								<artifact>
