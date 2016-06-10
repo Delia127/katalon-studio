@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.testdata.handlers;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -19,6 +21,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.wizard.RenameWizard;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 
@@ -49,12 +52,13 @@ public class RenameTestDataHandler {
     private void execute(TestDataTreeEntity testDataTreeEntity) {
         try {
             if (testDataTreeEntity.getObject() instanceof DataFileEntity) {
-                RenameWizard renameWizard = new RenameWizard(testDataTreeEntity, TestDataController.getInstance()
-                        .getSibblingDataFileNames((DataFileEntity) testDataTreeEntity.getObject()));
+                DataFileEntity testData = testDataTreeEntity.getObject();
+                List<String> existingNames = FolderController.getInstance()
+                        .getChildrenNames(testData.getParentFolder());
+                RenameWizard renameWizard = new RenameWizard(testDataTreeEntity, existingNames);
                 CWizardDialog wizardDialog = new CWizardDialog(parentShell, renameWizard);
                 int code = wizardDialog.open();
                 if (code == Window.OK) {
-                    DataFileEntity testData = (DataFileEntity) testDataTreeEntity.getObject();
                     String oldName = testData.getName();
                     String pk = testData.getId();
                     String oldIdForDisplay = testData.getIdForDisplay();

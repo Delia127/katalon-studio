@@ -60,14 +60,8 @@ public class RenameFolderHandler {
         try {
             FolderEntity oldFolder = (FolderEntity) folderTreeEntity.getObject();
             if (oldFolder != null) {
-                List<String> existingNames = FolderController.getInstance().getSibblingFolderNames(oldFolder);
-
-                for (TestCaseEntity siblingTestCase : FolderController.getInstance().getTestCaseChildren(
-                        oldFolder.getParentFolder())) {
-                    existingNames.add(siblingTestCase.getName());
-                }
-
-                RenameWizard renameWizard = new RenameWizard(folderTreeEntity, existingNames);
+                RenameWizard renameWizard = new RenameWizard(folderTreeEntity, FolderController.getInstance()
+                        .getChildrenNames(oldFolder.getParentFolder()));
                 CWizardDialog wizardDialog = new CWizardDialog(parentShell, renameWizard);
                 int code = wizardDialog.open();
                 if (code == Window.OK) {
@@ -75,7 +69,7 @@ public class RenameFolderHandler {
                     String oldName = folder.getName();
                     try {
                         if (renameWizard.getNewNameValue() != null && !renameWizard.getNewNameValue().equals("")
-                                && !renameWizard.getNewNameValue().equals(oldName)) {
+                                && !renameWizard.getNewNameValue().equalsIgnoreCase(oldName)) {
 
                             // preSave
                             // get object and oldLocation of all children of folder

@@ -12,6 +12,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
+import com.kms.katalon.controller.EntityNameController;
+import com.kms.katalon.dal.exception.InvalidNameException;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 
@@ -75,6 +77,13 @@ public abstract class CommonNewEntityDialog<T extends FileEntity> extends Abstra
             setEntityProperties();
         }
         super.okPressed();
+    }
+
+    @Override
+    public void validateEntityName(String entityName) throws Exception {
+        if (EntityNameController.getInstance().isNameExisted(parentFolder, entityName)) {
+            throw new InvalidNameException(StringConstants.DIA_NAME_EXISTED);
+        }
     }
 
 }
