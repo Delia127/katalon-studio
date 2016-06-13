@@ -2,14 +2,20 @@ package com.kms.katalon.core.mobile.helper;
 
 import groovy.transform.CompileStatic
 import io.appium.java_client.AppiumDriver
+import io.appium.java_client.android.AndroidDriver
 
 import org.openqa.selenium.NoSuchElementException
 import org.openqa.selenium.WebElement
 
+import com.kms.katalon.core.mobile.keyword.AndroidProperties;
 import com.kms.katalon.core.mobile.keyword.GUIObject
 import com.kms.katalon.core.mobile.keyword.MobileDriverFactory
 
 public class MobileCommonHelper {
+    private static final String ATTRIBUTE_NAME_FOR_ANDROID_RESOURCE_ID = "resourceId"
+
+    private static final String ATTRIBUTE_NAME_FOR_ANDROID_CONTENT_DESC = "name";
+    
     @CompileStatic
     public static void swipe(AppiumDriver driver, int startX, int startY, int endX, int endY){
         driver.swipe(startX, startY, endX, endY, 500);
@@ -95,6 +101,14 @@ public class MobileCommonHelper {
                 return String.valueOf(element.getLocation().x);
             case GUIObject.Y:
                 return String.valueOf(element.getLocation().y);
+            case AndroidProperties.ANDROID_RESOURCE_ID:
+                if (MobileDriverFactory.getDriver() instanceof AndroidDriver) {
+                    return element.getAttribute(ATTRIBUTE_NAME_FOR_ANDROID_RESOURCE_ID);
+                }
+            case AndroidProperties.ANDROID_CONTENT_DESC:
+                if (MobileDriverFactory.getDriver() instanceof AndroidDriver) {
+                    return element.getAttribute(ATTRIBUTE_NAME_FOR_ANDROID_CONTENT_DESC);
+                }
             default:
                 try {
                     return element.getAttribute(attributeName);
