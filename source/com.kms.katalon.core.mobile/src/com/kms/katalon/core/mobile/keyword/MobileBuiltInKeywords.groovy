@@ -34,6 +34,7 @@ import com.kms.katalon.core.keyword.KeywordMain
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.mobile.constants.StringConstants
 import com.kms.katalon.core.mobile.helper.MobileCommonHelper
+import com.kms.katalon.core.mobile.helper.MobileElementCommonHelper
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 
@@ -468,6 +469,26 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TAPPED_ON_ELEMENT, to.getObjectId()));
         }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_TAP_ON_ELEMENT_X, to.getObjectId())
         : StringConstants.KW_MSG_FAILED_TO_TAP_ON_ELEMENT);
+    }
+
+    /**
+     * Tap and hold on a mobile element for a duration
+     * @param to
+     *      represent a mobile element
+     * @param duration
+     *      duration that the tap is hold on the element, if set to <= 0 then will use default duration
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void tapAndHold(TestObject to, int duration, int timeout, FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            MobileElementCommonHelper.tapAndHold(to, duration, timeout);
+        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT_X, to.getObjectId())
+        : StringConstants.KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT);
     }
 
     /**

@@ -86,6 +86,12 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_MSG_FAILED_TO_TAP_ON_ELEMENT_X = "Failed to tap on element ''{0}''";
 
     public static final String KW_MSG_FAILED_TO_TAP_ON_ELEMENT = "Failed to tap on element";
+    
+    public static final String KW_LOG_PASSED_TAP_AND_HOLD_ON_ELEMENT_X = "Tapped and held on element ''{0}''";
+
+    public static final String KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT_X = "Failed to tap and hold on element ''{0}''";
+
+    public static final String KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT = "Failed to tap and hold on element";
 
     public static final String KW_LOG_PASSED_ELEMENT_HAS_ATTR = "Element ''{0}'' has attribute ''{1}'' is ''{2}''";
 
@@ -276,5 +282,10 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String APPIUM_START_EXCEPTION_APPIUM_DIRECTORY_NOT_SET = "Appium directory is not set. Please set it in Settings/Preferences/Mobile.";
 
     public static final String APPIUM_START_EXCEPTION_APPIUM_DIRECTORY_INVALID_CANNOT_FIND_APPIUM_JS = "Appium directory is invalid: Cannot find appium.js file.";
+    
+    // MobileElementCommonHelper
+    public static final String COMM_LOG_INFO_CHECKING_DURATION = "Checking duration";
+    
+    public static final String COMM_LOG_WARNING_INVALID_DURATION = "Duration ''{0}'' is invalid. Using default duration.";
 
 }
