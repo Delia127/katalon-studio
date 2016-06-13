@@ -190,8 +190,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         setDialogTitle(StringConstants.DIA_TITLE_GENERATE_COMMAND_FOR_CONSOLE);
 
         this.project = project;
-        defaultOutputReportLocation = projectLocation() + File.separator + StringConstants.ROOT_FOLDER_NAME_REPORT
-                + File.separator;
+        defaultOutputReportLocation = projectLocation() + File.separator + StringConstants.ROOT_FOLDER_NAME_REPORT;
 
         ScopedPreferenceStore prefs = getPreferenceStore(GenerateCommandDialog.class);
         boolean isSendAttachmentPrefEnabled = prefs.getBoolean(ExecutionPreferenceConstants.MAIL_CONFIG_ATTACHMENT);
@@ -654,7 +653,6 @@ public class GenerateCommandDialog extends AbstractDialog {
     }
 
     private void updateReportOutputLocation(String location) {
-        location = location + File.separator;
         if (chkUseRelativePath.getSelection()) {
             location = absoluteToRelativePath(location, projectLocation());
         }
