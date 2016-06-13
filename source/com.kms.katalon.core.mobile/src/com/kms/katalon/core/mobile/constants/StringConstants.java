@@ -240,10 +240,16 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_MSG_CANNOT_WAIT_OBJ_X_ATTRIBUTE_Y_VALUE_Z = "Unable to wait for object ''{0}'' to have attribute ''{1}'' with value ''{2}''";
 
     public static final String KW_MSG_CANNOT_WAIT_OBJ_ATTRIBUTE_VALUE = "Unable to wait for element to have attribute with value";
-    
+
     public static final String KW_LOG_PASSED_HIDE_KEYBOARD = "Keyboard is hidden";
 
     public static final String KW_MSG_CANNOT_HIDE_KEYBOARD = "Cannot hide keyboard";
+
+    public static final String KW_LOG_PASSED_CHECK_ELEMENT = "Element ''{0}'' is checked";
+
+    public static final String KW_MSG_FAILED_TO_CHECK_ELEMENT_X = "Failed to check element ''{0}''";
+
+    public static final String KW_MSG_FAILED_TO_CHECK_ELEMENT = "Failed to check element";
 
     public static final String KW_CATEGORIZE_APPLICATION = "Application";
 
