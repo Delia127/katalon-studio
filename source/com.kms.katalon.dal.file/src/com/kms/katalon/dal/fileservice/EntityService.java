@@ -28,6 +28,7 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 
@@ -293,11 +294,23 @@ public final class EntityService {
     }
 
     public void validateName(String name) throws InvalidNameException {
-        Pattern pattern = Pattern.compile("[\\w,\\s-().]+$");
-        // Pattern pattern = Pattern.compile("^[^/\\\\:*?\"'<>|]+$");
+        // null, blank and empty check
+        if (StringUtils.isBlank(name)) {
+            throw new InvalidNameException(StringConstants.FS_INVALID_FILE_NAME_BY_BLANK);
+        }
+
+        // invalid characters check
+        Pattern pattern = Pattern.compile("^[\\w]+[\\w,\\s-().]*$"); // ver3
+        // Pattern pattern = Pattern.compile("[\\w,\\s-().]+$"); // ver2
+        // Pattern pattern = Pattern.compile("^[^/\\\\:*?\"'<>|]+$"); // ver1
         Matcher matcher = pattern.matcher(name);
         if (!matcher.matches()) {
-            throw new InvalidNameException(StringConstants.FS_EXC_FILE_NAME_CONTAIN_SPECIAL_CHAR);
+            throw new InvalidNameException(StringConstants.FS_INVALID_FILE_NAME_BY_SPECIAL_CHAR);
+        }
+
+        // invalid dot check
+        if (name.contains("..") || StringUtils.endsWith(name.trim(), ".")) {
+            throw new InvalidNameException(StringConstants.FS_INVALID_FILE_NAME_BY_DOTS);
         }
     }
 

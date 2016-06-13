@@ -150,6 +150,15 @@ public class FolderController extends EntityController implements Serializable {
         return sibblingName;
     }
 
+    public List<String> getChildrenNames(FolderEntity folder) throws Exception {
+        List<FileEntity> children = getChildren(folder);
+        List<String> childrenNames = new ArrayList<String>();
+        for (FileEntity child : children) {
+            childrenNames.add(child.getName());
+        }
+        return childrenNames;
+    }
+
     public void loadAllDescentdantEntities(FolderEntity folder) throws Exception {
         List<FileEntity> childrenEntities = getChildren(folder);
         if (childrenEntities != null) {

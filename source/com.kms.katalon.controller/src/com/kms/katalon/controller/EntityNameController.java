@@ -28,4 +28,14 @@ public class EntityNameController extends EntityController implements Serializab
     public void validateName(String name) throws Exception {
         getDataProviderSetting().getEntityNameProvider().validateName(name);
     }
+
+    public boolean isNameExisted(FolderEntity parentFolder, String entityName) throws Exception {
+        for (String filename : FolderController.getInstance().getChildrenNames(parentFolder)) {
+            if (filename.equalsIgnoreCase(entityName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

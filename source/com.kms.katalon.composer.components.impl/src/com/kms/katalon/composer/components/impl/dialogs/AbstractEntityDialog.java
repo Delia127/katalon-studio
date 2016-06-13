@@ -119,10 +119,6 @@ public class AbstractEntityDialog extends TitleAreaDialog {
     private boolean isValidEntityName() {
         String entityName = getName();
         try {
-            if (StringUtils.isBlank(entityName)) {
-                throw new InvalidNameException(StringConstants.DIA_NAME_CANNOT_BE_BLANK_OR_EMPTY);
-            }
-
             EntityNameController.getInstance().validateName(entityName);
 
             validateEntityName(entityName);
