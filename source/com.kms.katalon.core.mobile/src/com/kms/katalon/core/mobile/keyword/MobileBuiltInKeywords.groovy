@@ -2,11 +2,13 @@ package com.kms.katalon.core.mobile.keyword;
 
 import groovy.transform.CompileStatic
 import io.appium.java_client.AppiumDriver
+import io.appium.java_client.DeviceActionShortcuts;
 import io.appium.java_client.MobileElement
 import io.appium.java_client.NetworkConnectionSetting
 import io.appium.java_client.android.AndroidDriver
 import io.appium.java_client.android.AndroidKeyCode
 import io.appium.java_client.ios.IOSDriver
+import io.appium.java_client.remote.HideKeyboardStrategy;
 
 import java.text.MessageFormat
 import java.util.concurrent.TimeUnit
@@ -1309,5 +1311,35 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         };
 
         return webElement;
+    }
+    
+    /**
+     * Hide the keyboard if it is showing
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
+    public static void hideKeyboard(FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            AppiumDriver<?> driver = getAnyAppiumDriver();
+            String context = driver.getContext();
+            try {
+                internalSwitchToNativeContext(driver);
+                try {
+                    driver.hideKeyboard();
+                } catch (WebDriverException e) {
+                    if (!(e.getMessage().startsWith(StringConstants.APPIUM_DRIVER_ERROR_JS_FAILED) && driver instanceof IOSDriver<?>)) {
+                        throw e;
+                    }
+                    // default hide keyboard strategy (tap outside) failed on iOS, use "Done" button
+                    IOSDriver<?> iosDriver = (IOSDriver<?>) driver;
+                    iosDriver.hideKeyboard(HideKeyboardStrategy.PRESS_KEY, "Done");
+                }
+                logger.logPassed(StringConstants.KW_LOG_PASSED_HIDE_KEYBOARD);
+            } finally {
+                driver.context(context)
+            }
+        }, flowControl, StringConstants.KW_MSG_CANNOT_HIDE_KEYBOARD)
     }
 }
