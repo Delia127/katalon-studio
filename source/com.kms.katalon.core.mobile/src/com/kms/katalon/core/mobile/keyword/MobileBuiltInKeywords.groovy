@@ -1342,4 +1342,22 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             }
         }, flowControl, StringConstants.KW_MSG_CANNOT_HIDE_KEYBOARD)
     }
+    
+    /**
+     * Check a check-box mobile element (android.widget.CheckBox for Android, UIASwitch for iOS)
+     * @param to
+     *      represent a mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void checkElement(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            MobileElementCommonHelper.checkElement(to, timeout);
+        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_ELEMENT_X, to.getObjectId())
+        : StringConstants.KW_MSG_FAILED_TO_CHECK_ELEMENT);
+    }
 }
