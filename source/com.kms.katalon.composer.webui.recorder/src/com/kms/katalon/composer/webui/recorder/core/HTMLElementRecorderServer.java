@@ -9,10 +9,13 @@ import com.kms.katalon.objectspy.core.HTMLElementCaptureServer;
 
 @SuppressWarnings("restriction")
 public class HTMLElementRecorderServer extends HTMLElementCaptureServer {
-
 	public HTMLElementRecorderServer(Logger logger, IEventBroker eventBroker) {
 		super(logger, eventBroker);
 	}
+	
+	public HTMLElementRecorderServer(int port, Logger logger, IEventBroker eventBroker) {
+        super(port, logger, eventBroker);
+    }
 	
 	@Override
 	protected void addServlets(Logger logger, IEventBroker eventBroker, ServletContextHandler context) {

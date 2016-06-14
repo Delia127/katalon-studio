@@ -14,7 +14,7 @@ public class ObjectSpyPreferenceDefaultValueInitializer extends AbstractPreferen
     @Override
     public void initializeDefaultPreferences() {
         ScopedPreferenceStore store = getPreferenceStore(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_QUALIFIER);
-        store.setDefault(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_INSTANT_BROWSER_PORT, 50000);
+        store.setDefault(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_INSTANT_BROWSER_PORT, WEBUI_OBJECTSPY_INSTANT_BROWSERS_PORT_DEFAULT);
         store.setDefault(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_INSTANT_BROWSER_DO_NOT_SHOW_AGAIN, WEBUI_OBJECTSPY_INSTANT_BROWSER_DO_NOT_SHOW_AGAIN_DEFAULT);
     }
 }
