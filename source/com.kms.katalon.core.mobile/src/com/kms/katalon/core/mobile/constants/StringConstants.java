@@ -248,6 +248,14 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_CHECKED = "Failed to verify if element is checked";
 
     public static final String KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_CHECKED = "Failed to verify if element ''{0}'' is checked";
+    
+    public static final String KW_LOG_PASSED_ELEMENT_X_UNCHECKED = "Element ''{0}'' is not checked";
+    
+    public static final String KW_LOG_FAILED_ELEMENT_X_UNCHECKED = "Element ''{0}'' is checked";
+
+    public static final String KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_UNCHECKED = "Failed to verify if element is not checked";
+
+    public static final String KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_UNCHECKED = "Failed to verify if element ''{0}'' is not checked";
 
     public static final String KW_LOG_PASSED_HIDE_KEYBOARD = "Keyboard is hidden";
 
