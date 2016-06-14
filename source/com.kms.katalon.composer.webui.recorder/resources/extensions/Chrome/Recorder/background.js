@@ -1,4 +1,4 @@
-var CONNECTING_ERROR_MESSAGE = "Cannot connect to Katalon Server. Make sure you have started Object Spy on Katalon application."
+var CONNECTING_ERROR_MESSAGE = "Cannot connect to Katalon Server. Make sure you have started Recorder on Katalon application."
 
 function processXHTTPAction(request, callback) {
 	var xhttp = new XMLHttpRequest();
