@@ -1360,4 +1360,22 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_ELEMENT_X, to.getObjectId())
         : StringConstants.KW_MSG_FAILED_TO_CHECK_ELEMENT);
     }
+    
+    /**
+     * Un-check a check-box mobile element (android.widget.CheckBox for Android, UIASwitch for iOS)
+     * @param to
+     *      represent a mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void uncheckElement(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            MobileElementCommonHelper.uncheckElement(to, timeout);
+        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_UNCHECK_ELEMENT_X, to.getObjectId())
+        : StringConstants.KW_MSG_FAILED_TO_UNCHECK_ELEMENT);
+    }
 }

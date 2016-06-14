@@ -72,8 +72,6 @@ public class MobileElementCommonHelper {
     }
 
     public static void tapAndHold(TestObject to, int duration, int timeout) throws StepFailedException, Exception {
-        KeywordHelper.checkTestObjectParameter(to);
-        timeout = KeywordHelper.checkTimeout(timeout);
         boolean useCustomDuration = true;
         KeywordLogger logger = KeywordLogger.getInstance();
         logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_DURATION);
@@ -90,6 +88,8 @@ public class MobileElementCommonHelper {
     }
 
     public static WebElement findElementWithCheck(TestObject to, int timeout) throws Exception {
+        KeywordHelper.checkTestObjectParameter(to);
+        timeout = KeywordHelper.checkTimeout(timeout);
         WebElement element = findElement(to, timeout * 1000);
         if (element == null) {
             throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_OBJ_NOT_FOUND, to.getObjectId()));
@@ -98,14 +98,12 @@ public class MobileElementCommonHelper {
     }
 
     public static void checkElement(TestObject to, int timeout) throws StepFailedException, Exception {
-        KeywordHelper.checkTestObjectParameter(to);
-        timeout = KeywordHelper.checkTimeout(timeout);
         WebElement element = findElementWithCheck(to, timeout);
-        KeywordLogger logger = KeywordLogger.getInstance();
         if (!isElementChecked(element)) {
             ((MobileElement) element).tap(1, 1);
         }
-        logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_CHECK_ELEMENT, to.getObjectId()));
+        KeywordLogger.getInstance().logPassed(
+                MessageFormat.format(StringConstants.KW_LOG_PASSED_CHECK_ELEMENT, to.getObjectId()));
     }
 
     public static boolean isElementChecked(WebElement element) {
@@ -118,5 +116,14 @@ public class MobileElementCommonHelper {
             return checkedAttribute != null && IOS_CHECKED_ATTRIBUTE_IS_CHECKED.equals(checkedAttribute);
         }
         return false;
+    }
+
+    public static void uncheckElement(TestObject to, int timeout) throws StepFailedException, Exception {
+        WebElement element = findElementWithCheck(to, timeout);
+        if (isElementChecked(element)) {
+            ((MobileElement) element).tap(1, 1);
+        }
+        KeywordLogger.getInstance().logPassed(
+                MessageFormat.format(StringConstants.KW_LOG_PASSED_UNCHECK_ELEMENT, to.getObjectId()));
     }
 }
