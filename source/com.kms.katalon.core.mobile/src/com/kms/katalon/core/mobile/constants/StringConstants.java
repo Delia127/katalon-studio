@@ -250,6 +250,12 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_MSG_FAILED_TO_CHECK_ELEMENT_X = "Failed to check element ''{0}''";
 
     public static final String KW_MSG_FAILED_TO_CHECK_ELEMENT = "Failed to check element";
+    
+    public static final String KW_LOG_PASSED_UNCHECK_ELEMENT = "Element ''{0}'' is un-checked";
+
+    public static final String KW_MSG_FAILED_TO_UNCHECK_ELEMENT_X = "Failed to un-check element ''{0}''";
+
+    public static final String KW_MSG_FAILED_TO_UNCHECK_ELEMENT = "Failed to un-check element";
 
     public static final String KW_CATEGORIZE_APPLICATION = "Application";
 
