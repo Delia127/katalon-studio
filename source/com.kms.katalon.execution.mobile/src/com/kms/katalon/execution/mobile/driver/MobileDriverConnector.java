@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.execution.configuration.AbstractDriverConnector;
 import com.kms.katalon.execution.mobile.constants.MobilePreferenceConstants;
@@ -80,4 +82,14 @@ public abstract class MobileDriverConnector extends AbstractDriverConnector {
         Map<String, Object> tempMap = new LinkedHashMap<String, Object>(getUserConfigProperties());
         return tempMap.toString();
     }
+
+    public String getDefaultDeviceId() {
+        return StringUtils.defaultString(
+                (String) getUserConfigProperties().get(StringConstants.CONF_EXECUTED_DEVICE_ID), StringUtils.EMPTY);
+    }
+
+    public void updateDefaultDeviceId() {
+        getUserConfigProperties().put(StringConstants.CONF_EXECUTED_DEVICE_ID, getDeviceId());
+    }
+
 }
