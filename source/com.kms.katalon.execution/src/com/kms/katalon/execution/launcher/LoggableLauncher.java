@@ -42,54 +42,50 @@ public abstract class LoggableLauncher extends Launcher implements ILogCollectio
     @Override
     public synchronized void addLogRecords(List<XmlLogRecord> records) {
         LauncherResult launcherResult = (LauncherResult) getResult();
-        try {
-            for (XmlLogRecord record : records) {
-                logRecords.add(record);
-                onUpdateRecord(record);
+        for (XmlLogRecord record : records) {
+            logRecords.add(record);
+            onUpdateRecord(record);
 
-                LogLevel logLevel = LogLevel.valueOf(record.getLevel().getName());
-                if (logLevel == null) {
-                    continue;
-                }
-
-                switch (logLevel) {
-                    case START:
-                        logDepth++;
-                        break;
-                    case END:
-                        if (isLogUnderTestCaseMainLevel()) {
-                            switch (currentTestCaseResult) {
-                                case PASSED:
-                                    launcherResult.increasePasses();
-                                    break;
-                                case ERROR:
-                                    launcherResult.increaseErrors();
-                                    break;
-                                case FAILED:
-                                    launcherResult.increaseFailures();
-                                    break;
-                                default:
-                                    break;
-                            }
-                            onUpdateStatus();
-
-                            currentTestCaseResult = LogLevel.NOT_RUN;
-                        }
-                        logDepth--;
-
-                        if (logDepth == 0) {
-                            watchdog.stop();
-                        }
-                        break;
-                    default:
-                        if (LogLevel.getResultLogs().contains(logLevel) && isLogUnderTestCaseMainLevel()) {
-                            currentTestCaseResult = logLevel;
-                        }
-                        break;
-                }
+            LogLevel logLevel = LogLevel.valueOf(record.getLevel().getName());
+            if (logLevel == null) {
+                continue;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            switch (logLevel) {
+                case START:
+                    logDepth++;
+                    break;
+                case END:
+                    if (isLogUnderTestCaseMainLevel()) {
+                        switch (currentTestCaseResult) {
+                            case PASSED:
+                                launcherResult.increasePasses();
+                                break;
+                            case ERROR:
+                                launcherResult.increaseErrors();
+                                break;
+                            case FAILED:
+                                launcherResult.increaseFailures();
+                                break;
+                            default:
+                                break;
+                        }
+                        onUpdateStatus();
+
+                        currentTestCaseResult = LogLevel.NOT_RUN;
+                    }
+                    logDepth--;
+
+                    if (logDepth == 0) {
+                        watchdog.stop();
+                    }
+                    break;
+                default:
+                    if (LogLevel.getResultLogs().contains(logLevel) && isLogUnderTestCaseMainLevel()) {
+                        currentTestCaseResult = logLevel;
+                    }
+                    break;
+            }
         }
     }
 

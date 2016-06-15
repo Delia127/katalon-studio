@@ -5,7 +5,6 @@ import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPre
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -16,8 +15,6 @@ import com.kms.katalon.composer.execution.tree.ILogParentTreeNode;
 import com.kms.katalon.composer.execution.tree.ILogTreeNode;
 import com.kms.katalon.composer.execution.tree.LogChildTreeNode;
 import com.kms.katalon.composer.execution.tree.LogParentTreeNode;
-import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
@@ -28,14 +25,11 @@ public class LogRecordTreeViewer extends TreeViewer {
 
     private List<ILogParentTreeNode> rootNodes;
 
-    private IEventBroker eventBroker;
-
     private ScopedPreferenceStore store;
 
-    public LogRecordTreeViewer(Composite parent, int style, IEventBroker eventBroker) {
+    public LogRecordTreeViewer(Composite parent, int style) {
         super(parent, style);
         rootNodes = new ArrayList<ILogParentTreeNode>();
-        this.eventBroker = eventBroker;
         store = getPreferenceStore(LogRecordTreeViewer.class);
     }
 
@@ -96,14 +90,6 @@ public class LogRecordTreeViewer extends TreeViewer {
                 refresh(currentParentNodeImpl);
                 select(new StructuredSelection(currentParentNodeImpl));
 
-                // update progress bar if a main test case (that is not a called
-                // test case) completed.
-                if (((currentParentNodeImpl.getParent() == null || ((LogParentTreeNode) currentParentNodeImpl
-                        .getParent()).getParent() == null))
-                        && record.getSourceMethodName().equals(StringConstants.LOG_END_TEST_METHOD)) {
-                    eventBroker.post(EventConstants.CONSOLE_LOG_UPDATE_PROGRESS_BAR, currentParentNodeImpl.getResult());
-                }
-
                 // switch to parent node
                 currentParentTreeNode = currentParentNodeImpl.getParent();
                 break;
@@ -116,17 +102,6 @@ public class LogRecordTreeViewer extends TreeViewer {
                 }
                 currentParentTreeNode.setResult(record);
                 refresh(currentParentTreeNode);
-
-                LogParentTreeNode currentParentNodeImpl = (LogParentTreeNode) currentParentTreeNode;
-
-                // update progress bar if error occurs if a test case has invalid
-                // variables
-                if (logLevel == LogLevel.ERROR
-                        && currentParentNodeImpl.getParent() == null
-                        && currentParentNodeImpl.getRecordStart().getMessage()
-                                .startsWith(StringConstants.LOG_START_SUITE_METHOD)) {
-                    eventBroker.post(EventConstants.CONSOLE_LOG_UPDATE_PROGRESS_BAR, currentParentNodeImpl.getResult());
-                }
                 break;
             }
             default: {
