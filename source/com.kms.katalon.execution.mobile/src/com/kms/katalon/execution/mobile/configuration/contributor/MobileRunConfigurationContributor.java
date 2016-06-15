@@ -92,12 +92,12 @@ public abstract class MobileRunConfigurationContributor implements IRunConfigura
         switch (platform) {
             case ANDROID_DRIVER: {
                 deviceId = new AndroidDriverConnector(projectDir + File.separator
-                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME).getDeviceId();
+                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME).getDefaultDeviceId();
                 break;
             }
             case IOS_DRIVER: {
                 deviceId = new IosDriverConnector(projectDir + File.separator
-                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME).getDeviceId();
+                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME).getDefaultDeviceId();
                 break;
             }
         }
