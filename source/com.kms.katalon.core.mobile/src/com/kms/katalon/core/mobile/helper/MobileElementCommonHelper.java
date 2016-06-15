@@ -126,4 +126,8 @@ public class MobileElementCommonHelper {
         KeywordLogger.getInstance().logPassed(
                 MessageFormat.format(StringConstants.KW_LOG_PASSED_UNCHECK_ELEMENT, to.getObjectId()));
     }
+    
+    public static boolean isElementChecked(TestObject to, int timeout) throws StepFailedException, Exception {
+        return isElementChecked(findElementWithCheck(to, timeout));
+    }
 }
