@@ -26,6 +26,7 @@ import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class NewFolderHandler {
@@ -74,6 +75,9 @@ public class NewFolderHandler {
                         parentTreeEntity = (ITreeEntity) parentTreeEntity.getParent();
                     } else if (selectedEntity instanceof WebElementEntity) {
                         parentFolder = ((WebElementEntity) selectedEntity).getParentFolder();
+                        parentTreeEntity = (ITreeEntity) parentTreeEntity.getParent();
+                    } else if (selectedEntity instanceof TestSuiteCollectionEntity) {
+                        parentFolder = ((TestSuiteCollectionEntity) selectedEntity).getParentFolder();
                         parentTreeEntity = (ITreeEntity) parentTreeEntity.getParent();
                     }
                 }

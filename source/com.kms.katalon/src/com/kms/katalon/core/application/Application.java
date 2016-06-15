@@ -21,7 +21,7 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.execution.console.ConsoleMain;
-import com.kms.katalon.execution.launcher.model.LauncherResult;
+import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.util.ApplicationInfo;
 
 /**

@@ -34,6 +34,8 @@ public interface IFolderDataProvider {
 	
 	public FolderEntity getReportRoot(ProjectEntity project) throws Exception;
 	
+	public FolderEntity getTestRunRoot(ProjectEntity project) throws Exception;
+	
 	public void refreshFolder(FolderEntity folder) throws Exception;
 	
 	/*

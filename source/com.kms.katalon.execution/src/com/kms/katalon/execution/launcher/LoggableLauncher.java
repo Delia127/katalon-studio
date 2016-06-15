@@ -7,7 +7,8 @@ import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.execution.configuration.IHostConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
-import com.kms.katalon.execution.launcher.model.LauncherResult;
+import com.kms.katalon.execution.launcher.manager.LauncherManager;
+import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.execution.logging.ILogCollection;
 import com.kms.katalon.execution.logging.SocketWatcher;
 
@@ -21,8 +22,10 @@ public abstract class LoggableLauncher extends Launcher implements ILogCollectio
      */
     private int logDepth;
 
-    public LoggableLauncher(IRunConfiguration runConfig) {
-        super(runConfig);
+    private LogLevel currentTestCaseResult;
+
+    public LoggableLauncher(LauncherManager manager, IRunConfiguration runConfig) {
+        super(manager, runConfig);
     }
 
     @Override
@@ -32,53 +35,66 @@ public abstract class LoggableLauncher extends Launcher implements ILogCollectio
         IHostConfiguration hostConfig = getRunConfig().getHostConfiguration();
 
         watchers.add(new SocketWatcher(hostConfig.getHostPort(), DF_WATCHER_DELAY_TIME, this));
+
+        currentTestCaseResult = LogLevel.NOT_RUN;
     }
 
     @Override
     public synchronized void addLogRecords(List<XmlLogRecord> records) {
         LauncherResult launcherResult = (LauncherResult) getResult();
+        try {
+            for (XmlLogRecord record : records) {
+                logRecords.add(record);
+                onUpdateRecord(record);
 
-        for (XmlLogRecord record : records) {
-            logRecords.add(record);
-            onUpdateRecord(record);
-
-            LogLevel logLevel = LogLevel.valueOf(record.getLevel().getName());
-            if (logLevel == null) {
-                continue;
-            }
-
-            switch (logLevel) {
-            case START:
-                logDepth++;
-                break;
-            case END:
-                logDepth--;
-
-                if (logDepth == 0) {
-                    watchdog.stop();
+                LogLevel logLevel = LogLevel.valueOf(record.getLevel().getName());
+                if (logLevel == null) {
+                    continue;
                 }
-                break;
-            default:
-                if (LogLevel.getResultLogs().contains(logLevel)
-                        && logDepth == getRunConfig().getExecutionSetting().getExecutedEntity().mainTestCaseDepth() + 1) {
-                    switch (logLevel) {
-                    case PASSED:
-                        launcherResult.increasePasses();
+
+                switch (logLevel) {
+                    case START:
+                        logDepth++;
                         break;
-                    case ERROR:
-                        launcherResult.increaseErrors();
-                        break;
-                    case FAILED:
-                        launcherResult.increaseFailures();
+                    case END:
+                        if (isLogUnderTestCaseMainLevel()) {
+                            switch (currentTestCaseResult) {
+                                case PASSED:
+                                    launcherResult.increasePasses();
+                                    break;
+                                case ERROR:
+                                    launcherResult.increaseErrors();
+                                    break;
+                                case FAILED:
+                                    launcherResult.increaseFailures();
+                                    break;
+                                default:
+                                    break;
+                            }
+                            onUpdateStatus();
+
+                            currentTestCaseResult = LogLevel.NOT_RUN;
+                        }
+                        logDepth--;
+
+                        if (logDepth == 0) {
+                            watchdog.stop();
+                        }
                         break;
                     default:
+                        if (LogLevel.getResultLogs().contains(logLevel) && isLogUnderTestCaseMainLevel()) {
+                            currentTestCaseResult = logLevel;
+                        }
                         break;
-                    }
-                    onUpdateStatus();
                 }
-                break;
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+    }
+
+    private boolean isLogUnderTestCaseMainLevel() {
+        return logDepth == getRunConfig().getExecutionSetting().getExecutedEntity().mainTestCaseDepth() + 1;
     }
 
     /**

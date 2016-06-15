@@ -15,6 +15,7 @@ import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.link.VariableLink;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
+import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.entity.TestCaseExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.util.SyntaxUtil;
@@ -69,7 +70,7 @@ public class TestSuiteScriptGenerator {
 
         List<TestSuiteTestCaseLink> lstTestCaseRun = TestSuiteController.getInstance().getTestSuiteTestCaseRun(
                 testSuite);
-        for (TestCaseExecutedEntity testCaseExecuted : testSuiteExecuted.getTestCaseExecutedEntities()) {
+        for (IExecutedEntity testCaseExecuted : testSuiteExecuted.getExecutedItems()) {
             String testCaseId = testCaseExecuted.getSourceId();
             TestSuiteTestCaseLink testCaseLink = getTestCaseLink(testCaseId, lstTestCaseRun);
             
@@ -77,7 +78,8 @@ public class TestSuiteScriptGenerator {
                 throw new IllegalArgumentException("Test case: '" + testCaseId + "' not found");
             }
             
-            List<String> testCaseBinding = getTestCaseBindingString(testCaseLink, testCaseExecuted);
+            List<String> testCaseBinding = getTestCaseBindingString(testCaseLink,
+                    (TestCaseExecutedEntity) testCaseExecuted);
             testCaseBindings.addAll(testCaseBinding);
         }
 

@@ -34,14 +34,15 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.ReportableLauncher;
+import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
-import com.kms.katalon.execution.launcher.model.LauncherStatus;
 import com.kms.katalon.execution.launcher.process.ILaunchProcess;
+import com.kms.katalon.execution.launcher.result.LauncherStatus;
 import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
-public class IDELauncher extends ReportableLauncher implements ILaunchListener {
+public class IDELauncher extends ReportableLauncher implements ILaunchListener, ObservableLauncher {
 
     private IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
 
@@ -59,8 +60,8 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener {
         return launch;
     }
 
-    public IDELauncher(IRunConfiguration runConfig, LaunchMode mode) {
-        super(runConfig);
+    public IDELauncher(LauncherManager manager, IRunConfiguration runConfig, LaunchMode mode) {
+        super(manager, runConfig);
 
         this.mode = mode;
         listeners = new LinkedList<IDELauncherListener>();
@@ -69,7 +70,7 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener {
 
     @Override
     public ReportableLauncher clone(IRunConfiguration newConfig) {
-        return new IDELauncher(newConfig, mode);
+        return new IDELauncher(getManager(), newConfig, mode);
     }
 
     @Override
@@ -109,7 +110,7 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener {
 
     @Override
     protected void onStartExecutionComplete() {
-        eventBroker.send(EventConstants.CONSOLE_LOG_RESET, getId());
+        sendUpdateLogViewerEvent(getId());
     }
 
     public void addListener(IDELauncherListener l) {
@@ -120,7 +121,7 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener {
         listeners.remove(l);
     }
 
-    private void notifyLauncherChanged(IDELaucherEvent event, Object object) {
+    private void notifyLauncherChanged(IDELauncherEvent event, Object object) {
         for (IDELauncherListener l : listeners) {
             l.handleLauncherEvent(event, object);
         }
@@ -134,33 +135,39 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener {
 
     @Override
     protected void onUpdateStatus() {
-        notifyLauncherChanged(IDELaucherEvent.UPDATE_STATUS, this.getId());
-        eventBroker.post(EventConstants.JOB_REFRESH, null);
+        notifyLauncherChanged(IDELauncherEvent.UPDATE_STATUS, this.getId());
+        sendUpdateJobViewerEvent();
     }
 
     @Override
     protected void onUpdateRecord(XmlLogRecord record) {
-        notifyLauncherChanged(IDELaucherEvent.UPDATE_RECORD, record);
+        notifyLauncherChanged(IDELauncherEvent.UPDATE_RECORD, record);
     }
 
     public void setObserved(boolean observed) {
         this.observed = observed;
     }
 
+    @Override
     public boolean isObserved() {
         return observed;
     }
 
     protected void postExecutionComplete() {
-        eventBroker.post(EventConstants.JOB_REFRESH, null);
+        sendUpdateJobViewerEvent();
 
         // update status of "Run" and "Stop" buttons
         eventBroker.post(UIEvents.REQUEST_ENABLEMENT_UPDATE_TOPIC, UIEvents.ALL_ELEMENT_ID);
 
-        if (getTestSuite() == null || getStatus() != LauncherStatus.DONE) {
-            return;
-        }
+        updateReport();
+    }
+
+    protected void updateReport() {
         try {
+            if (getTestSuite() == null || getStatus() != LauncherStatus.DONE) {
+                return;
+            }
+
             ReportEntity report = ReportController.getInstance().getReportEntity(getTestSuite(), getId());
 
             // refresh report item on tree explorer
@@ -200,11 +207,19 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener {
             libFolder.refreshLocal(IResource.DEPTH_ONE, null);
 
             if (isObserved()) {
-                eventBroker.send(EventConstants.CONSOLE_LOG_RESET, null);
+                sendUpdateLogViewerEvent(null);
             }
         } catch (Exception e) {
             logError(e);
         }
+    }
+
+    protected void sendUpdateLogViewerEvent(String message) {
+        eventBroker.send(EventConstants.CONSOLE_LOG_RESET, message);
+    }
+
+    protected void sendUpdateJobViewerEvent() {
+        eventBroker.post(EventConstants.JOB_REFRESH, null);
     }
 
     @Override
@@ -218,6 +233,7 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener {
         return launchConfig != null && expectedName.equals(launchConfig.getName());
     }
 
+    @Override
     public LaunchMode getMode() {
         return mode;
     }
@@ -240,7 +256,8 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener {
     @Override
     public void launchChanged(ILaunch launch) {
     }
-    
+
+    @Override
     public void suspend() {
         try {
             getLaunch().getDebugTarget().suspend();
@@ -249,12 +266,13 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener {
             LoggerSingleton.logError(e);
         }
     }
-    
+
     public void onSuspended() {
         setStatus(LauncherStatus.SUSPENDED);
         onUpdateStatus();
     }
-    
+
+    @Override
     public void resume() {
         try {
             getLaunch().getDebugTarget().resume();
@@ -263,5 +281,10 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener {
         } catch (DebugException e) {
             LoggerSingleton.logError(e);
         }
+    }
+
+    @Override
+    public String getDisplayMessage() {
+        return "<" + getStatus().toString() + ">" + " - " + getRunConfig().getName();
     }
 }

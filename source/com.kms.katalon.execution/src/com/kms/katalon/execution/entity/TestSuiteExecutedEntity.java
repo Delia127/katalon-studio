@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,8 +23,8 @@ import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.util.MailUtil;
 
-public class TestSuiteExecutedEntity implements IExecutedEntity, Reportable, Rerunnable, ConsoleOptionContributor {
-    private List<TestCaseExecutedEntity> testCaseExecutedEntities;
+public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportable, Rerunnable, ConsoleOptionContributor {
+    private List<IExecutedEntity> executedItems;
 
     private Map<String, TestData> testDataMap;
 
@@ -35,17 +34,11 @@ public class TestSuiteExecutedEntity implements IExecutedEntity, Reportable, Rer
 
     private EmailConfig emailConfig;
 
-    private String testSuiteName;
-
-    private String testSuiteId;
-
-    private String testSuiteDescription;
-
     public TestSuiteExecutedEntity() {
         reportLocationSetting = new ReportLocationSetting();
         emailConfig = MailUtil.getDefaultEmailConfig();
         rerunSetting = new DefaultRerunSetting();
-        testCaseExecutedEntities = new ArrayList<TestCaseExecutedEntity>();
+        executedItems = new ArrayList<IExecutedEntity>();
     }
 
     public TestSuiteExecutedEntity(TestSuiteEntity testSuite) throws Exception {
@@ -61,9 +54,7 @@ public class TestSuiteExecutedEntity implements IExecutedEntity, Reportable, Rer
     }
 
     public void setTestSuite(TestSuiteEntity testSuite) throws IOException, Exception {
-        this.testSuiteName = testSuite.getName();
-        this.testSuiteId = testSuite.getIdForDisplay();
-        this.testSuiteDescription = testSuite.getDescription();
+        updateEntity(testSuite);
         emailConfig.addRecipients(MailUtil.splitRecipientsString(testSuite.getMailRecipient()));
         rerunSetting.setRemainingRerunTimes(testSuite.getNumberOfRerun());
         rerunSetting.setRerunFailedTestCaseOnly(testSuite.isRerunFailedTestCasesOnly());
@@ -91,14 +82,14 @@ public class TestSuiteExecutedEntity implements IExecutedEntity, Reportable, Rer
                         testCaseLink.getTestCaseId()));
             }
 
-            TestCaseExecutedEntity testCaseExecutedEntity = new TestCaseExecutedEntity(testCaseLink.getTestCaseId());
+            TestCaseExecutedEntity testCaseExecutedEntity = new TestCaseExecutedEntity(testCase);
             testCaseExecutedEntity.setLoopTimes(1);
 
             prepareTestCaseExecutedEntity(projectDir, testDataUsedMap, testCaseLink, testCaseExecutedEntity);
             // make sure all TestDataExecutedEntity in testCaseExecutedEntity
             // has the same rows to prevent NullPointerException
 
-            getTestCaseExecutedEntities().add(testCaseExecutedEntity);
+            getExecutedItems().add(testCaseExecutedEntity);
         }
 
         setTestDataMap(testDataUsedMap);
@@ -313,43 +304,22 @@ public class TestSuiteExecutedEntity implements IExecutedEntity, Reportable, Rer
         return rowIndexes;
     }
 
-    @Override
-    public String getSourceName() {
-        return testSuiteName;
+
+
+    public List<IExecutedEntity> getExecutedItems() {
+        return executedItems;
+    }
+
+    public void setTestCaseExecutedEntities(List<IExecutedEntity> testCaseExecutedEntities) {
+        this.executedItems = testCaseExecutedEntities;
     }
 
     @Override
-    public String getSourceId() {
-        return testSuiteId;
-    }
-
-    @Override
-    public String getSourceDescription() {
-        return testSuiteDescription;
-    }
-
-    @Override
-    public Map<String, Object> getAttributes() {
-        Map<String, Object> attributes = new LinkedHashMap<String, Object>();
-        attributes.put(StringConstants.ID.toLowerCase(), getSourceId());
-        attributes.put(StringConstants.NAME.toLowerCase(), getSourceName());
-        attributes.put(StringConstants.DESCRIPTION.toLowerCase(), getSourceDescription());
-        return attributes;
-    }
-
-    public List<TestCaseExecutedEntity> getTestCaseExecutedEntities() {
-        return testCaseExecutedEntities;
-    }
-
-    public void setTestCaseExecutedEntities(List<TestCaseExecutedEntity> testCaseExecutedEntities) {
-        this.testCaseExecutedEntities = testCaseExecutedEntities;
-    }
-
     public int getTotalTestCases() {
         int total = 0;
 
-        for (TestCaseExecutedEntity testCaseExecutionEntity : getTestCaseExecutedEntities()) {
-            total += testCaseExecutionEntity.getLoopTimes();
+        for (IExecutedEntity testCaseExecutionEntity : getExecutedItems()) {
+            total += ((TestCaseExecutedEntity) testCaseExecutionEntity).getLoopTimes();
         }
         return total;
     }

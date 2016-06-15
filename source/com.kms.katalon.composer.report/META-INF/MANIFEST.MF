@@ -29,7 +29,9 @@ Require-Bundle: org.eclipse.e4.core.contexts,
  org.eclipse.ui,
  com.kms.katalon.core.webui,
  com.kms.katalon.jasper,
- com.kms.katalon.preferences
+ com.kms.katalon.preferences,
+ com.kms.katalon.composer.testsuite.collection,
+ com.kms.katalon.dal
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: javax.annotation;version="1.2.0",
  javax.inject;version="1.0.0",

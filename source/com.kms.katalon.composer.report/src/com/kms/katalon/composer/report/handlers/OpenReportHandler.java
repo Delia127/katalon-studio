@@ -27,7 +27,7 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
-import com.kms.katalon.execution.launcher.model.LauncherStatus;
+import com.kms.katalon.execution.launcher.result.LauncherStatus;
 
 public class OpenReportHandler {
 	private static final String REPORT_PART_URI = "bundleclass://com.kms.katalon.composer.report/"

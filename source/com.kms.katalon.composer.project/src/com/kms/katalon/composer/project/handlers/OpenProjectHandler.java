@@ -132,7 +132,6 @@ public class OpenProjectHandler {
                                             .getKeywordRoot(project), null));
                                     treeEntities.add(new FolderTreeEntity(FolderController.getInstance().getReportRoot(
                                             project), null));
-
                                     // Set project name on window title
                                     OpenProjectHandler.updateProjectTitle(project, modelService, app);
                                 }

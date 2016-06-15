@@ -124,4 +124,10 @@
 		        driver.connector.editor="com.kms.katalon.composer.webui.component.contributor.EdgeDriverEditorContributor">
 		  </client>
 	 </extension>
+  <extension
+        point="com.kms.katalon.composer.testsuite.collection.testSuiteExecutionItem">
+     <client
+           item="com.kms.katalon.composer.webui.execution.testsuite.WebDesktopExecutionGroup">
+     </client>
+  </extension>
 </plugin>

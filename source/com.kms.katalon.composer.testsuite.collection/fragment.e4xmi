@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_CJ-QQBJ0EeaBC_8l6YNNlg">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_DETKgBJ0EeaBC_8l6YNNlg" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="commands:Handler" xmi:id="_Mot_sBJ3EeaBC_8l6YNNlg" elementId="com.kms.katalon.composer.testsuite.collection.handler.new" contributionURI="bundleclass://com.kms.katalon.composer.testsuite.collection/com.kms.katalon.composer.testsuite.collection.handler.NewTestSuiteCollectionHandler" command="_Ov8x8BJ3EeaBC_8l6YNNlg"/>
+    <elements xsi:type="commands:Handler" xmi:id="_UQfQQBKhEeaBC_8l6YNNlg" elementId="com.kms.katalon.composer.testsuite.collection.handler.open" contributionURI="bundleclass://com.kms.katalon.composer.testsuite.collection/com.kms.katalon.composer.testsuite.collection.handler.OpenTestSuiteCollectionHandler"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_NEri8BJ3EeaBC_8l6YNNlg" featurename="commands" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="commands:Command" xmi:id="_Ov8x8BJ3EeaBC_8l6YNNlg" elementId="com.kms.katalon.composer.testsuite.collection.command.new" commandName="" description="New Test Suite Collection"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_RuJzABJ4EeaBC_8l6YNNlg" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu.new" positionInList="after:com.kms.katalon.composer.testsuite.popupmenu.new.dynamicmenucontribution">
+    <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_XJ5qABJ4EeaBC_8l6YNNlg" elementId="com.kms.katalon.composer.testsuite.collection.dynamicmenucontribution.new" contributionURI="bundleclass://com.kms.katalon.composer.testsuite.collection/com.kms.katalon.composer.testsuite.collection.menu.NewTestSuiteCollectionPopupMenuContribution"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_jNdGABJ5EeaBC_8l6YNNlg" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="before:com.kms.katalon.composer.objectrepository.handledtoolitem.newTestObject">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_jNdGARJ5EeaBC_8l6YNNlg" elementId="com.kms.katalon.composer.toolbar.testsuite.collection.new" label="" iconURI="platform:/plugin/com.kms.katalon.composer.testsuite.collection/icons/new_test_suite_collection_28.png" tooltip="New Test Suite Collection" command="_Ov8x8BJ3EeaBC_8l6YNNlg">
+      <tags>FORCE_TEXT</tags>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_w0gHgBKaEeaBC_8l6YNNlg" featurename="addons" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="application:Addon" xmi:id="_yHXdkBKaEeaBC_8l6YNNlg" elementId="com.kms.katalon.composer.testrun.addon.rootCatcher" contributionURI="bundleclass://com.kms.katalon.composer.testsuite.collection/com.kms.katalon.composer.testsuite.collection.addon.TestSuiteCollectionDependencyInjectionAddon"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_1qDbMCPzEeatKfnEt6puiw" featurename="children" parentElementId="com.kms.katalon.menu.submenu.new" positionInList="before:com.kms.katalon.menu.submenu.new.testobject">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_4x4u0CPzEeatKfnEt6puiw" elementId="com.kms.katalon.composer.testsuite.collection.handledmenuitem.new" label="New Test Suite Collection" iconURI="platform:/plugin/com.kms.katalon.composer.components.impl/icons/test_suite_collection_16.png" command="_Ov8x8BJ3EeaBC_8l6YNNlg"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_sUdXcC38EeakXcZ2TC1TFg" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu" positionInList="last">
+    <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_vIDgcC38EeakXcZ2TC1TFg" elementId="com.kms.katalon.composer.testsuite.collection.dynamicmenucontribution.properties" label="Properties" contributionURI="bundleclass://com.kms.katalon.composer.testsuite.collection/com.kms.katalon.composer.testsuite.collection.menu.TestSuiteCollectionPropertiesPopupMenuContribution"/>
+  </fragments>
+</fragment:ModelFragments>

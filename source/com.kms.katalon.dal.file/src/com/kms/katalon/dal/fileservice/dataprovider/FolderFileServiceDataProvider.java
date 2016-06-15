@@ -73,6 +73,11 @@ public class FolderFileServiceDataProvider implements IFolderDataProvider {
 		return FolderFileServiceManager.getReportRoot(project);
 	}
 
+    @Override
+    public FolderEntity getTestRunRoot(ProjectEntity project) throws Exception {
+        return FolderFileServiceManager.getTestRunRoot(project);
+    }
+
 	@Override
 	public FolderEntity copyFolder(FolderEntity folder, FolderEntity destinationFolder) throws Exception {
 		return FolderFileServiceManager.copyFolder(folder, destinationFolder);

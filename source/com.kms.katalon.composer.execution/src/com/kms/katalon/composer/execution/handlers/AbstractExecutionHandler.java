@@ -214,10 +214,11 @@ public abstract class AbstractExecutionHandler {
 
                         monitor.subTask("Building scripts...");
 
-                        runConfig.build(testCase, new TestCaseExecutedEntity(testCase.getIdForDisplay()));
+                        runConfig.build(testCase, new TestCaseExecutedEntity(testCase));
 
-                        ILauncher launcher = new IDELauncher(runConfig, launchMode);
-                        LauncherManager.getInstance().addLauncher(launcher);
+                        LauncherManager launcherManager = LauncherManager.getInstance();
+                        ILauncher launcher = new IDELauncher(launcherManager, runConfig, launchMode);
+                        launcherManager.addLauncher(launcher);
 
                         monitor.worked(1);
 
@@ -270,8 +271,9 @@ public abstract class AbstractExecutionHandler {
                         monitor.worked(1);
 
                         monitor.subTask("Launching test suite...");
-                        ILauncher launcher = new IDELauncher(runConfig, launchMode);
-                        LauncherManager.getInstance().addLauncher(launcher);
+                        LauncherManager launcherManager = LauncherManager.getInstance();
+                        ILauncher launcher = new IDELauncher(launcherManager, runConfig, launchMode);
+                        launcherManager.addLauncher(launcher);
 
                         monitor.worked(1);
 
@@ -316,7 +318,7 @@ public abstract class AbstractExecutionHandler {
      * @param numTestCasesRun
      *            : number of test cases will be executed
      */
-    protected static void openConsoleLog() {
+    public static void openConsoleLog() {
         // turn off pop-up messages on system console when execute the script
         IPreferenceStore debugUIPreferences = DebugUIPlugin.getDefault().getPreferenceStore();
         debugUIPreferences.setValue(IDebugPreferenceConstants.CONSOLE_OPEN_ON_ERR, false);

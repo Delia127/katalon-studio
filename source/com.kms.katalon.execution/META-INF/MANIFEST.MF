@@ -21,6 +21,7 @@ Export-Package: com.kms.katalon.execution.classpath,
  com.kms.katalon.execution.launcher.manager,
  com.kms.katalon.execution.launcher.model,
  com.kms.katalon.execution.launcher.process,
+ com.kms.katalon.execution.launcher.result,
  com.kms.katalon.execution.logging,
  com.kms.katalon.execution.setting,
  com.kms.katalon.execution.util

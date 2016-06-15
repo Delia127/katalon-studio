@@ -8,18 +8,19 @@ import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.exception.ExecutionException;
+import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.process.ConsoleProcess;
 import com.kms.katalon.execution.launcher.process.ILaunchProcess;
 import com.kms.katalon.execution.launcher.process.LaunchProcessor;
 
 public class ConsoleLauncher extends ReportableLauncher {
-    public ConsoleLauncher(IRunConfiguration runConfig) {
-        super(runConfig);
+    public ConsoleLauncher(LauncherManager manager, IRunConfiguration runConfig) {
+        super(manager, runConfig);
     }
 
     @Override
     public ReportableLauncher clone(IRunConfiguration runConfig) {
-        return new ConsoleLauncher(runConfig);
+        return new ConsoleLauncher(getManager(), runConfig);
     }
 
     @Override

@@ -47,6 +47,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<module>com.kms.katalon.composer.testcase</module>
 		<module>com.kms.katalon.composer.testsuite</module>
 		<module>com.kms.katalon.composer.testdata</module>
+		<module>com.kms.katalon.composer.testsuite.collection</module>
 		<module>com.kms.katalon.composer.objectrepository</module>
 		<module>com.kms.katalon.composer.mobile</module>
 		<module>com.kms.katalon.composer.mobile.objectspy</module>

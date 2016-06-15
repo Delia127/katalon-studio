@@ -35,6 +35,15 @@ public class FolderController extends EntityController implements Serializable {
     public List<FileEntity> getChildren(FolderEntity folder) throws Exception {
         return getDataProviderSetting().getFolderDataProvider().getChildren(folder);
     }
+    
+    public List<String> getChildNames(FolderEntity folder) throws Exception {
+        List<String> childNames = new ArrayList<>();
+        for (FileEntity child : getChildren(folder)) {
+            childNames.add(child.getName());
+        }
+
+        return childNames;
+    }
 
     /**
      * Get only children test case of the given folder

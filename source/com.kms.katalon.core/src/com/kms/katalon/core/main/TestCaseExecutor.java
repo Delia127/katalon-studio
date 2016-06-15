@@ -177,6 +177,7 @@ public class TestCaseExecutor {
             setupContextClassLoader();
             testCaseResult.setScriptResult(runScript(getScriptFile()));
         } catch (Throwable e) {
+            //logError(e, ExceptionsUtil.getMessageForThrowable(e));
             errorCollector.addError(e);
         }
 

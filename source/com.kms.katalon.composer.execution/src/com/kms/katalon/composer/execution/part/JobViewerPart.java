@@ -43,15 +43,15 @@ import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.execution.constants.ImageConstants;
-import com.kms.katalon.composer.execution.launcher.IDELauncher;
+import com.kms.katalon.composer.execution.launcher.ObservableLauncher;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.launcher.ILauncher;
-import com.kms.katalon.execution.launcher.ILauncherResult;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
-import com.kms.katalon.execution.launcher.model.LauncherStatus;
+import com.kms.katalon.execution.launcher.result.ILauncherResult;
+import com.kms.katalon.execution.launcher.result.LauncherStatus;
 
 public class JobViewerPart implements EventHandler {
     private static final Image IMG_DONE = ImageConstants.IMG_16_DONE;
@@ -140,7 +140,7 @@ public class JobViewerPart implements EventHandler {
         eventBroker.subscribe(EventConstants.JOB_UPDATE_PROGRESS, this);
     }
     
-    private void createLauncherIdComposite(Composite parent, final IDELauncher launcher) {
+    private void createLauncherIdComposite(Composite parent, final ObservableLauncher launcher) {
         Composite launcherIdComposite = new FocusableComposite(parent, SWT.NONE);
         launcherIdComposite.setBackground(parent.getBackground());
         launcherIdComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -162,7 +162,7 @@ public class JobViewerPart implements EventHandler {
         lblId.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
     }
 
-    private void createJobComposite(Composite composite, final IDELauncher launcher) throws Exception {
+    private void createJobComposite(Composite composite, final ObservableLauncher launcher) throws Exception {
         final Composite compositeLauncher = new FocusableComposite(composite, SWT.BORDER);
         compositeLauncher.setBackgroundMode(SWT.INHERIT_FORCE);
         compositeLauncher.setData(CONTROL_ID, launcher.getId());
@@ -224,10 +224,8 @@ public class JobViewerPart implements EventHandler {
         Label lblStatus = new Label(compositeLauncher, SWT.NONE);
         GridData gdLblStatus = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         gdLblStatus.heightHint = 9;
-        
-        String driver = launcher.getRunConfig().getName();
 
-        lblStatus.setText("<" + launcher.getStatus().toString() + ">" + " - " + driver);
+        lblStatus.setText(launcher.getDisplayMessage());
         new Label(compositeLauncher, SWT.NONE);
 
         if (launcher.getStatus() == LauncherStatus.RUNNING || launcher.getStatus() == LauncherStatus.WAITING
@@ -279,8 +277,7 @@ public class JobViewerPart implements EventHandler {
                 tltmPause.setToolTipText("Suspend");
             }
 
-            final IDELauncher ideLauncher = (IDELauncher) launcher;
-            if (ideLauncher.getMode() == LaunchMode.RUN) {
+            if (launcher.getMode() == LaunchMode.RUN) {
                 tltmPause.setEnabled(false);
             }
 
@@ -288,9 +285,9 @@ public class JobViewerPart implements EventHandler {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
                     if (launcher.getStatus() == LauncherStatus.RUNNING) {
-                        ideLauncher.suspend();
+                        launcher.suspend();
                     } else {
-                        ideLauncher.resume();
+                        launcher.resume();
                     }
 
                     compositeLauncher.setFocus();
@@ -334,7 +331,7 @@ public class JobViewerPart implements EventHandler {
     private void draw() {
         try {
             for (ILauncher launcher : LauncherManager.getInstance().getAllLaunchers()) {
-                createJobComposite(listCompositeLauncher, (IDELauncher) launcher);
+                createJobComposite(listCompositeLauncher, (ObservableLauncher) launcher);
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -379,7 +376,7 @@ public class JobViewerPart implements EventHandler {
                         if (dataId.equals(LAUNCHER_PROGRESS_LABEL)) {
                             
                             Label progressLabel = (Label) launcherControl;
-                            progressLabel.setText(result.getTotalTestCases() + "/"
+                            progressLabel.setText(result.getExecutedTestCases() + "/"
                                     + result.getTotalTestCases());
                             progressLabel.pack();
 

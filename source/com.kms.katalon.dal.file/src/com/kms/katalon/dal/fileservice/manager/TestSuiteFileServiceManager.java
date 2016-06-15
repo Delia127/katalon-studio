@@ -4,9 +4,12 @@ import java.io.File;
 import java.text.MessageFormat;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.dal.fileservice.FileServiceConstant;
 import com.kms.katalon.dal.fileservice.constants.StringConstants;
+import com.kms.katalon.dal.state.DataProviderState;
 import com.kms.katalon.entity.dal.exception.DuplicatedFileNameException;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -121,6 +124,18 @@ public class TestSuiteFileServiceManager {
             }
         }
         return null;
+    }
+
+    public static TestSuiteEntity getTestSuiteByDisplayId(String testSuiteId) throws Exception {
+        if (StringUtils.isBlank(testSuiteId)) {
+            return null;
+        }
+
+        ProjectEntity projectEntity = DataProviderState.getInstance().getCurrentProject();
+        String testSuitePk = projectEntity.getFolderLocation() + File.separator
+                + testSuiteId.replace(StringConstants.ENTITY_ID_SEPERATOR, File.separator)
+                + TestSuiteEntity.getTestSuiteFileExtension();
+        return getTestSuite(testSuitePk);
     }
 
     public static TestSuiteEntity getByGUID(String guid, ProjectEntity project) throws Exception {

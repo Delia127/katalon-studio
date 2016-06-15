@@ -8,11 +8,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class ReportController extends EntityController {
@@ -167,5 +170,19 @@ public class ReportController extends EntityController {
 
     public void reloadReport(ReportEntity report, Entity entity) throws Exception {
         entity = report = getReportEntity(entity.getId());
+    }
+
+    public ReportCollectionEntity newReportCollection(ProjectEntity projectEntity, TestSuiteCollectionEntity entity,
+            String newName) throws DALException {
+        return getDataProviderSetting().getReportDataProvider().newReportCollectionEntity(projectEntity, entity,
+                newName);
+    }
+    
+    public void updateReportCollection(ReportCollectionEntity reportCollection) throws DALException {
+        getDataProviderSetting().getReportDataProvider().updateReportCollectionEntity(reportCollection);
+    }
+    
+    public void deleteReportCollection(ReportCollectionEntity reportCollection) throws DALException {
+        getDataProviderSetting().getReportDataProvider().deleteReportCollection(reportCollection);
     }
 }

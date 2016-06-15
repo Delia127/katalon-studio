@@ -29,5 +29,11 @@
             name="Report">
       </page>
    </extension>
+   <extension
+         point="com.kms.katalon.composer.explorer.delete">
+      <client
+            handler="com.kms.katalon.composer.report.handlers.DeleteReportCollectionHandler">
+      </client>
+   </extension>
 
 </plugin>

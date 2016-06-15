@@ -117,6 +117,10 @@ public class GlobalStringConstants {
     public static final String INCOMPLETE = "Incomplete";
     
     public static final String NOT_RUN = "Not Run";
+    
+    public static final String COMPLETE = "Complete";
+    
+    public static final String NOT_STARTED = "Not started yet";
 
     // Tool-bar
     public static final String FOLDER = "Folder";
@@ -200,6 +204,8 @@ public class GlobalStringConstants {
     public static final String ROOT_FOLDER_NAME_KEYWORD = "Keywords";
 
     public static final String ROOT_FOLDER_NAME_REPORT = "Reports";
+    
+    public static final String ROOT_FOLDER_NAME_TESTRUN = "Test Runs";
 
     public static final String ROOT_FOLDER_NAME_SETTINGS = "settings";
 
@@ -223,6 +229,8 @@ public class GlobalStringConstants {
     public static final String ENTITY_KW_TEST_OBJECT = "ob";
 
     public static final String ENTITY_KW_TEST_DATA = "td";
+    
+    public static final String ENTITY_KW_TEST_RUN = "tr";
 
     public static final String ENTITY_KW_REPORT = "rp";
 

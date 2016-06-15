@@ -71,6 +71,16 @@ public class ColorUtil {
         return new Color(Display.getCurrent(), 153, 117, 21);
     }
 
+    // #f19696
+    public static Color getFailedStatusBackgroundColor() {
+        return new Color(Display.getCurrent(), 241, 150, 150);
+    }
+
+    // #f2bc70
+    public static Color getIncompleteStatusBackgroundColor() {
+        return new Color(Display.getCurrent(), 242, 188, 112);
+    }
+
     // #F6F6F6
     public static Color getExtraLightGrayBackgroundColor() {
         return new Color(Display.getCurrent(), 246, 246, 246);

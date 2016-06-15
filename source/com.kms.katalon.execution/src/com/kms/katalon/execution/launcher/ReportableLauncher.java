@@ -25,6 +25,9 @@ import com.kms.katalon.core.testdata.reader.CSVReader;
 import com.kms.katalon.core.testdata.reader.CSVSeparator;
 import com.kms.katalon.core.testdata.reader.CsvWriter;
 import com.kms.katalon.core.util.PathUtil;
+import com.kms.katalon.entity.report.ReportEntity;
+import com.kms.katalon.entity.report.ReportItemDescription;
+import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.constants.StringConstants;
@@ -37,14 +40,14 @@ import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.execution.integration.ReportIntegrationFactory;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
-import com.kms.katalon.execution.launcher.model.LauncherStatus;
+import com.kms.katalon.execution.launcher.result.LauncherStatus;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.logging.LogUtil;
 
 public abstract class ReportableLauncher extends LoggableLauncher {
-    public ReportableLauncher(IRunConfiguration runConfig) {
-        super(runConfig);
+    public ReportableLauncher(LauncherManager manager, IRunConfiguration runConfig) {
+        super(manager, runConfig);
     }
 
     public abstract ReportableLauncher clone(IRunConfiguration runConfig);
@@ -329,5 +332,15 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         CsvWriter.writeArraysToCsv(CsvWriter.SUMMARY_HEADER, newDatas, csvSummaryFile);
 
         return suitesSummaryForEmail;
+    }
+
+    public ReportItemDescription getReportDescription(RunConfigurationDescription configDescription) {
+        try {
+            ReportEntity reportEntity = ReportController.getInstance().getReportEntity(getTestSuite(), getId());
+            return ReportItemDescription.from(reportEntity.getIdForDisplay(), configDescription);
+        } catch (Exception e) {
+            LogUtil.logError(e);
+            return null;
+        }
     }
 }

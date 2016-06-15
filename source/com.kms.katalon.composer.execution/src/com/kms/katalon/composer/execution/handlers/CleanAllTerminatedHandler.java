@@ -15,6 +15,7 @@ public class CleanAllTerminatedHandler {
     @Execute
     public void execute() {
         LauncherManager.getInstance().removeAllTerminated();
+        eventBroker.post(EventConstants.CONSOLE_LOG_RESET, null);
         eventBroker.post(EventConstants.JOB_REFRESH, null);
     }
 }

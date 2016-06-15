@@ -1,7 +1,6 @@
 package com.kms.katalon.composer.execution.launcher;
 
-public enum IDELaucherEvent {
-    
-    UPDATE_STATUS,
+public enum IDELauncherEvent {
+    UPDATE_STATUS, 
     UPDATE_RECORD
 }

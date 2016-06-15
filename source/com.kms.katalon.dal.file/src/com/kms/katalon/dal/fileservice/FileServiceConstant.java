@@ -54,6 +54,10 @@ public class FileServiceConstant {
         return projectFolder + File.separator + KEYWORD_ROOT_FOLDER_NAME;
     }
     
+    public static String getTestSuiteColelctionRootFolderLocation(String projectFolder) {
+        return getTestSuiteRootFolderLocation(projectFolder);
+    }
+    
     public static String getGlobalVariableFileLocation(String projectFolder) {
 		return projectFolder + File.separator + GLOBAL_VARIABLE_FILE_NAME
 				+ GlobalVariableWrapper.getGlobalVariableFileExtension();

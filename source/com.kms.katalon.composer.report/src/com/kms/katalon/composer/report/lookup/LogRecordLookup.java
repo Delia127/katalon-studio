@@ -3,12 +3,15 @@ package com.kms.katalon.composer.report.lookup;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.reporting.ReportUtil;
 import com.kms.katalon.entity.report.ReportEntity;
@@ -32,6 +35,23 @@ public class LogRecordLookup implements EventHandler {
             _instance = new LogRecordLookup();
         }
         return _instance;
+    }
+    
+
+
+    public TestSuiteLogRecord getTestSuiteLogRecord(String reportId) {
+        if (StringUtils.isEmpty(reportId)) {
+            return null;
+        }
+        try {
+            ReportEntity report = ReportController.getInstance().getReportEntityByDisplayId(reportId,
+                    ProjectController.getInstance().getCurrentProject());
+
+            return report != null ? getTestSuiteLogRecord(report) : null;
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            return null;
+        }
     }
 
     public synchronized TestSuiteLogRecord getTestSuiteLogRecord(ReportEntity reportEntity) {
