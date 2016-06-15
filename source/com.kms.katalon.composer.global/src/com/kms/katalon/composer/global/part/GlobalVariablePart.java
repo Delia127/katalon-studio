@@ -301,8 +301,8 @@ public class GlobalVariablePart implements EventHandler {
                     ProjectEntity project = ProjectController.getInstance().getCurrentProject();
                     if (project != null) {
                         if (mpart.isDirty()) {
-                            MessageDialog.openInformation(tltmRefresh.getDisplay().getActiveShell(),
-                                    StringConstants.PA_INFO_TITLE, StringConstants.PA_INFO_MSG_REQUIRE_SAVE_B4_REFRESH);
+                            MessageDialog.openWarning(tltmRefresh.getDisplay().getActiveShell(), StringConstants.WARN,
+                                    StringConstants.PA_INFO_MSG_REQUIRE_SAVE_B4_REFRESH);
                             return;
                         }
                         List<GlobalVariableEntity> globalVariables = GlobalVariableController.getInstance()
