@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.ClassUtils;
 import org.codehaus.groovy.ast.MethodNode;
+import org.codehaus.groovy.ast.Parameter;
 import org.codehaus.groovy.ast.expr.ClassExpression;
 import org.codehaus.groovy.eclipse.codeassist.requestor.ContentAssistContext;
 import org.eclipse.core.resources.IFile;
@@ -96,7 +98,7 @@ public class KatalonContextUtil {
     public static boolean isKeywordMethodNode(MethodNode methodNode) {
         try {
             return KeywordController.getInstance().getBuiltInKeywordByName(methodNode.getDeclaringClass().getName(),
-                    methodNode.getName()) != null;
+                    methodNode.getName(), getAstParameterTypes(methodNode.getParameters())) != null;
         } catch (Exception ex) {
             return false;
         }
@@ -106,4 +108,17 @@ public class KatalonContextUtil {
         return new StyledString(" (Katalon)", StyledString.DECORATIONS_STYLER);
     }
 
+    public static String[] getAstParameterTypes(Parameter[] params) {
+        String[] paramTypes = new String[params.length];
+        for (int i = 0; i < paramTypes.length; i++) {
+            try {
+                Class<?> clazz = ClassUtils.getClass(params[i].getType().getName());
+                paramTypes[i] = clazz.isPrimitive() ? ClassUtils.primitiveToWrapper(clazz).getName() : clazz.getName();
+            } catch (ClassNotFoundException cnf) {
+                paramTypes[i] = params[i].getType().getName();
+            }
+        }
+        return paramTypes;
+    }
+    
 }

@@ -37,7 +37,6 @@ import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
-import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
 import com.kms.katalon.composer.webui.recorder.constants.StringConstants;
 import com.kms.katalon.composer.webui.recorder.dialog.RecorderDialog;
@@ -223,7 +222,6 @@ public class RecordHandler {
                 WebUiBuiltInKeywords.class.getSimpleName(), "openBrowser", null);
         ArgumentListExpressionWrapper arguments = methodCallExpressionWrapper.getArguments();
         arguments.addExpression(new ConstantExpressionWrapper(""));
-        arguments.addExpression(AstKeywordsInputUtil.getNewFailureHandlingPropertyExpression(arguments));
 
         resultStatementWrappers.add(new ExpressionStatementWrapper(methodCallExpressionWrapper));
 
@@ -247,7 +245,6 @@ public class RecordHandler {
         methodCallExpressionWrapper = new MethodCallExpressionWrapper(WebUiBuiltInKeywords.class.getSimpleName(),
                 "closeBrowser");
         arguments = methodCallExpressionWrapper.getArguments();
-        arguments.addExpression(AstKeywordsInputUtil.getNewFailureHandlingPropertyExpression(arguments));
         resultStatementWrappers.add(new ExpressionStatementWrapper(methodCallExpressionWrapper));
 
         return resultStatementWrappers;

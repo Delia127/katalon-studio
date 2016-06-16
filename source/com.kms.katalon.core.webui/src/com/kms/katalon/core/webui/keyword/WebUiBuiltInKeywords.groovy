@@ -81,6 +81,26 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         , flowControl, false, (rawUrl != null) ? MessageFormat.format(StringConstants.KW_MSG_UNABLE_TO_OPEN_BROWSER_W_URL, rawUrl) : StringConstants.KW_MSG_UNABLE_TO_OPEN_BROWSER)
     }
 
+    /**
+     * Open browser and navigate to the specified url; if url is left empty then just open browser
+     * @param rawUrl
+     *         url of the web page to be opened, can be left empty or null. If rawUrl doesn't contain protocol prefix,
+     *         then the protocol will be <code>http://</code>.
+     *      </p>Example:
+     *      <ul>
+     *          <li>http://katalon.kms-technology.com/</li>
+     *          <li>https://www.google.com</li>
+     *          <li>file:///D:/Development/index.html</li>
+     *          <li>kms-technology.com => http://kms-technology.com</li>
+     *      </ul>
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
+    public static void openBrowser(String rawUrl) throws StepFailedException {
+        openBrowser(rawUrl, RunConfiguration.getDefaultFailureHandling());
+    }
+
 
     /**
      * Close the browser. This action will close all windows of the browser.
@@ -99,6 +119,16 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Close the browser. This action will close all windows of the browser.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
+    public static void closeBrowser() throws StepFailedException {
+        closeBrowser(RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
      * Simulate users clicking "back" button on their browser
      * @param flowControl
      * @throws StepFailedException
@@ -112,6 +142,16 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             logger.logPassed(StringConstants.KW_LOG_PASSED_NAVIGATE_BACK);
         }
         , flowControl, true, StringConstants.KW_MSG_CANNOT_BACK_TO_PREV_PAGE)
+    }
+    
+    /**
+     * Simulate users clicking "back" button on their browser
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
+    public static void back() throws StepFailedException {
+        back(RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -128,6 +168,16 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             logger.logPassed(StringConstants.KW_LOG_PASSED_NAVIGATE_FORWARD);
         }
         , flowControl, true, StringConstants.KW_MSG_CANNOT_FORWARD_TO_NEXT_PAGE)
+    }
+    
+    /**
+     * Simulate users clicking "forward" button on their browser
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
+    public static void forward() throws StepFailedException {
+        forward(RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -146,6 +196,16 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         , flowControl, true, StringConstants.KW_MSG_CANNOT_REFRESH_PAGE)
     }
 
+    /**
+     * Simulate users clicking "refresh" button on their browser
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
+    public static void refresh() throws StepFailedException {
+        refresh(RunConfiguration.getDefaultFailureHandling());
+    }
+    
     /**
      * Navigate to the specified web page
      * @param rawUrl
@@ -179,6 +239,25 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Navigate to the specified web page
+     * @param rawUrl
+     *          url of the web page to navigate to. If rawUrl doesn't contain protocol prefix, then the protocol will be <code>http://</code>.
+     *      </p>Example:
+     *      <ul>
+     *          <li>http://katalon.kms-technology.com/</li>
+     *          <li>https://www.google.com</li>
+     *          <li>file:///D:/Development/index.html</li>
+     *          <li>kms-technology.com => http://kms-technology.com</li>
+     *      </ul>
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
+    public static void navigateToUrl(String rawUrl) throws StepFailedException {
+        navigateToUrl(rawUrl, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
      * Get title of the current window
      * @param flowControl
      * @return
@@ -195,6 +274,18 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             return windowTitle;
         }
         , flowControl, true, StringConstants.KW_MSG_CANNOT_GET_CURR_WINDOW_TITLE)
+    }
+    
+    /**
+     * Get title of the current window
+     * @return
+     *      title of the current window
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static String getWindowTitle() throws StepFailedException {
+        return getWindowTitle(RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -217,6 +308,18 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Get url of the current window
+     * @return
+     *      url of the current window
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static String getUrl() throws StepFailedException {
+        return getUrl(RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
      * Get index of the current window
      * @param flowControl
      * @return
@@ -236,6 +339,18 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Get index of the current window
+     * @return
+     *      index of the current window
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static int getWindowIndex() throws StepFailedException {
+        return getWindowIndex(RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
      * Resize current window to take up the entire screen
      * @param flowControl
      * @throws StepFailedException
@@ -251,6 +366,16 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         , flowControl, true, StringConstants.KW_MSG_CANNOT_MAX_CURR_WINDOW)
     }
 
+    /**
+     * Resize current window to take up the entire screen
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static void maximizeWindow() throws StepFailedException {
+        maximizeWindow(RunConfiguration.getDefaultFailureHandling());
+    }
+    
     /**
      * Wait for the given element to NOT present (disappear) within the given time in second unit
      * @param to 
@@ -311,6 +436,21 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Wait for the given element to NOT present (disappear) within the given time in second unit
+     * @param to
+     *          represent a web element
+     * @param timeOut
+     *          system will wait at most timeout (seconds) to return result
+     * @return
+     *      true if the element is NOT present, and false if the element is present
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean waitForElementNotPresent(TestObject to, int timeOut) throws StepFailedException {
+        return waitForElementNotPresent(to, timeOut, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
      * Wait for the given element to present (appear) within the given time in second unit
      * @param to
      *      represent a web element
@@ -349,6 +489,22 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_TO_BE_PRESENT, to.getObjectId())
         : StringConstants.KW_MSG_CANNOT_WAIT_FOR_OBJ_TO_BE_PRESENT)
+    }
+
+    /**
+     * Wait for the given element to present (appear) within the given time in second unit
+     * @param to
+     *      represent a web element
+     * @param timeOut
+     *       system will wait at most timeout (seconds) to return result
+     * @return
+     *      true if the element is present, and false if the element is NOT present
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean waitForElementPresent(TestObject to, int timeOut){
+        return waitForElementPresent(to, timeOut, RunConfiguration.getDefaultFailureHandling());
     }
 
     /***
@@ -391,6 +547,20 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_TO_BE_VISIBLE, to.getObjectId())
         : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_TO_BE_VISIBLE)
+    }
+    
+    /***
+     * Verify if given web element is visible
+     * @param to
+     *      represent a web element
+     * @return
+     *     true if the element is present and visible; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementVisible(TestObject to) throws StepFailedException {
+        return verifyElementVisible(to, RunConfiguration.getDefaultFailureHandling());
     }
 
     /***
@@ -436,6 +606,20 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /***
+     * Verify if given web element is NOT visible
+     * @param to
+     *      represent a web element
+     * @return
+     *     true if the element is present and NOT visible; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementNotVisible(TestObject to) throws StepFailedException {
+        return verifyElementNotVisible(to, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /***
      * Wait until the given web element is visible within timeout.
      * @param to 
      * 		represent a web element
@@ -480,6 +664,23 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         : StringConstants.KW_MSG_CANNOT_WAIT_FOR_OBJ_TO_BE_VISIBLE)
     }
 
+    
+    /***
+     * Wait until the given web element is visible within timeout.
+     * @param to
+     *      represent a web element
+     * @param timeOut
+     *      how many seconds to wait (maximum)
+     * @return
+     *     true if the element is present and visible; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean waitForElementVisible(TestObject to, int timeOut) throws StepFailedException {
+        return waitForElementVisible(to, timeOut, RunConfiguration.getDefaultFailureHandling());
+    }
+        
     /***
      * Wait until the given web element is NOT visible within timeout.
      * @param to
@@ -536,6 +737,22 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /***
+     * Wait until the given web element is NOT visible within timeout.
+     * @param to
+     *      represent a web element
+     * @param timeOut
+     *      how many seconds to wait (maximum)
+     * @return
+     *     true if the element is present but is NOT visible; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean waitForElementNotVisible(TestObject to, int timeOut) throws StepFailedException {
+         return waitForElementNotVisible(to, timeOut, RunConfiguration.getDefaultFailureHandling());   
+    }
+    
+    /***
      * Wait for the given element to be clickable within the given time in second
      * @param to
      *         represent a web element
@@ -589,6 +806,22 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         : StringConstants.KW_MSG_CANNOT_WAIT_FOR_OBJ_TO_BE_CLICKABLE)
     }
 
+    /***
+     * Wait for the given element to be clickable within the given time in second
+     * @param to
+     *         represent a web element
+     * @param timeOut
+     *         how many seconds to wait
+     * @return
+     *         true if the element is present and clickable; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean waitForElementClickable(TestObject to, int timeOut) throws StepFailedException {
+         return waitForElementClickable(to, timeOut, RunConfiguration.getDefaultFailureHandling());   
+    }
+    
     /***
      * Wait for the given element to be not clickable within the given time in second
      * @param to
@@ -644,6 +877,22 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /***
+     * Wait for the given element to be not clickable within the given time in second
+     * @param to
+     *         represent a web element
+     * @param timeOut
+     *         how many seconds to wait
+     * @return
+     *         true if the element is present but is NOT clickable; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean waitForElementNotClickable(TestObject to, int timeOut) throws StepFailedException {
+        return waitForElementNotClickable(to, timeOut, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /***
      * Verify if the given element is clickable
      * @param to
      *         represent a web element
@@ -685,6 +934,20 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /***
+     * Verify if the given element is clickable
+     * @param to
+     *         represent a web element
+     * @return
+     *         true if the element is present and clickable; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementClickable(TestObject to) throws StepFailedException {
+        return verifyElementClickable(to, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /***
      * Verify if the given element is NOT clickable
      * @param to
      *         represent a web element
@@ -725,6 +988,20 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         : StringConstants.KW_MSG_VERIFY_OBJ_TO_BE_NOT_CLICKABLE)
     }
 
+    /***
+     * Verify if the given element is NOT clickable
+     * @param to
+     *         represent a web element
+     * @return
+     *         true if the element is present and NOT clickable; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementNotClickable(TestObject to) throws StepFailedException {
+        return verifyElementNotClickable(to, RunConfiguration.getDefaultFailureHandling());    
+    }
+    
     /**
      * Click on the given element
      * @param to
@@ -754,6 +1031,18 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         : StringConstants.KW_MSG_CANNOT_CLICK_ON_OBJ)
     }
 
+    /**
+     * Click on the given element
+     * @param to
+     *       represent a web element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void click(TestObject to) throws StepFailedException {
+        click(to, RunConfiguration.getDefaultFailureHandling());
+    }
+    
     /**
      * If this current element is a form, or an element within a form, then this will be submitted. 
      * If this causes the current page to change, then this method will block until the new page is loaded.
@@ -785,6 +1074,19 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * If this current element is a form, or an element within a form, then this will be submitted.
+     * If this causes the current page to change, then this method will block until the new page is loaded.
+     * @param to
+     *      represent a web element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_FORM)
+    public static void submit(TestObject to) throws StepFailedException {
+        submit(to, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
      * Double click on the given web element
      * @param to
      *      represent a web element
@@ -815,6 +1117,18 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Double click on the given web element
+     * @param to
+     *      represent a web element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void doubleClick(TestObject to) throws StepFailedException {
+        doubleClick(to, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
      * Right click on the given web element
      * @param to
      *      represent a web element
@@ -844,6 +1158,18 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         : StringConstants.KW_MSG_CANNOT_RIGHT_CLICK_ON_OBJ)
     }
 
+    /**
+     * Right click on the given web element
+     * @param to
+     *      represent a web element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void rightClick(TestObject to) throws StepFailedException {
+        rightClick(to, RunConfiguration.getDefaultFailureHandling());
+    }
+    
     /**
      * Simulate users hovering a mouse over the given element
      * @param to
@@ -878,6 +1204,18 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Simulate users hovering a mouse over the given element
+     * @param to
+     *       represent a web element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void mouseOver(TestObject to) throws StepFailedException {
+        mouseOver(to, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
      * Simulates keystroke events on the specified element, as though you typed the value key-by-key
      * @param to
      *      represent a web element
@@ -911,6 +1249,20 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Simulates keystroke events on the specified element, as though you typed the value key-by-key
+     * @param to
+     *      represent a web element
+     * @param strKeys
+     *      the combination of keys to type
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_KEYBOARD)
+    public static void sendKeys(TestObject to, String strKeys) throws StepFailedException {
+        sendKeys(to, strKeys, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
      * Move the focus to the specified element; for example, if the element is an input field, move the cursor to that field
      * @param to
      *      represent a web element
@@ -941,6 +1293,18 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_FOCUS_ON_OBJ_X, to.getObjectId())
         : StringConstants.KW_MSG_CANNOT_FOCUS_ON_OBJ)
+    }
+    
+    /**
+     * Move the focus to the specified element; for example, if the element is an input field, move the cursor to that field
+     * @param to
+     *      represent a web element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void focus(TestObject to) throws StepFailedException {
+        focus(to, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -976,6 +1340,20 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         : StringConstants.KW_MSG_CANNOT_GET_OBJ_TXT)
     }
 
+    /**
+     * Get the visible (i.e. not hidden by CSS) innerText of the web element, including sub-elements, without any leading or trailing whitespace.
+     * @param to
+     *      represent a web element
+     * @return
+     *       innerText of the web element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
+    public static String getText(TestObject to) throws StepFailedException {
+         return getText(to, RunConfiguration.getDefaultFailureHandling());   
+    }
+    
     /**
      * Get attribute value of a web element
      * @param to
@@ -1013,6 +1391,22 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, true, (to != null && attribute != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_GET_ATTR_X_OF_OBJ_Y, attribute, to.getObjectId())
         : StringConstants.KW_MSG_CANNOT_GET_OBJ_ATTR)
+    }
+    
+    /**
+     * Get attribute value of a web element
+     * @param to
+     *       represent a web element
+     * @param attribute
+     *      name of the attribute
+     * @return
+     *      value of the attribute
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ATTRIBUTE)
+    public static String getAttribute(TestObject to, String attribute) throws StepFailedException {
+        return getAttribute(to, attribute, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -1054,6 +1448,20 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Set the value of an input field, as though you type it in. It also clears the previous value of the input field
+     * @param to
+     *      represent a web element
+     * @param text
+     *      the text to type
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
+    public static void setText(TestObject to, String text) throws StepFailedException {
+        setText(to, text, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
      * Check a toggle-button (check-box/radio-button)
      * @param to
      *      represent a web element
@@ -1081,6 +1489,18 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             }
         } , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_CHECK_OBJ_X, to.getObjectId())
         : StringConstants.KW_MSG_CANNOT_CHECK_OBJ)
+    }
+    
+    /**
+     * Check a toggle-button (check-box/radio-button)
+     * @param to
+     *      represent a web element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_CHECKBOX)
+    public static void check(TestObject to) throws StepFailedException {
+        check(to, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -1113,6 +1533,18 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         : StringConstants.KW_MSG_CANNOT_UNCHECK_OBJ)
     }
 
+    /**
+     * Uncheck a toggle-button (check-box/radio-button)
+     * @param to
+     *      represent a web element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_CHECKBOX)
+    public static void uncheck(TestObject to) throws StepFailedException {
+        uncheck(to, RunConfiguration.getDefaultFailureHandling());
+    }
+    
     /**
      * Select the options at the given indices. Index starts from 0.
      *
@@ -1152,6 +1584,25 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             }
         } , flowControl, true, (to != null && range != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_SEL_OPT_BY_INDEX_X_OF_OBJ_Y, range, to.getObjectId())
         : StringConstants.KW_MSG_CANNOT_SEL_OPT_BY_INDEX)
+    }
+    
+    /**
+     * Select the options at the given indices. Index starts from 0.
+     *
+     * @param to
+     *          represent a web element
+     * @param range
+     *          index range of the options to select. Index starts from 0.
+     <p>Example:
+     <p>2 - index 2
+     <p>"2,3" - index 2 and 3
+     <p>"2-5" - index 2 to 5 (2, 3, 4, 5)
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
+    public static void selectOptionByIndex(TestObject to, Object range) throws StepFailedException {
+        selectOptionByIndex(to, range, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -1193,6 +1644,23 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Select all options that have a value matching the "value" argument.
+     *
+     * @param to
+     *           represent a web element
+     * @param value
+     *           value of the options to select
+     * @param isRegex
+     *            true if value is regular expression, false if not
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
+    public static void selectOptionByValue(TestObject to, String value, boolean isRegex) throws StepFailedException {
+        selectOptionByValue(to, value, isRegex, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
      * Selection all options of an object.
      *
      * @param to
@@ -1220,6 +1688,19 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         : StringConstants.KW_MSG_CANNOT_SELECT_ALL_OPTS)
     }
 
+    /**
+     * Selection all options of an object.
+     *
+     * @param to
+     *         represent a web element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
+    public static void selectAllOption(TestObject to) throws StepFailedException {
+        selectAllOption(to, RunConfiguration.getDefaultFailureHandling());
+    }
+    
     /**
      * Select all options with the given label (displayed text)
      *
@@ -1257,6 +1738,23 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         : MessageFormat.format(StringConstants.KW_MSG_CANNOT_SEL_OPT_BY_LBL, regularExpressionLog))
     }
 
+    /**
+     * Select all options with the given label (displayed text)
+     *
+     * @param to
+     *         represent a web element
+     * @param labelText
+     *          displayed text of the options to select
+     * @param isRegex
+     *         true if label is regular expression, false if not
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
+    public static void selectOptionByLabel(TestObject to, String labelText, boolean isRegex) throws StepFailedException {
+        selectOptionByLabel(to, labelText, isRegex, RunConfiguration.getDefaultFailureHandling());
+    }
+    
     /**
      * Deselect the options at the given indices. Index starts from 0.
      *
@@ -1300,6 +1798,25 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Deselect the options at the given indices. Index starts from 0.
+     *
+     * @param to
+     *         represent a web element
+     * @param index
+     *  index range of the options to be deselected
+     *  <p>Example:
+     *  <p>2 - index 2
+     *  <p>"2,3" - index 2 and 3
+     *  <p>"2-5" - index 2 to 5 (2, 3, 4, 5)
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
+    public static void deselectOptionByIndex(TestObject to, Object range) throws StepFailedException {
+        deselectOptionByIndex(to, range, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
      * Deselect all options with the given value
      * @param to
      *         represent a web element
@@ -1334,6 +1851,22 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             }
         } , flowControl, true, (to != null && value != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_DESELECT_OPT_BY_VAL_OF_OBJ, value, to.getObjectId(), regularExpressionLog)
         : MessageFormat.format(StringConstants.KW_MSG_CANNOT_DESELECT_OPT_BY_VAL, regularExpressionLog))
+    }
+    
+    /**
+     * Deselect all options with the given value
+     * @param to
+     *         represent a web element
+     * @param value
+     *         value of the options to be deselected
+     * @param isRegex
+     *         true if value is regular expression, false if not
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
+    public static void deselectOptionByValue(TestObject to, String value, boolean isRegex) throws StepFailedException {
+        deselectOptionByValue(to, value, isRegex, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -1374,6 +1907,23 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         } , flowControl, true, (to != null && labelText != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_DESEL_OPT_BY_LBL_OF_OBJ, labelText, to.getObjectId(), regularExpressionLog)
         : MessageFormat.format(StringConstants.KW_MSG_CANNOT_DESEL_OPT_BY_LBL, regularExpressionLog))
     }
+            
+    /**
+     * Deselect the options with the given label (displayed text)
+     *
+     * @param to
+     *         represent a web element
+     * @param labelText
+     *         displayed text of the options to be deselected
+     * @param isRegex
+     *         true if label is regular expression, false if not
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
+    public static void deselectOptionByLabel(TestObject to, String labelText, boolean isRegex) throws StepFailedException {
+        deselectOptionByLabel(to, labelText, isRegex, RunConfiguration.getDefaultFailureHandling());
+    }
 
     /**
      * Deselect all options
@@ -1402,6 +1952,19 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             }
         } , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_SEL_ALL_OPTS_ON_OBJ, to.getObjectId())
         : StringConstants.KW_MSG_CANNOT_SEL_ALL_OPTS)
+    }
+    
+    /**
+     * Deselect all options
+     *
+     * @param to
+     *         represent a web element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
+    public static void deselectAllOption(TestObject to) throws StepFailedException {
+        deselectAllOption(to, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -1441,6 +2004,21 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Verify if the given web element is checked.
+     *
+     * @param to
+     *         represent a web element
+     * @param timeOut
+     *         system will wait at most timeout (seconds) to return result
+     * @return true if element is checked; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_CHECKBOX)
+    public static boolean verifyElementChecked(TestObject to, int timeOut) throws StepFailedException {
+        return verifyElementChecked(to, timeOut, RunConfiguration.getDefaultFailureHandling());   
+    }
+    
+    /**
      * Verify if the given web element is NOT checked.
      *
      * @param to
@@ -1476,6 +2054,22 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             }
         } , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_IS_NOT_CHECKED, to.getObjectId())
         : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_IS_NOT_CHECKED)
+    }
+    
+    /**
+     * Verify if the given web element is NOT checked.
+     *
+     * @param to
+     *         represent a web element
+     * @param timeOut
+     *         system will wait at most timeout (seconds) to return result
+     * @return true if element is not checked; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_CHECKBOX)
+    public static boolean verifyElementNotChecked(TestObject to, int timeOut) throws StepFailedException {
+        return verifyElementNotChecked(to, timeOut, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -1513,6 +2107,22 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             return false;
         } , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_IS_PRESENT, to.getObjectId())
         : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_IS_PRESENT)
+    }
+    
+    /**
+     * Verify if the given web element presents on the DOM
+     *
+     * @param to
+     *          represent a web element
+     * @param timeOut
+     *          system will wait at most timeout (seconds) to return result
+     * @return true if element presents; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementPresent(TestObject to, int timeOut) throws StepFailedException {
+        return verifyElementPresent(to, timeOut, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -1578,6 +2188,22 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Verify if the given web element does NOT present on the DOM
+     *
+     * @param to
+     *         represent a web element
+     * @param timeOut
+     *         system will wait at most timeout (seconds) to return result
+     * @return true if the element does NOT present; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementNotPresent(TestObject to, int timeOut) throws StepFailedException {
+        return verifyElementNotPresent(to, timeOut, RunConfiguration.getDefaultFailureHandling());    
+    }
+    
+    /**
      * Simulate users clicking on "OK" button of alert class (alert,
      * confirmation popup, prompt popup)
      * 
@@ -1597,6 +2223,18 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 WebUIKeywordMain.stepFailed(StringConstants.KW_MSG_NO_ALERT_FOUND, flowControl, null, true);
             }
         } , flowControl, true, StringConstants.KW_MSG_CANNOT_ACCEPT_ALERT)
+    }
+
+    /**
+     * Simulate users clicking on "OK" button of alert class (alert,
+     * confirmation popup, prompt popup)
+     *
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ALERT)
+    public static void acceptAlert() throws StepFailedException {
+        acceptAlert(RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -1621,6 +2259,18 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         } , flowControl, true, StringConstants.KW_MSG_CANNOT_DISMISS_ALERT)
     }
 
+    /**
+     * Simulate users clicking on "Cancel" button of alert class (alert,
+     * confirmation popup, prompt popup).
+     *
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ALERT)
+    public static void dismissAlert() throws StepFailedException {
+        dismissAlert(RunConfiguration.getDefaultFailureHandling());
+    }
+    
     /**
      * Get displayed text of the alert class (alert, confirmation popup, prompt
      * popup).
@@ -1649,6 +2299,20 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Get displayed text of the alert class (alert, confirmation popup, prompt
+     * popup).
+     *
+     * @return value
+     *      text of the alert
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ALERT)
+    public static String getAlertText() throws StepFailedException {
+        return getAlertText(RunConfiguration.getDefaultFailureHandling());    
+    }
+    
+    /**
      * Simulate users typing text into prompt popup.
      *
      * @param text
@@ -1676,6 +2340,19 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Simulate users typing text into prompt popup.
+     *
+     * @param text
+     *            text to type into the prompt popup
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ALERT)
+    public static void setAlertText(String text) throws StepFailedException {
+        setAlertText(text, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
      * Wait for alert to present
      *
      * @param timeout
@@ -1698,6 +2375,20 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 return false;
             }
         } , flowControl, true, StringConstants.KW_MSG_CANNOT_WAIT_FOR_ALERT)
+    }
+    
+    /**
+     * Wait for alert to present
+     *
+     * @param timeout
+     *            timeout waiting for alert to present
+     * @return true if alert is present and false if alert is not present
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ALERT)
+    public static boolean waitForAlert(int timeOut) throws StepFailedException {
+        return waitForAlert(timeOut, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -1724,6 +2415,20 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             }
         } , flowControl, true, StringConstants.KW_MSG_CANNOT_VERIFY_ALERT_PRESENT)
     }
+    
+    /**
+     * Verify if alert presents
+     *
+     * @param timeout
+     *            timeout waiting for alert to present
+     * @return true if alert is present and false if alert is not present
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ALERT)
+    public static boolean verifyAlertPresent(int timeOut) throws StepFailedException {
+        return verifyAlertPresent(timeOut, RunConfiguration.getDefaultFailureHandling());    
+    }
 
     /**
      * Verify if alert does not present
@@ -1748,6 +2453,20 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 return true;
             }
         } , flowControl, true, StringConstants.KW_MSG_CANNOT_VERIFY_ALERT_NOT_PRESENT)
+    }
+    
+    /**
+     * Verify if alert does not present
+     *
+     * @param timeout
+     *            timeout waiting for alert to not present
+     * @return true if alert is not present and false if alert is present
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ALERT)
+    public static boolean verifyAlertNotPresent(int timeOut) throws StepFailedException {
+        return verifyAlertNotPresent(timeOut, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -1777,6 +2496,22 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         } , flowControl, true, (text != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_TXT_X_IS_PRESENT_Y, text, regularExpressionLog)
         : StringConstants.KW_MSG_CANNOT_VERIFY_TXT_IS_PRESENT)
     }
+    
+    /**
+     * Verify if the given texts present anywhere in the page source
+     *
+     * @param text
+     *            to be verified if existing anywhere in page source
+     * @param isRegex
+     *             true if text is regular expression; otherwise, false
+     * @return true if text presents anywhere in the page source; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
+    public static boolean verifyTextPresent(String text, boolean isRegex) throws StepFailedException {
+        return verifyTextPresent(text, isRegex, RunConfiguration.getDefaultFailureHandling());
+    }
 
     /**
      * Verify if the given texts do NOT present anywhere in the page source
@@ -1803,6 +2538,22 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             return !isContains;
         } , flowControl, true,  (text != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_TXT_IS_NOT_PRESENT_Y, text, regularExpressionLog)
         : StringConstants.KW_MSG_CANNOT_VERIFY_TXT_IS_NOT_PRESENT)
+    }
+    
+    /**
+     * Verify if the given texts do NOT present anywhere in the page source
+     *
+     * @param text
+     *         text to be verified if NOT presenting anywhere in the page source
+     * @param isRegex
+     *         true if text is regular expression; otherwise, false
+     * @return true if text does NOT present anywhere in the page source; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
+    public static boolean verifyTextNotPresent(String text, boolean isRegex) throws StepFailedException {
+        return verifyTextNotPresent(text, isRegex, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -1831,6 +2582,19 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         } , flowControl, true, (title != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_SWITCH_TO_WINDOW_W_TITLE_X, title)
         : StringConstants.KW_MSG_CANNOT_SWITCH_TO_WINDOW_TITLE)
     }
+    
+    /**
+     * Switch to the window with given title.
+     *
+     * @param title
+     *            title of the window to switch to
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static void switchToWindowTitle(String title) throws StepFailedException {
+        switchToWindowTitle(title, RunConfiguration.getDefaultFailureHandling());
+    }
 
     /**
      * Close the window with given title.
@@ -1858,6 +2622,19 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         } , flowControl, true, (title != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_CLOSE_WINDOW_W_TITLE_X, title)
         : StringConstants.KW_MSG_CANNOT_CLOSE_WINDOW_TITLE)
     }
+    
+    /**
+     * Close the window with given title.
+     *
+     * @param title
+     *            title of the window to close
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static void closeWindowTitle(String title) throws StepFailedException {
+        closeWindowTitle(title, RunConfiguration.getDefaultFailureHandling());
+    }
 
     /**
      * Switch to the window with given url.
@@ -1884,6 +2661,19 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             }
         } , flowControl, true, (url != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_SWITCH_TO_WINDOW_W_URL_X, url)
         : StringConstants.KW_MSG_CANNOT_SWITCH_TO_WINDOW_URL)
+    }
+    
+    /**
+     * Switch to the window with given url.
+     *
+     * @param url
+     *            url of the window to switch to
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static void switchToWindowUrl(String url) throws StepFailedException {
+        switchToWindowUrl(url, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -1914,6 +2704,19 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Close the window with given url.
+     *
+     * @param url
+     *            url of the window to close
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static void closeWindowUrl(String url) throws StepFailedException {
+        closeWindowUrl(url, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
      * Switch to the window with given index.
      *
      * @param index
@@ -1942,6 +2745,19 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Switch to the window with given index.
+     *
+     * @param index
+     *            the index of the window to switch to, index is 0-based number
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static void switchToWindowIndex(Object index) throws StepFailedException {
+        switchToWindowIndex(index, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
      * Close window with the given index.
      *
      * @param index
@@ -1969,6 +2785,19 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         : StringConstants.KW_MSG_CANNOT_CLOSE_WINDOW_IDX)
     }
 
+    /**
+     * Close window with the given index.
+     *
+     * @param index
+     *            the index of the window to close, index is 0-based number
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static void closeWindowIndex(Object index) throws StepFailedException {
+        closeWindowIndex(index, RunConfiguration.getDefaultFailureHandling());
+    }
+    
     /**
      * Count the total number of options the given web element has
      *
@@ -2001,6 +2830,20 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         } , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_GET_TOTAL_OPTS_OF_OBJ_X, to.getObjectId())
         : StringConstants.KW_MSG_CANNOT_GET_TOTAL_OPTS_OF_OBJ)
         return Integer.valueOf(result.toString());
+    }
+    
+    /**
+     * Count the total number of options the given web element has
+     *
+     * @param to
+     *         represent a web element
+     * @return the total number of options
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
+    public static int getNumberOfTotalOption(TestObject to) throws StepFailedException {
+        return getNumberOfTotalOption(to, RunConfiguration.getDefaultFailureHandling());    
     }
 
     /**
@@ -2041,6 +2884,20 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         } , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_GET_NO_OF_SELECTED_OPTS_OF_OBJ_X, to.getObjectId())
         : StringConstants.KW_MSG_CANNOT_GET_NO_OF_SELECTED_OPTS_OF_OBJ)
         return Integer.valueOf(result.toString());
+    }
+    
+    /**
+     * Count the number of options which are being selected the given web element has.
+     *
+     * @param to
+     *         represent a web element
+     * @return number the number of selected options
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
+    public static int getNumberOfSelectedOption(TestObject to) throws StepFailedException {
+        return getNumberOfSelectedOption(to, RunConfiguration.getDefaultFailureHandling());    
     }
 
     /**
@@ -2093,6 +2950,26 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Verify if the option with the given label (displayed text) presents
+     *
+     * @param to
+     *         represent a web element
+     * @param label
+     *         displayed texts of the options to be verified if existing
+     * @param isRegex
+     *         true if label is regular expression, false if not
+     * @param timeOut
+     *         system will wait at most timeout (seconds) to return result
+     * @return true if all options with given displayed texts exist; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
+    public static boolean verifyOptionPresentByLabel(TestObject to, String label, boolean isRegex, int timeOut) throws StepFailedException {
+        return verifyOptionPresentByLabel(to, label, isRegex, timeOut, RunConfiguration.getDefaultFailureHandling());
+    }
+                    
+    /**
      * Verify if the options with the given value present.
      *
      * @param to
@@ -2143,6 +3020,26 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Verify if the options with the given value present.
+     *
+     * @param to
+     *         represent a web element.
+     * @param value
+     *         value of the options to be verified if presenting.
+     * @param isRegex
+     *         true if value is regular expression, false by default.
+     * @param timeOut
+     *         system will wait at most timeout (seconds) to return result
+     * @return true if all options with given value present; otherwise, false.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
+    public static boolean verifyOptionPresentByValue(TestObject to, String value, boolean isRegex, int timeOut) throws StepFailedException {
+        return verifyOptionPresentByValue(to, value, isRegex, timeOut, RunConfiguration.getDefaultFailureHandling());
+    }
+                    
+    /**
      * Verify if the options with the given displayed texts do not exist.
      *
      * @param to
@@ -2190,6 +3087,26 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         } , flowControl, true, (to != null && label != null) ? \
 					MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OPT_IS_NOT_PRESENT_BY_LBL_X_IN_OBJ_Y, label, to.getObjectId(), regularExpressionLog)
         : MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OPT_IS_NOT_PRESENT_BY_LBL_X, regularExpressionLog))
+    }
+            
+    /**
+     * Verify if the options with the given displayed texts do not exist.
+     *
+     * @param to
+     *         represent a web element
+     * @param label
+     *          displayed texts of the options to be verified if not existing
+     * @param isRegex
+     *         true if label is regular expression, false by default
+     * @param timeOut
+     *         system will wait at most timeout (seconds) to return result
+     * @return true if options with given displayed text do not present; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
+    public static boolean verifyOptionNotPresentByLabel(TestObject to, String label, boolean isRegex, int timeOut) throws StepFailedException {
+        return verifyOptionNotPresentByLabel(to, label, isRegex, timeOut, RunConfiguration.getDefaultFailureHandling());    
     }
 
     /**
@@ -2242,6 +3159,27 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OPT_IS_NOT_PRESENT_BY_VAL_X_IN_OBJ_Y, value, to.getObjectId(), regularExpressionLog)
         : MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OPT_IS_NOT_PRESENT_BY_VAL_X, regularExpressionLog))
     }
+            
+    /**
+     * Verify if the options with the given value do not present.
+     *
+     * @param to
+     *         represent a web element
+     * @param value
+     *         value of the options to be verified if NOT presenting.
+     * @param isRegex
+     *         true if label is regular expression, false by default.
+     * @param timeOut
+     *         system will wait at most timeout (seconds) to return result
+     * @return true if all options with given value do not present; otherwise, false.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
+    public static boolean verifyOptionNotPresentByValue(TestObject to, String value, boolean isRegex, int timeOut) throws StepFailedException {
+        return verifyOptionNotPresentByValue(to, value, isRegex, timeOut, RunConfiguration.getDefaultFailureHandling());
+    }
+                    
 
     /**
      * Verify if the options with the given displayed texts are selected.
@@ -2296,6 +3234,26 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         } , flowControl, true, (to != null && label != null) ?
         MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OPT_IS_SELECTED_BY_LBL_X_IN_OBJ_Y, label, to.getObjectId(), regularExpressionLog)
         : MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OPT_IS_SELECTED_BY_LBL_X, regularExpressionLog))
+    }
+            
+    /**
+     * Verify if the options with the given displayed texts are selected.
+     *
+     * @param to
+     *         represent a web element
+     * @param label
+     *         displayed text of the option to be verified if being selected
+     * @param isRegex
+     *         true if value is regular expression, false by default.
+     * @param timeOut
+     *         system will wait at most timeout (seconds) to return result
+     * @return true if all options with given displayed texts are selected; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
+    public static boolean verifyOptionSelectedByLabel(TestObject to, String label, boolean isRegex, int timeOut) throws StepFailedException {
+        return verifyOptionSelectedByLabel(to, label, isRegex, timeOut, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -2352,6 +3310,26 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OPT_IS_SELECTED_BY_VAL_X_IN_OBJ_Y, value, to.getObjectId(), regularExpressionLog)
         : MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OPT_IS_SELECTED_BY_VAL_X, regularExpressionLog))
     }
+            
+    /**
+     * Verify if the options with the given value are selected.
+     *
+     * @param to
+     *         represent a web element
+     * @param value
+     *         value of the options to be verified if being selected.
+     * @param isRegex
+     *         true if value is regular expression, false by default.
+     * @param timeOut
+     *         system will wait at most timeout (seconds) to return result
+     * @return true if all options with given value are selected; otherwise, false.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
+    public static boolean verifyOptionSelectedByValue(TestObject to, String value, boolean isRegex, int timeOut) throws StepFailedException {
+        return verifyOptionSelectedByValue(to, value, isRegex, timeOut, RunConfiguration.getDefaultFailureHandling());    
+    }
 
     /**
      * Verify if the options with the given displayed texts are not selected.
@@ -2406,6 +3384,26 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         } , flowControl, true, (to != null && label != null) ?
         MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OPT_IS_UNSELECTED_BY_LBL_X_IN_OBJ_Y, label, to.getObjectId(), regularExpressionLog)
         : MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OPT_IS_UNSELECTED_BY_LBL_X, regularExpressionLog))
+    }
+            
+    /**
+     * Verify if the options with the given displayed texts are not selected.
+     *
+     * @param to
+     *         represent a web element
+     * @param label
+     *         labels displayed texts of the options to be verified if not being selected.
+     * @param isRegex
+     *         true if label is regular expression, false by default.
+     * @param timeOut
+     *         system will wait at most timeout (seconds) to return result
+     * @return true if all options with given displayed texts are not selected; otherwise, false.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
+    public static boolean verifyOptionNotSelectedByLabel(TestObject to, String label, boolean isRegex, int timeOut) throws StepFailedException {
+        return verifyOptionNotSelectedByLabel(to, label, isRegex, timeOut, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -2463,6 +3461,26 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Verify if the options with the given value are not selected.
+     *
+     * @param to
+     *         represent a web element
+     * @param value
+     *         value of the options to be verified if not being selected.
+     * @param isRegex
+     *         true if label is regular expression, false by default.
+     * @param timeOut
+     *         system will wait at most timeout (seconds) to return result
+     * @return true if all options with given value are not selected; otherwise, false.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
+    public static boolean verifyOptionNotSelectedByValue(TestObject to, String value, boolean isRegex, int timeOut) throws StepFailedException {
+        return verifyOptionNotSelectedByValue(to, value, isRegex, timeOut, RunConfiguration.getDefaultFailureHandling());
+    }
+            
+    /**
      * Verify if the options at the given indices are selected.
      *
      * @param to
@@ -2513,6 +3531,25 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             }
         } , flowControl, true, (to != null && range != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OPT_IS_SELECTED_IN_IDX_RANGE_X_IN_OBJ, range, to.getObjectId())
         : StringConstants.KW_MSG_CANNOT_VERIFY_OPT_IS_SELECTED_IN_IDX_RANGE)
+    }
+            
+    /**
+     * Verify if the options at the given indices are selected.
+     *
+     * @param to
+     *         represent a web element
+     * @param range
+     *            list of indexes of the options to be verified if being
+     *            selected
+     * @param timeOut
+     *         system will wait at most timeout (seconds) to return result
+     * @return true if all options at given indices are selected; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
+    public static boolean verifyOptionSelectedByIndex(TestObject to, Object range, int timeOut) throws StepFailedException {
+        return verifyOptionSelectedByIndex(to, range, timeOut, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -2567,6 +3604,25 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OPT_IS_NOT_SELECTED_IN_IDX_RANGE_X_IN_OBJ, range, to.getObjectId())
         : StringConstants.KW_MSG_CANNOT_VERIFY_OPT_IS_NOT_SELECTED_IN_IDX_RANGE)
     }
+            
+    /**
+     * Verify if the options at the given indices are not selected
+     *
+     * @param to
+     *         represent a web element
+     * @param indexes
+     *            the indexes of the options to be verified if not being
+     *            selected
+     * @param timeOut
+     *         system will wait at most timeout (seconds) to return result
+     * @return true if all options at given indices are not selected; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
+    public static boolean verifyOptionNotSelectedByIndex(TestObject to, Object range, int timeOut) throws StepFailedException {
+        return verifyOptionNotSelectedByIndex(to, range, timeOut, RunConfiguration.getDefaultFailureHandling());        
+    }
 
     /**
      * Use this keyword to switch back to default Window, after deal with some
@@ -2579,6 +3635,18 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_FRAME)
     public static void switchToDefaultContent(FailureHandling flowControl) throws StepFailedException {
         WebUIKeywordMain.runKeyword({ WebUiCommonHelper.switchToDefaultContent(); } , flowControl, true, StringConstants.KW_MSG_CANNOT_SWITCH_TO_DEFAULT_CONTENT)
+    }
+    
+    /**
+     * Use this keyword to switch back to default Window, after deal with some
+     * framed element
+     *
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_FRAME)
+    public static void switchToDefaultContent() throws StepFailedException {
+        switchToDefaultContent(RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -2605,6 +3673,16 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             }
             logger.logPassed(StringConstants.KW_LOG_PASSED_DEL_ALL_COOKIE);
         } , flowControl, true, StringConstants.KW_MSG_CANNOT_DEL_ALL_COOKIES)
+    }
+    
+    /**
+     * Delete all cookies of all windows.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
+    public static void deleteAllCookies() throws StepFailedException {
+        deleteAllCookies(RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -2642,6 +3720,19 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             }
             logger.logPassed(StringConstants.KW_MSG_PASSED_WAIT_FOR_PAGE_LOAD);
         } , flowControl, true, StringConstants.KW_MSG_CANNOT_WAIT_FOR_PAGE_LOAD)
+    }
+    
+    /**
+     * Wait for the web page to load within the given time in second unit.
+     *
+     * @param seconds
+     *         the number of seconds to wait
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
+    public static void waitForPageLoad(int seconds) throws StepFailedException {
+        waitForPageLoad(seconds, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -2728,6 +3819,38 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         return null;
     }
+            
+    /**
+     * Modify property of test object. If the property is not existed then the
+     * property will be created. If the changed value is null then the existed
+     * value will not be changed. Use when test object has attributes changing
+     * in runtime. This keyword does not modify the object saved in Object
+     * Repository, instead, it creates another test object, modify and return
+     * this test object. Hence, users must use a variable to get the returned
+     * object.
+     *
+     * @param testObject
+     *          represent a web element
+     * @param propertyName
+     *          name of the property, for example, xpath, id, name,...
+     *          <p>If the property already exists in the object, the keyword will modify its related artifacts;
+     *          if not, the keyword will add new property.
+     * @param matchCondition
+     *          condition to match property name with property value, for example, equals, not equals,...
+     *          <p>In case the property already exists, input null to this argument to keep the old value of match condition.
+     * @param modifyValue
+     *          value of the property.
+     *          <p>In case the property already exists, input null to this argument to keep the old property value.
+     * @param isActive
+     *          true if the property is checked (used to find the test object); otherwise, false.
+     *          <p>In case the property already exists, input null to this argument to keep the old value.
+     * @return the newly created TestObject
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static TestObject modifyObjectProperty(TestObject testObject, String propertyName, String matchCondition, String modifyValue, boolean isActive) {
+        return modifyObjectProperty(testObject, propertyName, matchCondition, modifyValue, isActive, RunConfiguration.getDefaultFailureHandling());
+    }
 
     /**
      * Remove existing property of test object. Use when test object 
@@ -2769,6 +3892,25 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             return (TestObject) result;
         }
         return null;
+    }
+    
+    /**
+     * Remove existing property of test object. Use when test object
+     * has attributes changing in runtime. This keyword does not
+     * modify the object saved in Object Repository, instead, it creates
+     * another test object, modify and return this test object. Hence,
+     * users must use a variable to store the returned object.
+     *
+     * @param testObject
+     *          represent a web element
+     * @param propertyName
+     *          name of the property, for example, xpath, id, name,...
+     * @return
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static TestObject removeObjectProperty(TestObject testObject, String propertyName) {
+        return removeObjectProperty(testObject, propertyName, RunConfiguration.getDefaultFailureHandling());
     }
 
     /***
@@ -2822,6 +3964,20 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             }
         } , flowControl, true, StringConstants.KW_MSG_CANNOT_DRAG_AND_DROP_TO_OBJ)
     }
+            
+    /***
+     * Drag an object and drop it to another object
+     *
+     * @param sourceObject
+     *            the source object
+     * @param destinationObject
+     *            the destination object
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void dragAndDropToObject(TestObject sourceObject, TestObject destinationObject) {
+        dragAndDropToObject(sourceObject, destinationObject, RunConfiguration.getDefaultFailureHandling());
+    }
 
     /***
      * Drag an object and drop it to an offset location
@@ -2856,6 +4012,23 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 }
             }
         } , flowControl, true, StringConstants.KW_MSG_CANNOT_DRAG_AND_DROP_BY_OFFSET_DISTANCE)
+    }
+            
+    /***
+     * Drag an object and drop it to an offset location
+     *
+     * @param sourceObject
+     *            the source object
+     * @param xOffset
+     *            x offset
+     * @param yOffset
+     *            y offset
+     * @param flowControl
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void dragAndDropByOffset(TestObject sourceObject, int xOffset, int yOffset) {
+        dragAndDropByOffset(sourceObject, xOffset, yOffset, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -2986,6 +4159,23 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             }
         } , flowControl, true, StringConstants.KW_MSG_CANNOT_NAV_TO_AUTHENTICATED_PAGE)
     }
+            
+    /**
+     * Navigate to a page that requires authentication. System will enter username and password
+     * @param url
+     *          url of the page to navigate (optional)
+     * @param userName
+     *          username to authenticate
+     * @param password
+     *          password to authenticate
+     * @param timeout
+     *          time to wait since navigating to the page until entering username
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
+    public static void authenticate(final String url, String userName, String password, int timeout) {
+        authenticate(url, userName, password, timeout, RunConfiguration.getDefaultFailureHandling())
+    }
 
     /**
      * Click on an image on the web page
@@ -3014,6 +4204,17 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         } , flowControl, true, (imagePath != null) ?
         MessageFormat.format(StringConstants.KW_MSG_CANNOT_TYPE_ON_IMG, imagePath) :
         StringConstants.KW_MSG_CANNOT_CLICK_ON_IMG)
+    }
+    
+    /**
+     * Click on an image on the web page
+     * @param to
+     *       represent an image
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_IMAGE)
+    public static void clickImage(TestObject to) {
+        clickImage(to, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -3049,6 +4250,19 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         StringConstants.KW_MSG_CANNOT_TYPE_ON_IMG)
     }
 
+    /**
+     * Type on an image on the web page
+     * @param to
+     *       represent an image
+     * @param text
+     *          text to type on the image
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_IMAGE)
+    public static void typeOnImage(TestObject to, String text) {
+        typeOnImage(to, text, RunConfiguration.getDefaultFailureHandling());
+    }
+    
     /**
      * Verify if an image is present on page
      * @param to
@@ -3087,6 +4301,19 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Verify if an image is present on page
+     * @param to
+     *       represent an image
+     * @return true if the image if present; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_IMAGE)
+    public static boolean verifyImagePresent(TestObject to) throws StepFailedException {
+        return verifyImagePresent(to, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
      * Wait for an image to be presented on page
      * @param to
      *       represent an image
@@ -3123,6 +4350,21 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_FOR_IMG_X_TOBE_PRESENT, imagePath) :
         StringConstants.KW_MSG_CANNOT_WAIT_FOR_IMG_TOBE_PRESENT)
         return present;
+    }
+    
+    /**
+     * Wait for an image to be presented on page
+     * @param to
+     *       represent an image
+     * @param timeOutInSeconds
+     *      system will wait at most timeout (seconds) to return result
+     * @return true if the image if present; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_IMAGE)
+    public static boolean waitForImagePresent(TestObject to, int timeOutInSeconds) throws StepFailedException {
+        return waitForImagePresent(to, timeOutInSeconds, RunConfiguration.getDefaultFailureHandling());   
     }
 
     /**
@@ -3194,6 +4436,26 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_IMG_X_PRESENT, to.getObjectId()) :
         StringConstants.KW_LOG_FAILED_SWITCHED_TO_IFRAME)
     }
+    
+    /**
+     * Switch the current context into an iframe
+     * @param to
+     *      represent a web element
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @return
+     *      true if the current context is switched to the iframe; otherwise, false
+     * @throws IllegalArgumentException
+     * @throws WebElementNotFoundException
+     * @throws StepFailedException
+     * @throws WebDriverException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_FRAME)
+    public static boolean switchToFrame(TestObject to, int timeOut) throws IllegalArgumentException,
+    WebElementNotFoundException, StepFailedException, WebDriverException {
+        return switchToFrame(to, timeOut, RunConfiguration.getDefaultFailureHandling());
+    }
 
     /**
      * Take screenshot of the browser
@@ -3211,6 +4473,15 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             }
         } , flowControl, true, StringConstants.KW_LOG_WARNING_CANNOT_TAKE_SCREENSHOT)
 
+    }
+    
+    /**
+     * Take screenshot of the browser
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static void takeScreenshot() {
+        takeScreenshot(RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -3243,6 +4514,20 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_UPLOAD_FILE_X_TO_OBJ_Y, fileAbsolutePath, to.getObjectId())
         : MessageFormat.format(StringConstants.KW_MSG_CANNOT_UPLOAD_FILE_X, fileAbsolutePath))
+    }
+    
+    /**
+     * Upload file to an input html element with type = "file"
+     * @param to
+     *    represent a web element.
+     * @param fileAbsolutePath
+     *       absolute path of the file on local machine
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_KEYBOARD)
+    public static void uploadFile(TestObject to, String fileAbsolutePath) throws StepFailedException {
+        uploadFile(to, fileAbsolutePath, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -3277,6 +4562,20 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_SCROLLING_TO_OBJ_X, to.getObjectId())
         : StringConstants.KW_MSG_CANNOT_SCROLLING_TO_OBJ)
     }
+    
+    /**
+     * scrolls a element into the visible area of the browser window
+     * @param to
+     *    represent a web element
+     * @param fileAbsolutePath
+     *       absolute path of the file on local machine
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void scrollToElement(TestObject to, int timeOut) throws StepFailedException {
+        scrollToElement(to, timeOut, RunConfiguration.getDefaultFailureHandling());
+    }
 
     /**
      * Verify if the web element is visible in current view port
@@ -3306,6 +4605,20 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_VISIBLE_IN_VIEWPORT, to.getObjectId())
         : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_VISIBLE_IN_VIEWPORT)
+    }
+    
+    /**
+     * Verify if the web element is visible in current view port
+     * @param to
+     *      represent a web element
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @return true if element is present and visible in viewport; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementVisibleInViewport(TestObject to, int timeOut) {
+        return verifyElementVisibleInViewport(to, timeOut, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -3338,6 +4651,20 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Verify if the web element is NOT visible in current view port
+     * @param to
+     *      represent a web element
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @return true if element is present and NOT visible in viewport; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementNotVisibleInViewport(TestObject to, int timeOut) {
+        return verifyElementNotVisibleInViewport(to, timeOut, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
      * Get current viewport's width value
      * @param flowControl
      * @return current viewport's width
@@ -3352,6 +4679,17 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             return viewportWidth;
         }
         , flowControl, false, StringConstants.KW_MSG_CANNOT_GET_VIEWPORT_WIDTH)
+    }
+    
+    /**
+     * Get current viewport's width value
+     * @return current viewport's width
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static int getViewportWidth() throws StepFailedException {
+        return getViewportWidth(RunConfiguration.getDefaultFailureHandling());
     }
 
     /** 
@@ -3369,6 +4707,17 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             return viewportHeight;
         }
         , flowControl, false, StringConstants.KW_MSG_CANNOT_GET_VIEWPORT_HEIGHT)
+    }
+    
+    /**
+     * Get current viewport's height value
+     * @return current viewport's height
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static int getViewportHeight() throws StepFailedException {
+        return getViewportHeight(RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -3417,6 +4766,22 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Verify if the web element has an attribute with the specific name
+     * @param to
+     *      represent a web element
+     * @param attributeName
+     *      the name of the attribute to verify
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @return true if element has the attribute with the specific name; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementHasAttribute(TestObject to, String attributeName, int timeOut) {
+        return verifyElementHasAttribute(to, attributeName, timeOut, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
      * Verify if the web element doesn't have an attribute with the specific name
      * @param to
      *      represent a web element
@@ -3460,6 +4825,23 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_NOT_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
         : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_NOT_HAS_ATTRIBUTE)
     }
+    
+    /**
+     * Verify if the web element doesn't have an attribute with the specific name
+     * @param to
+     *      represent a web element
+     * @param attributeName
+     *      the name of the attribute to verify
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @return true if element doesn't have the attribute with the specific name; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementNotHasAttribute(TestObject to, String attributeName, int timeOut) {
+        return verifyElementNotHasAttribute(to, attributeName, timeOut, RunConfiguration.getDefaultFailureHandling());
+    }
+    
 
     /**
      * Verify if the web element has an attribute with the specific name and value
@@ -3517,6 +4899,24 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Verify if the web element has an attribute with the specific name and value
+     * @param to
+     *      represent a web element
+     * @param attributeName
+     *      the name of the attribute to verify
+     * @param attributeValue
+     *      the value of the attribute to verify
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @return true if element has the attribute with the specific name and value; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementAttributeValue(TestObject to, String attributeName, String attributeValue, int timeOut) {
+        return verifyElementAttributeValue(to, attributeName, attributeValue, timeOut, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
      * Wait until the given web element has an attribute with the specific name
      * @param to
      *      represent a web element
@@ -3566,6 +4966,22 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
         : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_HAS_ATTRIBUTE)
+    }
+    
+    /**
+     * Wait until the given web element has an attribute with the specific name
+     * @param to
+     *      represent a web element
+     * @param attributeName
+     *      the name of the attribute to wait for
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @return true if element has the attribute with the specific name; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean waitForElementHasAttribute(TestObject to, String attributeName, int timeOut) {
+        return waitForElementHasAttribute(to, attributeName, timeOut, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -3620,6 +5036,22 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_NOT_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
         : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_NOT_HAS_ATTRIBUTE)
     }
+    
+    /**
+    * Wait until the given web element doesn't have an attribute with the specific name
+    * @param to
+    *      represent a web element
+    * @param attributeName
+    *      the name of the attribute to wait for
+    * @param timeOut
+    *      system will wait at most timeout (seconds) to return result
+    * @return true if element doesn't have the attribute with the specific name; otherwise, false
+    */
+   @CompileStatic
+   @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+   public static boolean waitForElementNotHasAttribute(TestObject to, String attributeName, int timeOut) {
+       return waitForElementNotHasAttribute(to, attributeName, timeOut, RunConfiguration.getDefaultFailureHandling());
+   }
 
     /**
      * Wait until the given web element has an attribute with the specific name and value
@@ -3674,6 +5106,24 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue)
         : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_ATTRIBUTE_VALUE)
     }
+    
+    /**
+     * Wait until the given web element has an attribute with the specific name and value
+     * @param to
+     *      represent a web element
+     * @param attributeName
+     *      the name of the attribute to wait for
+     * @param attributeValue
+     *      the value of the attribute to wait for
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @return true if element has the attribute with the specific name and value; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean waitForElementAttributeValue(TestObject to, String attributeName, String attributeValue, int timeOut) {
+        return waitForElementAttributeValue(to, attributeName, attributeValue, timeOut, RunConfiguration.getDefaultFailureHandling());    
+    }
 
     /**
      * Set the size of the current window. This will change the outer window dimension and the viewport, synonymous to window.resizeTo() in JS.
@@ -3699,6 +5149,19 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SET_VIEWPORT_WIDTH_X_HEIGHT_Y, width.toString(), height.toString()));
         }
         , flowControl, true, StringConstants.KW_MSG_CANNOT_SET_VIEWPORT)
+    }
+    
+    /**
+     * Set the size of the current window. This will change the outer window dimension and the viewport, synonymous to window.resizeTo() in JS.
+     * @param width
+     *      the target viewport width
+     * @param height
+     *      the target viewport height
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static void setViewPortSize(int width, int height) {
+        setViewPortSize(width, height, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -3727,6 +5190,19 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, true, MessageFormat.format(StringConstants.KW_MSG_CANNOT_SCROLL_TO_POSITION_X_Y, x.toString(), y.toString()))
     }
+    
+    /**
+     * Scroll the viewport to a specific position
+     * @param x
+     *      x position
+     * @param y
+     *      y position
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static void scrollToPosition(int x, int y) {
+        scrollToPosition(x, y, RunConfiguration.getDefaultFailureHandling());
+    }
 
     /**
      * Get current web page's width
@@ -3747,6 +5223,16 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             return pageWidth;
         }
         , flowControl, true, StringConstants.KW_MSG_CANNOT_GET_PAGE_WIDTH)
+    }
+    
+    /**
+     * Get current web page's width
+     * @return current web page's width
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static int getPageWidth() {
+        return getPageWidth(RunConfiguration.getDefaultFailureHandling());    
     }
 
     /**
@@ -3769,6 +5255,17 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, true, StringConstants.KW_MSG_CANNOT_GET_PAGE_HEIGHT)
     }
+    
+    /**
+     * Get current web page's height
+     * @param flowControl
+     * @return current web page's height
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static int getPageHeight() {
+        return getPageHeight(RunConfiguration.getDefaultFailureHandling());
+    }
 
     /**
      * Get current view port left (x) position relatively to the web page
@@ -3788,6 +5285,16 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Get current view port left (x) position relatively to the web page
+     * @return current view port left (x) position
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static int getViewportLeftPosition() {
+        return getViewportLeftPosition(RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
      * Get current view port top (y) position relatively to the web page
      * @param flowControl
      * @return current view port top (y) position
@@ -3802,5 +5309,15 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             return topPositionIntValue;
         }
         , flowControl, true, StringConstants.KW_MSG_CANNOT_GET_VIEWPORT_TOP_POSITION)
+    }
+    
+    /**
+     * Get current view port top (y) position relatively to the web page
+     * @return current view port top (y) position
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static int getViewportTopPosition() {
+        return getViewportTopPosition(RunConfiguration.getDefaultFailureHandling());
     }
 }

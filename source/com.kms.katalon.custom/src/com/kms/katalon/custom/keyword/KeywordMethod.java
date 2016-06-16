@@ -3,8 +3,11 @@ package com.kms.katalon.custom.keyword;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.lang.ClassUtils;
 import org.eclipse.persistence.internal.libraries.asm.ClassReader;
 import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.libraries.asm.tree.ClassNode;
@@ -44,20 +47,37 @@ public class KeywordMethod {
             return;
         }
         classReader.accept(classNode, 0);
-        int increament = 2;
+
         for (MethodNode node : (List<MethodNode>) classNode.methods) {
             if (!node.name.equals(method.getName())) {
                 continue;
             }
+            if (!Type.getMethodDescriptor(method).equals(node.desc)) {
+                continue;
+            }
             parameters = new KeywordParameter[method.getParameterTypes().length];
+
             List<LocalVariableNode> localVariables = node.localVariables;
+            Collections.sort(localVariables, new Comparator<LocalVariableNode>() {
+                @Override
+                public int compare(LocalVariableNode arg0, LocalVariableNode arg1) {
+                    if (arg0 != null && arg1 != null) {
+                        return arg0.index - arg1.index;
+                    }
+                    return 0;
+                }
+
+            });
             for (int i = 0; i < method.getParameterTypes().length; i++) {
-                LocalVariableNode localVariableNode = localVariables.get(i * increament);
-                parameters[i] = new KeywordParameter(localVariableNode.name, method.getParameterTypes()[i]);
+                LocalVariableNode localVariableNode = localVariables.get(i);
+                parameters[i] = new KeywordParameter(localVariableNode.name,
+                        method.getParameterTypes()[i].isPrimitive()
+                                ? ClassUtils.primitiveToWrapper(method.getParameterTypes()[i])
+                                : method.getParameterTypes()[i]);
             }
         }
     }
-
+    
     public String getName() {
         return name;
     }
@@ -88,5 +108,15 @@ public class KeywordMethod {
 
     public void setKeywordAnnotation(Keyword keywordAnnotation) {
         this.keywordAnnotation = keywordAnnotation;
+    }
+    
+    public boolean checkParametersAssignable(String[] paramTypes) {
+        for (int i = 0; i < this.getParameters().length; i++) {
+            if (!Object.class.getName().equals(paramTypes[i])
+                    && !this.getParameters()[i].isClassAssignable(paramTypes[i])) {
+                return false;
+            }
+        }
+        return true;
     }
 }

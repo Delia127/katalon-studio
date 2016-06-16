@@ -15,18 +15,19 @@ import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.model.FailureHandling;
 
 public class AstCustomKeywordTreeTableNode extends AstAbstractKeywordTreeTableNode {
     public AstCustomKeywordTreeTableNode(ExpressionStatementWrapper methodCallStatement, AstTreeTableNode parentNode) {
         super(methodCallStatement, parentNode);
     }
 
-    private List<String> getKeywordNames() {
-        List<String> keywordNames = new ArrayList<String>();
+    private List<MethodNode> getKeywords() {
+        List<MethodNode> keywordMethods = new ArrayList<MethodNode>();
         for (MethodNode keywordMethodNode : getCustomKeywordMethods()) {
-            keywordNames.add(keywordMethodNode.getName());
+            keywordMethods.add(keywordMethodNode);
         }
-        return keywordNames;
+        return keywordMethods;
     }
 
     @Override
@@ -46,9 +47,13 @@ public class AstCustomKeywordTreeTableNode extends AstAbstractKeywordTreeTableNo
 
     @Override
     public CellEditor getCellEditorForItem(Composite parent) {
-        List<String> keywordNames = getKeywordNames();
-        return new ComboBoxCellEditorWithContentProposal(parent, keywordNames.toArray(new String[keywordNames.size()]),
-                keywordNames.toArray(new String[keywordNames.size()]));
+        List<MethodNode> keywordMethods = getKeywords();
+        String[] tooltips = new String[keywordMethods.size()];
+        for (int i = 0; i < keywordMethods.size(); i++) {
+            tooltips[i] = keywordMethods.get(i).getName();
+        }
+        return new ComboBoxCellEditorWithContentProposal(parent,
+                keywordMethods.toArray(new MethodNode[keywordMethods.size()]), tooltips);
     }
 
     @Override
@@ -182,5 +187,14 @@ public class AstCustomKeywordTreeTableNode extends AstAbstractKeywordTreeTableNo
 
     private List<MethodNode> getCustomKeywordMethods() {
         return KeywordController.getInstance().getCustomKeywords(ProjectController.getInstance().getCurrentProject());
+    }
+    
+    @Override
+    public boolean setFailureHandlingValue(FailureHandling failureHandling) {
+        // If this custom keyword has FailureHandling
+        if (getFailureHandlingValue() != null) {
+            return super.setFailureHandlingValue(failureHandling);
+        }
+        return false;
     }
 }
