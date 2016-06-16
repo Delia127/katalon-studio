@@ -79,9 +79,7 @@ import com.kms.katalon.composer.execution.constants.ImageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.dialog.LogPropertyDialog;
 import com.kms.katalon.composer.execution.launcher.IDEConsoleManager;
-import com.kms.katalon.composer.execution.launcher.IDELauncherEvent;
-import com.kms.katalon.composer.execution.launcher.IDELauncherListener;
-import com.kms.katalon.composer.execution.launcher.ObservableLauncher;
+import com.kms.katalon.composer.execution.launcher.IDEObservableLauncher;
 import com.kms.katalon.composer.execution.provider.LogRecordTreeViewer;
 import com.kms.katalon.composer.execution.provider.LogRecordTreeViewerContentProvider;
 import com.kms.katalon.composer.execution.provider.LogRecordTreeViewerLabelProvider;
@@ -98,12 +96,15 @@ import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.core.logging.XmlLogRecordException;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.execution.launcher.ILauncher;
+import com.kms.katalon.execution.launcher.listener.LauncherEvent;
+import com.kms.katalon.execution.launcher.listener.LauncherListener;
+import com.kms.katalon.execution.launcher.listener.LauncherNotifiedObject;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.ILauncherResult;
 import com.kms.katalon.execution.logging.LogExceptionFilter;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
-public class LogViewerPart implements EventHandler, IDELauncherListener {
+public class LogViewerPart implements EventHandler, LauncherListener {
 
     private static final int AFTER_STATUS_MENU_INDEX = 1;
 
@@ -125,7 +126,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
 
     private Composite parentComposite;
 
-    private ObservableLauncher launcherWatched;
+    private IDEObservableLauncher launcherWatched;
 
     private boolean isBusy;
     
@@ -924,9 +925,9 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
     }
 
     private synchronized void changeObservedLauncher(final Event event) throws Exception {
-        final IDELauncherListener launcherListener = this;
+        final LauncherListener launcherListener = this;
         new Thread(new Runnable() {
-            private ObservableLauncher getWatchedLauncherFromEvent() {
+            private IDEObservableLauncher getWatchedLauncherFromEvent() {
                 Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
                 if (!(object instanceof String)) {
                     return null;
@@ -934,8 +935,8 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                 
                 String launcherId = (String) object;
                 for (ILauncher launcher : LauncherManager.getInstance().getAllLaunchers()) {
-                    if (launcher instanceof ObservableLauncher && launcher.getId().equals(launcherId)) {
-                        return (ObservableLauncher) launcher;
+                    if (launcher instanceof IDEObservableLauncher && launcher.getId().equals(launcherId)) {
+                        return (IDEObservableLauncher) launcher;
                     }
                 }
                 
@@ -1067,7 +1068,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
     }
 
     @Override
-    public void handleLauncherEvent(IDELauncherEvent event, Object object) {
+    public void handleLauncherEvent(LauncherEvent event, LauncherNotifiedObject notifiedObject) {
 
         switch (event) {
             case UPDATE_RECORD:
@@ -1091,8 +1092,10 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                     }
                 });
                 break;
-            case UPDATE_STATUS:
-                if (launcherWatched != null && StringUtils.defaultIfEmpty(launcherWatched.getId(), "").equals(object)) {
+            case UPDATE_RESULT:
+                if (launcherWatched != null
+                        && StringUtils.defaultIfEmpty(launcherWatched.getId(), "").equals(
+                                notifiedObject.getLauncherId())) {
                     updateProgressBar();
                 }
                 break;

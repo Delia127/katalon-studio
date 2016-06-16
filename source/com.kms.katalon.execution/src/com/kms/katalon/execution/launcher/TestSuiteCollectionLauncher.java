@@ -5,25 +5,27 @@ import java.util.List;
 
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
+import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
+import com.kms.katalon.execution.launcher.listener.LauncherEvent;
+import com.kms.katalon.execution.launcher.listener.LauncherListener;
+import com.kms.katalon.execution.launcher.listener.LauncherNotifiedObject;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.ILauncherResult;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
 import com.kms.katalon.logging.LogUtil;
 
-public class TestSuiteCollectionLauncher implements ILauncher {
+public class TestSuiteCollectionLauncher extends BasicLauncher implements LauncherListener {
 
     private List<? extends ReportableLauncher> subLaunchers;
 
     private LauncherResult result;
-
-    private LauncherStatus status;
 
     private TestRunLauncherManager testRunManager;
 
@@ -32,31 +34,39 @@ public class TestSuiteCollectionLauncher implements ILauncher {
     private Thread watchDog;
 
     private TestSuiteCollectionExecutedEntity executedEntity;
-    
+
     protected final ReportCollectionEntity reportCollectionEntity;
 
     public TestSuiteCollectionLauncher(TestSuiteCollectionExecutedEntity executedEntity, LauncherManager parentManager,
             List<? extends ReportableLauncher> subLaunchers) {
         this.testRunManager = new TestRunLauncherManager();
         this.subLaunchers = subLaunchers;
-        this.result = new LauncherResult(subLaunchers.size());
-        this.status = LauncherStatus.WAITING;
+        this.result = new LauncherResult(executedEntity.getTotalTestCases());
         this.parentManager = parentManager;
         this.executedEntity = executedEntity;
         this.reportCollectionEntity = createReportCollectionEntity();
+
+        addListenerForChildren(subLaunchers);
+    }
+
+    private void addListenerForChildren(List<? extends ReportableLauncher> subLaunchers) {
+        for (ReportableLauncher childLauncher : subLaunchers) {
+            childLauncher.addListener(this);
+        }
     }
 
     private final ReportCollectionEntity createReportCollectionEntity() {
         try {
             ReportController reportController = ReportController.getInstance();
-            ReportCollectionEntity reportCollection = reportController.newReportCollection(
-                    getCurrentProject(), getTestSuiteCollection(), getId());
+            ReportCollectionEntity reportCollection = reportController.newReportCollection(getCurrentProject(),
+                    getTestSuiteCollection(), getId());
 
             for (int i = 0; i < subLaunchers.size(); i++) {
                 ReportableLauncher launcher = subLaunchers.get(i);
                 RunConfigurationDescription configDescription = executedEntity.getEntity()
                         .getTestSuiteRunConfigurations()
-                        .get(i).getConfiguration();
+                        .get(i)
+                        .getConfiguration();
                 reportCollection.getReportItemDescriptions().add(launcher.getReportDescription(configDescription));
             }
             reportController.updateReportCollection(reportCollection);
@@ -66,18 +76,18 @@ public class TestSuiteCollectionLauncher implements ILauncher {
             return null;
         }
     }
-    
+
     private ProjectEntity getCurrentProject() {
         return ProjectController.getInstance().getCurrentProject();
     }
-    
+
     private TestSuiteCollectionEntity getTestSuiteCollection() {
         return executedEntity.getEntity();
     }
 
     @Override
     public void start() throws IOException {
-        this.status = LauncherStatus.RUNNING;
+        setStatus(LauncherStatus.RUNNING);
 
         preStarting();
 
@@ -114,7 +124,7 @@ public class TestSuiteCollectionLauncher implements ILauncher {
         });
         watchDog.start();
     }
-    
+
     protected void postExecution() {
         schedule();
     }
@@ -133,8 +143,9 @@ public class TestSuiteCollectionLauncher implements ILauncher {
             watchDog.interrupt();
         }
         testRunManager.stopAllLauncher();
-        this.status = LauncherStatus.TERMINATED;
-        onUpdateResult();
+
+        setStatus(LauncherStatus.TERMINATED);
+
         postExecution();
     }
 
@@ -156,40 +167,34 @@ public class TestSuiteCollectionLauncher implements ILauncher {
     }
 
     @Override
-    public LauncherStatus getStatus() {
-        return status;
-    }
-
-    @Override
-    public void setStatus(LauncherStatus status) {
-        this.status = status;
-        onUpdateStatus();
-    }
-
-    protected void onUpdateStatus() {
-        // Children may override this
-    }
-
-    @Override
     public ILauncherResult getResult() {
         return result;
-    }
-
-    protected void onUpdateResult() {
-        // Children may override this
     }
 
     private class TestRunLauncherManager extends LauncherManager {
         protected boolean isLauncherReadyToRun(ILauncher launcher) {
             return getRunningLaunchers().isEmpty();
         }
+    }
 
-        public synchronized void stopRunningAndSchedule(ILauncher launcher) throws InterruptedException {
-            if (launcher.getStatus() == LauncherStatus.DONE) {
-                result.increasePasses();
-                onUpdateResult();
+    @Override
+    public void handleLauncherEvent(LauncherEvent event, LauncherNotifiedObject object) {
+        if (event == LauncherEvent.UPDATE_RESULT) {
+            TestStatusValue statusValue = (TestStatusValue) object.getObject();
+            switch (statusValue) {
+                case ERROR:
+                    result.increaseErrors();
+                    break;
+                case FAILED:
+                    result.increaseFailures();
+                    break;
+                case PASSED:
+                    result.increasePasses();
+                    break;
+                default:
+                    break;
             }
-            super.stopRunningAndSchedule(launcher);
+            onUpdateResult(statusValue);
         }
     }
 }

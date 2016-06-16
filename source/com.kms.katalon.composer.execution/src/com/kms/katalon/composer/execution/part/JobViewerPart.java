@@ -43,7 +43,7 @@ import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.execution.constants.ImageConstants;
-import com.kms.katalon.composer.execution.launcher.ObservableLauncher;
+import com.kms.katalon.composer.execution.launcher.IDEObservableLauncher;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -140,7 +140,7 @@ public class JobViewerPart implements EventHandler {
         eventBroker.subscribe(EventConstants.JOB_UPDATE_PROGRESS, this);
     }
     
-    private void createLauncherIdComposite(Composite parent, final ObservableLauncher launcher) {
+    private void createLauncherIdComposite(Composite parent, final IDEObservableLauncher launcher) {
         Composite launcherIdComposite = new FocusableComposite(parent, SWT.NONE);
         launcherIdComposite.setBackground(parent.getBackground());
         launcherIdComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -162,7 +162,7 @@ public class JobViewerPart implements EventHandler {
         lblId.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
     }
 
-    private void createJobComposite(Composite composite, final ObservableLauncher launcher) throws Exception {
+    private void createJobComposite(Composite composite, final IDEObservableLauncher launcher) throws Exception {
         final Composite compositeLauncher = new FocusableComposite(composite, SWT.BORDER);
         compositeLauncher.setBackgroundMode(SWT.INHERIT_FORCE);
         compositeLauncher.setData(CONTROL_ID, launcher.getId());
@@ -331,7 +331,7 @@ public class JobViewerPart implements EventHandler {
     private void draw() {
         try {
             for (ILauncher launcher : LauncherManager.getInstance().getAllLaunchers()) {
-                createJobComposite(listCompositeLauncher, (ObservableLauncher) launcher);
+                createJobComposite(listCompositeLauncher, (IDEObservableLauncher) launcher);
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
