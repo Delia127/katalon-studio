@@ -42,6 +42,7 @@ import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.ie.InternetExploreDriverServiceBuilder;
 import com.kms.katalon.core.webui.exception.BrowserNotOpenedException;
+import com.kms.katalon.core.webui.util.FirefoxExecutable;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
 
 public class DriverFactory {
@@ -148,7 +149,11 @@ public class DriverFactory {
             WebDriver webDriver = null;
             switch (driver) {
                 case FIREFOX_DRIVER:
-                    webDriver = new FirefoxDriver(desireCapibilities);
+                    if (FirefoxExecutable.isUsingFirefox47AndAbove(desireCapibilities)) {
+                        webDriver = FirefoxExecutable.startGeckoDriver(desireCapibilities);
+                    } else {
+                        webDriver = new FirefoxDriver(desireCapibilities);
+                    }
                     break;
                 case IE_DRIVER:
                     File ieDriverServerLogFile = new File(RunConfiguration.getLogFolderPath() + File.separator
@@ -282,7 +287,13 @@ public class DriverFactory {
             switch (webUIDriver) {
                 case FIREFOX_DRIVER:
                     if (options instanceof FirefoxProfile) {
-                        webDriver = new FirefoxDriver((FirefoxProfile) options);
+                        DesiredCapabilities desiredCapabilities = DesiredCapabilities.firefox();
+                        desiredCapabilities.setCapability(FirefoxDriver.PROFILE, (FirefoxProfile) options);
+                        if (FirefoxExecutable.isUsingFirefox47AndAbove(desiredCapabilities)) {
+                            webDriver = FirefoxExecutable.startGeckoDriver(desiredCapabilities);
+                        } else {
+                            webDriver = new FirefoxDriver(desiredCapabilities);
+                        }
                     } else {
                         webDriver = new FirefoxDriver();
                     }

@@ -58,6 +58,7 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String CONF_PROPERTY_IE_DRIVER_PATH = "ieDriverPath";
 	public static final String CONF_PROPERTY_EDGE_DRIVER_PATH = "edgeDriverPath";
 	public static final String CONF_PROPERTY_CHROME_DRIVER_PATH = "chromeDriverPath";
+	public static final String CONF_PROPERTY_GECKO_DRIVER_PATH = "geckoDriverPath";
 	public static final String CONF_PROPERTY_WAIT_FOR_IE_HANGING = "waitForIEHanging";
 	public static final String CONF_PROPERTY_EXECUTED_BROWSER = XML_LOG_BROWSER_TYPE_PROPERTY;
 	public static final String CONF_PROPERTY_REMOTE_WEB_DRIVER_URL = "remoteWebDriverUrl";
