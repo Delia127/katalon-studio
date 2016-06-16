@@ -48,7 +48,7 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
         Map<String, String> defaultKeywords = new HashMap<String, String>();
         for (KeywordClass keywordClass : KeywordController.getInstance().getBuiltInKeywordClasses()) {
             defaultKeywords.put(keywordClass.getName(),
-                    KeywordController.getInstance().getBuiltInKeywords(keywordClass.getSimpleName()).get(0).getName());
+                    KeywordController.getInstance().getBuiltInKeywords(keywordClass.getSimpleName(), true).get(0).getName());
         }
 
         store.setDefault(TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORDS,
