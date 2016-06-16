@@ -120,6 +120,6 @@ public class ComboBoxCellEditorWithContentProposal extends TooltipComboBoxCellEd
         if (item instanceof MethodNode) {
             return TreeEntityUtil.getReadableKeywordName(((MethodNode) item).getName());
         }
-        return TreeEntityUtil.getReadableKeywordName(item.toString());
+        return item.toString();
     }
 }
