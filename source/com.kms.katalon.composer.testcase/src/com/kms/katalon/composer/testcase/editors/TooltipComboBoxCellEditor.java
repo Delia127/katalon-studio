@@ -280,14 +280,12 @@ public class TooltipComboBoxCellEditor extends CellEditor {
     }
     
     private String getItemText(Object item){
-    	String text = "";
     	if (item instanceof KeywordMethod) {
-            text = ((KeywordMethod) item).getName();
-        } else if (item instanceof MethodNode) {
-            text = ((MethodNode) item).getName();
-        } else {
-            text = item.toString();
+    	    TreeEntityUtil.getReadableKeywordName(((KeywordMethod) item).getName());
         }
-    	return TreeEntityUtil.getReadableKeywordName(text);
+        if (item instanceof MethodNode) {
+            TreeEntityUtil.getReadableKeywordName(((MethodNode) item).getName());
+        }
+        return item.toString();
     }
 }
