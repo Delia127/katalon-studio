@@ -51,7 +51,7 @@ public class BuiltinKeywordFolderBrowserTreeEntity extends KeywordBrowserFolderT
     }
 
     private List<IKeywordBrowserTreeEntity> getKeywordByKeywordObject() throws Exception {
-        List<KeywordMethod> allKeywordMethod = KeywordController.getInstance().getBuiltInKeywords(simpleName);
+        List<KeywordMethod> allKeywordMethod = KeywordController.getInstance().getBuiltInKeywords(simpleName, true);
         Map<String, List<KeywordMethod>> methodObjectMap = new HashMap<String, List<KeywordMethod>>();
         for (KeywordMethod method : allKeywordMethod) {
             Keyword keywordParameter = method.getKeywordAnnotation();
