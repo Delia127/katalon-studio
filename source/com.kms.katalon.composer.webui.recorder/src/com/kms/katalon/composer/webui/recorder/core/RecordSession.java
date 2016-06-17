@@ -6,6 +6,7 @@ import org.eclipse.e4.core.services.log.Logger;
 
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.objectspy.core.HTMLElementCaptureServer;
 import com.kms.katalon.objectspy.core.InspectSession;
 
 @SuppressWarnings("restriction")
@@ -19,10 +20,9 @@ public class RecordSession extends InspectSession {
 	
 	private static final String RECORDER_APPLICATION_DATA_FOLDER = System.getProperty("user.home") + File.separator + "AppData" + File.separator
 			+ "Local" + File.separator + "KMS" + File.separator + "qAutomate" + File.separator + "Recorder";
-	
 
-	public RecordSession(String serverUrl, WebUIDriverType webUiDriverType, ProjectEntity currentProject, Logger logger) throws Exception {
-		super(serverUrl, webUiDriverType, currentProject, logger);
+	public RecordSession(HTMLElementCaptureServer server, WebUIDriverType webUiDriverType, ProjectEntity currentProject, Logger logger) throws Exception {
+		super(server, webUiDriverType, currentProject, logger);
 	}
 	
 	protected String getChromeExtensionPath() {

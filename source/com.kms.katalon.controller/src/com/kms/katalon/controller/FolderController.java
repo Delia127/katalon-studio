@@ -35,6 +35,15 @@ public class FolderController extends EntityController implements Serializable {
     public List<FileEntity> getChildren(FolderEntity folder) throws Exception {
         return getDataProviderSetting().getFolderDataProvider().getChildren(folder);
     }
+    
+    public List<String> getChildNames(FolderEntity folder) throws Exception {
+        List<String> childNames = new ArrayList<>();
+        for (FileEntity child : getChildren(folder)) {
+            childNames.add(child.getName());
+        }
+
+        return childNames;
+    }
 
     /**
      * Get only children test case of the given folder
@@ -148,6 +157,15 @@ public class FolderController extends EntityController implements Serializable {
             }
         }
         return sibblingName;
+    }
+
+    public List<String> getChildrenNames(FolderEntity folder) throws Exception {
+        List<FileEntity> children = getChildren(folder);
+        List<String> childrenNames = new ArrayList<String>();
+        for (FileEntity child : children) {
+            childrenNames.add(child.getName());
+        }
+        return childrenNames;
     }
 
     public void loadAllDescentdantEntities(FolderEntity folder) throws Exception {

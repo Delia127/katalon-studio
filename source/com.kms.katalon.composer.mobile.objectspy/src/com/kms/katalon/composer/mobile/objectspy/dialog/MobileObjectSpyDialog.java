@@ -97,6 +97,8 @@ import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 @SuppressWarnings("restriction")
 public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
+    public static final Point DIALOG_SIZE = new Point(800, 600);
+
     private static final String DIALOG_TITLE = StringConstants.DIA_DIALOG_TITLE_MOBILE_OBJ_INSPECTOR;
 
     private Text txtAppFile, txtObjectName;
@@ -138,10 +140,13 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
     private MobileInspectorController inspectorController;
 
     private List<MobileDeviceInfo> deviceInfos = new ArrayList<>();
+    
+    private Point initialLocation;
 
-    public MobileObjectSpyDialog(Shell parentShell, Logger logger, IEventBroker eventBroker,
+    public MobileObjectSpyDialog(Shell parentShell, Point location, Logger logger, IEventBroker eventBroker,
             ESelectionService selectionService) throws Exception {
         super(parentShell);
+        this.initialLocation = location;
         setShellStyle(SWT.SHELL_TRIM | SWT.NONE);
         this.logger = logger;
         this.eventBroker = eventBroker;
@@ -590,7 +595,7 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
      */
     @Override
     protected Point getInitialSize() {
-        return new Point(800, 600);
+        return DIALOG_SIZE;
     }
 
     @Override
@@ -844,5 +849,10 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
             return new String[] { ANDROID_FILTER_EXTS, IOS_FILTER_EXTS };
         }
         return new String[] { ANDROID_FILTER_EXTS };
+    }
+    
+    @Override
+    protected Point getInitialLocation(Point initialSize) {
+        return initialLocation;
     }
 }

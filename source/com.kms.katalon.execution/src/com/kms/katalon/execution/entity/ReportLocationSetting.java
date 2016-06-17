@@ -7,7 +7,6 @@ import org.apache.commons.lang.StringUtils;
 
 import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
-import com.kms.katalon.execution.console.entity.NoArgumentConsoleOption;
 import com.kms.katalon.execution.console.entity.StringConsoleOption;
 
 public class ReportLocationSetting implements ConsoleOptionContributor {
@@ -17,7 +16,6 @@ public class ReportLocationSetting implements ConsoleOptionContributor {
 
     public final static String REPORT_FOLDER_OPTION = "reportFolder";
     public final static String REPORT_FILE_NAME_OPTION = "reportFileName";
-    public final static String CLEAN_REPORT_FOLDER = "cleanReportFolder";
 
     private boolean reportFolderFlag = DEFAULT_REPORT_FOLDER_FLAG;
     private String reportFolderPath;
@@ -40,13 +38,6 @@ public class ReportLocationSetting implements ConsoleOptionContributor {
         @Override
         public String getDefaultArgumentValue() {
             return DEFAULT_REPORT_FILE_NAME;
-        }
-    };
-
-    public static final NoArgumentConsoleOption CLEAN_REPORT_FOLDER_CONSOLE_OPTION = new NoArgumentConsoleOption() {
-        @Override
-        public String getOption() {
-            return CLEAN_REPORT_FOLDER;
         }
     };
 
@@ -94,16 +85,11 @@ public class ReportLocationSetting implements ConsoleOptionContributor {
         List<ConsoleOption<?>> consoleOptionList = new ArrayList<ConsoleOption<?>>();
         consoleOptionList.add(REPORT_FOLDER_CONSOLE_OPTION);
         consoleOptionList.add(REPORT_FILE_NAME_CONSOLE_OPTION);
-        consoleOptionList.add(CLEAN_REPORT_FOLDER_CONSOLE_OPTION);
         return consoleOptionList;
     }
 
     @Override
     public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
-        if (consoleOption == CLEAN_REPORT_FOLDER_CONSOLE_OPTION) {
-            cleanReportFolderFlag = true;
-            return;
-        }
         if (StringUtils.isBlank(argumentValue)) {
             return;
         }

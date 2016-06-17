@@ -39,19 +39,21 @@ import com.kms.katalon.objectspy.util.HTMLElementUtil;
 
 public class HTMLActionUtil {
     public static final int DF_SELECTED_INDEX_IF_NULL = 0;
-    
+
     private static List<HTMLValidationAction> validationActions;
 
     private static List<HTMLSynchronizeAction> synchronizeActions;
 
-    private static Method getMethodInActionMapping(HTMLActionMapping actionMapping) throws ClassNotFoundException {
+    private static KeywordMethod getMethodInActionMapping(HTMLActionMapping actionMapping)
+            throws ClassNotFoundException {
         IHTMLAction action = actionMapping.getAction();
         if (action == null) {
             return null;
         }
 
-        Method method = null;
-        for (Method declareMethod : Class.forName(action.getMappedKeywordClassName()).getMethods()) {
+        KeywordMethod method = null;
+        for (KeywordMethod declareMethod : KeywordController.getInstance().getBuiltInKeywords(
+                action.getMappedKeywordClassSimpleName())) {
             if (declareMethod.getName().equals(action.getMappedKeywordMethod())) {
                 method = declareMethod;
                 break;
@@ -62,22 +64,22 @@ public class HTMLActionUtil {
 
     public static StatementWrapper generateWebUiTestStep(HTMLActionMapping actionMapping,
             WebElementEntity createdTestObject) throws ClassNotFoundException {
-        Method method = getMethodInActionMapping(actionMapping);
+        KeywordMethod method = getMethodInActionMapping(actionMapping);
         if (method == null) {
             return null;
         }
         int actionDataCount = 0;
 
-        MethodCallExpressionWrapper methodCallExpressionWrapper = new MethodCallExpressionWrapper(actionMapping.getAction()
-                .getMappedKeywordClassSimpleName(), actionMapping.getAction().getMappedKeywordMethod(), null);
-        ArgumentListExpressionWrapper argumentListExpressionWrapper = methodCallExpressionWrapper
-                .getArguments();
-        for (int i = 0; i < method.getParameterTypes().length; i++) {
-            Class<?> argumentClass = method.getParameterTypes()[i];
+        MethodCallExpressionWrapper methodCallExpressionWrapper = new MethodCallExpressionWrapper(
+                actionMapping.getAction().getMappedKeywordClassSimpleName(), actionMapping.getAction()
+                        .getMappedKeywordMethod(), null);
+        ArgumentListExpressionWrapper argumentListExpressionWrapper = methodCallExpressionWrapper.getArguments();
+        for (int i = 0; i < method.getParameters().length; i++) {
+            Class<?> argumentClass = method.getParameters()[i].getType();
             ExpressionWrapper generatedExression = null;
             if (argumentClass.getName().equals(TestObject.class.getName())) {
-                generatedExression = AstEntityInputUtil.createNewFindTestObjectMethodCall(
-                        (createdTestObject != null) ? createdTestObject.getIdForDisplay() : null, null);
+                generatedExression = AstEntityInputUtil.createNewFindTestObjectMethodCall((createdTestObject != null)
+                        ? createdTestObject.getIdForDisplay() : null, null);
             } else if (argumentClass.getName().equals(FailureHandling.class.getName())) {
                 generatedExression = AstKeywordsInputUtil.getNewFailureHandlingPropertyExpression(null);
             } else {
@@ -213,7 +215,7 @@ public class HTMLActionUtil {
         }
         return paramList.toArray(new HTMLActionParam[paramList.size()]);
     }
-    
+
     public static boolean hasElement(String keywordClass, String keywordMethodName) {
         KeywordMethod keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(keywordClass,
                 keywordMethodName);
@@ -257,11 +259,11 @@ public class HTMLActionUtil {
         }
 
         ExpressionWrapper expression = existingParamData.toExpressionWrapper();
-        
+
         if (expression == null) {
             return false;
         }
-        
+
         Class<?> paramClass = param.getClazz();
         ClassNodeWrapper existingParamClassNode = expression.getType();
         if (paramClass.isPrimitive() || existingParamClassNode.getTypeClass() == null) {

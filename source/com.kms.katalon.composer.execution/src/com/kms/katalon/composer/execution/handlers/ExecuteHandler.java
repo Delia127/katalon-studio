@@ -26,7 +26,7 @@ public class ExecuteHandler extends AbstractExecutionHandler {
         }
         for (MMenuElement menuItem : toolItem.getMenu().getChildren()) {
             if (!(menuItem instanceof ExecutionHandledMenuItem)) {
-                return;
+                continue;
             }
             
             ExecutionHandledMenuItem handledMenuItem = (ExecutionHandledMenuItem) menuItem;

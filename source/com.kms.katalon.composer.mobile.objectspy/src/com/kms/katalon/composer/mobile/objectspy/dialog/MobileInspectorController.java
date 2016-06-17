@@ -363,8 +363,8 @@ public class MobileInspectorController {
         }
 
         String propValue = null;
-        if (jsonObject.has(IOSProperties.IOS_VALUE) && (jsonObject.getString(IOSProperties.IOS_VALUE).length() > 0)) {
-            properties.put(IOSProperties.IOS_VALUE, propValue = jsonObject.getString(IOSProperties.IOS_VALUE));
+        if (jsonObject.has(IOSProperties.IOS_VALUE) && (String.valueOf(jsonObject.get(IOSProperties.IOS_VALUE)).length() > 0)) {
+            properties.put(IOSProperties.IOS_VALUE, propValue = String.valueOf(jsonObject.get(IOSProperties.IOS_VALUE)));
         }
 
         if (jsonObject.has(IOSProperties.IOS_HINT) && (jsonObject.getString(IOSProperties.IOS_HINT).length() > 0)) {

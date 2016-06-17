@@ -8,8 +8,6 @@ import com.kms.katalon.entity.project.ProjectEntity;
 public class KeywordBrowserTreeEntity implements IKeywordBrowserTreeEntity {
     private static final long serialVersionUID = 1L;
 
-    private String fullClassName;
-
     private String simpleClassName;
 
     private boolean isCustom;
@@ -20,7 +18,6 @@ public class KeywordBrowserTreeEntity implements IKeywordBrowserTreeEntity {
 
     public KeywordBrowserTreeEntity(String fullClassName, String simpleClassName, String keywordName, boolean isCustom,
             IKeywordBrowserTreeEntity parent) {
-        this.fullClassName = fullClassName;
         this.simpleClassName = simpleClassName;
         this.keywordName = keywordName;
         this.isCustom = isCustom;
@@ -38,7 +35,7 @@ public class KeywordBrowserTreeEntity implements IKeywordBrowserTreeEntity {
         if (isCustom || project == null) {
             return getName();
         }
-        String keywordJavaDoc = TestCaseEntityUtil.getKeywordJavaDocText(fullClassName, keywordName);
+        String keywordJavaDoc = TestCaseEntityUtil.getKeywordJavaDocText(simpleClassName, keywordName);
         if (keywordJavaDoc.isEmpty()) {
             return TreeEntityUtil.getReadableKeywordName(getName());
         } else {

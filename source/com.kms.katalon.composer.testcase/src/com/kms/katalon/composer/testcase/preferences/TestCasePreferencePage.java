@@ -396,16 +396,18 @@ public class TestCasePreferencePage extends PreferencePage {
     private void updateListViewKwName() throws Exception {
         IKeywordContributor contributor = (IKeywordContributor) ((IStructuredSelection) listViewerKwType.getSelection()).getFirstElement();
         java.util.List<KeywordMethod> methods = KeywordController.getInstance().getBuiltInKeywords(
-                contributor.getKeywordClass().getSimpleName());
+                contributor.getKeywordClass().getSimpleName(), true);
+
         listViewerKwName.setInput(methods);
         listViewerKwName.getList().deselectAll();
 
         String keywordName = defaultKeywords.get(contributor.getKeywordClass().getName());
         if (!StringUtils.isBlank(keywordName)) {
-            for (int index = 0; index < methods.size(); index++) {
-                if (methods.get(index).getName().equals(keywordName)) {
-                    listViewerKwName.getList().select(index);
+            for (KeywordMethod method : methods) {
+                if (method.getName().equals(keywordName)) {
+                    listViewerKwName.getList().select(methods.indexOf(method));
                     listViewerKwName.getList().showSelection();
+                    break;
                 }
             }
         }

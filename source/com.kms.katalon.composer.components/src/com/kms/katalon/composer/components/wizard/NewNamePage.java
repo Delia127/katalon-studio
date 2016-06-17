@@ -2,9 +2,6 @@ package com.kms.katalon.composer.components.wizard;
 
 import java.text.MessageFormat;
 
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.resource.JFaceResources;
@@ -21,6 +18,7 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.composer.components.constants.StringConstants;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
+import com.kms.katalon.controller.EntityNameController;
 
 @SuppressWarnings("restriction")
 public class NewNamePage extends WizardPage {
@@ -99,7 +97,7 @@ public class NewNamePage extends WizardPage {
 	public boolean isDuplicated() throws Exception {
 		boolean isDuplicated = ((RenameWizard) getWizard()).getExistingNames().contains(txtName.getText());
 		if (isDuplicated) {
-			setErrorMessage("Duplicated " + treeEntity.getTypeName() + ".");
+			setErrorMessage(StringConstants.WIZ_NAME_ALREADY_EXISTS);
 		}
 		return isDuplicated;
 	}
@@ -108,7 +106,7 @@ public class NewNamePage extends WizardPage {
 		try {
 			for (String containedName : ((RenameWizard) getWizard()).getExistingNames()) {
 				if (containedName.equalsIgnoreCase(txtName.getText())) {
-					setErrorMessage("Type with same name but different case exists.");
+					setErrorMessage(StringConstants.WIZ_NAME_ALREADY_EXISTS_IN_DIFFERENT_CASE);
 					return false;
 				}
 			}
@@ -118,15 +116,18 @@ public class NewNamePage extends WizardPage {
 		return true;
 	}
 
-	public boolean validateName(ITreeEntity treeEntity) throws Exception {
-		IStatus status = ResourcesPlugin.getWorkspace().validateName(txtName.getText(), IResource.FOLDER);
-		if (status.isOK()) {
-			return (!txtName.getText().isEmpty() && !txtName.getText().equals(treeEntity.getText()));
-		} else {
-			setErrorMessage(status.getMessage());
-			return false;
-		}
-	}
+    public boolean validateName(ITreeEntity treeEntity) {
+        try {
+            String name = txtName.getText();
+            EntityNameController.getInstance().validateName(name);
+            // please do not check for equalsIgnoreCase here
+            // validateVariantName() will do the job
+            return !name.equals(treeEntity.getText());
+        } catch (Exception e) {
+            setErrorMessage(e.getMessage());
+            return false;
+        }
+    }
 
 	/**
 	 * Check this entity is being called or used somewhere TODO: add a hasReferences() method to ITreeEntity to check if

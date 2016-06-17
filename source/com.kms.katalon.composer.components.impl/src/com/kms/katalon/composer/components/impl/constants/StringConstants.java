@@ -14,9 +14,8 @@ public class StringConstants extends GlobalStringConstants {
     // AbstractEntityDialog
     public static final String DIA_LBL_NAME = NAME;
     public static final String DIA_LBL_CREATE_NEW = "Create new";
-    public static final String DIA_NAME_CANNOT_BE_BLANK_OR_EMPTY = NAME + " cannot be blank or empty.";
-    public static final String DIA_NAME_EXISTED = NAME + " already exists.";
     public static final String DIA_WINDOW_TITLE_NEW = "New";
+    public static final String DIA_NAME_EXISTED = "Name already exists.";
 
     // TreeEntitySelectionDialog
     public static final String DIA_SEARCH_TEXT_DEFAULT_VALUE = "Enter text to search...";

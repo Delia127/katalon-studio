@@ -1,7 +1,7 @@
 package com.kms.katalon.execution.launcher;
 
-import com.kms.katalon.execution.configuration.IRunConfiguration;
-import com.kms.katalon.execution.launcher.model.LauncherStatus;
+import com.kms.katalon.execution.launcher.result.ILauncherResult;
+import com.kms.katalon.execution.launcher.result.LauncherStatus;
 
 public interface ILauncher extends Executable {
     /**
@@ -14,11 +14,6 @@ public interface ILauncher extends Executable {
      * Used for displaying.
      */
     String getName();
-    
-    /**
-     * Represents system and users's configuration that is prepared to launch this launcher. 
-     */
-    IRunConfiguration getRunConfig();
     
     /**
      * Represents what status the current is doing.

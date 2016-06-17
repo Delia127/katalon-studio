@@ -1,20 +1,15 @@
 package com.kms.katalon.entity;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.Date;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import com.kms.katalon.entity.file.ClonableObject;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 
-public abstract class Entity implements IEntity, Serializable, Cloneable {
+public abstract class Entity extends ClonableObject implements IEntity {
 	protected static final long serialVersionUID = 1L;
 	protected String id;
 	protected Date dateCreated;
@@ -103,21 +98,10 @@ public abstract class Entity implements IEntity, Serializable, Cloneable {
 		return name;
 	}
 
-	@Override
-	public Entity clone() {
-		try {
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			ObjectOutputStream os = new ObjectOutputStream(bos);
-			os.writeObject(this);
-
-			byte[] bytes = bos.toByteArray();
-			ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(bytes));
-
-			return (Entity) ois.readObject();
-		} catch (IOException | ClassNotFoundException exception) {
-			return null;
-		}
-	}
+    @Override
+    public Entity clone() {
+        return (Entity) super.clone();
+    }
 
     @Override
     public boolean equals(Object object) {

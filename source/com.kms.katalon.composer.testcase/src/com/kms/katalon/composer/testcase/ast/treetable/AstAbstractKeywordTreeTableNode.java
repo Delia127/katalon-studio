@@ -20,8 +20,10 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.PropertyExpressi
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.VariableExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
+import com.kms.katalon.composer.testcase.preferences.TestCaseSettingStore;
 import com.kms.katalon.composer.testcase.util.AstValueUtil;
 import com.kms.katalon.controller.KeywordController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.FailureHandling;
 
 public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableStatementTreeTableNode implements
@@ -234,9 +236,13 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
 
     public boolean setFailureHandlingValue(FailureHandling failureHandling) {
         PropertyExpressionWrapper failureHandlingPropertyExpression = getFailureHandlingPropertyExpression();
-        if (failureHandlingPropertyExpression == null
-                || StringUtils.equals(failureHandling.toString(),
-                        failureHandlingPropertyExpression.getPropertyAsString())) {
+        if (failureHandlingPropertyExpression == null) {
+            failureHandlingPropertyExpression = new PropertyExpressionWrapper(FailureHandling.class.getSimpleName(),
+                    failureHandling.name(), methodCall.getArguments());
+            methodCall.getArguments().addExpression(failureHandlingPropertyExpression);
+            return true;
+        }
+        if (StringUtils.equals(failureHandling.toString(), failureHandlingPropertyExpression.getPropertyAsString())) {
             return false;
         }
         failureHandlingPropertyExpression.setProperty(new ConstantExpressionWrapper(failureHandling.toString(),
@@ -251,7 +257,9 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
         }
         FailureHandling failureHandling = getFailureHandlingValue();
         if (failureHandling == null) {
-            return ImageConstants.IMG_16_FAILED_CONTINUE;
+            failureHandling = TestCaseSettingStore.getDefaultFailureHandling(ProjectController.getInstance()
+                    .getCurrentProject()
+                    .getFolderLocation());
         }
         switch (failureHandling) {
             case OPTIONAL:

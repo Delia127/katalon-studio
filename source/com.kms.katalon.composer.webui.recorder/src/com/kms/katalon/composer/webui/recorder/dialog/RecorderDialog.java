@@ -1,5 +1,10 @@
 package com.kms.katalon.composer.webui.recorder.dialog;
 
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +17,7 @@ import org.eclipse.jdt.internal.ui.dialogs.StatusInfo;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.FontDescriptor;
@@ -83,6 +89,7 @@ import com.kms.katalon.composer.webui.recorder.action.HTMLSynchronizeAction;
 import com.kms.katalon.composer.webui.recorder.action.HTMLValidationAction;
 import com.kms.katalon.composer.webui.recorder.action.IHTMLAction;
 import com.kms.katalon.composer.webui.recorder.constants.ImageConstants;
+import com.kms.katalon.composer.webui.recorder.constants.RecorderPreferenceConstants;
 import com.kms.katalon.composer.webui.recorder.constants.StringConstants;
 import com.kms.katalon.composer.webui.recorder.core.HTMLElementRecorderServer;
 import com.kms.katalon.composer.webui.recorder.core.RecordSession;
@@ -97,10 +104,13 @@ import com.kms.katalon.objectspy.element.HTMLFrameElement;
 import com.kms.katalon.objectspy.element.HTMLPageElement;
 import com.kms.katalon.objectspy.element.tree.HTMLElementLabelProvider;
 import com.kms.katalon.objectspy.element.tree.HTMLElementTreeContentProvider;
+import com.kms.katalon.preferences.internal.PreferenceStoreManager;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 @SuppressWarnings("restriction")
 public class RecorderDialog extends Dialog implements EventHandler {
 
+    private static final int ANY_PORT_NUMBER = 0;
     private static final String TABLE_COLUMN_ELEMENT_TITLE = StringConstants.DIA_COL_ELEMENT;
     private static final String TABLE_COLUMN_ACTION_DATA_TITLE = StringConstants.DIA_COL_ACTION_DATA;
     private static final String TABLE_COLUMN_ACTION_TITLE = StringConstants.DIA_COL_ACTION;
@@ -124,6 +134,8 @@ public class RecorderDialog extends Dialog implements EventHandler {
     private FolderTreeEntity targetFolderTreeEntity;
 
     private CapturedHTMLElementsComposite capturedObjectComposite;
+    
+    private WebUIDriverType selectedBrowser;
 
     /**
      * Create the dialog.
@@ -140,33 +152,69 @@ public class RecorderDialog extends Dialog implements EventHandler {
         recordedActions = new ArrayList<HTMLActionMapping>();
         isPausing = false;
     }
+    
+    private void startBrowser() {
+        startBrowser(false);
+    }
 
-    private void startBrowser(WebUIDriverType webUiDriverType) {
+    private void startBrowser(boolean isInstant) {
         try {
-            if (server != null && server.isRunning()) {
-                server.stop();
+            if (isInstant) {
+                startServer(getInstantBrowsersPort());
+            } else {
+                startServer();
+                startRecordSession(selectedBrowser);
             }
-            server = new HTMLElementRecorderServer(logger, eventBroker);
-            server.start();
-
-            if (session != null) {
-                session.stop();
-            }
-            session = new RecordSession(server.getServerUrl(), webUiDriverType, ProjectController.getInstance()
-                    .getCurrentProject(), logger);
-            new Thread(session).start();
 
             tltmPause.setEnabled(true);
             tltmStop.setEnabled(true);
             resume();
-
-            elements.clear();
-            recordedActions.clear();
-            actionTableViewer.refresh();
+            resetInput();
         } catch (Exception e) {
             logger.error(e);
             MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, e.getMessage());
         }
+    }
+
+    private void resetInput() {
+        elements.clear();
+        recordedActions.clear();
+        actionTableViewer.refresh();
+    }
+
+    private void startRecordSession(WebUIDriverType webUiDriverType) throws Exception {
+        stopRecordSession();
+        session = new RecordSession(server, webUiDriverType, ProjectController.getInstance()
+                .getCurrentProject(), logger);
+        new Thread(session).start();
+    }
+    
+    private int getInstantBrowsersPort() {
+        return PreferenceStoreManager.getPreferenceStore(RecorderPreferenceConstants.WEBUI_RECORDER_QUALIFIER)
+                .getInt(RecorderPreferenceConstants.WEBUI_RECORDER_INSTANT_BROWSER_PORT);
+    }
+    
+    private void startServer(int port) throws Exception {
+        if (server != null && server.isStarted() && isCurrentServerPortUsable(port)) {
+            return;
+        }
+        stopServer();
+        server = new HTMLElementRecorderServer(port, logger, eventBroker);
+        server.start();
+    }
+
+    private void stopServer() throws Exception {
+        if (server != null && server.isRunning()) {
+            server.stop();
+        }
+    }
+    
+    public boolean isCurrentServerPortUsable(int port) {
+        return port == ANY_PORT_NUMBER || port == server.getServerPort();
+    }
+
+    private void startServer() throws Exception {
+        startServer(ANY_PORT_NUMBER);
     }
 
     class DropdownSelectionListener extends SelectionAdapter {
@@ -185,12 +233,14 @@ public class RecorderDialog extends Dialog implements EventHandler {
                 menu.setVisible(true);
             } else if (event.widget instanceof ToolItem) {
                 ToolItem item = (ToolItem) event.widget;
-                if (item.getText().equals(START_TOOL_ITEM_LABEL)) {
-                    changeBrowser(WebUIDriverType.FIREFOX_DRIVER.toString());
-                    startBrowser(WebUIDriverType.FIREFOX_DRIVER);
-                } else if (!item.getText().isEmpty()) {
-                    startBrowser(WebUIDriverType.fromStringValue(item.getText()));
+                if (item.getText().equals(StringConstants.INSTANT_BROWSER_PREFIX)) {
+                    startBrowser(true);
+                    return;
                 }
+                if (item.getText().equals(START_TOOL_ITEM_LABEL)) {
+                    changeBrowser(WebUIDriverType.FIREFOX_DRIVER);
+                }
+                startBrowser();
             }
         }
     }
@@ -878,6 +928,8 @@ public class RecorderDialog extends Dialog implements EventHandler {
         addBrowserMenuItem(browserMenu, WebUIDriverType.FIREFOX_DRIVER);
         addBrowserMenuItem(browserMenu, WebUIDriverType.CHROME_DRIVER);
         addBrowserMenuItem(browserMenu, WebUIDriverType.IE_DRIVER);
+        
+        createInstantBrowserMenu(browserMenu);
 
         toolItemBrowserDropdown.addSelectionListener(new DropdownSelectionListener(browserMenu));
 
@@ -904,8 +956,8 @@ public class RecorderDialog extends Dialog implements EventHandler {
             @Override
             public void widgetSelected(SelectionEvent event) {
                 try {
-                    server.stop();
-                    session.stop();
+                    stopServer();
+                    stopRecordSession();
                 } catch (Exception e) {
                     logger.error(e);
                     MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, e.getMessage());
@@ -918,24 +970,111 @@ public class RecorderDialog extends Dialog implements EventHandler {
         tltmStop.setEnabled(false);
     }
 
-    private void addBrowserMenuItem(Menu browserMenu, final WebUIDriverType webUIDriverType) {
+    private void createInstantBrowserMenu(Menu browserMenu) {
+        final MenuItem instantBrowserMenuItem = new MenuItem(browserMenu, SWT.CASCADE);
+        instantBrowserMenuItem.setText(StringConstants.MENU_ITEM_INSTANT_BROWSERS);
+
+        final Menu instantBrowserMenu = new Menu(browserMenu);
+        instantBrowserMenuItem.setMenu(instantBrowserMenu);
+        
+        addInstantBrowserMenuItem(instantBrowserMenu, WebUIDriverType.CHROME_DRIVER);
+    }
+
+    private MenuItem createBrowserMenuItem(Menu browserMenu, final WebUIDriverType webUIDriverType) {
         MenuItem menuItem = new MenuItem(browserMenu, SWT.NONE);
         menuItem.setText(webUIDriverType.toString());
         menuItem.setImage(getWebUIDriverImage(webUIDriverType));
+        return menuItem;
+    }
+
+    private void addBrowserMenuItem(Menu browserMenu, final WebUIDriverType webUIDriverType) {
+        MenuItem menuItem = createBrowserMenuItem(browserMenu, webUIDriverType);
         menuItem.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent event) {
-                changeBrowser(webUIDriverType.toString());
-                startBrowser(webUIDriverType);
+                changeBrowser(webUIDriverType);
+                startBrowser();
             }
         });
     }
+    
+    private void addInstantBrowserMenuItem(Menu browserMenu, final WebUIDriverType webUIDriverType) {
+        MenuItem menuItem = createBrowserMenuItem(browserMenu, webUIDriverType);
+        menuItem.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent event) {
+                try {
+                    if (!isNotShowingInstantBrowserDialog() && !showInstantBrowserDialog()) {
+                        return;
+                    }
+                    changeBrowser(webUIDriverType, true);
+                    startBrowser(true);
+                } catch (IOException | URISyntaxException e) {
+                    LoggerSingleton.logError(e);
+                }
+            }
+            
+            private boolean isNotShowingInstantBrowserDialog() {
+                return getPreferenceStore()
+                        .getBoolean(RecorderPreferenceConstants.WEBUI_RECORDER_INSTANT_BROWSER_DO_NOT_SHOW_AGAIN);
+            }
 
-    private void changeBrowser(final String browserName) {
+            private void setNotShowingInstantBrowserDialog(boolean toogleState) {
+                getPreferenceStore().setValue(
+                        RecorderPreferenceConstants.WEBUI_RECORDER_INSTANT_BROWSER_DO_NOT_SHOW_AGAIN, toogleState);
+            }
+
+            private ScopedPreferenceStore getPreferenceStore() {
+                return PreferenceStoreManager.getPreferenceStore(RecorderPreferenceConstants.WEBUI_RECORDER_QUALIFIER);
+            }
+            
+            private boolean showInstantBrowserDialog() throws IOException, URISyntaxException {
+                MessageDialogWithToggle messageDialogWithToggle = MessageDialogWithToggle.openYesNoCancelQuestion(
+                        getParentShell(), StringConstants.HAND_INSTANT_BROWSERS_DIA_TITLE,
+                        MessageFormat.format(StringConstants.HAND_INSTANT_BROWSERS_DIA_MESSAGE, webUIDriverType.toString()),
+                        StringConstants.HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE, false, null, null);
+                setNotShowingInstantBrowserDialog(messageDialogWithToggle.getToggleState());
+                int returnCode = messageDialogWithToggle.getReturnCode();
+                if (returnCode == IDialogConstants.NO_ID) {
+                    return true;
+                }
+                if (returnCode != IDialogConstants.YES_ID) {
+                    return false;
+                }
+                openBrowserToAddonUrl();
+                return true;
+            }
+            
+            private void openBrowserToAddonUrl() throws IOException, URISyntaxException {
+                String url = null;
+                if (webUIDriverType == WebUIDriverType.CHROME_DRIVER) {
+                    url = StringConstants.RECORDER_CHROME_ADDON_URL;
+                }
+                if (url == null || !Desktop.isDesktopSupported()) {
+                    return;
+                }
+                Desktop.getDesktop().browse(new URI(url));
+            }
+
+        });
+    }
+    
+    private void changeBrowser(final WebUIDriverType browserType) {
+        changeBrowser(browserType, false);
+    }
+
+    private void changeBrowser(final WebUIDriverType browserType, final boolean isInstant) {
+        if (browserType == null) {
+            return;
+        }
+        selectedBrowser = browserType;
         UISynchronizeService.getInstance().getSync().asyncExec(new Runnable() {
             @Override
             public void run() {
                 // Set browser name into toolbar item label
-                toolItemBrowserDropdown.setText(browserName);
+                String label = browserType.toString();
+                if (isInstant) {
+                    label = StringConstants.INSTANT_BROWSER_PREFIX;
+                }
+                toolItemBrowserDropdown.setText(label);
                 // reload layout
                 toolItemBrowserDropdown.getParent().getParent().layout(true, true);
             }
@@ -966,10 +1105,14 @@ public class RecorderDialog extends Dialog implements EventHandler {
                 logger.error(e);
             }
         }
+        stopRecordSession();
+        eventBroker.unsubscribe(this);
+    }
+
+    private void stopRecordSession() {
         if (session != null && session.isRunning()) {
             session.stop();
         }
-        eventBroker.unsubscribe(this);
     }
 
     /**

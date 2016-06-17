@@ -61,6 +61,24 @@
 							<goal>copy-resources</goal>
 						</goals>
 					</execution>
+					<execution>						
+						<id>copy-splash-screen</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.parent.build.directory}/${resourcesDiretory}</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${basedir}</directory>
+									<includes>
+							          <include>splash.bmp</include>
+							        </includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>					
 				</executions>
 			</plugin>
 			<plugin>

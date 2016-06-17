@@ -27,6 +27,11 @@
 
    <windowImages i16="icons/branding_16.png" i32="icons/branding_32.png" i48="icons/branding_48.png" i64="icons/branding_64.png" i128="icons/branding_128.png" i256="icons/branding_256.png"/>
 
+   <splash
+      location="com.kms.katalon"
+      startupProgressRect="0,290,450,10"
+      startupMessageRect="5,270,445,20"
+      startupForegroundColor="404040" />
    <launcher name="katalon">
       <linux icon="icons/icon.xpm"/>
       <macosx icon="icons/icon.icns"/>
@@ -37,9 +42,11 @@
       </win>
    </launcher>
 
+
    <vm>
       <windows include="true">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7</windows>
    </vm>
+
 
    <plugins>
       <plugin id="com.ibm.icu"/>

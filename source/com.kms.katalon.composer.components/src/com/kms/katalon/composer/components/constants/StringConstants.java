@@ -16,6 +16,8 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String WIZ_NEW_NAME_PAGE_DESCRIPTION_TEMPLATE = "Enter new name for the {0}. All references to this {1} are also updated.";
 	public static final String WIZ_LABEL_NEW_NAME_TEXT = "New name";
 	public static final String WIZ_NEW_NAME_PAGE_TITLE = "New";
+	public static final String WIZ_NAME_ALREADY_EXISTS = "Name already exists.";
+	public static final String WIZ_NAME_ALREADY_EXISTS_IN_DIFFERENT_CASE = "Name already exists in different case.";
 
 	// RenameWizard
 	public static final String WIZ_RENAME_WIZARD_TITLE = "Rename";

@@ -3,19 +3,22 @@ package com.kms.katalon.composer.explorer.handlers;
 import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Display;
 
+import com.kms.katalon.composer.components.impl.handler.CommonExplorerHandler;
 import com.kms.katalon.composer.components.impl.transfer.TreeEntityTransfer;
 import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.components.transfer.TransferMoveFlag;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
+import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 
-public class CopyHandler extends AbstractHandler {
+public class CopyHandler extends CommonExplorerHandler {
 
     private static CopyHandler _instance;
 
@@ -28,8 +31,8 @@ public class CopyHandler extends AbstractHandler {
 
     @Override
     public boolean canExecute() {
-        Object[] selectedObjects = getSelection();
-        if (selectedObjects == null) {
+        Object[] selectedObjects = getExplorerSelection();
+        if (selectedObjects.length == 0) {
             return false;
         }
 
@@ -49,13 +52,18 @@ public class CopyHandler extends AbstractHandler {
                     return false;
                 }
 
-                // Not allow to copy multiple types of tree entity
                 String copyTag = treeEntity.getCopyTag();
+
+                // Not allow Report or its folder from copy
+                if (StringUtils.equals(copyTag, FolderType.REPORT.toString())) {
+                    return false;
+                }
                 if (entityTag == null) {
                     entityTag = copyTag;
                     continue;
                 }
 
+                // Not allow to copy multiple types of tree entity
                 if (!equalsIgnoreCase(copyTag, entityTag)) {
                     return false;
                 }
@@ -69,15 +77,20 @@ public class CopyHandler extends AbstractHandler {
 
     @Override
     public void execute() {
-        Object[] selectedObjects = getSelection();
-        if (selectedObjects == null) {
+        if (isExplorerPartNotActive()) {
             return;
         }
 
-        Clipboard cb = new Clipboard(Display.getCurrent());
-        TransferMoveFlag.setMove(false);
+        Object[] selectedObjects = getExplorerSelection();
+
+        if (selectedObjects.length == 0) {
+            return;
+        }
 
         int numberOfSelectedObject = selectedObjects.length;
+
+        Clipboard cb = new Clipboard(Display.getCurrent());
+        TransferMoveFlag.setMove(false);
         try {
             String[] keywordData = new String[numberOfSelectedObject];
             ITreeEntity[] entityData = new ITreeEntity[numberOfSelectedObject];

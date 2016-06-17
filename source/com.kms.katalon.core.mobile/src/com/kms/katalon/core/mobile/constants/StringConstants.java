@@ -86,6 +86,12 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_MSG_FAILED_TO_TAP_ON_ELEMENT_X = "Failed to tap on element ''{0}''";
 
     public static final String KW_MSG_FAILED_TO_TAP_ON_ELEMENT = "Failed to tap on element";
+    
+    public static final String KW_LOG_PASSED_TAP_AND_HOLD_ON_ELEMENT_X = "Tapped and held on element ''{0}''";
+
+    public static final String KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT_X = "Failed to tap and hold on element ''{0}''";
+
+    public static final String KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT = "Failed to tap and hold on element";
 
     public static final String KW_LOG_PASSED_ELEMENT_HAS_ATTR = "Element ''{0}'' has attribute ''{1}'' is ''{2}''";
 
@@ -235,6 +241,44 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 
     public static final String KW_MSG_CANNOT_WAIT_OBJ_ATTRIBUTE_VALUE = "Unable to wait for element to have attribute with value";
 
+    public static final String KW_LOG_PASSED_ELEMENT_X_CHECKED = "Element ''{0}'' is checked";
+
+    public static final String KW_LOG_FAILED_ELEMENT_X_CHECKED = "Element ''{0}'' is not checked";
+
+    public static final String KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_CHECKED = "Failed to verify if element is checked";
+
+    public static final String KW_LOG_PASSED_DRAG_AND_DROP_ELEMENT_X_TO_ELEMENT_Y = "Dragged element ''{0}'' to element ''{1}''";
+
+    public static final String KW_MSG_FAILED_TO_DRAG_AND_DROP_ELEMENT_X_TO_ELEMENT_Y = "Failed to drag and drop element ''{0}'' to element ''{1}''";
+
+    public static final String KW_MSG_FAILED_TO_DRAG_AND_DROP_ELEMENT = "Failed to drag and drop element";
+
+    public static final String KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_CHECKED = "Failed to verify if element ''{0}'' is checked";
+    
+    public static final String KW_LOG_PASSED_ELEMENT_X_UNCHECKED = "Element ''{0}'' is not checked";
+    
+    public static final String KW_LOG_FAILED_ELEMENT_X_UNCHECKED = "Element ''{0}'' is checked";
+
+    public static final String KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_UNCHECKED = "Failed to verify if element is not checked";
+
+    public static final String KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_UNCHECKED = "Failed to verify if element ''{0}'' is not checked";
+
+    public static final String KW_LOG_PASSED_HIDE_KEYBOARD = "Keyboard is hidden";
+
+    public static final String KW_MSG_CANNOT_HIDE_KEYBOARD = "Cannot hide keyboard";
+
+    public static final String KW_LOG_PASSED_CHECK_ELEMENT = "Element ''{0}'' is checked";
+
+    public static final String KW_MSG_FAILED_TO_CHECK_ELEMENT_X = "Failed to check element ''{0}''";
+
+    public static final String KW_MSG_FAILED_TO_CHECK_ELEMENT = "Failed to check element";
+    
+    public static final String KW_LOG_PASSED_UNCHECK_ELEMENT = "Element ''{0}'' is un-checked";
+
+    public static final String KW_MSG_FAILED_TO_UNCHECK_ELEMENT_X = "Failed to un-check element ''{0}''";
+
+    public static final String KW_MSG_FAILED_TO_UNCHECK_ELEMENT = "Failed to un-check element";
+
     public static final String KW_CATEGORIZE_APPLICATION = "Application";
 
     public static final String KW_CATEGORIZE_ATTRIBUTE = "Attribute";
@@ -266,6 +310,8 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String CONF_EXECUTED_DEVICE_OS = "deviceOS";
 
     public static final String CONF_EXECUTED_DEVICE_OS_VERSON = "deviceOSVersion";
+    
+    public static final String APPIUM_DRIVER_ERROR_JS_FAILED = "An error occurred while executing user supplied JavaScript.";
 
     // MobileDriverPropertySettingStore
     public static final String MOBILE_PROPERTY_FILE_NAME = "com.kms.katalon.core.mobile";
@@ -276,5 +322,10 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String APPIUM_START_EXCEPTION_APPIUM_DIRECTORY_NOT_SET = "Appium directory is not set. Please set it in Settings/Preferences/Mobile.";
 
     public static final String APPIUM_START_EXCEPTION_APPIUM_DIRECTORY_INVALID_CANNOT_FIND_APPIUM_JS = "Appium directory is invalid: Cannot find appium.js file.";
+    
+    // MobileElementCommonHelper
+    public static final String COMM_LOG_INFO_CHECKING_DURATION = "Checking duration";
+    
+    public static final String COMM_LOG_WARNING_INVALID_DURATION = "Duration ''{0}'' is invalid. Using default duration.";
 
 }

@@ -7,12 +7,11 @@ public class MobileDriverCleaner implements IDriverCleaner{
 
 	@Override
 	public void cleanDriverAfterRunningTestCase() {
-	    MobileDriverFactory.closeDriver();
 	}
 
     @Override
     public void cleanDriverAfterRunningTestSuite() {
-        cleanDriverAfterRunningTestCase();
+        MobileDriverFactory.closeDriver();
     }
 
 }

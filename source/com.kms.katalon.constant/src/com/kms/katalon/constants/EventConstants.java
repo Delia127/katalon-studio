@@ -59,6 +59,11 @@ public class EventConstants {
     public static final String TESTCASE_SAVE_SCRIPT = "TESTCASE/SAVE_SCRIPT";
     public static final String TESTCASE_REFRESH_EDITOR = "TESTCASE/UPDATE_SCRIPT";
 
+    // TestRun Events
+    public static final String TEST_SUITE_COLLECTION_OPEN = "TEST_SUITE_COLLECTION/OPEN";
+
+    public static final String TEST_SUITE_COLLECTION_UPDATED = "TEST_SUITE_COLLECTION/UPDATED";
+
     // TestSuite Events
     public static final String TEST_SUITE = "TESTSUITE/*";
     public static final String TEST_SUITE_OPEN = "TESTSUITE/OPEN";

@@ -25,6 +25,8 @@ import org.openqa.selenium.edge.EdgeDriverService;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.ie.InternetExplorerDriverLogLevel;
+import org.openqa.selenium.ie.InternetExplorerDriverService;
 import org.openqa.selenium.net.NetworkUtils;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -38,10 +40,14 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.core.webui.constants.StringConstants;
+import com.kms.katalon.core.webui.driver.ie.InternetExploreDriverServiceBuilder;
 import com.kms.katalon.core.webui.exception.BrowserNotOpenedException;
+import com.kms.katalon.core.webui.util.FirefoxExecutable;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
 
 public class DriverFactory {
+    private static final String IE_DRIVER_SERVER_LOG_FILE_NAME = "IEDriverServer.log";
+
     public static final String WEB_UI_DRIVER_PROPERTY = StringConstants.CONF_PROPERTY_WEBUI_DRIVER;
 
     public static final String MOBILE_DRIVER_PROPERTY = StringConstants.CONF_PROPERTY_MOBILE_DRIVER;
@@ -143,11 +149,20 @@ public class DriverFactory {
             WebDriver webDriver = null;
             switch (driver) {
                 case FIREFOX_DRIVER:
-                    webDriver = new FirefoxDriver(desireCapibilities);
+                    if (FirefoxExecutable.isUsingFirefox47AndAbove(desireCapibilities)) {
+                        webDriver = FirefoxExecutable.startGeckoDriver(desireCapibilities);
+                    } else {
+                        webDriver = new FirefoxDriver(desireCapibilities);
+                    }
                     break;
                 case IE_DRIVER:
-                    System.setProperty(IE_DRIVER_PATH_PROPERTY_KEY, getIEDriverPath());
-                    webDriver = new InternetExplorerDriver(desireCapibilities);
+                    File ieDriverServerLogFile = new File(RunConfiguration.getLogFolderPath() + File.separator
+                            + IE_DRIVER_SERVER_LOG_FILE_NAME);
+                    InternetExplorerDriverService.Builder service = new InternetExploreDriverServiceBuilder().withLogLevel(
+                            InternetExplorerDriverLogLevel.TRACE)
+                            .usingDriverExecutable(new File(getIEDriverPath()))
+                            .withLogFile(ieDriverServerLogFile);
+                    webDriver = new InternetExplorerDriver(service.build(), desireCapibilities);
                     break;
                 case SAFARI_DRIVER:
                     webDriver = new SafariDriver(desireCapibilities);
@@ -272,7 +287,13 @@ public class DriverFactory {
             switch (webUIDriver) {
                 case FIREFOX_DRIVER:
                     if (options instanceof FirefoxProfile) {
-                        webDriver = new FirefoxDriver((FirefoxProfile) options);
+                        DesiredCapabilities desiredCapabilities = DesiredCapabilities.firefox();
+                        desiredCapabilities.setCapability(FirefoxDriver.PROFILE, (FirefoxProfile) options);
+                        if (FirefoxExecutable.isUsingFirefox47AndAbove(desiredCapabilities)) {
+                            webDriver = FirefoxExecutable.startGeckoDriver(desiredCapabilities);
+                        } else {
+                            webDriver = new FirefoxDriver(desiredCapabilities);
+                        }
                     } else {
                         webDriver = new FirefoxDriver();
                     }

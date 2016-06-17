@@ -15,6 +15,7 @@ import org.eclipse.e4.ui.workbench.modeling.ISelectionListener;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.TestSuiteCollectionTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -81,7 +82,8 @@ public class NewFolderPopupMenuContribution {
 			} else if (parentTreeEntity instanceof TestCaseTreeEntity
 					|| parentTreeEntity instanceof TestDataTreeEntity
 					|| parentTreeEntity instanceof TestSuiteTreeEntity
-					|| parentTreeEntity instanceof WebElementTreeEntity) {
+					|| parentTreeEntity instanceof WebElementTreeEntity
+					|| parentTreeEntity instanceof TestSuiteCollectionTreeEntity) {
 				return true;
 			}
 		}

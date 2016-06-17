@@ -36,7 +36,7 @@ import com.kms.katalon.execution.integration.ReportIntegrationFactory;
 import com.kms.katalon.execution.launcher.ConsoleLauncher;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
-import com.kms.katalon.execution.launcher.model.LauncherResult;
+import com.kms.katalon.execution.launcher.result.LauncherResult;
 
 public class ConsoleMain {
     public static final String ARGUMENT_SPLITTER = "=";
@@ -324,8 +324,9 @@ public class ConsoleMain {
     private static void launchTestSuite(TestSuiteEntity testSuite, IRunConfiguration runConfig,
             TestSuiteExecutedEntity testSuiteExecutedEntity) throws Exception, InterruptedException {
         runConfig.build(testSuite, testSuiteExecutedEntity);
-        ConsoleLauncher cslauncher = new ConsoleLauncher(runConfig);
-        LauncherManager.getInstance().addLauncher(cslauncher);
+        LauncherManager launcherManager = LauncherManager.getInstance();
+        ConsoleLauncher cslauncher = new ConsoleLauncher(launcherManager, runConfig);
+        launcherManager.addLauncher(cslauncher);
         Thread.sleep(1000);
     }
 

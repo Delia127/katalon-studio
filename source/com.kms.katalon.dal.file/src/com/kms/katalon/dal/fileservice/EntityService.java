@@ -22,15 +22,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 
+import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.dal.exception.InvalidNameException;
 import com.kms.katalon.dal.fileservice.constants.StringConstants;
 import com.kms.katalon.dal.fileservice.manager.EntityFileServiceManager;
@@ -50,6 +53,8 @@ public final class EntityService {
     private Marshaller marshaller;
 
     private Unmarshaller unmarshaller;
+
+    private JAXBContext jaxbContext;
 
     private static final String BIDING_FILES_LOCATION = "res/mapping";
 
@@ -96,7 +101,6 @@ public final class EntityService {
         }
         System.setProperty("javax.xml.bind.context.factory", JAXBContextFactory.class.getName());
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, bindingFiles);
-        JAXBContext jaxbContext = null;
         jaxbContext = JAXBContext.newInstance(getEntityClasses(), properties);
         marshaller = jaxbContext.createMarshaller();
         unmarshaller = jaxbContext.createUnmarshaller();
@@ -119,7 +123,10 @@ public final class EntityService {
                 com.kms.katalon.entity.global.GlobalVariableEntity.class,
                 com.kms.katalon.entity.integration.IntegratedEntity.class,
                 com.kms.katalon.entity.file.IntegratedFileEntity.class,
-                com.kms.katalon.entity.report.ReportEntity.class };
+                com.kms.katalon.entity.report.ReportEntity.class, 
+                com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.class,
+                com.kms.katalon.dal.fileservice.adapter.TestSuiteReferenceXmlAdapter.class,
+                com.kms.katalon.entity.report.ReportCollectionEntity.class};
     }
 
     public Marshaller getMarshaller() {
@@ -293,11 +300,23 @@ public final class EntityService {
     }
 
     public void validateName(String name) throws InvalidNameException {
-        Pattern pattern = Pattern.compile("[\\w,\\s-().]+$");
-        // Pattern pattern = Pattern.compile("^[^/\\\\:*?\"'<>|]+$");
+        // null, blank and empty check
+        if (StringUtils.isBlank(name)) {
+            throw new InvalidNameException(StringConstants.FS_INVALID_FILE_NAME_BY_BLANK);
+        }
+
+        // invalid characters check
+        Pattern pattern = Pattern.compile("^[\\w]+[\\w,\\s-().]*$"); // ver3
+        // Pattern pattern = Pattern.compile("[\\w,\\s-().]+$"); // ver2
+        // Pattern pattern = Pattern.compile("^[^/\\\\:*?\"'<>|]+$"); // ver1
         Matcher matcher = pattern.matcher(name);
         if (!matcher.matches()) {
-            throw new InvalidNameException(StringConstants.FS_EXC_FILE_NAME_CONTAIN_SPECIAL_CHAR);
+            throw new InvalidNameException(StringConstants.FS_INVALID_FILE_NAME_BY_SPECIAL_CHAR);
+        }
+
+        // invalid dot check
+        if (name.contains("..") || StringUtils.endsWith(name.trim(), ".")) {
+            throw new InvalidNameException(StringConstants.FS_INVALID_FILE_NAME_BY_DOTS);
         }
     }
 
@@ -313,5 +332,17 @@ public final class EntityService {
         } else {
             return false;
         }
+    }
+
+    public Unmarshaller newUnmarshaller() throws DALException {
+        try {
+            return jaxbContext.createUnmarshaller();
+        } catch (JAXBException e) {
+            throw new DALException(e);
+        }
+    }
+
+    public Unmarshaller changeUnmarshaller(Unmarshaller unmashaller) {
+        return this.unmarshaller = unmashaller;
     }
 }

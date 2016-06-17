@@ -13,6 +13,7 @@ import org.apache.commons.io.FileUtils;
 
 import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.dal.fileservice.FileServiceConstant;
+import com.kms.katalon.dal.fileservice.dataprovider.setting.FileServiceDataProviderSetting;
 import com.kms.katalon.dal.state.DataProviderState;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
@@ -22,6 +23,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.util.Util;
 
@@ -344,6 +346,8 @@ public class EntityFileServiceManager {
                     DataFileFileServiceManager.moveDataFile((DataFileEntity) childEntity, newFolder);
                 } else if (childEntity instanceof WebElementEntity) {
                     WebElementFileServiceManager.moveWebElement((WebElementEntity) childEntity, newFolder);
+                } else if (childEntity instanceof TestSuiteCollectionEntity) {
+                    new FileServiceDataProviderSetting().getTestSuiteCollectionDataProvider().move(childEntity.getId(), newFolder);
                 } else if (childEntity instanceof FolderEntity) {
                     moveFolder((FolderEntity) childEntity, newFolder);
                 }

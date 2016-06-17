@@ -8,13 +8,14 @@ import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Display;
 
+import com.kms.katalon.composer.components.impl.handler.CommonExplorerHandler;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.transfer.TransferMoveFlag;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 
-public class PasteHandler extends AbstractHandler {
+public class PasteHandler extends CommonExplorerHandler {
 
     @Override
     public boolean canExecute() {
@@ -36,7 +37,7 @@ public class PasteHandler extends AbstractHandler {
             // Handle other entities from paste
             Transfer entityTransfer = entity.getEntityTransfer();
             Object transferingObjects = entityTransfer != null ? clipboard.getContents(entityTransfer) : null;
-            
+
             if (entityTransfer == null || transferingObjects == null || !transferingObjects.getClass().isArray()
                     || ((Object[]) transferingObjects).length == 0
                     || !(((Object[]) transferingObjects)[0] instanceof ITreeEntity)) {
@@ -59,6 +60,10 @@ public class PasteHandler extends AbstractHandler {
 
     @Override
     public void execute() {
+        if (isExplorerPartNotActive()) {
+            return;
+        }
+
         ITreeEntity entity = getValidSelection();
         if (entity == null) {
             return;
@@ -68,8 +73,8 @@ public class PasteHandler extends AbstractHandler {
     }
 
     private ITreeEntity getValidSelection() {
-        Object[] selectedObjects = getSelection();
-        if (selectedObjects == null || selectedObjects.length != 1) {
+        Object[] selectedObjects = getExplorerSelection();
+        if (selectedObjects.length != 1) {
             return null;
         }
 

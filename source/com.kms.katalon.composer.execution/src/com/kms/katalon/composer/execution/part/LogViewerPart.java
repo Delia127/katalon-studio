@@ -79,9 +79,9 @@ import com.kms.katalon.composer.execution.constants.ImageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.dialog.LogPropertyDialog;
 import com.kms.katalon.composer.execution.launcher.IDEConsoleManager;
-import com.kms.katalon.composer.execution.launcher.IDELaucherEvent;
-import com.kms.katalon.composer.execution.launcher.IDELauncher;
+import com.kms.katalon.composer.execution.launcher.IDELauncherEvent;
 import com.kms.katalon.composer.execution.launcher.IDELauncherListener;
+import com.kms.katalon.composer.execution.launcher.ObservableLauncher;
 import com.kms.katalon.composer.execution.provider.LogRecordTreeViewer;
 import com.kms.katalon.composer.execution.provider.LogRecordTreeViewerContentProvider;
 import com.kms.katalon.composer.execution.provider.LogRecordTreeViewerLabelProvider;
@@ -98,8 +98,8 @@ import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.core.logging.XmlLogRecordException;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.execution.launcher.ILauncher;
-import com.kms.katalon.execution.launcher.ILauncherResult;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
+import com.kms.katalon.execution.launcher.result.ILauncherResult;
 import com.kms.katalon.execution.logging.LogExceptionFilter;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
@@ -125,7 +125,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
 
     private Composite parentComposite;
 
-    private IDELauncher launcherWatched;
+    private ObservableLauncher launcherWatched;
 
     private boolean isBusy;
 
@@ -910,7 +910,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
     private synchronized void changeObservedLauncher(final Event event) throws Exception {
         final IDELauncherListener launcherListener = this;
         new Thread(new Runnable() {
-            private IDELauncher getWatchedLauncherFromEvent() {
+            private ObservableLauncher getWatchedLauncherFromEvent() {
                 Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
                 if (!(object instanceof String)) {
                     return null;
@@ -918,8 +918,8 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                 
                 String launcherId = (String) object;
                 for (ILauncher launcher : LauncherManager.getInstance().getAllLaunchers()) {
-                    if (launcher instanceof IDELauncher && launcher.getId().equals(launcherId)) {
-                        return (IDELauncher) launcher;
+                    if (launcher instanceof ObservableLauncher && launcher.getId().equals(launcherId)) {
+                        return (ObservableLauncher) launcher;
                     }
                 }
                 
@@ -1041,7 +1041,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
     }
 
     @Override
-    public void handleLauncherEvent(IDELaucherEvent event, Object object) {
+    public void handleLauncherEvent(IDELauncherEvent event, Object object) {
 
         switch (event) {
             case UPDATE_RECORD:

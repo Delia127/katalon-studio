@@ -3,8 +3,12 @@ package com.kms.katalon.dal.fileservice.constants;
 import com.kms.katalon.constants.GlobalStringConstants;
 
 public class StringConstants extends GlobalStringConstants {
-	// EntityService
-	public static final String FS_EXC_FILE_NAME_CONTAIN_SPECIAL_CHAR = "A file name cannot contain non English alphabet or any of the following characters: / \\ : * ? \" ' < > |";
+    // EntityService
+    public static final String FS_INVALID_FILE_NAME_BY_BLANK = "Invalid name! Name cannot be blank.";
+
+    public static final String FS_INVALID_FILE_NAME_BY_DOTS = "Invalid name! Name cannot contain '..' or end with '.'.";
+
+    public static final String FS_INVALID_FILE_NAME_BY_SPECIAL_CHAR = "Invalid name! A file name must start with English letters or numbers, and can mix up with space or any of the following characters: ( ) . _ -";
 
 	// FileServiceConstant
 	public static final String FS_ROOT_FOLDER_NAME_TEST_CASE = ROOT_FOLDER_NAME_TEST_CASE;

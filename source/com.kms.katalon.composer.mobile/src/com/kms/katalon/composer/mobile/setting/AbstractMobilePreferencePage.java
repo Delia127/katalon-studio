@@ -22,6 +22,7 @@ import com.kms.katalon.execution.mobile.driver.MobileDriverConnector;
 public abstract class AbstractMobilePreferencePage extends DriverPreferencePage {
 
     private DeviceSelectionComposite deviceSelectionComposite;
+
     private MobileDriverConnector abstractMobileDriverConnector;
 
     @Override
@@ -51,32 +52,36 @@ public abstract class AbstractMobilePreferencePage extends DriverPreferencePage 
         updateInput();
         return container;
     }
-    
-    protected void updateInput() {
-        String deviceId = abstractMobileDriverConnector.getDeviceId();
-        deviceSelectionComposite.setDeviceId(deviceId);
 
-        
+    protected void updateInput() {
+        deviceSelectionComposite.setDeviceId(abstractMobileDriverConnector.getDefaultDeviceId());
+
         Map<String, Object> configProp = new LinkedHashMap<String, Object>();
         configProp.putAll(abstractMobileDriverConnector.getUserConfigProperties());
         configProp.remove(StringConstants.CONF_EXECUTED_DEVICE_ID);
-        
+
         driverPreferenceComposite.setInput(configProp);
     }
 
     @Override
-    public boolean performOk() {       
+    public boolean performOk() {
         try {
             if (driverPreferenceComposite == null || driverPreferenceComposite.isDisposed()) {
                 return true;
             }
-            
+
             driverConnector = driverPreferenceComposite.getResult();
-            
+
             if (abstractMobileDriverConnector != null && deviceSelectionComposite != null) {
                 abstractMobileDriverConnector.setDevice(deviceSelectionComposite.getSelectedDevice());
+                abstractMobileDriverConnector.updateDefaultDeviceId();
             }
+
+            // save settings
             driverConnector.saveUserConfigProperties();
+
+            // prevent deviceId appears in property table setting
+            abstractMobileDriverConnector.getUserConfigProperties().remove(StringConstants.CONF_EXECUTED_DEVICE_ID);
             return true;
         } catch (IOException e) {
             LoggerSingleton.logError(e);

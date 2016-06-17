@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
@@ -21,10 +24,10 @@ public class RunConfigurationCollector {
     public static final String CUSTOM_EXECUTION_CONFIG_ROOT_FOLDER_RELATIVE_PATH = PropertySettingStoreUtil.EXTERNAL_SETTING_ROOT_FOLDER_NAME
             + File.separator + "execution";
     private static RunConfigurationCollector _instance;
-    private List<IRunConfigurationContributor> runConfigurationContributors;
+    private Map<String, IRunConfigurationContributor> runConfigurationContributors;
 
     private RunConfigurationCollector() {
-        runConfigurationContributors = new ArrayList<IRunConfigurationContributor>();
+        runConfigurationContributors = new HashMap<>();
     }
 
     public static RunConfigurationCollector getInstance() {
@@ -35,28 +38,37 @@ public class RunConfigurationCollector {
     }
 
     public void addBuiltinRunConfigurationContributor(IRunConfigurationContributor runConfigurationContributor) {
-        runConfigurationContributors.add(runConfigurationContributor);
+        runConfigurationContributors.put(runConfigurationContributor.getId(), runConfigurationContributor);
+    }
+    
+    private List<IRunConfigurationContributor> getListRunContributors() {
+        List<IRunConfigurationContributor> contributors = new ArrayList<>();
+        for (Entry<String, IRunConfigurationContributor> entry : runConfigurationContributors.entrySet()) {
+            contributors.add(entry.getValue());
+        }
+        return contributors;
     }
 
     public IRunConfigurationContributor[] getAllBuiltinRunConfigurationContributors() {
-        Collections.sort(runConfigurationContributors, new Comparator<IRunConfigurationContributor>() {
+        List<IRunConfigurationContributor> lstContributors = getListRunContributors();
+        Collections.sort(lstContributors, new Comparator<IRunConfigurationContributor>() {
             @Override
             public int compare(IRunConfigurationContributor runConfigContributor_1,
                     IRunConfigurationContributor runConfigContributor_2) {
                 return runConfigContributor_1.getPreferredOrder() - runConfigContributor_2.getPreferredOrder();
             }
         });
-        return runConfigurationContributors.toArray(new IRunConfigurationContributor[runConfigurationContributors
+        return lstContributors.toArray(new IRunConfigurationContributor[lstContributors
                 .size()]);
     }
     
     public List<ConsoleOptionContributor> getConsoleOptionContributorList() {
-        return new ArrayList<ConsoleOptionContributor>(runConfigurationContributors);
+        return new ArrayList<ConsoleOptionContributor>(getListRunContributors());
     }
 
     public List<ConsoleOption<?>> getConsoleOptionList() {
         List<ConsoleOption<?>> additionalArgumentList = new ArrayList<ConsoleOption<?>>();
-        for (IRunConfigurationContributor runConfigContributor : runConfigurationContributors) {
+        for (IRunConfigurationContributor runConfigContributor : getListRunContributors()) {
             additionalArgumentList.addAll(runConfigContributor.getConsoleOptionList());
         }
         return additionalArgumentList;
@@ -86,16 +98,43 @@ public class RunConfigurationCollector {
 
     public IRunConfiguration getRunConfiguration(String id, String projectDir) throws IOException, ExecutionException,
             InterruptedException {
-        for (IRunConfigurationContributor builtinRunConfigurationContributor : getAllBuiltinRunConfigurationContributors()) {
-            if (builtinRunConfigurationContributor.getId().equals(id)) {
-                return builtinRunConfigurationContributor.getRunConfiguration(projectDir);
-            }
+        if (runConfigurationContributors.containsKey(id)) {
+            return runConfigurationContributors.get(id).getRunConfiguration(projectDir);
         }
+        
         for (IRunConfigurationContributor customRunConfigurationContributor : getAllCustomRunConfigurationContributors()) {
             if (customRunConfigurationContributor.getId().equals(id)) {
                 return customRunConfigurationContributor.getRunConfiguration(projectDir);
             }
         }
         return null;
+    }
+    
+    public IRunConfigurationContributor getRunContributor(String id) {
+        return runConfigurationContributors.get(id);
+    }
+    
+    /**
+     * @return String[] Custom run configuration IDs (names)
+     */
+    public String[] getAllCustomRunConfigurationIds() {
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+        if (currentProject == null) {
+            return new String[0];
+        }
+
+        File customProfileSettingFolder = new File(currentProject.getFolderLocation() + File.separator
+                + CUSTOM_EXECUTION_CONFIG_ROOT_FOLDER_RELATIVE_PATH);
+        if (!customProfileSettingFolder.exists() || !customProfileSettingFolder.isDirectory()) {
+            return new String[0];
+        }
+
+        List<String> customRunConfigIdList = new ArrayList<String>();
+        for (File customProfile : customProfileSettingFolder.listFiles()) {
+            if (customProfile.isDirectory() && !customProfile.isHidden()) {
+                customRunConfigIdList.add(customProfile.getName());
+            }
+        }
+        return customRunConfigIdList.toArray(new String[customRunConfigIdList.size()]);
     }
 }

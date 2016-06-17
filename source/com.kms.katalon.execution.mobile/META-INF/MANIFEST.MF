@@ -23,6 +23,7 @@ Require-Bundle: org.eclipse.swt,
  com.kms.katalon.execution.webui,
  org.apache.commons.lang
 Export-Package: com.kms.katalon.execution.mobile.configuration,
+ com.kms.katalon.execution.mobile.configuration.contributor,
  com.kms.katalon.execution.mobile.configuration.providers,
  com.kms.katalon.execution.mobile.constants,
  com.kms.katalon.execution.mobile.device,

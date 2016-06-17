@@ -100,27 +100,22 @@ public class GlobalVariablePart implements EventHandler {
 
         tltmAdd = new ToolItem(toolBar, SWT.NONE);
         tltmAdd.setText(StringConstants.PA_BTN_TIP_ADD);
-        tltmAdd.setToolTipText(StringConstants.PA_BTN_TIP_ADD);
         tltmAdd.setImage(ImageConstants.IMG_16_ADD);
 
         tltmEdit = new ToolItem(toolBar, SWT.NONE);
         tltmEdit.setText(StringConstants.PA_BTN_TIP_EDIT);
-        tltmEdit.setToolTipText(StringConstants.PA_BTN_TIP_EDIT);
         tltmEdit.setImage(ImageConstants.IMG_16_EDIT);
 
         tltmRemove = new ToolItem(toolBar, SWT.NONE);
         tltmRemove.setText(StringConstants.PA_BTN_TIP_REMOVE);
-        tltmRemove.setToolTipText(StringConstants.PA_BTN_TIP_REMOVE);
         tltmRemove.setImage(ImageConstants.IMG_16_REMOVE);
 
         tltmClear = new ToolItem(toolBar, SWT.NONE);
         tltmClear.setText(StringConstants.PA_BTN_TIP_CLEAR);
-        tltmClear.setToolTipText(StringConstants.PA_BTN_TIP_CLEAR);
         tltmClear.setImage(ImageConstants.IMG_16_CLEAR);
 
         tltmRefresh = new ToolItem(toolBar, SWT.NONE);
         tltmRefresh.setText(StringConstants.PA_BTN_TIP_REFRESH);
-        tltmRefresh.setToolTipText(StringConstants.PA_BTN_TIP_REFRESH);
         tltmRefresh.setImage(ImageConstants.IMG_16_REFRESH);
 
         Composite compositeTable = new Composite(composite, SWT.NONE);
@@ -306,8 +301,8 @@ public class GlobalVariablePart implements EventHandler {
                     ProjectEntity project = ProjectController.getInstance().getCurrentProject();
                     if (project != null) {
                         if (mpart.isDirty()) {
-                            MessageDialog.openInformation(tltmRefresh.getDisplay().getActiveShell(),
-                                    StringConstants.PA_INFO_TITLE, StringConstants.PA_INFO_MSG_REQUIRE_SAVE_B4_REFRESH);
+                            MessageDialog.openWarning(tltmRefresh.getDisplay().getActiveShell(), StringConstants.WARN,
+                                    StringConstants.PA_INFO_MSG_REQUIRE_SAVE_B4_REFRESH);
                             return;
                         }
                         List<GlobalVariableEntity> globalVariables = GlobalVariableController.getInstance()

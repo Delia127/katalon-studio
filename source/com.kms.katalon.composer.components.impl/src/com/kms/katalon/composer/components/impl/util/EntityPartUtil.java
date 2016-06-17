@@ -21,12 +21,15 @@ import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestDataController;
+import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.IEntity;
+import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
 
@@ -43,6 +46,10 @@ public class EntityPartUtil {
     public static String getTestSuiteCompositePartId(String testSuitePk) {
         return IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX + "(" + testSuitePk + ")";
     }
+    
+    public static String getTestSuiteCollectionPartId(String testRunId) {
+        return IdConstants.TEST_SUITE_COLLECTION_CONTENT_PART_ID_PREFIX + "(" + testRunId + ")";
+    }
 
     public static String getTestDataPartId(String testDataPk) {
         return IdConstants.TESTDATA_CONTENT_PART_ID_PREFIX + "(" + testDataPk + ")";
@@ -50,6 +57,10 @@ public class EntityPartUtil {
 
     public static String getReportPartId(String reportPk) {
         return IdConstants.REPORT_CONTENT_PART_ID_PREFIX + "(" + reportPk + ")";
+    }
+
+    public static String getReportCollectionPartId(String reportCollectionId) {
+        return IdConstants.REPORT_COLLECTION_CONTENT_PART_ID_PREFIX + "(" + reportCollectionId + ")";
     }
 
     public static void closePart(IEntity entity) {
@@ -70,7 +81,11 @@ public class EntityPartUtil {
         } else if (entity instanceof TestSuiteEntity) {
             partId = getTestSuiteCompositePartId(entityId);
         } else if (entity instanceof ReportEntity) {
-            partId = getReportPartId(entity.getId());
+            partId = getReportPartId(entityId);
+        } else if (entity instanceof TestSuiteCollectionEntity) {
+            partId = getTestSuiteCollectionPartId(entityId);
+        } else if (entity instanceof ReportCollectionEntity) {
+            partId = getReportCollectionPartId(entityId);
         } else {
             return;
         }
@@ -112,6 +127,10 @@ public class EntityPartUtil {
                 String reportId = partElementId.substring(IdConstants.REPORT_CONTENT_PART_ID_PREFIX.length() + 1,
                         partElementId.lastIndexOf(")"));
                 return ReportController.getInstance().getReportEntity(reportId);
+            } else if (partElementId.startsWith(IdConstants.TEST_SUITE_COLLECTION_CONTENT_PART_ID_PREFIX)) {
+                String testRunId = partElementId.substring(IdConstants.TEST_SUITE_COLLECTION_CONTENT_PART_ID_PREFIX.length() + 1,
+                        partElementId.lastIndexOf(")"));
+                return TestSuiteCollectionController.getInstance().getTestSuiteCollection(testRunId);
             }
             return null;
         } catch (Exception ex) {

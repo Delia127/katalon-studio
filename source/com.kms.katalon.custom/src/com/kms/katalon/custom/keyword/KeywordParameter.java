@@ -39,4 +39,11 @@ public class KeywordParameter {
     public boolean isFailureHandlingParam() {
         return FailureHandling.class.getName().equals(getType().getName());
     }
+    
+    public boolean isClassAssignable(String childClass) {
+        try {
+            return Class.forName(this.getType().getName()).isAssignableFrom(Class.forName(childClass));
+        } catch (ClassNotFoundException cnf) {}
+        return false;
+    }
 }

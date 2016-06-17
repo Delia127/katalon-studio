@@ -12,9 +12,11 @@ import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.ReportCollectionTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.TestSuiteCollectionTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
@@ -24,15 +26,18 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestDataController;
+import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
 import com.kms.katalon.groovy.util.GroovyUtil;
@@ -62,6 +67,10 @@ public class TreeEntityUtil {
                     childrenEntities[i] = new WebElementTreeEntity((WebElementEntity) childrenEntities[i], folderTreeEntity);
                 } else if (childrenEntities[i] instanceof ReportEntity) {
                     childrenEntities[i] = new ReportTreeEntity((ReportEntity) childrenEntities[i], folderTreeEntity);
+                } else if (childrenEntities[i] instanceof TestSuiteCollectionEntity) { 
+                    childrenEntities[i] = new TestSuiteCollectionTreeEntity((TestSuiteCollectionEntity) childrenEntities[i], folderTreeEntity);
+                } else if (childrenEntities[i] instanceof ReportCollectionEntity) {
+                    childrenEntities[i] = new ReportCollectionTreeEntity((ReportCollectionEntity) childrenEntities[i], folderTreeEntity);
                 }
             }
             return childrenEntities;
@@ -132,6 +141,13 @@ public class TreeEntityUtil {
             }
         }
         return null;
+    }
+    
+    public static TestSuiteCollectionTreeEntity getTestRunTreeEntity(TestSuiteCollectionEntity reportEntity, ProjectEntity projectEntity)
+            throws Exception {
+        FolderEntity testCaseRootFolder = FolderController.getInstance().getReportRoot(projectEntity);
+        return new TestSuiteCollectionTreeEntity(reportEntity, createSelectedTreeEntityHierachy(reportEntity.getParentFolder(),
+                testCaseRootFolder));
     }
 
     /**
@@ -288,6 +304,10 @@ public class TreeEntityUtil {
             } else if (StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_KEYWORD)) {
                 // Keyword
                 treeEntities.add(TreeEntityUtil.getKeywordTreeEntity(id, project));
+            } else if (StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_TESTRUN)) {
+                // TestRun
+                TestSuiteCollectionEntity tr = TestSuiteCollectionController.getInstance().getTestRunByDisplayId(id);
+                treeEntities.add(TreeEntityUtil.getTestRunTreeEntity(tr, project));
             }
         }
         return treeEntities;

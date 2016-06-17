@@ -18,6 +18,7 @@ import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.BadLocationException;
 
 import com.kms.katalon.composer.codeassist.proposal.completion.KatalonMethodCompletionProposal;
+import com.kms.katalon.composer.codeassist.util.KatalonContextUtil;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.custom.keyword.KeywordMethod;
 import com.kms.katalon.custom.keyword.KeywordParameter;
@@ -114,7 +115,9 @@ public class KatalonMethodNodeProposal extends GroovyMethodProposal {
         try {
             String insideParens = javaContext.getDocument().get(methodNameEnd, context.completionEnd - methodNameEnd);
 
-            return new StringBuilder(String.valueOf(parentCompletionName)).append(insideParens).append(")").toString()
+            return new StringBuilder(String.valueOf(parentCompletionName)).append(insideParens)
+                    .append(")")
+                    .toString()
                     .toCharArray();
         } catch (BadLocationException e) {
             return parentCompletionName;
@@ -124,8 +127,10 @@ public class KatalonMethodNodeProposal extends GroovyMethodProposal {
     @Override
     protected char[][] createAllParameterNames(ICompilationUnit unit) {
         try {
+
             KeywordMethod methodNode = KeywordController.getInstance().getBuiltInKeywordByName(
-                    method.getDeclaringClass().getName(), method.getName());
+                    method.getDeclaringClass().getName(), method.getName(),
+                    KatalonContextUtil.getAstParameterTypes(method.getParameters()));
 
             Parameter[] params = method.getParameters();
             int numParams = params == null ? 0 : params.length;

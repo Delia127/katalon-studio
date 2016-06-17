@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.ast.stmt.CatchStatement;
+import org.codehaus.groovy.ast.stmt.Statement;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
@@ -23,7 +24,7 @@ public class CatchStatementWrapper extends ComplexChildStatementWrapper {
     }
 
     public CatchStatementWrapper(CatchStatement catchStatement, TryCatchStatementWrapper parentTryCatchStatement) {
-        super(catchStatement, (BlockStatement) catchStatement.getCode(), parentTryCatchStatement);
+        super(catchStatement, initCodeBlock(catchStatement), parentTryCatchStatement);
         this.variable = new ParameterWrapper(catchStatement.getVariable(), this);
     }
 
@@ -35,6 +36,16 @@ public class CatchStatementWrapper extends ComplexChildStatementWrapper {
 
     public CatchStatementWrapper() {
         this(null);
+    }
+    
+    private static BlockStatement initCodeBlock(CatchStatement catchStatement) {
+        Statement code = catchStatement.getCode();
+        if (code instanceof BlockStatement) {
+            return (BlockStatement) code;
+        }
+        BlockStatement block = new BlockStatement();
+        block.addStatement(code);
+        return block;
     }
 
     public ParameterWrapper getVariable() {

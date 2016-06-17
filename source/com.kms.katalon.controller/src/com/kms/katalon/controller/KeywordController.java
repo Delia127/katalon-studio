@@ -52,14 +52,22 @@ public class KeywordController extends EntityController {
         return BuiltInMethodNodeFactory.findClass(className) != null;
     }
 
-    public KeywordMethod getBuiltInKeywordByName(String className, String keywordName) {
-        return BuiltInMethodNodeFactory.findMethod(className, keywordName);
+    public KeywordMethod getBuiltInKeywordByName(String className, String keywordName, String[] paramTypes) {
+        return BuiltInMethodNodeFactory.findMethod(className, keywordName, paramTypes);
     }
-
+    
+    public KeywordMethod getBuiltInKeywordByName(String className, String keywordName) {
+        return BuiltInMethodNodeFactory.findMethod(className, keywordName, null);
+    }
+    
     public List<KeywordMethod> getBuiltInKeywords(String builtInKeywordClassName) {
         return BuiltInMethodNodeFactory.getFilteredMethods(builtInKeywordClassName);
     }
 
+    public List<KeywordMethod> getBuiltInKeywords(String builtInKeywordClassName, boolean excludeFlowControl) {
+        return BuiltInMethodNodeFactory.getFilteredMethods(builtInKeywordClassName, excludeFlowControl);
+    }
+    
     public List<MethodNode> getCustomKeywords(ProjectEntity project) {
         return CustomKeywordParser.getInstance().getAllMethodNodes(GroovyUtil.getCustomKeywordLibFolder(project));
     }

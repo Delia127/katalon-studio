@@ -41,7 +41,6 @@ import com.kms.katalon.execution.collector.DriverConnectorCollector;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.configuration.CustomRunConfiguration;
 import com.kms.katalon.execution.configuration.IDriverConnector;
-import com.kms.katalon.execution.configuration.contributor.CustomRunConfigurationContributor;
 import com.kms.katalon.execution.exception.ExecutionException;
 
 public class CustomExecutionSettingPage extends PreferencePage {
@@ -58,11 +57,10 @@ public class CustomExecutionSettingPage extends PreferencePage {
     public CustomExecutionSettingPage() {
         customRunConfigurationList = new ArrayList<CustomRunConfiguration>();
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
-        for (CustomRunConfigurationContributor customRunConfigurationContributor : RunConfigurationCollector
-                .getInstance().getAllCustomRunConfigurationContributors()) {
+        for (String customRunConfigurationId : RunConfigurationCollector.getInstance()
+                .getAllCustomRunConfigurationIds()) {
             try {
-                customRunConfigurationList.add(new CustomRunConfiguration(projectDir, customRunConfigurationContributor
-                        .getId()));
+                customRunConfigurationList.add(new CustomRunConfiguration(projectDir, customRunConfigurationId));
             } catch (IOException | ExecutionException e) {
                 LoggerSingleton.logError(e);
             }

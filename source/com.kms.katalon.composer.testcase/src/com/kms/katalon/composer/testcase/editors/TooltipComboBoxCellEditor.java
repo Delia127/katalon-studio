@@ -2,6 +2,7 @@ package com.kms.katalon.composer.testcase.editors;
 
 import java.text.MessageFormat;
 
+import org.codehaus.groovy.ast.MethodNode;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.SWT;
@@ -17,7 +18,9 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.testcase.components.TooltipCCombo;
+import com.kms.katalon.custom.keyword.KeywordMethod;
 
 /**
  * Cell editor that use TooltipCCombo
@@ -28,7 +31,7 @@ public class TooltipComboBoxCellEditor extends CellEditor {
     /**
      * The list of items to present in the combo box.
      */
-    private String[] items;
+    private Object[] items;
 
     /**
      * The list of tooltips to present in the combo box;
@@ -67,11 +70,11 @@ public class TooltipComboBoxCellEditor extends CellEditor {
      * validator and the first item in the list is selected.
      *
      * @param parent
-     *            the parent control
+     * the parent control
      * @param items
-     *            the list of strings for the combo box
+     * the list of strings for the combo box
      */
-    public TooltipComboBoxCellEditor(Composite parent, String[] items, String[] toolTips) {
+    public TooltipComboBoxCellEditor(Composite parent, Object[] items, String[] toolTips) {
         this(parent, items, toolTips, defaultStyle);
     }
 
@@ -81,14 +84,14 @@ public class TooltipComboBoxCellEditor extends CellEditor {
      * validator and the first item in the list is selected.
      *
      * @param parent
-     *            the parent control
+     * the parent control
      * @param items
-     *            the list of strings for the combo box
+     * the list of strings for the combo box
      * @param style
-     *            the style bits
+     * the style bits
      * @since 2.1
      */
-    public TooltipComboBoxCellEditor(Composite parent, String[] items, String[] toolTips, int style) {
+    public TooltipComboBoxCellEditor(Composite parent, Object[] items, String[] toolTips, int style) {
         super(parent, style);
         setItems(items, toolTips);
     }
@@ -98,7 +101,7 @@ public class TooltipComboBoxCellEditor extends CellEditor {
      *
      * @return the list of choices for the combo box
      */
-    public String[] getItems() {
+    public Object[] getItems() {
         return this.items;
     }
 
@@ -106,9 +109,9 @@ public class TooltipComboBoxCellEditor extends CellEditor {
      * Sets the list of choices for the combo box
      *
      * @param items
-     *            the list of choices for the combo box
+     * the list of choices for the combo box
      */
-    public void setItems(String[] items, String[] toolTips) {
+    public void setItems(Object[] items, String[] toolTips) {
         Assert.isNotNull(items);
         Assert.isNotNull(toolTips);
         this.items = items;
@@ -207,7 +210,7 @@ public class TooltipComboBoxCellEditor extends CellEditor {
      * zero-based index of a selection.
      *
      * @param value
-     *            the zero-based index of the selection wrapped as an <code>Integer</code>
+     * the zero-based index of the selection wrapped as an <code>Integer</code>
      */
     @Override
     protected void doSetValue(Object value) {
@@ -223,7 +226,8 @@ public class TooltipComboBoxCellEditor extends CellEditor {
         if (comboBox != null && items != null) {
             comboBox.removeAll();
             for (int i = 0; i < items.length; i++) {
-                comboBox.add(items[i], i, (i < toolTips.length) ? toolTips[i] : "");
+                String itemText = getItemText(items[i]);
+                comboBox.add(itemText, i, (i < toolTips.length) ? toolTips[i] : "");
             }
 
             setValueValid(true);
@@ -273,5 +277,15 @@ public class TooltipComboBoxCellEditor extends CellEditor {
         } else if (keyEvent.character == '\t') { // tab key
             applyEditorValueAndDeactivate();
         }
+    }
+    
+    private String getItemText(Object item){
+    	if (item instanceof KeywordMethod) {
+    	    TreeEntityUtil.getReadableKeywordName(((KeywordMethod) item).getName());
+        }
+        if (item instanceof MethodNode) {
+            TreeEntityUtil.getReadableKeywordName(((MethodNode) item).getName());
+        }
+        return item.toString();
     }
 }

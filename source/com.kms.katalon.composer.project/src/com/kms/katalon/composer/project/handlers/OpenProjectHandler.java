@@ -132,7 +132,6 @@ public class OpenProjectHandler {
                                             .getKeywordRoot(project), null));
                                     treeEntities.add(new FolderTreeEntity(FolderController.getInstance().getReportRoot(
                                             project), null));
-
                                     // Set project name on window title
                                     OpenProjectHandler.updateProjectTitle(project, modelService, app);
                                 }
@@ -149,7 +148,7 @@ public class OpenProjectHandler {
                     monitor.worked(1);
 
                     TimeUnit.SECONDS.sleep(1);
-                    eventBroker.send(EventConstants.PROJECT_OPENED, null);
+                    eventBroker.post(EventConstants.PROJECT_OPENED, null);
                     return;
                 } catch (final Exception e) {
                     sync.syncExec(new Runnable() {

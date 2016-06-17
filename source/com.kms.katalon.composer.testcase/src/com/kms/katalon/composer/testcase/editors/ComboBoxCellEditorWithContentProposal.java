@@ -2,6 +2,7 @@ package com.kms.katalon.composer.testcase.editors;
 
 import java.util.ArrayList;
 
+import org.codehaus.groovy.ast.MethodNode;
 import org.eclipse.jface.fieldassist.ContentProposal;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.jface.fieldassist.IContentProposal;
@@ -15,15 +16,20 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 import com.kms.katalon.composer.components.adapter.CComboContentAdapter;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.testcase.model.ContentProposalCheck;
+import com.kms.katalon.custom.keyword.KeywordMethod;
 
 public class ComboBoxCellEditorWithContentProposal extends TooltipComboBoxCellEditor {
     private ContentProposalCheck contentProposalCheck;
-    protected String[] items;
+
+    protected Object[] items;
+
     protected String[] toolTips;
+
     private ContentProposalAdapter adapter;
 
-    public ComboBoxCellEditorWithContentProposal(Composite parent, String[] items, String[] toolTips) {
+    public ComboBoxCellEditorWithContentProposal(Composite parent, Object[] items, String[] toolTips) {
         super(parent, items, toolTips);
         this.contentProposalCheck = new ContentProposalCheck();
         this.items = items;
@@ -59,9 +65,10 @@ public class ComboBoxCellEditorWithContentProposal extends TooltipComboBoxCellEd
                 public IContentProposal[] getProposals(String contents, int position) {
                     ArrayList<ContentProposal> list = new ArrayList<ContentProposal>();
                     for (int i = 0; i < items.length; i++) {
-                        if (items[i].length() >= contents.length()
-                                && items[i].substring(0, contents.length()).equalsIgnoreCase(contents)) {
-                            list.add(new ContentProposal(items[i], toolTips[i]));
+                        String itemText = getItemText(items[i]);
+                        if (itemText.length() >= contents.length()
+                                && itemText.substring(0, contents.length()).equalsIgnoreCase(contents)) {
+                            list.add(new ContentProposal(itemText, toolTips[i]));
                         }
                     }
                     return list.toArray(new IContentProposal[list.size()]);
@@ -106,4 +113,13 @@ public class ComboBoxCellEditorWithContentProposal extends TooltipComboBoxCellEd
         return control;
     }
 
+    private String getItemText(Object item){
+        if (item instanceof KeywordMethod) {
+            return TreeEntityUtil.getReadableKeywordName(((KeywordMethod) item).getName());
+        } 
+        if (item instanceof MethodNode) {
+            return TreeEntityUtil.getReadableKeywordName(((MethodNode) item).getName());
+        }
+        return item.toString();
+    }
 }

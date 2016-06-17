@@ -96,7 +96,7 @@ public class AstKeywordsInputUtil {
         return createBuiltInKeywordStatement(classSimpleName, keyword, null);
     }
 
-    public static ExpressionStatementWrapper createBuiltInKeywordStatement(String classSimpleName, String keyword,
+    private static ExpressionStatementWrapper createBuiltInKeywordStatement(String classSimpleName, String keyword,
             ASTNodeWrapper parentNode) {
         MethodCallExpressionWrapper keywordMethodCallExpression = new MethodCallExpressionWrapper(classSimpleName,
                 keyword);
@@ -110,7 +110,7 @@ public class AstKeywordsInputUtil {
             return null;
         }
         KeywordMethod keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(buitInKWClassSimpleName,
-                keyword);
+                keyword, argumentListExpression.getArgumentListParameterTypes());
         if (keywordMethod == null || keywordMethod.getParameters().length == 0) {
             return Collections.emptyList();
         }

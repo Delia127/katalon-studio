@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.objectrepository.handler;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -19,6 +21,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.wizard.RenameWizard;
 import com.kms.katalon.composer.objectrepository.constant.StringConstants;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.entity.repository.WebElementEntity;
 
@@ -49,12 +52,13 @@ public class RenameTestObjectHandler {
     private void execute(WebElementTreeEntity webElementTreeEntity) {
         try {
             if (webElementTreeEntity.getObject() instanceof WebElementEntity) {
-                RenameWizard renameWizard = new RenameWizard(webElementTreeEntity, ObjectRepositoryController
-                        .getInstance().getSibblingWebElementNames((WebElementEntity) webElementTreeEntity.getObject()));
+                WebElementEntity webElement = (WebElementEntity) webElementTreeEntity.getObject();
+                List<String> existingNames = FolderController.getInstance().getChildrenNames(
+                        webElement.getParentFolder());
+                RenameWizard renameWizard = new RenameWizard(webElementTreeEntity, existingNames);
                 CWizardDialog wizardDialog = new CWizardDialog(parentShell, renameWizard);
                 int code = wizardDialog.open();
                 if (code == Window.OK) {
-                    WebElementEntity webElement = (WebElementEntity) webElementTreeEntity.getObject();
                     String oldName = webElement.getName();
                     String pk = webElement.getId();
                     String oldIdForDisplay = webElement.getIdForDisplay();

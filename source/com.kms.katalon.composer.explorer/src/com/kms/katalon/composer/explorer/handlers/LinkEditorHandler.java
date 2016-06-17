@@ -42,6 +42,7 @@ import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
@@ -119,6 +120,8 @@ public class LinkEditorHandler implements EventHandler {
                     treeEntity = TreeEntityUtil.getTestDataTreeEntity((DataFileEntity) entity, projectEntity);
                 } else if (entity instanceof ReportEntity) {
                     treeEntity = TreeEntityUtil.getReportTreeEntity((ReportEntity) entity, projectEntity);
+                } else if (entity instanceof TestSuiteCollectionEntity) {
+                    treeEntity = TreeEntityUtil.getTestRunTreeEntity((TestSuiteCollectionEntity) entity, projectEntity);
                 }
             } else {
                 treeEntity = getKeywordTreeEntity(mpart);

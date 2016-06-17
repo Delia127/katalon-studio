@@ -117,7 +117,7 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         propertyMap.put(RunConfiguration.PROJECT_DIR_PROPERTY, getProjectFolderLocation());
 
         propertyMap.put(RunConfiguration.HOST, hostConfiguration.getProperties());
-
+        
         propertyMap.putAll(ExecutionUtil.getExecutionProperties(executionSetting, getDriverConnectors()));
 
         return propertyMap;

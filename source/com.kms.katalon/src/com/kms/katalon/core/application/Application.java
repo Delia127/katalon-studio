@@ -21,7 +21,7 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.execution.console.ConsoleMain;
-import com.kms.katalon.execution.launcher.model.LauncherResult;
+import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.util.ApplicationInfo;
 
 /**
@@ -47,11 +47,13 @@ public class Application implements IApplication {
 
         preRunInit();
         final Map<?, ?> args = context.getArguments();
-        final String[] appArgs = (String[]) args.get("application.args");
+        final String[] appArgs = (String[]) args.get(IApplicationContext.APPLICATION_ARGS);
 
         RunningModeParam runningModeParam = getRunningModeParamFromParam(parseOption(appArgs));
         switch (runningModeParam) {
             case CONSOLE:
+                // hide splash screen
+                context.applicationRunning();
                 return runConsole(appArgs);
             case GUI:
                 return runGUI();

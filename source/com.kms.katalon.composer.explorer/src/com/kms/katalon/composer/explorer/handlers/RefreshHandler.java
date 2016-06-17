@@ -1,22 +1,24 @@
 package com.kms.katalon.composer.explorer.handlers;
 
+import com.kms.katalon.composer.components.impl.handler.CommonExplorerHandler;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.constants.EventConstants;
 
-public class RefreshHandler extends AbstractHandler {
+public class RefreshHandler extends CommonExplorerHandler {
 
     @Override
     public boolean canExecute() {
-        if (getSelection() == null) {
-            return false;
-        }
-        return true;
+        return getExplorerSelection().length != 0;
     }
 
     @Override
     public void execute() {
-        Object[] selectedObjects = getSelection();
-        if (selectedObjects == null) {
+        if (isExplorerPartNotActive()) {
+            return;
+        }
+
+        Object[] selectedObjects = getExplorerSelection();
+        if (selectedObjects.length == 0) {
             return;
         }
 

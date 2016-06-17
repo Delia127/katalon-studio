@@ -19,6 +19,8 @@ import com.kms.katalon.core.main.TestResult
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testcase.TestCase
 import com.kms.katalon.core.testcase.TestCaseBinding
+import java.text.MessageFormat
+import com.kms.katalon.core.configuration.RunConfiguration
 
 @CompileStatic
 public class BuiltinKeywords {
@@ -55,13 +57,31 @@ public class BuiltinKeywords {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ACTUAL_TXT_MATCHED_EXPECTED_TXT, actualText, expectedText, regularExpressionLog));
                 return true;
             } else {
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_ACTUAL_TXT_NOT_MATCHED_EXPECTED_TXT, actualText, expectedText, regularExpressionLog), flowControl, null);
+                throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_ACTUAL_TXT_NOT_MATCHED_EXPECTED_TXT, actualText, expectedText, regularExpressionLog));
                 return false;
             }
         }
-        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_MATCHING_BETWEEN_TXTS, actualText, expectedText, regularExpressionLog))
+        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_MATCHING_BETWEEN_TXTS, actualText, 
+            expectedText, regularExpressionLog), true)
     }
 
+    /**
+     * Verify if two strings match each other, the second string can be a
+     * regular expression.
+     *
+     * @param actualText
+     * @param expectedText
+     * @param isRegex
+     *            whether string2 is regular expression or not, has two values
+     *            true, false (default if left empty)
+     * @return whether two strings match, has two values true, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
+    public static boolean verifyMatch(String actualText, String expectedText, boolean isRegex) throws StepFailedException {
+        return verifyMatch(actualText, expectedText, isRegex, RunConfiguration.getDefaultFailureHandling());
+    }
 
     /**
      * Verify if two strings do not match each other, the second string can be a
@@ -83,17 +103,35 @@ public class BuiltinKeywords {
         return KeywordMain.runKeyword({
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_MATCHING_ACTUAL_TXT_W_EXPECTED_VAL, actualText, expectedText, regularExpressionLog));
             if (KeywordHelper.match(actualText, expectedText, isRegex)) {
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_TXTS_MATCHED_BUT_EXPECTED_UNMATCHED, actualText, expectedText, regularExpressionLog), flowControl, null);
+                throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_TXTS_MATCHED_BUT_EXPECTED_UNMATCHED, actualText, expectedText, regularExpressionLog));
                 return false;
             } else {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TXTS_UNMATCHED, actualText, expectedText, regularExpressionLog));
                 return true;
             }
         }
-        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_TXTS_ARE_UNMATCHED, actualText, expectedText, regularExpressionLog))
+        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_TXTS_ARE_UNMATCHED, actualText, expectedText, 
+            regularExpressionLog), true)
     }
 
-
+    /**
+     * Verify if two strings do not match each other, the second string can be a
+     * regular expression.
+     *
+     * @param actualText
+     * @param expectedText
+     * @param isRegex
+     *            whether string2 is regular expression or not, has two values
+     *            true, false (default if left empty)
+     * @return whether two strings do not match, has two values true, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
+    public static boolean verifyNotMatch(String actualText, String expectedText, boolean isRegex) throws StepFailedException {
+        return verifyNotMatch(actualText, expectedText, isRegex, RunConfiguration.getDefaultFailureHandling());
+    }
+    
     /**
      * Verify if two objects are equal.
      *
@@ -116,18 +154,31 @@ public class BuiltinKeywords {
                 isEqual = actualObject == expectedObject;
             }
             if (!isEqual) {
-                KeywordMain.stepFailed(
-                        MessageFormat.format(StringConstants.KW_MSG_OBJECTS_ARE_NOT_EQUAL, String.valueOf(actualObject), String.valueOf(expectedObject)), flowControl, null);
-                return false;
+                throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_OBJECTS_ARE_NOT_EQUAL, 
+                    String.valueOf(actualObject), String.valueOf(expectedObject)))
             } else {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJECTS_ARE_EQUAL, String.valueOf(actualObject), String.valueOf(expectedObject)));
             }
             return isEqual;
         }
-        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJECTS_ARE_EQUAL, actualObject, expectedObject))
+        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJECTS_ARE_EQUAL, actualObject, 
+            expectedObject), true)
     }
 
-
+    /**
+     * Verify if two objects are equal.
+     *
+     * @param actualObject
+     * @param expectedObject
+     * @return true if actual object is equals with expected object; otherwise, false
+     * @throws StepFailedException
+     * @throws StepErrorException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_NUMBER)
+    public static boolean verifyEqual(Object actualObject, Object expectedObject) throws StepFailedException, StepErrorException {
+        return verifyEqual(actualObject, expectedObject, RunConfiguration.getDefaultFailureHandling());
+    }
 
     /**
      * Verify if two objects are not equal.
@@ -151,16 +202,32 @@ public class BuiltinKeywords {
                 isEqual = actualObject == expectedObject;
             }
             if (isEqual) {
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJECTS_ARE_EQUAL, String.valueOf(actualObject), String.valueOf(expectedObject)), flowControl, null);
+                throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_OBJECTS_ARE_EQUAL, String.valueOf(actualObject), String.valueOf(expectedObject)));
                 return false;
             } else {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJECTS_ARE_NOT_EQUAL, String.valueOf(actualObject), String.valueOf(expectedObject)));
             }
             return !isEqual;
         }
-        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJECTS_ARE_NOT_EQUAL, actualObject, expectedObject))
+        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJECTS_ARE_NOT_EQUAL, actualObject, 
+            expectedObject), true)
     }
 
+    /**
+     * Verify if two objects are not equal.
+     *
+     * @param actualNumber
+     * @param expectedNumber
+     * @return true if actual object is not equals with expected object; otherwise, false
+     * @throws StepFailedException
+     * @throws StepErrorException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_NUMBER)
+    public static boolean verifyNotEqual(Object actualObject, Object expectedObject) throws StepFailedException, StepErrorException {
+        return verifyNotEqual(actualObject, expectedObject, RunConfiguration.getDefaultFailureHandling());    
+    }
+    
     /**
      * Verify if the actual number is greater than the expected number
      * @param actualNumber
@@ -178,12 +245,27 @@ public class BuiltinKeywords {
             if (isGreaterThan) {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ACTUAL_NUM_IS_GREATER_THAN_EXPECTED_NUM, actualNumber, expectedNumber));
             } else {
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_ACTUAL_NUM_IS_NOT_GREATER_THAN_EXPECTED_NUM, actualNumber, expectedNumber), flowControl, null);
+                throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_ACTUAL_NUM_IS_NOT_GREATER_THAN_EXPECTED_NUM, actualNumber, expectedNumber));
                 return false;
             }
             return isGreaterThan;
         }
-        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_GREATER, actualNumber, expectedNumber))
+        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_GREATER, actualNumber, expectedNumber), 
+        , true)
+    }
+    
+    /**
+     * Verify if the actual number is greater than the expected number
+     * @param actualNumber
+     * @param expectedNumber
+     * @return
+     *      true the actual number is greater than the expected number; otherwise false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_NUMBER)
+    public static boolean verifyGreaterThan(Object actualNumber, Object expectedNumber) throws StepFailedException {
+        return verifyGreaterThan(actualNumber, expectedNumber, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -203,13 +285,28 @@ public class BuiltinKeywords {
             if (isGreaterThanOrEqual) {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ACTUAL_NUM_IS_GT_OR_EQ_TO_EXPECTED_NUM, actualNumber, expectedNumber));
             } else {
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_ACTUAL_NUM_IS_NOT_GT_OR_EQ_TO_EXPECTED_NUM, actualNumber, expectedNumber), flowControl, null);
+                throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_ACTUAL_NUM_IS_NOT_GT_OR_EQ_TO_EXPECTED_NUM, actualNumber, expectedNumber));
             }
             return isGreaterThanOrEqual;
         }
-        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_NUMS_ARE_GT_OR_EQ, actualNumber, expectedNumber))
+        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_NUMS_ARE_GT_OR_EQ, actualNumber, 
+            expectedNumber), true)
     }
 
+    /**
+     * Verify if the actual number is greater than or equal with the expected number
+     * @param actualNumber
+     * @param expectedNumber
+     * @return
+     *      true the actual number is greater than or equal with the expected number ; otherwise false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_NUMBER)
+    public static boolean verifyGreaterThanOrEqual(Object actualNumber, Object expectedNumber) throws StepFailedException {
+        return verifyGreaterThanOrEqual(actualNumber, expectedNumber, RunConfiguration.getDefaultFailureHandling());
+    }
+    
     /**
      * Verify if the actual number is less than the expected number
      * @param actualNumber
@@ -227,12 +324,27 @@ public class BuiltinKeywords {
             if (isLessThan) {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ACTUAL_NUM_IS_LT_EXPECTED_NUM, actualNumber, expectedNumber));
             } else {
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_ACTUAL_NUM_IS_NOT_LT_EXPECTED_NUM, actualNumber, expectedNumber), flowControl, null);
+                throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_ACTUAL_NUM_IS_NOT_LT_EXPECTED_NUM, actualNumber, expectedNumber));
                 return false;
             }
             return isLessThan;
         }
-        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_LT, actualNumber, expectedNumber))
+        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_LT, actualNumber
+            , expectedNumber), true)
+    }
+    
+    /**
+     * Verify if the actual number is less than the expected number
+     * @param actualNumber
+     * @param expectedNumber
+     * @return
+     *      true the actual number is less than the expected number; otherwise false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_NUMBER)
+    public static boolean verifyLessThan(Object actualNumber, Object expectedNumber) throws StepFailedException {
+        return verifyLessThan(actualNumber, expectedNumber, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -252,12 +364,27 @@ public class BuiltinKeywords {
             if (isLessThanOrEqual) {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ACTUAL_NUM_IS_LT_OR_EQ_TO_EXPECTED_NUM, actualNumber, expectedNumber));
             } else {
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_ACTUAL_NUM_IS_NOT_LT_OR_EQ_EXPECTED_NUM, actualNumber, expectedNumber), flowControl, null);
+                throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_ACTUAL_NUM_IS_NOT_LT_OR_EQ_EXPECTED_NUM, actualNumber, expectedNumber));
                 return false;
             }
             return isLessThanOrEqual;
         }
-        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_LT_OR_EQ_TO, actualNumber, expectedNumber))
+        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_LT_OR_EQ_TO, actualNumber, 
+            expectedNumber), true)
+    }
+    
+    /**
+     * Verify if the actual number is less than or equal with the expected number
+     * @param actualNumber
+     * @param expectedNumber
+     * @return
+     *      true the actual number is less than or equal with the expected number; otherwise false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_NUMBER)
+    public static boolean verifyLessThanOrEqual(Object actualNumber, Object expectedNumber) throws StepFailedException {
+        return verifyLessThanOrEqual(actualNumber, expectedNumber, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -293,7 +420,22 @@ public class BuiltinKeywords {
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_CONCAT_STR_ARRAY, stringArrayValue, sb.toString()));
             return sb.toString();
         }
-        , flowControl, (stringArrayValue != null) ? MessageFormat.format(StringConstants.KW_CANNOT_CONCAT_STR_ARRAY, stringArrayValue) : StringConstants.KW_CANNOT_CONCAT)
+        , flowControl, (stringArrayValue != null) ? MessageFormat.format(StringConstants.KW_CANNOT_CONCAT_STR_ARRAY, 
+            stringArrayValue) : StringConstants.KW_CANNOT_CONCAT, true)
+    }
+    
+    /**
+     * Concatenate string array into a single string
+     * @param strings
+     *      a string array
+     * @return
+     *      the result string
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
+    public static String concatenate(String[] strings) throws StepFailedException {
+        return concatenate(strings, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -321,11 +463,10 @@ public class BuiltinKeywords {
                         calledTestCase.getTestCaseId(), binding), flowControl);
                 switch (result.getTestStatus().getStatusValue()) {
                     case TestStatus.TestStatusValue.FAILED:
-                        KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_CALL_TC_FAILED, calledTestCase.getTestCaseId()), flowControl, result.getMessage());
+                        throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_CALL_TC_FAILED, calledTestCase.getTestCaseId()));
                         break;
                     case TestStatus.TestStatusValue.ERROR:
-                        KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_CALL_TC_X_FAILED_BECAUSE_OF_ERROR, calledTestCase.getTestCaseId()),
-                        flowControl, result.getMessage());
+                        throw new StepErrorException(MessageFormat.format(StringConstants.KW_MSG_CALL_TC_X_FAILED_BECAUSE_OF_ERROR, calledTestCase.getTestCaseId()));
                         break;
                     case TestStatus.TestStatusValue.PASSED:
                         logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_CALL_TC_X_SUCCESSFULLY, calledTestCase.getTestCaseId()));
@@ -342,7 +483,21 @@ public class BuiltinKeywords {
             }
         }
         , flowControl, (calledTestCase != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_CALL_TC_W_ID_X, calledTestCase.getTestCaseId())
-        : StringConstants.KW_MSG_CANNOT_CALL_TC)
+        : StringConstants.KW_MSG_CANNOT_CALL_TC, true)
+    }
+    
+    /**
+     * Call and execute another test case
+     * @param calledTestCase
+     *      represent a test case
+     * @param binding
+     *      map object contain variables bindings for the called test case
+     * @throws Exception
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static Object callTestCase(TestCase calledTestCase, Map<String, Object> binding) throws Exception {
+        return callTestCase(calledTestCase, binding, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -365,6 +520,18 @@ public class BuiltinKeywords {
             }
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_DELAYED_SEC, second));
         }
-        , flowControl, StringConstants.KW_MSG_CANNOT_DELAY_BROWSER)
+        , flowControl, StringConstants.KW_MSG_CANNOT_DELAY_BROWSER, true)
+    }
+    
+    /**
+     * Delay execution for a specific time (in seconds)
+     * @param second
+     *      number of seconds to delay
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static void delay(Object second) throws StepFailedException {
+        delay(second, RunConfiguration.getDefaultFailureHandling());
     }
 }

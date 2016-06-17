@@ -36,7 +36,6 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String ERROR_TITLE = ERROR;
 	public static final String PA_ERROR_MSG_UNABLE_TO_UPDATE_VAR_REFERENCES = "Unable to update references of the selected variable.";
 	public static final String PA_ERROR_MSG_UNABLE_TO_SAVE_ALL_VAR = "Unable to save all global variables";
-	public static final String PA_INFO_TITLE = "";
 	public static final String PA_INFO_MSG_REQUIRE_SAVE_B4_REFRESH = "System needs to save before refreshing";
 	public static final String PA_WARN_TITLE_INVALID_VAR = "Invalid Variable";
 	public static final String PA_WARN_MSG_INVALID_VAR_NAME = "Variable''s name ''{0}'' is not a valid qualifier.";

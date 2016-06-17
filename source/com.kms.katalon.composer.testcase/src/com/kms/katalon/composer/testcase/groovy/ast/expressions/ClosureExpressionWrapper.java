@@ -6,8 +6,10 @@ import java.util.List;
 import org.codehaus.groovy.ast.ClassHelper;
 import org.codehaus.groovy.ast.expr.ClosureExpression;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
+import org.codehaus.groovy.ast.stmt.Statement;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ASTHasBlock;
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapHelper;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ParameterWrapper;
@@ -31,7 +33,17 @@ public class ClosureExpressionWrapper extends ExpressionWrapper implements ASTHa
         for (int i = 0; i < closureExpression.getParameters().length; i++) {
             parameters[i] = new ParameterWrapper(closureExpression.getParameters()[i], this);
         }
-        this.code = new BlockStatementWrapper((BlockStatement) closureExpression.getCode(), this);
+        initCodeBlock(closureExpression);
+    }
+    
+    private void initCodeBlock(ClosureExpression closureExpression) {
+        Statement statementCode = closureExpression.getCode();
+        if (statementCode instanceof BlockStatement) {
+            this.code = new BlockStatementWrapper((BlockStatement) statementCode, this);
+            return;
+        }
+        this.code = new BlockStatementWrapper(this);
+        code.addStatement(ASTNodeWrapHelper.getStatementNodeWrapperFromStatement(statementCode, this));
     }
 
     public ClosureExpressionWrapper(ClosureExpressionWrapper closureExpressionWrapper, ASTNodeWrapper parentNodeWrapper) {

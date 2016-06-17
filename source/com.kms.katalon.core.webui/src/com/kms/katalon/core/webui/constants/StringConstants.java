@@ -58,6 +58,7 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String CONF_PROPERTY_IE_DRIVER_PATH = "ieDriverPath";
 	public static final String CONF_PROPERTY_EDGE_DRIVER_PATH = "edgeDriverPath";
 	public static final String CONF_PROPERTY_CHROME_DRIVER_PATH = "chromeDriverPath";
+	public static final String CONF_PROPERTY_GECKO_DRIVER_PATH = "geckoDriverPath";
 	public static final String CONF_PROPERTY_WAIT_FOR_IE_HANGING = "waitForIEHanging";
 	public static final String CONF_PROPERTY_EXECUTED_BROWSER = XML_LOG_BROWSER_TYPE_PROPERTY;
 	public static final String CONF_PROPERTY_REMOTE_WEB_DRIVER_URL = "remoteWebDriverUrl";
@@ -76,7 +77,6 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String EXC_WEB_ELEMENT_NOT_FOUND = "Web element with id: ''{0}'' located by ''{1}'' not found";
 
 	// WebUiBuiltInKeywords
-	public static final String KW_LOG_WARNING_CANNOT_TAKE_SCREENSHOT = "Cannot take screenshot (Root cause: {0})";
 	public static final String KW_LOG_INFO_OPENING_BROWSER = "Opening browser";
 	public static final String KW_LOG_INFO_NAVIGATING_BROWSER_TO = "Navigating browser to: ''{0}''";
 	public static final String KW_LOG_PASSED_BROWSER_IS_OPENED_W_URL = "Browser is opened with url: ''{0}''";
