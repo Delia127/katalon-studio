@@ -279,6 +279,14 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 
     public static final String KW_MSG_FAILED_TO_UNCHECK_ELEMENT = "Failed to un-check element";
 
+    public static final String KW_LOG_PASSED_SET_SLIDER_X_TO_Y = "Set slider ''{0}'' value to {1}";
+
+    public static final String KW_MSG_FAILED_SET_SLIDER_X_TO_Y = "Failed to set slider ''{0}'' value to {1}";
+    
+    public static final String KW_MSG_FAILED_SET_SLIDER_INVALID_PERCENTAGE_X = "Invalid percentage {1}. Percentage value must be between [0, 100].";
+
+    public static final String KW_MSG_FAILED_SET_SLIDER = "Failed to set slider value";
+
     public static final String KW_CATEGORIZE_APPLICATION = "Application";
 
     public static final String KW_CATEGORIZE_ATTRIBUTE = "Attribute";
@@ -327,5 +335,7 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String COMM_LOG_INFO_CHECKING_DURATION = "Checking duration";
     
     public static final String COMM_LOG_WARNING_INVALID_DURATION = "Duration ''{0}'' is invalid. Using default duration.";
+    
+    public static final String COMM_LOG_INFO_CHECKING_PERCENTAGE = "Checking percentage";
 
 }

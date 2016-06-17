@@ -11,6 +11,7 @@ import java.util.Date;
 
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.touch.TouchActions;
 
@@ -23,7 +24,11 @@ import com.kms.katalon.core.mobile.keyword.MobileSearchEngine;
 import com.kms.katalon.core.testobject.TestObject;
 
 public class MobileElementCommonHelper {
+    private static final int ANDROID_SEEKBAR_PADDING = 56;
+
     private static final int DEFAULT_DRAG_AND_DROP_DELAY = 2000;
+
+    private static final int DEFAULT_TAP_DURATION = 50;
 
     private static final String IOS_CHECKED_ATTRIBUTE_IS_CHECKED = "1";
 
@@ -120,7 +125,7 @@ public class MobileElementCommonHelper {
         }
         return false;
     }
-
+    
     public static void uncheckElement(TestObject to, int timeout) throws StepFailedException, Exception {
         WebElement element = findElementWithCheck(to, timeout);
         if (isElementChecked(element)) {
@@ -151,5 +156,36 @@ public class MobileElementCommonHelper {
         KeywordLogger.getInstance().logPassed(
                 MessageFormat.format(StringConstants.KW_LOG_PASSED_DRAG_AND_DROP_ELEMENT_X_TO_ELEMENT_Y,
                         fromObj.getObjectId()));
+    }
+
+    public static void moveSlider(TestObject to, Number percent, int timeout) throws StepFailedException, Exception {
+        KeywordLogger logger = KeywordLogger.getInstance();
+        logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_PERCENTAGE);
+        if (percent == null || percent.floatValue() < 0 || percent.floatValue() > 100) {
+            throw new StepFailedException(MessageFormat.format(
+                    StringConstants.KW_MSG_FAILED_SET_SLIDER_INVALID_PERCENTAGE_X, percent));
+        }
+        WebElement element = findElementWithCheck(to, timeout);
+        AppiumDriver<?> driver = MobileDriverFactory.getDriver();
+        float percentValue = percent.floatValue() / 100;
+        if (driver instanceof AndroidDriver<?>) {
+            moveAndroidSeekbar(percentValue, element, driver);
+        } else if (driver instanceof IOSDriver<?>) {
+            moveIosUIASlider(percentValue, element);
+        }
+        logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SET_SLIDER_X_TO_Y, to.getObjectId(),
+                percent));
+    }
+
+    private static void moveIosUIASlider(float percentValue, WebElement element) {
+        element.sendKeys(String.valueOf(percentValue));
+    }
+    
+    private static void moveAndroidSeekbar(float percentValue, WebElement element, AppiumDriver<?> driver)
+            throws WebDriverException {
+        int startX = element.getLocation().getX();
+        int width = element.getSize().getWidth() - (ANDROID_SEEKBAR_PADDING * 2);
+        int relativeX = Math.round(width * percentValue);
+        driver.tap(1, startX + ANDROID_SEEKBAR_PADDING + relativeX, element.getLocation().getY(), DEFAULT_TAP_DURATION);
     }
 }
