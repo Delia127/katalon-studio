@@ -34,7 +34,7 @@ public class LaunchProcessor implements ILaunchProcessor {
 
     @Override
     public Process execute(File scripFile) throws IOException {
-        ProcessBuilder pb = new ProcessBuilder("java", "-cp",
+        ProcessBuilder pb = new ProcessBuilder("java", "-cp", File.pathSeparator +
                 FilenameUtils.separatorsToSystem(getGroovyLibs()) + File.pathSeparator + getClasspaths(), STARTER_CLASS,
                 "--main", MAIN_CLASS, FilenameUtils.separatorsToSystem(scripFile.getAbsolutePath()));
         pb.environment().putAll(getEnviromentVariables());

@@ -1,6 +1,7 @@
 package com.kms.katalon.core.main;
 
 import groovy.lang.Binding;
+import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyCodeSource;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
@@ -48,26 +49,26 @@ public class ScriptEngine extends GroovyScriptEngine {
     }
 
     // Parse this temporary class without caching
-    public Object runScript(final String scriptText, Binding binding) throws ResourceException, ScriptException {
+    public Object runScript(final String scriptText, Binding binding) throws ResourceException, ScriptException, IOException {
         return run(getGroovyCodeSource(scriptText, generateScriptName()), binding, true);
     }
 
     // Parse this class as script text
     public Object runScriptAsRawText(final String scriptText, String className, Binding binding)
-            throws ResourceException, ScriptException {
+            throws ResourceException, ScriptException, IOException {
         String processedScriptText = preProcessScriptBeforeBuild(scriptText);
         return run(getGroovyCodeSource(processedScriptText, className), binding, true);
     }
 
     public Object runScriptMethodAsRawText(final String scriptText, final String className, final String methodName,
-            Object args, Binding binding) throws ResourceException, ScriptException, ClassNotFoundException {
+            Object args, Binding binding) throws ResourceException, ScriptException, ClassNotFoundException, IOException {
         String processedScriptText = preProcessScriptBeforeBuild(scriptText);
         return getScript(getGroovyCodeSource(processedScriptText, className), binding, true).invokeMethod(methodName,
                 args);
     }
 
     public Object runScriptMethodAsRawText(final String scriptText, final String className, final String methodName,
-            Binding binding) throws ResourceException, ScriptException, ClassNotFoundException {
+            Binding binding) throws ResourceException, ScriptException, ClassNotFoundException, IOException {
         String processedScriptText = preProcessScriptBeforeBuild(scriptText);
         return getScript(getGroovyCodeSource(processedScriptText, className), binding, true).invokeMethod(methodName,
                 null);
@@ -101,11 +102,11 @@ public class ScriptEngine extends GroovyScriptEngine {
         return runScriptMethod(className, methodName, null, binding);
     }
 
-    public Object runScript(final File file, Binding binding) throws ResourceException, ScriptException {
+    public Object runScript(final File file, Binding binding) throws ResourceException, ScriptException, IOException {
         return run(getGroovyCodeSource(file), binding, true);
     }
 
-    public Script parseClass(final File file, Binding binding) {
+    public Script parseClass(final File file, Binding binding) throws IOException {
         return getScript(getGroovyCodeSource(file), binding, true);
     }
 
@@ -126,18 +127,18 @@ public class ScriptEngine extends GroovyScriptEngine {
         return gcs;
     }
 
-    private Object run(GroovyCodeSource gcs, Binding binding, boolean remember) {
+    private Object run(GroovyCodeSource gcs, Binding binding, boolean remember) throws IOException {
         return getScript(gcs, binding, remember).run();
     }
 
-    private Script getScript(GroovyCodeSource gcs, Binding binding, boolean remember) {
-        Class<?> clazz = getGroovyClassLoader().parseClass(gcs, remember);
-
-        return getScript(clazz, binding, remember);
+    private Script getScript(GroovyCodeSource gcs, Binding binding, boolean remember) throws IOException {
+        try (final GroovyClassLoader classLoader = new GroovyClassLoader()){
+            Class<?> clazz = classLoader.parseClass(gcs, remember);
+            return getScript(clazz, binding, remember);
+        }
     }
 
     public Script getScript(Class<?> clazz, Binding binding, boolean remember) {
-
         if (!remember) {
             return InvokerHelper.createScript(clazz, binding);
         }
