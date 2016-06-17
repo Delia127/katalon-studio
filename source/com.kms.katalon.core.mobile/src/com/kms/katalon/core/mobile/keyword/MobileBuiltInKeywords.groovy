@@ -1856,6 +1856,43 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     }
     
     /**
+     * Drag and drop an element into another element
+     * @param fromObject
+     *      represent the drag-able mobile element
+     * @param toObject
+     *      represent the drop-able mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void dragAndDrop(TestObject fromObject, TestObject toObject, int timeout, FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            MobileElementCommonHelper.dragAndDrop(fromObject, toObject, timeout);
+        }, flowControl, (fromObject != null && toObject != null) ? 
+                MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_DRAG_AND_DROP_ELEMENT_X_TO_ELEMENT_Y, fromObject.getObjectId(), toObject.getObjectId())
+        : StringConstants.KW_MSG_FAILED_TO_DRAG_AND_DROP_ELEMENT);
+    }
+    
+    /**
+     * Drag and drop an element into another element
+     * @param fromObject
+     *      represent the drag-able mobile element
+     * @param toObject
+     *      represent the drop-able mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void dragAndDrop(TestObject fromObject, TestObject toObject, int timeout) throws StepFailedException {
+        dragAndDrop(fromObject, toObject, timeout, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
      * Hide the keyboard if it is showing
      * @param flowControl
      * @throws StepFailedException

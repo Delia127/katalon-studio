@@ -23,7 +23,10 @@ import com.kms.katalon.core.mobile.keyword.MobileSearchEngine;
 import com.kms.katalon.core.testobject.TestObject;
 
 public class MobileElementCommonHelper {
+    private static final int DEFAULT_DRAG_AND_DROP_DELAY = 2000;
+
     private static final String IOS_CHECKED_ATTRIBUTE_IS_CHECKED = "1";
+
 
     private static final String IOS_CHECKED_ATTRIBUTE = "value";
 
@@ -129,5 +132,24 @@ public class MobileElementCommonHelper {
     
     public static boolean isElementChecked(TestObject to, int timeout) throws StepFailedException, Exception {
         return isElementChecked(findElementWithCheck(to, timeout));
+    }
+
+    public static void dragAndDrop(TestObject fromObj, TestObject toObj, int timeout) throws StepFailedException,
+            Exception {
+        WebElement fromElement = findElement(fromObj, timeout);
+        WebElement toElement = findElement(toObj, timeout);
+        AppiumDriver<?> driver = MobileDriverFactory.getDriver();
+        TouchAction dragAndDropAction = new TouchAction(driver);
+        dragAndDropAction = (driver instanceof AndroidDriver) ? dragAndDropAction.longPress(fromElement)
+                .moveTo(toElement)
+                .release() : dragAndDropAction.longPress(fromElement)
+                .waitAction(DEFAULT_DRAG_AND_DROP_DELAY)
+                .moveTo(toElement)
+                .waitAction(DEFAULT_DRAG_AND_DROP_DELAY)
+                .release();
+        dragAndDropAction.perform();
+        KeywordLogger.getInstance().logPassed(
+                MessageFormat.format(StringConstants.KW_LOG_PASSED_DRAG_AND_DROP_ELEMENT_X_TO_ELEMENT_Y,
+                        fromObj.getObjectId()));
     }
 }
