@@ -82,7 +82,7 @@ public class TestCaseMain {
             //Load CustomKeywords class
             Class<?> clazz = cl.parseClass('''class CustomKeywords { }''')
 
-            InvokerHelper.metaRegistry.setMetaClass(clazz, new CustomKeywordDelegatingMetaClass(clazz, engine))
+            InvokerHelper.metaRegistry.setMetaClass(clazz, new CustomKeywordDelegatingMetaClass(clazz, cl));
         } catch (ClassNotFoundException e) {
             // Do nothing
         }
