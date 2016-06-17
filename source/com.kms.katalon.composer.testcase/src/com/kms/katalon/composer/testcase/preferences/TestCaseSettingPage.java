@@ -55,7 +55,7 @@ public class TestCaseSettingPage extends PreferencePage {
     @Override
     public boolean performOk() {
         if (container == null)
-            return false;
+            return true;
         TestCaseSettingStore.saveDefaultFailureHandling(projectDir,
                 FailureHandling.valueStrings()[cbbFailureHanlings.getSelectionIndex()]);
         return super.performOk();

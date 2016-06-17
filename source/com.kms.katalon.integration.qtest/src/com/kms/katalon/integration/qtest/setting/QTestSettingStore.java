@@ -47,7 +47,7 @@ public class QTestSettingStore {
     }
 
     public static void saveToken(IQTestToken token, String projectDir) throws IOException {
-        String rawToken = token.getRawToken() != null ? token.getRawToken() : "";
+        String rawToken = token != null ? token.getRawToken() : "";
         PropertySettingStoreUtil.addNewProperty(TOKEN_PROPERTY, rawToken, getPropertyFile(projectDir));
     }
 
