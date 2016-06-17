@@ -95,4 +95,19 @@ public class SeleniumWebDriverProvider {
             return "C:\\Program Files\\Microsoft Web Driver\\MicrosoftWebDriver.exe";
         }
     }
+    
+    public static String getGeckoDriverPath() throws IOException {
+        switch (getOS()) {
+            case OS_WIN32:
+                return getDriverDirectory().getAbsolutePath() + File.separator + "firefox_win32" + File.separator
+                        + "wires.exe";
+            case OS_LINUX:
+                return getDriverDirectory().getAbsolutePath() + File.separator + "firefox_linux64" + File.separator
+                        + "wires";
+            case OS_MACOSX:
+                return getDriverDirectory().getAbsolutePath() + File.separator + "firefox_mac32" + File.separator
+                        + "wires";
+        }
+        return "";
+    }
 }
