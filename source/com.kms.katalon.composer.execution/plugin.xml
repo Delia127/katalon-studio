@@ -40,6 +40,7 @@
 	<extension
          point="com.kms.katalon.preferences.PreferencePages">
       <page
+            category="com.kms.katalon.composer.preferences.GeneralPreferencePage"
             class="com.kms.katalon.composer.execution.preferences.ExecutionPreferencePage"
             id="com.kms.katalon.composer.execution"
             name="Execution">

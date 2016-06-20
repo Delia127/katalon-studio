@@ -10,6 +10,7 @@
 	<extension
          point="com.kms.katalon.preferences.PreferencePages">
       <page
+            category="com.kms.katalon.composer.preferences.GeneralPreferencePage"
             class="com.kms.katalon.composer.webui.recorder.preferences.RecorderPreferencePage"
             id="com.kms.katalon.composer.webui.recorder"
             name="Recorder">

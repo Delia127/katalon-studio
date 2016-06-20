@@ -2,6 +2,7 @@ package com.kms.katalon.composer.mobile.preferences;
 
 import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 
 import com.kms.katalon.execution.mobile.constants.MobilePreferenceConstants;
@@ -13,7 +14,8 @@ public class MobileSettingPreferenceDefaultValueInitializer extends AbstractPref
     @Override
     public void initializeDefaultPreferences() {
         ScopedPreferenceStore store = getPreferenceStore(MobilePreferenceConstants.MOBILE_QUALIFIER);
-        store.setDefault(MobilePreferenceConstants.MOBILE_APPIUM_DIRECTORY, MOBILE_APPIUM_DIRECTORY_DEFAULT_VALUE);
+        store.setDefault(MobilePreferenceConstants.MOBILE_APPIUM_DIRECTORY,
+                StringUtils.defaultString(MOBILE_APPIUM_DIRECTORY_DEFAULT_VALUE));
     }
 
 }

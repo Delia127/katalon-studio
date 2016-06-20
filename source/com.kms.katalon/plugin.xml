@@ -86,7 +86,7 @@
     <page
           class="com.kms.katalon.composer.preferences.GeneralPreferencePage"
           id="com.kms.katalon.composer.preferences.GeneralPreferencePage"
-          name="General">
+          name="Katalon">
     </page>
  </extension>
 </plugin>

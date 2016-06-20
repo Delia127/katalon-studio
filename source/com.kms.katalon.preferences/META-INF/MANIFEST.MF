@@ -12,3 +12,4 @@ Require-Bundle: org.eclipse.e4.core.di,
  org.eclipse.jface
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: com.kms.katalon.preferences.internal
+Bundle-ActivationPolicy: lazy
