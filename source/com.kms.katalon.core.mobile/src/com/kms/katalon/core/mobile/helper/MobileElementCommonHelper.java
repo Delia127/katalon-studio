@@ -21,6 +21,7 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.core.mobile.keyword.MobileDriverFactory;
 import com.kms.katalon.core.mobile.keyword.MobileSearchEngine;
+import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testobject.TestObject;
 
 public class MobileElementCommonHelper {
@@ -217,6 +218,15 @@ public class MobileElementCommonHelper {
         int width = element.getSize().getWidth() - (ANDROID_SEEKBAR_PADDING * 2);
         int relativeX = Math.round(width * percentValue);
         driver.tap(1, startX + ANDROID_SEEKBAR_PADDING + relativeX, element.getLocation().getY(), DEFAULT_TAP_DURATION);
+    }
+    
+    public static int getElementTopPosition(TestObject to, int timeout, FailureHandling flowControl) throws Exception {
+        WebElement element = findElementWithCheck(to, timeout);
+        Point location = element.getLocation();
+        KeywordLogger.getInstance().logPassed(
+                MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_HAS_TOP_POSITION, to.getObjectId(),
+                        location.getY()));
+        return location.getY();
     }
 
     public static void tapAtPosition(Number x, Number y) {
