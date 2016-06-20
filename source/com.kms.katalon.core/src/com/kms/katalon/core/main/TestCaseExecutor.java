@@ -1,6 +1,7 @@
 package com.kms.katalon.core.main;
 
 import groovy.lang.Binding;
+import groovy.lang.GroovyClassLoader;
 import groovy.util.ResourceException;
 import groovy.util.ScriptException;
 
@@ -148,7 +149,8 @@ public class TestCaseExecutor {
     public TestResult execute(FailureHandling flowControl) {
         preExecution();
 
-        logger.startTest(testCase.getTestCaseId(), getTestCaseProperties(testCaseBinding, testCase, flowControl), keywordStack);
+        logger.startTest(testCase.getTestCaseId(), getTestCaseProperties(testCaseBinding, testCase, flowControl),
+                keywordStack);
 
         accessMainPhase();
 
@@ -173,11 +175,11 @@ public class TestCaseExecutor {
     private void processExecutionPhase() {
         try {
             // Prepare configuration before execution
-            engine.setConfig(getConfigForExecutingScript());
+            engine.setConfig(getConfigForExecutingScript(engine.getGroovyClassLoader()));
             setupContextClassLoader();
             testCaseResult.setScriptResult(runScript(getScriptFile()));
         } catch (Throwable e) {
-            //logError(e, ExceptionsUtil.getMessageForThrowable(e));
+            // logError(e, ExceptionsUtil.getMessageForThrowable(e));
             errorCollector.addError(e);
         }
 
@@ -188,18 +190,20 @@ public class TestCaseExecutor {
         }
     }
 
-    private Object runScript(File scriptFile) throws ResourceException, ScriptException, IOException {
+    private Object runScript(File scriptFile) throws ResourceException, ScriptException, IOException,
+            ClassNotFoundException {
         return engine.runScriptAsRawText(FileUtils.readFileToString(scriptFile), scriptFile.getName(), variableBinding);
     }
 
     private void runMethod(File scriptFile, String methodName) throws ResourceException, ScriptException,
             ClassNotFoundException, IOException {
-        engine.setConfig(getConfigForExecutingScript());
+        engine.setConfig(getConfigForExecutingScript(engine.getGroovyClassLoader()));
         engine.runScriptMethodAsRawText(FileUtils.readFileToString(scriptFile), scriptFile.getName(), methodName,
                 variableBinding);
     }
 
-    private Map<String, String> getTestCaseProperties(TestCaseBinding testCaseBinding, TestCase testCase, FailureHandling flowControl) {
+    private Map<String, String> getTestCaseProperties(TestCaseBinding testCaseBinding, TestCase testCase,
+            FailureHandling flowControl) {
         Map<String, String> testProperties = new HashMap<String, String>();
         testProperties.put(StringConstants.XML_LOG_NAME_PROPERTY, testCaseBinding.getTestCaseId());
         testProperties.put(StringConstants.XML_LOG_DESCRIPTION_PROPERTY, testCase.getDescription());
@@ -210,10 +214,10 @@ public class TestCaseExecutor {
     }
 
     @SuppressWarnings("unchecked")
-    private CompilerConfiguration getConfigForExecutingScript() throws ClassNotFoundException {
+    /* package */static CompilerConfiguration getConfigForExecutingScript(GroovyClassLoader classLoader)
+            throws ClassNotFoundException {
         CompilerConfiguration conf = new CompilerConfiguration(System.getProperties());
-        Class<?> astTransformationClass = engine.getGroovyClassLoader().loadClass(
-                StringConstants.TEST_STEP_TRANSFORMATION_CLASS);
+        Class<?> astTransformationClass = classLoader.loadClass(StringConstants.TEST_STEP_TRANSFORMATION_CLASS);
 
         conf.addCompilationCustomizers(new ASTTransformationCustomizer(
                 (Class<? extends Annotation>) astTransformationClass));
@@ -252,7 +256,7 @@ public class TestCaseExecutor {
             try {
                 String defaultValue = StringUtils.defaultIfEmpty(testCaseVariable.getDefaultValue(),
                         StringConstants.NULL_AS_STRING);
-                Object defaultValueObject = engine.runScript(defaultValue, null);
+                Object defaultValueObject = engine.runScriptWithoutLogging(defaultValue, null);
                 logger.logInfo(MessageFormat.format(
                         StringConstants.MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y_AS_DEFAULT,
                         testCaseVariable.getName(), defaultValueObject));
