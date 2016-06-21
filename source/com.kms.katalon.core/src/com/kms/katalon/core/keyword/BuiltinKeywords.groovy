@@ -62,7 +62,7 @@ public class BuiltinKeywords {
             }
         }
         , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_MATCHING_BETWEEN_TXTS, actualText, 
-            expectedText, regularExpressionLog), true)
+            expectedText, regularExpressionLog))
     }
 
     /**
@@ -111,7 +111,7 @@ public class BuiltinKeywords {
             }
         }
         , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_TXTS_ARE_UNMATCHED, actualText, expectedText, 
-            regularExpressionLog), true)
+            regularExpressionLog))
     }
 
     /**
@@ -162,7 +162,7 @@ public class BuiltinKeywords {
             return isEqual;
         }
         , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJECTS_ARE_EQUAL, actualObject, 
-            expectedObject), true)
+            expectedObject))
     }
 
     /**
@@ -210,7 +210,7 @@ public class BuiltinKeywords {
             return !isEqual;
         }
         , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJECTS_ARE_NOT_EQUAL, actualObject, 
-            expectedObject), true)
+            expectedObject))
     }
 
     /**
@@ -250,8 +250,7 @@ public class BuiltinKeywords {
             }
             return isGreaterThan;
         }
-        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_GREATER, actualNumber, expectedNumber), 
-        , true)
+        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_GREATER, actualNumber, expectedNumber))
     }
     
     /**
@@ -290,7 +289,7 @@ public class BuiltinKeywords {
             return isGreaterThanOrEqual;
         }
         , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_NUMS_ARE_GT_OR_EQ, actualNumber, 
-            expectedNumber), true)
+            expectedNumber))
     }
 
     /**
@@ -330,7 +329,7 @@ public class BuiltinKeywords {
             return isLessThan;
         }
         , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_LT, actualNumber
-            , expectedNumber), true)
+            , expectedNumber))
     }
     
     /**
@@ -370,7 +369,7 @@ public class BuiltinKeywords {
             return isLessThanOrEqual;
         }
         , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_LT_OR_EQ_TO, actualNumber, 
-            expectedNumber), true)
+            expectedNumber))
     }
     
     /**
@@ -421,7 +420,7 @@ public class BuiltinKeywords {
             return sb.toString();
         }
         , flowControl, (stringArrayValue != null) ? MessageFormat.format(StringConstants.KW_CANNOT_CONCAT_STR_ARRAY, 
-            stringArrayValue) : StringConstants.KW_CANNOT_CONCAT, true)
+            stringArrayValue) : StringConstants.KW_CANNOT_CONCAT)
     }
     
     /**
@@ -483,7 +482,7 @@ public class BuiltinKeywords {
             }
         }
         , flowControl, (calledTestCase != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_CALL_TC_W_ID_X, calledTestCase.getTestCaseId())
-        : StringConstants.KW_MSG_CANNOT_CALL_TC, true)
+        : StringConstants.KW_MSG_CANNOT_CALL_TC)
     }
     
     /**
@@ -520,7 +519,7 @@ public class BuiltinKeywords {
             }
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_DELAYED_SEC, second));
         }
-        , flowControl, StringConstants.KW_MSG_CANNOT_DELAY_BROWSER, true)
+        , flowControl, StringConstants.KW_MSG_CANNOT_DELAY_BROWSER)
     }
     
     /**

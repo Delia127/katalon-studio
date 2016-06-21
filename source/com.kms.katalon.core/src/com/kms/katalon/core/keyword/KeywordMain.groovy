@@ -41,14 +41,21 @@ public class KeywordMain {
     }
 
     @CompileStatic
-    public static runKeyword(Closure closure, FailureHandling flowControl, String errorMessage, boolean takeScreenShot = false) {
+    public static runKeyword(Closure closure, FailureHandling flowControl, String errorMessage) {
         try {
             return closure.call();
         } catch (Throwable e) {
-            if (e instanceof StepFailedException) {
-               throw e;
-            }
             stepFailed(errorMessage, flowControl, ExceptionsUtil.getMessageForThrowable(e));
         }
+    }
+    
+    @CompileStatic
+    public static int runKeywordAndReturnInt(Closure closure, FailureHandling flowControl, String errorMessage) {
+        try {
+            return (int) closure.call();
+        } catch (Throwable e) {
+            stepFailed(errorMessage, flowControl, ExceptionsUtil.getMessageForThrowable(e));
+        }
+        return -1;
     }
 }
