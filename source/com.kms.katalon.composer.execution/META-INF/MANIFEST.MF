@@ -62,7 +62,8 @@ Require-Bundle: org.eclipse.e4.core.di,
  org.eclipse.ui.editors,
  org.eclipse.ui,
  org.codehaus.groovy,
- org.eclipse.e4.ui.bindings
+ org.eclipse.e4.ui.bindings,
+ com.kms.katalon.core.appium
 Export-Package: com.kms.katalon.composer.execution.components,
  com.kms.katalon.composer.execution.components.contributor,
  com.kms.katalon.composer.execution.constants,

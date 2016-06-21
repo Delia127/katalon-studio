@@ -63,6 +63,7 @@ import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.core.appium.driver.AppiumDriverManager;
 import com.kms.katalon.core.application.Application;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
@@ -175,7 +176,7 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private static final String ARG_REMOTE_WEB_DRIVER_TYPE = DriverFactory.REMOTE_WEB_DRIVER_TYPE;
 
-    private static final String ARG_MOBILE_DEVICE_ID = DriverFactory.EXECUTED_MOBILE_DEVICE_ID;
+    private static final String ARG_MOBILE_DEVICE_ID = AppiumDriverManager.EXECUTED_DEVICE_ID;
 
     private static final String ARG_BROWSER_TYPE = ConsoleMain.BROWSER_TYPE_OPTION;
 
@@ -687,7 +688,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         deviceInfos.addAll(MobileDeviceUIProvider.getAllDevices());
         List<String> devicesNameList = new ArrayList<String>();
         for (MobileDeviceInfo deviceInfo : deviceInfos) {
-            devicesNameList.add(deviceInfo.getDeviceName());
+            devicesNameList.add(deviceInfo.getDisplayName());
         }
         return devicesNameList;
     }

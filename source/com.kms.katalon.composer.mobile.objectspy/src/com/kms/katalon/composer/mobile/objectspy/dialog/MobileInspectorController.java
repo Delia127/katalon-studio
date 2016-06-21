@@ -96,7 +96,7 @@ public class MobileInspectorController {
 
         AppiumDriverManager.startAppiumServerJS(SERVER_START_TIMEOUT,
                 getAdditionalEnvironmentVariables(mobileDriverType));
-        driver = MobileDriverFactory.startMobileDriver(mobileDriverType, mobileDeviceInfo.getDeviceId(), appFile,
+        driver = MobileDriverFactory.startMobileDriver(mobileDriverType, mobileDeviceInfo.getDeviceId(), mobileDeviceInfo.getDeviceName(), appFile,
                 uninstallAfterCloseApp);
     }
 

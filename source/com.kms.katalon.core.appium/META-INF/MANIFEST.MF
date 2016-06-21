@@ -10,5 +10,6 @@ Require-Bundle: com.kms.katalon.selenium-standalone,
  io.appium.java-client,
  com.kms.katalon.core,
  org.apache.commons.lang3
-Export-Package: com.kms.katalon.core.appium.driver,
+Export-Package: com.kms.katalon.core.appium.constants,
+ com.kms.katalon.core.appium.driver,
  com.kms.katalon.core.appium.exception

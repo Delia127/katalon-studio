@@ -120,8 +120,13 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
     }
 
     @Override
-    public String getDeviceName() {
+    public String getDisplayName() {
         return getDeviceManufacturer() + " " + getDeviceModel() + " " + getDeviceOSVersion();
+    }
+    
+    @Override
+    public String getDeviceName() {
+        return getDisplayName();
     }
 
     @Override

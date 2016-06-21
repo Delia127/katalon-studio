@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
+import com.kms.katalon.core.appium.constants.AppiumStringConstants;
 import com.kms.katalon.core.appium.driver.AppiumDriverManager;
 import com.kms.katalon.core.appium.exception.AppiumStartException;
 import com.kms.katalon.core.appium.exception.MobileDriverInitializeException;
@@ -25,6 +26,10 @@ public class WebMobileDriverFactory {
     private static final String SAFARI = "Safari";
 
     public static final String MOBILE_DRIVER_PROPERTY = StringConstants.CONF_PROPERTY_MOBILE_DRIVER;
+
+    public static final String EXECUTED_MOBILE_PLATFORM = AppiumStringConstants.CONF_EXECUTED_PLATFORM;
+
+    public static final String EXECUTED_MOBILE_DEVICE_ID = AppiumStringConstants.CONF_EXECUTED_DEVICE_ID;
 
     public static void cleanup() throws InterruptedException, IOException {
         AppiumDriverManager.cleanup();
@@ -50,7 +55,7 @@ public class WebMobileDriverFactory {
         return desireCapabilities;
     }
 
-    private static DesiredCapabilities createCapabilities(WebUIDriverType osType, String deviceId) {
+    private static DesiredCapabilities createCapabilities(WebUIDriverType osType) {
         DesiredCapabilities capabilities = new DesiredCapabilities();
         Map<String, Object> driverPreferences = RunConfiguration.getDriverPreferencesProperties(MOBILE_DRIVER_PROPERTY);
 
@@ -62,14 +67,53 @@ public class WebMobileDriverFactory {
             capabilities.setPlatform(Platform.ANDROID);
             capabilities.setCapability(MobileCapabilityType.BROWSER_NAME, CHROME);
         }
-        capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceId);
-        capabilities.setCapability(MobileCapabilityType.UDID, deviceId);
+        capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, getDeviceName());
+        String deviceId = getDeviceId();
+        if (deviceId != null) {
+            capabilities.setCapability(MobileCapabilityType.UDID, deviceId);
+        } else {
+            capabilities.setCapability(MobileCapabilityType.PLATFORM, getDeviceOS());
+            capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, getDeviceOSVersion());
+        }
         capabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, 1800);
         return capabilities;
     }
 
-    public static AppiumDriver<?> createMobileDriver(WebUIDriverType osType, String deviceId)
+    public static AppiumDriver<?> createMobileDriver(WebUIDriverType osType)
             throws MobileDriverInitializeException, IOException, InterruptedException, AppiumStartException {
-        return AppiumDriverManager.createMobileDriver(osType, deviceId, createCapabilities(osType, deviceId));
+        return AppiumDriverManager.createMobileDriver(osType, getDeviceId(), createCapabilities(osType));
+    }
+
+    public static WebUIDriverType getWebMobileDriverType() {
+        return WebUIDriverType.valueOf(RunConfiguration.getDriverSystemProperty(DriverFactory.WEB_UI_DRIVER_PROPERTY,
+                AppiumDriverManager.EXECUTED_PLATFORM));
+    }
+
+    public static String getDevicePlatform() {
+        return getWebMobileDriverType().toString();
+    }
+
+    public static String getDeviceId() {
+        return AppiumDriverManager.getDeviceId(DriverFactory.MOBILE_DRIVER_PROPERTY);
+    }
+
+    public static String getDeviceName() {
+        return AppiumDriverManager.getDeviceName(DriverFactory.MOBILE_DRIVER_PROPERTY);
+    }
+
+    public static String getDeviceModel() {
+        return AppiumDriverManager.getDeviceModel(DriverFactory.MOBILE_DRIVER_PROPERTY);
+    }
+
+    public static String getDeviceManufacturer() {
+        return AppiumDriverManager.getDeviceManufacturer(DriverFactory.MOBILE_DRIVER_PROPERTY);
+    }
+
+    public static String getDeviceOSVersion() {
+        return AppiumDriverManager.getDeviceOSVersion(DriverFactory.MOBILE_DRIVER_PROPERTY);
+    }
+
+    public static String getDeviceOS() {
+        return AppiumDriverManager.getDeviceOS(DriverFactory.MOBILE_DRIVER_PROPERTY);
     }
 }

@@ -15,7 +15,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.components.DriverPreferenceComposite;
 import com.kms.katalon.composer.execution.settings.DriverPreferencePage;
 import com.kms.katalon.composer.mobile.component.DeviceSelectionComposite;
-import com.kms.katalon.core.mobile.constants.StringConstants;
+import com.kms.katalon.core.appium.constants.AppiumStringConstants;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.execution.mobile.driver.MobileDriverConnector;
 
@@ -58,7 +58,7 @@ public abstract class AbstractMobilePreferencePage extends DriverPreferencePage 
 
         Map<String, Object> configProp = new LinkedHashMap<String, Object>();
         configProp.putAll(abstractMobileDriverConnector.getUserConfigProperties());
-        configProp.remove(StringConstants.CONF_EXECUTED_DEVICE_ID);
+        configProp.remove(AppiumStringConstants.CONF_EXECUTED_DEVICE_ID);
 
         driverPreferenceComposite.setInput(configProp);
     }
@@ -81,7 +81,7 @@ public abstract class AbstractMobilePreferencePage extends DriverPreferencePage 
             driverConnector.saveUserConfigProperties();
 
             // prevent deviceId appears in property table setting
-            abstractMobileDriverConnector.getUserConfigProperties().remove(StringConstants.CONF_EXECUTED_DEVICE_ID);
+            abstractMobileDriverConnector.getUserConfigProperties().remove(AppiumStringConstants.CONF_EXECUTED_DEVICE_ID);
             return true;
         } catch (IOException e) {
             LoggerSingleton.logError(e);

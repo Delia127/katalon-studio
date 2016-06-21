@@ -29,6 +29,12 @@ public class MobileDeviceUIProvider {
             MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "Error", e.getClass().getName() + ": "
                     + e.getMessage());
         }
+        try {
+            mobileDeviceInfos.addAll(MobileDeviceProvider.getIosSimulators());
+        } catch (InterruptedException | IOException e) {
+            MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "Error", e.getClass().getName() + ": "
+                    + e.getMessage());
+        }
         return mobileDeviceInfos;
     }
 }

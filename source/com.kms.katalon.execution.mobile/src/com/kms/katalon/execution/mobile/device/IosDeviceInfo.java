@@ -28,20 +28,20 @@ public class IosDeviceInfo extends MobileDeviceInfo {
     private static final String IMOBILE_DEVICE_FOLDER_RELATIVE_PATH = "resources" + File.separator + "tools"
             + File.separator + "imobiledevice";
 
-    private String deviceClass = "";
+    protected String deviceClass = "";
 
-    private String deviceName = "";
+    protected String deviceName = "";
 
-    private String deviceOSVersion = "";
+    protected String deviceOSVersion = "";
 
-    private String deviceType = "";
+    protected String deviceType = "";
 
     public IosDeviceInfo(String deviceId) throws IOException, InterruptedException {
         super(deviceId);
         initDeviceInfos(deviceId);
     }
 
-    private void initDeviceInfos(String deviceId) throws IOException, InterruptedException {
+    protected void initDeviceInfos(String deviceId) throws IOException, InterruptedException {
         String[] deviceInfoCommand = new String[] {
                 getIMobileDeviceDirectoryAsString() + File.separator + "ideviceinfo", "-u", deviceId };
         List<String> deviceInfos = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(deviceInfoCommand, getIosAdditionalEnvironmentVariables());
@@ -65,9 +65,14 @@ public class IosDeviceInfo extends MobileDeviceInfo {
             }
         }
     }
-
+    
     @Override
     public String getDeviceName() {
+        return deviceName;
+    }
+
+    @Override
+    public String getDisplayName() {
         return deviceClass + " " + deviceName + " " + deviceOSVersion;
     }
 

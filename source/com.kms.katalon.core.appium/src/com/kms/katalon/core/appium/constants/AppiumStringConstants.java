@@ -17,4 +17,18 @@ public class AppiumStringConstants extends StringConstants {
     public static final String CANNOT_CONNECT_TO_APPIUM_AFTER_X = "Could not connect to appium server after {0} seconds";
     
     public static final String CANNOT_START_MOBILE_DRIVER_INVALID_TYPE = "Could not start appium driver: Invalid mobile driver type ''{0}''";
+    
+    public static final String CONF_EXECUTED_PLATFORM = XML_LOG_DEVICE_PLATFORM_PROPERTY;
+
+    public static final String CONF_EXECUTED_DEVICE_ID = XML_LOG_DEVICE_ID_PROPERTY;
+
+    public static final String CONF_EXECUTED_DEVICE_NAME = "deviceName";
+
+    public static final String CONF_EXECUTED_DEVICE_MANUFACTURER = "deviceManufacturer";
+
+    public static final String CONF_EXECUTED_DEVICE_MODEL = "deviceModel";
+
+    public static final String CONF_EXECUTED_DEVICE_OS = "deviceOS";
+
+    public static final String CONF_EXECUTED_DEVICE_OS_VERSON = "deviceOSVersion";
 }

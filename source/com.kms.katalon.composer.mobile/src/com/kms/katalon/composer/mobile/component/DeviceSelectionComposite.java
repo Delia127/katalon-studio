@@ -61,7 +61,7 @@ public class DeviceSelectionComposite extends Composite {
     private String[] getDeviceFullNames() {
         String[] fullNames = new String[devicesList.size()];
         for (int i = 0; i < devicesList.size(); i++) {
-            fullNames[i] = devicesList.get(i).getDeviceName();
+            fullNames[i] = devicesList.get(i).getDisplayName();
         }
         return fullNames;
     }

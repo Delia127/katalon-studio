@@ -48,7 +48,7 @@ public enum MobileDriverType implements DriverType {
 
 	@Override
 	public String getPropertyKey() {
-		return com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_PLATFORM;
+		return com.kms.katalon.core.appium.constants.AppiumStringConstants.CONF_EXECUTED_PLATFORM;
 	}
 
 	@Override

@@ -34,7 +34,22 @@ import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 
 public class AppiumDriverManager {
+    
     private static final String APPIUM_DEFAULT_LOG_LEVEL = "info";
+    
+    public static final String EXECUTED_PLATFORM = AppiumStringConstants.CONF_EXECUTED_PLATFORM;
+
+    public static final String EXECUTED_DEVICE_ID = AppiumStringConstants.CONF_EXECUTED_DEVICE_ID;
+
+    public static final String EXECUTED_DEVICE_MANUFACTURER = AppiumStringConstants.CONF_EXECUTED_DEVICE_MANUFACTURER;
+
+    public static final String EXECUTED_DEVICE_MODEL = AppiumStringConstants.CONF_EXECUTED_DEVICE_MODEL;
+
+    public static final String EXECUTED_DEVICE_NAME = AppiumStringConstants.CONF_EXECUTED_DEVICE_NAME;
+
+    public static final String EXECUTED_DEVICE_OS = AppiumStringConstants.CONF_EXECUTED_DEVICE_OS;
+
+    public static final String EXECUTED_DEVICE_OS_VERSON = AppiumStringConstants.CONF_EXECUTED_DEVICE_OS_VERSON;
 
     private static String APPIUM_RELATIVE_PATH_FROM_APPIUM_FOLDER = "bin" + File.separator + "appium.js";
 
@@ -57,8 +72,6 @@ public class AppiumDriverManager {
             + DEFAULT_WEB_PROXY_PORT;
 
     private static final String LOCALHOST_PREFIX = "http://localhost:";
-
-    public static final String MOBILE_DRIVER_PROPERTY = AppiumStringConstants.CONF_PROPERTY_MOBILE_DRIVER;
 
     private static final ThreadLocal<Process> localStorageWebProxyProcess = new ThreadLocal<Process>() {
         @Override
@@ -318,6 +331,30 @@ public class AppiumDriverManager {
     private static void killProcessOnMac(String processName) throws InterruptedException, IOException {
         ProcessBuilder pb = new ProcessBuilder("killall", processName);
         pb.start().waitFor();
+    }
+
+    public static String getDeviceId(String parentProperty) {
+        return RunConfiguration.getDriverSystemProperty(parentProperty, EXECUTED_DEVICE_ID);
+    }
+
+    public static String getDeviceName(String parentProperty) {
+        return RunConfiguration.getDriverSystemProperty(parentProperty, EXECUTED_DEVICE_NAME);
+    }
+
+    public static String getDeviceModel(String parentProperty) {
+        return RunConfiguration.getDriverSystemProperty(parentProperty, EXECUTED_DEVICE_MODEL);
+    }
+
+    public static String getDeviceManufacturer(String parentProperty) {
+        return RunConfiguration.getDriverSystemProperty(parentProperty, EXECUTED_DEVICE_MANUFACTURER);
+    }
+
+    public static String getDeviceOSVersion(String parentProperty) {
+        return RunConfiguration.getDriverSystemProperty(parentProperty, EXECUTED_DEVICE_OS_VERSON);
+    }
+
+    public static String getDeviceOS(String parentProperty) {
+        return RunConfiguration.getDriverSystemProperty(parentProperty, EXECUTED_DEVICE_OS);
     }
 
 }
