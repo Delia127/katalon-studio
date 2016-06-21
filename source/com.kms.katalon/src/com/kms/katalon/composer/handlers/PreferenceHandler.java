@@ -14,10 +14,11 @@ import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.internal.dialogs.WorkbenchPreferenceDialog;
 
+import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
 import com.kms.katalon.preferences.internal.PreferencesRegistry;
 
 @SuppressWarnings("restriction")
-public class PreferenceHandler extends CommandHandler {
+public class PreferenceHandler extends AbstractHandler {
 
     private static final String DEFAULT_PREFERENCE_PAGE_ID = "com.kms.katalon.composer.preferences.GeneralPreferencePage";
 

@@ -16,7 +16,7 @@ import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.services.PartServiceSingleton;
 import com.kms.katalon.composer.components.services.SelectionServiceSingleton;
 
-public abstract class AbstractHandler implements IHandler2 {
+public abstract class AbstractHandler extends WorkbenchUtilizer implements IHandler2 {
 
     @Inject
     protected IEventBroker eventBroker;
@@ -93,5 +93,4 @@ public abstract class AbstractHandler implements IHandler2 {
     private void setExecutionEvent(ExecutionEvent executionEvent) {
         this.executionEvent = executionEvent;
     }
-
 }
