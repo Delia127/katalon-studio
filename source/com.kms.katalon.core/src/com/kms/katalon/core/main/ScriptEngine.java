@@ -57,7 +57,7 @@ public class ScriptEngine extends GroovyScriptEngine {
     // Parse this temporary class without caching and not logging
     public Object runScriptWithoutLogging(final String scriptText, Binding binding) throws ResourceException, ScriptException,
             IOException, ClassNotFoundException {
-        try (final GroovyClassLoader classLoader = new GroovyClassLoader(getParentClassLoader())) {
+        try (final GroovyClassLoader classLoader = new GroovyClassLoader(getParentClassLoader(), TestCaseExecutor.getConfigForCollectingVariable())) {
             Class<?> clazz = classLoader.parseClass(getGroovyCodeSource(scriptText, generateScriptName()), false);
             return getScript(clazz, binding, false).run();
         }
