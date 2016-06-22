@@ -129,7 +129,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
 
     private boolean isBusy;
     
-    private boolean loadingLogCancled;
+    private boolean loadingLogCanceled;
 
     private LogRecordTreeViewer treeViewer;
 
@@ -201,6 +201,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
         createControls(parent);
         createLogViewerControl(parent);
         registerEventListeners();
+        getChangingViewToolItem().setEnabled(true);
     }
 
     private void createLogViewerControl(Composite parent) {
@@ -371,11 +372,12 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                     @Override
                     public void run() {
                         compositeTreeContainer.setRedraw(false);
+                        getChangingViewToolItem().setEnabled(false);
                     }
                 });
                 for (int index = 0; index < logSize; index++) {
                     if (monitor.isCanceled()) {
-                        loadingLogCancled = true;
+                        loadingLogCanceled = true;
                         return Status.CANCEL_STATUS;
                     }
                     final XmlLogRecord record = currentRecords.get(index);
@@ -399,6 +401,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                     @Override
                     public void run() {
                         compositeTreeContainer.setRedraw(true);
+                        getChangingViewToolItem().setEnabled(true);
                     }
                 });
                 monitor.done();
@@ -808,9 +811,11 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
         table.setMenu(popupMenu);
         tableViewer.setInput(new ArrayList<XmlLogRecord>());
         if (launcherWatched != null) {
+            isBusy = true;
             for (XmlLogRecord record : currentRecords) {
                 tableViewer.add(record);
             }
+            isBusy = false;
         }
     }
 
@@ -952,7 +957,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                     launcherWatched = null;
                 }
 
-                loadingLogCancled = false;
+                loadingLogCanceled = false;
                 launcherWatched = getWatchedLauncherFromEvent();
                 
                 sync.syncExec(new Runnable() {
@@ -1017,15 +1022,24 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                     public void run() {
                         resetProgressBar();
                         createLogViewerControl(parentComposite);
-                        updateProgressBar(); 
+                        updateProgressBar();
                     }
                 });
             }
         }).start();
     }
     
+    private MDirectToolItem getChangingViewToolItem() {
+        for (MToolBarElement element : fMPart.getToolbar().getChildren()) {
+            if (IdConstants.LOG_VIEWER_TOOL_ITEM_TREE_ID.equals(element.getElementId())) {
+                return (MDirectToolItem) element;
+            }
+        }
+        return null;
+    }
+    
     private void waitForNotBusy() {
-        while (isBusy) {
+        while (isBusy || (loadingJob != null && loadingJob.getState() == Job.RUNNING)) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -1057,7 +1071,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
 
         switch (event) {
             case UPDATE_RECORD:
-                if (launcherWatched == null || loadingLogCancled) {
+                if (launcherWatched == null || loadingLogCanceled) {
                     return;
                 }
                 UISynchronizeService.syncExec(new Runnable() {
