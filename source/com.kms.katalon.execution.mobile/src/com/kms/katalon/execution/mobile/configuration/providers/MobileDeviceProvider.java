@@ -19,6 +19,16 @@ import com.kms.katalon.execution.mobile.exception.MobileSetupException;
 import com.kms.katalon.execution.mobile.util.ConsoleCommandExecutor;
 
 public class MobileDeviceProvider {
+    private static final String L_FLAG = "-l";
+
+    private static final String IDEVICE_ID_COMMAND = "idevice_id";
+
+    private static final String ANDROID_ADB_DEVICES_COMMAND = "devices";
+
+    private static final String LIST_OF_DEVICES = "list of devices";
+
+    private static final String ANDROID_DEVICE = "device";
+
     private static final String UNAVAILABLE = "unavailable";
 
     private static final String SHUTDOWN = "(Shutdown)";
@@ -33,30 +43,18 @@ public class MobileDeviceProvider {
     private MobileDeviceProvider() {
     }
 
-    public static List<? extends MobileDeviceInfo> getDevices(MobileDriverType mobileDriverType) throws IOException,
-            InterruptedException, MobileSetupException {
-        switch (mobileDriverType) {
-            case ANDROID_DRIVER:
-                return getAndroidDevices();
-            case IOS_DRIVER:
-                List<IosDeviceInfo> iosDevices = getIosDevices();
-                iosDevices.addAll(getIosSimulators());
-                return iosDevices;
-        }
-        return new ArrayList<>();
-    }
-
     public static List<AndroidDeviceInfo> getAndroidDevices() throws MobileSetupException, IOException,
             InterruptedException {
         AndroidDeviceInfo.makeAllAndroidSDKBinaryExecutable();
-        String[] getDevicesCommand = new String[] { AndroidDeviceInfo.getADBPath(), "devices" };
+        String[] getDevicesCommand = new String[] { AndroidDeviceInfo.getADBPath(), ANDROID_ADB_DEVICES_COMMAND };
         List<String> deviceIds = new ArrayList<String>();
         List<String> deviceResultLines = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(getDevicesCommand);
         for (String resultLine : deviceResultLines) {
-            if (StringUtils.isEmpty(resultLine) || resultLine.toLowerCase().trim().contains("list of devices")) {
+            String trimmedLowerCaseResult = resultLine.toLowerCase().trim();
+            if (StringUtils.isEmpty(resultLine) || trimmedLowerCaseResult.contains(LIST_OF_DEVICES)) {
                 continue;
             }
-            if (resultLine.toLowerCase().trim().contains("device")) {
+            if (trimmedLowerCaseResult.contains(ANDROID_DEVICE)) {
                 deviceIds.add(resultLine.split("\\s")[0]);
             }
         }
@@ -67,24 +65,7 @@ public class MobileDeviceProvider {
         }
         return androidDeviceInfos;
     }
-
-    public static List<IosDeviceInfo> getIosDevices() throws IOException, InterruptedException {
-        if (!isRunningOnMacOSX()) {
-            return Collections.emptyList();
-        }
-        IosDeviceInfo.makeAllIMobileDeviceBinaryExecuteAble();
-        List<IosDeviceInfo> iosDevices = new ArrayList<IosDeviceInfo>();
-        String[] getDeviceIdsCommand = {
-                IosDeviceInfo.getIMobileDeviceDirectoryAsString() + File.separator + "idevice_id", "-l" };
-        List<String> deviceIds = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(getDeviceIdsCommand,
-                IosDeviceInfo.getIosAdditionalEnvironmentVariables());
-
-        for (String deviceId : deviceIds) {
-            iosDevices.add(new IosDeviceInfo(deviceId));
-        }
-        return iosDevices;
-    }
-
+    
     public static List<IosDeviceInfo> getIosSimulators() throws IOException, InterruptedException {
         List<IosDeviceInfo> iosDevices = new ArrayList<IosDeviceInfo>();
         Map<String, String> iosAdditionalEnvironmentVariables = IosDeviceInfo.getIosAdditionalEnvironmentVariables();
@@ -103,6 +84,23 @@ public class MobileDeviceProvider {
             String simulatorName = simulatorLine.substring(0, firstIndexOfOpenQuote).trim();
             String simulatorId = simulatorLine.substring(firstIndexOfOpenQuote + 1, simulatorLine.indexOf(")")).trim();
             iosDevices.add(new IosSimulatorInfo(simulatorId, simulatorName, currentOsVersion));
+        }
+        return iosDevices;
+    }
+
+    public static List<IosDeviceInfo> getIosDevices() throws IOException, InterruptedException {
+        if (!isRunningOnMacOSX()) {
+            return Collections.emptyList();
+        }
+        IosDeviceInfo.makeAllIMobileDeviceBinaryExecuteAble();
+        List<IosDeviceInfo> iosDevices = new ArrayList<IosDeviceInfo>();
+        String[] getDeviceIdsCommand = {
+                IosDeviceInfo.getIMobileDeviceDirectoryAsString() + File.separator + IDEVICE_ID_COMMAND, L_FLAG };
+        List<String> deviceIds = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(getDeviceIdsCommand,
+                IosDeviceInfo.getIosAdditionalEnvironmentVariables());
+
+        for (String deviceId : deviceIds) {
+            iosDevices.add(new IosDeviceInfo(deviceId));
         }
         return iosDevices;
     }

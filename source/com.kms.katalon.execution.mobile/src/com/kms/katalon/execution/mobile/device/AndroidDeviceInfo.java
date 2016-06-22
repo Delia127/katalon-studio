@@ -12,6 +12,14 @@ import com.kms.katalon.execution.mobile.exception.AndroidSetupException;
 import com.kms.katalon.execution.mobile.util.ConsoleCommandExecutor;
 
 public class AndroidDeviceInfo extends MobileDeviceInfo {
+    private static final String EMULATOR_SUFFIX = ")";
+
+    private static final String FOR_ANDROID_VERSION = " - Android ";
+
+    private static final String EMULATOR_PREFIX = "Emulator (";
+
+    private static final String ANDROID_EMULATOR_PREFIX = "emulator-";
+
     private static final String ANDROID_HOME_ENVIRONMENT_VARIABLE_NAME = "ANDROID_HOME";
 
     private static final String ANDROID_SDK_FOLDER_RELATIVE_PATH = "resources" + File.separator + "tools"
@@ -44,9 +52,16 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
     private String deviceOs;
 
     private String deviceOSVersion;
+    
+    private boolean isEmulator;
 
     public AndroidDeviceInfo(String deviceId) throws AndroidSetupException, IOException, InterruptedException {
         super(deviceId);
+        isEmulator = deviceId.startsWith(ANDROID_EMULATOR_PREFIX);
+        initDeviceProperties();
+    }
+
+    protected void initDeviceProperties() throws IOException, InterruptedException, AndroidSetupException {
         deviceManufacture = initAndroidDeviceManufacturer();
         deviceModel = initAndroidDeviceModel();
         deviceOs = initAndroidDeviceOS();
@@ -121,6 +136,9 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
 
     @Override
     public String getDisplayName() {
+        if (isEmulator) {
+            return EMULATOR_PREFIX + getDeviceModel() + FOR_ANDROID_VERSION + getDeviceOSVersion() + EMULATOR_SUFFIX;
+        }
         return getDeviceManufacturer() + " " + getDeviceModel() + " " + getDeviceOSVersion();
     }
     

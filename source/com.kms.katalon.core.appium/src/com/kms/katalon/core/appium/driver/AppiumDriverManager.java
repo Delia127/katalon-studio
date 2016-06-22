@@ -184,7 +184,7 @@ public class AppiumDriverManager {
                 .withArgument(GeneralServerFlag.TEMP_DIRECTORY, createAppiumTempFile())
                 .withArgument(GeneralServerFlag.SESSION_OVERRIDE)
                 .withAppiumJS(new File(appium))
-                .withArgument(GeneralServerFlag.CHROME_DRIVER_PORT, Integer.toString(getFreePort()))
+                .withArgument(AndroidServerFlag.CHROME_DRIVER_PORT, Integer.toString(getFreePort()))
                 .withArgument(AndroidServerFlag.BOOTSTRAP_PORT_NUMBER, Integer.toString(getFreePort()))
                 .withIPAddress(DEFAULT_APPIUM_SERVER_ADDRESS)
                 .usingPort(freePort)

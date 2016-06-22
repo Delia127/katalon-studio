@@ -58,22 +58,22 @@ public class WebMobileDriverFactory {
     private static DesiredCapabilities createCapabilities(WebUIDriverType osType) {
         DesiredCapabilities capabilities = new DesiredCapabilities();
         Map<String, Object> driverPreferences = RunConfiguration.getDriverPreferencesProperties(MOBILE_DRIVER_PROPERTY);
-
+        String deviceId = getDeviceId();
         if (driverPreferences != null && osType == WebUIDriverType.IOS_DRIVER) {
             capabilities.merge(toDesireCapabilities(driverPreferences, WebUIDriverType.IOS_DRIVER));
             capabilities.setCapability(MobileCapabilityType.BROWSER_NAME, SAFARI);
+            if (deviceId == null) {
+                capabilities.setCapability(MobileCapabilityType.PLATFORM, getDeviceOS());
+                capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, getDeviceOSVersion());
+            }
         } else if (driverPreferences != null && osType == WebUIDriverType.ANDROID_DRIVER) {
             capabilities.merge(toDesireCapabilities(driverPreferences, WebUIDriverType.ANDROID_DRIVER));
             capabilities.setPlatform(Platform.ANDROID);
             capabilities.setCapability(MobileCapabilityType.BROWSER_NAME, CHROME);
         }
         capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, getDeviceName());
-        String deviceId = getDeviceId();
         if (deviceId != null) {
             capabilities.setCapability(MobileCapabilityType.UDID, deviceId);
-        } else {
-            capabilities.setCapability(MobileCapabilityType.PLATFORM, getDeviceOS());
-            capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, getDeviceOSVersion());
         }
         capabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, 1800);
         return capabilities;

@@ -11,11 +11,11 @@ public class IosSimulatorInfo extends IosDeviceInfo {
 
     private static final String NOT_AVAILABLE_FOR_SIMULATOR = "Not available for Simulator";
 
-    public IosSimulatorInfo(String deviceId, String deviceName, String deviceOSVersion)
-            throws IOException, InterruptedException {
+    public IosSimulatorInfo(String deviceId, String deviceName, String deviceOSVersion) throws IOException,
+            InterruptedException {
         super(deviceId);
         this.deviceName = deviceName;
-        this.deviceOSVersion = deviceOSVersion; 
+        this.deviceOSVersion = deviceOSVersion;
     }
 
     @Override
@@ -37,7 +37,7 @@ public class IosSimulatorInfo extends IosDeviceInfo {
     public String getDeviceOSVersion() {
         return deviceOSVersion;
     }
-    
+
     public Map<String, String> getDeviceSystemProperties() {
         Map<String, String> systemProperties = new HashMap<String, String>();
         systemProperties.put(AppiumStringConstants.CONF_EXECUTED_DEVICE_NAME, getDeviceName());

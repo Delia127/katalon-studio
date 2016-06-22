@@ -94,19 +94,19 @@ public class MobileDriverFactory {
         if (driverPreferences != null && osType == MobileDriverType.IOS_DRIVER) {
             capabilities.merge(convertPropertiesMaptoDesireCapabilities(driverPreferences, MobileDriverType.IOS_DRIVER));
             capabilities.setCapability(WAIT_FOR_APP_SCRIPT, true);
+            if (deviceId == null) {
+                capabilities.setCapability(MobileCapabilityType.PLATFORM, getDeviceOS());
+                capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, getDeviceOSVersion());
+            }
         } else if (driverPreferences != null && osType == MobileDriverType.ANDROID_DRIVER) {
             capabilities.merge(convertPropertiesMaptoDesireCapabilities(driverPreferences,
                     MobileDriverType.ANDROID_DRIVER));
             capabilities.setPlatform(Platform.ANDROID);
         }
-
         capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceName);
         capabilities.setCapability(MobileCapabilityType.APP, appFile);
         if (deviceId != null) {
             capabilities.setCapability(MobileCapabilityType.UDID, deviceId);
-        } else {
-            capabilities.setCapability(MobileCapabilityType.PLATFORM, getDeviceOS());
-            capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, getDeviceOSVersion());
         }
         capabilities.setCapability(FULL_RESET, uninstallAfterCloseApp);
         capabilities.setCapability(NO_RESET, !uninstallAfterCloseApp);
