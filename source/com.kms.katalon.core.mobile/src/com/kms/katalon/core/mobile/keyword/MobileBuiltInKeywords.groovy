@@ -1893,7 +1893,42 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Hide the keyboard if it is showing
+     * Set the value for Slider control (android.widget.SeekBar for Android, UIASlider for iOS) at specific percentage
+     * @param to
+     *      represent a mobile element (android.widget.SeekBar for Android, UIASlider for iOS)
+     * @param percent
+     *      percentage value to set to the slider ( 0 <= percent <= 100 )
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void setSliderValue(TestObject to, Number percent, int timeOut, FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            MobileElementCommonHelper.moveSlider(to, percent, timeOut);
+        }, flowControl, (to != null && percent != null) ? 
+            MessageFormat.format(StringConstants.KW_MSG_FAILED_SET_SLIDER_X_TO_Y, to.getObjectId(), percent) : StringConstants.KW_MSG_FAILED_SET_SLIDER)
+    }
+    
+    /**
+     * Set the value for Slider control (android.widget.SeekBar for Android, UIASlider for iOS) at specific percentage
+     * @param to
+     *      represent a mobile element (android.widget.SeekBar for Android, UIASlider for iOS)
+     * @param percent
+     *      percentage value to set to the slider ( 0 <= percent <= 100 )
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void setSliderValue(TestObject to, Number percent, int timeOut) throws StepFailedException {
+        setSliderValue(to, percent, timeOut, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /** Hide the keyboard if it is showing
      * @param flowControl
      * @throws StepFailedException
      */
