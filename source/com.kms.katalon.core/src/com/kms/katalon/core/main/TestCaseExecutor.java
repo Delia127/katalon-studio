@@ -224,7 +224,7 @@ public class TestCaseExecutor {
         return conf;
     }
 
-    private CompilerConfiguration getConfigForCollectingVariable() {
+    /* package */ static CompilerConfiguration getConfigForCollectingVariable() {
         CompilerConfiguration configuration = new CompilerConfiguration();
         ImportCustomizer importCustomizer = new ImportCustomizer();
         importCustomizer.addImport(TestDataFactory.class.getSimpleName(), TestDataFactory.class.getName());
