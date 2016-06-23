@@ -188,4 +188,20 @@ public class MobileElementCommonHelper {
         int relativeX = Math.round(width * percentValue);
         driver.tap(1, startX + ANDROID_SEEKBAR_PADDING + relativeX, element.getLocation().getY(), DEFAULT_TAP_DURATION);
     }
+    
+    public static void tapAtPosition(Number x, Number y) {
+        KeywordLogger logger = KeywordLogger.getInstance();
+        logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_X);
+        if (x == null) {
+            throw new StepFailedException(MessageFormat.format(
+                    StringConstants.KW_MSG_FAILED_PARAM_X_CANNOT_BE_NULL, "x"));
+        }
+        logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_Y);
+        if (y == null) {
+            throw new StepFailedException(MessageFormat.format(
+                    StringConstants.KW_MSG_FAILED_PARAM_X_CANNOT_BE_NULL, "y"));
+        }
+        MobileDriverFactory.getDriver().tap(1, x.intValue(), y.intValue(), DEFAULT_TAP_DURATION);
+        logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TAPPED_AT_X_Y, x, y));
+    }
 }

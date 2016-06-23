@@ -2147,4 +2147,37 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static void unlockScreen() throws StepFailedException {
         unlockScreen(RunConfiguration.getDefaultFailureHandling());
     }
+
+    /**
+     *  Tap at a specific position on the screen of the mobile device
+     * @param x
+     *      x position
+     * @param y
+     *      y position
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
+    public static void tapAtPosition(Number x, Number y, FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            MobileElementCommonHelper.tapAtPosition(x, y);
+        }, flowControl, (x != null && y != null) ? 
+            MessageFormat.format(StringConstants.KW_LOG_FAILED_TAPPED_AT_X_Y, x, y)
+            : StringConstants.KW_LOG_FAILED_TAPPED_AT_POSITION );
+    }
+    
+    /**
+     *  Tap at a specific position on the screen of the mobile device
+     * @param x
+     *      x position
+     * @param y
+     *      y position
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
+    public static void tapAtPosition(Number x, Number y) throws StepFailedException {
+        tapAtPosition(x, y, RunConfiguration.getDefaultFailureHandling());
+    }
 }
