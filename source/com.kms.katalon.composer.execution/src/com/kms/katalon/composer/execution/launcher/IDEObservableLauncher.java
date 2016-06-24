@@ -5,10 +5,10 @@ import java.util.List;
 import org.eclipse.debug.core.ILaunch;
 
 import com.kms.katalon.core.logging.XmlLogRecord;
-import com.kms.katalon.execution.launcher.ILauncher;
+import com.kms.katalon.execution.launcher.ObservableLauncher;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 
-public interface ObservableLauncher extends ILauncher {
+public interface IDEObservableLauncher extends ObservableLauncher {
     
     void setObserved(boolean observed);
     
@@ -21,10 +21,6 @@ public interface ObservableLauncher extends ILauncher {
     void suspend();
 
     void resume();
-    
-    void addListener(IDELauncherListener l);
-
-    void removeListener(IDELauncherListener l);
 
     List<XmlLogRecord> getLogRecords();
     

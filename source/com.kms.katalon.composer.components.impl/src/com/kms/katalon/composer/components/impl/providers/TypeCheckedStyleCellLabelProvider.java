@@ -57,7 +57,7 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
 
         ViewerCell cell = getOwnedViewerCell(event);
 
-        if (cell == null || cell.getViewerRow() == null) {
+        if (isCellNotExisted(cell)) {
             return;
         }
 
@@ -145,7 +145,11 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
         }
 
         ViewerCell cell = getOwnedViewerCell(event);
-
+        
+        if (isCellNotExisted(cell)) {
+            return;
+        }
+        
         boolean applyColors = useColors(event);
 
         TextLayout layout = getSharedTextLayout(event.display);
@@ -153,6 +157,10 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
         int textWidthDelta = deltaOfLastMeasure = updateTextLayout(layout, cell, applyColors);
 
         event.width += textWidthDelta;
+    }
+
+    private boolean isCellNotExisted(ViewerCell cell) {
+        return cell == null || cell.getViewerRow() == null;
     }
 
     /**

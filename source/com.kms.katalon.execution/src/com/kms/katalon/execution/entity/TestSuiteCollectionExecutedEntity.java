@@ -36,6 +36,10 @@ public class TestSuiteCollectionExecutedEntity extends ExecutedEntity {
 
     @Override
     public int getTotalTestCases() {
-        return getExecutedItems().size();
+        int totalTestCases = 0;
+        for (IExecutedEntity childItem : getExecutedItems()) {
+            totalTestCases += childItem.getTotalTestCases();
+        }
+        return totalTestCases;
     }
 }

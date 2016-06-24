@@ -4,8 +4,6 @@ import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
 import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.resources.IFile;
@@ -27,7 +25,7 @@ import com.kms.katalon.composer.execution.constants.ExecutionPreferenceConstants
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
-import com.kms.katalon.core.logging.XmlLogRecord;
+import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -42,11 +40,9 @@ import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
-public class IDELauncher extends ReportableLauncher implements ILaunchListener, ObservableLauncher {
+public class IDELauncher extends ReportableLauncher implements ILaunchListener, IDEObservableLauncher {
 
     private IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
-
-    private List<IDELauncherListener> listeners;
 
     private boolean observed;
 
@@ -64,7 +60,6 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
         super(manager, runConfig);
 
         this.mode = mode;
-        listeners = new LinkedList<IDELauncherListener>();
         observed = false;
     }
 
@@ -113,35 +108,16 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
         sendUpdateLogViewerEvent(getId());
     }
 
-    public void addListener(IDELauncherListener l) {
-        listeners.add(l);
-    }
-
-    public void removeListener(IDELauncherListener l) {
-        listeners.remove(l);
-    }
-
-    private void notifyLauncherChanged(IDELauncherEvent event, Object object) {
-        for (IDELauncherListener l : listeners) {
-            l.handleLauncherEvent(event, object);
-        }
-    }
-
     @Override
     public void setStatus(LauncherStatus status) {
         super.setStatus(status);
-        onUpdateStatus();
-    }
-
-    @Override
-    protected void onUpdateStatus() {
-        notifyLauncherChanged(IDELauncherEvent.UPDATE_STATUS, this.getId());
         sendUpdateJobViewerEvent();
     }
 
     @Override
-    protected void onUpdateRecord(XmlLogRecord record) {
-        notifyLauncherChanged(IDELauncherEvent.UPDATE_RECORD, record);
+    protected void onUpdateResult(TestStatusValue statusValue) {
+        super.onUpdateResult(statusValue);
+        sendUpdateJobViewerEvent();
     }
 
     public void setObserved(boolean observed) {
@@ -269,7 +245,7 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
 
     public void onSuspended() {
         setStatus(LauncherStatus.SUSPENDED);
-        onUpdateStatus();
+        sendUpdateJobViewerEvent();
     }
 
     @Override
@@ -277,7 +253,7 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
         try {
             getLaunch().getDebugTarget().resume();
             setStatus(LauncherStatus.RUNNING);
-            onUpdateStatus();
+            sendUpdateJobViewerEvent();
         } catch (DebugException e) {
             LoggerSingleton.logError(e);
         }

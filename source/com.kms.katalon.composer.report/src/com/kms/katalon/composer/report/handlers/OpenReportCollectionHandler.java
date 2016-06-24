@@ -22,7 +22,7 @@ public class OpenReportCollectionHandler extends OpenFileEntityHandler<ReportCol
 
     @Override
     public String getIconURI() {
-        return ImageConstants.URL_16_REPORT;
+        return ImageConstants.URL_16_REPORT_COLLECTION;
     }
 
     @Override
