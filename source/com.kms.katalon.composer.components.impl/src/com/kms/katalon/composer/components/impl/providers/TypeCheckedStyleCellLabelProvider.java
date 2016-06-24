@@ -50,7 +50,7 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
 
     @Override
     protected void paint(Event event, Object element) {
-        if (canDrawSafely(element)) {
+        if (canNotDrawSafely(element)) {
             super.paint(event, element);
             return;
         }
@@ -61,8 +61,8 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
             return;
         }
 
+        
         GC gc = event.gc;
-
         boolean applyColors = useColors(event);
 
         Color oldForeground = gc.getForeground();
@@ -84,7 +84,11 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
         }
     }
 
-    private boolean canDrawSafely(Object element) {
+    protected int getSpace() {
+        return SPACE;
+    }
+
+    protected boolean canNotDrawSafely(Object element) {
         return !customPaint || !isElementInstanceOf(element);
     }
 
@@ -101,8 +105,9 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
     }
 
     private void drawCellFocus(ViewerCell cell, GC gc) {
-        Rectangle focusBounds = cell.getViewerRow().getBounds();
-        gc.drawFocus(focusBounds.x, focusBounds.y, focusBounds.width + deltaOfLastMeasure, focusBounds.height);
+        Rectangle focusBounds = getTextBounds(cell.getViewerRow().getBounds());
+        gc.drawFocus(focusBounds.x, focusBounds.y, focusBounds.width + deltaOfLastMeasure + getSpace(),
+                focusBounds.height);
     }
 
     private boolean canDrawFocus(Event event) {
@@ -112,25 +117,28 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
     private void drawCellTextAndImage(Event event, ViewerCell cell, GC gc) {
         Image image = cell.getImage();
         if (image != null) {
-            gc.drawImage(image, event.getBounds().x + SPACE, event.getBounds().y);
+            gc.drawImage(image, event.getBounds().x + getSpace(), event.getBounds().y);
         }
 
-        Rectangle textBounds = cell.getTextBounds();
+        Rectangle textBounds = getTextBounds(cell.getTextBounds());
         if (textBounds != null) {
             TextLayout textLayout = getSharedTextLayout(event.display);
-            textLayout.setText(cell.getText());
 
             Rectangle layoutBounds = textLayout.getBounds();
             int y = textBounds.y + Math.max(0, (textBounds.height - layoutBounds.height) / 2);
 
             Rectangle saveClipping = gc.getClipping();
             gc.setClipping(textBounds);
-            textLayout.draw(gc, textBounds.x, y);
+            textLayout.draw(gc, textBounds.x + getSpace(), y);
             gc.setClipping(saveClipping);
         }
     }
 
-    private ViewerCell getOwnedViewerCell(Event event) {
+    protected Rectangle getTextBounds(Rectangle originalBounds) {
+        return originalBounds;
+    }
+
+    protected ViewerCell getOwnedViewerCell(Event event) {
         return getViewer().getCell(new Point(event.x, event.y));
     }
 
@@ -139,24 +147,24 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
      */
     @Override
     protected void measure(Event event, Object element) {
-        if (canDrawSafely(element)) {
+        if (canNotDrawSafely(element)) {
             super.measure(event, element);
             return;
         }
 
         ViewerCell cell = getOwnedViewerCell(event);
-        
+
         if (isCellNotExisted(cell)) {
             return;
         }
-        
+
         boolean applyColors = useColors(event);
 
         TextLayout layout = getSharedTextLayout(event.display);
 
         int textWidthDelta = deltaOfLastMeasure = updateTextLayout(layout, cell, applyColors);
 
-        event.width += textWidthDelta;
+        event.width += textWidthDelta + getSpace();
     }
 
     private boolean isCellNotExisted(ViewerCell cell) {
@@ -179,7 +187,7 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
         layout.setText(cell.getText());
         layout.setFont(cell.getFont()); // set also if null to clear previous usages
 
-        int originalTextWidth = layout.getBounds().width; // text width without any styles
+        int originalTextWidth = getTextBounds(layout.getBounds()).width; // text width without any styles
         boolean containsOtherFont = false;
 
         StyleRange[] styleRanges = cell.getStyleRanges();
@@ -194,7 +202,7 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
         }
         int textWidthDelta = 0;
         if (containsOtherFont) {
-            textWidthDelta = layout.getBounds().width - originalTextWidth;
+            textWidthDelta = getTextBounds(layout.getBounds()).width - originalTextWidth;
         }
         return textWidthDelta;
     }
@@ -219,6 +227,7 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
         cell.setImage(getImage(element));
         cell.setBackground(getBackground(cell.getBackground(), element));
         cell.setForeground(getForeground(cell.getForeground(), element));
+        cell.setStyleRanges(getStyleRanges(cell, element));
         super.update(cell);
     }
 
@@ -246,4 +255,8 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
     protected abstract Image getImage(T element);
 
     protected abstract String getText(T element);
+    
+    protected StyleRange[] getStyleRanges(ViewerCell cell, T element) {
+        return null;
+    }
 }

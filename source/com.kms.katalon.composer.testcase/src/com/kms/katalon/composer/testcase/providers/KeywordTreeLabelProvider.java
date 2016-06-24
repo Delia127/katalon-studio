@@ -27,7 +27,6 @@ public class KeywordTreeLabelProvider extends StyledCellLabelProvider implements
         super();
     }
 
-    @Override
     public String getText(Object element) {
         if (element instanceof IKeywordBrowserTreeEntity) {
             if (element instanceof KeywordBrowserTreeEntity && !((KeywordBrowserTreeEntity) element).isCustom()) {
@@ -47,7 +46,6 @@ public class KeywordTreeLabelProvider extends StyledCellLabelProvider implements
         return StringConstants.EMPTY;
     }
 
-    @Override
     public Image getImage(Object element) {
         if (element instanceof KeywordBrowserTreeEntity || element instanceof KeywordBrowserControlTreeEntity) {
             return ImageConstants.IMG_16_KEYWORD;
