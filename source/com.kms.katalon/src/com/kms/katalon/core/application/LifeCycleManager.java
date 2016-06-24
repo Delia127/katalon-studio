@@ -33,6 +33,7 @@ import com.kms.katalon.composer.handlers.SaveHandler;
 import com.kms.katalon.composer.handlers.SearchHandler;
 import com.kms.katalon.composer.handlers.PreferenceHandler;
 import com.kms.katalon.composer.handlers.WorkbenchSaveHandler;
+import com.kms.katalon.composer.initializer.CommandBindingInitializer;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.StringConstants;
@@ -103,6 +104,8 @@ public class LifeCycleManager {
             public void partActivated(IWorkbenchPartReference partRef) {
             }
         });
+        
+        new CommandBindingInitializer().setup();
     }
 
     private void setupPreferences() {

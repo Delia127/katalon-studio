@@ -1,14 +1,11 @@
-package com.kms.katalon.composer.handlers;
+package com.kms.katalon.composer.components.impl.handler;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
-import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
-
-public abstract class CommandHandler extends AbstractHandler {
-
+public class WorkbenchUtilizer {
     protected IWorkbench getActiveWorkbench() {
         return PlatformUI.getWorkbench();
     }
@@ -18,6 +15,11 @@ public abstract class CommandHandler extends AbstractHandler {
     }
 
     protected IEclipseContext getWorkbenchContext() {
-        return (IEclipseContext) getActiveWorkbench().getService(IEclipseContext.class);
+        return getService(IEclipseContext.class);
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected <T> T getService(Class<? extends T> clazz) {
+        return (T) getActiveWorkbench().getService(clazz);
     }
 }
