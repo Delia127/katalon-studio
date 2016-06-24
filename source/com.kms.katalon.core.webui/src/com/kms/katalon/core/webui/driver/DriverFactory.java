@@ -86,10 +86,6 @@ public class DriverFactory {
 
     public static final String REMOTE_WEB_DRIVER_TYPE = StringConstants.CONF_PROPERTY_REMOTE_WEB_DRIVER_TYPE;
 
-    public static final String EXECUTED_MOBILE_PLATFORM = StringConstants.CONF_EXECUTED_PLATFORM;
-
-    public static final String EXECUTED_MOBILE_DEVICE_ID = StringConstants.CONF_EXECUTED_DEVICE_ID;
-
     public static final String DEBUG_PORT = "debugPort";
 
     public static final String DEBUG_HOST = "debugHost";
@@ -209,7 +205,7 @@ public class DriverFactory {
                     break;
                 case ANDROID_DRIVER:
                 case IOS_DRIVER:
-                    webDriver = WebMobileDriverFactory.createMobileDriver(driver, getMobileDeviceName());
+                    webDriver = WebMobileDriverFactory.createMobileDriver(driver);
                     break;
                 case EDGE_DRIVER:
                     EdgeDriverService edgeService = localEdgeDriverServiceStorage.get();
@@ -558,9 +554,10 @@ public class DriverFactory {
         }
 
         if (webDriverType == null
-                && RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY, EXECUTED_MOBILE_PLATFORM) != null) {
+                && RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY,
+                        WebMobileDriverFactory.EXECUTED_MOBILE_PLATFORM) != null) {
             webDriverType = WebUIDriverType.valueOf(RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY,
-                    EXECUTED_MOBILE_PLATFORM));
+                    WebMobileDriverFactory.EXECUTED_MOBILE_PLATFORM));
         }
         return webDriverType;
     }
@@ -571,15 +568,6 @@ public class DriverFactory {
 
     public static String getRemoteWebDriverServerType() {
         return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, REMOTE_WEB_DRIVER_TYPE);
-    }
-
-    public static String getMobilePlatform() {
-        return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, EXECUTED_MOBILE_PLATFORM);
-    }
-
-    public static String getMobileDeviceName() {
-        return RunConfiguration.getDriverSystemProperty(StringConstants.CONF_PROPERTY_MOBILE_DRIVER,
-                EXECUTED_MOBILE_DEVICE_ID);
     }
 
     public static void closeWebDriver() {

@@ -19,5 +19,6 @@ Require-Bundle: org.eclipse.osgi,
  org.apache.commons.lang,
  com.kms.katalon.preferences,
  org.eclipse.equinox.preferences,
- com.kms.katalon.composer.testsuite.collection
+ com.kms.katalon.composer.testsuite.collection,
+ com.kms.katalon.core.appium
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7

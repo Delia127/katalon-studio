@@ -301,23 +301,7 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 
     public static final String KW_CATEGORIZE_TEXT = "Text";
 
-
     public static final String KW_CATEGORIZE_UTILITIES = "Utilities";
-
-
-    public static final String CONF_EXECUTED_PLATFORM = XML_LOG_DEVICE_PLATFORM_PROPERTY;
-
-    public static final String CONF_EXECUTED_DEVICE_ID = XML_LOG_DEVICE_ID_PROPERTY;
-
-    public static final String CONF_EXECUTED_DEVICE_NAME = "deviceName";
-
-    public static final String CONF_EXECUTED_DEVICE_MANUFACTURER = "deviceManufacturer";
-
-    public static final String CONF_EXECUTED_DEVICE_MODEL = "deviceModel";
-
-    public static final String CONF_EXECUTED_DEVICE_OS = "deviceOS";
-
-    public static final String CONF_EXECUTED_DEVICE_OS_VERSON = "deviceOSVersion";
     
     public static final String APPIUM_DRIVER_ERROR_JS_FAILED = "An error occurred while executing user supplied JavaScript.";
 

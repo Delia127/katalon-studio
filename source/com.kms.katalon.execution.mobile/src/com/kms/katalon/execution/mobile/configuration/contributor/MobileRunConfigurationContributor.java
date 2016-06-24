@@ -29,7 +29,7 @@ public abstract class MobileRunConfigurationContributor implements IRunConfigura
     public static final StringConsoleOption DEVICE_NAME_CONSOLE_OPTION = new StringConsoleOption() {
         @Override
         public String getOption() {
-            return com.kms.katalon.core.mobile.constants.StringConstants.CONF_EXECUTED_DEVICE_ID;
+            return com.kms.katalon.core.appium.constants.AppiumStringConstants.CONF_EXECUTED_DEVICE_ID;
         }
         
         @Override

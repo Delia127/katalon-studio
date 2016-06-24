@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.kms.katalon.core.appium.constants.AppiumStringConstants;
 import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.execution.configuration.AbstractDriverConnector;
 import com.kms.katalon.execution.mobile.constants.MobilePreferenceConstants;
@@ -59,12 +60,7 @@ public abstract class MobileDriverConnector extends AbstractDriverConnector {
         if (device == null) {
             return;
         }
-        systemProperties.put(StringConstants.CONF_EXECUTED_DEVICE_ID, device.getDeviceId());
-        systemProperties.put(StringConstants.CONF_EXECUTED_DEVICE_NAME, device.getDeviceName());
-        systemProperties.put(StringConstants.CONF_EXECUTED_DEVICE_MANUFACTURER, device.getDeviceManufacturer());
-        systemProperties.put(StringConstants.CONF_EXECUTED_DEVICE_MODEL, device.getDeviceModel());
-        systemProperties.put(StringConstants.CONF_EXECUTED_DEVICE_OS, device.getDeviceOS());
-        systemProperties.put(StringConstants.CONF_EXECUTED_DEVICE_OS_VERSON, device.getDeviceOSVersion());
+        systemProperties.putAll(device.getDeviceSystemProperties());
     }
 
     @Override
@@ -85,11 +81,11 @@ public abstract class MobileDriverConnector extends AbstractDriverConnector {
 
     public String getDefaultDeviceId() {
         return StringUtils.defaultString(
-                (String) getUserConfigProperties().get(StringConstants.CONF_EXECUTED_DEVICE_ID), StringUtils.EMPTY);
+                (String) getUserConfigProperties().get(AppiumStringConstants.CONF_EXECUTED_DEVICE_ID), StringUtils.EMPTY);
     }
 
     public void updateDefaultDeviceId() {
-        getUserConfigProperties().put(StringConstants.CONF_EXECUTED_DEVICE_ID, getDeviceId());
+        getUserConfigProperties().put(AppiumStringConstants.CONF_EXECUTED_DEVICE_ID, getDeviceId());
     }
 
 }

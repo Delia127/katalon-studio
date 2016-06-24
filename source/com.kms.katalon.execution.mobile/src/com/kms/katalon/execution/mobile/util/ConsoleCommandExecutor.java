@@ -11,7 +11,7 @@ import java.util.Map;
 public class ConsoleCommandExecutor {
     private ConsoleCommandExecutor() {
     }
-    
+
     public static List<String> runConsoleCommandAndCollectResults(String[] command,
             Map<String, String> addtionalEnvironmentVariables) throws IOException, InterruptedException {
         ProcessBuilder pb = new ProcessBuilder(command);
@@ -28,6 +28,15 @@ public class ConsoleCommandExecutor {
             }
         }
         return resultLines;
+    }
+
+    public static String runConsoleCommandAndCollectFirstResult(String[] command,
+            Map<String, String> addtionalEnvironmentVariables) throws IOException, InterruptedException {
+        List<String> resultLines = runConsoleCommandAndCollectResults(command, addtionalEnvironmentVariables);
+        if (!resultLines.isEmpty()) {
+            return resultLines.get(0);
+        }
+        return "";
     }
 
     public static List<String> runConsoleCommandAndCollectResults(String[] command) throws IOException,

@@ -383,7 +383,7 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
         deviceInfos.addAll(MobileDeviceUIProvider.getAllDevices());
         List<String> devicesNameList = new ArrayList<String>();
         for (MobileDeviceInfo deviceInfo : deviceInfos) {
-            devicesNameList.add(deviceInfo.getDeviceName());
+            devicesNameList.add(deviceInfo.getDisplayName());
         }
         return devicesNameList;
     }

@@ -30,27 +30,13 @@ public class MobileDriverFactory {
 
     public static final String MOBILE_DRIVER_PROPERTY = StringConstants.CONF_PROPERTY_MOBILE_DRIVER;
 
-    public static final String EXECUTED_PLATFORM = StringConstants.CONF_EXECUTED_PLATFORM;
-
-    public static final String EXECUTED_DEVICE_ID = StringConstants.CONF_EXECUTED_DEVICE_ID;
-
-    public static final String EXECUTED_DEVICE_MANUFACTURER = StringConstants.CONF_EXECUTED_DEVICE_MANUFACTURER;
-
-    public static final String EXECUTED_DEVICE_MODEL = StringConstants.CONF_EXECUTED_DEVICE_MODEL;
-
-    public static final String EXECUTED_DEVICE_NAME = StringConstants.CONF_EXECUTED_DEVICE_NAME;
-
-    public static final String EXECUTED_DEVICE_OS = StringConstants.CONF_EXECUTED_DEVICE_OS;
-
-    public static final String EXECUTED_DEVICE_OS_VERSON = StringConstants.CONF_EXECUTED_DEVICE_OS_VERSON;
-
     public static void cleanup() throws InterruptedException, IOException {
         AppiumDriverManager.cleanup();
     }
 
     public static MobileDriverType getMobileDriverType() {
         return MobileDriverType.valueOf(RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY,
-                EXECUTED_PLATFORM));
+                AppiumDriverManager.EXECUTED_PLATFORM));
     }
 
     public static String getDevicePlatform() {
@@ -58,27 +44,27 @@ public class MobileDriverFactory {
     }
 
     public static String getDeviceId() {
-        return RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY, EXECUTED_DEVICE_ID);
+        return AppiumDriverManager.getDeviceId(MOBILE_DRIVER_PROPERTY);
     }
 
     public static String getDeviceName() {
-        return RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY, EXECUTED_DEVICE_NAME);
+        return AppiumDriverManager.getDeviceName(MOBILE_DRIVER_PROPERTY);
     }
 
     public static String getDeviceModel() {
-        return RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY, EXECUTED_DEVICE_MODEL);
+        return AppiumDriverManager.getDeviceModel(MOBILE_DRIVER_PROPERTY);
     }
 
     public static String getDeviceManufacturer() {
-        return RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY, EXECUTED_DEVICE_MANUFACTURER);
+        return AppiumDriverManager.getDeviceManufacturer(MOBILE_DRIVER_PROPERTY);
     }
 
     public static String getDeviceOSVersion() {
-        return RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY, EXECUTED_DEVICE_OS_VERSON);
+        return AppiumDriverManager.getDeviceOSVersion(MOBILE_DRIVER_PROPERTY);
     }
 
     public static String getDeviceOS() {
-        return RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY, EXECUTED_DEVICE_OS);
+        return AppiumDriverManager.getDeviceOS(MOBILE_DRIVER_PROPERTY);
     }
 
     public static AppiumDriver<?> getDriver() throws StepFailedException {
@@ -101,22 +87,27 @@ public class MobileDriverFactory {
         return desireCapabilities;
     }
 
-    private static DesiredCapabilities createCapabilities(MobileDriverType osType, String deviceId, String appFile,
+    private static DesiredCapabilities createCapabilities(MobileDriverType osType, String deviceId, String deviceName, String appFile,
             boolean uninstallAfterCloseApp) {
         DesiredCapabilities capabilities = new DesiredCapabilities();
         Map<String, Object> driverPreferences = RunConfiguration.getDriverPreferencesProperties(MOBILE_DRIVER_PROPERTY);
         if (driverPreferences != null && osType == MobileDriverType.IOS_DRIVER) {
             capabilities.merge(convertPropertiesMaptoDesireCapabilities(driverPreferences, MobileDriverType.IOS_DRIVER));
             capabilities.setCapability(WAIT_FOR_APP_SCRIPT, true);
+            if (deviceId == null) {
+                capabilities.setCapability(MobileCapabilityType.PLATFORM, getDeviceOS());
+                capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, getDeviceOSVersion());
+            }
         } else if (driverPreferences != null && osType == MobileDriverType.ANDROID_DRIVER) {
             capabilities.merge(convertPropertiesMaptoDesireCapabilities(driverPreferences,
                     MobileDriverType.ANDROID_DRIVER));
             capabilities.setPlatform(Platform.ANDROID);
         }
-
-        capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceId);
+        capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceName);
         capabilities.setCapability(MobileCapabilityType.APP, appFile);
-        capabilities.setCapability(MobileCapabilityType.UDID, deviceId);
+        if (deviceId != null) {
+            capabilities.setCapability(MobileCapabilityType.UDID, deviceId);
+        }
         capabilities.setCapability(FULL_RESET, uninstallAfterCloseApp);
         capabilities.setCapability(NO_RESET, !uninstallAfterCloseApp);
         capabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, 1800);
@@ -126,13 +117,13 @@ public class MobileDriverFactory {
     public static AppiumDriver<?> startMobileDriver(String appFile, boolean uninstallAfterCloseApp)
             throws AppiumStartException, IOException, InterruptedException, MobileDriverInitializeException,
             IOSWebkitStartException {
-        return startMobileDriver(getMobileDriverType(), getDeviceId(), appFile, uninstallAfterCloseApp);
+        return startMobileDriver(getMobileDriverType(), getDeviceId(), getDeviceName(), appFile, uninstallAfterCloseApp);
     }
 
-    public static AppiumDriver<?> startMobileDriver(MobileDriverType osType, String deviceId, String appFile,
+    public static AppiumDriver<?> startMobileDriver(MobileDriverType osType, String deviceId, String deviceName, String appFile,
             boolean uninstallAfterCloseApp) throws MobileDriverInitializeException, IOException, InterruptedException,
             AppiumStartException {
         return AppiumDriverManager.createMobileDriver(osType, deviceId,
-                createCapabilities(osType, deviceId, appFile, uninstallAfterCloseApp));
+                createCapabilities(osType, deviceId, deviceName, appFile, uninstallAfterCloseApp));
     }
 }
