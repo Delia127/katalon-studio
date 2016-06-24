@@ -281,10 +281,10 @@ public class TooltipComboBoxCellEditor extends CellEditor {
     
     private String getItemText(Object item){
     	if (item instanceof KeywordMethod) {
-    	    TreeEntityUtil.getReadableKeywordName(((KeywordMethod) item).getName());
+    	    return TreeEntityUtil.getReadableKeywordName(((KeywordMethod) item).getName());
         }
         if (item instanceof MethodNode) {
-            TreeEntityUtil.getReadableKeywordName(((MethodNode) item).getName());
+            return ((MethodNode) item).getName();
         }
         return item.toString();
     }
