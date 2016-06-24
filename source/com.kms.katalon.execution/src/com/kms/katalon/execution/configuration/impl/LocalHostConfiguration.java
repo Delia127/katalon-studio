@@ -32,7 +32,7 @@ public class LocalHostConfiguration implements IHostConfiguration {
 
     @Override
     public String getHostAddress() {
-        return "127.0.0.1";
+        return ExecutionUtil.getLocalHostAddress();
     }
 
     @Override
@@ -64,5 +64,4 @@ public class LocalHostConfiguration implements IHostConfiguration {
         
         return properties;
     }
-
 }

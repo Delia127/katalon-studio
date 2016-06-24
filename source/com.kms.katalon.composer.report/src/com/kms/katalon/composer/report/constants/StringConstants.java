@@ -8,7 +8,7 @@ public class StringConstants extends GlobalStringConstants {
 	
 	// ReportPart
 	public static final String TITLE_SUMMARY = "Summary";
-	public static final String TITLE_RUNDATA = "Run Data";
+	public static final String TITLE_EXECUTION_ENVIRONMENT = "Execution Environment";
 	public static final String TITLE_EXECUTION_SETTINGS = "Execution Settings";
 	
 	public static final String LBL_EXECUTION_ENVIRONMENT = "Execution Infomation";
@@ -24,7 +24,6 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String REPORT_TABLE_ITEM_COLUMN_HEADER = "Item";
 	public static final String REPORT_TABLE_START_TIME_COLUMN_HEADER = "Start";
 	public static final String REPORT_TABLE_END_TIME_COLUMN_HEADER = "End";
-	public static final String REPORT_TABLE_RUN_DATA_COLUMN_HEADER = "Run Data";
 	public static final String REPORT_TABLE_ELAPSED_TIME_COLUMN_HEADER = "Elapsed";
 	public static final String REPORT_TABLE_STATUS_COLUMN_HEADER = "Status";
 	public static final String REPORT_TABLE_DESCRIPTION_COLUMN_HEADER = "Description";

@@ -50,6 +50,8 @@ public class RunConfiguration {
     public static final String EXECUTION_SYSTEM_PROPERTY = StringConstants.CONF_PROPERTY_EXECUTION_SYSTEM_PROPERTY;
 
     public static final String EXECUTION_PREFS_PROPERTY = StringConstants.CONF_PROPERTY_EXECUTION_PREFS_PROPERTY;
+    
+    public static final String EXECUTION_TEST_DATA_INFO_PROPERTY = StringConstants.CONF_PROPERTY_TEST_DATA_INFO;
 
     public static final String EXECUTION_PROPERTY = StringConstants.CONF_PROPERTY_EXEC;
 
@@ -332,5 +334,10 @@ public class RunConfiguration {
         } catch (NullPointerException | IllegalArgumentException e) {
             return FailureHandling.STOP_ON_FAILURE;
         }
+    }
+    
+    public static Map<String, String> getCollectedTestDataProperties() {
+        Map<String, Object> generalProperties = getExecutionGeneralProperties();
+        return (Map<String, String>) generalProperties.get(EXECUTION_TEST_DATA_INFO_PROPERTY);
     }
 }

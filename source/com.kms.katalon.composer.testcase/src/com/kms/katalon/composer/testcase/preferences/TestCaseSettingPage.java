@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Label;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.execution.setting.TestCaseSettingStore;
 
 public class TestCaseSettingPage extends PreferencePage {
 
@@ -21,8 +22,11 @@ public class TestCaseSettingPage extends PreferencePage {
 
     private String projectDir;
 
+    private TestCaseSettingStore settingStore;
+
     public TestCaseSettingPage() {
         projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+        settingStore = new TestCaseSettingStore(projectDir);
         noDefaultAndApplyButton();
     }
 
@@ -48,16 +52,17 @@ public class TestCaseSettingPage extends PreferencePage {
 
     private void initValue() {
         cbbFailureHanlings.setItems(FailureHandling.valueStrings());
-        FailureHandling defaultFailureHandling = TestCaseSettingStore.getDefaultFailureHandling(projectDir);
+        FailureHandling defaultFailureHandling = settingStore.getDefaultFailureHandling();
         cbbFailureHanlings.select(defaultFailureHandling.ordinal());
     }
 
     @Override
     public boolean performOk() {
-        if (container == null)
+        if (container == null) {
             return true;
-        TestCaseSettingStore.saveDefaultFailureHandling(projectDir,
-                FailureHandling.valueStrings()[cbbFailureHanlings.getSelectionIndex()]);
+        }
+
+        settingStore.saveDefaultFailureHandling(FailureHandling.valueStrings()[cbbFailureHanlings.getSelectionIndex()]);
         return super.performOk();
     }
 }

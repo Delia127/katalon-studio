@@ -87,4 +87,12 @@ public class DBData extends AbstractTestData {
         }
     }
 
+    @Override
+    public TestDataInfo getDataInfo() {
+        if (databaseConnection == null) {
+            return null;
+        }
+        
+        return databaseConnection.getDBDataInfo();
+    }
 }

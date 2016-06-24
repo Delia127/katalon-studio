@@ -81,4 +81,10 @@ public interface TestData {
     boolean hasHeaders();
 
     void activeHeaders(boolean active) throws IOException;
+    
+    /**
+     * Used for logging
+     * @return the information of the current test data, can be null if not implemented.
+     */
+    TestDataInfo getDataInfo();
 }

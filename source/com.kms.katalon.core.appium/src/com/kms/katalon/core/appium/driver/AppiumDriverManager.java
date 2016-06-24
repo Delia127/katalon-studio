@@ -272,6 +272,7 @@ public class AppiumDriverManager {
                             AppiumStringConstants.CANNOT_START_MOBILE_DRIVER_INVALID_TYPE, driver));
                 }
                 localStorageAppiumDriver.set(driver);
+                new AppiumRequestService(appiumService).logAppiumInfo();
                 return driver;
             } catch (UnreachableBrowserException e) {
                 long newMilis = System.currentTimeMillis();

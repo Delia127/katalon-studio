@@ -67,6 +67,7 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String XML_LOG_CONNECTING_TO_REMOTE_WEB_SERVER_X_WITH_TYPE_Y = "Connecting to remote web server ''{0}'' with type ''{1}''";
     public static final String XML_LOG_ERROR_BROWSER_NOT_IE = "Executing browser is not IE";
     public static final String XML_LOG_ERROR_CANNOT_FOUND_WINDOW_HANDLE = "Cannot found current window handle";
+    public static final String XML_LOG_SELENIUM_VERSION = "seleniumVersion";
 	
 	// BrowserNotOpenedException
 	public static final String EXC_BROWSER_IS_NOT_OPENED = "Browser is not opened";

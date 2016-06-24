@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Stack;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
@@ -96,7 +97,7 @@ public class KeywordLogger {
                 fileHandler.setFormatter(new CustomXmlFormatter());
                 logger.addHandler(fileHandler);
 
-                SocketHandler socketHandler = new SystemSocketHandler(getHostAddress(), getPort());
+                SocketHandler socketHandler = new SystemSocketHandler(StringConstants.DF_LOCAL_HOST_ADDRESS, getPort());
                 socketHandler.setFormatter(new CustomSocketLogFomatter());
                 logger.addHandler(socketHandler);
             } catch (SecurityException | IOException e) {
@@ -124,10 +125,6 @@ public class KeywordLogger {
     private int getPort() {
         return RunConfiguration.getPort();
     }
-    
-    private String getHostAddress() {
-        return RunConfiguration.getHostAddress();
-    }
 
     public void startSuite(String name, Map<String, String> attributes) {
         getLogger().log(
@@ -135,7 +132,12 @@ public class KeywordLogger {
                         attributes));
         logRunData(RunConfiguration.HOST_NAME, RunConfiguration.getHostName());
         logRunData(RunConfiguration.HOST_OS, RunConfiguration.getOS());
+        logRunData(RunConfiguration.HOST_ADDRESS, RunConfiguration.getHostAddress());
         logRunData(RunConfiguration.APP_VERSION, RunConfiguration.getAppVersion());
+        
+        for (Entry<String, String> collectedDataInfo : RunConfiguration.getCollectedTestDataProperties().entrySet()) {
+            logRunData(collectedDataInfo.getKey(), collectedDataInfo.getValue());
+        }
     }
 
     public void endSuite(String name, Map<String, String> attributes) {
