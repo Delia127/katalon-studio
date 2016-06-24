@@ -8,7 +8,7 @@ public class AppiumStringConstants extends StringConstants {
 
     public static final String APPIUM_START_EXCEPTION_APPIUM_DIRECTORY_NOT_SET = "Appium directory is not set. Please set it in Settings/Preferences/Mobile.";
 
-    public static final String APPIUM_START_EXCEPTION_APPIUM_DIRECTORY_INVALID_CANNOT_FIND_APPIUM_JS = "Appium directory is invalid: Cannot find appium.js file.";
+    public static final String APPIUM_START_EXCEPTION_APPIUM_DIRECTORY_INVALID_CANNOT_FIND_APPIUM_JS = "Appium directory is invalid: Cannot find appium executable file.";
     
     public static final String APPIUM_STARTED_ON_PORT = "Appium server started on port {0}";
     

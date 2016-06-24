@@ -51,7 +51,10 @@ public class AppiumDriverManager {
 
     public static final String EXECUTED_DEVICE_OS_VERSON = AppiumStringConstants.CONF_EXECUTED_DEVICE_OS_VERSON;
 
-    private static String APPIUM_RELATIVE_PATH_FROM_APPIUM_FOLDER = "bin" + File.separator + "appium.js";
+    private static String APPIUM_RELATIVE_PATH_FROM_APPIUM_FOLDER_OLD = "bin" + File.separator + "appium.js";
+
+    private static String APPIUM_RELATIVE_PATH_FROM_APPIUM_FOLDER_NEW = "build" + File.separator + "lib"
+            + File.separator + "main.js";
 
     private static String APPIUM_RELATIVE_PATH_FROM_APPIUM_GUI = "node_modules" + File.separator + "appium";
 
@@ -223,7 +226,11 @@ public class AppiumDriverManager {
     }
 
     private static String getAppiumJSPathFromNPMBuild(String appiumHome) {
-        return appiumHome + File.separator + APPIUM_RELATIVE_PATH_FROM_APPIUM_FOLDER;
+        String oldAppiumJSPath = appiumHome + File.separator + APPIUM_RELATIVE_PATH_FROM_APPIUM_FOLDER_OLD;
+        if (!new File(oldAppiumJSPath).exists()) {
+            return appiumHome + File.separator + APPIUM_RELATIVE_PATH_FROM_APPIUM_FOLDER_NEW;
+        }
+        return oldAppiumJSPath;
     }
 
     public static void startAppiumServerJS(int timeout) throws AppiumStartException, IOException {
