@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.groovy.eclipse.codeassist.processors.GroovyCompletionProposal;
 import org.codehaus.groovy.eclipse.codeassist.requestor.ContentAssistContext;
@@ -127,7 +128,7 @@ public class KatalonMethodCompletionProposal extends ParameterGuessingProposal {
             int baseOffset = getReplacementOffset();
             String replacement = getReplacementString();
 
-            if (fPositions != null && getTextViewer() != null) {
+            if (ArrayUtils.isNotEmpty(fPositions) && getTextViewer() != null) {
 
                 LinkedModeModel model = new LinkedModeModel();
 
@@ -241,9 +242,6 @@ public class KatalonMethodCompletionProposal extends ParameterGuessingProposal {
     @Override
     protected String computeReplacementString() {
         try {
-            if (!hasArgumentList() || !hasParameters()) {
-                return super.computeReplacementString();
-            }
             return computeGuessingCompletion();
         } catch (JavaModelException e) {
             return "";
