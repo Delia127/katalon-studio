@@ -238,4 +238,13 @@ public class MobileElementCommonHelper {
                     "y"));
         }
     }
+    
+    public static int getElementWidth(TestObject to, int timeout) throws Exception {
+        WebElement element = findElementWithCheck(to, timeout);
+        int width = element.getSize().getWidth();
+        KeywordLogger.getInstance().logPassed(
+                MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_HAS_WIDTH, to.getObjectId(),
+                        width));
+        return width;
+    }
 }
