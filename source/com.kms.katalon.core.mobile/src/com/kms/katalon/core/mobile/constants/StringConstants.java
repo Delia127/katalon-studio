@@ -87,11 +87,17 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 
     public static final String KW_MSG_FAILED_TO_TAP_ON_ELEMENT = "Failed to tap on element";
     
-    public static final String KW_LOG_PASSED_TAP_AND_HOLD_ON_ELEMENT_X = "Tapped and held on element ''{0}''";
+    public static final String KW_LOG_PASSED_TAP_AND_HOLD_ON_ELEMENT_X_WITH_DURATION_Y = "Tapped and held on element ''{0}'' with duration {1}";
 
-    public static final String KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT_X = "Failed to tap and hold on element ''{0}''";
+    public static final String KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT_X_WITH_DURATION_Y = "Failed to tap and hold on element ''{0}'' with duration {1}";
 
     public static final String KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT = "Failed to tap and hold on element";
+    
+    public static final String KW_LOG_PASSED_TAP_AND_HOLD_AT_X_Y_WITH_DURATION_Z = "Tapped and held at [{0}, {1}] with duration {2}";
+
+    public static final String KW_MSG_FAILED_TO_TAP_AND_HOLD_AT_X_Y_WITH_DURATION_Z = "Failed to tap and hold at [{0}, {1}] with duration {2}";
+
+    public static final String KW_MSG_FAILED_TO_TAP_AND_HOLD_AT_POSITION = "Failed to tap and hold at position";
 
     public static final String KW_LOG_PASSED_ELEMENT_HAS_ATTR = "Element ''{0}'' has attribute ''{1}'' is ''{2}''";
 

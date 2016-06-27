@@ -685,7 +685,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      * @param to
      *      represent a mobile element
      * @param duration
-     *      duration that the tap is hold on the element, if set to <= 0 then will use default duration
+     *      duration (in seconds) that the tap is hold on the element, if set to <= 0 then will use default duration
      * @param timeout
      *      system will wait at most timeout (seconds) to return result
      * @param flowControl
@@ -693,11 +693,11 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
-    public static void tapAndHold(TestObject to, int duration, int timeout, FailureHandling flowControl) throws StepFailedException {
+    public static void tapAndHold(TestObject to, Number duration, int timeout, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             MobileElementCommonHelper.tapAndHold(to, duration, timeout);
-        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT_X, to.getObjectId())
-        : StringConstants.KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT);
+        }, flowControl, (to != null && duration != null) ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT_X_WITH_DURATION_Y, 
+            to.getObjectId(), MobileElementCommonHelper.getStringForDuration(duration)) : StringConstants.KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT);
     }
 
     /**
@@ -705,14 +705,14 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      * @param to
      *      represent a mobile element
      * @param duration
-     *      duration that the tap is hold on the element, if set to <= 0 then will use default duration
+     *      duration (in seconds) that the tap is hold on the element, if set to <= 0 then will use default duration
      * @param timeout
      *      system will wait at most timeout (seconds) to return result
      * @throws StepFailedException
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
-    public static void tapAndHold(TestObject to, int duration, int timeout) throws StepFailedException {
+    public static void tapAndHold(TestObject to, Number duration, int timeout) throws StepFailedException {
         tapAndHold(to, duration, timeout, RunConfiguration.getDefaultFailureHandling());
     }
 
@@ -2179,5 +2179,42 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
     public static void tapAtPosition(Number x, Number y) throws StepFailedException {
         tapAtPosition(x, y, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
+     *  Tap and hold at a specific position on the screen of the mobile device
+     * @param x
+     *      x position
+     * @param y
+     *      y position
+     * @param duration
+     *      duration (in seconds) that the tap is hold on the element, if set to <= 0 then will use default duration
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
+    public static void tapAndHoldAtPosition(Number x, Number y, Number duration, FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            MobileElementCommonHelper.tapAndHold(x, y, duration);
+        }, flowControl, (x != null && y != null && duration != null) ?
+            MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_TAP_AND_HOLD_AT_X_Y_WITH_DURATION_Z, x, y, 
+                MobileElementCommonHelper.getStringForDuration(duration)) : StringConstants.KW_MSG_FAILED_TO_TAP_AND_HOLD_AT_POSITION );
+    }
+    
+    /**
+     *  Tap and hold at a specific position on the screen of the mobile device
+     * @param x
+     *      x position
+     * @param y
+     *      y position
+     * @param duration
+     *      duration (in seconds) that the tap is hold on the element, if set to <= 0 then will use default duration
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
+    public static void tapAndHoldAtPosition(Number x, Number y, Number duration) throws StepFailedException {
+        tapAndHoldAtPosition(x, y, duration, RunConfiguration.getDefaultFailureHandling());
     }
 }
