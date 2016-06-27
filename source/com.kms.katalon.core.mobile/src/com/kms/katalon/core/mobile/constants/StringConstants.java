@@ -305,6 +305,12 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     
     public static final String KW_LOG_FAILED_ZOOM_AT_POSITION = "Failed to pinch to zoom at position";
     
+    public static final String KW_LOG_PASSED_PINCH_AT_X_Y_WITH_OFFSET_Z = "Zoomed out to [{0}, {1}] with offset {2}";
+
+    public static final String KW_LOG_FAILED_PINCH_AT_X_Y_WITH_OFFSET_Z = "Failed to zoom out to [{0}, {1}] with offset {2}";
+    
+    public static final String KW_LOG_FAILED_PINCH_AT_POSITION = "Failed to pinch to zoom out at position";
+    
     public static final String KW_MSG_FAILED_PARAM_X_CANNOT_BE_NULL = "Param {0} cannot be null";
 
     public static final String KW_CATEGORIZE_APPLICATION = "Application";

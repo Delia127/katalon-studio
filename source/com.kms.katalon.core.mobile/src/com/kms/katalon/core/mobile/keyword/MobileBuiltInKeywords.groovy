@@ -2254,7 +2254,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static void pinchToZoomInAtPosition(Number x, Number y, Number offset) throws StepFailedException {
         pinchToZoomInAtPosition(x, y, offset, RunConfiguration.getDefaultFailureHandling());
     }
-
+    
     /**
      * Get the width of mobile element
      * @param to 
@@ -2289,6 +2289,43 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
     public static int getElementWidth(TestObject to, int timeout) throws StepFailedException {
         return getElementWidth(to, timeout, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
+     *  Pinch to zoom out at a specific position on the screen of the mobile device
+     * @param x
+     *      x position
+     * @param y
+     *      y position
+     * @param offset
+     *      the offset length to pinch
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
+    public static void pinchToZoomOutAtPosition(Number x, Number y, Number offset, FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            MobileGestureCommonHelper.pinchToZoomOut(x, y, offset);
+        }, flowControl, (x != null && y != null && offset != null) ?
+            MessageFormat.format(StringConstants.KW_LOG_FAILED_PINCH_AT_X_Y_WITH_OFFSET_Z, x, y, offset)
+            : StringConstants.KW_LOG_FAILED_PINCH_AT_POSITION );
+    }
+    
+    /**
+     *  Pinch to zoom out at a specific position on the screen of the mobile device
+     * @param x
+     *      x position
+     * @param y
+     *      y position
+     * @param offset
+     *      the offset length to pinch
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
+    public static void pinchToZoomOutAtPosition(Number x, Number y, Number offset) throws StepFailedException {
+        pinchToZoomOutAtPosition(x, y, offset, RunConfiguration.getDefaultFailureHandling());
     }
     
     /**

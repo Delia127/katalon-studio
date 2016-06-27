@@ -3,6 +3,7 @@ package com.kms.katalon.core.mobile.helper;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MultiTouchAction;
 import io.appium.java_client.TouchAction;
+import io.appium.java_client.android.AndroidDriver;
 
 import java.text.MessageFormat;
 
@@ -12,6 +13,10 @@ import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.core.mobile.keyword.MobileDriverFactory;
 
 public class MobileGestureCommonHelper {
+    private static final int IOS_PINCH_OFFSET = 5;
+
+    private static final int ANDROID_PINCH_OFFSET = 150;
+
     private static final int PINCH_PART_LENGTH = 10;
 
     public static void pinchToZoomIn(Number startX, Number startY, Number offset) {
@@ -40,6 +45,36 @@ public class MobileGestureCommonHelper {
         leftTouchAction = leftTouchAction.release();
         rightTouchAction = rightTouchAction.release();
 
+        MultiTouchAction multiTouchAction = new MultiTouchAction(driver).add(leftTouchAction).add(rightTouchAction);
+        multiTouchAction.perform();
+    }
+
+    public static void pinchToZoomOut(Number endX, Number endY, Number offset) {
+        MobileCommonHelper.checkXAndY(endX, endY);
+        checkOffset(offset);
+        pinchToZoomOut(endX.intValue(), endY.intValue(), offset.intValue());
+        KeywordLogger.getInstance().logPassed(
+                MessageFormat.format(StringConstants.KW_LOG_PASSED_PINCH_AT_X_Y_WITH_OFFSET_Z, endX, endY, offset));
+    }
+
+    private static void pinchToZoomOut(int endX, int endY, int offset) {
+        AppiumDriver<?> driver = MobileDriverFactory.getDriver();
+        offset = makeSureOffsetValueIsValid(endY, offset);
+        int offsetParts = offset / PINCH_PART_LENGTH;
+        int offsetRemainingPart = offset % PINCH_PART_LENGTH;
+        int additionalOffset = (driver instanceof AndroidDriver<?>) ? ANDROID_PINCH_OFFSET : IOS_PINCH_OFFSET;
+        TouchAction leftTouchAction = new TouchAction(driver).press(endX, endY - offset - additionalOffset);
+        TouchAction rightTouchAction = new TouchAction(driver).press(endX, endY + offset + additionalOffset);
+        for (int i = 0; i < offsetParts; i++) {
+            leftTouchAction = leftTouchAction.moveTo(0, PINCH_PART_LENGTH);
+            rightTouchAction = rightTouchAction.moveTo(0, -PINCH_PART_LENGTH);
+        }
+        if (offsetRemainingPart != 0) {
+            leftTouchAction = leftTouchAction.moveTo(0, offsetRemainingPart);
+            rightTouchAction = rightTouchAction.moveTo(0, -offsetRemainingPart);
+        }
+        leftTouchAction = leftTouchAction.release();
+        rightTouchAction = rightTouchAction.release();
         MultiTouchAction multiTouchAction = new MultiTouchAction(driver).add(leftTouchAction).add(rightTouchAction);
         multiTouchAction.perform();
     }
