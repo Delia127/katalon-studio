@@ -2253,4 +2253,40 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static int getElementWidth(TestObject to, int timeout) throws StepFailedException {
         return getElementWidth(to, timeout, RunConfiguration.getDefaultFailureHandling());
     }
+    
+    /**
+     * Get the height of mobile element
+     * @param to 
+     *      represent a mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return 
+     *      height of the element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static int getElementHeight(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
+        return KeywordMain.runKeywordAndReturnInt({
+            return MobileElementCommonHelper.getElementHeight(to, timeout);
+        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_GET_HEIGHT_OF_ELEMENT_X, to.getObjectId())
+        : StringConstants.KW_MSG_FAILED_TO_GET_HEIGHT_OF_ELEMENT);
+    }
+
+    /**
+     * Get the height of mobile element
+     * @param to 
+     *      represent a mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @return 
+     *      height of the element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static int getElementHeight(TestObject to, int timeout) throws StepFailedException {
+        return getElementHeight(to, timeout, RunConfiguration.getDefaultFailureHandling());
+    }
 }

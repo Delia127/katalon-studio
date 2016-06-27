@@ -247,4 +247,13 @@ public class MobileElementCommonHelper {
                         width));
         return width;
     }
+    
+    public static int getElementHeight(TestObject to, int timeout) throws Exception {
+        WebElement element = findElementWithCheck(to, timeout);
+        int height = element.getSize().getHeight();
+        KeywordLogger.getInstance().logPassed(
+                MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_HAS_HEIGHT, to.getObjectId(),
+                        height));
+        return height;
+    }
 }

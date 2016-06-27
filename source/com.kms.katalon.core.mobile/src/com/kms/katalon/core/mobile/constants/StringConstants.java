@@ -343,10 +343,16 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String COMM_LOG_INFO_CHECKING_X = "Checking x position";
 
     public static final String COMM_LOG_INFO_CHECKING_Y = "Checking y position";
-    
+
     public static final String KW_LOG_PASSED_OBJ_HAS_WIDTH = "Object ''{0}'' has width: ''{1}''";
 
     public static final String KW_MSG_FAILED_TO_GET_WIDTH_OF_ELEMENT_X = "Failed to get width of element ''{0}''";
 
     public static final String KW_MSG_FAILED_TO_GET_WIDTH_OF_ELEMENT = "Failed to get width of element";
+
+    public static final String KW_LOG_PASSED_OBJ_HAS_HEIGHT = "Object ''{0}'' has height: ''{1}''";
+
+    public static final String KW_MSG_FAILED_TO_GET_HEIGHT_OF_ELEMENT_X = "Failed to get height of element ''{0}''";
+
+    public static final String KW_MSG_FAILED_TO_GET_HEIGHT_OF_ELEMENT = "Failed to get height of element";
 }
