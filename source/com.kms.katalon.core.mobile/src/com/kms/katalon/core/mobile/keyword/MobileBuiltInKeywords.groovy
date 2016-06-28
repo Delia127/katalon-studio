@@ -2255,6 +2255,36 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     }
     
     /**
+     * Get the top position of mobile element
+     * @param to mobile element object
+     * @param timeout
+     * @param flowControl
+     * @return element top position
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
+    public static int getElementTopPosition(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
+        return KeywordMain.runKeywordAndReturnInt({
+            return MobileElementCommonHelper.getElementTopPosition(to, timeout, flowControl);
+        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_GET_TOP_POSITION_OF_ELEMENT, to.getObjectId())
+        : StringConstants.KW_MSG_FAILED_TO_GET_TOP_POSITION);
+    }
+    
+    /**
+     * Get the top position of mobile element
+     * @param to mobile element object
+     * @param timeout
+     * @return element top position
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
+    public static int getElementTopPosition(TestObject to, int timeout) throws StepFailedException {
+        return getElementTopPosition(to, timeout, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
      * Get the height of mobile element
      * @param to 
      *      represent a mobile element
