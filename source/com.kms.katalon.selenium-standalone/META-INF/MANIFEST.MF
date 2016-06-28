@@ -9,6 +9,7 @@ Bundle-ClassPath: .,
  resources/lib/selenium-server-standalone-2.53.0.jar
 Export-Package: com.google.common.base,
  com.google.common.collect,
+ com.google.common.io,
  com.kms.katalon.selenium,
  org.openqa.selenium,
  org.openqa.selenium.browserlaunchers.locators,

@@ -42,7 +42,6 @@ Require-Bundle: com.kms.katalon.core;bundle-version="1.0.0",
  org.eclipse.jdt.ui,
  com.kms.katalon.custom,
  com.kms.katalon.groovy;bundle-version="1.0.0",
- com.google.guava,
  com.kms.katalon.selenium-standalone,
  org.apache.commons.io,
  com.kms.katalon.preferences
