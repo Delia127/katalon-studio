@@ -28,6 +28,8 @@ public class StringConstants {
 
     public static final String LOG_END_KEYWORD_METHOD = "endKeyword";
 
+    public static final String DF_LOCAL_HOST_ADDRESS = "127.0.0.1";
+
     // LogLevel
     public static final String LOG_LVL_PASSED = "PASSED";
 
@@ -255,6 +257,8 @@ public class StringConstants {
 
     public static final String XML_LOG_HOST_ADDRESS_PROPERTY = "hostAddress";
 
+    public static final String XML_LOG_DB_SERVER_INFO ="dbServerInfo";
+
     // CustomKeywords
     public static final String GENERATED_SCRIPT_FOLDER = "Libs";
 
@@ -353,6 +357,8 @@ public class StringConstants {
     public static final String CONF_PROPERTY_SCREEN_CAPTURE_OPTION = "screenCaptureOption";
 
     public static final String CONF_PROPERTY_DEFAULT_FAILURE_HANDLING = "defaultFailureHandling";
+    
+    public static final String CONF_PROPERTY_TEST_DATA_INFO = "testDataInfo";
 
     // TestCaseExecutor
     public static final String TEST_STEP_TRANSFORMATION_CLASS = "com.kms.katalon.core.ast.RequireAstTestStepTransformation";

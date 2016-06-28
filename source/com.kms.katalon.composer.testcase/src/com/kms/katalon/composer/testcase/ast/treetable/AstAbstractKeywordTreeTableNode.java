@@ -20,11 +20,11 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.PropertyExpressi
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.VariableExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
-import com.kms.katalon.composer.testcase.preferences.TestCaseSettingStore;
 import com.kms.katalon.composer.testcase.util.AstValueUtil;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.execution.setting.TestCaseSettingStore;
 
 public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableStatementTreeTableNode implements
         IAstItemEditableNode, IAstObjectEditableNode, IAstOutputEditableNode {
@@ -255,12 +255,14 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
         if (isComment()) {
             return ImageConstants.IMG_16_COMMENT;
         }
+
         FailureHandling failureHandling = getFailureHandlingValue();
         if (failureHandling == null) {
-            failureHandling = TestCaseSettingStore.getDefaultFailureHandling(ProjectController.getInstance()
+            failureHandling = new TestCaseSettingStore(ProjectController.getInstance()
                     .getCurrentProject()
-                    .getFolderLocation());
+                    .getFolderLocation()).getDefaultFailureHandling();
         }
+
         switch (failureHandling) {
             case OPTIONAL:
                 return ImageConstants.IMG_16_OPTIONAL_RUN;
@@ -268,7 +270,6 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
                 return ImageConstants.IMG_16_FAILED_STOP;
             default:
                 return ImageConstants.IMG_16_FAILED_CONTINUE;
-
         }
     }
 

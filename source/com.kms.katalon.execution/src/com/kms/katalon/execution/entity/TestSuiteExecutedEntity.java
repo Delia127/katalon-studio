@@ -11,6 +11,7 @@ import org.apache.commons.lang.ArrayUtils;
 
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.core.testdata.TestDataInfo;
 import com.kms.katalon.core.testdata.TestData;
 import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
@@ -35,6 +36,7 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
     private EmailConfig emailConfig;
 
     public TestSuiteExecutedEntity() {
+        testDataMap = new HashMap<>();
         reportLocationSetting = new ReportLocationSetting();
         emailConfig = MailUtil.getDefaultEmailConfig();
         rerunSetting = new DefaultRerunSetting();
@@ -70,8 +72,7 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
     private void loadTestDataForTestSuiteExecutedEntity(TestSuiteEntity testSuite) throws Exception {
         String projectDir = testSuite.getProject().getFolderLocation();
 
-        // key: id of id of test data
-        Map<String, TestData> testDataUsedMap = new HashMap<String, TestData>();
+        testDataMap.clear();
 
         for (TestSuiteTestCaseLink testCaseLink : TestSuiteController.getInstance().getTestSuiteTestCaseRun(testSuite)) {
             TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByDisplayId(
@@ -85,19 +86,16 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
             TestCaseExecutedEntity testCaseExecutedEntity = new TestCaseExecutedEntity(testCase);
             testCaseExecutedEntity.setLoopTimes(1);
 
-            prepareTestCaseExecutedEntity(projectDir, testDataUsedMap, testCaseLink, testCaseExecutedEntity);
+            prepareTestCaseExecutedEntity(projectDir, testCaseLink, testCaseExecutedEntity);
             // make sure all TestDataExecutedEntity in testCaseExecutedEntity
             // has the same rows to prevent NullPointerException
 
             getExecutedItems().add(testCaseExecutedEntity);
         }
-
-        setTestDataMap(testDataUsedMap);
     }
 
-    private void prepareTestCaseExecutedEntity(String projectDir, Map<String, TestData> testDataUsedMap,
-            TestSuiteTestCaseLink testCaseLink, TestCaseExecutedEntity testCaseExecutedEntity) throws Exception,
-            IOException {
+    private void prepareTestCaseExecutedEntity(String projectDir, TestSuiteTestCaseLink testCaseLink,
+            TestCaseExecutedEntity testCaseExecutedEntity) throws Exception {
         List<TestCaseTestDataLink> testDataLinkUsedList = TestSuiteController.getInstance()
                 .getTestDataLinkUsedInTestCase(testCaseLink);
         if (testDataLinkUsedList.size() <= 0) {
@@ -106,9 +104,9 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         int numberTestCaseUsedOnce = 0;
         int numTestDataRowUsedManyTimes = 1;
         for (TestCaseTestDataLink testDataLink : testDataLinkUsedList) {
-            TestData testData = findTestData(projectDir, testDataUsedMap, testDataLink);
+            TestData testData = findTestData(projectDir, testDataMap, testDataLink);
 
-            testDataUsedMap.put(testDataLink.getTestDataId(), testData);
+            testDataMap.put(testDataLink.getTestDataId(), testData);
 
             TestDataExecutedEntity testDataExecutedEntity = getTestDataExecutedEntity(testCaseLink, testDataLink,
                     testData);
@@ -386,5 +384,17 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         reportLocationSetting.setArgumentValue(consoleOption, argumentValue);
         emailConfig.setArgumentValue(consoleOption, argumentValue);
         rerunSetting.setArgumentValue(consoleOption, argumentValue);
+    }
+    
+    @Override
+    public Map<String, String> getCollectedDataInfo() {
+        Map<String, String> collectedInfo = new HashMap<>();
+        for (TestData testDataUsed : testDataMap.values()) {
+            TestDataInfo testDataInfo = testDataUsed.getDataInfo();
+            if (testDataInfo != null) {
+                collectedInfo.put(testDataInfo.getKey(), testDataInfo.getInfo());
+            }
+        }
+        return collectedInfo;
     }
 }

@@ -27,6 +27,7 @@ import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerDriverLogLevel;
 import org.openqa.selenium.ie.InternetExplorerDriverService;
+import org.openqa.selenium.internal.BuildInfo;
 import org.openqa.selenium.net.NetworkUtils;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -263,6 +264,7 @@ public class DriverFactory {
         if (webDriver == null) {
             return;
         }
+        
         KeywordLogger logger = KeywordLogger.getInstance();
         logger.logRunData("sessionId", ((RemoteWebDriver) webDriver).getSessionId().toString());
         logger.logRunData("browser", WebUiCommonHelper.getBrowserAndVersion(webDriver));
@@ -270,6 +272,7 @@ public class DriverFactory {
                 webDriver.getClass() == RemoteWebDriver.class ? ((RemoteWebDriver) webDriver).getCapabilities()
                         .getPlatform()
                         .toString() : System.getProperty("os.name"));
+        logger.logRunData(StringConstants.XML_LOG_SELENIUM_VERSION, new BuildInfo().getReleaseLabel());
     }
 
     public static WebDriver openWebDriver(DriverType driver, String projectDir, Object options) throws Exception {

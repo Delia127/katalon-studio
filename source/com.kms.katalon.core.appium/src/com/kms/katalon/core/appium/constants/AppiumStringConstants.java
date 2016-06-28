@@ -31,4 +31,8 @@ public class AppiumStringConstants extends StringConstants {
     public static final String CONF_EXECUTED_DEVICE_OS = "deviceOS";
 
     public static final String CONF_EXECUTED_DEVICE_OS_VERSON = "deviceOSVersion";
+    
+    // AppiumVersionHelper
+    public static final String XML_LOG_APPIUM_VERSION = "appiumVersion";
+    public static final String MSG_UNABLE_TO_GET_APPIUM_STATUS = "Unable to get appium status. Root cause ({0})";
 }
