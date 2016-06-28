@@ -6,6 +6,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -88,10 +89,14 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.mobile.driver.MobileDriverType;
+import com.kms.katalon.core.mobile.keyword.AndroidProperties;
 import com.kms.katalon.core.mobile.keyword.GUIObject;
+import com.kms.katalon.core.mobile.keyword.IOSProperties;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 
 @SuppressWarnings("restriction")
@@ -578,6 +583,7 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
         if (elementTreeViewer.getChecked(element) || elementTreeViewer.getGrayed(element)) {
             WebElementEntity convertedElement = MobileElementUtil.convertElementToWebElementEntity(element, null,
                     parentFolder);
+            autoSelectObjectProperties(convertedElement);
             ObjectRepositoryController.getInstance().importWebElement(convertedElement, parentFolder);
         }
         for (MobileElement childElement : element.getChildrenElement()) {
@@ -674,11 +680,7 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
         btnStart.setEnabled(false);
 
         try {
-            int selectedMobileDeviceIndex = cbbDevices.getSelectionIndex();
-            if (selectedMobileDeviceIndex < 0 || selectedMobileDeviceIndex >= deviceInfos.size()) {
-                return;
-            }
-            final MobileDeviceInfo selectDeviceInfo = deviceInfos.get(selectedMobileDeviceIndex);
+            final MobileDeviceInfo selectDeviceInfo = getMobileDeviceInfo();
             if (selectDeviceInfo == null) {
                 return;
             }
@@ -854,5 +856,34 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
     @Override
     protected Point getInitialLocation(Point initialSize) {
         return initialLocation;
+    }
+    
+    private void autoSelectObjectProperties(WebElementEntity entity) {
+        if (getMobileDeviceInfo() == null) {
+            return;
+        }
+        List<String> typicalProps = new ArrayList<String>();
+        if (isMobileDriverTypeOf(MobileDriverType.ANDROID_DRIVER)) {
+            typicalProps.addAll(Arrays.asList(AndroidProperties.ANDROID_TYPICAL_PROPERTIES));
+        } else if (isMobileDriverTypeOf(MobileDriverType.IOS_DRIVER)) {
+            typicalProps.addAll(Arrays.asList(IOSProperties.IOS_TYPICAL_PROPERTIES));
+        }
+        for (WebElementPropertyEntity prop : entity.getWebElementProperties()) {
+            if (typicalProps.contains(prop.getName())) {
+                prop.setIsSelected(true);
+            }
+        }
+    }
+
+    private MobileDeviceInfo getMobileDeviceInfo() {
+        int selectedMobileDeviceIndex = cbbDevices.getSelectionIndex();
+        if (selectedMobileDeviceIndex < 0 || selectedMobileDeviceIndex >= deviceInfos.size()) {
+            return null;
+        }
+        return deviceInfos.get(selectedMobileDeviceIndex);
+    }
+    
+    private boolean isMobileDriverTypeOf(MobileDriverType type) {
+        return MobileInspectorController.getMobileDriverType(getMobileDeviceInfo()) == type;
     }
 }

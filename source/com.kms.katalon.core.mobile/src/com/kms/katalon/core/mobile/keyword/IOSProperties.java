@@ -12,4 +12,6 @@ public class IOSProperties {
 	public static final String IOS_RECT = "rect";
 	public static final String IOS_SIZE = "size";
 	public static final String IOS_ORIGIN = "origin";
+	public static final String XPATH = "xpath";
+    public static final String[] IOS_TYPICAL_PROPERTIES = new String[] { "type", "name", "label" };
 }

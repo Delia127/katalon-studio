@@ -14,8 +14,6 @@ public class MobileElementUtil {
 
     public static final String PAGE_TITLE_KEY = "title";
 
-    private static final String XPATH_KEY = "xpath";
-
     public static WebElementEntity convertElementToWebElementEntity(MobileElement element, WebElementEntity refElement,
             FolderEntity parentFolder) throws Exception {
         WebElementEntity newWebElement = new WebElementEntity();
@@ -30,9 +28,6 @@ public class MobileElementUtil {
             WebElementPropertyEntity webElementPropertyEntity = new WebElementPropertyEntity();
             webElementPropertyEntity.setName(entry.getKey());
             webElementPropertyEntity.setValue(entry.getValue());
-            if (entry.getKey().equals(XPATH_KEY)) {
-                webElementPropertyEntity.setIsSelected(true);
-            }
             newWebElement.getWebElementProperties().add(webElementPropertyEntity);
         }
 
