@@ -2217,4 +2217,40 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static void tapAndHoldAtPosition(Number x, Number y, Number duration) throws StepFailedException {
         tapAndHoldAtPosition(x, y, duration, RunConfiguration.getDefaultFailureHandling());
     }
+
+    /**
+     * Get the width of mobile element
+     * @param to 
+     *      represent a mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return 
+     *      width of the element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static int getElementWidth(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
+        return KeywordMain.runKeywordAndReturnInt({
+            return MobileElementCommonHelper.getElementWidth(to, timeout);
+        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_GET_WIDTH_OF_ELEMENT_X, to.getObjectId())
+        : StringConstants.KW_MSG_FAILED_TO_GET_WIDTH_OF_ELEMENT);
+    }
+
+    /**
+     * Get the width of mobile element
+     * @param to 
+     *      represent a mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @return 
+     *      width of the element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static int getElementWidth(TestObject to, int timeout) throws StepFailedException {
+        return getElementWidth(to, timeout, RunConfiguration.getDefaultFailureHandling());
+    }
 }
