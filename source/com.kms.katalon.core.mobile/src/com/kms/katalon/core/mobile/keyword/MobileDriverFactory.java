@@ -22,6 +22,8 @@ import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 
 public class MobileDriverFactory {
+    private static final String WAIT_FOR_APP_SCRIPT_TRUE = "true;";
+
     private static final String WAIT_FOR_APP_SCRIPT = "waitForAppScript";
 
     private static final String NO_RESET = "noReset";
@@ -93,7 +95,7 @@ public class MobileDriverFactory {
         Map<String, Object> driverPreferences = RunConfiguration.getDriverPreferencesProperties(MOBILE_DRIVER_PROPERTY);
         if (driverPreferences != null && osType == MobileDriverType.IOS_DRIVER) {
             capabilities.merge(convertPropertiesMaptoDesireCapabilities(driverPreferences, MobileDriverType.IOS_DRIVER));
-            capabilities.setCapability(WAIT_FOR_APP_SCRIPT, true);
+            capabilities.setCapability(WAIT_FOR_APP_SCRIPT, WAIT_FOR_APP_SCRIPT_TRUE);
             if (deviceId == null) {
                 capabilities.setCapability(MobileCapabilityType.PLATFORM, getDeviceOS());
                 capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, getDeviceOSVersion());
