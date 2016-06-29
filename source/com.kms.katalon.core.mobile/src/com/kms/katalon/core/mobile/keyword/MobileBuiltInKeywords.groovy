@@ -2319,4 +2319,40 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static int getElementHeight(TestObject to, int timeout) throws StepFailedException {
         return getElementHeight(to, timeout, RunConfiguration.getDefaultFailureHandling());
     }
+
+    /**
+     * Get the left position of mobile element
+     * @param to
+     *      represent a mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return 
+     *      the left position of the mobile element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
+    public static int getElementLeftPosition(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
+        return KeywordMain.runKeywordAndReturnInt({
+            return MobileElementCommonHelper.getElementLeftPosition(to, timeout, flowControl);
+        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_GET_LEFT_POSITION_OF_ELEMENT, to.getObjectId())
+        : StringConstants.KW_MSG_FAILED_TO_GET_LEFT_POSITION);
+    }
+
+    /**
+     * Get the left position of mobile element
+     * @param to
+     *      represent a mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @return
+     *      the left position of the mobile element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
+    public static int getElementLeftPosition(TestObject to, int timeout) throws StepFailedException {
+        return getElementLeftPosition(to, timeout, RunConfiguration.getDefaultFailureHandling());
+    }
 }

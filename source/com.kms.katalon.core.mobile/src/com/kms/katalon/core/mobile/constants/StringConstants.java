@@ -86,7 +86,7 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_MSG_FAILED_TO_TAP_ON_ELEMENT_X = "Failed to tap on element ''{0}''";
 
     public static final String KW_MSG_FAILED_TO_TAP_ON_ELEMENT = "Failed to tap on element";
-    
+
     public static final String KW_LOG_PASSED_TAP_AND_HOLD_ON_ELEMENT_X_WITH_DURATION_Y = "Tapped and held on element ''{0}'' with duration {1}";
 
     public static final String KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT_X_WITH_DURATION_Y = "Failed to tap and hold on element ''{0}'' with duration {1}";
@@ -341,6 +341,12 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_MSG_FAILED_TO_GET_TOP_POSITION_OF_ELEMENT = "Failed to get top position of element ''{0}''";
 
     public static final String KW_MSG_FAILED_TO_GET_TOP_POSITION = "Failed to get top position of element";
+    
+    public static final String KW_LOG_PASSED_OBJ_HAS_LEFT_POSITION = "Object ''{0}'' has left position ''{1}''";
+
+    public static final String KW_MSG_FAILED_TO_GET_LEFT_POSITION_OF_ELEMENT = "Failed to get left position of element ''{0}''";
+
+    public static final String KW_MSG_FAILED_TO_GET_LEFT_POSITION = "Failed to get left position of element";
 
     public static final String KW_MSG_FAILED_TO_UNLOCK_SCREEN = "Failed to unlock screen";
 

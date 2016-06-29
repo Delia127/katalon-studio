@@ -220,6 +220,15 @@ public class MobileElementCommonHelper {
         driver.tap(1, startX + ANDROID_SEEKBAR_PADDING + relativeX, element.getLocation().getY(), DEFAULT_TAP_DURATION);
     }
     
+    public static int getElementLeftPosition(TestObject to, int timeout, FailureHandling flowControl) throws Exception {
+        WebElement element = findElementWithCheck(to, timeout);
+        Point location = element.getLocation();
+        KeywordLogger.getInstance().logPassed(
+                MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_HAS_LEFT_POSITION, to.getObjectId(),
+                        location.getX()));
+        return location.getX();
+    }
+    
     public static int getElementTopPosition(TestObject to, int timeout, FailureHandling flowControl) throws Exception {
         WebElement element = findElementWithCheck(to, timeout);
         Point location = element.getLocation();
