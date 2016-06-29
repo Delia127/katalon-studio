@@ -353,7 +353,7 @@ public class MobileInspectorController {
             htmlMobileElement.setName(guiName);
         }
         
-        String xpath = makeAndroidXpath(htmlMobileElement);        
+        String xpath = makeXpath(htmlMobileElement, MobileDriverType.ANDROID_DRIVER);   
         htmlMobileElementProps.put(AndroidProperties.XPATH, xpath);
 
         return htmlMobileElement;
@@ -439,56 +439,68 @@ public class MobileInspectorController {
             }
         }
         
-        String xpath = makeIOSXpath(currentMobileElement);
-        currentMobileElement.getAttributes().put(IOSProperties.XPATH, xpath);
+        String xpath = makeXpath(currentMobileElement, MobileDriverType.IOS_DRIVER);
+        if (xpath != null) {
+            currentMobileElement.getAttributes().put(IOSProperties.XPATH, xpath);
+        }
 
         currentMobileElement.setName(guiName);
         return currentMobileElement;
     }
-
-    private String makeAndroidXpath(MobileElement htmlMobileElement) {
-        String tagName = htmlMobileElement.getAttributes().get(AndroidProperties.ANDROID_CLASS);
-        String instance = htmlMobileElement.getAttributes().get(AndroidProperties.ANDROID_INSTANCE);
-        String xpath = StringUtils.isEmpty(tagName) ? "//*" : ("/" + tagName);
-        if (StringUtils.isEmpty(instance) || Integer.parseInt(instance) > 0) {
-            xpath += "[" + instance + "]";
-        }
-        if (htmlMobileElement.getParentElement() != null) {
-            String parentXpath = htmlMobileElement.getParentElement().getAttributes().get(AndroidProperties.XPATH);
-            xpath = (StringUtils.isEmpty(parentXpath) ? "/*" : parentXpath) + xpath;
-        }
-        return xpath;
-    }
     
-    private String makeIOSXpath(MobileElement currentMobileElement) {
+    private String makeXpath(MobileElement htmlMobileElement, MobileDriverType mobileDriverType) {
+        String tagName = getTagName(htmlMobileElement, mobileDriverType);
+        int index = getIndexPropertyForElement(htmlMobileElement, mobileDriverType, tagName);
+        String xpath = StringUtils.isEmpty(tagName) ? "//*" : ("/" + tagName);
+        if (index > 1) {
+            xpath += "[" + index + "]";
+        }
+        if (htmlMobileElement.getParentElement() == null) {
+            return xpath;
+        }
 
-        String tagName = currentMobileElement.getAttributes().get(IOSProperties.IOS_TYPE);
-        MobileElement parentElement = currentMobileElement.getParentElement();
-        int instance = 0;
-        if (StringUtils.isNotEmpty(tagName) && parentElement != null) {
-            for (MobileElement parentChild : currentMobileElement.getParentElement().getChildrenElement()) {
-                if (tagName.equals(parentChild.getAttributes().get(IOSProperties.IOS_TYPE))) {
-                    instance += 1;
-                }
-                if (parentChild == currentMobileElement) {
-                    break;
-                }
+        String parentXpath = getXpath(htmlMobileElement.getParentElement(), mobileDriverType);
+        xpath = (StringUtils.isEmpty(parentXpath) ? "//*" : parentXpath) + xpath;
+        return xpath;
+        
+    }
+
+    private int getIndexPropertyForElement(MobileElement htmlMobileElement, MobileDriverType mobileDriverType,
+            String tagName) {
+        MobileElement parentElement = htmlMobileElement.getParentElement();
+        if (StringUtils.isEmpty(tagName) || parentElement == null) {
+            return 1;
+        }
+        int index = 1;
+        for (MobileElement parentChild : parentElement.getChildrenElement()) {
+            if (parentChild == htmlMobileElement) {
+                break;
+            }
+            if (tagName.equals(getTagName(parentChild, mobileDriverType))) {
+                index += 1;
             }
         }
+        return index;
+    }
 
-        // Make xpath
-        String xpath = StringUtils.isEmpty(tagName) ? "//*" : ("/" + tagName);
-        if (instance > 0) {
-            xpath += "[" + instance + "]";
+    private String getTagName(MobileElement htmlMobileElement, MobileDriverType mobileDriverType) {
+        if (mobileDriverType == MobileDriverType.ANDROID_DRIVER) {
+            return htmlMobileElement.getAttributes().get(AndroidProperties.ANDROID_CLASS); 
         }
-        if (parentElement != null) {
-            String parentXpath = parentElement.getAttributes().get(IOSProperties.XPATH );
-            xpath = (StringUtils.isEmpty(parentXpath) ? "/*" : parentXpath) + xpath;
-        } else {
-            xpath = "/" + xpath;
+        if (mobileDriverType == MobileDriverType.IOS_DRIVER) {
+            return htmlMobileElement.getAttributes().get(IOSProperties.IOS_TYPE); 
         }
-
-        return xpath;
+        return null;
+    }
+    
+    private String getXpath(MobileElement htmlMobileElement, MobileDriverType mobileDriverType) {
+        if (mobileDriverType == MobileDriverType.ANDROID_DRIVER) {
+            return htmlMobileElement.getAttributes().get(AndroidProperties.XPATH); 
+        }
+        if (mobileDriverType == MobileDriverType.IOS_DRIVER) {
+            return htmlMobileElement.getAttributes().get(IOSProperties.XPATH); 
+        }
+        return null;
     }
     
     /*
