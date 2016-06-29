@@ -64,7 +64,7 @@ public class SheetPOI extends ExcelData {
                     maxRow));
         }
 
-        int maxColumnAtRow = getMaxColumn(row);
+        int maxColumnAtRow = getMaxColumn(row + getHeaderRowIdx());
 
         if (maxColumnAtRow < 0) {
             return "";
