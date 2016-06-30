@@ -73,4 +73,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_ERROR_MSG_OS_NOT_SUPPORT = "OS type has not been support";
 
     public static final String DIA_ERROR_MSG_OPERATION_CANCELED = "Operation was canceled";
+    
+    public static final String INTEGER_PATTERN_FORMAT_STRING = "#####";
 }

@@ -6,6 +6,7 @@ import io.appium.java_client.ios.IOSDriver;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +15,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openqa.selenium.OutputType;
@@ -110,7 +112,7 @@ public class MobileInspectorController {
         return new HashMap<String, String>();
     }
 
-    private static MobileDriverType getMobileDriverType(MobileDeviceInfo mobileDeviceInfo) {
+    public static MobileDriverType getMobileDriverType(MobileDeviceInfo mobileDeviceInfo) {
         if (mobileDeviceInfo == null) {
             return null;
         }
@@ -177,7 +179,9 @@ public class MobileInspectorController {
                 InputSource is = new InputSource();
                 is.setCharacterStream(new StringReader(pageSource));
                 Document doc = db.parse(is);
-                renderTree(doc.getDocumentElement(), htmlMobileElementRootNode);
+                Element rootElement = doc.getDocumentElement();
+                htmlMobileElementRootNode.getAttributes().put(AndroidProperties.ANDROID_CLASS, rootElement.getTagName());
+                renderTree(rootElement, htmlMobileElementRootNode);
             }
         } catch (Exception ex) {
             LoggerSingleton.logError(ex);
@@ -189,15 +193,16 @@ public class MobileInspectorController {
         if (jsonObject == null) {
             return;
         }
-        convertXMLElementToWebElementForIos(jsonObject, currentNode);
+        convertJsonObjectToWebElementForIos(jsonObject, currentNode);
         // Create child-Node
         if (jsonObject.has("children")) {
             JSONArray childrens = jsonObject.getJSONArray("children");
             for (int i = 0; i < childrens.length(); i++) {
                 JSONObject child = childrens.getJSONObject(i);
                 MobileElement childNode = new MobileElement();
-                renderTree(child, childNode);
+                childNode.setParentElement(currentNode);
                 currentNode.getChildrenElement().add(childNode);
+                renderTree(child, childNode);
             }
         }
     }
@@ -214,8 +219,9 @@ public class MobileInspectorController {
                 org.w3c.dom.Node node = xmlElement.getChildNodes().item(i);
                 if ((node != null) && (node instanceof Element)) {
                     MobileElement childNode = new MobileElement();
-                    renderTree((Element) node, childNode);
+                    childNode.setParentElement(htmlMobileElement);
                     htmlMobileElement.getChildrenElement().add(childNode);
+                    renderTree((Element) node, childNode);
                 }
             }
         }
@@ -223,97 +229,101 @@ public class MobileInspectorController {
 
     private MobileElement convertXMLElementToWebElementForAndroid(Element xmlElement, MobileElement htmlMobileElement) {
 
-        htmlMobileElement.getAttributes().put(AndroidProperties.ANDROID_CLASS,
-                xmlElement.getAttribute(AndroidProperties.ANDROID_CLASS));
+        Map<String, String> htmlMobileElementProps = htmlMobileElement.getAttributes();
+
+        if (StringUtils.isNotEmpty(xmlElement.getAttribute(AndroidProperties.ANDROID_CLASS))) {
+            htmlMobileElementProps.put(AndroidProperties.ANDROID_CLASS,
+                    xmlElement.getAttribute(AndroidProperties.ANDROID_CLASS));
+        }
 
         String instance = "0";
         if (xmlElement.hasAttribute(AndroidProperties.ANDROID_INSTANCE)
                 && (xmlElement.getAttribute(AndroidProperties.ANDROID_INSTANCE).length() > 0)) {
             instance = xmlElement.getAttribute(AndroidProperties.ANDROID_INSTANCE);
-            htmlMobileElement.getAttributes().put(AndroidProperties.ANDROID_INSTANCE, instance);
+            htmlMobileElementProps.put(AndroidProperties.ANDROID_INSTANCE, instance);
         }
 
         if (xmlElement.hasAttribute(AndroidProperties.ANDROID_TEXT)
                 && (xmlElement.getAttribute(AndroidProperties.ANDROID_TEXT).length() > 0)) {
-            htmlMobileElement.getAttributes().put(AndroidProperties.ANDROID_TEXT,
+            htmlMobileElementProps.put(AndroidProperties.ANDROID_TEXT,
                     xmlElement.getAttribute(AndroidProperties.ANDROID_TEXT));
         }
 
         if (xmlElement.hasAttribute(AndroidProperties.ANDROID_RESOURCE_ID)
                 && (xmlElement.getAttribute(AndroidProperties.ANDROID_RESOURCE_ID).length() > 0)) {
-            htmlMobileElement.getAttributes().put(AndroidProperties.ANDROID_RESOURCE_ID,
+            htmlMobileElementProps.put(AndroidProperties.ANDROID_RESOURCE_ID,
                     xmlElement.getAttribute(AndroidProperties.ANDROID_RESOURCE_ID));
         }
 
         if (xmlElement.hasAttribute(AndroidProperties.ANDROID_PACKAGE)
                 && (xmlElement.getAttribute(AndroidProperties.ANDROID_PACKAGE).length() > 0)) {
-            htmlMobileElement.getAttributes().put(AndroidProperties.ANDROID_PACKAGE,
+            htmlMobileElementProps.put(AndroidProperties.ANDROID_PACKAGE,
                     xmlElement.getAttribute(AndroidProperties.ANDROID_PACKAGE));
         }
 
         if (xmlElement.hasAttribute(AndroidProperties.ANDROID_CONTENT_DESC)
                 && (xmlElement.getAttribute(AndroidProperties.ANDROID_CONTENT_DESC).length() > 0)) {
-            htmlMobileElement.getAttributes().put(AndroidProperties.ANDROID_CONTENT_DESC,
+            htmlMobileElementProps.put(AndroidProperties.ANDROID_CONTENT_DESC,
                     xmlElement.getAttribute(AndroidProperties.ANDROID_CONTENT_DESC));
         }
 
         if (xmlElement.hasAttribute(AndroidProperties.ANDROID_CHECKABLE)
                 && (xmlElement.getAttribute(AndroidProperties.ANDROID_CHECKABLE).length() > 0)) {
-            htmlMobileElement.getAttributes().put(AndroidProperties.ANDROID_CHECKABLE,
+            htmlMobileElementProps.put(AndroidProperties.ANDROID_CHECKABLE,
                     xmlElement.getAttribute(AndroidProperties.ANDROID_CHECKABLE));
         }
 
         if (xmlElement.hasAttribute(AndroidProperties.ANDROID_CHECKED)
                 && (xmlElement.getAttribute(AndroidProperties.ANDROID_CHECKED).length() > 0)) {
-            htmlMobileElement.getAttributes().put(AndroidProperties.ANDROID_CHECKED,
+            htmlMobileElementProps.put(AndroidProperties.ANDROID_CHECKED,
                     xmlElement.getAttribute(AndroidProperties.ANDROID_CHECKED));
         }
 
         if (xmlElement.hasAttribute(AndroidProperties.ANDROID_CLICKABLE)
                 && (xmlElement.getAttribute(AndroidProperties.ANDROID_CLICKABLE).length() > 0)) {
-            htmlMobileElement.getAttributes().put(AndroidProperties.ANDROID_CLICKABLE,
+            htmlMobileElementProps.put(AndroidProperties.ANDROID_CLICKABLE,
                     xmlElement.getAttribute(AndroidProperties.ANDROID_CLICKABLE));
         }
 
         if (xmlElement.hasAttribute(AndroidProperties.ANDROID_ENABLED)
                 && (xmlElement.getAttribute(AndroidProperties.ANDROID_ENABLED).length() > 0)) {
-            htmlMobileElement.getAttributes().put(AndroidProperties.ANDROID_ENABLED,
+            htmlMobileElementProps.put(AndroidProperties.ANDROID_ENABLED,
                     xmlElement.getAttribute(AndroidProperties.ANDROID_ENABLED));
         }
 
         if (xmlElement.hasAttribute(AndroidProperties.ANDROID_FOCUSABLE)
                 && (xmlElement.getAttribute(AndroidProperties.ANDROID_FOCUSABLE).length() > 0)) {
-            htmlMobileElement.getAttributes().put(AndroidProperties.ANDROID_FOCUSABLE,
+            htmlMobileElementProps.put(AndroidProperties.ANDROID_FOCUSABLE,
                     xmlElement.getAttribute(AndroidProperties.ANDROID_FOCUSABLE));
         }
 
         if (xmlElement.hasAttribute(AndroidProperties.ANDROID_FOCUSED)
                 && (xmlElement.getAttribute(AndroidProperties.ANDROID_FOCUSED).length() > 0)) {
-            htmlMobileElement.getAttributes().put(AndroidProperties.ANDROID_FOCUSED,
+            htmlMobileElementProps.put(AndroidProperties.ANDROID_FOCUSED,
                     xmlElement.getAttribute(AndroidProperties.ANDROID_FOCUSED));
         }
 
         if (xmlElement.hasAttribute(AndroidProperties.ANDROID_SCROLLABLE)
                 && (xmlElement.getAttribute(AndroidProperties.ANDROID_SCROLLABLE).length() > 0)) {
-            htmlMobileElement.getAttributes().put(AndroidProperties.ANDROID_SCROLLABLE,
+            htmlMobileElementProps.put(AndroidProperties.ANDROID_SCROLLABLE,
                     xmlElement.getAttribute(AndroidProperties.ANDROID_SCROLLABLE));
         }
 
         if (xmlElement.hasAttribute(AndroidProperties.ANDROID_LONG_CLICKABLE)
                 && (xmlElement.getAttribute(AndroidProperties.ANDROID_LONG_CLICKABLE).length() > 0)) {
-            htmlMobileElement.getAttributes().put(AndroidProperties.ANDROID_LONG_CLICKABLE,
+            htmlMobileElementProps.put(AndroidProperties.ANDROID_LONG_CLICKABLE,
                     xmlElement.getAttribute(AndroidProperties.ANDROID_LONG_CLICKABLE));
         }
 
         if (xmlElement.hasAttribute(AndroidProperties.ANDROID_PASSWORD)
                 && (xmlElement.getAttribute(AndroidProperties.ANDROID_PASSWORD).length() > 0)) {
-            htmlMobileElement.getAttributes().put(AndroidProperties.ANDROID_PASSWORD,
+            htmlMobileElementProps.put(AndroidProperties.ANDROID_PASSWORD,
                     xmlElement.getAttribute(AndroidProperties.ANDROID_PASSWORD));
         }
 
         if (xmlElement.hasAttribute(AndroidProperties.ANDROID_SELECTED)
                 && (xmlElement.getAttribute(AndroidProperties.ANDROID_SELECTED).length() > 0)) {
-            htmlMobileElement.getAttributes().put(AndroidProperties.ANDROID_SELECTED,
+            htmlMobileElementProps.put(AndroidProperties.ANDROID_SELECTED,
                     xmlElement.getAttribute(AndroidProperties.ANDROID_SELECTED));
         }
 
@@ -325,25 +335,31 @@ public class MobileInspectorController {
             int right = Integer.parseInt(bounds.substring(bounds.lastIndexOf('[') + 1, bounds.lastIndexOf(',')));
             int bottom = Integer.parseInt(bounds.substring(bounds.lastIndexOf(',') + 1, bounds.lastIndexOf(']')));
 
-            htmlMobileElement.getAttributes().put(GUIObject.X, String.valueOf(left));
-            htmlMobileElement.getAttributes().put(GUIObject.Y, String.valueOf(top));
-            htmlMobileElement.getAttributes().put(GUIObject.WIDTH, String.valueOf(right - left));
-            htmlMobileElement.getAttributes().put(GUIObject.HEIGHT, String.valueOf(bottom - top));
+            htmlMobileElementProps.put(GUIObject.X, String.valueOf(left));
+            htmlMobileElementProps.put(GUIObject.Y, String.valueOf(top));
+            htmlMobileElementProps.put(GUIObject.WIDTH, String.valueOf(right - left));
+            htmlMobileElementProps.put(GUIObject.HEIGHT, String.valueOf(bottom - top));
         }
 
-        String guiName = htmlMobileElement.getAttributes().get(AndroidProperties.ANDROID_CLASS);
-        if (htmlMobileElement.getAttributes().get(AndroidProperties.ANDROID_TEXT) != null) {
-            guiName += " - " + htmlMobileElement.getAttributes().get(AndroidProperties.ANDROID_TEXT);
+        String guiName = htmlMobileElementProps.get(AndroidProperties.ANDROID_CLASS);
+        if (StringUtils.isNotEmpty(guiName)) {
+            guiName += instance;
+            if (htmlMobileElementProps.get(AndroidProperties.ANDROID_TEXT) != null) {
+                guiName += " - " + htmlMobileElementProps.get(AndroidProperties.ANDROID_TEXT);
+            }
+            if (guiName.contains("\n")) {
+                guiName = guiName.replace("\n", "");
+            }
+            htmlMobileElement.setName(guiName);
         }
-        if (guiName != null && guiName.contains("\n")) {
-            guiName = guiName.replace("\n", "");
-        }
-        guiName += instance;
-        htmlMobileElement.setName(guiName);
+        
+        String xpath = makeXpath(htmlMobileElement, MobileDriverType.ANDROID_DRIVER);   
+        htmlMobileElementProps.put(AndroidProperties.XPATH, xpath);
+
         return htmlMobileElement;
     }
 
-    private MobileElement convertXMLElementToWebElementForIos(JSONObject jsonObject, MobileElement currentMobileElement)
+    private MobileElement convertJsonObjectToWebElementForIos(JSONObject jsonObject, MobileElement currentMobileElement)
             throws Exception {
 
         // Extract web element property info
@@ -372,23 +388,28 @@ public class MobileInspectorController {
         }
 
         if (jsonObject.has(IOSProperties.IOS_RECT)) {
+        	DecimalFormat formatter = new DecimalFormat(StringConstants.INTEGER_PATTERN_FORMAT_STRING);
             JSONObject rect = jsonObject.getJSONObject(IOSProperties.IOS_RECT);
             if (rect.has(IOSProperties.IOS_ORIGIN)) {
                 JSONObject origin = rect.getJSONObject(IOSProperties.IOS_ORIGIN);
                 if (origin.has(GUIObject.X)) {
-                    properties.put(GUIObject.X, String.valueOf(origin.getDouble(GUIObject.X)));
+                	double x = origin.getDouble(GUIObject.X);
+                    properties.put(GUIObject.X, String.valueOf(x % 1 > 0 ? x : formatter.format(x)));
                 }
                 if (origin.has(GUIObject.Y)) {
-                    properties.put(GUIObject.Y, String.valueOf(origin.getDouble(GUIObject.Y)));
+                	double y = origin.getDouble(GUIObject.Y);
+                    properties.put(GUIObject.Y, String.valueOf(y % 1 > 0 ? y : formatter.format(y)));
                 }
             }
             if (rect.has(IOSProperties.IOS_SIZE)) {
                 JSONObject size = rect.getJSONObject(IOSProperties.IOS_SIZE);
                 if (size.has(GUIObject.WIDTH)) {
-                    properties.put(GUIObject.WIDTH, String.valueOf(size.getDouble(GUIObject.WIDTH)));
+                	double width = size.getDouble(GUIObject.WIDTH);
+                    properties.put(GUIObject.WIDTH, String.valueOf(width % 1 > 0 ? width : formatter.format(width)));
                 }
                 if (size.has(GUIObject.HEIGHT)) {
-                    properties.put(GUIObject.HEIGHT, String.valueOf(size.getDouble(GUIObject.HEIGHT)));
+                	double height = size.getDouble(GUIObject.HEIGHT);
+                    properties.put(GUIObject.HEIGHT, String.valueOf(height % 1 > 0 ? height : formatter.format(height)));
                 }
             }
         }
@@ -417,11 +438,72 @@ public class MobileInspectorController {
                 }
             }
         }
+        
+        String xpath = makeXpath(currentMobileElement, MobileDriverType.IOS_DRIVER);
+        if (xpath != null) {
+            currentMobileElement.getAttributes().put(IOSProperties.XPATH, xpath);
+        }
 
         currentMobileElement.setName(guiName);
         return currentMobileElement;
     }
+    
+    private String makeXpath(MobileElement htmlMobileElement, MobileDriverType mobileDriverType) {
+        String tagName = getTagName(htmlMobileElement, mobileDriverType);
+        int index = getIndexPropertyForElement(htmlMobileElement, mobileDriverType, tagName);
+        String xpath = StringUtils.isEmpty(tagName) ? "//*" : ("/" + tagName);
+        if (index > 0) {
+            xpath += "[" + index + "]";
+        }
+        if (htmlMobileElement.getParentElement() == null) {
+            // top node, add "/" to select all
+            return "/" + xpath;
+        }
 
+        String parentXpath = getXpath(htmlMobileElement.getParentElement(), mobileDriverType);
+        xpath = (StringUtils.isEmpty(parentXpath) ? "//*" : parentXpath) + xpath;
+        return xpath;
+        
+    }
+
+    private int getIndexPropertyForElement(MobileElement htmlMobileElement, MobileDriverType mobileDriverType,
+            String tagName) {
+        MobileElement parentElement = htmlMobileElement.getParentElement();
+        if (StringUtils.isEmpty(tagName) || parentElement == null) {
+            return 0;
+        }
+        int index = 1;
+        for (MobileElement parentChild : parentElement.getChildrenElement()) {
+            if (parentChild == htmlMobileElement) {
+                break;
+            }
+            if (tagName.equals(getTagName(parentChild, mobileDriverType))) {
+                index += 1;
+            }
+        }
+        return index;
+    }
+
+    private String getTagName(MobileElement htmlMobileElement, MobileDriverType mobileDriverType) {
+        if (mobileDriverType == MobileDriverType.ANDROID_DRIVER) {
+            return htmlMobileElement.getAttributes().get(AndroidProperties.ANDROID_CLASS); 
+        }
+        if (mobileDriverType == MobileDriverType.IOS_DRIVER) {
+            return htmlMobileElement.getAttributes().get(IOSProperties.IOS_TYPE); 
+        }
+        return null;
+    }
+    
+    private String getXpath(MobileElement htmlMobileElement, MobileDriverType mobileDriverType) {
+        if (mobileDriverType == MobileDriverType.ANDROID_DRIVER) {
+            return htmlMobileElement.getAttributes().get(AndroidProperties.XPATH); 
+        }
+        if (mobileDriverType == MobileDriverType.IOS_DRIVER) {
+            return htmlMobileElement.getAttributes().get(IOSProperties.XPATH); 
+        }
+        return null;
+    }
+    
     /*
      * private WebElementProperty createProperty(String propertyName, String propertyValue, WebElement parentWebElement)
      * { WebElementProperty propEntity = new WebElementProperty(); propEntity.setId(-1L);

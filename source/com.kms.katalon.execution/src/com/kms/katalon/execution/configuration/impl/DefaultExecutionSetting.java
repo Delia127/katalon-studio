@@ -45,8 +45,9 @@ public class DefaultExecutionSetting implements IExecutionSetting {
         generalProperties.put(RunConfiguration.TIMEOUT_PROPERTY, timeout);
         generalProperties.put(StringConstants.CONF_PROPERTY_REPORT, getReportProperties());
         generalProperties.put(RunConfiguration.EXCUTION_DEFAULT_FAILURE_HANDLING, getDefaultFailureHandlingSetting());
-        generalProperties.put(RunConfiguration.EXECUTION_TEST_DATA_INFO_PROPERTY, executedEntity.getCollectedDataInfo());
-
+        if (executedEntity != null) {
+            generalProperties.put(RunConfiguration.EXECUTION_TEST_DATA_INFO_PROPERTY, executedEntity.getCollectedDataInfo());
+        }
         return generalProperties;
     }
 
