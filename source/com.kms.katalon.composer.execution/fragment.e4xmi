@@ -24,7 +24,7 @@
     <elements xsi:type="commands:Handler" xmi:id="_UauoQArIEea7RfDmXOohVw" elementId="com.kms.katalon.composer.execution.handler.removeAllBreakpoints" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.debug.handler.RemoveAllBreakpointHandler" command="_tecPcAh6EeaOHID5tXhDTg"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_2siakEO8EeS6w-5VfP-05A" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="last">
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_hGFVQGZHEeSy97efZ7yHrA" elementId="com.kms.katalon.composer.execution.handledtoolitem.run" label="" iconURI="platform:/plugin/com.kms.katalon.composer.execution/icons/play_28.png" tooltip="Run" command="_1Vr3wEvpEeWSR5dl8TkM5g">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_hGFVQGZHEeSy97efZ7yHrA" elementId="com.kms.katalon.composer.execution.handledtoolitem.run" label="" iconURI="platform:/plugin/com.kms.katalon.composer.components.impl/icons/play_28.png" tooltip="Run" command="_1Vr3wEvpEeWSR5dl8TkM5g">
       <tags>FORCE_TEXT</tags>
       <tags>Opaque</tags>
       <menu xmi:id="_h1k4gGZHEeSy97efZ7yHrA" elementId="com.kms.katalon.composer.execution.menu.run" label="Run "/>
@@ -34,7 +34,7 @@
       <tags>Opaque</tags>
       <menu xmi:id="_lev64OJXEeSyVPtKyNklew" elementId="com.kms.katalon.composer.execution.menu.debug" label="Debug"/>
     </elements>
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_yvXSEG74EeSqyYL0pZQV2Q" elementId="com.kms.katalon.composer.execution.handledtoolitem.stop" label="" iconURI="platform:/plugin/com.kms.katalon.composer.execution/icons/stop_28.png" tooltip="Stop All" command="_4raZwG74EeSqyYL0pZQV2Q">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_yvXSEG74EeSqyYL0pZQV2Q" elementId="com.kms.katalon.composer.execution.handledtoolitem.stop" label="" iconURI="platform:/plugin/com.kms.katalon.composer.components.impl/icons/stop_28.png" tooltip="Stop All" command="_4raZwG74EeSqyYL0pZQV2Q">
       <tags>FORCE_TEXT</tags>
       <tags>Opaque</tags>
     </elements>
