@@ -18,7 +18,6 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
-import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -249,14 +248,14 @@ public class RecorderDialog extends Dialog implements EventHandler {
         isPausing = true;
         tltmPause.setText(RESUME_TOOL_ITEM_LABEL);
         tltmPause.setImage(ImageConstants.IMG_28_PLAY);
-        toolBar.pack();
+        toolBar.getParent().layout();
     }
 
     private void resume() {
         isPausing = false;
         tltmPause.setText(PAUSE_TOOL_ITEM_LABEL);
         tltmPause.setImage(ImageConstants.IMG_28_PAUSE);
-        toolBar.pack();
+        toolBar.getParent().layout();
     }
 
     @Override
@@ -916,8 +915,8 @@ public class RecorderDialog extends Dialog implements EventHandler {
 
     private void createToolbar(Composite parent) {
         toolBar = new ToolBar(parent, SWT.FLAT | SWT.RIGHT);
+        toolBar.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
         toolBar.setLayout(new FillLayout(SWT.HORIZONTAL));
-        GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(true, false).applyTo(toolBar);
 
         toolItemBrowserDropdown = new ToolItem(toolBar, SWT.DROP_DOWN);
         toolItemBrowserDropdown.setText(START_TOOL_ITEM_LABEL);
