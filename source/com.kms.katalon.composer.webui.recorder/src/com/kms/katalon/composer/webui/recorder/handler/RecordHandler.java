@@ -167,14 +167,14 @@ public class RecordHandler {
 
     private boolean verifyTestCase(Shell activeShell, TestCaseCompositePart testCaseCompositePart) throws Exception {
         if (testCaseCompositePart.getDirty().isDirty()) {
-            MessageDialog.openError(activeShell, StringConstants.ERROR_TITLE,
+            MessageDialog.openWarning(activeShell, StringConstants.WARN,
                     StringConstants.HAND_ERROR_MSG_PLS_SAVE_TEST_CASE);
             return false;
         }
         try {
             testCaseCompositePart.getAstNodesFromScript();
         } catch (CompilationFailedException compilationFailedExcption) {
-            MessageDialog.openError(activeShell, StringConstants.ERROR_TITLE,
+            MessageDialog.openWarning(activeShell, StringConstants.WARN,
                     StringConstants.HAND_ERROR_MSG_PLS_FIX_TEST_CASE);
             return false;
         }
