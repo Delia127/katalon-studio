@@ -50,6 +50,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
@@ -66,6 +67,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 import com.kms.katalon.composer.testcase.keywords.KeywordBrowserTreeEntityTransfer;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
+import com.kms.katalon.composer.testcase.providers.AstTreeItemLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstTreeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstTreeTableContentProvider;
 import com.kms.katalon.composer.testcase.providers.TestCaseSelectionListener;
@@ -247,7 +249,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
         Composite compositeTable = new Composite(compositeSteps, SWT.NONE);
         compositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        treeTable = new TreeViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+        treeTable = new CTreeViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
         treeTable.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         treeTable.getTree().setLinesVisible(true);
         treeTable.getTree().setHeaderVisible(true);
@@ -256,7 +258,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
         compositeTable.setLayout(treeColumnLayout);
 
         addTreeTableColumn(treeTable, treeColumnLayout, StringConstants.PA_COL_ITEM, 200, 0,
-                new AstTreeLabelProvider(), new ItemColumnEditingSupport(treeTable, this));
+                new AstTreeItemLabelProvider(), new ItemColumnEditingSupport(treeTable, this));
 
         addTreeTableColumn(treeTable, treeColumnLayout, StringConstants.PA_COL_OBJ, 200, 0, new AstTreeLabelProvider(),
                 new TestObjectEditingSupport(treeTable, this));

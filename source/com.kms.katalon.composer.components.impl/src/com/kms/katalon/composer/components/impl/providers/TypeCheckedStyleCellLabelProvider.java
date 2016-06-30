@@ -87,6 +87,14 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
     protected int getSpace() {
         return SPACE;
     }
+    
+    protected int getLeftMargin() {
+        return SPACE;
+    }
+    
+    protected int getRightMargin() {
+        return SPACE;
+    }
 
     protected boolean canNotDrawSafely(Object element) {
         return !customPaint || !isElementInstanceOf(element);
@@ -106,7 +114,7 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
 
     private void drawCellFocus(ViewerCell cell, GC gc) {
         Rectangle focusBounds = getTextBounds(cell.getViewerRow().getBounds());
-        gc.drawFocus(focusBounds.x, focusBounds.y, focusBounds.width + deltaOfLastMeasure + getSpace(),
+        gc.drawFocus(focusBounds.x, focusBounds.y, focusBounds.width + deltaOfLastMeasure + getRightMargin(),
                 focusBounds.height);
     }
 
@@ -117,7 +125,7 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
     private void drawCellTextAndImage(Event event, ViewerCell cell, GC gc) {
         Image image = cell.getImage();
         if (image != null) {
-            gc.drawImage(image, event.getBounds().x + getSpace(), event.getBounds().y);
+            gc.drawImage(image, event.getBounds().x + getLeftMargin(), event.getBounds().y);
         }
 
         Rectangle textBounds = getTextBounds(cell.getTextBounds());
@@ -164,7 +172,7 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
 
         int textWidthDelta = deltaOfLastMeasure = updateTextLayout(layout, cell, applyColors);
 
-        event.width += textWidthDelta + getSpace();
+        event.width += textWidthDelta + getRightMargin();
     }
 
     private boolean isCellNotExisted(ViewerCell cell) {
