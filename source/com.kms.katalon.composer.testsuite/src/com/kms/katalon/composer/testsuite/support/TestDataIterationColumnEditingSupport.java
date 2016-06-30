@@ -1,17 +1,16 @@
 package com.kms.katalon.composer.testsuite.support;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
-import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.components.impl.support.TypeCheckedEditingSupport;
 import com.kms.katalon.composer.testsuite.editors.DataIterationCellEditor;
 import com.kms.katalon.composer.testsuite.parts.TestSuitePartDataBindingView;
 import com.kms.katalon.entity.link.IterationEntity;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
 
-public class TestDataIterationColumnEditingSupport extends EditingSupport {
+public class TestDataIterationColumnEditingSupport extends TypeCheckedEditingSupport<TestCaseTestDataLink> {
 
     private TestSuitePartDataBindingView mpart;
 
@@ -21,59 +20,32 @@ public class TestDataIterationColumnEditingSupport extends EditingSupport {
     }
 
     @Override
-    protected CellEditor getCellEditor(Object element) {
-        if (element != null && element instanceof TestCaseTestDataLink) {
-            TestCaseTestDataLink testDataLink = (TestCaseTestDataLink) element;
-            if (testDataLink.getIterationEntity() != null) {
-                return new DataIterationCellEditor((Composite) getViewer().getControl(), testDataLink
-                        .getIterationEntity().clone());
-            }
-        }
-        return null;
+    protected Class<TestCaseTestDataLink> getElementType() {
+        return TestCaseTestDataLink.class;
     }
 
     @Override
-    protected boolean canEdit(Object element) {
-        if (element != null && element instanceof TestCaseTestDataLink) {
-            TestCaseTestDataLink testDataLink = (TestCaseTestDataLink) element;
-
-            if (testDataLink.getIterationEntity() != null) {
-                return true;
-            }
-        }
-        return false;
+    protected CellEditor getCellEditorByElement(TestCaseTestDataLink element) {
+        return new DataIterationCellEditor((Composite) getViewer().getControl());
     }
 
     @Override
-    protected Object getValue(Object element) {
-        if (element != null && element instanceof TestCaseTestDataLink) {
-            TestCaseTestDataLink testDataLink = (TestCaseTestDataLink) element;
-
-            if (testDataLink.getIterationEntity() != null) {
-                switch (testDataLink.getIterationEntity().getIterationType()) {
-                    case ALL:
-                        return testDataLink.getIterationEntity().getIterationType().name();
-                    default:
-                        return testDataLink.getIterationEntity().getValue();
-                }
-
-            }
-        }
-        return StringUtils.EMPTY;
+    protected boolean canEditElement(TestCaseTestDataLink element) {
+        return element.getIterationEntity() != null;
     }
 
     @Override
-    protected void setValue(Object element, Object value) {
-        if (element != null && element instanceof TestCaseTestDataLink && value != null
-                && value instanceof IterationEntity) {
-            TestCaseTestDataLink testDataLink = (TestCaseTestDataLink) element;
+    protected Object getElementValue(TestCaseTestDataLink element) {
+        return element.getIterationEntity();
+    }
 
-            if (!testDataLink.getIterationEntity().equals(value)) {
-                testDataLink.setIterationEntity((IterationEntity) value);
+    @Override
+    protected void setElementValue(TestCaseTestDataLink element, Object value) {
+        if (value instanceof IterationEntity && !value.equals(element.getIterationEntity())) {
+            element.setIterationEntity((IterationEntity) value);
 
-                getViewer().update(element, null);
-                mpart.setDirty(true);
-            }
+            getViewer().update(element, null);
+            mpart.setDirty(true);
         }
     }
 

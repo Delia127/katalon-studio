@@ -80,4 +80,8 @@ public class IterationEntity implements Serializable {
     public void setIterationType(IterationType iterationType) {
         this.iterationType = iterationType;
     }
+    
+    public String getDisplayString() {
+        return iterationType == IterationType.ALL ? iterationType.toString() : getValue();
+    }
 }
