@@ -18,6 +18,6 @@ public class AndroidProperties {
 	public static final String ANDROID_PASSWORD = "password";
 	public static final String ANDROID_SELECTED = "selected";
 	public static final String ANDROID_BOUNDS = "bounds";
-    public static final String[] ANDROID_TYPICAL_PROPERTIES = new String[] { "class", "instance", "text", "resource-id" };
+    public static final String[] ANDROID_TYPICAL_PROPERTIES = new String[] { ANDROID_CLASS, ANDROID_INSTANCE, ANDROID_TEXT, ANDROID_RESOURCE_ID };
     public static final String XPATH = "xpath";
 }

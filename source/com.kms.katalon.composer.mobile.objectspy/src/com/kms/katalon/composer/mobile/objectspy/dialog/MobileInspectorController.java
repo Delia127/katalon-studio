@@ -452,11 +452,12 @@ public class MobileInspectorController {
         String tagName = getTagName(htmlMobileElement, mobileDriverType);
         int index = getIndexPropertyForElement(htmlMobileElement, mobileDriverType, tagName);
         String xpath = StringUtils.isEmpty(tagName) ? "//*" : ("/" + tagName);
-        if (index > 1) {
+        if (index > 0) {
             xpath += "[" + index + "]";
         }
         if (htmlMobileElement.getParentElement() == null) {
-            return xpath;
+            // top node, add "/" to select all
+            return "/" + xpath;
         }
 
         String parentXpath = getXpath(htmlMobileElement.getParentElement(), mobileDriverType);
@@ -469,7 +470,7 @@ public class MobileInspectorController {
             String tagName) {
         MobileElement parentElement = htmlMobileElement.getParentElement();
         if (StringUtils.isEmpty(tagName) || parentElement == null) {
-            return 1;
+            return 0;
         }
         int index = 1;
         for (MobileElement parentChild : parentElement.getChildrenElement()) {
