@@ -248,14 +248,14 @@ public class RecorderDialog extends Dialog implements EventHandler {
     private void pause() {
         isPausing = true;
         tltmPause.setText(RESUME_TOOL_ITEM_LABEL);
-        tltmPause.setImage(ImageConstants.IMG_16_PLAY);
+        tltmPause.setImage(ImageConstants.IMG_28_PLAY);
         toolBar.pack();
     }
 
     private void resume() {
         isPausing = false;
         tltmPause.setText(PAUSE_TOOL_ITEM_LABEL);
-        tltmPause.setImage(ImageConstants.IMG_16_PAUSE);
+        tltmPause.setImage(ImageConstants.IMG_28_PAUSE);
         toolBar.pack();
     }
 
@@ -935,7 +935,7 @@ public class RecorderDialog extends Dialog implements EventHandler {
 
         tltmPause = new ToolItem(toolBar, SWT.PUSH);
         tltmPause.setText(PAUSE_TOOL_ITEM_LABEL);
-        tltmPause.setImage(ImageConstants.IMG_16_PAUSE);
+        tltmPause.setImage(ImageConstants.IMG_28_PAUSE);
         tltmPause.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -951,7 +951,7 @@ public class RecorderDialog extends Dialog implements EventHandler {
 
         tltmStop = new ToolItem(toolBar, SWT.PUSH);
         tltmStop.setText(STOP_TOOL_ITEM_LABEL);
-        tltmStop.setImage(ImageConstants.IMG_16_STOP);
+        tltmStop.setImage(ImageConstants.IMG_28_STOP);
         tltmStop.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
