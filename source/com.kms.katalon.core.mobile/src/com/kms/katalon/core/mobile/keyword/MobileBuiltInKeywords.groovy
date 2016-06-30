@@ -2,13 +2,12 @@ package com.kms.katalon.core.mobile.keyword;
 
 import groovy.transform.CompileStatic
 import io.appium.java_client.AppiumDriver
-import io.appium.java_client.DeviceActionShortcuts;
 import io.appium.java_client.MobileElement
 import io.appium.java_client.NetworkConnectionSetting
 import io.appium.java_client.android.AndroidDriver
 import io.appium.java_client.android.AndroidKeyCode
 import io.appium.java_client.ios.IOSDriver
-import io.appium.java_client.remote.HideKeyboardStrategy;
+import io.appium.java_client.remote.HideKeyboardStrategy
 
 import java.text.MessageFormat
 import java.util.concurrent.TimeUnit
@@ -38,6 +37,7 @@ import com.kms.katalon.core.mobile.constants.StringConstants
 import com.kms.katalon.core.mobile.helper.MobileCommonHelper
 import com.kms.katalon.core.mobile.helper.MobileDeviceCommonHelper
 import com.kms.katalon.core.mobile.helper.MobileElementCommonHelper
+import com.kms.katalon.core.mobile.helper.MobileGestureCommonHelper
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 
@@ -2216,6 +2216,43 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
     public static void tapAndHoldAtPosition(Number x, Number y, Number duration) throws StepFailedException {
         tapAndHoldAtPosition(x, y, duration, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
+     *  Pinch to zoom in at a specific position on the screen of the mobile device
+     * @param x
+     *      x position
+     * @param y
+     *      y position
+     * @param offset
+     *      the offset length to pinch
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
+    public static void pinchToZoomInAtPosition(Number x, Number y, Number offset, FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            MobileGestureCommonHelper.pinchToZoomIn(x, y, offset);
+        }, flowControl, (x != null && y != null && offset != null) ?
+            MessageFormat.format(StringConstants.KW_LOG_FAILED_ZOOM_AT_X_Y_WITH_OFFSET_Z, x, y, offset)
+            : StringConstants.KW_LOG_FAILED_ZOOM_AT_POSITION );
+    }
+    
+    /**
+     *  Pinch to zoom in at a specific position on the screen of the mobile device
+     * @param x
+     *      x position
+     * @param y
+     *      y position
+     * @param offset
+     *      the offset length to pinch
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
+    public static void pinchToZoomInAtPosition(Number x, Number y, Number offset) throws StepFailedException {
+        pinchToZoomInAtPosition(x, y, offset, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**

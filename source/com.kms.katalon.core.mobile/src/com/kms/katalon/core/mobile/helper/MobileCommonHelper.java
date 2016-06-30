@@ -4,12 +4,16 @@ import groovy.transform.CompileStatic;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 
+import com.kms.katalon.core.exception.StepFailedException;
+import com.kms.katalon.core.logging.KeywordLogger;
+import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.core.mobile.keyword.AndroidProperties;
 import com.kms.katalon.core.mobile.keyword.GUIObject;
 import com.kms.katalon.core.mobile.keyword.MobileDriverFactory;
@@ -119,6 +123,20 @@ public class MobileCommonHelper {
                     // attribute not found, return null
                     return null;
                 }
+        }
+    }
+
+    public static void checkXAndY(Number x, Number y) {
+        KeywordLogger logger = KeywordLogger.getInstance();
+        logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_X);
+        if (x == null) {
+            throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_FAILED_PARAM_X_CANNOT_BE_NULL,
+            "x"));
+        }
+        logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_Y);
+        if (y == null) {
+            throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_FAILED_PARAM_X_CANNOT_BE_NULL,
+            "y"));
         }
     }
 

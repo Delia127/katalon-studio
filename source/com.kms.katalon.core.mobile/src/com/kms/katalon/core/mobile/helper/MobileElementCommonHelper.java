@@ -29,7 +29,7 @@ public class MobileElementCommonHelper {
 
     private static final int DEFAULT_DRAG_AND_DROP_DELAY = 2000;
 
-    private static final int DEFAULT_TAP_DURATION = 50;
+    public static final int DEFAULT_TAP_DURATION = 50;
 
     private static final String IOS_CHECKED_ATTRIBUTE_IS_CHECKED = "1";
 
@@ -107,7 +107,7 @@ public class MobileElementCommonHelper {
     }
 
     public static void tapAndHold(Number x, Number y, Number duration) throws StepFailedException, Exception {
-        checkXAndY(x, y);
+        MobileCommonHelper.checkXAndY(x, y);
         boolean useCustomDuration = checkDuration(duration);
         TouchAction longPressAction = new TouchAction(MobileDriverFactory.getDriver());
         longPressAction = (useCustomDuration) ? longPressAction.longPress(x.intValue(), y.intValue(),
@@ -239,23 +239,9 @@ public class MobileElementCommonHelper {
     }
 
     public static void tapAtPosition(Number x, Number y) {
-        checkXAndY(x, y);
+        MobileCommonHelper.checkXAndY(x, y);
         MobileDriverFactory.getDriver().tap(1, x.intValue(), y.intValue(), DEFAULT_TAP_DURATION);
         KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TAPPED_AT_X_Y, x, y));
-    }
-
-    private static void checkXAndY(Number x, Number y) {
-        KeywordLogger logger = KeywordLogger.getInstance();
-        logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_X);
-        if (x == null) {
-            throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_FAILED_PARAM_X_CANNOT_BE_NULL,
-                    "x"));
-        }
-        logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_Y);
-        if (y == null) {
-            throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_FAILED_PARAM_X_CANNOT_BE_NULL,
-                    "y"));
-        }
     }
     
     public static int getElementWidth(TestObject to, int timeout) throws Exception {
