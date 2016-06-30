@@ -5,14 +5,16 @@ import java.util.List;
 
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XmlLogRecord;
+import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.execution.configuration.IHostConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
+import com.kms.katalon.execution.launcher.listener.LauncherEvent;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.execution.logging.ILogCollection;
 import com.kms.katalon.execution.logging.SocketWatcher;
 
-public abstract class LoggableLauncher extends Launcher implements ILogCollection {
+public abstract class LoggableLauncher extends ProcessLauncher implements ILogCollection {
     private static final int DF_WATCHER_DELAY_TIME = 1;
 
     private List<XmlLogRecord> logRecords = new ArrayList<XmlLogRecord>();
@@ -42,54 +44,50 @@ public abstract class LoggableLauncher extends Launcher implements ILogCollectio
     @Override
     public synchronized void addLogRecords(List<XmlLogRecord> records) {
         LauncherResult launcherResult = (LauncherResult) getResult();
-        try {
-            for (XmlLogRecord record : records) {
-                logRecords.add(record);
-                onUpdateRecord(record);
+        for (XmlLogRecord record : records) {
+            logRecords.add(record);
+            onUpdateRecord(record);
 
-                LogLevel logLevel = LogLevel.valueOf(record.getLevel().getName());
-                if (logLevel == null) {
-                    continue;
-                }
-
-                switch (logLevel) {
-                    case START:
-                        logDepth++;
-                        break;
-                    case END:
-                        if (isLogUnderTestCaseMainLevel()) {
-                            switch (currentTestCaseResult) {
-                                case PASSED:
-                                    launcherResult.increasePasses();
-                                    break;
-                                case ERROR:
-                                    launcherResult.increaseErrors();
-                                    break;
-                                case FAILED:
-                                    launcherResult.increaseFailures();
-                                    break;
-                                default:
-                                    break;
-                            }
-                            onUpdateStatus();
-
-                            currentTestCaseResult = LogLevel.NOT_RUN;
-                        }
-                        logDepth--;
-
-                        if (logDepth == 0) {
-                            watchdog.stop();
-                        }
-                        break;
-                    default:
-                        if (LogLevel.getResultLogs().contains(logLevel) && isLogUnderTestCaseMainLevel()) {
-                            currentTestCaseResult = logLevel;
-                        }
-                        break;
-                }
+            LogLevel logLevel = LogLevel.valueOf(record.getLevel().getName());
+            if (logLevel == null) {
+                continue;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            switch (logLevel) {
+                case START:
+                    logDepth++;
+                    break;
+                case END:
+                    if (isLogUnderTestCaseMainLevel()) {
+                        switch (currentTestCaseResult) {
+                            case PASSED:
+                                launcherResult.increasePasses();
+                                break;
+                            case ERROR:
+                                launcherResult.increaseErrors();
+                                break;
+                            case FAILED:
+                                launcherResult.increaseFailures();
+                                break;
+                            default:
+                                break;
+                        }
+                        TestStatusValue statusValue = TestStatusValue.valueOf(currentTestCaseResult.name());
+                        onUpdateResult(statusValue);
+                        currentTestCaseResult = LogLevel.NOT_RUN;
+                    }
+                    logDepth--;
+
+                    if (logDepth == 0) {
+                        watchdog.stop();
+                    }
+                    break;
+                default:
+                    if (LogLevel.getResultLogs().contains(logLevel) && isLogUnderTestCaseMainLevel()) {
+                        currentTestCaseResult = logLevel;
+                    }
+                    break;
+            }
         }
     }
 
@@ -100,15 +98,8 @@ public abstract class LoggableLauncher extends Launcher implements ILogCollectio
     /**
      * Children may override this
      */
-    protected void onUpdateStatus() {
-        // For children
-    }
-
-    /**
-     * Children may override this
-     */
     protected void onUpdateRecord(XmlLogRecord record) {
-        // For children
+        notifyLauncherChanged(LauncherEvent.UPDATE_RECORD, record);
     }
 
     public List<XmlLogRecord> getLogRecords() {

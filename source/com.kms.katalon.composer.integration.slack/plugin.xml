@@ -17,6 +17,7 @@
    <extension
          point="com.kms.katalon.preferences.PreferencePages">
       <page
+            category="com.kms.katalon.composer.preferences.GeneralPreferencePage"
             class="com.kms.katalon.composer.integration.slack.preferences.SlackPreferencePage"
             id="com.kms.katalon.composer.integration.slack.preference"
             name="Team Collaboration">

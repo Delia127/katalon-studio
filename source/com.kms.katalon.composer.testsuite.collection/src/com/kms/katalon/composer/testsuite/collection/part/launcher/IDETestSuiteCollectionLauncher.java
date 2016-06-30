@@ -1,31 +1,30 @@
 package com.kms.katalon.composer.testsuite.collection.part.launcher;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.workbench.UIEvents;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
-import com.kms.katalon.composer.execution.launcher.IDELauncher;
-import com.kms.katalon.composer.execution.launcher.IDELauncherEvent;
-import com.kms.katalon.composer.execution.launcher.IDELauncherListener;
-import com.kms.katalon.composer.execution.launcher.ObservableLauncher;
+import com.kms.katalon.composer.execution.launcher.IDEObservableLauncher;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.core.logging.XmlLogRecord;
+import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
 import com.kms.katalon.execution.launcher.TestSuiteCollectionLauncher;
+import com.kms.katalon.execution.launcher.listener.LauncherEvent;
+import com.kms.katalon.execution.launcher.listener.LauncherListener;
+import com.kms.katalon.execution.launcher.listener.LauncherNotifiedObject;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
+import com.kms.katalon.execution.launcher.result.LauncherStatus;
 
-public class IDETestSuiteCollectionLauncher extends TestSuiteCollectionLauncher implements ObservableLauncher, IDELauncherListener {
+public class IDETestSuiteCollectionLauncher extends TestSuiteCollectionLauncher implements IDEObservableLauncher,
+        LauncherListener {
 
     private boolean observed;
-
-    private Set<IDELauncherListener> listeners;
 
     private List<XmlLogRecord> logRecords;
 
@@ -33,10 +32,7 @@ public class IDETestSuiteCollectionLauncher extends TestSuiteCollectionLauncher 
             LauncherManager parentManager, List<SubIDELauncher> subLaunchers) {
         super(executedEntity, parentManager, subLaunchers);
         this.observed = false;
-        listeners = new LinkedHashSet<>();
-        for (IDELauncher subLauncher : subLaunchers) {
-            subLauncher.addListener(this);
-        }
+
         logRecords = new ArrayList<>();
     }
 
@@ -57,19 +53,9 @@ public class IDETestSuiteCollectionLauncher extends TestSuiteCollectionLauncher 
     }
 
     @Override
-    protected void onUpdateResult() {
-        onUpdateStatus();
-    }
-
-    protected void onUpdateStatus() {
-        notifyLauncherChanged(IDELauncherEvent.UPDATE_STATUS, this.getId());
+    public void setStatus(LauncherStatus status) {
+        super.setStatus(status);
         getEventBroker().post(EventConstants.JOB_REFRESH, null);
-    }
-
-    private void notifyLauncherChanged(IDELauncherEvent event, String id) {
-        for (IDELauncherListener l : listeners) {
-            l.handleLauncherEvent(event, id);
-        }
     }
 
     @Override
@@ -103,16 +89,6 @@ public class IDETestSuiteCollectionLauncher extends TestSuiteCollectionLauncher 
     }
 
     @Override
-    public void addListener(IDELauncherListener l) {
-        listeners.add(l);
-    }
-
-    @Override
-    public void removeListener(IDELauncherListener l) {
-        listeners.remove(l);
-    }
-
-    @Override
     public List<XmlLogRecord> getLogRecords() {
         return logRecords;
     }
@@ -123,11 +99,20 @@ public class IDETestSuiteCollectionLauncher extends TestSuiteCollectionLauncher 
     }
 
     @Override
-    public void handleLauncherEvent(IDELauncherEvent event, Object object) {
-        if (event == IDELauncherEvent.UPDATE_RECORD && object instanceof XmlLogRecord) {
-            logRecords.add((XmlLogRecord) object);
-            notifyLauncherChanged(IDELauncherEvent.UPDATE_RECORD, getId());
+    public void handleLauncherEvent(LauncherEvent event, LauncherNotifiedObject object) {
+        switch (event) {
+            case UPDATE_RECORD:
+                logRecords.add((XmlLogRecord) object.getObject());
+                notifyLauncherChanged(LauncherEvent.UPDATE_RECORD, getId());
+                break;
+            default:
+                super.handleLauncherEvent(event, object);
         }
     }
 
+    @Override
+    protected void onUpdateResult(TestStatusValue testStatusValue) {
+        super.onUpdateResult(testStatusValue);
+        getEventBroker().post(EventConstants.JOB_REFRESH, null);
+    }
 }

@@ -2,11 +2,14 @@ package com.kms.katalon.execution.mobile.device;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.core.appium.constants.AppiumStringConstants;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.execution.mobile.util.ConsoleCommandExecutor;
 
@@ -29,6 +32,8 @@ public abstract class MobileDeviceInfo {
         return deviceId;
     }
 
+    public abstract String getDisplayName();
+    
     public abstract String getDeviceName();
 
     public abstract String getDeviceManufacturer();
@@ -75,5 +80,16 @@ public abstract class MobileDeviceInfo {
     protected static void makeFileExecutable(File file) throws IOException, InterruptedException {
         ConsoleCommandExecutor.runConsoleCommandAndCollectFirstResult(new String[] { CHMOD_COMMAND, X_FLAG,
                 file.getAbsolutePath() });
+    }
+    
+    public Map<String, String> getDeviceSystemProperties() {
+        Map<String, String> systemProperties = new HashMap<String, String>();
+        systemProperties.put(AppiumStringConstants.CONF_EXECUTED_DEVICE_ID, getDeviceId());
+        systemProperties.put(AppiumStringConstants.CONF_EXECUTED_DEVICE_NAME, getDeviceName());
+        systemProperties.put(AppiumStringConstants.CONF_EXECUTED_DEVICE_MANUFACTURER, getDeviceManufacturer());
+        systemProperties.put(AppiumStringConstants.CONF_EXECUTED_DEVICE_MODEL, getDeviceModel());
+        systemProperties.put(AppiumStringConstants.CONF_EXECUTED_DEVICE_OS, getDeviceOS());
+        systemProperties.put(AppiumStringConstants.CONF_EXECUTED_DEVICE_OS_VERSON, getDeviceOSVersion());
+        return systemProperties;
     }
 }

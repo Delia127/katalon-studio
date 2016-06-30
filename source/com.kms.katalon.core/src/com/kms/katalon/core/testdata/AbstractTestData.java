@@ -114,4 +114,9 @@ public abstract class AbstractTestData implements TestData {
         }
         return ArrayUtils.toString(validColumNames.toArray(new String[validColumNames.size()]));
     }
+    
+    @Override
+    public TestDataInfo getDataInfo() {
+        return null;
+    }
 }

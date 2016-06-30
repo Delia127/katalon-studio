@@ -1,6 +1,7 @@
 package com.kms.katalon.execution.entity;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -58,4 +59,8 @@ public abstract class ExecutedEntity implements IExecutedEntity {
         return attributes;
     }
 
+    @Override
+    public Map<String, String> getCollectedDataInfo() {
+        return Collections.emptyMap();
+    }
 }

@@ -69,6 +69,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
@@ -123,7 +124,7 @@ public class ExplorerPart {
 
     private Text txtInput;
 
-    private TreeViewer treeViewer;
+    private CTreeViewer treeViewer;
 
     private CLabel lblSearch, lblFilter;
 
@@ -141,7 +142,7 @@ public class ExplorerPart {
         return treeViewer;
     }
 
-    private void setViewer(TreeViewer viewer) {
+    private void setViewer(CTreeViewer viewer) {
         this.treeViewer = viewer;
     }
 
@@ -218,7 +219,7 @@ public class ExplorerPart {
 
         application.getContext().set(ExplorerPart.class.getName(), this);
 
-        setViewer(new TreeViewer(parent, SWT.BORDER | SWT.MULTI | SWT.VIRTUAL));
+        setViewer(new CTreeViewer(parent, SWT.BORDER | SWT.MULTI | SWT.VIRTUAL));
         treeViewer.setUseHashlookup(true);
         getViewer().getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
 

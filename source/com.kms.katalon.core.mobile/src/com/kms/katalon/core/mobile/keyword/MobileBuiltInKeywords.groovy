@@ -36,6 +36,7 @@ import com.kms.katalon.core.keyword.KeywordMain
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.mobile.constants.StringConstants
 import com.kms.katalon.core.mobile.helper.MobileCommonHelper
+import com.kms.katalon.core.mobile.helper.MobileDeviceCommonHelper
 import com.kms.katalon.core.mobile.helper.MobileElementCommonHelper
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
@@ -65,7 +66,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_START_APP_AT, appFile));
         }, flowControl, MessageFormat.format(StringConstants.KW_MSG_UNABLE_TO_START_APP_AT, appFile))
     }
-    
+
     /**
      * Start up an application
      * @param appFile
@@ -93,7 +94,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             logger.logPassed(StringConstants.KW_LOG_PASSED_CLOSE_APP);
         }, flowControl, StringConstants.KW_MSG_UNABLE_TO_CLOSE_APPLICATION)
     }
-    
+
     /**
      * Close the current running application
      * @throws StepFailedException
@@ -129,7 +130,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             logger.logPassed(StringConstants.KW_LOG_PASSED_PRESS_BACK_BTN);
         }, flowControl, StringConstants.KW_MSG_CANNOT_PRESS_BACK_BTN)
     }
-    
+
     /**
      * Simulate pressing back button on a mobile device (Android only)
      * @throws StepFailedException
@@ -168,7 +169,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             }
         }, flowControl, StringConstants.KW_MSG_CANNOT_SWIPE_ON_DEVICE)
     }
-    
+
     /**
      * Simulate swiping fingers on the mobile device
      * @param startX
@@ -220,7 +221,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             }
         }, flowControl, StringConstants.KW_MSG_UNABLE_TO_TAKE_SCREENSHOT)
     }
-    
+
     /**
      * Taking screenshot of the mobile device screen
      * @param fileName
@@ -263,7 +264,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             }
         }, flowControl, StringConstants.KW_MSG_CANNOT_OPEN_NOTIFICATIONS)
     }
-    
+
     /**
      * Simulate opening notification action on mobile devices
      * @throws StepFailedException
@@ -299,7 +300,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             }
         }, flowControl, StringConstants.KW_MSG_CANNOT_PRESS_HOME_BTN);
     }
-    
+
     /**
      * Simulate pressing home button on mobile devices (Android only)
      * @throws StepFailedException
@@ -326,7 +327,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             return manufacturer;
         }, flowControl, StringConstants.KW_MSG_CANNOT_GET_MANUFACTURER);
     }
-    
+
     /**
      * Get the manufacturer of the current active mobile device
      * @return
@@ -355,7 +356,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             return osName;
         }, flowControl, StringConstants.KW_MSG_CANNOT_GET_OS_NAME);
     }
-    
+
     /**
      * Get the device os of the current active mobile device
      * @return
@@ -384,7 +385,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             return osVersion;
         }, flowControl, StringConstants.KW_MSG_CANNOT_GET_OS_VER);
     }
-    
+
     /**
      * Get the device os version of the current active mobile device
      * @return
@@ -412,7 +413,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static String getDeviceModel() throws StepFailedException {
         return getDeviceModel(RunConfiguration.getDefaultFailureHandling());
     }
-    
+
     /**
      * Simulate closing notification action on mobile devices
      * @param flowControl
@@ -445,7 +446,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static void closeNotifications() throws StepFailedException {
         closeNotifications(RunConfiguration.getDefaultFailureHandling());
     }
-    
+
     /**
      * Simulate toggling airplane mode on mobile devices
      * @param mode
@@ -511,7 +512,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static void toggleAirplaneMode(String mode) throws StepFailedException {
         toggleAirplaneMode(mode, RunConfiguration.getDefaultFailureHandling());
     }
-    
+
     /**
      * Running the active application in background
      * @param seconds
@@ -536,7 +537,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             logger.logPassed(StringConstants.KW_LOG_PASSED_RUN_IOS_APP_PASSED);
         }, flowControl, StringConstants.KW_MSG_CANNOT_RUN_IOS_APP_IN_BACKGROUND);
     }
-    
+
     /**
      * Running the active application in background
      * @param seconds
@@ -577,7 +578,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_GET_ELEMENT_TEXT, to.getObjectId())
         : StringConstants.KW_MSG_FAILED_TO_GET_ELEMENT_TEXT);
     }
-    
+
     /**
      * Get text of a mobile element
      * @param to
@@ -622,7 +623,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_SET_ELEMENT_TEXT, to.getObjectId())
         : StringConstants.KW_MSG_FAILED_TO_SET_ELEMENT_TEXT);
     }
-    
+
     /**
      * Set text to a mobile element
      * @param to
@@ -664,7 +665,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_TAP_ON_ELEMENT_X, to.getObjectId())
         : StringConstants.KW_MSG_FAILED_TO_TAP_ON_ELEMENT);
     }
-    
+
     /**
      * Tap on an mobile element
      * @param to
@@ -684,7 +685,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      * @param to
      *      represent a mobile element
      * @param duration
-     *      duration that the tap is hold on the element, if set to <= 0 then will use default duration
+     *      duration (in seconds) that the tap is hold on the element, if set to <= 0 then will use default duration
      * @param timeout
      *      system will wait at most timeout (seconds) to return result
      * @param flowControl
@@ -692,26 +693,26 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
-    public static void tapAndHold(TestObject to, int duration, int timeout, FailureHandling flowControl) throws StepFailedException {
+    public static void tapAndHold(TestObject to, Number duration, int timeout, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             MobileElementCommonHelper.tapAndHold(to, duration, timeout);
-        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT_X, to.getObjectId())
-        : StringConstants.KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT);
+        }, flowControl, (to != null && duration != null) ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT_X_WITH_DURATION_Y, 
+            to.getObjectId(), MobileElementCommonHelper.getStringForDuration(duration)) : StringConstants.KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT);
     }
-    
+
     /**
      * Tap and hold on a mobile element for a duration
      * @param to
      *      represent a mobile element
      * @param duration
-     *      duration that the tap is hold on the element, if set to <= 0 then will use default duration
+     *      duration (in seconds) that the tap is hold on the element, if set to <= 0 then will use default duration
      * @param timeout
      *      system will wait at most timeout (seconds) to return result
      * @throws StepFailedException
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
-    public static void tapAndHold(TestObject to, int duration, int timeout) throws StepFailedException {
+    public static void tapAndHold(TestObject to, Number duration, int timeout) throws StepFailedException {
         tapAndHold(to, duration, timeout, RunConfiguration.getDefaultFailureHandling());
     }
 
@@ -745,7 +746,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_GET_ELEMENT_X_ATTR_Y, to.getObjectId(), name)
         : StringConstants.KW_MSG_FAILED_TO_GET_ELEMENT_ATTR);
     }
-    
+
     /**
      * Get a specific attribute of a mobile element
      * @param to
@@ -761,7 +762,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ATTRIBUTE)
     public static String getAttribute(TestObject to, String name, int timeout) throws StepFailedException {
-        return getAttribute(to, name, timeout, RunConfiguration.getDefaultFailureHandling());        
+        return getAttribute(to, name, timeout, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -792,7 +793,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_WAIT_FOR_ELEMENT_PRESENT, to.getObjectId())
         : StringConstants.KW_MSG_FAILED_TO_WAIT_FOR_ELEMENT_X_PRESENT);
     }
-    
+
     /**
      * Wait for a mobile element to present
      * @param to
@@ -837,7 +838,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, to != null ?  MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_EXIST, to.getObjectId())
         : StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_EXIST);
     }
-    
+
     /**
      * Verify if a mobile element is presented
      * @param to
@@ -882,7 +883,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, to != null ?  MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_NOT_EXIST, to.getObjectId())
         : StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_NOT_EXIST);
     }
-    
+
     /**
      * Verify if a mobile element is NOT presented
      * @param to
@@ -896,7 +897,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
     public static boolean verifyElementNotExist(TestObject to, int timeout) throws StepFailedException {
-        return verifyElementNotExist(to, timeout, RunConfiguration.getDefaultFailureHandling());    
+        return verifyElementNotExist(to, timeout, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -924,7 +925,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CLEAR_TEXT_OF_ELEMENT, to.getObjectId())
         : StringConstants.KW_MSG_FAILED_TO_CLEAR_TEXT_OF_ELEMENT);
     }
-    
+
     /**
      * Clear text of a mobile element
      * @param to
@@ -978,7 +979,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static boolean verifyIsLandscape() throws StepFailedException {
         return verifyIsLandscape(RunConfiguration.getDefaultFailureHandling());
     }
-    
+
     /**
      * Verify if current device is in portrait mode
      * @param flowControl
@@ -1006,7 +1007,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             }
         }, flowControl, StringConstants.KW_MSG_UNABLE_VERIFY_PORTRAIT);
     }
-    
+
     /**
      * Verify if current device is in portrait mode
      * @return
@@ -1039,7 +1040,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             }
         }, flowControl, StringConstants.KW_MSG_UNABLE_SWITCH_LANDSCAPE);
     }
-    
+
     /**
      * Switch the current device's mode to landscape mode
      * @throws StepFailedException
@@ -1047,7 +1048,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
     public static boolean switchToLandscape() throws StepFailedException {
-        return switchToLandscape(RunConfiguration.getDefaultFailureHandling());    
+        return switchToLandscape(RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -1070,7 +1071,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             }
         }, flowControl, StringConstants.KW_MSG_UNABLE_SWITCH_PORTRAIT);
     }
-    
+
     /**
      * Switch the current device's mode to portrait mode
      * @throws StepFailedException
@@ -1104,7 +1105,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             return null;
         }, flowControl, StringConstants.KW_MSG_UNABLE_GET_ORIENTATION);
     }
-    
+
     /**
      * Get current screen orientation of the device
      * @return current screen orientation (portrait, landscape)
@@ -1135,7 +1136,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             }
         }, flowControl, StringConstants.KW_MSG_UNABLE_SWITCH_WEB_VIEW);
     }
-    
+
     /**
      * Switch the current device driver to web view context
      * @throws StepFailedException
@@ -1164,7 +1165,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             }
         }, flowControl, StringConstants.KW_MSG_UNABLE_SWITCH_NATIVE);
     }
-    
+
     /**
      * Switch the current device driver to native context
      * @throws StepFailedException
@@ -1248,7 +1249,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             }
         }, flowControl, MessageFormat.format(StringConstants.KW_MSG_UNABLE_SCROLL_TO_TEXT_X, text));
     }
-    
+
     /**
      * Scroll to an element which contains the given text.
      * @param text : text of an element to scroll to
@@ -1293,7 +1294,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, to != null ?  MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_VISIBLE, to.getObjectId())
         : StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_VISIBLE);
     }
-    
+
     /**
      * Verify if a mobile element is visible
      * @param to
@@ -1343,7 +1344,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, to != null ?  MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_NOT_VISIBLE, to.getObjectId())
         : StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_NOT_VISIBLE);
     }
-    
+
     /**
      * Verify if a mobile element is NOT visible
      * @param to
@@ -1369,7 +1370,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
     public static int getDeviceWidth(FailureHandling flowControl) throws StepFailedException {
-        return (int) KeywordMain.runKeyword({
+        return KeywordMain.runKeywordAndReturnInt({
             AppiumDriver<?> driver = getAnyAppiumDriver();
             String context = driver.getContext();
             try {
@@ -1383,7 +1384,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, StringConstants.KW_MSG_UNABLE_GET_DEVICE_WIDTH)
     }
-    
+
     /**
      * Get device's physical width
      * @return device's physical width
@@ -1404,7 +1405,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
     public static int getDeviceHeight(FailureHandling flowControl) throws StepFailedException {
-        return (int) KeywordMain.runKeyword({
+        return KeywordMain.runKeywordAndReturnInt({
             AppiumDriver<?> driver = getAnyAppiumDriver();
             String context = driver.getContext();
             try {
@@ -1418,7 +1419,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }
         , flowControl, StringConstants.KW_MSG_UNABLE_GET_DEVICE_HEIGHT)
     }
-    
+
     /**
      * Get device's physical height
      * @return device's physical height
@@ -1469,7 +1470,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         , flowControl, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
         : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_HAS_ATTRIBUTE)
     }
-    
+
     /**
      * Verify if the element has an attribute with the specific name
      * @param to
@@ -1483,7 +1484,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
     public static boolean verifyElementHasAttribute(TestObject to, String attributeName, int timeout) {
-        return verifyElementHasAttribute(to, attributeName, timeout, RunConfiguration.getDefaultFailureHandling());    
+        return verifyElementHasAttribute(to, attributeName, timeout, RunConfiguration.getDefaultFailureHandling());
     }
 
     /**
@@ -1525,7 +1526,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         , flowControl, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_NOT_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
         : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_NOT_HAS_ATTRIBUTE)
     }
-    
+
     /**
      * Verify if the element doesn't have an attribute with the specific name
      * @param to
@@ -1591,7 +1592,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         , flowControl, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue)
         : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_ATTRIBUTE_VALUE)
     }
-    
+
     /**
      * Verify if the element has an attribute with the specific name and value
      * @param to
@@ -1657,7 +1658,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         , flowControl, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
         : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_HAS_ATTRIBUTE)
     }
-    
+
     /**
      * Wait until the given web element has an attribute with the specific name
      * @param to
@@ -1721,7 +1722,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         , flowControl, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_NOT_HAS_ATTRIBUTE_Y, to.getObjectId(), attributeName)
         : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_NOT_HAS_ATTRIBUTE)
     }
-    
+
     /**
      * Wait until the given web element doesn't have an attribute with the specific name
      * @param to
@@ -1787,7 +1788,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         , flowControl, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue)
         : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_ATTRIBUTE_VALUE)
     }
-    
+
     /**
      * Wait until the given web element has an attribute with the specific name and value
      * @param to
@@ -1854,7 +1855,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
 
         return webElement;
     }
-    
+
     /**
      * Drag and drop an element into another element
      * @param fromObject
@@ -1871,11 +1872,11 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static void dragAndDrop(TestObject fromObject, TestObject toObject, int timeout, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             MobileElementCommonHelper.dragAndDrop(fromObject, toObject, timeout);
-        }, flowControl, (fromObject != null && toObject != null) ? 
-                MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_DRAG_AND_DROP_ELEMENT_X_TO_ELEMENT_Y, fromObject.getObjectId(), toObject.getObjectId())
+        }, flowControl, (fromObject != null && toObject != null) ?
+        MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_DRAG_AND_DROP_ELEMENT_X_TO_ELEMENT_Y, fromObject.getObjectId(), toObject.getObjectId())
         : StringConstants.KW_MSG_FAILED_TO_DRAG_AND_DROP_ELEMENT);
     }
-    
+
     /**
      * Drag and drop an element into another element
      * @param fromObject
@@ -1891,9 +1892,44 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static void dragAndDrop(TestObject fromObject, TestObject toObject, int timeout) throws StepFailedException {
         dragAndDrop(fromObject, toObject, timeout, RunConfiguration.getDefaultFailureHandling());
     }
+
+    /**
+     * Set the value for Slider control (android.widget.SeekBar for Android, UIASlider for iOS) at specific percentage
+     * @param to
+     *      represent a mobile element (android.widget.SeekBar for Android, UIASlider for iOS)
+     * @param percent
+     *      percentage value to set to the slider ( 0 <= percent <= 100 )
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void setSliderValue(TestObject to, Number percent, int timeOut, FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            MobileElementCommonHelper.moveSlider(to, percent, timeOut);
+        }, flowControl, (to != null && percent != null) ? 
+            MessageFormat.format(StringConstants.KW_MSG_FAILED_SET_SLIDER_X_TO_Y, to.getObjectId(), percent) : StringConstants.KW_MSG_FAILED_SET_SLIDER)
+    }
     
     /**
-     * Hide the keyboard if it is showing
+     * Set the value for Slider control (android.widget.SeekBar for Android, UIASlider for iOS) at specific percentage
+     * @param to
+     *      represent a mobile element (android.widget.SeekBar for Android, UIASlider for iOS)
+     * @param percent
+     *      percentage value to set to the slider ( 0 <= percent <= 100 )
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void setSliderValue(TestObject to, Number percent, int timeOut) throws StepFailedException {
+        setSliderValue(to, percent, timeOut, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /** Hide the keyboard if it is showing
      * @param flowControl
      * @throws StepFailedException
      */
@@ -1921,7 +1957,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
             }
         }, flowControl, StringConstants.KW_MSG_CANNOT_HIDE_KEYBOARD)
     }
-    
+
     /**
      * Hide the keyboard if it is showing
      * @throws StepFailedException
@@ -1931,7 +1967,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static void hideKeyboard() throws StepFailedException {
         hideKeyboard(RunConfiguration.getDefaultFailureHandling());
     }
-    
+
     /**
      * Check a check-box mobile element (android.widget.CheckBox for Android, UIASwitch for iOS)
      * @param to
@@ -1949,7 +1985,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_ELEMENT_X, to.getObjectId())
         : StringConstants.KW_MSG_FAILED_TO_CHECK_ELEMENT);
     }
-    
+
     /**
      * Check a check-box mobile element (android.widget.CheckBox for Android, UIASwitch for iOS)
      * @param to
@@ -1963,7 +1999,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static void checkElement(TestObject to, int timeout) throws StepFailedException {
         checkElement(to, timeout, RunConfiguration.getDefaultFailureHandling());
     }
-    
+
     /**
      * Un-check a check-box mobile element (android.widget.CheckBox for Android, UIASwitch for iOS)
      * @param to
@@ -1981,7 +2017,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_UNCHECK_ELEMENT_X, to.getObjectId())
         : StringConstants.KW_MSG_FAILED_TO_UNCHECK_ELEMENT);
     }
-    
+
     /**
      * Un-check a check-box mobile element (android.widget.CheckBox for Android, UIASwitch for iOS)
      * @param to
@@ -2021,7 +2057,7 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, to != null ?  MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_CHECKED, to.getObjectId())
         : StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_CHECKED);
     }
-    
+
     /**
      * Verify if a mobile element is checked
      * @param to
@@ -2063,20 +2099,260 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         }, flowControl, to != null ?  MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_UNCHECKED, to.getObjectId())
         : StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_UNCHECKED);
     }
-	
-	/**
-	 * Verify if a mobile element is not checked
-	 * @param to
-	 *      represent a mobile element
-	 * @param timeout
-	 *      system will wait at most timeout (seconds) to return result
-	 * @return
-	 *      true if the element is not checked; otherwise, false
-	 * @throws StepFailedException
-	 */
-	@CompileStatic
-	@Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
-	public static boolean verifyElementNotChecked(TestObject to, int timeout) throws StepFailedException {
-		return verifyElementNotChecked(to, timeout, RunConfiguration.getDefaultFailureHandling());
-	}
+
+    /**
+     * Verify if a mobile element is not checked
+     * @param to
+     *      represent a mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @return
+     *      true if the element is not checked; otherwise, false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementNotChecked(TestObject to, int timeout) throws StepFailedException {
+        return verifyElementNotChecked(to, timeout, RunConfiguration.getDefaultFailureHandling());
+    }
+
+    /**
+     * Unlock device screen
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
+    public static void unlockScreen(FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            AppiumDriver<?> driver = getAnyAppiumDriver();
+            String context = driver.getContext();
+            try{
+                internalSwitchToNativeContext(driver);
+                MobileDeviceCommonHelper.unlockScreen(driver);
+
+            } finally {
+                driver.context(context)
+            }
+            logger.logPassed(StringConstants.KW_MSG_PASSED_TO_UNLOCK_SCREEN);
+        }, flowControl, StringConstants.KW_MSG_FAILED_TO_UNLOCK_SCREEN);
+    }
+    
+    /**
+     * Unlock device screen
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
+    public static void unlockScreen() throws StepFailedException {
+        unlockScreen(RunConfiguration.getDefaultFailureHandling());
+    }
+
+    /**
+     *  Tap at a specific position on the screen of the mobile device
+     * @param x
+     *      x position
+     * @param y
+     *      y position
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
+    public static void tapAtPosition(Number x, Number y, FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            MobileElementCommonHelper.tapAtPosition(x, y);
+        }, flowControl, (x != null && y != null) ? 
+            MessageFormat.format(StringConstants.KW_LOG_FAILED_TAPPED_AT_X_Y, x, y)
+            : StringConstants.KW_LOG_FAILED_TAPPED_AT_POSITION );
+    }
+    
+    /**
+     *  Tap at a specific position on the screen of the mobile device
+     * @param x
+     *      x position
+     * @param y
+     *      y position
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
+    public static void tapAtPosition(Number x, Number y) throws StepFailedException {
+        tapAtPosition(x, y, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
+     *  Tap and hold at a specific position on the screen of the mobile device
+     * @param x
+     *      x position
+     * @param y
+     *      y position
+     * @param duration
+     *      duration (in seconds) that the tap is hold on the element, if set to <= 0 then will use default duration
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
+    public static void tapAndHoldAtPosition(Number x, Number y, Number duration, FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            MobileElementCommonHelper.tapAndHold(x, y, duration);
+        }, flowControl, (x != null && y != null && duration != null) ?
+            MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_TAP_AND_HOLD_AT_X_Y_WITH_DURATION_Z, x, y, 
+                MobileElementCommonHelper.getStringForDuration(duration)) : StringConstants.KW_MSG_FAILED_TO_TAP_AND_HOLD_AT_POSITION );
+    }
+    
+    /**
+     *  Tap and hold at a specific position on the screen of the mobile device
+     * @param x
+     *      x position
+     * @param y
+     *      y position
+     * @param duration
+     *      duration (in seconds) that the tap is hold on the element, if set to <= 0 then will use default duration
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
+    public static void tapAndHoldAtPosition(Number x, Number y, Number duration) throws StepFailedException {
+        tapAndHoldAtPosition(x, y, duration, RunConfiguration.getDefaultFailureHandling());
+    }
+
+    /**
+     * Get the width of mobile element
+     * @param to 
+     *      represent a mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return 
+     *      width of the element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static int getElementWidth(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
+        return KeywordMain.runKeywordAndReturnInt({
+            return MobileElementCommonHelper.getElementWidth(to, timeout);
+        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_GET_WIDTH_OF_ELEMENT_X, to.getObjectId())
+        : StringConstants.KW_MSG_FAILED_TO_GET_WIDTH_OF_ELEMENT);
+    }
+
+    /**
+     * Get the width of mobile element
+     * @param to 
+     *      represent a mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @return 
+     *      width of the element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static int getElementWidth(TestObject to, int timeout) throws StepFailedException {
+        return getElementWidth(to, timeout, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
+     * Get the top position of mobile element
+     * @param to mobile element object
+     * @param timeout
+     * @param flowControl
+     * @return element top position
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
+    public static int getElementTopPosition(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
+        return KeywordMain.runKeywordAndReturnInt({
+            return MobileElementCommonHelper.getElementTopPosition(to, timeout, flowControl);
+        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_GET_TOP_POSITION_OF_ELEMENT, to.getObjectId())
+        : StringConstants.KW_MSG_FAILED_TO_GET_TOP_POSITION);
+    }
+    
+    /**
+     * Get the top position of mobile element
+     * @param to mobile element object
+     * @param timeout
+     * @return element top position
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
+    public static int getElementTopPosition(TestObject to, int timeout) throws StepFailedException {
+        return getElementTopPosition(to, timeout, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
+     * Get the height of mobile element
+     * @param to 
+     *      represent a mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return 
+     *      height of the element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static int getElementHeight(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
+        return KeywordMain.runKeywordAndReturnInt({
+            return MobileElementCommonHelper.getElementHeight(to, timeout);
+        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_GET_HEIGHT_OF_ELEMENT_X, to.getObjectId())
+        : StringConstants.KW_MSG_FAILED_TO_GET_HEIGHT_OF_ELEMENT);
+    }
+
+    /**
+     * Get the height of mobile element
+     * @param to 
+     *      represent a mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @return 
+     *      height of the element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static int getElementHeight(TestObject to, int timeout) throws StepFailedException {
+        return getElementHeight(to, timeout, RunConfiguration.getDefaultFailureHandling());
+    }
+
+    /**
+     * Get the left position of mobile element
+     * @param to
+     *      represent a mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return 
+     *      the left position of the mobile element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
+    public static int getElementLeftPosition(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
+        return KeywordMain.runKeywordAndReturnInt({
+            return MobileElementCommonHelper.getElementLeftPosition(to, timeout, flowControl);
+        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_GET_LEFT_POSITION_OF_ELEMENT, to.getObjectId())
+        : StringConstants.KW_MSG_FAILED_TO_GET_LEFT_POSITION);
+    }
+
+    /**
+     * Get the left position of mobile element
+     * @param to
+     *      represent a mobile element
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @return
+     *      the left position of the mobile element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
+    public static int getElementLeftPosition(TestObject to, int timeout) throws StepFailedException {
+        return getElementLeftPosition(to, timeout, RunConfiguration.getDefaultFailureHandling());
+    }
 }

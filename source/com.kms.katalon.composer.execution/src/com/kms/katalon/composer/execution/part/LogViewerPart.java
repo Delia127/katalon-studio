@@ -79,9 +79,7 @@ import com.kms.katalon.composer.execution.constants.ImageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.dialog.LogPropertyDialog;
 import com.kms.katalon.composer.execution.launcher.IDEConsoleManager;
-import com.kms.katalon.composer.execution.launcher.IDELauncherEvent;
-import com.kms.katalon.composer.execution.launcher.IDELauncherListener;
-import com.kms.katalon.composer.execution.launcher.ObservableLauncher;
+import com.kms.katalon.composer.execution.launcher.IDEObservableLauncher;
 import com.kms.katalon.composer.execution.provider.LogRecordTreeViewer;
 import com.kms.katalon.composer.execution.provider.LogRecordTreeViewerContentProvider;
 import com.kms.katalon.composer.execution.provider.LogRecordTreeViewerLabelProvider;
@@ -98,12 +96,15 @@ import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.core.logging.XmlLogRecordException;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.execution.launcher.ILauncher;
+import com.kms.katalon.execution.launcher.listener.LauncherEvent;
+import com.kms.katalon.execution.launcher.listener.LauncherListener;
+import com.kms.katalon.execution.launcher.listener.LauncherNotifiedObject;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.ILauncherResult;
 import com.kms.katalon.execution.logging.LogExceptionFilter;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
-public class LogViewerPart implements EventHandler, IDELauncherListener {
+public class LogViewerPart implements EventHandler, LauncherListener {
 
     private static final int AFTER_STATUS_MENU_INDEX = 1;
 
@@ -125,9 +126,11 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
 
     private Composite parentComposite;
 
-    private ObservableLauncher launcherWatched;
+    private IDEObservableLauncher launcherWatched;
 
     private boolean isBusy;
+    
+    private boolean loadingLogCanceled;
 
     private LogRecordTreeViewer treeViewer;
 
@@ -145,6 +148,8 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
     private MPart fMPart;
 
     private ScopedPreferenceStore preferenceStore;
+
+    private LogLoadingJob loadingJob;
 
     private void updateToolItemsStatus(MPart mpart) {
         for (MToolBarElement toolbarElement : mpart.getToolbar().getChildren()) {
@@ -197,6 +202,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
         createControls(parent);
         createLogViewerControl(parent);
         registerEventListeners();
+        getChangingViewToolItem().setEnabled(true);
     }
 
     private void createLogViewerControl(Composite parent) {
@@ -300,7 +306,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
         TreeColumnLayout treeColumnLayout = new TreeColumnLayout();
         compositeTreeDetails.setLayout(treeColumnLayout);
 
-        treeViewer = new LogRecordTreeViewer(compositeTreeDetails, SWT.BORDER, eventBroker);
+        treeViewer = new LogRecordTreeViewer(compositeTreeDetails, SWT.BORDER);
         treeViewer.setContentProvider(new LogRecordTreeViewerContentProvider());
         ColumnViewerToolTipSupport.enableFor(treeViewer, ToolTip.NO_RECREATE);
 
@@ -345,7 +351,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
 
         treeViewer.reset(new ArrayList<XmlLogRecord>());
         if (launcherWatched != null) {
-            Job loadingJob = new LogLoadingJob();
+            loadingJob = new LogLoadingJob();
             loadingJob.setUser(true);
             loadingJob.schedule();
         }
@@ -367,9 +373,14 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                     @Override
                     public void run() {
                         compositeTreeContainer.setRedraw(false);
+                        getChangingViewToolItem().setEnabled(false);
                     }
                 });
                 for (int index = 0; index < logSize; index++) {
+                    if (monitor.isCanceled()) {
+                        loadingLogCanceled = true;
+                        return Status.CANCEL_STATUS;
+                    }
                     final XmlLogRecord record = currentRecords.get(index);
                     sync.syncExec(new Runnable() {
                         public void run() {
@@ -391,6 +402,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                     @Override
                     public void run() {
                         compositeTreeContainer.setRedraw(true);
+                        getChangingViewToolItem().setEnabled(true);
                     }
                 });
                 monitor.done();
@@ -800,9 +812,11 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
         table.setMenu(popupMenu);
         tableViewer.setInput(new ArrayList<XmlLogRecord>());
         if (launcherWatched != null) {
+            isBusy = true;
             for (XmlLogRecord record : currentRecords) {
                 tableViewer.add(record);
             }
+            isBusy = false;
         }
     }
 
@@ -885,6 +899,9 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
     }
 
     private void addRecords(final List<XmlLogRecord> records) throws InterruptedException {
+        if (loadingJob != null && loadingJob.getState() == Job.RUNNING) {
+            return;
+        }
         waitForNotBusy();
 
         isBusy = true;
@@ -908,9 +925,9 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
     }
 
     private synchronized void changeObservedLauncher(final Event event) throws Exception {
-        final IDELauncherListener launcherListener = this;
+        final LauncherListener launcherListener = this;
         new Thread(new Runnable() {
-            private ObservableLauncher getWatchedLauncherFromEvent() {
+            private IDEObservableLauncher getWatchedLauncherFromEvent() {
                 Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
                 if (!(object instanceof String)) {
                     return null;
@@ -918,8 +935,8 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                 
                 String launcherId = (String) object;
                 for (ILauncher launcher : LauncherManager.getInstance().getAllLaunchers()) {
-                    if (launcher instanceof ObservableLauncher && launcher.getId().equals(launcherId)) {
-                        return (ObservableLauncher) launcher;
+                    if (launcher instanceof IDEObservableLauncher && launcher.getId().equals(launcherId)) {
+                        return (IDEObservableLauncher) launcher;
                     }
                 }
                 
@@ -941,6 +958,7 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                     launcherWatched = null;
                 }
 
+                loadingLogCanceled = false;
                 launcherWatched = getWatchedLauncherFromEvent();
                 
                 sync.syncExec(new Runnable() {
@@ -1005,15 +1023,24 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                     public void run() {
                         resetProgressBar();
                         createLogViewerControl(parentComposite);
-                        updateProgressBar(); 
+                        updateProgressBar();
                     }
                 });
             }
         }).start();
     }
     
+    private MDirectToolItem getChangingViewToolItem() {
+        for (MToolBarElement element : fMPart.getToolbar().getChildren()) {
+            if (IdConstants.LOG_VIEWER_TOOL_ITEM_TREE_ID.equals(element.getElementId())) {
+                return (MDirectToolItem) element;
+            }
+        }
+        return null;
+    }
+    
     private void waitForNotBusy() {
-        while (isBusy) {
+        while (isBusy || (loadingJob != null && loadingJob.getState() == Job.RUNNING)) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -1041,11 +1068,11 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
     }
 
     @Override
-    public void handleLauncherEvent(IDELauncherEvent event, Object object) {
+    public void handleLauncherEvent(LauncherEvent event, LauncherNotifiedObject notifiedObject) {
 
         switch (event) {
             case UPDATE_RECORD:
-                if (launcherWatched == null) {
+                if (launcherWatched == null || loadingLogCanceled) {
                     return;
                 }
                 UISynchronizeService.syncExec(new Runnable() {
@@ -1065,8 +1092,10 @@ public class LogViewerPart implements EventHandler, IDELauncherListener {
                     }
                 });
                 break;
-            case UPDATE_STATUS:
-                if (launcherWatched != null && StringUtils.defaultIfEmpty(launcherWatched.getId(), "").equals(object)) {
+            case UPDATE_RESULT:
+                if (launcherWatched != null
+                        && StringUtils.defaultIfEmpty(launcherWatched.getId(), "").equals(
+                                notifiedObject.getLauncherId())) {
                     updateProgressBar();
                 }
                 break;

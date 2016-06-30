@@ -831,7 +831,7 @@ public class ReportPart implements EventHandler, IComposerPart {
 
     private void createRunDataTabControls(final CTabFolder tabFolder) {
         final CTabItem tbtmRunData = new CTabItem(tabFolder, SWT.NONE);
-        tbtmRunData.setText(StringConstants.TITLE_RUNDATA);
+        tbtmRunData.setText(StringConstants.TITLE_EXECUTION_ENVIRONMENT);
 
         Composite compositeRunData = new Composite(tabFolder, SWT.BORDER);
         tbtmRunData.setControl(compositeRunData);

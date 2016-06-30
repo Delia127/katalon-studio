@@ -8,6 +8,9 @@ Require-Bundle: org.eclipse.e4.core.di,
  org.eclipse.e4.ui.services,
  org.eclipse.jface,
  org.eclipse.core.runtime,
- com.kms.katalon.preferences
+ com.kms.katalon.preferences,
+ org.eclipse.ui.workbench,
+ org.eclipse.ui.ide,
+ org.eclipse.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: com.kms.katalon.composer.preferences.editor

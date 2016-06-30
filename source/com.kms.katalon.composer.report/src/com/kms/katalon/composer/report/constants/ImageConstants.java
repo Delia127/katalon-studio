@@ -11,8 +11,14 @@ import com.kms.katalon.composer.components.util.ImageUtil;
 public class ImageConstants {
 	private static final Bundle currentBundle = FrameworkUtil.getBundle(ImageConstants.class);
 
+    private static final Bundle componentBundle = FrameworkUtil.getBundle(
+            com.kms.katalon.composer.components.impl.constants.ImageConstants.class);
+
 	// OpenReportHandler
-	public static final String URL_16_REPORT = ImageUtil.getImageUrl(currentBundle, "/icons/report_16.png");
+    public static final String URL_16_REPORT = ImageUtil.getImageUrl(componentBundle, "/icons/report_16.png");
+
+    public static final String URL_16_REPORT_COLLECTION = ImageUtil.getImageUrl(componentBundle,
+            "/icons/report_list_16.png");
 
 	// ReportPart
 	public static final Image IMG_16_ARROW_UP_BLACK = ImageUtil

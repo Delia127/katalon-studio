@@ -40,4 +40,11 @@ public class StringConstants extends GlobalStringConstants {
     // NewTestSuiteCollectionDialog
     public static final String DIA_TITLE_NEW_TEST_SUITE_COLLECTION = "New Test Suite Collection";
     public static final String DIA_MSG_NEW_TEST_SUITE_COLLECTION = "Create new test suite collection";
+    
+    //TestSuiteCollectionBuilderJob
+    public static final String JOB_TITLE_TEST_SUITE_COLLECTION_BUILDER = "Test Suite Collection Builder";
+    public static final String JOB_TASK_BUILDING_TEST_SUITE_COLLECTION = "Building test suite collection...";
+    public static final String JOB_TASK_BUILDING_LAUNCHER = "Building launcher for ''{0}''";
+    public static final String JOB_MSG_EMPTY_TEST_SUITE = "Test suite ''{0}'' has no test case to execute. Please check again.";
+    public static final String JOB_MSG_UNABLE_TO_EXECUTE_TEST_SUITE = "Unable to executed test suite ''{0}''";
 }

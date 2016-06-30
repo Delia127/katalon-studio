@@ -49,19 +49,30 @@ public class ScriptEngine extends GroovyScriptEngine {
     }
 
     // Parse this temporary class without caching
-    public Object runScript(final String scriptText, Binding binding) throws ResourceException, ScriptException, IOException {
-        return run(getGroovyCodeSource(scriptText, generateScriptName()), binding, true);
+    public Object runScript(final String scriptText, Binding binding) throws ResourceException, ScriptException,
+            IOException, ClassNotFoundException {
+        return run(getGroovyCodeSource(scriptText, generateScriptName()), binding, false);
+    }
+    
+    // Parse this temporary class without caching and not logging
+    public Object runScriptWithoutLogging(final String scriptText, Binding binding) throws ResourceException, ScriptException,
+            IOException, ClassNotFoundException {
+        try (final GroovyClassLoader classLoader = new GroovyClassLoader(getParentClassLoader(), TestCaseExecutor.getConfigForCollectingVariable())) {
+            Class<?> clazz = classLoader.parseClass(getGroovyCodeSource(scriptText, generateScriptName()), false);
+            return getScript(clazz, binding, false).run();
+        }
     }
 
     // Parse this class as script text
     public Object runScriptAsRawText(final String scriptText, String className, Binding binding)
-            throws ResourceException, ScriptException, IOException {
+            throws ResourceException, ScriptException, IOException, ClassNotFoundException {
         String processedScriptText = preProcessScriptBeforeBuild(scriptText);
         return run(getGroovyCodeSource(processedScriptText, className), binding, true);
     }
 
     public Object runScriptMethodAsRawText(final String scriptText, final String className, final String methodName,
-            Object args, Binding binding) throws ResourceException, ScriptException, ClassNotFoundException, IOException {
+            Object args, Binding binding) throws ResourceException, ScriptException, ClassNotFoundException,
+            IOException {
         String processedScriptText = preProcessScriptBeforeBuild(scriptText);
         return getScript(getGroovyCodeSource(processedScriptText, className), binding, true).invokeMethod(methodName,
                 args);
@@ -102,11 +113,12 @@ public class ScriptEngine extends GroovyScriptEngine {
         return runScriptMethod(className, methodName, null, binding);
     }
 
-    public Object runScript(final File file, Binding binding) throws ResourceException, ScriptException, IOException {
+    public Object runScript(final File file, Binding binding) throws ResourceException, ScriptException, IOException,
+            ClassNotFoundException {
         return run(getGroovyCodeSource(file), binding, true);
     }
 
-    public Script parseClass(final File file, Binding binding) throws IOException {
+    public Script parseClass(final File file, Binding binding) throws IOException, ClassNotFoundException {
         return getScript(getGroovyCodeSource(file), binding, true);
     }
 
@@ -127,12 +139,15 @@ public class ScriptEngine extends GroovyScriptEngine {
         return gcs;
     }
 
-    private Object run(GroovyCodeSource gcs, Binding binding, boolean remember) throws IOException {
+    private Object run(GroovyCodeSource gcs, Binding binding, boolean remember) throws IOException,
+            ClassNotFoundException {
         return getScript(gcs, binding, remember).run();
     }
 
-    private Script getScript(GroovyCodeSource gcs, Binding binding, boolean remember) throws IOException {
-        try (final GroovyClassLoader classLoader = new GroovyClassLoader()){
+    private Script getScript(GroovyCodeSource gcs, Binding binding, boolean remember) throws IOException,
+            ClassNotFoundException {
+        try (final GroovyClassLoader classLoader = new GroovyClassLoader(getParentClassLoader(),
+                TestCaseExecutor.getConfigForExecutingScript(getGroovyClassLoader()))) {
             Class<?> clazz = classLoader.parseClass(gcs, remember);
             return getScript(clazz, binding, remember);
         }

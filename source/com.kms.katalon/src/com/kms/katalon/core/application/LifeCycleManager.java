@@ -31,7 +31,9 @@ import com.kms.katalon.composer.handlers.CloseHandler;
 import com.kms.katalon.composer.handlers.ResetPerspectiveHandler;
 import com.kms.katalon.composer.handlers.SaveHandler;
 import com.kms.katalon.composer.handlers.SearchHandler;
+import com.kms.katalon.composer.handlers.PreferenceHandler;
 import com.kms.katalon.composer.handlers.WorkbenchSaveHandler;
+import com.kms.katalon.composer.initializer.CommandBindingInitializer;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.StringConstants;
@@ -55,6 +57,7 @@ public class LifeCycleManager {
         handlerService.activateHandler(IWorkbenchCommandConstants.FILE_CLOSE, new CloseHandler());
         handlerService.activateHandler(IdConstants.SEARCH_COMMAND_ID, new SearchHandler());
         handlerService.activateHandler(IdConstants.RESET_PERSPECTIVE_HANDLER_ID, new ResetPerspectiveHandler());
+        handlerService.activateHandler(IWorkbenchCommandConstants.WINDOW_PREFERENCES, new PreferenceHandler());
 
         MTrimmedWindow model = (MTrimmedWindow) PlatformUI.getWorkbench()
                 .getActiveWorkbenchWindow()
@@ -101,6 +104,8 @@ public class LifeCycleManager {
             public void partActivated(IWorkbenchPartReference partRef) {
             }
         });
+        
+        new CommandBindingInitializer().setup();
     }
 
     private void setupPreferences() {

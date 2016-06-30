@@ -8,23 +8,31 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.util.ExceptionsUtil
 import com.kms.katalon.core.webui.helper.screenshot.WebUIScreenCaptor
 
-public class WebUIKeywordMain extends KeywordMain {
+public class WebUIKeywordMain {
 
     @CompileStatic
     public static runKeyword(Closure closure, FailureHandling flowControl, boolean takeScreenShot, String errorMessage) {
         try {
             return closure.call();
         } catch (Throwable e) {
-            if (e instanceof StepFailedException) {
-                throw e;
-            }
             stepFailed(errorMessage, flowControl, ExceptionsUtil.getMessageForThrowable(e), takeScreenShot);
         }
+    }
+    
+    // Add this for keywords that need to return int, as Groovy cannot automatically convert null to int
+    @CompileStatic
+    public static int runKeywordAndReturnInt(Closure closure, FailureHandling flowControl, boolean takeScreenShot, String errorMessage) {
+        try {
+            return (int) closure.call();
+        } catch (Throwable e) {
+            stepFailed(errorMessage, flowControl, ExceptionsUtil.getMessageForThrowable(e), takeScreenShot);
+        }
+        return -1;
     }
 
     @CompileStatic
     public static stepFailed(String message, FailureHandling flHandling, String reason, boolean takeScreenShot)
             throws StepFailedException {
-        super.stepFailed(message, flHandling, reason, new WebUIScreenCaptor().takeScreenshotAndGetAttributes(takeScreenShot));
+        KeywordMain.stepFailed(message, flHandling, reason, new WebUIScreenCaptor().takeScreenshotAndGetAttributes(takeScreenShot));
     }
 }

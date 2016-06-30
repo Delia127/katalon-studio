@@ -64,7 +64,7 @@ public class SheetPOI extends ExcelData {
                     maxRow));
         }
 
-        int maxColumnAtRow = getMaxColumn(row);
+        int maxColumnAtRow = getMaxColumn(row + getHeaderRowIdx());
 
         if (maxColumnAtRow < 0) {
             return "";
@@ -221,7 +221,7 @@ public class SheetPOI extends ExcelData {
                 }
             }
         }
-        return columnCount;
+        return Math.max(0, columnCount);
     }
 
     protected String getFormatString(String rawFormatString) {
@@ -248,6 +248,7 @@ public class SheetPOI extends ExcelData {
         sheet = workbook.getSheet(sheetName);
         mergedRegionsList = null;
         columnNames = null;
+        columnCount = -1;
     }
 
     @Override

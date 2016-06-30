@@ -27,6 +27,7 @@ import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerDriverLogLevel;
 import org.openqa.selenium.ie.InternetExplorerDriverService;
+import org.openqa.selenium.internal.BuildInfo;
 import org.openqa.selenium.net.NetworkUtils;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -85,10 +86,6 @@ public class DriverFactory {
     public static final String REMOTE_WEB_DRIVER_URL = StringConstants.CONF_PROPERTY_REMOTE_WEB_DRIVER_URL;
 
     public static final String REMOTE_WEB_DRIVER_TYPE = StringConstants.CONF_PROPERTY_REMOTE_WEB_DRIVER_TYPE;
-
-    public static final String EXECUTED_MOBILE_PLATFORM = StringConstants.CONF_EXECUTED_PLATFORM;
-
-    public static final String EXECUTED_MOBILE_DEVICE_ID = StringConstants.CONF_EXECUTED_DEVICE_ID;
 
     public static final String DEBUG_PORT = "debugPort";
 
@@ -209,7 +206,7 @@ public class DriverFactory {
                     break;
                 case ANDROID_DRIVER:
                 case IOS_DRIVER:
-                    webDriver = WebMobileDriverFactory.createMobileDriver(driver, getMobileDeviceName());
+                    webDriver = WebMobileDriverFactory.createMobileDriver(driver);
                     break;
                 case EDGE_DRIVER:
                     EdgeDriverService edgeService = localEdgeDriverServiceStorage.get();
@@ -267,6 +264,7 @@ public class DriverFactory {
         if (webDriver == null) {
             return;
         }
+        
         KeywordLogger logger = KeywordLogger.getInstance();
         logger.logRunData("sessionId", ((RemoteWebDriver) webDriver).getSessionId().toString());
         logger.logRunData("browser", WebUiCommonHelper.getBrowserAndVersion(webDriver));
@@ -274,6 +272,7 @@ public class DriverFactory {
                 webDriver.getClass() == RemoteWebDriver.class ? ((RemoteWebDriver) webDriver).getCapabilities()
                         .getPlatform()
                         .toString() : System.getProperty("os.name"));
+        logger.logRunData(StringConstants.XML_LOG_SELENIUM_VERSION, new BuildInfo().getReleaseLabel());
     }
 
     public static WebDriver openWebDriver(DriverType driver, String projectDir, Object options) throws Exception {
@@ -558,9 +557,10 @@ public class DriverFactory {
         }
 
         if (webDriverType == null
-                && RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY, EXECUTED_MOBILE_PLATFORM) != null) {
+                && RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY,
+                        WebMobileDriverFactory.EXECUTED_MOBILE_PLATFORM) != null) {
             webDriverType = WebUIDriverType.valueOf(RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY,
-                    EXECUTED_MOBILE_PLATFORM));
+                    WebMobileDriverFactory.EXECUTED_MOBILE_PLATFORM));
         }
         return webDriverType;
     }
@@ -571,15 +571,6 @@ public class DriverFactory {
 
     public static String getRemoteWebDriverServerType() {
         return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, REMOTE_WEB_DRIVER_TYPE);
-    }
-
-    public static String getMobilePlatform() {
-        return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, EXECUTED_MOBILE_PLATFORM);
-    }
-
-    public static String getMobileDeviceName() {
-        return RunConfiguration.getDriverSystemProperty(StringConstants.CONF_PROPERTY_MOBILE_DRIVER,
-                EXECUTED_MOBILE_DEVICE_ID);
     }
 
     public static void closeWebDriver() {

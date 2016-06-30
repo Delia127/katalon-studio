@@ -1,6 +1,7 @@
 package com.kms.katalon.core.db;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -8,10 +9,17 @@ import java.util.Properties;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.lang.StringUtils;
 
+import com.kms.katalon.core.constants.StringConstants;
+import com.kms.katalon.core.logging.KeywordLogger;
+import com.kms.katalon.core.testdata.TestDataInfo;
+
 /**
  * Database Connection
  */
 public class DatabaseConnection {
+    
+    private static KeywordLogger logger = KeywordLogger.getInstance();
+    
     private static final String PASSWORD_PROPERTY = "password";
 
     private static final String USER_PROPERTY = "user";
@@ -23,6 +31,8 @@ public class DatabaseConnection {
     private String user;
 
     private String password;
+    
+    private TestDataInfo dbDataInfo;
 
     /**
      * Database Connection with user and password included in URL
@@ -88,7 +98,15 @@ public class DatabaseConnection {
         connection.setAutoCommit(false);
         // Enable read-only
         connection.setReadOnly(true);
+
+        logNewConnection();
+
         return connection;
+    }
+
+    private void logNewConnection() {
+        dbDataInfo = newDBDataInfo(connection);
+        logger.logRunData(dbDataInfo.getKey(), dbDataInfo.getInfo());
     }
 
     /**
@@ -134,5 +152,24 @@ public class DatabaseConnection {
      */
     public void close() {
         DbUtils.closeQuietly(connection);
+    }
+    
+    public TestDataInfo getDBDataInfo() {
+        return dbDataInfo;
+    }
+    
+    public static TestDataInfo newDBDataInfo(Connection connection) {
+        if (connection == null) {
+            return null;
+        }
+
+        try {
+            DatabaseMetaData connectionMetaData = connection.getMetaData();
+
+            return new TestDataInfo(StringConstants.XML_LOG_DB_SERVER_INFO, connectionMetaData.getDatabaseProductName()
+                    + " " + connectionMetaData.getDatabaseProductVersion());
+        } catch (SQLException e) {
+            return null;
+        }
     }
 }

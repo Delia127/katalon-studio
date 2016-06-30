@@ -11,6 +11,7 @@ import java.util.Date;
 
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.touch.TouchActions;
 
@@ -20,13 +21,17 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.core.mobile.keyword.MobileDriverFactory;
 import com.kms.katalon.core.mobile.keyword.MobileSearchEngine;
+import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testobject.TestObject;
 
 public class MobileElementCommonHelper {
+    private static final int ANDROID_SEEKBAR_PADDING = 56;
+
     private static final int DEFAULT_DRAG_AND_DROP_DELAY = 2000;
 
-    private static final String IOS_CHECKED_ATTRIBUTE_IS_CHECKED = "1";
+    private static final int DEFAULT_TAP_DURATION = 50;
 
+    private static final String IOS_CHECKED_ATTRIBUTE_IS_CHECKED = "1";
 
     private static final String IOS_CHECKED_ATTRIBUTE = "value";
 
@@ -74,20 +79,51 @@ public class MobileElementCommonHelper {
         return webElement;
     }
 
-    public static void tapAndHold(TestObject to, int duration, int timeout) throws StepFailedException, Exception {
+    public static void tapAndHold(TestObject to, Number duration, int timeout) throws StepFailedException, Exception {
+        boolean useCustomDuration = checkDuration(duration);
+        WebElement element = findElementWithCheck(to, timeout);
+        TouchAction longPressAction = new TouchAction(MobileDriverFactory.getDriver());
+        longPressAction = (useCustomDuration) ? longPressAction.longPress(element,
+                gitIntValueForDuration(duration)) : longPressAction.longPress(element);
+        longPressAction.release().perform();
+        KeywordLogger.getInstance().logPassed(
+                MessageFormat.format(StringConstants.KW_LOG_PASSED_TAP_AND_HOLD_ON_ELEMENT_X_WITH_DURATION_Y,
+                        to.getObjectId(), getStringForDuration(duration)));
+    }
+
+    public static boolean checkDuration(Number duration) {
         boolean useCustomDuration = true;
         KeywordLogger logger = KeywordLogger.getInstance();
         logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_DURATION);
-        if (duration <= 0) {
+        if (isDurationInvalid(duration)) {
             logger.logInfo(MessageFormat.format(StringConstants.COMM_LOG_WARNING_INVALID_DURATION, duration));
             useCustomDuration = false;
         }
-        WebElement element = findElementWithCheck(to, timeout);
+        return useCustomDuration;
+    }
+
+    private static boolean isDurationInvalid(Number duration) {
+        return duration == null || duration.floatValue() <= 0;
+    }
+
+    public static void tapAndHold(Number x, Number y, Number duration) throws StepFailedException, Exception {
+        checkXAndY(x, y);
+        boolean useCustomDuration = checkDuration(duration);
         TouchAction longPressAction = new TouchAction(MobileDriverFactory.getDriver());
-        longPressAction = (useCustomDuration) ? longPressAction.longPress(element, duration)
-                : longPressAction.longPress(element);
+        longPressAction = (useCustomDuration) ? longPressAction.longPress(x.intValue(), y.intValue(),
+                gitIntValueForDuration(duration)) : longPressAction.longPress(x.intValue(), y.intValue());
         longPressAction.release().perform();
-        logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TAP_AND_HOLD_ON_ELEMENT_X, to.getObjectId()));
+        KeywordLogger.getInstance().logPassed(
+                MessageFormat.format(StringConstants.KW_LOG_PASSED_TAP_AND_HOLD_AT_X_Y_WITH_DURATION_Z, x, y,
+                        getStringForDuration(duration)));
+    }
+
+    private static int gitIntValueForDuration(Number duration) {
+        return Math.round(duration.floatValue() * 1000);
+    }
+
+    public static String getStringForDuration(Number duration) {
+        return (isDurationInvalid(duration)) ? "(default)" : duration.toString();
     }
 
     public static WebElement findElementWithCheck(TestObject to, int timeout) throws Exception {
@@ -129,7 +165,7 @@ public class MobileElementCommonHelper {
         KeywordLogger.getInstance().logPassed(
                 MessageFormat.format(StringConstants.KW_LOG_PASSED_UNCHECK_ELEMENT, to.getObjectId()));
     }
-    
+
     public static boolean isElementChecked(TestObject to, int timeout) throws StepFailedException, Exception {
         return isElementChecked(findElementWithCheck(to, timeout));
     }
@@ -151,5 +187,92 @@ public class MobileElementCommonHelper {
         KeywordLogger.getInstance().logPassed(
                 MessageFormat.format(StringConstants.KW_LOG_PASSED_DRAG_AND_DROP_ELEMENT_X_TO_ELEMENT_Y,
                         fromObj.getObjectId()));
+    }
+
+    public static void moveSlider(TestObject to, Number percent, int timeout) throws StepFailedException, Exception {
+        KeywordLogger logger = KeywordLogger.getInstance();
+        logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_PERCENTAGE);
+        if (percent == null || percent.floatValue() < 0 || percent.floatValue() > 100) {
+            throw new StepFailedException(MessageFormat.format(
+                    StringConstants.KW_MSG_FAILED_SET_SLIDER_INVALID_PERCENTAGE_X, percent));
+        }
+        WebElement element = findElementWithCheck(to, timeout);
+        AppiumDriver<?> driver = MobileDriverFactory.getDriver();
+        float percentValue = percent.floatValue() / 100;
+        if (driver instanceof AndroidDriver<?>) {
+            moveAndroidSeekbar(percentValue, element, driver);
+        } else if (driver instanceof IOSDriver<?>) {
+            moveIosUIASlider(percentValue, element);
+        }
+        logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SET_SLIDER_X_TO_Y, to.getObjectId(),
+                percent));
+    }
+
+    private static void moveIosUIASlider(float percentValue, WebElement element) {
+        element.sendKeys(String.valueOf(percentValue));
+    }
+
+    private static void moveAndroidSeekbar(float percentValue, WebElement element, AppiumDriver<?> driver)
+            throws WebDriverException {
+        int startX = element.getLocation().getX();
+        int width = element.getSize().getWidth() - (ANDROID_SEEKBAR_PADDING * 2);
+        int relativeX = Math.round(width * percentValue);
+        driver.tap(1, startX + ANDROID_SEEKBAR_PADDING + relativeX, element.getLocation().getY(), DEFAULT_TAP_DURATION);
+    }
+    
+    public static int getElementLeftPosition(TestObject to, int timeout, FailureHandling flowControl) throws Exception {
+        WebElement element = findElementWithCheck(to, timeout);
+        Point location = element.getLocation();
+        KeywordLogger.getInstance().logPassed(
+                MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_HAS_LEFT_POSITION, to.getObjectId(),
+                        location.getX()));
+        return location.getX();
+    }
+    
+    public static int getElementTopPosition(TestObject to, int timeout, FailureHandling flowControl) throws Exception {
+        WebElement element = findElementWithCheck(to, timeout);
+        Point location = element.getLocation();
+        KeywordLogger.getInstance().logPassed(
+                MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_HAS_TOP_POSITION, to.getObjectId(),
+                        location.getY()));
+        return location.getY();
+    }
+
+    public static void tapAtPosition(Number x, Number y) {
+        checkXAndY(x, y);
+        MobileDriverFactory.getDriver().tap(1, x.intValue(), y.intValue(), DEFAULT_TAP_DURATION);
+        KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TAPPED_AT_X_Y, x, y));
+    }
+
+    private static void checkXAndY(Number x, Number y) {
+        KeywordLogger logger = KeywordLogger.getInstance();
+        logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_X);
+        if (x == null) {
+            throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_FAILED_PARAM_X_CANNOT_BE_NULL,
+                    "x"));
+        }
+        logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_Y);
+        if (y == null) {
+            throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_FAILED_PARAM_X_CANNOT_BE_NULL,
+                    "y"));
+        }
+    }
+    
+    public static int getElementWidth(TestObject to, int timeout) throws Exception {
+        WebElement element = findElementWithCheck(to, timeout);
+        int width = element.getSize().getWidth();
+        KeywordLogger.getInstance().logPassed(
+                MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_HAS_WIDTH, to.getObjectId(),
+                        width));
+        return width;
+    }
+    
+    public static int getElementHeight(TestObject to, int timeout) throws Exception {
+        WebElement element = findElementWithCheck(to, timeout);
+        int height = element.getSize().getHeight();
+        KeywordLogger.getInstance().logPassed(
+                MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_HAS_HEIGHT, to.getObjectId(),
+                        height));
+        return height;
     }
 }

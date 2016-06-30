@@ -329,7 +329,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
     public static int getWindowIndex(FailureHandling flowControl) throws StepFailedException {
-        return (int) WebUIKeywordMain.runKeyword({
+        return WebUIKeywordMain.runKeywordAndReturnInt({
             logger.logInfo(StringConstants.KW_LOG_INFO_GETTING_CURR_WINDOW_INDEX);
             int windowIndex = DriverFactory.getCurrentWindowIndex();
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_CURR_WINDOW_INDEX, windowIndex));
@@ -531,12 +531,12 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                         return true;
                     } else {
                         WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_IS_NOT_VISIBLE, to.getObjectId()),
-                                flowControl, null);
+                                flowControl, null, true);
                         return false;
                     }
                     return true;
                 } catch (WebElementNotFoundException e) {
-                    WebUIKeywordMain.stepFailed(e.getMessage(), flowControl, null);
+                    WebUIKeywordMain.stepFailed(e.getMessage(), flowControl, null, true);
                     return false;
                 }
             } finally {
@@ -587,12 +587,12 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                         return true;
                     } else {
                         WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_IS_VISIBLE, to.getObjectId()),
-                                flowControl, null);
+                                flowControl, null, true);
                         return false;
                     }
                     return true;
                 } catch (WebElementNotFoundException e) {
-                    WebUIKeywordMain.stepFailed(e.getMessage(), flowControl, null);
+                    WebUIKeywordMain.stepFailed(e.getMessage(), flowControl, null, true);
                     return false;
                 }
             } finally {
@@ -916,11 +916,11 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                         return true;
                     } else {
                         WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_IS_NOT_CLICKABLE, to.getObjectId()),
-                                flowControl, null);
+                                flowControl, null, true);
                         return false;
                     }
                 } catch (WebElementNotFoundException e) {
-                    WebUIKeywordMain.stepFailed(e.getMessage(), flowControl, null);
+                    WebUIKeywordMain.stepFailed(e.getMessage(), flowControl, null, true);
                     return false;
                 }
             } finally {
@@ -968,14 +968,14 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                     WebElement foundElement = findWebElement(to, RunConfiguration.getTimeOut());
                     if (foundElement.isEnabled()) {
                         WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_IS_CLICKABLE, to.getObjectId()),
-                                flowControl, null);
+                                flowControl, null, true);
                         return false;
                     } else {
                         logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_IS_NOT_CLICKABLE, to.getObjectId()));
                         return true;
                     }
                 } catch (WebElementNotFoundException e) {
-                    WebUIKeywordMain.stepFailed(e.getMessage(), flowControl, null);
+                    WebUIKeywordMain.stepFailed(e.getMessage(), flowControl, null, true);
                     return false;
                 }
             } finally {
@@ -1329,11 +1329,11 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_GETTING_OBJ_TXT, to.getObjectId()));
                 text = element.getText();
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_TXT_IS, to.getObjectId(), text));
+                return text;
             } finally {
                 if (isSwitchIntoFrame) {
                     WebUiCommonHelper.switchToDefaultContent();
                 }
-                return text;
             }
         }
         , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_GET_TXT_OF_OBJ_X, to.getObjectId())
@@ -1382,11 +1382,11 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_GETTING_OBJ_ATTR, attribute, to.getObjectId()));
                 attrValue = element.getAttribute(attribute);
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_ATTR_IS, attribute, to.getObjectId(), attrValue));
+                return attrValue;
             } finally {
                 if (isSwitchIntoFrame) {
                     WebUiCommonHelper.switchToDefaultContent();
                 }
-                return attrValue;
             }
         }
         , flowControl, true, (to != null && attribute != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_GET_ATTR_X_OF_OBJ_Y, attribute, to.getObjectId())
@@ -2810,7 +2810,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
     public static int getNumberOfTotalOption(TestObject to, FailureHandling flowControl) throws StepFailedException {
-        def result = WebUIKeywordMain.runKeyword({
+        return WebUIKeywordMain.runKeywordAndReturnInt({
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
@@ -2829,7 +2829,6 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             return 0;
         } , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_GET_TOTAL_OPTS_OF_OBJ_X, to.getObjectId())
         : StringConstants.KW_MSG_CANNOT_GET_TOTAL_OPTS_OF_OBJ)
-        return Integer.valueOf(result.toString());
     }
     
     /**
@@ -2858,7 +2857,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
     public static int getNumberOfSelectedOption(TestObject to, FailureHandling flowControl) throws StepFailedException {
-        def result = WebUIKeywordMain.runKeyword({
+        return WebUIKeywordMain.runKeywordAndReturnInt({
             boolean isSwitchIntoFrame = false;
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to);
@@ -2883,7 +2882,6 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
             return 0;
         } , flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_GET_NO_OF_SELECTED_OPTS_OF_OBJ_X, to.getObjectId())
         : StringConstants.KW_MSG_CANNOT_GET_NO_OF_SELECTED_OPTS_OF_OBJ)
-        return Integer.valueOf(result.toString());
     }
     
     /**
@@ -4327,8 +4325,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_IMAGE)
     public static boolean waitForImagePresent(TestObject to, int timeOutInSeconds, FailureHandling flowControl) throws StepFailedException {
         String imagePath = null;
-        boolean present = false;
-        WebUIKeywordMain.runKeyword({
+        return WebUIKeywordMain.runKeyword({
             imagePath = to.getImagePath();
             WebUiCommonHelper.checkTestObjectParameter(to)
             if (imagePath == null || imagePath.equals("")) {
@@ -4340,16 +4337,15 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 String currentDirFilePath = new File(RunConfiguration.getProjectDir()).getAbsolutePath();
                 imagePath = currentDirFilePath + File.separator + imagePath;
             }
-            present = screenUtil.waitForImagePresent(imagePath, timeOutInSeconds);
+            boolean present = screenUtil.waitForImagePresent(imagePath, timeOutInSeconds);
             if (present) {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_IMG_X_IS_PRESENT, imagePath));
             } else {
-                logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_PASSED_IMG_X_IS_NOT_PRESENT, imagePath))
+                WebUIKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_PASSED_IMG_X_IS_NOT_PRESENT, imagePath), flowControl, null, true)
             }
         } , flowControl, true, (imagePath != null) ?
         MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_FOR_IMG_X_TOBE_PRESENT, imagePath) :
         StringConstants.KW_MSG_CANNOT_WAIT_FOR_IMG_TOBE_PRESENT)
-        return present;
     }
     
     /**
@@ -4673,8 +4669,9 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
     public static int getViewportWidth(FailureHandling flowControl) throws StepFailedException {
-        return (int) WebUIKeywordMain.runKeyword({
-            int viewportWidth = WebUiCommonHelper.getViewportWidth(DriverFactory.getWebDriver());
+        return WebUIKeywordMain.runKeywordAndReturnInt({
+            int viewportWidth = 0;
+            viewportWidth = WebUiCommonHelper.getViewportWidth(DriverFactory.getWebDriver());
             KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_VIEWPORT_WIDTH_X, viewportWidth.toString()));
             return viewportWidth;
         }
@@ -4701,7 +4698,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
     public static int getViewportHeight(FailureHandling flowControl) throws StepFailedException {
-        return (int) WebUIKeywordMain.runKeyword({
+        return WebUIKeywordMain.runKeywordAndReturnInt({
             int viewportHeight = WebUiCommonHelper.getViewportHeight(DriverFactory.getWebDriver());
             KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_VIEWPORT_HEIGHT_X, viewportHeight.toString()));
             return viewportHeight;
@@ -5212,7 +5209,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
     public static int getPageWidth(FailureHandling flowControl) {
-        return (int) WebUIKeywordMain.runKeyword({
+        return WebUIKeywordMain.runKeywordAndReturnInt({
             int pageWidth = (int) ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript('''return Math.max(
                 document.documentElement["clientWidth"], 
                 document.body["scrollWidth"], 
@@ -5243,7 +5240,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
     public static int getPageHeight(FailureHandling flowControl) {
-        return (int) WebUIKeywordMain.runKeyword({
+        return WebUIKeywordMain.runKeywordAndReturnInt({
             int pageHeight = (int) ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript('''return Math.max(
                 document.documentElement["clientHeight"], 
                 document.body["scrollHeight"], 
@@ -5275,7 +5272,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
     public static int getViewportLeftPosition(FailureHandling flowControl) {
-        return (int) WebUIKeywordMain.runKeyword({
+        return WebUIKeywordMain.runKeywordAndReturnInt({
             Number leftPosition = (Number) ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript('return window.pageXOffset || document.documentElement.scrollLeft;');
             int leftPositionIntValue = leftPosition.intValue();
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_VIEWPORT_LEFT_POSITION_X, leftPositionIntValue.toString()));
@@ -5302,7 +5299,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
     public static int getViewportTopPosition(FailureHandling flowControl) {
-        return (int) WebUIKeywordMain.runKeyword({
+        return WebUIKeywordMain.runKeywordAndReturnInt({
             Number topPosition = (Number) ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript('return window.pageYOffset || document.documentElement.scrollTop;');
             int topPositionIntValue = topPosition.intValue();
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_GET_VIEWPORT_TOP_POSITION_X, topPositionIntValue.toString()));

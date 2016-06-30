@@ -63,12 +63,11 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 	public static final String CONF_PROPERTY_EXECUTED_BROWSER = XML_LOG_BROWSER_TYPE_PROPERTY;
 	public static final String CONF_PROPERTY_REMOTE_WEB_DRIVER_URL = "remoteWebDriverUrl";
 	public static final String CONF_PROPERTY_REMOTE_WEB_DRIVER_TYPE = "remoteWebDriverType";
-	public static final String CONF_EXECUTED_PLATFORM = XML_LOG_DEVICE_PLATFORM_PROPERTY;
-    public static final String CONF_EXECUTED_DEVICE_ID = XML_LOG_DEVICE_ID_PROPERTY;
     public static final String XML_LOG_STARTING_DRIVER_X = "Starting ''{0}'' driver";
     public static final String XML_LOG_CONNECTING_TO_REMOTE_WEB_SERVER_X_WITH_TYPE_Y = "Connecting to remote web server ''{0}'' with type ''{1}''";
     public static final String XML_LOG_ERROR_BROWSER_NOT_IE = "Executing browser is not IE";
     public static final String XML_LOG_ERROR_CANNOT_FOUND_WINDOW_HANDLE = "Cannot found current window handle";
+    public static final String XML_LOG_SELENIUM_VERSION = "seleniumVersion";
 	
 	// BrowserNotOpenedException
 	public static final String EXC_BROWSER_IS_NOT_OPENED = "Browser is not opened";

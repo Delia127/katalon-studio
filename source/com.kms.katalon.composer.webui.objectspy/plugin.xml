@@ -3,6 +3,7 @@
 	<extension
          point="com.kms.katalon.preferences.PreferencePages">
       <page
+            category="com.kms.katalon.composer.preferences.GeneralPreferencePage"
             class="com.kms.katalon.objectspy.preferences.ObjectSpyPreferencePage"
             id="com.kms.katalon.composer.webui.objectspy"
             name="Object Spy">

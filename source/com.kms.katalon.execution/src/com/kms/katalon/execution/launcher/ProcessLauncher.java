@@ -18,10 +18,8 @@ import com.kms.katalon.execution.launcher.result.LauncherStatus;
 import com.kms.katalon.execution.logging.IOutputStream;
 import com.kms.katalon.logging.LogUtil;
 
-public abstract class Launcher implements ILauncher, IWatchdogListener {
+public abstract class ProcessLauncher extends BasicLauncher implements IWatchdogListener {
     protected IRunConfiguration runConfig;
-
-    private LauncherStatus status;
 
     private ILauncherResult result;
 
@@ -35,17 +33,17 @@ public abstract class Launcher implements ILauncher, IWatchdogListener {
 
     private LauncherManager manager;
 
-    private Launcher() {
-        status = LauncherStatus.WAITING;
+    private ProcessLauncher() {
+        super();
         watchers = new HashSet<IWatcher>();
     }
 
-    protected Launcher(IRunConfiguration runConfig) {
+    protected ProcessLauncher(IRunConfiguration runConfig) {
         this();
         setRunConfig(runConfig);
     }
 
-    protected Launcher(LauncherManager manager, IRunConfiguration runConfig) {
+    protected ProcessLauncher(LauncherManager manager, IRunConfiguration runConfig) {
         this(runConfig);
         this.manager = manager;
     }
@@ -68,11 +66,6 @@ public abstract class Launcher implements ILauncher, IWatchdogListener {
 
     public IRunConfiguration getRunConfig() {
         return runConfig;
-    }
-
-    @Override
-    public LauncherStatus getStatus() {
-        return status;
     }
 
     @Override
@@ -214,11 +207,6 @@ public abstract class Launcher implements ILauncher, IWatchdogListener {
      */
     protected void preExecutionComplete() {
         // For children
-    }
-
-    @Override
-    public void setStatus(LauncherStatus status) {
-        this.status = status;
     }
 
     /**

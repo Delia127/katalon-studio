@@ -26,7 +26,9 @@ import com.kms.katalon.execution.mobile.exception.MobileSetupException;
 
 public class DeviceSelectionComposite extends Composite {
     private Combo cbbDevices;
-    private List<? extends MobileDeviceInfo> devicesList = new ArrayList<>();
+
+    private List<MobileDeviceInfo> devicesList = new ArrayList<>();
+
     private ArrayList<SelectionListener> selectionListenerList = new ArrayList<>();
 
     public DeviceSelectionComposite(Composite parent, int style, MobileDriverType platform) {
@@ -61,7 +63,7 @@ public class DeviceSelectionComposite extends Composite {
     private String[] getDeviceFullNames() {
         String[] fullNames = new String[devicesList.size()];
         for (int i = 0; i < devicesList.size(); i++) {
-            fullNames[i] = devicesList.get(i).getDeviceName();
+            fullNames[i] = devicesList.get(i).getDisplayName();
         }
         return fullNames;
     }
@@ -87,13 +89,34 @@ public class DeviceSelectionComposite extends Composite {
     }
 
     private void loadDeviceList(MobileDriverType platForm) {
-        try {
-            devicesList = MobileDeviceProvider.getDevices(platForm);
-        } catch (IOException | InterruptedException | MobileSetupException e) {
-            MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "Error", e.getClass().getName() + ": "
-                    + e.getMessage());
-            LoggerSingleton.logError(e);
+        devicesList.clear();
+        switch (platForm) {
+            case ANDROID_DRIVER:
+                try {
+                    devicesList.addAll(MobileDeviceProvider.getAndroidDevices());
+                } catch (IOException | InterruptedException | MobileSetupException e) {
+                    logException(e);
+                }
+                break;
+            case IOS_DRIVER:
+                try {
+                    devicesList.addAll(MobileDeviceProvider.getIosDevices());
+                } catch (IOException | InterruptedException e) {
+                    logException(e);
+                }
+                try {
+                    devicesList.addAll(MobileDeviceProvider.getIosSimulators());
+                } catch (IOException | InterruptedException e) {
+                    logException(e);
+                }
+                break;
         }
+    }
+
+    public void logException(Exception e) {
+        MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "Error",
+                e.getClass().getName() + ": " + e.getMessage());
+        LoggerSingleton.logError(e);
     }
 
     private boolean isNoDeviceSelected() {

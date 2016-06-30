@@ -24,6 +24,8 @@ public interface IExecutedEntity {
     int getTotalTestCases();
     
     public Map<String, Object> getAttributes();
+    
+    public Map<String, String> getCollectedDataInfo();
 
     public int mainTestCaseDepth();
 }

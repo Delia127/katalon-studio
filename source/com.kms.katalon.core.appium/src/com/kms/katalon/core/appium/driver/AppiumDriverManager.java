@@ -34,9 +34,27 @@ import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 
 public class AppiumDriverManager {
+    
     private static final String APPIUM_DEFAULT_LOG_LEVEL = "info";
+    
+    public static final String EXECUTED_PLATFORM = AppiumStringConstants.CONF_EXECUTED_PLATFORM;
 
-    private static String APPIUM_RELATIVE_PATH_FROM_APPIUM_FOLDER = "bin" + File.separator + "appium.js";
+    public static final String EXECUTED_DEVICE_ID = AppiumStringConstants.CONF_EXECUTED_DEVICE_ID;
+
+    public static final String EXECUTED_DEVICE_MANUFACTURER = AppiumStringConstants.CONF_EXECUTED_DEVICE_MANUFACTURER;
+
+    public static final String EXECUTED_DEVICE_MODEL = AppiumStringConstants.CONF_EXECUTED_DEVICE_MODEL;
+
+    public static final String EXECUTED_DEVICE_NAME = AppiumStringConstants.CONF_EXECUTED_DEVICE_NAME;
+
+    public static final String EXECUTED_DEVICE_OS = AppiumStringConstants.CONF_EXECUTED_DEVICE_OS;
+
+    public static final String EXECUTED_DEVICE_OS_VERSON = AppiumStringConstants.CONF_EXECUTED_DEVICE_OS_VERSON;
+
+    private static String APPIUM_RELATIVE_PATH_FROM_APPIUM_FOLDER_OLD = "bin" + File.separator + "appium.js";
+
+    private static String APPIUM_RELATIVE_PATH_FROM_APPIUM_FOLDER_NEW = "build" + File.separator + "lib"
+            + File.separator + "main.js";
 
     private static String APPIUM_RELATIVE_PATH_FROM_APPIUM_GUI = "node_modules" + File.separator + "appium";
 
@@ -57,8 +75,6 @@ public class AppiumDriverManager {
             + DEFAULT_WEB_PROXY_PORT;
 
     private static final String LOCALHOST_PREFIX = "http://localhost:";
-
-    public static final String MOBILE_DRIVER_PROPERTY = AppiumStringConstants.CONF_PROPERTY_MOBILE_DRIVER;
 
     private static final ThreadLocal<Process> localStorageWebProxyProcess = new ThreadLocal<Process>() {
         @Override
@@ -171,7 +187,7 @@ public class AppiumDriverManager {
                 .withArgument(GeneralServerFlag.TEMP_DIRECTORY, createAppiumTempFile())
                 .withArgument(GeneralServerFlag.SESSION_OVERRIDE)
                 .withAppiumJS(new File(appium))
-                .withArgument(GeneralServerFlag.CHROME_DRIVER_PORT, Integer.toString(getFreePort()))
+                .withArgument(AndroidServerFlag.CHROME_DRIVER_PORT, Integer.toString(getFreePort()))
                 .withArgument(AndroidServerFlag.BOOTSTRAP_PORT_NUMBER, Integer.toString(getFreePort()))
                 .withIPAddress(DEFAULT_APPIUM_SERVER_ADDRESS)
                 .usingPort(freePort)
@@ -210,7 +226,11 @@ public class AppiumDriverManager {
     }
 
     private static String getAppiumJSPathFromNPMBuild(String appiumHome) {
-        return appiumHome + File.separator + APPIUM_RELATIVE_PATH_FROM_APPIUM_FOLDER;
+        String oldAppiumJSPath = appiumHome + File.separator + APPIUM_RELATIVE_PATH_FROM_APPIUM_FOLDER_OLD;
+        if (!new File(oldAppiumJSPath).exists()) {
+            return appiumHome + File.separator + APPIUM_RELATIVE_PATH_FROM_APPIUM_FOLDER_NEW;
+        }
+        return oldAppiumJSPath;
     }
 
     public static void startAppiumServerJS(int timeout) throws AppiumStartException, IOException {
@@ -252,6 +272,7 @@ public class AppiumDriverManager {
                             AppiumStringConstants.CANNOT_START_MOBILE_DRIVER_INVALID_TYPE, driver));
                 }
                 localStorageAppiumDriver.set(driver);
+                new AppiumRequestService(appiumService).logAppiumInfo();
                 return driver;
             } catch (UnreachableBrowserException e) {
                 long newMilis = System.currentTimeMillis();
@@ -318,6 +339,30 @@ public class AppiumDriverManager {
     private static void killProcessOnMac(String processName) throws InterruptedException, IOException {
         ProcessBuilder pb = new ProcessBuilder("killall", processName);
         pb.start().waitFor();
+    }
+
+    public static String getDeviceId(String parentProperty) {
+        return RunConfiguration.getDriverSystemProperty(parentProperty, EXECUTED_DEVICE_ID);
+    }
+
+    public static String getDeviceName(String parentProperty) {
+        return RunConfiguration.getDriverSystemProperty(parentProperty, EXECUTED_DEVICE_NAME);
+    }
+
+    public static String getDeviceModel(String parentProperty) {
+        return RunConfiguration.getDriverSystemProperty(parentProperty, EXECUTED_DEVICE_MODEL);
+    }
+
+    public static String getDeviceManufacturer(String parentProperty) {
+        return RunConfiguration.getDriverSystemProperty(parentProperty, EXECUTED_DEVICE_MANUFACTURER);
+    }
+
+    public static String getDeviceOSVersion(String parentProperty) {
+        return RunConfiguration.getDriverSystemProperty(parentProperty, EXECUTED_DEVICE_OS_VERSON);
+    }
+
+    public static String getDeviceOS(String parentProperty) {
+        return RunConfiguration.getDriverSystemProperty(parentProperty, EXECUTED_DEVICE_OS);
     }
 
 }

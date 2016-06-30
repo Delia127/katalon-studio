@@ -86,12 +86,18 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_MSG_FAILED_TO_TAP_ON_ELEMENT_X = "Failed to tap on element ''{0}''";
 
     public static final String KW_MSG_FAILED_TO_TAP_ON_ELEMENT = "Failed to tap on element";
-    
-    public static final String KW_LOG_PASSED_TAP_AND_HOLD_ON_ELEMENT_X = "Tapped and held on element ''{0}''";
 
-    public static final String KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT_X = "Failed to tap and hold on element ''{0}''";
+    public static final String KW_LOG_PASSED_TAP_AND_HOLD_ON_ELEMENT_X_WITH_DURATION_Y = "Tapped and held on element ''{0}'' with duration {1}";
+
+    public static final String KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT_X_WITH_DURATION_Y = "Failed to tap and hold on element ''{0}'' with duration {1}";
 
     public static final String KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT = "Failed to tap and hold on element";
+    
+    public static final String KW_LOG_PASSED_TAP_AND_HOLD_AT_X_Y_WITH_DURATION_Z = "Tapped and held at [{0}, {1}] with duration {2}";
+
+    public static final String KW_MSG_FAILED_TO_TAP_AND_HOLD_AT_X_Y_WITH_DURATION_Z = "Failed to tap and hold at [{0}, {1}] with duration {2}";
+
+    public static final String KW_MSG_FAILED_TO_TAP_AND_HOLD_AT_POSITION = "Failed to tap and hold at position";
 
     public static final String KW_LOG_PASSED_ELEMENT_HAS_ATTR = "Element ''{0}'' has attribute ''{1}'' is ''{2}''";
 
@@ -279,6 +285,22 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 
     public static final String KW_MSG_FAILED_TO_UNCHECK_ELEMENT = "Failed to un-check element";
 
+    public static final String KW_LOG_PASSED_SET_SLIDER_X_TO_Y = "Set slider ''{0}'' value to {1}";
+
+    public static final String KW_MSG_FAILED_SET_SLIDER_X_TO_Y = "Failed to set slider ''{0}'' value to {1}";
+    
+    public static final String KW_MSG_FAILED_SET_SLIDER_INVALID_PERCENTAGE_X = "Invalid percentage {1}. Percentage value must be between [0, 100].";
+
+    public static final String KW_MSG_FAILED_SET_SLIDER = "Failed to set slider value";
+    
+    public static final String KW_LOG_PASSED_TAPPED_AT_X_Y = "Tapped at [{0}, {1}]";
+
+    public static final String KW_LOG_FAILED_TAPPED_AT_X_Y = "Failed to tap at [{0}, {1}]";
+    
+    public static final String KW_LOG_FAILED_TAPPED_AT_POSITION = "Failed to tap at position";
+    
+    public static final String KW_MSG_FAILED_PARAM_X_CANNOT_BE_NULL = "Param {0} cannot be null";
+
     public static final String KW_CATEGORIZE_APPLICATION = "Application";
 
     public static final String KW_CATEGORIZE_ATTRIBUTE = "Attribute";
@@ -293,23 +315,7 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 
     public static final String KW_CATEGORIZE_TEXT = "Text";
 
-
     public static final String KW_CATEGORIZE_UTILITIES = "Utilities";
-
-
-    public static final String CONF_EXECUTED_PLATFORM = XML_LOG_DEVICE_PLATFORM_PROPERTY;
-
-    public static final String CONF_EXECUTED_DEVICE_ID = XML_LOG_DEVICE_ID_PROPERTY;
-
-    public static final String CONF_EXECUTED_DEVICE_NAME = "deviceName";
-
-    public static final String CONF_EXECUTED_DEVICE_MANUFACTURER = "deviceManufacturer";
-
-    public static final String CONF_EXECUTED_DEVICE_MODEL = "deviceModel";
-
-    public static final String CONF_EXECUTED_DEVICE_OS = "deviceOS";
-
-    public static final String CONF_EXECUTED_DEVICE_OS_VERSON = "deviceOSVersion";
     
     public static final String APPIUM_DRIVER_ERROR_JS_FAILED = "An error occurred while executing user supplied JavaScript.";
 
@@ -327,5 +333,38 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String COMM_LOG_INFO_CHECKING_DURATION = "Checking duration";
     
     public static final String COMM_LOG_WARNING_INVALID_DURATION = "Duration ''{0}'' is invalid. Using default duration.";
+    
+    public static final String COMM_LOG_INFO_CHECKING_PERCENTAGE = "Checking percentage";
+    
+    public static final String KW_LOG_PASSED_OBJ_HAS_TOP_POSITION = "Object ''{0}'' has top position ''{1}''";
 
+    public static final String KW_MSG_FAILED_TO_GET_TOP_POSITION_OF_ELEMENT = "Failed to get top position of element ''{0}''";
+
+    public static final String KW_MSG_FAILED_TO_GET_TOP_POSITION = "Failed to get top position of element";
+    
+    public static final String KW_LOG_PASSED_OBJ_HAS_LEFT_POSITION = "Object ''{0}'' has left position ''{1}''";
+
+    public static final String KW_MSG_FAILED_TO_GET_LEFT_POSITION_OF_ELEMENT = "Failed to get left position of element ''{0}''";
+
+    public static final String KW_MSG_FAILED_TO_GET_LEFT_POSITION = "Failed to get left position of element";
+
+    public static final String KW_MSG_FAILED_TO_UNLOCK_SCREEN = "Failed to unlock screen";
+
+    public static final String KW_MSG_PASSED_TO_UNLOCK_SCREEN = "Screen unlocked";
+
+    public static final String COMM_LOG_INFO_CHECKING_X = "Checking x position";
+
+    public static final String COMM_LOG_INFO_CHECKING_Y = "Checking y position";
+
+    public static final String KW_LOG_PASSED_OBJ_HAS_WIDTH = "Object ''{0}'' has width: ''{1}''";
+
+    public static final String KW_MSG_FAILED_TO_GET_WIDTH_OF_ELEMENT_X = "Failed to get width of element ''{0}''";
+
+    public static final String KW_MSG_FAILED_TO_GET_WIDTH_OF_ELEMENT = "Failed to get width of element";
+
+    public static final String KW_LOG_PASSED_OBJ_HAS_HEIGHT = "Object ''{0}'' has height: ''{1}''";
+
+    public static final String KW_MSG_FAILED_TO_GET_HEIGHT_OF_ELEMENT_X = "Failed to get height of element ''{0}''";
+
+    public static final String KW_MSG_FAILED_TO_GET_HEIGHT_OF_ELEMENT = "Failed to get height of element";
 }
