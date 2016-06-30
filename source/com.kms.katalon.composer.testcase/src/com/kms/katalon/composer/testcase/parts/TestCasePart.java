@@ -58,7 +58,6 @@ import com.kms.katalon.composer.testcase.ast.treetable.AstMethodTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
-import com.kms.katalon.composer.testcase.constants.TestCaseEventConstant;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants.AddAction;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
@@ -137,13 +136,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
     }
 
     private void registerEventBrokerListeners() {
-        eventBroker.subscribe(TestCaseEventConstant.TESTCASE_UPDATE_TABLE_ITEM_BACKGROUND, this);
-        eventBroker.subscribe(TestCaseEventConstant.TESTCASE_UPDATE_DIRTY, this);
-        eventBroker.subscribe(TestCaseEventConstant.TESTCASE_RESET_DIRTY, this);
-        eventBroker.subscribe(TestCaseEventConstant.TESTCASE_BUTTON_SELECTED, this);
-        eventBroker.subscribe(TestCaseEventConstant.TESTCASE_TOOL_ITEM_SELECTED, this);
-        eventBroker.subscribe(TestCaseEventConstant.TESTCASE_MENU_ITEM_SELECTED, this);
-        eventBroker.subscribe(EventConstants.TEST_OBJECT_UPDATED, this);
+        eventBroker.subscribe(EventConstants.TESTCASE_SETTINGS_FAILURE_HANDLING_UPDATED, this);
     }
 
     private void createControls(Composite parent) {
@@ -523,37 +516,18 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
     @Override
     public void handleEvent(Event event) {
-        SelectionEvent selectionEvent = null;
-        if (event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME) instanceof SelectionEvent) {
-            selectionEvent = (SelectionEvent) event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-        }
-        if (event.getTopic().equals(TestCaseEventConstant.TESTCASE_UPDATE_TABLE_ITEM_BACKGROUND)) {
-            // int index = (int)
-            // event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-            // for (int i = index; i < table.getItemCount(); i++) {
-            // setTableItemBackGroundColor(i);
-            // }
-        } else if (event.getTopic().equals(TestCaseEventConstant.TESTCASE_RESET_DIRTY) && selectionEvent != null
-                && selectionEvent.getSource() instanceof TestCaseEntity) {
-            TestCaseEntity entity = (TestCaseEntity) selectionEvent.getSource();
-            if (getTestCase().equals(entity)) {
-                setDirty(false);
-            }
-        } else if (event.getTopic().equals(TestCaseEventConstant.TESTCASE_UPDATE_DIRTY)) {
-            // TestStepTableViewer viewer = (TestStepTableViewer) event
-            // .getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-            // if (viewer == this.checkboxTableViewer) {
-            setDirty(true);
-            // }
-        } else if (event.getTopic().equals(EventConstants.TEST_OBJECT_UPDATED) && selectionEvent != null) {
-            Object object = selectionEvent.getSource();
-            if (object != null && object instanceof Object[]) {
-                // String oldPk = (String) ((Object[]) object)[0];
-                // WebElementEntity objectRepo = (WebElementEntity) ((Object[])
-                // object)[1];
-                // checkboxTableViewer.refreshObjectRepository(oldPk,
-                // objectRepo);
-            }
+        switch (event.getTopic()) {
+            case EventConstants.TESTCASE_SETTINGS_FAILURE_HANDLING_UPDATED:
+                try {
+                    if (treeTableInput != null) {
+                        loadASTNodesToTreeTable(treeTableInput.getMainClassNode());
+                    }
+                } catch (Exception e) {
+                    LoggerSingleton.logError(e);
+                }
+                break;
+            default:
+                break;
         }
     }
 
