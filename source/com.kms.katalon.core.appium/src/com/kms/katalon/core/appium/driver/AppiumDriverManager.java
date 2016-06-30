@@ -29,14 +29,12 @@ import com.kms.katalon.core.appium.exception.AppiumStartException;
 import com.kms.katalon.core.appium.exception.IOSWebkitStartException;
 import com.kms.katalon.core.appium.exception.MobileDriverInitializeException;
 import com.kms.katalon.core.configuration.RunConfiguration;
+import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 
 public class AppiumDriverManager {
-    
-    private static final String APPIUM_DEFAULT_LOG_LEVEL = "info";
-    
     public static final String EXECUTED_PLATFORM = AppiumStringConstants.CONF_EXECUTED_PLATFORM;
 
     public static final String EXECUTED_DEVICE_ID = AppiumStringConstants.CONF_EXECUTED_DEVICE_ID;
@@ -183,7 +181,7 @@ public class AppiumDriverManager {
         String appium = findAppiumJS();
         int freePort = getFreePort();
         AppiumDriverLocalService service = AppiumDriverLocalService.buildService(new AppiumServiceBuilder().withArgument(
-                GeneralServerFlag.LOG_LEVEL, APPIUM_DEFAULT_LOG_LEVEL)
+                GeneralServerFlag.LOG_LEVEL, getAppiumLogLevel())
                 .withArgument(GeneralServerFlag.TEMP_DIRECTORY, createAppiumTempFile())
                 .withArgument(GeneralServerFlag.SESSION_OVERRIDE)
                 .withAppiumJS(new File(appium))
@@ -198,6 +196,11 @@ public class AppiumDriverManager {
         localStorageAppiumServer.set(service);
         KeywordLogger.getInstance().logInfo(
                 MessageFormat.format(AppiumStringConstants.APPIUM_STARTED_ON_PORT, freePort));
+    }
+
+    private static String getAppiumLogLevel() {
+        return RunConfiguration.getDriverSystemProperty(StringConstants.CONF_PROPERTY_MOBILE_DRIVER,
+                StringConstants.CONF_APPIUM_LOG_LEVEL);
     }
 
     private static String createAppiumTempFile() {
