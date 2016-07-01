@@ -61,5 +61,6 @@ Require-Bundle: org.eclipse.e4.core.contexts,
  org.dom4j,
  net.sf.jopt-simple.jopt-simple,
  com.kms.katalon.logging,
- com.kms.katalon.core.appium
+ com.kms.katalon.core.appium,
+ org.eclipse.core.commands
 Bundle-Activator: com.kms.katalon.execution.addon.ExecutionBundleActivator
