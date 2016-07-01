@@ -13,7 +13,6 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.ListExpressionWr
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.core.testcase.TestCase;
-import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.custom.keyword.KeywordParameter;
 
 public class InputParameter {
@@ -101,15 +100,16 @@ public class InputParameter {
         ListExpressionWrapper listExpression = (ListExpressionWrapper) inputValue;
         ClassNode convertedTypeClass = new ClassNode(new ClassNode(paramClass.getComponentType().getFullName(),
                 paramClass.getModifiers(), new ClassNode(Object.class)));
-        return new CastExpressionWrapper(convertedTypeClass, listExpression,
-                listExpression.getParent());
+        return new CastExpressionWrapper(convertedTypeClass, listExpression, listExpression.getParent());
     }
 
     public boolean isEditable() {
-        return getParamType() != null
-                && getParamType().getFullName() != null
-                && !(AstEntityInputUtil.isClassChildOf(TestObject.class.getName(), getParamType().getFullName()) || AstEntityInputUtil.isClassChildOf(
-                        TestCase.class.getName(), getParamType().getFullName()));
+        return getParamType() != null && getParamType().getFullName() != null
+                && !(AstEntityInputUtil.isClassChildOf(TestCase.class.getName(), getParamType().getFullName()));
+    }
+
+    public boolean isTestObjectInputParameter() {
+        return getParamType().isTestObjectTypeClass();
     }
 
     public boolean isFailureHandlingInputParameter() {
