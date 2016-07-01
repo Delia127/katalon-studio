@@ -7,7 +7,6 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.testcase.ast.treetable.AstMethodTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.IAstInputEditableNode;
@@ -15,8 +14,6 @@ import com.kms.katalon.composer.testcase.ast.treetable.IAstObjectEditableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.IAstOutputEditableNode;
 
 public class AstTreeLabelProvider extends StyledCellLabelProvider {
-
-    private static final int CLMN_ITEM_IDX = 0;
 
     private static final int CLMN_OBJECT_IDX = 1;
 
@@ -28,29 +25,12 @@ public class AstTreeLabelProvider extends StyledCellLabelProvider {
 
     private int columnIndex;
 
-    private Image getImage(Object element) {
-        if (element == null || !(element instanceof AstTreeTableNode)) {
-            return null;
-        }
-        AstTreeTableNode treeTableNode = (AstTreeTableNode) element;
-
-        switch (columnIndex) {
-            case CLMN_ITEM_IDX:
-                return treeTableNode.getIcon();
-            default:
-                return null;
-        }
-    }
-
     private String getText(Object element) {
         if (element == null || !(element instanceof AstTreeTableNode)) {
             return "";
         }
         AstTreeTableNode treeTableNode = (AstTreeTableNode) element;
         switch (columnIndex) {
-            case CLMN_ITEM_IDX:
-                return ((treeTableNode instanceof AstStatementTreeTableNode) ? (getStringIndex(treeTableNode) + " - ")
-                        : "") + treeTableNode.getItemText();
             case CLMN_OBJECT_IDX:
                 if (treeTableNode instanceof IAstObjectEditableNode) {
                     return ((IAstObjectEditableNode) treeTableNode).getTestObjectText();
@@ -76,19 +56,6 @@ public class AstTreeLabelProvider extends StyledCellLabelProvider {
         }
     }
 
-    private String getStringIndex(AstTreeTableNode node) {
-        if (node == null || node.getParent() == null || !(node.getParent().canHaveChildren())
-                || node instanceof AstMethodTreeTableNode) {
-            return "";
-        }
-        String parentIndex = getStringIndex(node.getParent());
-        String thisIndex = String.valueOf(node.getParent().getChildren().indexOf(node) + 1);
-        if (!parentIndex.isEmpty()) {
-            return parentIndex + "." + thisIndex;
-        }
-        return thisIndex;
-    }
-
     @Override
     public void update(ViewerCell cell) {
         Object element = cell.getElement();
@@ -105,6 +72,10 @@ public class AstTreeLabelProvider extends StyledCellLabelProvider {
             handleDefaultStatement(cell);
         }
         super.update(cell);
+    }
+
+    private Image getImage(Object element) {
+        return null;
     }
 
     private boolean isDisabledStatement(Object element) {
@@ -126,8 +97,6 @@ public class AstTreeLabelProvider extends StyledCellLabelProvider {
         }
         AstTreeTableNode treeTableNode = (AstTreeTableNode) element;
         switch (columnIndex) {
-            case CLMN_ITEM_IDX:
-                return treeTableNode.getItemTooltipText();
             case CLMN_OBJECT_IDX:
                 if (treeTableNode instanceof IAstObjectEditableNode) {
                     return ((IAstObjectEditableNode) treeTableNode).getTestObjectTooltipText();
