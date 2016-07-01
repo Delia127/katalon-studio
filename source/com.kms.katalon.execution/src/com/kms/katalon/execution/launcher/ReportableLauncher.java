@@ -281,21 +281,21 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             }
             // Collect result and send mail here
             CSVReader csvReader = new CSVReader(file, CSVSeparator.COMMA, true);
-            Deque<String[]> datas = new ArrayDeque<String[]>();
+            Deque<List<String>> datas = new ArrayDeque<List<String>>();
             datas.addAll(csvReader.getData());
-            String[] suiteRow = datas.pollFirst();
-            String suiteName = (suiteIndex + 1) + "." + suiteRow[0];
-            String browser = suiteRow[1];
+            List<String> suiteRow = datas.pollFirst();
+            String suiteName = (suiteIndex + 1) + "." + suiteRow.get(0);
+            String browser = suiteRow.get(1);
 
             String hostName = getRunConfig().getHostConfiguration().getHostName();
             String os = getRunConfig().getHostConfiguration().getOS();
 
-            Object[] arrSuitesSummaryForEmail = new Object[] { suiteRow[0], 0, 0, 0, 0, hostName, os, browser };
+            Object[] arrSuitesSummaryForEmail = new Object[] { suiteRow.get(0), 0, 0, 0, 0, hostName, os, browser };
             suitesSummaryForEmail.add(arrSuitesSummaryForEmail);
 
             int testIndex = 0;
             while (datas.size() > 0) {
-                String[] row = datas.pollFirst();
+                List<String> row = datas.pollFirst();
                 // Check empty line
                 boolean isEmptyLine = true;
                 for (String col : row) {
@@ -306,12 +306,12 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 }
                 if (isEmptyLine && !datas.isEmpty()) {
                     testIndex++;
-                    String[] testRow = datas.pollFirst();
-                    String testName = testIndex + "." + testRow[0];
+                    List<String> testRow = datas.pollFirst();
+                    String testName = testIndex + "." + testRow.get(0);
                     newDatas.add(ArrayUtils.addAll(new String[] { suiteName, testName, browser },
-                            Arrays.copyOfRange(testRow, 2, testRow.length)));
+                            Arrays.copyOfRange(testRow.toArray(new String[0]), 2, testRow.size())));
 
-                    String testStatus = testRow[6];
+                    String testStatus = testRow.get(6);
                     if (TestStatusValue.PASSED.toString().equals(testStatus)) {
                         arrSuitesSummaryForEmail[1] = (Integer) arrSuitesSummaryForEmail[1] + 1;
                     } else if (TestStatusValue.FAILED.toString().equals(testStatus)) {

@@ -123,10 +123,12 @@ public final class EntityService {
                 com.kms.katalon.entity.global.GlobalVariableEntity.class,
                 com.kms.katalon.entity.integration.IntegratedEntity.class,
                 com.kms.katalon.entity.file.IntegratedFileEntity.class,
-                com.kms.katalon.entity.report.ReportEntity.class, 
+                com.kms.katalon.entity.report.ReportEntity.class,
                 com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.class,
                 com.kms.katalon.dal.fileservice.adapter.TestSuiteReferenceXmlAdapter.class,
-                com.kms.katalon.entity.report.ReportCollectionEntity.class};
+                com.kms.katalon.entity.report.ReportCollectionEntity.class,
+                com.kms.katalon.entity.checkpoint.CheckpointEntity.class,
+                com.kms.katalon.dal.fileservice.adapter.CheckpointDataXmlAdapter.class };
     }
 
     public Marshaller getMarshaller() {

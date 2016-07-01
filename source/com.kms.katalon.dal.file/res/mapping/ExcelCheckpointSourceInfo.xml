@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="com.kms.katalon.entity.checkpoint">
+    <java-types>
+        <java-type name="ExcelCheckpointSourceInfo">
+            <xml-root-element name="source-info" />
+            <xml-type prop-order="sheetNameOrSeparator usingRelativePath usingFirstRowAsHeader" />
+            <java-attributes>
+                <!-- for excel and csv -->
+                <xml-element java-attribute="sheetNameOrSeparator" name="sheet-name-or-separator" />
+                <xml-element java-attribute="usingRelativePath" name="is-using-relative-path" />
+                <xml-element java-attribute="usingFirstRowAsHeader" name="is-using-first-row-as-header" />
+            </java-attributes>
+        </java-type>
+    </java-types>
+</xml-bindings>

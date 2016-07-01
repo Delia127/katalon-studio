@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="com.kms.katalon.entity.checkpoint">
+    <java-types>
+        <java-type name="CheckpointSourceInfo">
+            <xml-root-element name="source-info" />
+            <xml-type prop-order="fromTestData sourceUrl sourceType" />
+            <java-attributes>
+                <xml-element java-attribute="fromTestData" name="is-from-test-data" />
+
+                <!-- sourceUrl could be Test-Data-displayed-ID, DB Connection String or Excel, CSV file location -->
+                <xml-element java-attribute="sourceUrl" name="source-url" />
+
+                <!-- if isFromTestData is FALSE -->
+                <!-- data source type EXCEL, CSV, DATABASE -->
+                <xml-element java-attribute="sourceType" name="source-type" />
+            </java-attributes>
+        </java-type>
+    </java-types>
+</xml-bindings>

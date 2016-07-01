@@ -1,5 +1,6 @@
 package com.kms.katalon.dal.setting;
 
+import com.kms.katalon.dal.ICheckpointProvider;
 import com.kms.katalon.dal.IDataFileDataProvider;
 import com.kms.katalon.dal.IEntityNameProvider;
 import com.kms.katalon.dal.IExportDataProvider;
@@ -17,35 +18,39 @@ import com.kms.katalon.entity.PKType;
 import com.kms.katalon.entity.project.ProjectEntity;
 
 public interface IDataProviderSetting {
-	public void reset(String configValue) throws Exception;
-	
-	public ITestCaseDataProvider getTestCaseDataProvider();
 
-	public IFolderDataProvider getFolderDataProvider();
+    public void reset(String configValue) throws Exception;
 
-	public ITestSuiteDataProvider getTestSuiteDataProvider();
-	
+    public ITestCaseDataProvider getTestCaseDataProvider();
+
+    public IFolderDataProvider getFolderDataProvider();
+
+    public ITestSuiteDataProvider getTestSuiteDataProvider();
+
     public TestSuiteCollectionDataProvider getTestSuiteCollectionDataProvider();
 
-	public IWebElementDataProvider getWebElementDataProvider();
+    public IWebElementDataProvider getWebElementDataProvider();
 
-	public IProjectDataProvider getProjectDataProvider();
+    public IProjectDataProvider getProjectDataProvider();
 
-	public IImportDataProvider getImportDataProvider();
+    public IImportDataProvider getImportDataProvider();
 
-	public IExportDataProvider getExportDataProvider();
-	
-	public IDataFileDataProvider getDataFileDataProvider();
-	
-	public PKType getEntityPKType();
-	
-	public void setCurrentProject(ProjectEntity project);
-	
-	public IReportDataProvider getReportDataProvider();
-	
-	public String getEntityPk(Entity entity);
-	
-	public IGlobalVariableDataProvider getGlobalVariableDataProvider();
-	
-	public IEntityNameProvider getEntityNameProvider();
+    public IExportDataProvider getExportDataProvider();
+
+    public IDataFileDataProvider getDataFileDataProvider();
+
+    public PKType getEntityPKType();
+
+    public void setCurrentProject(ProjectEntity project);
+
+    public IReportDataProvider getReportDataProvider();
+
+    public String getEntityPk(Entity entity);
+
+    public IGlobalVariableDataProvider getGlobalVariableDataProvider();
+
+    public IEntityNameProvider getEntityNameProvider();
+
+    public ICheckpointProvider getCheckpointDataProvider();
+
 }

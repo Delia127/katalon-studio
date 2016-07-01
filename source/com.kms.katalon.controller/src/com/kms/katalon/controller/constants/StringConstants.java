@@ -34,6 +34,27 @@ public class StringConstants extends GlobalStringConstants {
     // TestDataController
     public static final String CTRL_NEW_TEST_DATA = "New Test Data";
 
+    public static final String CTRL_EXC_TEST_DATA_IS_NULL = "Test Data is null.";
+
+    public static final String CTRL_EXC_TEST_DATA_IS_NOT_DB_TYPE = "Test Data with ID ''{0}'' is not ''Database Data'' type.";
+
     // TestSuiteController
     public static final String CTRL_NEW_TEST_SUITE = "New Test Suite";
+
+    // ProjectNotFoundException
+    public static final String EXC_MSG_PROJECT_NOT_FOUND = "No current project is found.";
+
+    // CheckpointController
+    public static final String CTRL_EXC_CHECKPOINT_IS_NULL = "Checkpoint is null.";
+
+    public static final String CTRL_EXC_SOURCE_URL_IS_NULL = "Source URL is empty.";
+
+    public static final String CTRL_EXC_CANNOT_TAKE_SNAPSHOT_DATA = "Cannot take a snapshot from data source for Checkpoint with ID ''{0}''. Root cause: Unsupport source data type ''{1}''";
+
+    public static final String CTRL_EXC_DB_CONNECTION_SETTINGS_ARE_EMPTY = "Database Connection settings are empty.";
+
+    public static final String CTRL_EXC_EXCEL_SHEET_NAME_IS_EMPTY = "Excel sheet name is null or empty.";
+
+    public static final String CTRL_EXC_INVALID_CSV_SEPARATOR = "Invalid CSV separator.";
+
 }
