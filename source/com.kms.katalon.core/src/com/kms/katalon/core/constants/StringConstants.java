@@ -319,6 +319,8 @@ public class StringConstants {
     public static final String CONF_APPIUM_LOG_FILE = "appiumLogFile";
     
     public static final String CONF_APPIUM_DIRECTORY = "appiumDirectory";
+    
+    public static final String CONF_APPIUM_LOG_LEVEL = "appiumLogLevel";
 
     public static final String CONF_PROPERTY_TIMEOUT = "timeout";
 

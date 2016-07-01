@@ -12,6 +12,7 @@ import com.kms.katalon.execution.configuration.AbstractDriverConnector;
 import com.kms.katalon.execution.mobile.constants.MobilePreferenceConstants;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public abstract class MobileDriverConnector extends AbstractDriverConnector {
     private static final String APPIUM_LOG_FILE_NAME = "appium.log";
@@ -47,13 +48,21 @@ public abstract class MobileDriverConnector extends AbstractDriverConnector {
         Map<String, Object> systemProperties = super.getSystemProperties();
         systemProperties.put(StringConstants.CONF_APPIUM_LOG_FILE, APPIUM_LOG_FILE_NAME);
         systemProperties.put(StringConstants.CONF_APPIUM_DIRECTORY, getAppiumDirectory());
+        systemProperties.put(StringConstants.CONF_APPIUM_LOG_LEVEL, getAppiumLogLevel());
         setDeviceSystemProperties(systemProperties);
         return systemProperties;
     }
 
-    private Object getAppiumDirectory() {
-        return PreferenceStoreManager.getPreferenceStore(MobilePreferenceConstants.MOBILE_QUALIFIER).getString(
-                MobilePreferenceConstants.MOBILE_APPIUM_DIRECTORY);
+    private String getAppiumDirectory() {
+        return getMobilePreferenceStore().getString(MobilePreferenceConstants.MOBILE_APPIUM_DIRECTORY);
+    }
+
+    private String getAppiumLogLevel() {
+        return getMobilePreferenceStore().getString(MobilePreferenceConstants.MOBILE_APPIUM_LOG_LEVEL);
+    }
+
+    private ScopedPreferenceStore getMobilePreferenceStore() {
+        return PreferenceStoreManager.getPreferenceStore(MobilePreferenceConstants.MOBILE_QUALIFIER);
     }
 
     private void setDeviceSystemProperties(Map<String, Object> systemProperties) {
@@ -81,7 +90,8 @@ public abstract class MobileDriverConnector extends AbstractDriverConnector {
 
     public String getDefaultDeviceId() {
         return StringUtils.defaultString(
-                (String) getUserConfigProperties().get(AppiumStringConstants.CONF_EXECUTED_DEVICE_ID), StringUtils.EMPTY);
+                (String) getUserConfigProperties().get(AppiumStringConstants.CONF_EXECUTED_DEVICE_ID),
+                StringUtils.EMPTY);
     }
 
     public void updateDefaultDeviceId() {
