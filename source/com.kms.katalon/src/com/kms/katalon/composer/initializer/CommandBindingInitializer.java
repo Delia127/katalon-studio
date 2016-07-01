@@ -24,20 +24,12 @@ public class CommandBindingInitializer extends WorkbenchUtilizer implements Appl
 
     private static final String TEXT_EDITOR_CONTEXT_ID = "org.eclipse.ui.textEditorScope";
 
-    private static final String[] OVERRIDEN_COMMAND_IDS = new String[] {
-            "com.kms.katalon.composer.explorer.command.open", "com.kms.katalon.composer.explorer.command.rename",
-            "com.kms.katalon.composer.explorer.command.copy", "com.kms.katalon.composer.explorer.command.cut",
-            "com.kms.katalon.composer.explorer.command.paste", "com.kms.katalon.composer.explorer.command.delete",
-            "org.eclipse.ui.window.preferences" };
-
     @Override
     public void setup() {
         BindingService bindingService = (BindingService) getService(IBindingService.class);
-        ICommandService commandService = (ICommandService) getService(ICommandService.class);
 
-        removeOverlapingCommands(bindingService);
+        activeExplorerCommands(bindingService);
 
-        restoreTextEditorCommand(bindingService, commandService);
         try {
             bindingService.savePreferences(bindingService.getActiveScheme(), bindingService.getActiveBindings()
                     .toArray(new Binding[0]));
@@ -46,50 +38,81 @@ public class CommandBindingInitializer extends WorkbenchUtilizer implements Appl
         }
     }
 
-    private void restoreTextEditorCommand(BindingService bindingService, ICommandService commandService) {
-        for (TextEditorCommand editorCommand : TextEditorCommand.values()) {
+    private ICommandService getCommandService() {
+        ICommandService commandService = (ICommandService) getService(ICommandService.class);
+        return commandService;
+    }
+
+    private void activeExplorerCommands(BindingService bindingService) {
+        for (TextEditorCommand command : TextEditorCommand.values()) {
             try {
-                bindingService.addBinding(editorCommand.newKeyBinding(bindingService, commandService));
+                activeKeyBindingForExplorerCommand(bindingService, command);
             } catch (ParseException e) {
                 LoggerSingleton.logError(e);
             }
         }
     }
 
-    private void removeOverlapingCommands(BindingService bindingService) {
-        for (String commandId : OVERRIDEN_COMMAND_IDS) {
-            TriggerSequence triggerSequence = bindingService.getBestActiveBindingFor(commandId);
+    private void activeKeyBindingForExplorerCommand(BindingService bindingService, TextEditorCommand command)
+            throws ParseException {
+        String explorerCommandId = command.getExplorerCommandId();
+        TriggerSequence triggerSequence = bindingService.getBestActiveBindingFor(explorerCommandId);
 
-            for (Binding binding : bindingService.getActiveBindings()) {
-                if ((binding instanceof KeyBinding) && binding.getTriggerSequence().equals(triggerSequence)
-                        && (!binding.getParameterizedCommand().getId().equals(commandId))) {
-                    bindingService.removeBinding(binding);
-                }
+        for (Binding activeBinding : bindingService.getActiveBindings()) {
+            if (!(activeBinding instanceof KeyBinding) || !triggerSequence.equals(activeBinding.getTriggerSequence())) {
+                continue;
+            }
+
+            String overlappedCommandId = activeBinding.getParameterizedCommand().getId();
+
+            if (overlappedCommandId.equals(explorerCommandId)) {
+                continue;
+            }
+
+            bindingService.removeBinding(activeBinding);
+
+            if (overlappedCommandId.equals(command.getEditorCommandId())) {
+                bindingService.addBinding(command.newKeyBinding(bindingService, getCommandService()));
             }
         }
     }
 
     private enum TextEditorCommand {
-        OPEN("org.eclipse.jdt.ui.edit.text.java.open.editor", "F3"),
-        COPY("org.eclipse.ui.edit.copy", "M1+C"),
-        CUT("org.eclipse.ui.edit.cut", "M1+X"),
-        PASTE("org.eclipse.ui.edit.paste", "M1+V"),
-        DELETE("org.eclipse.ui.edit.delete", "Delete"),
-        GO_TO_MATCHING_BRACKET("org.eclipse.jdt.ui.edit.text.java.goto.matching.bracket", "M1+M2+P");
+        OPEN("com.kms.katalon.composer.explorer.command.open", "org.eclipse.jdt.ui.edit.text.java.open.editor", "F3"),
+        RENAME("com.kms.katalon.composer.explorer.command.rename", "", "F2"),
+        COPY("com.kms.katalon.composer.explorer.command.copy", "org.eclipse.ui.edit.copy", "M1+C"),
+        CUT("com.kms.katalon.composer.explorer.command.cut", "org.eclipse.ui.edit.cut", "M1+X"),
+        PASTE("com.kms.katalon.composer.explorer.command.paste", "org.eclipse.ui.edit.paste", "M1+V"),
+        DELETE("com.kms.katalon.composer.explorer.command.delete", "org.eclipse.ui.edit.delete", "Delete"),
+        GO_TO_MATCHING_BRACKET(
+                "org.eclipse.ui.window.preferences",
+                "org.eclipse.jdt.ui.edit.text.java.goto.matching.bracket",
+                "M1+M2+P");
 
-        private String commandId;
+        private String editorCommandId;
+
+        private String explorerCommandId;
 
         private String keySequence;
 
-        TextEditorCommand(String commandId, String keySequence) {
-            this.commandId = commandId;
+        TextEditorCommand(String explorerCommandId, String commandId, String keySequence) {
+            this.explorerCommandId = explorerCommandId;
+            this.editorCommandId = commandId;
             this.keySequence = keySequence;
+        }
+
+        public String getExplorerCommandId() {
+            return explorerCommandId;
+        }
+
+        public String getEditorCommandId() {
+            return editorCommandId;
         }
 
         public KeyBinding newKeyBinding(IBindingService bindingService, ICommandService commandService)
                 throws ParseException {
-            ParameterizedCommand parameterizedCommand = new ParameterizedCommand(commandService.getCommand(commandId),
-                    null);
+            ParameterizedCommand parameterizedCommand = new ParameterizedCommand(
+                    commandService.getCommand(editorCommandId), null);
 
             return new KeyBinding(KeySequence.getInstance(keySequence), parameterizedCommand,
                     bindingService.getActiveScheme().getId(), TEXT_EDITOR_CONTEXT_ID, null, null, null, Binding.USER);
