@@ -1,14 +1,13 @@
-document.addEventListener('DOMContentLoaded', function() {
-	initOnOffButton();
-	initPortText();
-	addEventHandler();
-});
+initOnOffButton();
+initPortText();
+addEventHandler();
 
 function initOnOffButton() {
 	getKatalonOnOffStatus( function(isOn) {
 		console.log(isOn)
 		document.getElementById("katalon_onoffswitch").checked = isOn;
 		$('#katalon_onoffswitch').data('clicks', isOn);
+		$("#katalon_onoffswitch_label").addClass("onoffswitch-label");
 	});
 }
 

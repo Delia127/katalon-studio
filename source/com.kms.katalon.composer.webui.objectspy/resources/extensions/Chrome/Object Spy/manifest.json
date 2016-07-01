@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "Katalon Object Spy",
 	"description": "Element Spy Chrome extension for Katalon",
-	"version": "0.0.0.1",
+	"version": "0.0.0.2",
 	"permissions": ["http://*/", "https://*/", "storage"],
 	"icons": { "128": "images/object_spy_24.png" },
 	"content_scripts": [
