@@ -67,6 +67,14 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String DIA_TOOLTIP_OBJECT_NAME = "Press Enter to update new name and Esc to discard change";
 
+    public static final String DIA_JOB_TASK_LOADING_DEVICES = "Loading devices...";
+
+    public static final String DIA_ERROR_UNABLE_TO_COLLECT_DEVICES = "Unable to collect devices";
+
+    public static final String DIA_JOB_TASK_CAPTURING_OBJECTS = "Capturing objects...";
+
+    public static final String DIA_ERROR_UNABLE_TO_CAPTURE_OBJECTS = "Unable to capture objects";
+
     // CheckboxTreeSelectionHelper
     public static final String TREE_EXC_MSG_REQUIRE_CONTENT_PROVIDER = "Content provider is required";
 

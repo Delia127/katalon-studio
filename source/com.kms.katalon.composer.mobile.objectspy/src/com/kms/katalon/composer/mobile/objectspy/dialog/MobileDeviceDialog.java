@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.swing.BorderFactory;
@@ -16,8 +17,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
-import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
@@ -33,16 +32,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.mobile.constants.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
-import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.core.mobile.keyword.GUIObject;
 
-@SuppressWarnings("restriction")
-public class MobileDeviceDialog extends Dialog implements EventHandler {
+public class MobileDeviceDialog extends Dialog {
 
     private static final String DIALOG_TITLE = StringConstants.DIA_DIALOG_TITLE_DEVICE_VIEW;
 
@@ -56,9 +53,9 @@ public class MobileDeviceDialog extends Dialog implements EventHandler {
 
     public static final Point DIALOG_SIZE = new Point(DIALOG_WIDTH + 9, DIALOG_HEIGHT + 57);
 
-    private float currentX = 0, currentY = 0, currentWidth = 0, currentHeight = 0;
+    private double currentX = 0, currentY = 0, currentWidth = 0, currentHeight = 0;
 
-    float wRatio, hRatio;
+    double wRatio, hRatio;
 
     private JScrollPane scrImage;
 
@@ -70,25 +67,19 @@ public class MobileDeviceDialog extends Dialog implements EventHandler {
 
     private boolean isDisposed;
 
-    private IEventBroker eventBroker;
-    
     private Point initialLocation;
 
-    public MobileDeviceDialog(Shell parentShell, Point location, Logger logger, IEventBroker eventBroker) {
+    public MobileDeviceDialog(Shell parentShell, Point location) {
         super(parentShell);
         this.initialLocation = location;
         setShellStyle(SWT.SHELL_TRIM | SWT.FILL | SWT.RESIZE);
-        this.eventBroker = eventBroker;
         this.isDisposed = false;
-        eventBroker.subscribe(EventConstants.OBJECT_SPY_CLOSE_MOBILE_APP, this);
-        eventBroker.subscribe(EventConstants.OBJECT_SPY_MOBILE_HIGHLIGHT, this);
-        eventBroker.subscribe(EventConstants.OBJECT_SPY_MOBILE_SCREEN_CAPTURE, this);
     }
 
-	
     @Override
     protected Control createDialogArea(Composite parent) {
         mainContainer = new Composite(parent, SWT.EMBEDDED | SWT.INHERIT_NONE);
+        mainContainer.setBackground(ColorUtil.getBlackBackgroundColor());
         GridLayout layout = new GridLayout();
         layout.marginHeight = 0;
         layout.marginWidth = 0;
@@ -120,7 +111,7 @@ public class MobileDeviceDialog extends Dialog implements EventHandler {
         return mainContainer;
     }
 
-    public void highlight(final float x, final float y, final float width, final float height) {
+    public void highlight(final double x, final double y, final double width, final double height) {
         // Scale the coordinator depend on the ratio between scaled image / source image
         this.currentX = x * wRatio;
         this.currentY = y * hRatio;
@@ -134,8 +125,8 @@ public class MobileDeviceDialog extends Dialog implements EventHandler {
                 JLabel label = new JLabel();
                 label.setOpaque(false);
                 label.setBorder(BorderFactory.createLineBorder(Color.green, 2));
-                label.setBounds(Math.round(currentX), Math.round(currentY), Math.round(currentWidth),
-                        Math.round(currentHeight));
+                label.setBounds(safeRoundDouble(currentX), safeRoundDouble(currentY), safeRoundDouble(currentWidth),
+                        safeRoundDouble(currentHeight));
                 // flash
                 for (int i = 0; i < 6; i++) {
                     c.add(label);
@@ -156,13 +147,13 @@ public class MobileDeviceDialog extends Dialog implements EventHandler {
         thread.start();
     }
 
-    private Image scaleImage(Image image, float newWidth, float newHeight) {
-        Image scaled = new Image(Display.getDefault(), Math.round(newWidth), Math.round(newHeight));
+    private Image scaleImage(Image image, double newWidth, double newHeight) {
+        Image scaled = new Image(Display.getDefault(), safeRoundDouble(newWidth), safeRoundDouble(newHeight));
         GC gc = new GC(scaled);
         gc.setAntialias(SWT.ON);
         gc.setInterpolation(SWT.HIGH);
-        gc.drawImage(image, 0, 0, image.getBounds().width, image.getBounds().height, 0, 0, Math.round(newWidth),
-                Math.round(newHeight));
+        gc.drawImage(image, 0, 0, image.getBounds().width, image.getBounds().height, 0, 0, safeRoundDouble(newWidth),
+                safeRoundDouble(newHeight));
         gc.dispose();
         image.dispose();
         return scaled;
@@ -191,65 +182,66 @@ public class MobileDeviceDialog extends Dialog implements EventHandler {
         return parent;
     }
 
-    @Override
-    public void handleEvent(Event event) {
-        if (event.getTopic().equals(EventConstants.OBJECT_SPY_CLOSE_MOBILE_APP)) {
-            handleShellCloseEvent();
-        } else if (event.getTopic().equals(EventConstants.OBJECT_SPY_MOBILE_HIGHLIGHT)) {
-            MobileElement selectedElement = (MobileElement) event.getProperty("selected_object");
-            float x = Float.parseFloat(selectedElement.getAttributes().get(GUIObject.X));
-            float y = Float.parseFloat(selectedElement.getAttributes().get(GUIObject.Y));
-            float w = Float.parseFloat(selectedElement.getAttributes().get(GUIObject.WIDTH));
-            float h = Float.parseFloat(selectedElement.getAttributes().get(GUIObject.HEIGHT));
-            highlight(x, y, w, h);
-        } else if (event.getTopic().equals(EventConstants.OBJECT_SPY_MOBILE_SCREEN_CAPTURE)) {
-            try {
-                File imageFile = (File) event.getProperty("real_image_file_path");
-                MobileElement root = (MobileElement) event.getProperty("appium_screen_object");
+    /* package */void closeApp() {
+        handleShellCloseEvent();
+    }
 
-                if (root != null && root.getAttributes().containsKey("width")
-                        && root.getAttributes().containsKey("height")) {
-                    float appWidth = Float.parseFloat(root.getAttributes().get("width"));
-                    float appHeight = Float.parseFloat(root.getAttributes().get("height"));
+    /* package */void highlightElement(MobileElement selectedElement) {
+        Map<String, String> attributes = selectedElement.getAttributes();
+        if (attributes == null || !attributes.containsKey(GUIObject.X) || !attributes.containsKey(GUIObject.Y)
+                || !attributes.containsKey(GUIObject.WIDTH) || !attributes.containsKey(GUIObject.HEIGHT)) {
+            return;
+        }
+        double x = Double.parseDouble(attributes.get(GUIObject.X));
+        double y = Double.parseDouble(attributes.get(GUIObject.Y));
+        double w = Double.parseDouble(attributes.get(GUIObject.WIDTH));
+        double h = Double.parseDouble(attributes.get(GUIObject.HEIGHT));
+        highlight(x, y, w, h);
+    }
 
-                    ImageDescriptor imgDesc = ImageDescriptor.createFromURL(imageFile.toURI().toURL());
-                    Image img = imgDesc.createImage();
-                    currentScreenShot = scaleImage(img, appWidth, appHeight);
-
-                    String scaledImageFilePath = System.getProperty("java.io.tmpdir") + File.separator
-                            + UUID.randomUUID() + "_scaled1.png";
-                    ImageLoader imgLoader = new ImageLoader();
-                    imgLoader.data = new ImageData[] { this.currentScreenShot.getImageData() };
-                    imgLoader.save(scaledImageFilePath, SWT.IMAGE_PNG);
-
-                    imageFile = new File(scaledImageFilePath);
-                }
+    public void refreshDialog(File imageFile, MobileElement root) {
+        try {
+            String userTempDir = System.getProperty("java.io.tmpdir");
+            if (root != null && root.getAttributes().containsKey(GUIObject.WIDTH)
+                    && root.getAttributes().containsKey(GUIObject.HEIGHT)) {
+                double appWidth = Double.parseDouble(root.getAttributes().get(GUIObject.WIDTH));
+                double appHeight = Double.parseDouble(root.getAttributes().get(GUIObject.HEIGHT));
 
                 ImageDescriptor imgDesc = ImageDescriptor.createFromURL(imageFile.toURI().toURL());
                 Image img = imgDesc.createImage();
+                currentScreenShot = scaleImage(img, appWidth, appHeight);
 
-                // Calculate scaled ratio
-                wRatio = DIALOG_WIDTH / (float) img.getBounds().width;
-                hRatio = DIALOG_HEIGHT / (float) img.getBounds().height;
-                // wRatio = (wRatio==0 ? theWidthRatio : theWidthRatio * wRatio);
-                // hRatio = (hRatio==0 ? theHeightRatio : theHeightRatio * hRatio);
+                String scaledImageFilePath = userTempDir + File.separator + UUID.randomUUID() + "_scaled1.png";
+                ImageLoader imgLoader = new ImageLoader();
+                imgLoader.data = new ImageData[] { this.currentScreenShot.getImageData() };
+                imgLoader.save(scaledImageFilePath, SWT.IMAGE_PNG);
 
-                currentScreenShot = scaleImage(img, DIALOG_WIDTH, DIALOG_HEIGHT);
-
-                // Save scaled version
-                String scaledImageFile = System.getProperty("java.io.tmpdir") + File.separator + UUID.randomUUID()
-                        + "_scaled2.png";
-                ImageLoader loader = new ImageLoader();
-                loader.data = new ImageData[] { this.currentScreenShot.getImageData() };
-                loader.save(scaledImageFile, SWT.IMAGE_PNG);
-
-                icon = new ImageIcon(scaledImageFile);
-                scrImage.setViewportView(new JLabel(icon));
-                scrImage.revalidate();
-                scrImage.repaint();
-            } catch (Exception ex) {
-                ex.printStackTrace();
+                imageFile = new File(scaledImageFilePath);
             }
+
+            ImageDescriptor imgDesc = ImageDescriptor.createFromURL(imageFile.toURI().toURL());
+            Image img = imgDesc.createImage();
+
+            // Calculate scaled ratio
+            wRatio = DIALOG_WIDTH / (double) img.getBounds().width;
+            hRatio = contextPanel.getHeight() / (double) img.getBounds().height;
+            // wRatio = (wRatio==0 ? theWidthRatio : theWidthRatio * wRatio);
+            // hRatio = (hRatio==0 ? theHeightRatio : theHeightRatio * hRatio);
+
+            currentScreenShot = scaleImage(img, contextPanel.getWidth(), contextPanel.getHeight());
+
+            // Save scaled version
+            String scaledImageFile = userTempDir + File.separator + UUID.randomUUID() + "_scaled2.png";
+            ImageLoader loader = new ImageLoader();
+            loader.data = new ImageData[] { this.currentScreenShot.getImageData() };
+            loader.save(scaledImageFile, SWT.IMAGE_PNG);
+
+            icon = new ImageIcon(scaledImageFile);
+            scrImage.setViewportView(new JLabel(icon));
+            scrImage.revalidate();
+            scrImage.repaint();
+        } catch (Exception ex) {
+            LoggerSingleton.logError(ex);
         }
     }
 
@@ -260,7 +252,6 @@ public class MobileDeviceDialog extends Dialog implements EventHandler {
     }
 
     public void dispose() {
-        this.eventBroker.unsubscribe(this);
         this.isDisposed = true;
     }
 
@@ -271,6 +262,7 @@ public class MobileDeviceDialog extends Dialog implements EventHandler {
     @SuppressWarnings("unused")
     private class AlphaContainer extends JComponent {
         private static final long serialVersionUID = -244003111111860211L;
+
         private JComponent component;
 
         public JComponent getComponent() {
@@ -284,8 +276,9 @@ public class MobileDeviceDialog extends Dialog implements EventHandler {
         public AlphaContainer(JComponent component) {
             this.component = component;
             setLayout(new BorderLayout());
-            component.setBackground(new Color(0, 0, 0, 0));
-            setBackground(new Color(0, 0, 0, 0));
+            Color whiteColor = new Color(255, 255, 255, 0);
+            component.setBackground(whiteColor);
+            setBackground(whiteColor);
             setOpaque(false);
             component.setOpaque(false);
             add(component);
@@ -297,11 +290,14 @@ public class MobileDeviceDialog extends Dialog implements EventHandler {
             g.fillRect(0, 0, getWidth(), getHeight());
         }
     }
-    
+
     @Override
     protected Point getInitialLocation(Point initialSize) {
         return initialLocation;
     }
+
+    private int safeRoundDouble(double d) {
+        long rounded = Math.round(d);
+        return (int) Math.max(Integer.MIN_VALUE, Math.min(Integer.MAX_VALUE, rounded));
+    }
 }
-
-

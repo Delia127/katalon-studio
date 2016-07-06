@@ -158,7 +158,7 @@ public class MultiStatusErrorDialog extends AbstractDialog {
         return detailsShowed ? "<< " + detailsButtonText : detailsButtonText + " >>";
     }
 
-    public static void showErrorDialog(Exception e, String title, String errorDescription) {
+    public static void showErrorDialog(Throwable e, String title, String errorDescription) {
         MultiStatusErrorDialog dialog = new MultiStatusErrorDialog(Display.getCurrent().getActiveShell(), title,
                 errorDescription, e.getMessage());
         dialog.open();
