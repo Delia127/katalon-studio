@@ -22,9 +22,9 @@ import com.kms.katalon.custom.keyword.KeywordMethod;
 import com.kms.katalon.custom.keyword.KeywordParameter;
 
 public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableNode {
-    
-    //Built-In keyword methods without FailureHandling, to show in drop-down list in test case manual mode 
-    //This list is being used many places, it should be initiated only once
+
+    // Built-In keyword methods without FailureHandling, to show in drop-down list in test case manual mode
+    // This list is being used many places, it should be initiated only once
     private List<KeywordMethod> builtInKeywordMethods = new ArrayList<KeywordMethod>();
 
     public AstBuiltInKeywordTreeTableNode(ExpressionStatementWrapper methodCallStatement, AstTreeTableNode parentNode) {
@@ -106,13 +106,15 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
         if (keywordMethod == null || keywordMethod.getParameters().length == 0) {
             return false;
         }
-        int count = 0;
+        boolean hasTestObjectParam = false;
         for (int i = 0; i < keywordMethod.getParameters().length; i++) {
-            if (!AstEntityInputUtil.isTestObjectClass(keywordMethod.getParameters()[i].getType())) {
-                count++;
+            boolean isTestObjectParam = AstEntityInputUtil.isTestObjectClass(keywordMethod.getParameters()[i].getType());
+            if (!isTestObjectParam || hasTestObjectParam) {
+                return true;
             }
+            hasTestObjectParam = true;
         }
-        return count > 0;
+        return false;
     }
 
     @Override
@@ -122,8 +124,7 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
             return "";
         }
         KeywordMethod keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
-                getBuiltInKWClassSimpleName(), getKeywordName(),
-                arguments.getArgumentListParameterTypes());
+                getBuiltInKWClassSimpleName(), getKeywordName(), arguments.getArgumentListParameterTypes());
         if (keywordMethod == null) {
             return "";
         }
@@ -133,9 +134,15 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
     protected String buildInputDisplayString(ArgumentListExpressionWrapper arguments, KeywordMethod keywordMethod) {
         int count = 0;
         StringBuilder displayString = new StringBuilder();
+        boolean hasTestObjectParam = false;
         for (int i = 0; i < keywordMethod.getParameters().length; i++) {
             KeywordParameter keywordParam = keywordMethod.getParameters()[i];
-            if (isIgnoreParamType(keywordParam.getType())) {
+            Class<?> paramType = keywordParam.getType();
+            if (AstEntityInputUtil.isTestObjectClass(paramType) && !hasTestObjectParam) {
+                hasTestObjectParam = true;
+                continue;
+            }
+            if (isIgnoreParamType(paramType)) {
                 continue;
             }
             if (count > 0) {
@@ -159,7 +166,7 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
     }
 
     protected boolean isIgnoreParamType(Class<?> paramType) {
-        return AstEntityInputUtil.isTestObjectClass(paramType) || AstEntityInputUtil.isFailureHandlingClass(paramType);
+        return AstEntityInputUtil.isFailureHandlingClass(paramType);
     }
 
     @Override

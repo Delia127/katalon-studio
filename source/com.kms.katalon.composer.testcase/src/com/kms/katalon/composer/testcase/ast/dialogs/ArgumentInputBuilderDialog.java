@@ -52,7 +52,16 @@ public class ArgumentInputBuilderDialog extends AbstractAstBuilderWithTableDialo
         originalParameters = inputParameters;
         this.parent = parent;
         this.inputParameters = new ArrayList<InputParameter>();
+        filterInputParameters(inputParameters);
+    }
+
+    public void filterInputParameters(List<InputParameter> inputParameters) {
+        boolean hasTestObjectParam = false;
         for (InputParameter inputParameter : inputParameters) {
+            if (inputParameter.isTestObjectInputParameter() && !hasTestObjectParam) {
+                hasTestObjectParam = true;
+                continue;
+            }
             if (!inputParameter.isEditable()) {
                 continue;
             }
