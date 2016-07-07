@@ -95,12 +95,7 @@ public class TestDataTableLabelProvider extends StyledCellLabelProvider {
             case COLUMN_ID_INDEX:
                 return link.getTestDataId();
             case COLUMN_ITERATION_INDEX:
-                switch (link.getIterationEntity().getIterationType()) {
-                    case ALL:
-                        return link.getIterationEntity().getIterationType().toString();
-                    default:
-                        return link.getIterationEntity().getValue();
-                }
+                return link.getIterationEntity().getDisplayString();
             case COLUMN_COMBINATION_INDEX:
                 return link.getCombinationType().toString();
 
