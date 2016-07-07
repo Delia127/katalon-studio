@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 
@@ -88,4 +90,63 @@ public class SelectorBuilderHelper {
 
 		return binding;
 	}
+    
+    //TODO: Need to refactor later
+    public static String makeXpath(List<TestObjectProperty> propEntities) {
+        StringBuilder exp = new StringBuilder();
+        String tagName = "";
+        for (int i = 0; i < propEntities.size(); i++) {
+            TestObjectProperty prop = propEntities.get(i);
+            String propName = prop.getName();
+            String propVal = prop.getValue();
+            String mCondition = prop.getCondition().toString();
+
+            if ("xpath".equals(propName)) {
+                return propVal;
+            }
+
+            if ("ref_element".equalsIgnoreCase(propName) || "parent_frame".equalsIgnoreCase(propName)) {
+                continue;
+            }
+            if ("tagName".equalsIgnoreCase(propName) || "tag".equalsIgnoreCase(propName)
+                    || "type".equalsIgnoreCase(propName)) {
+                tagName = propVal;
+                continue;
+            }
+            if (!StringUtils.isEmpty(exp.toString())) {
+                exp.append(" and ");
+            }
+            if ("text".equals(propName) || "link_text".equals(propName)) {
+                propName = "text()";
+            }
+            // If attribute, append '@' before attribute name, skip it if method
+            if (!StringUtils.endsWith(propName, "()")) {
+                propName = "@" + propName;
+            }
+            if (mCondition.equals(ConditionType.EQUALS.toString())) {
+                exp.append(String.format("%s = '%s'", propName, propVal));
+            } else if (mCondition.equals(ConditionType.NOT_EQUAL.toString())) {
+                exp.append(String.format("%s != '%s'", propName, propVal));
+            } else if (mCondition.equals(ConditionType.CONTAINS.toString())) {
+                exp.append(String.format("contains(%s,'%s')", propName, propVal));
+            } else if (mCondition.equals(ConditionType.NOT_CONTAIN.toString())) {
+                exp.append(String.format("not(contains(%s,'%s'))", propName, propVal));
+            } else if (mCondition.equals(ConditionType.STARTS_WITH.toString())) {
+                exp.append(String.format("starts-with(%s,'%s')", propName, propVal));
+            }
+        }
+        if (!StringUtils.isEmpty(exp.toString())) {
+            StringBuilder xpath = new StringBuilder();
+            xpath.append("//");
+            xpath.append(StringUtils.isEmpty(tagName) ? "*" : tagName);
+            xpath.append("[" + exp + "]");
+
+            return xpath.toString();
+        } 
+        if (StringUtils.isNotBlank(tagName)) {
+            return "//" + tagName;
+        }
+        return "";
+    }
+
 }

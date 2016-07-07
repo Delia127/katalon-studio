@@ -368,6 +368,16 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
 
     public static final String COMM_LOG_INFO_CHECKING_Y = "Checking y position";
 
+    public static final String KW_LOG_PASSED_LIST_ITEM_CLICKED = "Item index ''{0}'' of object ''{1}'' clicked";
+    
+    public static final String KW_LOG_FAILED_LIST_ITEM_INDEX_EXCEED = "Index ''{0}'' exceed total item count ''{1}''";
+    
+    public static final String KW_LOG_FAILED_FEATURE_NOT_AVAILABLE = "This feature is being implemented";
+    
+    public static final String KW_MSG_FAILED_TO_SELECT_ELEMENT_BY_INDEX_OF_OBJ = "Failed to select item indexed ''{0}'' of object ''{1}''";
+    
+    public static final String KW_MSG_FAILED_TO_SELECT_ELEMENT_BY_INDEX = "Failed to select item indexed ''{0}''";
+    
     public static final String COMM_LOG_INFO_CHECKING_OFFSET = "Checking offset position";
 
     public static final String KW_LOG_PASSED_OBJ_HAS_WIDTH = "Object ''{0}'' has width: ''{1}''";
