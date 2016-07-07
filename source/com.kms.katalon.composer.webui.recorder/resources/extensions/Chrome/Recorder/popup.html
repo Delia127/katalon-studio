@@ -6,7 +6,6 @@
 	<script src="chrome_variables_default.js"></script>
 	<script src="chrome_variables_init.js"></script>
 	<script src="chrome_common.js"></script>
-	<script src="popup.js"></script>
 	<style>
 		.onoffswitch {
 			position: relative; width: 40px;
@@ -47,10 +46,10 @@
 		Toggle On/Off:<br>
 		<div class="onoffswitch">
 			<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="katalon_onoffswitch" checked>
-			<label class="onoffswitch-label" for="katalon_onoffswitch"></label>
+			<label id="katalon_onoffswitch_label" for="katalon_onoffswitch"></label>
+			<script src="popup.js"></script>
 		</div>
-		<br>
-		Katalon Server Port:<br>
+		<br> Katalon Server Port:<br>
 		<input type="text" name="port" id="port">
 		<br>
 	</form>
