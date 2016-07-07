@@ -23,6 +23,7 @@ import org.openqa.selenium.TimeoutException
 import org.openqa.selenium.WebDriverException
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.interactions.touch.TouchActions
+import org.openqa.selenium.remote.RemoteWebElement
 import org.openqa.selenium.support.ui.FluentWait
 
 import com.google.common.base.Function
@@ -2116,6 +2117,42 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
         return verifyElementNotChecked(to, timeout, RunConfiguration.getDefaultFailureHandling());
     }
 
+    /**
+     * Select item of list view control by its label.
+     * @param to 
+     *      represent a mobile element
+     * @param label 
+     *      item label
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void selectListItemByLabel(TestObject to, String label, int timeout, FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            MobileElementCommonHelper.selectListItemByLabel(to, label, timeout, flowControl);
+        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_SELECT_ELEMENT_BY_LABEL_OF_OBJ, label, to.getObjectId())
+        : MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_SELECT_ELEMENT_BY_LABEL, label));
+    }
+    
+    /**
+     * Select item of list view control by its label.
+     * @param to 
+     *      represent a mobile element
+     * @param label 
+     *      item label
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void selectListItemByLabel(TestObject to, String label, int timeout) throws StepFailedException {
+        selectListItemByLabel(to, label, timeout, RunConfiguration.getDefaultFailureHandling())
+    }
+    
     /**
      * Unlock device screen
      * @param flowControl

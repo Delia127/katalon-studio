@@ -16,6 +16,7 @@ import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.touch.TouchActions;
+import org.openqa.selenium.remote.RemoteWebElement;
 
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.helper.KeywordHelper;
@@ -195,7 +196,7 @@ public class MobileElementCommonHelper {
         KeywordLogger.getInstance().logPassed(
                 MessageFormat.format(StringConstants.KW_LOG_PASSED_LIST_ITEM_CLICKED, index, to.getObjectId()));
     }
-
+    
     public static boolean isElementChecked(TestObject to, int timeout) throws StepFailedException, Exception {
         return isElementChecked(findElementWithCheck(to, timeout));
     }
@@ -217,6 +218,49 @@ public class MobileElementCommonHelper {
         KeywordLogger.getInstance().logPassed(
                 MessageFormat.format(StringConstants.KW_LOG_PASSED_DRAG_AND_DROP_ELEMENT_X_TO_ELEMENT_Y,
                         fromObj.getObjectId()));
+    }
+    
+    public static void selectListItemByLabel(TestObject to, String label, int timeout, FailureHandling flowControl)
+            throws Exception {
+        WebElement element = findElementWithCheck(to, timeout);
+        if (element == null) {
+            throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_OBJ_NOT_FOUND, to.getObjectId()));
+        }
+        // Find direct children
+        AppiumDriver<?> driver = MobileDriverFactory.getDriver();
+        String xpath = SelectorBuilderHelper.makeXpath(to.getActiveProperties());
+
+        scrollToFindElementWithText(driver, (RemoteWebElement) element, label);
+
+        // Find child element with specified label
+        String itemXpath = (driver instanceof IOSDriver) ? (xpath + "//*" + "[@label='" + label + "' or @value='"
+                + label + "']") : (xpath + "//*" + "[@text='" + label + "' or text()='" + label + "']");
+        List<?> itemElements = driver.findElementsByXPath(itemXpath);
+        if (itemElements.size() > 0) {
+            WebElement itemElement = (WebElement) itemElements.get(0);
+            // Click on element
+            ((MobileElement) itemElement).tap(1, 1);
+        } else {
+            throw new StepFailedException(MessageFormat.format(StringConstants.KW_LOG_FAILED_LABELED_ITEM_NOT_FOUND,
+                    label, to.getObjectId()));
+        }
+
+        KeywordLogger.getInstance().logPassed(
+                MessageFormat.format(StringConstants.KW_LOG_PASSED_LIST_LABELED_ITEM_CLICKED, label, to.getObjectId()));
+    }
+
+    private static void scrollToFindElementWithText(AppiumDriver<?> driver, RemoteWebElement element, String text) {
+        // Ensure element visible
+        try {
+            HashMap<String, String> scrollObject = new HashMap<String, String>();
+            scrollObject = new HashMap<String, String>();
+            scrollObject.put("direction", "down");
+            scrollObject.put("element", element.getId());
+            scrollObject.put("text", text);
+            driver.executeScript("mobile: scrollTo", scrollObject);
+        } catch (WebDriverException ex) {
+            // Scroll action sometime throw unknown server error
+        }
     }
 
     public static void moveSlider(TestObject to, Number percent, int timeout) throws StepFailedException, Exception {
