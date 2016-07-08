@@ -50,14 +50,13 @@ public class FolderFileServiceManager {
             initRootFolder(FileServiceConstant.getObjectRepositoryRootFolderLocation(project.getFolderLocation()));
             initRootFolder(FileServiceConstant.getKeywordRootFolderLocation(project.getFolderLocation()));
             initRootFolder(FileServiceConstant.getReportRootFolderLocation(project.getFolderLocation()));
-            initRootFolder(FileServiceConstant.getTestSuiteColelctionRootFolderLocation(project.getFolderLocation()));
+            initRootFolder(FileServiceConstant.getCheckpointRootFolderLocation(project.getFolderLocation()));
         }
     }
 
     public static FolderEntity getTestSuiteRoot(ProjectEntity project) throws Exception {
         if (project != null) {
-            FolderEntity folder = getFolder(FileServiceConstant.getTestSuiteRootFolderLocation(project
-                    .getFolderLocation()));
+            FolderEntity folder = getFolder(FileServiceConstant.getTestSuiteRootFolderLocation(project.getFolderLocation()));
             if (folder != null) {
                 folder.setProject(project);
                 return folder;
@@ -68,8 +67,7 @@ public class FolderFileServiceManager {
 
     public static FolderEntity getTestCaseRoot(ProjectEntity project) throws Exception {
         if (project != null) {
-            FolderEntity folder = getFolder(FileServiceConstant.getTestCaseRootFolderLocation(project
-                    .getFolderLocation()));
+            FolderEntity folder = getFolder(FileServiceConstant.getTestCaseRootFolderLocation(project.getFolderLocation()));
             if (folder != null) {
                 folder.setProject(project);
                 return folder;
@@ -80,8 +78,7 @@ public class FolderFileServiceManager {
 
     public static FolderEntity getTestDataRoot(ProjectEntity project) throws Exception {
         if (project != null) {
-            FolderEntity folder = getFolder(FileServiceConstant.getDataFileRootFolderLocation(project
-                    .getFolderLocation()));
+            FolderEntity folder = getFolder(FileServiceConstant.getDataFileRootFolderLocation(project.getFolderLocation()));
             if (folder != null) {
                 folder.setProject(project);
                 return folder;
@@ -92,8 +89,7 @@ public class FolderFileServiceManager {
 
     public static FolderEntity getObjectRepositoryRoot(ProjectEntity project) throws Exception {
         if (project != null) {
-            FolderEntity folder = getFolder(FileServiceConstant.getObjectRepositoryRootFolderLocation(project
-                    .getFolderLocation()));
+            FolderEntity folder = getFolder(FileServiceConstant.getObjectRepositoryRootFolderLocation(project.getFolderLocation()));
             if (folder != null) {
                 folder.setProject(project);
                 return folder;
@@ -104,8 +100,7 @@ public class FolderFileServiceManager {
 
     public static FolderEntity getKeywordRoot(ProjectEntity project) throws Exception {
         if (project != null) {
-            FolderEntity folder = getFolder(FileServiceConstant.getKeywordRootFolderLocation(project
-                    .getFolderLocation()));
+            FolderEntity folder = getFolder(FileServiceConstant.getKeywordRootFolderLocation(project.getFolderLocation()));
             if (folder != null) {
                 folder.setProject(project);
                 return folder;
@@ -116,8 +111,7 @@ public class FolderFileServiceManager {
 
     public static FolderEntity getReportRoot(ProjectEntity project) throws Exception {
         if (project != null) {
-            FolderEntity folder = getFolder(FileServiceConstant
-                    .getReportRootFolderLocation(project.getFolderLocation()));
+            FolderEntity folder = getFolder(FileServiceConstant.getReportRootFolderLocation(project.getFolderLocation()));
             if (folder != null) {
                 folder.setProject(project);
                 return folder;
@@ -125,13 +119,13 @@ public class FolderFileServiceManager {
         }
         return null;
     }
-    
-    public static FolderEntity getTestRunRoot(ProjectEntity project) throws Exception {
+
+    public static FolderEntity getCheckpointRoot(ProjectEntity project) throws Exception {
         if (project == null) {
             return null;
         }
-        FolderEntity folder = getFolder(FileServiceConstant
-                .getTestSuiteColelctionRootFolderLocation(project.getFolderLocation()));
+
+        FolderEntity folder = getFolder(FileServiceConstant.getCheckpointRootFolderLocation(project.getFolderLocation()));
         if (folder == null) {
             return null;
         }
@@ -144,8 +138,7 @@ public class FolderFileServiceManager {
      * Use to create new Folders (Test Case folder, Test Suite folder, Test Data folder...)
      * 
      * @param parentFolder
-     * @param defaultName
-     *            Folder name. Default name (New Folder) will be used if this null or empty
+     * @param defaultName Folder name. Default name (New Folder) will be used if this null or empty
      * @return {@link FolderEntity}
      * @throws Exception
      */
@@ -219,7 +212,7 @@ public class FolderFileServiceManager {
                 for (File file : parentFolderFile.listFiles(EntityFileServiceManager.fileFilter)) {
                     if (file.isDirectory()) {
                         File reportFile = new File(file, ReportEntity.DF_LOG_FILE_NAME);
-                        
+
                         String folderName = FilenameUtils.getBaseName(file.getName());
                         File reportCollectionFile = new File(file, folderName + ReportCollectionEntity.FILE_EXTENSION);
                         IReportDataProvider reportDataProvider = new FileServiceDataProviderSetting().getReportDataProvider();
@@ -281,11 +274,9 @@ public class FolderFileServiceManager {
                     String oldRelativeFolderLocation = folderEntity.getRelativePath();
                     // Collect entities which will be affected if rename folder
                     FolderEntity testSuiteRoot = FolderFileServiceManager.getTestSuiteRoot(project);
-                    List<TestSuiteEntity> allTestSuites = FolderFileServiceManager
-                            .getDescendantTestSuitesOfFolder(testSuiteRoot);
+                    List<TestSuiteEntity> allTestSuites = FolderFileServiceManager.getDescendantTestSuitesOfFolder(testSuiteRoot);
 
-                    List<TestCaseEntity> descendantTestCases = FolderFileServiceManager
-                            .getDescendantTestCasesOfFolder(folderEntity);
+                    List<TestCaseEntity> descendantTestCases = FolderFileServiceManager.getDescendantTestCasesOfFolder(folderEntity);
                     for (TestCaseEntity testCase : descendantTestCases) {
                         GroovyUtil.loadScriptContentIntoTestCase(testCase);
                     }
@@ -333,6 +324,10 @@ public class FolderFileServiceManager {
                                 break;
                             case WEBELEMENT:
                                 WebElementFileServiceManager.updateFolderTestObjectReferences(folderEntity,
+                                        oldRelativeFolderLocation);
+                                break;
+                            case CHECKPOINT:
+                                CheckpointFileServiceManager.updateFolderCheckpointReferences(folderEntity,
                                         oldRelativeFolderLocation);
                                 break;
                             default:

@@ -12,7 +12,7 @@ import com.kms.katalon.composer.components.impl.dialogs.CommonPropertiesDialog;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
-public class TestCasePropertiesDialog extends CommonPropertiesDialog {
+public class TestCasePropertiesDialog extends CommonPropertiesDialog<TestCaseEntity> {
 
     private Text txtTag;
 
@@ -52,8 +52,4 @@ public class TestCasePropertiesDialog extends CommonPropertiesDialog {
         getEntity().setTag(txtTag.getText());
     }
 
-    @Override
-    public TestCaseEntity getEntity() {
-        return (TestCaseEntity) super.getEntity();
-    }
 }

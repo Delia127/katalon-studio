@@ -24,12 +24,8 @@ import com.kms.katalon.composer.components.wizard.RenameWizard;
 import com.kms.katalon.composer.folder.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
-import com.kms.katalon.entity.folder.FolderEntity.FolderType;
-import com.kms.katalon.entity.repository.WebElementEntity;
-import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.entity.testdata.DataFileEntity;
-import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 @SuppressWarnings("restriction")
 public class RenameFolderHandler {
@@ -76,37 +72,11 @@ public class RenameFolderHandler {
                             // to notify to all object that refer to them
                             // get collection of descendant entities that
                             // doesn't include descendant folder entity
-                            List<Object> allDescendantEntites = new ArrayList<Object>();
+                            List<FileEntity> allDescendantEntites = new ArrayList<>();
                             for (Object descendantEntity : FolderController.getInstance().getAllDescentdantEntities(
                                     folder)) {
                                 if (!(descendantEntity instanceof FolderEntity)) {
-                                    allDescendantEntites.add(descendantEntity);
-                                }
-                            }
-                            List<String> lstDescendantEntityLocations = new ArrayList<String>();
-                            if (folder.getFolderType() == FolderType.TESTCASE) {
-                                for (Object child : allDescendantEntites) {
-                                    if (child != null && child instanceof TestCaseEntity) {
-                                        lstDescendantEntityLocations.add(((TestCaseEntity) child).getId());
-                                    }
-                                }
-                            } else if (folder.getFolderType() == FolderType.DATAFILE) {
-                                for (Object child : allDescendantEntites) {
-                                    if (child != null && child instanceof DataFileEntity) {
-                                        lstDescendantEntityLocations.add(((DataFileEntity) child).getId());
-                                    }
-                                }
-                            } else if (folder.getFolderType() == FolderType.TESTSUITE) {
-                                for (Object child : allDescendantEntites) {
-                                    if (child != null && child instanceof TestSuiteEntity) {
-                                        lstDescendantEntityLocations.add(((TestSuiteEntity) child).getId());
-                                    }
-                                }
-                            } else if (folder.getFolderType() == FolderType.WEBELEMENT) {
-                                for (Object child : allDescendantEntites) {
-                                    if (child != null && child instanceof WebElementEntity) {
-                                        lstDescendantEntityLocations.add(((WebElementEntity) child).getId());
-                                    }
+                                    allDescendantEntites.add((FileEntity) descendantEntity);
                                 }
                             }
                             String folderParentPath = folder.getParentFolder().getRelativePathForUI()
@@ -119,25 +89,29 @@ public class RenameFolderHandler {
                             folder.setName(renameWizard.getNewNameValue());
                             // afterSaving
                             // send notification events
-                            if (folder.getFolderType() == FolderType.TESTCASE) {
-                                for (int i = 0; i < lstDescendantEntityLocations.size(); i++) {
-                                    eventBroker.post(EventConstants.TESTCASE_UPDATED, new Object[] {
-                                            lstDescendantEntityLocations.get(i), allDescendantEntites.get(i) });
-                                }
-                            } else if (folder.getFolderType() == FolderType.DATAFILE) {
-                                for (int i = 0; i < lstDescendantEntityLocations.size(); i++) {
-                                    eventBroker.post(EventConstants.TEST_DATA_UPDATED, new Object[] {
-                                            lstDescendantEntityLocations.get(i), allDescendantEntites.get(i) });
-                                }
-                            } else if (folder.getFolderType() == FolderType.TESTSUITE) {
-                                for (int i = 0; i < lstDescendantEntityLocations.size(); i++) {
-                                    eventBroker.post(EventConstants.TEST_SUITE_UPDATED, new Object[] {
-                                            lstDescendantEntityLocations.get(i), allDescendantEntites.get(i) });
-                                }
-                            } else if (folder.getFolderType() == FolderType.WEBELEMENT) {
-                                for (int i = 0; i < lstDescendantEntityLocations.size(); i++) {
-                                    eventBroker.post(EventConstants.TEST_OBJECT_UPDATED, new Object[] {
-                                            lstDescendantEntityLocations.get(i), allDescendantEntites.get(i) });
+                            String eventTopic = null;
+                            switch (folder.getFolderType()) {
+                                case TESTCASE:
+                                    eventTopic = EventConstants.TESTCASE_UPDATED;
+                                    break;
+                                case DATAFILE:
+                                    eventTopic = EventConstants.TEST_DATA_UPDATED;
+                                    break;
+                                case TESTSUITE:
+                                    eventTopic = EventConstants.TEST_SUITE_UPDATED;
+                                    break;
+                                case WEBELEMENT:
+                                    eventTopic = EventConstants.TEST_OBJECT_UPDATED;
+                                    break;
+                                case CHECKPOINT:
+                                    eventTopic = EventConstants.CHECKPOINT_UPDATED;
+                                    break;
+                                default:
+                                    break;
+                            }
+                            if (eventTopic != null) {
+                                for (FileEntity entity : allDescendantEntites) {
+                                    eventBroker.post(eventTopic, new Object[] { entity.getId(), entity });
                                 }
                             }
 

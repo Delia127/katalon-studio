@@ -1,8 +1,11 @@
 package com.kms.katalon.dal.fileservice.manager;
 
 import java.io.File;
+import java.io.IOException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.NullArgumentException;
+import org.eclipse.core.runtime.CoreException;
 
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.dal.exception.NullAttributeException;
@@ -12,6 +15,8 @@ import com.kms.katalon.dal.fileservice.constants.StringConstants;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.groovy.reference.TestArtifactScriptRefactor;
 
 public class CheckpointFileServiceManager {
 
@@ -49,8 +54,17 @@ public class CheckpointFileServiceManager {
 
             // Clean up cache if entity exists
             EntityCache entityCache = getEntityService().getEntityCache();
-            if (entityCache.contains(checkpoint) && !checkpoint.getLocation().equals(entityCache.getKey(checkpoint))) {
+            String oldLocation = entityCache.getKey(checkpoint);
+            if (entityCache.contains(checkpoint) && !checkpoint.getLocation().equals(oldLocation)) {
                 entityCache.remove(checkpoint, true);
+
+                // update checkpoint's references
+                ProjectEntity project = checkpoint.getProject();
+                String oldRelativeLocation = oldLocation.substring(new File(project.getLocation()).getParent().length() + 1);
+                String oldCheckpointId = FilenameUtils.removeExtension(oldRelativeLocation)
+                        .replace(File.separator, "/");
+                TestArtifactScriptRefactor.createForCheckpointEntity(oldCheckpointId).updateReferenceForProject(
+                        checkpoint.getIdForDisplay(), project);
             }
 
             // Do save
@@ -92,14 +106,29 @@ public class CheckpointFileServiceManager {
     public static CheckpointEntity move(CheckpointEntity checkpoint, FolderEntity destinationFolder)
             throws DALException {
         try {
+            String oldCheckpointId = checkpoint.getIdForDisplay();
             FolderEntity originParentFolder = checkpoint.getParentFolder();
             CheckpointEntity movedCheckpoint = EntityFileServiceManager.move(checkpoint, destinationFolder);
+
+            // refresh parent folder
             FolderFileServiceManager.refreshFolder(originParentFolder);
             FolderFileServiceManager.refreshFolder(destinationFolder);
+
+            if (movedCheckpoint != null) {
+                // update checkpoint references
+                TestArtifactScriptRefactor.createForCheckpointEntity(oldCheckpointId).updateReferenceForProject(
+                        movedCheckpoint.getIdForDisplay(), movedCheckpoint.getProject());
+            }
             return movedCheckpoint;
         } catch (Exception e) {
             throw new DALException(e);
         }
+    }
+
+    public static void updateFolderCheckpointReferences(FolderEntity checkpointFolder, String oldDisplayedId)
+            throws CoreException, IOException {
+        TestArtifactScriptRefactor.createForCheckpointEntity(oldDisplayedId).updateReferenceForProject(
+                checkpointFolder.getIdForDisplay(), checkpointFolder.getProject());
     }
 
     private static EntityService getEntityService() throws Exception {

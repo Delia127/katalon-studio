@@ -1,11 +1,14 @@
 package com.kms.katalon.entity.checkpoint;
 
+import com.kms.katalon.entity.constants.StringConstants;
 import com.kms.katalon.entity.testdata.DataFileEntity.DataFileDriverType;
 
 /**
  * Checkpoint Excel source info
  */
 public class ExcelCheckpointSourceInfo extends CheckpointSourceInfo {
+
+    private static final long serialVersionUID = -7156970395932671391L;
 
     /** Excel sheet name or CSV separator */
     private String sheetNameOrSeparator;
@@ -16,8 +19,8 @@ public class ExcelCheckpointSourceInfo extends CheckpointSourceInfo {
     /** Excel and CSV header indicator */
     private boolean usingFirstRowAsHeader;
 
-    protected ExcelCheckpointSourceInfo() {
-        super();
+    public ExcelCheckpointSourceInfo() {
+        this(StringConstants.EMPTY, null, false, true);
     }
 
     /**

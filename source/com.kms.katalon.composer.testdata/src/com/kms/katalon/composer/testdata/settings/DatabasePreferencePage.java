@@ -24,10 +24,10 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.testdata.constants.StringConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.db.DatabaseConnection;
 import com.kms.katalon.core.db.DatabaseSettings;
@@ -281,11 +281,11 @@ public class DatabasePreferencePage extends PreferencePage {
         dbSettings.setUrl(txtConnectionURL.getText());
         try {
             PropertySettingStoreUtil.saveExternalSettings(PROJECT_DIR, SETTING_NAME, dbSettings.getSettings(),
-                    StringConstants.DIA_DB_SETTING_COMMENT);
+                    com.kms.katalon.composer.testdata.constants.StringConstants.DIA_DB_SETTING_COMMENT);
             return true;
         } catch (IOException e) {
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.ERROR,
-                    StringConstants.DIA_MSG_UNABLE_TO_SAVE_DB_SETTING_PAGE);
+                    com.kms.katalon.composer.testdata.constants.StringConstants.DIA_MSG_UNABLE_TO_SAVE_DB_SETTING_PAGE);
             return false;
         }
     }

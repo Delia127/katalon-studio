@@ -1,5 +1,6 @@
 package com.kms.katalon.entity.checkpoint;
 
+import com.kms.katalon.entity.constants.StringConstants;
 import com.kms.katalon.entity.testdata.DataFileEntity.DataFileDriverType;
 
 /**
@@ -7,8 +8,11 @@ import com.kms.katalon.entity.testdata.DataFileEntity.DataFileDriverType;
  */
 public class CsvCheckpointSourceInfo extends ExcelCheckpointSourceInfo {
 
-    protected CsvCheckpointSourceInfo() {
-        super();
+    private static final long serialVersionUID = 6385215618023670146L;
+
+    public CsvCheckpointSourceInfo() {
+        // COMMA is CSVSeparator.COMMA.name() because of dependency issue
+        this(StringConstants.EMPTY, "COMMA", false, true);
     }
 
     /**

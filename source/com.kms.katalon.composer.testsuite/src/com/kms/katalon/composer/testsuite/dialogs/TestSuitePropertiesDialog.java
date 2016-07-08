@@ -12,7 +12,7 @@ import com.kms.katalon.composer.components.impl.dialogs.CommonPropertiesDialog;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
-public class TestSuitePropertiesDialog extends CommonPropertiesDialog {
+public class TestSuitePropertiesDialog extends CommonPropertiesDialog<TestSuiteEntity> {
 
     private Text txtCreatedDate;
 
@@ -47,11 +47,6 @@ public class TestSuitePropertiesDialog extends CommonPropertiesDialog {
         super.setInput();
         txtCreatedDate.setText(getEntity().getDateCreated().toString());
         txtModifiedDate.setText(getEntity().getDateModified().toString());
-    }
-
-    @Override
-    public TestSuiteEntity getEntity() {
-        return (TestSuiteEntity) super.getEntity();
     }
 
 }

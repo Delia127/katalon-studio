@@ -122,11 +122,11 @@ public class GlobalStringConstants {
     public static final String ERROR = "Error";
 
     public static final String INCOMPLETE = "Incomplete";
-    
+
     public static final String NOT_RUN = "Not Run";
-    
+
     public static final String COMPLETE = "Complete";
-    
+
     public static final String NOT_STARTED = "Not started yet";
 
     // Tool-bar
@@ -147,6 +147,8 @@ public class GlobalStringConstants {
     public static final String KEYWORD = "Keyword";
 
     public static final String REPORT = "Report";
+
+    public static final String CHECKPOINT = "Checkpoint";
 
     public static final String OBJECT_SPY = "Object Spy";
 
@@ -211,8 +213,8 @@ public class GlobalStringConstants {
     public static final String ROOT_FOLDER_NAME_KEYWORD = "Keywords";
 
     public static final String ROOT_FOLDER_NAME_REPORT = "Reports";
-    
-    public static final String ROOT_FOLDER_NAME_TESTRUN = "Test Runs";
+
+    public static final String ROOT_FOLDER_NAME_CHECKPOINT = "Checkpoints";
 
     public static final String ROOT_FOLDER_NAME_SETTINGS = "settings";
 
@@ -236,12 +238,14 @@ public class GlobalStringConstants {
     public static final String ENTITY_KW_TEST_OBJECT = "ob";
 
     public static final String ENTITY_KW_TEST_DATA = "td";
-    
+
     public static final String ENTITY_KW_TEST_RUN = "tr";
 
     public static final String ENTITY_KW_REPORT = "rp";
 
     public static final String ENTITY_KW_KEYWORD = "kw";
+
+    public static final String ENTITY_KW_CHECKPOINT = "cp";
 
     // Common value
     public static final String NULL = "null";
@@ -258,6 +262,6 @@ public class GlobalStringConstants {
     public static final String APP_VERSION = "katalonVersion";
 
     public static final String UNKNOWN = "unkown";
-    
+
     public static final String OK = "OK";
 }

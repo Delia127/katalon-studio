@@ -37,3 +37,4 @@ Require-Bundle: com.kms.katalon.composer.explorer,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: com.kms.katalon.dal.exception,
  javax.annotation;version="1.2.0"
+Export-Package: com.kms.katalon.composer.testdata.job

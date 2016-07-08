@@ -1,11 +1,14 @@
 package com.kms.katalon.entity.checkpoint;
 
+import com.kms.katalon.entity.constants.StringConstants;
 import com.kms.katalon.entity.testdata.DataFileEntity.DataFileDriverType;
 
 /**
  * Checkpoint database source info
  */
 public class DatabaseCheckpointSourceInfo extends CheckpointSourceInfo {
+
+    private static final long serialVersionUID = 3179900113916086055L;
 
     /**
      * Using global database settings which declared in
@@ -29,8 +32,8 @@ public class DatabaseCheckpointSourceInfo extends CheckpointSourceInfo {
     /** Database query string */
     private String query;
 
-    protected DatabaseCheckpointSourceInfo() {
-        super();
+    public DatabaseCheckpointSourceInfo() {
+        this(StringConstants.EMPTY, false, false, null, null, StringConstants.EMPTY);
     }
 
     /**
