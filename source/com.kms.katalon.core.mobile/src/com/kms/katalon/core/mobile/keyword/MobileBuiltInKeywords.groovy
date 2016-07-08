@@ -2429,4 +2429,40 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static int getElementLeftPosition(TestObject to, int timeout) throws StepFailedException {
         return getElementLeftPosition(to, timeout, RunConfiguration.getDefaultFailureHandling());
     }
+
+    /**
+     * Select item of list view control by its index. Have not implemented for Android because its list view is async loaded
+     * @param to 
+     *      represent a mobile element
+     * @param index 
+     *      item index (1-based indexed)
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void selectListItemByIndex(TestObject to, int index, int timeout, FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            MobileElementCommonHelper.selectItemByIndex(to, index, timeout, flowControl);
+        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_SELECT_ELEMENT_BY_INDEX_OF_OBJ, index, to.getObjectId())
+        : MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_SELECT_ELEMENT_BY_INDEX, index));
+    }
+
+    /**
+     * Select item of list view control by its index. Have not implemented for Android because its list view is async loaded
+     * @param to 
+     *      represent a mobile element
+     * @param index 
+     *      item index (1-based indexed)
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void selectListItemByIndex(TestObject to, int index, int timeout) throws StepFailedException {
+        selectListItemByIndex(to, index, timeout, RunConfiguration.getDefaultFailureHandling());
+    }
 }

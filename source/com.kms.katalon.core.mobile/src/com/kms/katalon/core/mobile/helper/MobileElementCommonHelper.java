@@ -8,6 +8,8 @@ import io.appium.java_client.ios.IOSDriver;
 
 import java.text.MessageFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
@@ -21,6 +23,7 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.core.mobile.keyword.MobileDriverFactory;
 import com.kms.katalon.core.mobile.keyword.MobileSearchEngine;
+import com.kms.katalon.core.mobile.keyword.SelectorBuilderHelper;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testobject.TestObject;
 
@@ -164,6 +167,33 @@ public class MobileElementCommonHelper {
         }
         KeywordLogger.getInstance().logPassed(
                 MessageFormat.format(StringConstants.KW_LOG_PASSED_UNCHECK_ELEMENT, to.getObjectId()));
+    }
+
+    public static void selectItemByIndex(TestObject to, int index, int timeout, FailureHandling flowControl)
+            throws Exception {
+        findElementWithCheck(to, timeout * 1000);
+        // Find direct children
+        AppiumDriver<?> driver = MobileDriverFactory.getDriver();
+        String xpath = SelectorBuilderHelper.makeXpath(to.getActiveProperties());
+        List<?> items = driver.findElementsByXPath(xpath + "/*");
+        if (items.size() < index) {
+            throw new StepFailedException(MessageFormat.format(StringConstants.KW_LOG_FAILED_LIST_ITEM_INDEX_EXCEED,
+                    index, items.size()));
+        }
+        if (driver instanceof IOSDriver) {
+            // Ensure element is visible
+            WebElement itemElement = driver.findElementByXPath(xpath + "/*" + "[" + index + "]");
+            HashMap<String, String> scrollObject = new HashMap<String, String>();
+            scrollObject.put("direction", "down");
+            scrollObject.put("element", ((MobileElement) itemElement).getId());
+            driver.executeScript("mobile: scrollTo", scrollObject);
+            // Click on element
+            ((MobileElement) itemElement).tap(1, 1);
+        } else if (driver instanceof AndroidDriver) {
+            throw new StepFailedException(StringConstants.KW_LOG_FAILED_FEATURE_NOT_AVAILABLE);
+        }
+        KeywordLogger.getInstance().logPassed(
+                MessageFormat.format(StringConstants.KW_LOG_PASSED_LIST_ITEM_CLICKED, index, to.getObjectId()));
     }
 
     public static boolean isElementChecked(TestObject to, int timeout) throws StepFailedException, Exception {
