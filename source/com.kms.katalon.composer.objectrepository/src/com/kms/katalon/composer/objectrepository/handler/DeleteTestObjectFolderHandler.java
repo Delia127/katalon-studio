@@ -1,8 +1,6 @@
 package com.kms.katalon.composer.objectrepository.handler;
 
 import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
-import static com.kms.katalon.groovy.util.GroovyRefreshUtil.findReferencesInAffectedTestCaseScripts;
-import static com.kms.katalon.groovy.util.GroovyRefreshUtil.findReferencesInTestCaseScripts;
 import static java.text.MessageFormat.format;
 
 import java.util.ArrayList;
@@ -16,10 +14,12 @@ import com.kms.katalon.composer.folder.handlers.deletion.IDeleteFolderHandler;
 import com.kms.katalon.composer.objectrepository.constant.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.IEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.groovy.reference.TestArtifactScriptRefactor;
 
 public class DeleteTestObjectFolderHandler extends DeleteTestObjectHandler implements IDeleteFolderHandler {
 
@@ -40,8 +40,8 @@ public class DeleteTestObjectFolderHandler extends DeleteTestObjectHandler imple
             monitor.beginTask(format(StringConstants.HAND_DELETE_OBJECT_FOLDER_TASK_NAME, folder.getName()),
                     descendantEntities.size() + 1);
 
-            List<IFile> affectedTestCaseScripts = findReferencesInTestCaseScripts(folder.getIdForDisplay()
-                    + StringConstants.ENTITY_ID_SEPERATOR, folder.getProject());
+            List<IFile> affectedTestCaseScripts = TestArtifactScriptRefactor.createForFolderEntity(folder)
+                    .findReferrersInTestCaseScripts(ProjectController.getInstance().getCurrentProject());
 
             List<IEntity> undeletedTestObjects = new ArrayList<IEntity>();
 
@@ -78,8 +78,11 @@ public class DeleteTestObjectFolderHandler extends DeleteTestObjectHandler imple
         try {
             String testObjectId = testObject.getIdForDisplay();
             monitor.subTask(format(StringConstants.HAND_DELETE_OBJECT_SUB_TASK_NAME, testObjectId));
-            return performDeleteTestObject(testObject, descendant,
-                    findReferencesInAffectedTestCaseScripts(testObjectId, affectedTestCaseScripts));
+            return performDeleteTestObject(
+                    testObject,
+                    descendant,
+                    TestArtifactScriptRefactor.createForTestObjectEntity(testObjectId).findReferrers(
+                            affectedTestCaseScripts));
         } catch (Exception e) {
             logError(e);
             return false;

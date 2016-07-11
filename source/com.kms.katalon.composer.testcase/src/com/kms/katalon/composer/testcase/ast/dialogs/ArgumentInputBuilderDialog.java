@@ -335,7 +335,7 @@ public class ArgumentInputBuilderDialog extends AbstractAstBuilderWithTableDialo
             }
             inputParameter.setValue(newAstNode);
             if (newAstNode instanceof MethodCallExpressionWrapper
-                    && AstEntityInputUtil.isFindTestCaseMethodCall((MethodCallExpressionWrapper) newAstNode)) {
+                    && ((MethodCallExpressionWrapper) newAstNode).isFindTestCaseMethodCall()) {
                 updateTestCaseBindingInputParameters((MethodCallExpressionWrapper) newAstNode);
             }
             getViewer().refresh();

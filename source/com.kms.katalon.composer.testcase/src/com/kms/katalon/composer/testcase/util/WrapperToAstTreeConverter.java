@@ -35,8 +35,6 @@ import com.kms.katalon.composer.testcase.groovy.ast.statements.SynchronizedState
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ThrowStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.TryCatchStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.WhileStatementWrapper;
-import com.kms.katalon.controller.KeywordController;
-import com.kms.katalon.custom.keyword.KeywordClass;
 
 /**
  * Created by taittle on 3/17/16.
@@ -70,8 +68,6 @@ public class WrapperToAstTreeConverter {
     }
 
     private static Converter<ExpressionStatementWrapper> expressionConverter = new Converter<ExpressionStatementWrapper>() {
-        private static final String CUSTOM_KEYWORDS_CLASS_NAME = "CustomKeywords";
-
         @Override
         public List<AstTreeTableNode> convert(final ExpressionStatementWrapper expressionStatement,
                 final AstTreeTableNode parentNode) {
@@ -104,9 +100,9 @@ public class WrapperToAstTreeConverter {
                 BinaryExpressionWrapper expression, AstTreeTableNode parentNode) {
             if (expression.getRightExpression() instanceof MethodCallExpressionWrapper) {
                 MethodCallExpressionWrapper methodCallExpression = (MethodCallExpressionWrapper) expression.getRightExpression();
-                if (isBuiltInKeywordMethodCall(methodCallExpression)) {
+                if (methodCallExpression.isBuiltInKeywordMethodCall()) {
                     return new AstBuiltInKeywordTreeTableNode(statementWrapper, parentNode);
-                } else if (isCustomKeywordMethodCall(methodCallExpression)) {
+                } else if (methodCallExpression.isCustomKeywordMethodCall()) {
                     return new AstCustomKeywordTreeTableNode(statementWrapper, parentNode);
                 }
             }
@@ -116,33 +112,16 @@ public class WrapperToAstTreeConverter {
 
         private AstTreeTableNode convert(ExpressionStatementWrapper statementWrapper,
                 MethodCallExpressionWrapper methodCallExpression, AstTreeTableNode parentNode) {
-            if (isBuiltInKeywordMethodCall(methodCallExpression)) {
-                if (AstEntityInputUtil.isCallTestCaseMethodCall(methodCallExpression)) {
+            if (methodCallExpression.isBuiltInKeywordMethodCall()) {
+                if (methodCallExpression.isCallTestCaseMethodCall()) {
                     return new AstCallTestCaseKeywordTreeTableNode(statementWrapper, parentNode);
                 }
                 return new AstBuiltInKeywordTreeTableNode(statementWrapper, parentNode);
-            } else if (isCustomKeywordMethodCall(methodCallExpression)) {
+            } else if (methodCallExpression.isCustomKeywordMethodCall()) {
                 return new AstCustomKeywordTreeTableNode(statementWrapper, parentNode);
             }
             return new AstInputEditableStatementTreeTableNode(statementWrapper, parentNode,
                     ImageConstants.IMG_16_FUNCTION, StringConstants.TREE_METHOD_CALL_STATEMENT);
-        }
-
-        private boolean isBuiltInKeywordMethodCall(MethodCallExpressionWrapper methodCallExpression) {
-            if (methodCallExpression == null || methodCallExpression.getObjectExpression() == null) {
-                return false;
-            }
-            for (KeywordClass keywordClass : KeywordController.getInstance().getBuiltInKeywordClasses()) {
-                if (methodCallExpression.isObjectExpressionOfClass(keywordClass.getType())) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private boolean isCustomKeywordMethodCall(MethodCallExpressionWrapper methodCallExpression) {
-            return methodCallExpression != null && methodCallExpression.getObjectExpression() != null
-                    && methodCallExpression.getObjectExpressionAsString().equals(CUSTOM_KEYWORDS_CLASS_NAME);
         }
     };
 

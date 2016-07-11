@@ -29,4 +29,9 @@ public class MobileKeywordContributor implements IKeywordContributor {
     public int getPreferredOrder() {
         return 2;
     }
+
+    @Override
+    public String getAliasName() {
+        return "Mobile";
+    }
 }

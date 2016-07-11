@@ -5,7 +5,6 @@ import org.codehaus.groovy.eclipse.codeassist.requestor.ContentAssistContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 
-import com.kms.katalon.composer.codeassist.proposal.completion.KatalonJavaLocalVariableCompletionProposal;
 import com.kms.katalon.composer.codeassist.proposal.completion.KatalonLocalVariableCompletionProposal;
 
 public class KatalonLocalVariableProposal extends AbstractGroovyProposal {
@@ -30,12 +29,8 @@ public class KatalonLocalVariableProposal extends AbstractGroovyProposal {
         if (variableName.startsWith(context.completionExpression)) {
             KatalonLocalVariableCompletionProposal proposal = new KatalonLocalVariableCompletionProposal(context,
                     variableName);
-            KatalonJavaLocalVariableCompletionProposal variableProposal = new KatalonJavaLocalVariableCompletionProposal(
-                    proposal);
-            return variableProposal;
-        } else {
-            return null;
+            return proposal.getCompletionProposal();
         }
+        return null;
     }
-
 }

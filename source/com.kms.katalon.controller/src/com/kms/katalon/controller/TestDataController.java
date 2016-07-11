@@ -147,7 +147,7 @@ public class TestDataController extends EntityController {
     public String getIdForDisplay(DataFileEntity entity) throws Exception {
         return getDataProviderSetting().getDataFileDataProvider()
                 .getIdForDisplay(entity)
-                .replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPERATOR);
+                .replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPARATOR);
     }
 
     public List<String> getSibblingDataFileNames(DataFileEntity dataFile) throws Exception {
@@ -179,7 +179,7 @@ public class TestDataController extends EntityController {
     }
 
     public DataFileEntity getTestDataByDisplayId(String displayId) throws Exception {
-        String relativePathWithoutExtensions = displayId.replace(GlobalStringConstants.ENTITY_ID_SEPERATOR,
+        String relativePathWithoutExtensions = displayId.replace(GlobalStringConstants.ENTITY_ID_SEPARATOR,
                 File.separator);
         return getDataProviderSetting().getDataFileDataProvider().getDataFileByDisplayId(relativePathWithoutExtensions);
     }
@@ -191,7 +191,7 @@ public class TestDataController extends EntityController {
     public String getTestDataDisplayIdByPk(String pk, String projectLocation) {
         return FilenameUtils.removeExtension(pk)
                 .replace(projectLocation + File.separator, "")
-                .replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPERATOR);
+                .replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPARATOR);
     }
 
     public Map<String, List<TestSuiteTestCaseLink>> getTestDataReferences(DataFileEntity dataFileEntity)

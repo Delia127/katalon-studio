@@ -246,9 +246,9 @@ public class KeywordBrowserPart implements EventHandler {
         KeywordBrowserFolderTreeEntity builtinKeywordRootFolder = new KeywordBrowserFolderTreeEntity(
                 StringConstants.KEYWORD_BROWSER_BUILTIN_KEYWORD_ROOT_TREE_ITEM_LABEL, null, keywordTreeEntities);
         for (KeywordClass builtInKeywordContributor : KeywordController.getInstance().getBuiltInKeywordClasses()) {
-            keywordTreeEntities
-                    .add(new BuiltinKeywordFolderBrowserTreeEntity(builtInKeywordContributor.getName(), builtInKeywordContributor
-                            .getSimpleName(), builtInKeywordContributor.getLabelName(), builtinKeywordRootFolder));
+            keywordTreeEntities.add(new BuiltinKeywordFolderBrowserTreeEntity(builtInKeywordContributor.getName(),
+                    builtInKeywordContributor.getSimpleName(), builtInKeywordContributor.getLabelName(),
+                    builtinKeywordRootFolder));
         }
         return builtinKeywordRootFolder;
     }

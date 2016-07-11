@@ -33,7 +33,9 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
     }
 
     protected String getBuiltInKWClassSimpleName() {
-        return methodCall.getObjectExpressionAsString();
+        return KeywordController.getInstance()
+                .getBuiltInKeywordClassByName(methodCall.getObjectExpressionAsString())
+                .getSimpleName();
     }
 
     private List<KeywordMethod> getKeywords() {

@@ -3,6 +3,8 @@ package com.kms.katalon.core.constants;
 import java.io.File;
 
 public class StringConstants {
+    public static final String ID_SEPARATOR = "/";
+
     // KeywordLogger
     public static final String LOG_START_SUITE = "Start Test Suite";
 
@@ -257,7 +259,7 @@ public class StringConstants {
 
     public static final String XML_LOG_HOST_ADDRESS_PROPERTY = "hostAddress";
 
-    public static final String XML_LOG_DB_SERVER_INFO ="dbServerInfo";
+    public static final String XML_LOG_DB_SERVER_INFO = "dbServerInfo";
 
     // CustomKeywords
     public static final String GENERATED_SCRIPT_FOLDER = "Libs";
@@ -319,7 +321,7 @@ public class StringConstants {
     public static final String CONF_APPIUM_LOG_FILE = "appiumLogFile";
 
     public static final String CONF_APPIUM_DIRECTORY = "appiumDirectory";
-    
+
     public static final String CONF_APPIUM_LOG_LEVEL = "appiumLogLevel";
 
     public static final String CONF_PROPERTY_TIMEOUT = "timeout";
@@ -359,7 +361,7 @@ public class StringConstants {
     public static final String CONF_PROPERTY_SCREEN_CAPTURE_OPTION = "screenCaptureOption";
 
     public static final String CONF_PROPERTY_DEFAULT_FAILURE_HANDLING = "defaultFailureHandling";
-    
+
     public static final String CONF_PROPERTY_TEST_DATA_INFO = "testDataInfo";
 
     // TestCaseExecutor
@@ -414,4 +416,13 @@ public class StringConstants {
     public static final String EXC_MSG_INVALID_CSV_SEPARATOR = "Invalid CSV separator.";
 
     public static final String EXC_MSG_CHECKPOINT_IS_MISSING_ELEMENT = "Checkpoint is missing ''{0}'' element";
+
+    // TestCaseFactory
+    public static final String TEST_CASE_FACTORY_MSG_ID_IS_NULL = "Test case id is null";
+
+    public static final String TEST_CASE_FACTORY_MSG_TC_NOT_EXISTED = "Cannot find test case with id ''{0}''";
+
+    public static final String TEST_CASE_FACTORY_MSG_TC_NOT_EXISTED_WITH_REASON = "Cannot find test case with id ''{0}''"
+            + " because (of) ''{1}''";
+
 }

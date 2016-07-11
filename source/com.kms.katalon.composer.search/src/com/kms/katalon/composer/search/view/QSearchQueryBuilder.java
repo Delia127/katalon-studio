@@ -17,6 +17,7 @@ import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
+import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.global.GlobalVariableEntity;
@@ -26,6 +27,7 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.groovy.constant.GroovyConstants;
+import com.kms.katalon.groovy.reference.TestArtifactScriptRefactor;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class QSearchQueryBuilder {
@@ -134,6 +136,24 @@ public class QSearchQueryBuilder {
 
         return null;
     }
+    
+    public static String getSearchTextInScript(FileEntity entity) {
+        TestArtifactScriptRefactor scriptReference = null;
+        if (entity instanceof FolderEntity) {
+            scriptReference = TestArtifactScriptRefactor.createForFolderEntity((FolderEntity) entity);
+        } else {
+            scriptReference = new TestArtifactScriptRefactor(entity.getParentFolder().getFolderType(),
+                    entity.getIdForDisplay(), true);
+        }
+        StringBuilder searchTextBuilder = new StringBuilder();
+        for (String potentialRef : scriptReference.getReferenceStrings()) {
+            if (searchTextBuilder.length() > 0) {
+                searchTextBuilder.append("|");
+            }
+            searchTextBuilder.append(Pattern.quote(potentialRef));
+        }
+        return searchTextBuilder.toString();
+    }
 
     /**
      * Returns a {@link QSearchQuery} for the given testCaseTreeEntity
@@ -150,10 +170,8 @@ public class QSearchQueryBuilder {
         if (testCaseEntity == null) return null;
 
         String testCaseId = testCaseEntity.getIdForDisplay();
-
-        String searchText = "((\'|\")" + Pattern.quote(testCaseId) + "(\'|\"))";
         String searchTextMetaData = "(<testCaseId>" + Pattern.quote(testCaseId) + "</testCaseId>)";
-        searchText = searchText + "|" + searchTextMetaData;
+        String searchText = getSearchTextInScript(testCaseEntity) + "|" + searchTextMetaData;
         boolean isCaseSensitive = true;
         boolean isRegExSearch = true;
 
@@ -176,9 +194,8 @@ public class QSearchQueryBuilder {
 
         String folderId = folderEntity.getIdForDisplay() + "/";
 
-        String searchText = "((\'|\")" + Pattern.quote(folderId) + ")";
         String searchTextMetaData = "(<testCaseId>" + Pattern.quote(folderId) + ".+</testCaseId>)";
-        searchText = searchText + "|" + searchTextMetaData;
+        String searchText = getSearchTextInScript(folderEntity) + "|" + searchTextMetaData;
         boolean isCaseSensitive = true;
         boolean isRegExSearch = true;
 
@@ -203,9 +220,8 @@ public class QSearchQueryBuilder {
 
         String testObjectId = testObjectEntity.getIdForDisplay();
 
-        String searchText = "((\'|\")" + Pattern.quote(testObjectId) + "(\'|\"))";
         String searchTextMetaData = "(<value>" + Pattern.quote(testObjectId) + "</value>)";
-        searchText = searchText + "|" + searchTextMetaData;
+        String searchText = getSearchTextInScript(testObjectEntity) + "|" + searchTextMetaData;
         boolean isCaseSensitive = true;
         boolean isRegExSearch = true;
 
@@ -228,9 +244,8 @@ public class QSearchQueryBuilder {
 
         String folderId = folderEntity.getIdForDisplay() + "/";
 
-        String searchText = "((\'|\")" + Pattern.quote(folderId) + ")";
         String searchTextMetaData = "(<value>" + Pattern.quote(folderId) + ".+</value>)";
-        searchText = searchText + "|" + searchTextMetaData;
+        String searchText = getSearchTextInScript(folderEntity) + "|" + searchTextMetaData;
         boolean isCaseSensitive = true;
         boolean isRegExSearch = true;
 
@@ -255,9 +270,8 @@ public class QSearchQueryBuilder {
 
         String testDataId = testDataEntity.getIdForDisplay();
 
-        String searchText = "((\'|\")" + Pattern.quote(testDataId) + "(\'|\"))";
         String searchTextMetaData = "(<testDataId>" + Pattern.quote(testDataId) + "</testDataId>)";
-        searchText = searchText + "|" + searchTextMetaData;
+        String searchText = getSearchTextInScript(testDataEntity) + "|" + searchTextMetaData;
         boolean isCaseSensitive = true;
         boolean isRegExSearch = true;
 
@@ -280,9 +294,8 @@ public class QSearchQueryBuilder {
 
         String folderId = folderEntity.getIdForDisplay() + "/";
 
-        String searchText = "((\'|\")" + Pattern.quote(folderId) + ")";
         String searchTextMetaData = "(<testDataId>" + Pattern.quote(folderId) + ".+</testDataId>)";
-        searchText = searchText + "|" + searchTextMetaData;
+        String searchText = getSearchTextInScript(folderEntity) + "|" + searchTextMetaData;
         boolean isCaseSensitive = true;
         boolean isRegExSearch = true;
 

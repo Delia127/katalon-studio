@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
@@ -29,6 +30,7 @@ import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords;
+import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.custom.keyword.KeywordMethod;
 import com.kms.katalon.custom.keyword.KeywordParameter;
 import com.kms.katalon.entity.repository.WebElementEntity;
@@ -43,6 +45,10 @@ public class HTMLActionUtil {
     private static List<HTMLValidationAction> validationActions;
 
     private static List<HTMLSynchronizeAction> synchronizeActions;
+
+    public static KeywordClass getWebUiKeywordClass() {
+        return KeywordController.getInstance().getBuiltInKeywordClassByName(WebUiBuiltInKeywords.class.getName());
+    }
 
     private static KeywordMethod getMethodInActionMapping(HTMLActionMapping actionMapping)
             throws ClassNotFoundException {
@@ -63,23 +69,23 @@ public class HTMLActionUtil {
     }
 
     public static StatementWrapper generateWebUiTestStep(HTMLActionMapping actionMapping,
-            WebElementEntity createdTestObject) throws ClassNotFoundException {
+            WebElementEntity createdTestObject, ASTNodeWrapper parentClassNode) throws ClassNotFoundException {
         KeywordMethod method = getMethodInActionMapping(actionMapping);
         if (method == null) {
             return null;
         }
         int actionDataCount = 0;
 
+        IHTMLAction action = actionMapping.getAction();
         MethodCallExpressionWrapper methodCallExpressionWrapper = new MethodCallExpressionWrapper(
-                actionMapping.getAction().getMappedKeywordClassSimpleName(), actionMapping.getAction()
-                        .getMappedKeywordMethod(), null);
+                getWebUiKeywordClass().getAliasName(), action.getMappedKeywordMethod(), parentClassNode);
         ArgumentListExpressionWrapper argumentListExpressionWrapper = methodCallExpressionWrapper.getArguments();
         for (int i = 0; i < method.getParameters().length; i++) {
             Class<?> argumentClass = method.getParameters()[i].getType();
             ExpressionWrapper generatedExression = null;
             if (argumentClass.getName().equals(TestObject.class.getName())) {
                 generatedExression = AstEntityInputUtil.createNewFindTestObjectMethodCall((createdTestObject != null)
-                        ? createdTestObject.getIdForDisplay() : null, null);
+                        ? createdTestObject.getIdForDisplay() : null, parentClassNode);
             } else if (argumentClass.getName().equals(FailureHandling.class.getName())) {
                 generatedExression = AstKeywordsInputUtil.getNewFailureHandlingPropertyExpression(null);
             } else {

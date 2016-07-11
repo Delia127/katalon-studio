@@ -46,7 +46,7 @@ public class ScriptNodeWrapper extends ClassNodeWrapper implements ASTHasBlock {
     @Override
     public List<? extends ASTNodeWrapper> getAstChildren() {
         List<ASTNodeWrapper> astNodeWrappers = new ArrayList<ASTNodeWrapper>();
-        astNodeWrappers.addAll(imports);
+        astNodeWrappers.addAll(getImports());
         astNodeWrappers.add(mainBlock);
         astNodeWrappers.addAll(fields);
         astNodeWrappers.addAll(methods);

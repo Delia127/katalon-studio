@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.MethodNode;
@@ -12,6 +13,7 @@ import org.codehaus.groovy.eclipse.codeassist.processors.IProposalProvider;
 import org.codehaus.groovy.eclipse.codeassist.proposals.IGroovyProposal;
 import org.codehaus.groovy.eclipse.codeassist.requestor.ContentAssistContext;
 
+import com.kms.katalon.composer.codeassist.proposal.KatalonBuitInKeywordAliasProposal;
 import com.kms.katalon.composer.codeassist.proposal.KatalonLocalVariableProposal;
 import com.kms.katalon.composer.codeassist.proposal.KatalonMethodNodeProposal;
 import com.kms.katalon.composer.codeassist.util.KatalonContextUtil;
@@ -19,6 +21,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.annotation.Keyword;
+import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 /**
@@ -37,8 +40,11 @@ public class KatalonProposalProvider implements IProposalProvider {
 
         // Add keyword proposals for BuiltinKeyword class
         if (KatalonContextUtil.isBuiltinKeywordCompletionClassNode(context)) {
-            for (MethodNode methodNode : completionType.getAllDeclaredMethods()) {
-                if (methodNode.getName().startsWith(completionExpression.trim()) && isKeywordNode(methodNode)) {
+            ClassNode classNode = new ClassNode(KatalonContextUtil.getBuiltInKeywordCompletionClassNode(context)
+                    .getType());
+            for (MethodNode methodNode : classNode.getAllDeclaredMethods()) {
+                if (StringUtils.startsWith(methodNode.getName(), completionExpression.trim())
+                        && isKeywordNode(methodNode)) {
                     groovyProposals.add(new KatalonMethodNodeProposal(methodNode));
                 }
             }
@@ -65,6 +71,12 @@ public class KatalonProposalProvider implements IProposalProvider {
                             variableName);
                     groovyProposals.add(testCaseVariableProposal);
                 }
+            }
+        }
+
+        for (KeywordClass keywordClass : KeywordController.getInstance().getBuiltInKeywordClasses()) {
+            if (StringUtils.startsWith(keywordClass.getAliasName(), context.fullCompletionExpression)) {
+                groovyProposals.add(new KatalonBuitInKeywordAliasProposal(keywordClass));
             }
         }
 

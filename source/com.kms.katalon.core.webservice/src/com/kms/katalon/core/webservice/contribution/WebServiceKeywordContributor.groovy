@@ -28,4 +28,9 @@ public class WebServiceKeywordContributor implements IKeywordContributor {
     public int getPreferredOrder() {
         return 3;
     }
+
+    @Override
+    public String getAliasName() {
+        return "WS";
+    }
 }

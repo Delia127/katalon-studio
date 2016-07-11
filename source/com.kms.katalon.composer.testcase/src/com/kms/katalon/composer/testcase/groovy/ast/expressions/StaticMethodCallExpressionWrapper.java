@@ -51,6 +51,10 @@ public class StaticMethodCallExpressionWrapper extends ExpressionWrapper {
         return arguments;
     }
 
+    public void setArguments(ExpressionWrapper arguments) {
+        this.arguments = arguments;
+    }
+
     @Override
     public String getText() {
         return getOwnerType().getName() + "." + method + arguments.getText();
