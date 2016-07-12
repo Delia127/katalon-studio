@@ -47,7 +47,9 @@ public class InspectSession implements Runnable {
 
     private static final String VARIABLE_INIT_FILE_FOR_CHROME = "chrome_variables_init.js";
 
-    private static final String SERVER_URL_PREFERENCE_KEY = "serverUrl";
+    private static final String FIREFOX_SERVER_PORT_PREFERENCE_KEY = "extensions.@objectspy.katalonServerPort";
+    
+    private static final String FIREFOX_ON_OFF_PREFERENCE_KEY = "extensions.@objectspy.katalonOnOffStatus";
 
     private static final String SERVER_URL_FILE_NAME = "serverUrl.txt";
 
@@ -218,7 +220,8 @@ public class InspectSession implements Runnable {
 
     protected FirefoxProfile createFireFoxProfile() throws IOException {
         FirefoxProfile firefoxProfile = WebDriverPropertyUtil.createDefaultFirefoxProfile();
-        firefoxProfile.setPreference(SERVER_URL_PREFERENCE_KEY, server.getServerUrl());
+        firefoxProfile.setPreference(FIREFOX_SERVER_PORT_PREFERENCE_KEY, String.valueOf(server.getServerPort()));
+        firefoxProfile.setPreference(FIREFOX_ON_OFF_PREFERENCE_KEY, true);
         File file = getFirefoxAddonFile();
         if (file != null) {
             firefoxProfile.addExtension(file);
@@ -272,7 +275,7 @@ public class InspectSession implements Runnable {
 
     protected void dispose() {
         try {
-            if (driver != null) {
+            if (driver != null && ((RemoteWebDriver) driver).getSessionId() != null) {
                 driver.quit();
             }
             File serverSettingFile = new File(getIEApplicationServerSettingFile());
