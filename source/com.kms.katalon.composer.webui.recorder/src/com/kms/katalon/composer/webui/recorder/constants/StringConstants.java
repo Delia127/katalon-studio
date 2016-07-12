@@ -36,7 +36,9 @@ public class StringConstants extends GlobalStringConstants {
             "Please make sure you have installed the browser''s add-on for Recorder. Do you want go to the add-on store right now to get the add-on for Recorder ?";
     public static final String HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE = "Don't show this dialog again";
     public static final String DIA_INSTANT_BROWSER_CHROME_RECORDER_EXTENSION_PATH = "<Katalon build path>/Resources/extensions/Chrome/Recorder Packed";
+    
     public static final String RECORDER_CHROME_ADDON_URL = "https://chrome.google.com/webstore/detail/katalon-recorder/bnaalgpdhfjepeanejkicnidgbpbmkhh";
+    public static final String RECORDER_FIREFOX_ADDON_URL = "https://addons.mozilla.org/en-US/firefox/addon/katalon-recorder/";
 
 	// RecordHandler
 	public static final String HAND_ERROR_MSG_CANNOT_GEN_TEST_STEPS = "Cannot generate test steps.";

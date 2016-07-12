@@ -1,8 +1,21 @@
 {
   "name": "recorder",
   "title": "Recorder",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "HTML Element Recorder Firefox addon for Katalon",
-  "author": "hieumai",
-  "main": "./lib/main.js"
+  "author": "Katalon",
+  "main": "./lib/main.js",
+  "preferences": [{
+  		"name": "katalonServerPort",
+        "title": "Katalon Server Port",
+        "description": "Server port to connect to Katalon application",
+        "type": "string",
+        "value": "50000"
+    }, {
+  		"name": "katalonOnOffStatus",
+        "title": "Add-on On/Off status",
+        "description": "Toggle on/off status for this extension",
+        "type": "bool",
+        "value": false
+    }]
 }

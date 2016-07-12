@@ -24,7 +24,9 @@ public class RecordSession extends InspectSession {
 	private static final String RECORDER_APPLICATION_DATA_FOLDER = System.getProperty("user.home") + File.separator + "AppData" + File.separator
 			+ "Local" + File.separator + "KMS" + File.separator + "qAutomate" + File.separator + "Recorder";
 	
-	private static final String SERVER_URL_PREFERENCE_KEY = "serverUrl";
+    private static final String RECORDER_FIREFOX_SERVER_PORT_PREFERENCE_KEY = "extensions.@recorder.katalonServerPort";
+
+    private static final String RECORDER_FIREFOX_ON_OFF_PREFERENCE_KEY = "extensions.@recorder.katalonOnOffStatus";
 
 	public RecordSession(HTMLElementCaptureServer server, WebUIDriverType webUiDriverType, ProjectEntity currentProject, Logger logger) throws Exception {
 		super(server, webUiDriverType, currentProject, logger);
@@ -52,11 +54,10 @@ public class RecordSession extends InspectSession {
 		return RECORDER_APPLICATION_DATA_FOLDER;
 	}
 	
-    // TODO: Override this method here for recorder, will be removed later for KAT-828
-    @Override
-    protected FirefoxProfile createFireFoxProfile() throws IOException {
+	protected FirefoxProfile createFireFoxProfile() throws IOException {
         FirefoxProfile firefoxProfile = WebDriverPropertyUtil.createDefaultFirefoxProfile();
-        firefoxProfile.setPreference(SERVER_URL_PREFERENCE_KEY, server.getServerUrl());
+        firefoxProfile.setPreference(RECORDER_FIREFOX_SERVER_PORT_PREFERENCE_KEY, String.valueOf(server.getServerPort()));
+        firefoxProfile.setPreference(RECORDER_FIREFOX_ON_OFF_PREFERENCE_KEY, true);
         File file = getFirefoxAddonFile();
         if (file != null) {
             firefoxProfile.addExtension(file);
