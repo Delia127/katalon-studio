@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.mobile.objectspy.dialog;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 import java.io.File;
@@ -8,17 +7,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -55,6 +54,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -76,6 +76,13 @@ import org.eclipse.swt.widgets.Widget;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.SelectionServiceSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.execution.util.MobileDeviceUIProvider;
 import com.kms.katalon.composer.mobile.constants.ImageConstants;
@@ -91,7 +98,6 @@ import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.keyword.AndroidProperties;
-import com.kms.katalon.core.mobile.keyword.GUIObject;
 import com.kms.katalon.core.mobile.keyword.IOSProperties;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
@@ -99,12 +105,14 @@ import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 
-@SuppressWarnings("restriction")
+
 public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
     public static final Point DIALOG_SIZE = new Point(800, 600);
 
     private static final String DIALOG_TITLE = StringConstants.DIA_DIALOG_TITLE_MOBILE_OBJ_INSPECTOR;
+
+    private static final int DIALOG_MARGIN_OFFSET = 5;
 
     private Text txtAppFile, txtObjectName;
 
@@ -116,13 +124,7 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
     private CheckboxTreeViewer elementTreeViewer;
 
-    private Logger logger;
-
     private ToolItem btnStart, btnCapture, btnAdd, btnStop;
-
-    private IEventBroker eventBroker;
-
-    private ESelectionService selectionService;
 
     private MobileElement selectedElement;
 
@@ -145,17 +147,20 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
     private MobileInspectorController inspectorController;
 
     private List<MobileDeviceInfo> deviceInfos = new ArrayList<>();
-    
-    private Point initialLocation;
 
-    public MobileObjectSpyDialog(Shell parentShell, Point location, Logger logger, IEventBroker eventBroker,
-            ESelectionService selectionService) throws Exception {
+    private MobileDeviceDialog deviceView;
+
+    private Composite container;
+
+    private boolean canceledBeforeOpening;
+
+    public boolean isCanceledBeforeOpening() {
+        return canceledBeforeOpening;
+    }
+
+    public MobileObjectSpyDialog(Shell parentShell) throws Exception {
         super(parentShell);
-        this.initialLocation = location;
         setShellStyle(SWT.SHELL_TRIM | SWT.NONE);
-        this.logger = logger;
-        this.eventBroker = eventBroker;
-        this.selectionService = selectionService;
         this.isDisposed = false;
         this.inspectorController = new MobileInspectorController();
         this.orsRootNode = FolderController.getInstance().getObjectRepositoryRoot(
@@ -164,7 +169,7 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
     @Override
     protected Control createDialogArea(Composite parent) {
-        Composite container = (Composite) super.createDialogArea(parent);
+        container = (Composite) super.createDialogArea(parent);
         container.setLayout(new FillLayout(SWT.HORIZONTAL));
 
         SashForm sashForm = new SashForm(container, SWT.NONE);
@@ -265,7 +270,12 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
         cbbDevices = new Combo(contentComposite, SWT.READ_ONLY);
         cbbDevices.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        cbbDevices.setItems(getAllDevicesName().toArray(new String[] {}));
+        cbbDevices.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                validateToEnableStartButton();
+            }
+        });
 
         // Application Type
         Label typeLabel = new Label(contentComposite, SWT.NONE);
@@ -274,6 +284,12 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
         cbbAppType = new Combo(contentComposite, SWT.READ_ONLY);
         cbbAppType.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         cbbAppType.setItems(new String[] { StringConstants.DIA_APP_TYPE_NATIVE_APP });
+        cbbAppType.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                validateToEnableStartButton();
+            }
+        });
 
         // Application File location
         Label appFileLabel = new Label(contentComposite, SWT.NONE);
@@ -284,21 +300,10 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
         txtAppFile.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                btnStart.setEnabled(false);
-                String appFile = txtAppFile.getText();
-                if (isBlank(appFile)) {
-                    return;
-                }
-
-                if (cbbDevices.getSelectionIndex() < 0 || cbbAppType.getSelectionIndex() < 0) {
-                    return;
-                }
-
                 if (selectedElement != null) {
                     selectedElement.setType(txtAppFile.getText());
                 }
-
-                btnStart.setEnabled(true);
+                validateToEnableStartButton();
             }
         });
 
@@ -382,6 +387,75 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
         return container;
     }
+    
+    private void validateToEnableStartButton() {
+        boolean ableToStart = isNotBlank(txtAppFile.getText()) && cbbDevices.getSelectionIndex() >= 0
+                && cbbAppType.getSelectionIndex() >= 0;
+        btnStart.setEnabled(ableToStart);
+    }
+
+    @Override
+    public void create() {
+        super.create();
+
+        updateDeviceNames();
+    }
+
+    private void updateDeviceNames() {
+        try {
+            new ProgressMonitorDialogWithThread(getShell()).run(true, true, new IRunnableWithProgress() {
+                @Override
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    monitor.beginTask(StringConstants.DIA_JOB_TASK_LOADING_DEVICES, IProgressMonitor.UNKNOWN);
+                    UISynchronizeService.syncExec(new Runnable() {
+                        @Override
+                        public void run() {
+                            ControlUtils.recursiveSetEnabled(container, false);
+
+                        }
+                    });
+                    final List<String> devices = getAllDevicesName();
+
+                    checkMonitorCanceled(monitor);
+
+                    UISynchronizeService.syncExec(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!devices.isEmpty()) {
+                                cbbDevices.setItems(devices.toArray(new String[] {}));
+
+                                cbbDevices.select(0);
+                            }
+                            ControlUtils.recursiveSetEnabled(container, true);
+                        }
+                    });
+
+                    monitor.done();
+                }
+            });
+        } catch (InterruptedException ignored) {
+            // User canceled
+            canceledBeforeOpening = true;
+        } catch (InvocationTargetException e) {
+            LoggerSingleton.logError(e);
+            Throwable targetException = e.getTargetException();
+            MultiStatusErrorDialog.showErrorDialog(targetException,
+                    StringConstants.DIA_ERROR_UNABLE_TO_COLLECT_DEVICES, targetException.getClass().getSimpleName());
+            canceledBeforeOpening = true;
+        }
+    }
+    
+    @Override
+    public int open() {
+        try {
+            canceledBeforeOpening = false;
+            return super.open();
+        } finally {
+            if (canceledBeforeOpening) {
+                close();
+            }
+        }
+    }
 
     private List<String> getAllDevicesName() {
         deviceInfos.clear();
@@ -409,11 +483,7 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
         btnCapture.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                try {
-                    captureObjectAction();
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                }
+                captureObjectAction();
             }
         });
 
@@ -449,12 +519,14 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
                         for (Object obj : elementTreeViewer.getCheckedElements()) {
                             elementTreeViewer.setChecked(obj, false);
                         }
+                        IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
                         // Refresh explorer
-                        eventBroker.post(EventConstants.OBJECT_SPY_REFRESH_SELECTED_TARGET, "");
+                        eventBroker.send(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, new FolderTreeEntity(
+                                parentFolder, null));
                         eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);
                     }
                 } catch (Exception ex) {
-                    logger.error(ex);
+                    LoggerSingleton.logError(ex);
                     MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, ex.getMessage());
                 }
             }
@@ -592,7 +664,6 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
     }
 
     public void dispose() {
-        eventBroker.unsubscribe(this);
         isDisposed = true;
     }
 
@@ -618,8 +689,7 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
     private void refreshAttributesTable(MobileElement selectedElement) {
         if (selectedElement != null) {
             txtObjectName.setText(selectedElement.getName());
-            attributesTableViewer.setInput(new ArrayList<Entry<String, String>>(selectedElement.getAttributes()
-                    .entrySet()));
+            attributesTableViewer.setInput(new ArrayList<>(selectedElement.getAttributes().entrySet()));
         } else {
             attributesTableViewer.setInput(Collections.emptyList());
         }
@@ -628,37 +698,158 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
     // Highlight Selected object on captured screenshot
     private void highLightObject(MobileElement selectedElement) {
-        if (selectedElement != null) {
-            // Get object's location and object's size
-            if (selectedElement.getAttributes().get(GUIObject.X) != null
-                    && selectedElement.getAttributes().get(GUIObject.Y) != null
-                    && selectedElement.getAttributes().get(GUIObject.WIDTH) != null
-                    && selectedElement.getAttributes().get(GUIObject.HEIGHT) != null) {
+        if (selectedElement == null) {
+            return;
+        }
 
-                Map<String, Object> datas = new HashMap<String, Object>();
-                datas.put("selected_object", selectedElement);
-                eventBroker.send(EventConstants.OBJECT_SPY_MOBILE_HIGHLIGHT, datas);
+        deviceView.highlightElement(selectedElement);
+    }
+
+    public boolean isOutOfBound(Rectangle displayBounds, Point dialogSize, int startX) {
+        return startX < 0 || startX + dialogSize.x > displayBounds.width + displayBounds.x;
+    }
+
+    public int getDeviceViewStartXIfPlaceRight(Rectangle objectSpyViewBounds) {
+        return objectSpyViewBounds.x + objectSpyViewBounds.width + DIALOG_MARGIN_OFFSET;
+    }
+
+    public int getDeviceViewStartXIfPlaceLeft(Rectangle objectSpyViewBounds, Point dialogSize) {
+        return objectSpyViewBounds.x - dialogSize.x - DIALOG_MARGIN_OFFSET;
+    }
+
+    public int getDefaultDeviceViewDialogStartX(Rectangle displayBounds, Point dialogSize) {
+        return displayBounds.width - dialogSize.x;
+    }
+
+    public Point calculateInitPositionForObjectSpyDialog() {
+        Rectangle displayBounds = getShell().getDisplay().getBounds();
+        Point dialogSize = MobileObjectSpyDialog.DIALOG_SIZE;
+        return new Point(calculateObjectSpyDialogStartX(displayBounds, dialogSize), calculateObjectSpyDialogStartY(
+                displayBounds, dialogSize));
+    }
+
+    public int calculateObjectSpyDialogStartX(Rectangle displayBounds, Point dialogSize) {
+        int dialogsWidth = dialogSize.x + MobileDeviceDialog.DIALOG_SIZE.x;
+        int startX = (displayBounds.width - dialogsWidth) / 2 + displayBounds.x;
+        return Math.max(startX, 0);
+    }
+
+    public int calculateObjectSpyDialogStartY(Rectangle displayBounds, Point dialogSize) {
+        int startY = displayBounds.height - dialogSize.y;
+        return Math.max(startY, 0) / 2;
+    }
+
+    public Point calculateInitPositionForDeviceViewDialog() {
+        Rectangle displayBounds = getShell().getMonitor().getBounds();
+        Point dialogSize = MobileDeviceDialog.DIALOG_SIZE;
+        Rectangle objectSpyViewBounds = getShell().getBounds();
+        int startX = getDeviceViewStartXIfPlaceRight(objectSpyViewBounds);
+        if (isOutOfBound(displayBounds, dialogSize, startX)) {
+            startX = getDeviceViewStartXIfPlaceLeft(objectSpyViewBounds, dialogSize);
+            if (isOutOfBound(displayBounds, dialogSize, startX)) {
+                startX = getDefaultDeviceViewDialogStartX(displayBounds, dialogSize);
             }
+        }
+        return new Point(startX, objectSpyViewBounds.y);
+    }
+
+    public void openDeviceView() {
+        if (deviceView != null && !deviceView.isDisposed()) {
+            return;
+        }
+        deviceView = new MobileDeviceDialog(getShell(), calculateInitPositionForDeviceViewDialog());
+        deviceView.open();
+        setDeviceView(deviceView);
+    }
+
+    private void captureObjectAction() {
+        final String appName = FilenameUtils.getName(txtAppFile.getText());
+        final ProgressMonitorDialogWithThread dialog = new ProgressMonitorDialogWithThread(getShell());
+
+        IRunnableWithProgress runnable = new IRunnableWithProgress() {
+            @Override
+            public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                monitor.beginTask(StringConstants.DIA_JOB_TASK_CAPTURING_OBJECTS, IProgressMonitor.UNKNOWN);
+
+                dialog.runAndWait(new Callable<Object>() {
+
+                    @Override
+                    public Object call() throws Exception {
+                        appRootElement = inspectorController.getMobileObjectRoot();
+                        appRootElement.setName(appName);
+                        return null;
+                    }
+                });
+
+                checkMonitorCanceled(monitor);
+
+                refreshTreeElements(dialog);
+
+                String imgPath = captureImage();
+
+                checkMonitorCanceled(monitor);
+
+                refreshDeviceView(imgPath);
+
+                UISynchronizeService.syncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        deviceView.getShell().forceActive();
+                    }
+                });
+                monitor.done();
+            }
+
+            private void refreshTreeElements(final ProgressMonitorDialogWithThread dialog) {
+                // Root element should be named as .apk file name
+                UISynchronizeService.syncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        dialog.setCancelable(false);
+                        elementTreeViewer.setInput(new Object[] { appRootElement });
+                        elementTreeViewer.refresh();
+                        dialog.setCancelable(true);
+                    }
+                });
+            }
+
+            private void refreshDeviceView(String imgPath) {
+                File imgFile = new File(imgPath);
+                if (imgFile.exists()) {
+                    deviceView.refreshDialog(imgFile, appRootElement);
+                }
+            }
+
+            private String captureImage() throws InvocationTargetException {
+                // Render Screenshot
+                try {
+                    return inspectorController.captureScreenshot();
+                } catch (Exception e) {
+                    throw new InvocationTargetException(e);
+                }
+            }
+        };
+
+        try {
+            btnCapture.setEnabled(false);
+            openDeviceView();
+            dialog.run(true, true, runnable);
+        } catch (InterruptedException ignored) {
+            // User canceled
+        } catch (InvocationTargetException e) {
+            LoggerSingleton.logError(e);
+            Throwable exception = e.getTargetException();
+            MultiStatusErrorDialog.showErrorDialog(exception, StringConstants.DIA_ERROR_UNABLE_TO_CAPTURE_OBJECTS,
+                    exception.getClass()
+                    .getSimpleName());
+        } finally {
+            btnCapture.setEnabled(true);
         }
     }
 
-    private void captureObjectAction() throws Exception {
-        // Reopen Device View Dialog if it has not opened
-        eventBroker.send(EventConstants.OBJECT_SPY_ENSURE_DEVICE_VIEW_DIALOG, "");
-
-        appRootElement = inspectorController.getMobileObjectRoot();
-        // Root element should be named as .apk file name
-        appRootElement.setName(FilenameUtils.getName(txtAppFile.getText()));
-        elementTreeViewer.setInput(new Object[] { appRootElement });
-        elementTreeViewer.refresh();
-        // Render Screenshot
-        String imgPath = inspectorController.captureScreenshot();
-        File imgFile = new File(imgPath);
-        if (imgFile.exists()) {
-            Map<String, Object> images = new HashMap<String, Object>();
-            images.put("real_image_file_path", imgFile);
-            images.put("appium_screen_object", appRootElement);
-            eventBroker.send(EventConstants.OBJECT_SPY_MOBILE_SCREEN_CAPTURE, images);
+    private void checkMonitorCanceled(IProgressMonitor monitor) throws InterruptedException {
+        if (monitor.isCanceled()) {
+            throw new InterruptedException(StringConstants.DIA_ERROR_MSG_OPERATION_CANCELED);
         }
     }
 
@@ -686,7 +877,7 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
             }
             final String appFile = txtAppFile.getText();
 
-            ProgressMonitorDialog progressDlg = new ProgressMonitorDialog(Display.getCurrent().getActiveShell()) {
+            final ProgressMonitorDialogWithThread progressDlg = new ProgressMonitorDialogWithThread(getShell()) {
                 @Override
                 public void cancelPressed() {
                     super.cancelPressed();
@@ -703,22 +894,29 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     monitor.beginTask(StringConstants.DIA_LBL_STATUS_APP_STARTING, IProgressMonitor.UNKNOWN);
-                    try {
-                        // Start application using MobileDriver
-                        inspectorController.startMobileApp(selectDeviceInfo, appFile, false);
-                    } catch (Exception ex) {
-                        logger.error(ex);
-                        throw new InvocationTargetException(ex, ex.getMessage());
-                    }
-                    if (monitor.isCanceled()) {
-                        throw new InterruptedException(StringConstants.DIA_ERROR_MSG_OPERATION_CANCELED);
-                    }
+
+                    progressDlg.runAndWait(new Callable<Object>() {
+                        @Override
+                        public Object call() throws Exception {
+                            try {
+                                // Start application using MobileDriver
+                                inspectorController.startMobileApp(selectDeviceInfo, appFile, false);
+                            } catch (Exception ex) {
+                                LoggerSingleton.logError(ex);
+                                throw new InvocationTargetException(ex, ex.getMessage());
+                            }
+                            return null;
+                        }
+                    });
+                    checkMonitorCanceled(monitor);
+
                     monitor.done();
                 }
             };
 
             progressDlg.run(true, true, processToRun);
 
+            captureObjectAction();
             // If no exception, application has been successful started, enable more features
             btnAdd.setEnabled(true);
             btnCapture.setEnabled(true);
@@ -749,16 +947,20 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
         });
         thread.start();
 
-        // Update UI
-        btnStart.setEnabled(true);
-        btnStop.setEnabled(false);
-        btnCapture.setEnabled(false);
-        btnAdd.setEnabled(false);
+        if (!getShell().isDisposed()) {
+            // Update UI
+            btnStart.setEnabled(true);
+            btnStop.setEnabled(false);
+            btnCapture.setEnabled(false);
+            btnAdd.setEnabled(false);
 
-        elementTreeViewer.setInput(new Object[] {});
-        elementTreeViewer.refresh();
+            elementTreeViewer.setInput(new Object[] {});
+            elementTreeViewer.refresh();
+        }
 
-        eventBroker.send(EventConstants.OBJECT_SPY_CLOSE_MOBILE_APP, "");
+        if (deviceView != null) {
+            deviceView.closeApp();
+        }
 
         dispose();
     }
@@ -812,6 +1014,7 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
     }
 
     private FolderEntity findSelectedFolderInExplorer() throws Exception {
+        ESelectionService selectionService = SelectionServiceSingleton.getInstance().getSelectionService();
         Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
         if (selectedObjects != null && selectedObjects.length > 0) {
             ITreeEntity parentTreeEntity = getParentTreeEntity(selectedObjects);
@@ -852,12 +1055,14 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
         }
         return new String[] { ANDROID_FILTER_EXTS };
     }
-    
+
     @Override
     protected Point getInitialLocation(Point initialSize) {
-        return initialLocation;
+        Rectangle displayBounds = getShell().getMonitor().getBounds();
+        return new Point(calculateObjectSpyDialogStartX(displayBounds, initialSize), calculateObjectSpyDialogStartY(
+                displayBounds, initialSize));
     }
-    
+
     private void autoSelectObjectProperties(WebElementEntity entity) {
         if (getMobileDeviceInfo() == null) {
             return;
@@ -882,8 +1087,61 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
         }
         return deviceInfos.get(selectedMobileDeviceIndex);
     }
-    
+
     private boolean isMobileDriverTypeOf(MobileDriverType type) {
         return MobileInspectorController.getMobileDriverType(getMobileDeviceInfo()) == type;
+    }
+
+    public MobileDeviceDialog getDeviceView() {
+        return deviceView;
+    }
+
+    public void setDeviceView(MobileDeviceDialog deviceView) {
+        this.deviceView = deviceView;
+    }
+
+    private class ProgressMonitorDialogWithThread extends ProgressMonitorDialog {
+        public ProgressMonitorDialogWithThread(Shell parent) {
+            super(parent);
+        }
+
+        private Thread thread;
+
+        private void setThread(Thread thread) {
+            this.thread = thread;
+        }
+
+        @Override
+        protected void cancelPressed() {
+            if (thread != null && thread.isAlive()) {
+                thread.interrupt();
+            }
+
+            super.cancelPressed();
+        }
+
+        private void startThreadAndWait() {
+            if (thread == null) {
+                return;
+            }
+
+            thread.run();
+
+            while (thread.isAlive()) {
+                // wait for thread complete or interrupted
+            }
+        }
+
+        public <V> V runAndWait(final Callable<V> callable) throws InterruptedException, InvocationTargetException {
+            FutureTask<V> futureTask = new FutureTask<V>(callable);
+            setThread(new Thread(futureTask));
+            startThreadAndWait();
+
+            try {
+                return futureTask.get();
+            } catch (ExecutionException e) {
+                throw new InvocationTargetException(e);
+            }
+        }
     }
 }
