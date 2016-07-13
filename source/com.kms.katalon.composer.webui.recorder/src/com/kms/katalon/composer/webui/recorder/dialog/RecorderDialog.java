@@ -977,6 +977,7 @@ public class RecorderDialog extends Dialog implements EventHandler {
         instantBrowserMenuItem.setMenu(instantBrowserMenu);
         
         addInstantBrowserMenuItem(instantBrowserMenu, WebUIDriverType.CHROME_DRIVER);
+        addInstantBrowserMenuItem(instantBrowserMenu, WebUIDriverType.FIREFOX_DRIVER);
     }
 
     private MenuItem createBrowserMenuItem(Menu browserMenu, final WebUIDriverType webUIDriverType) {
@@ -1043,14 +1044,21 @@ public class RecorderDialog extends Dialog implements EventHandler {
             }
             
             private void openBrowserToAddonUrl() throws IOException, URISyntaxException {
-                String url = null;
-                if (webUIDriverType == WebUIDriverType.CHROME_DRIVER) {
-                    url = StringConstants.RECORDER_CHROME_ADDON_URL;
-                }
+                String url = getAddonUrl(webUIDriverType);
                 if (url == null || !Desktop.isDesktopSupported()) {
                     return;
                 }
                 Desktop.getDesktop().browse(new URI(url));
+            }
+
+            private String getAddonUrl(final WebUIDriverType webUIDriverType) {
+                if (webUIDriverType == WebUIDriverType.CHROME_DRIVER) {
+                    return StringConstants.RECORDER_CHROME_ADDON_URL;
+                }
+                if (webUIDriverType == WebUIDriverType.FIREFOX_DRIVER) {
+                    return StringConstants.RECORDER_FIREFOX_ADDON_URL;
+                }
+                return null;
             }
 
         });
