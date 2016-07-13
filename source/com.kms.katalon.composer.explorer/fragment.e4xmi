@@ -4,9 +4,12 @@
     <elements xsi:type="commands:KeyBinding" xmi:id="_7reTkA58EeWhRqQJseEW0Q" elementId="com.kms.katalon.composer.explorer.keybinding.refresh" keySequence="F5" command="_zBE1cKCCEeS_c-2UCFgVmQ">
       <tags>type:user</tags>
     </elements>
-    <elements xsi:type="commands:KeyBinding" xmi:id="_XCr8UA59EeWhRqQJseEW0Q" elementId="com.kms.katalon.composer.explorer.keybinding.open" keySequence="F2" command="_ZMWQgCH5EeSLeYgXIq1FKQ"/>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_XCr8UA59EeWhRqQJseEW0Q" elementId="com.kms.katalon.composer.explorer.keybinding.rename" keySequence="F2" command="_ZMWQgCH5EeSLeYgXIq1FKQ"/>
     <elements xsi:type="commands:KeyBinding" xmi:id="_rVXjoA6DEeWhRqQJseEW0Q" elementId="com.kms.katalon.composer.explorer.keybinding.open" keySequence="F3" command="_DfqvoB7uEeSCzrWY6RMEZw"/>
     <elements xsi:type="commands:KeyBinding" xmi:id="_OvsmoA8mEeW1X5UIL5jJZA" elementId="com.kms.katalon.composer.explorer.keybinding.delete" keySequence="DELETE" command="_PMBCoCEKEeSe6pqNW7uvMw"/>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_NUJvYD0WEeaKLM8U5-yGQQ" elementId="com.kms.katalon.composer.explorer.keybinding.copy" keySequence="M1+C" command="_X1bcYCNjEeSA7eQW_3uciQ"/>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_0qI6cD0aEeaKLM8U5-yGQQ" elementId="com.kms.katalon.composer.explorer.keybinding.cut" keySequence="M1+X" command="_Phq7QImREeSwnaro5Nln-g"/>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_092goD0aEeaKLM8U5-yGQQ" elementId="com.kms.katalon.composer.explorer.keybinding.paste" keySequence="M1+V" command="_8CRNICPTEeStgKkqz5sGOw"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_u8dKgBb7EeSOVencM6x_7w" featurename="children" parentElementId="com.kms.katalon.composer.partstack.explorer" positionInList="">
     <elements xsi:type="basic:Part" xmi:id="_1oZzMBb9EeSOVencM6x_7w" elementId="com.kms.katalon.composer.part.explorer" contributionURI="bundleclass://com.kms.katalon.composer.explorer/com.kms.katalon.composer.explorer.parts.ExplorerPart" label="Tests Explorer" iconURI="platform:/plugin/com.kms.katalon.composer.explorer/icons/project_16.png">

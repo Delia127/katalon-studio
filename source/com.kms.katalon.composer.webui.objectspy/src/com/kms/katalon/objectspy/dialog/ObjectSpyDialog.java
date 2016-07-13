@@ -300,6 +300,11 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         startChrome.setImage(ImageConstants.IMG_16_BROWSER_CHROME);
         startChrome.setText(WebUIDriverType.CHROME_DRIVER.toString());
         startChrome.addSelectionListener(new InstantBrowserSelectionAdapter(WebUIDriverType.CHROME_DRIVER));
+        
+        final MenuItem startFirefox = new MenuItem(instantBrowserMenu, SWT.PUSH);
+        startFirefox.setImage(ImageConstants.IMG_16_BROWSER_FIREFOX);
+        startFirefox.setText(WebUIDriverType.FIREFOX_DRIVER.toString());
+        startFirefox.addSelectionListener(new InstantBrowserSelectionAdapter(WebUIDriverType.FIREFOX_DRIVER));
     }
 
     private final class InstantBrowserSelectionAdapter extends SelectionAdapter {
@@ -356,14 +361,21 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         }
 
         private void openBrowserToAddonUrl() throws IOException, URISyntaxException {
-            String url = null;
-            if (driverType == WebUIDriverType.CHROME_DRIVER) {
-                url = StringConstants.OBJECT_SPY_CHROME_ADDON_URL;
-            }
+            String url = getAddonUrl();
             if (url == null || !Desktop.isDesktopSupported()) {
                 return;
             }
             Desktop.getDesktop().browse(new URI(url));
+        }
+
+        private String getAddonUrl() {
+            if (driverType == WebUIDriverType.CHROME_DRIVER) {
+                return StringConstants.OBJECT_SPY_CHROME_ADDON_URL;
+            }
+            if (driverType == WebUIDriverType.FIREFOX_DRIVER) {
+                return StringConstants.OBJECT_SPY_FIREFOX_ADDON_URL;
+            }
+            return null;
         }
     }
 

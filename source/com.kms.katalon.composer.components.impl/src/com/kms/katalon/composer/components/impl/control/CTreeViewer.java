@@ -6,12 +6,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.Widget;
 
-public class CTreeViewer extends TreeViewer {
+public class CTreeViewer extends TreeViewer implements CustomColumnViewer {
 
     public CTreeViewer(Composite parent, int style) {
         super(parent, style);
     }
-    
+
     public CTreeViewer(Tree tree) {
         super(tree);
     }
@@ -19,5 +19,10 @@ public class CTreeViewer extends TreeViewer {
     @Override
     public ViewerRow getViewerRowFromItem(Widget item) {
         return super.getViewerRowFromItem(item);
+    }
+
+    @Override
+    public Widget getColumn(int columnIndex) {
+        return getColumnViewerOwner(columnIndex);
     }
 }

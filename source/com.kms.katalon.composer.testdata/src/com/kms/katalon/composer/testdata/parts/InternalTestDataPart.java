@@ -1,32 +1,40 @@
 package com.kms.katalon.composer.testdata.parts;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CellLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.TableEditor;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -34,13 +42,16 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testdata.constants.ImageConstants;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
+import com.kms.katalon.composer.testdata.parts.provider.InternalDataColumViewerEditor;
+import com.kms.katalon.composer.testdata.parts.provider.InternalDataAddColumnLabelProvider;
+import com.kms.katalon.composer.testdata.parts.provider.InternalDataEditingSupport;
+import com.kms.katalon.composer.testdata.parts.provider.InternalDataLabelProvider;
 import com.kms.katalon.composer.testdata.views.NewTestDataColumnDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.TestDataController;
@@ -51,18 +62,46 @@ import com.kms.katalon.entity.testdata.InternalDataFilePropertyEntity;
 
 public class InternalTestDataPart extends TestDataMainPart {
 
-    private Image addImage;
+    private static final int DF_UNREMOVEVABLE_COLUMN_WIDTH = 40;
 
-    private Table table;
-
-    private static final int DF_DATA_COLUMN_WIDTH = 200;
-
-    private static final int DF_UNREMOVEVABLE_COLUMN_WIDTH = 50;
+    private static final int DF_REMOVEVABLE_COLUMN_WIDTH = 100;
 
     private static final int COLUMN_NO_IDX = 0;
 
+    public static final int BASE_COLUMN_INDEX = 1;
+
+    private static final int UNREMOVABLE_COLUMNS = 2;
+
+    private static final int LEFT_CLICK = 1;
+
     @Inject
     private EPartService partService;
+
+    private List<InternalDataRow> input;
+
+    private Table table;
+
+    private TableViewer tableViewer;
+
+    @Override
+    protected EPartService getPartService() {
+        return partService;
+    }
+
+    @Override
+    protected void preDestroy() {
+    }
+
+    @Focus
+    public void setFocus() {
+        table.setFocus();
+    }
+
+    @Override
+    protected Composite createFileInfoPart(Composite parent) {
+        // Internal data doesn't need to create File Info Part
+        return null;
+    }
 
     @PostConstruct
     public void createControls(Composite parent, MPart mpart) {
@@ -82,63 +121,78 @@ public class InternalTestDataPart extends TestDataMainPart {
         return tableViewerComposite;
     }
 
+    /**
+     * @wbp.parser.entryPoint
+     */
     private void createContents(final Composite parent) {
         parent.setLayout(new FillLayout());
 
         // Create the table
-        table = new Table(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
+        tableViewer = new CTableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
+        table = tableViewer.getTable();
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
 
-        // Create No. column, read only
-        TableColumn columnNumber = new TableColumn(table, SWT.LEFT);
-        columnNumber.setWidth(DF_UNREMOVEVABLE_COLUMN_WIDTH);
-        columnNumber.setText(StringConstants.PA_COL_NO);
+        createColumnViewer(StringConstants.PA_COL_NO, SWT.CENTER, false, DF_UNREMOVEVABLE_COLUMN_WIDTH,
+                new InternalDataAddColumnLabelProvider(), null);
 
-        createTableEditor(table);
+        tableViewer.setContentProvider(ArrayContentProvider.getInstance());
+
+        // Enable editing on Tab move
+        InternalDataColumViewerEditor.create(tableViewer, new ColumnViewerEditorActivationStrategy(tableViewer),
+                InternalDataColumViewerEditor.TABBING_HORIZONTAL | InternalDataColumViewerEditor.KEYBOARD_ACTIVATION
+                        | InternalDataColumViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
+                        | InternalDataColumViewerEditor.TABBING_CYCLE_IN_TABLE);
+
+        addMouseEventListenersForTable(table);
+
+        // Enable tool-tip
+        table.setToolTipText(StringUtils.EMPTY);
+        ColumnViewerToolTipSupport.enableFor(tableViewer);
+    }
+
+    private TableViewerColumn createColumnViewer(String name, int style, boolean resizable, int width,
+            CellLabelProvider labelProvider, EditingSupport editingSupport) {
+        TableViewerColumn tableColumnViewer = new TableViewerColumn(tableViewer, style);
+        addInfoForTableColumn(tableColumnViewer, name, resizable, width, labelProvider, editingSupport);
+        return tableColumnViewer;
+    }
+
+    private void addInfoForTableColumn(TableViewerColumn tableViewerColumn, String name, boolean resizable, int width,
+            CellLabelProvider labelProvider, EditingSupport editingSupport) {
+        TableColumn tableColumn = tableViewerColumn.getColumn();
+        tableColumn.setWidth(width);
+        tableColumn.setText(name);
+        tableColumn.setResizable(resizable);
+        tableViewerColumn.setLabelProvider(labelProvider);
+        if (editingSupport != null) {
+            tableViewerColumn.setEditingSupport(editingSupport);
+        }
     }
 
     private void createColumns(DataFileEntity dataFile) {
-        // Create five mock-up columns
         for (InternalDataColumnEntity dataCol : dataFile.getInternalDataColumns()) {
-            CustomTableColumn column = new CustomTableColumn(table, SWT.LEFT);
-            // column.setAlignment(SWT.RIGHT);
-            column.setWidth(DF_DATA_COLUMN_WIDTH);
-            column.setText(dataCol.getName());
-            column.setDataType(dataCol.getDataType());
+            createColumnViewer(dataCol.getName(), SWT.NONE, true, DF_REMOVEVABLE_COLUMN_WIDTH,
+                    new InternalDataLabelProvider(), new InternalDataEditingSupport(tableViewer, dirtyable));
         }
-    }
 
-    private void loadDataRows(DataFileEntity dataFile) {
-        for (int i = 0; i < dataFile.getData().size(); i++) {
-            List<Object> dataRow = dataFile.getData().get(i);
-            TableItem tableRow = new TableItem(table, SWT.NONE);
-            // Index column
-            tableRow.setText(0, String.valueOf(i + 1));
-            // Data columns
-            for (int j = 0; j < dataRow.size(); j++) {
-                tableRow.setText(j + 1, String.valueOf(dataRow.get(j)));
+        // create Add column
+        TableViewerColumn tableViewerColumnAdd = createColumnViewer(StringUtils.EMPTY, SWT.CENTER, false,
+                DF_UNREMOVEVABLE_COLUMN_WIDTH, new InternalDataLabelProvider(), null);
+        TableColumn columnAdd = tableViewerColumnAdd.getColumn();
+        columnAdd.setImage(ImageConstants.IMG_16_ADD);
+        columnAdd.setToolTipText(StringConstants.PA_TOOL_TIP_ADD_COLUMN);
+
+        columnAdd.addListener(SWT.Selection, new Listener() {
+            @Override
+            public void handleEvent(Event event) {
+                openAddColumnDialog(table.getColumnCount() - BASE_COLUMN_INDEX);
             }
-        }
+        });
+        table.redraw();
     }
 
-    /**
-     * Last row is command row
-     */
-    private void createLastRow(Table table) {
-        if (addImage == null) {
-            addImage = ImageConstants.IMG_16_ADD;
-        }
-        // The last row for adding new row
-        TableItem lastRow = new TableItem(table, SWT.CENTER);
-        lastRow.setImage(COLUMN_NO_IDX, addImage);
-    }
-
-    private void createTableEditor(final Table table) {
-        final TableEditor editor = new TableEditor(table);
-        editor.horizontalAlignment = SWT.LEFT;
-        editor.grabHorizontal = true;
-
+    private void addMouseEventListenersForTable(final Table table) {
         table.addListener(SWT.MenuDetect, new Listener() {
             public void handleEvent(Event event) {
                 Point cursorPt = table.getDisplay().map(null, table, new Point(event.x, event.y));
@@ -155,256 +209,220 @@ public class InternalTestDataPart extends TestDataMainPart {
                     }
                     theWidth += tc.getWidth();
                 }
-                createContextMenu(colIndex, isHeader);
+                createContextMenu(colIndex, isHeader, cursorPt);
             }
         });
 
         table.addMouseListener(new MouseAdapter() {
-
             public void mouseDown(MouseEvent event) {
-                if (event.button == 1) {
-                    handleLeftClick(event);
-                }
-            }
-
-            private void handleLeftClick(MouseEvent event) {
-                Control old = editor.getEditor();
-                if (old != null) old.dispose();
-                Point pt = new Point(event.x, event.y);
-                final TableItem item = table.getItem(pt);
-                if (item != null && item.getImage() == null) {
-                    int selectedColumnIdx = -1;
-                    for (int i = 0; i < table.getColumnCount(); i++) {
-                        Rectangle rect = item.getBounds(i);
-                        if (rect.contains(pt)) {
-                            selectedColumnIdx = i;
-                            break;
-                        }
-                    }
-
-                    // allow users to edit internal columns which are created by
-                    // them only.
-                    if (isEditableColumn(selectedColumnIdx)) {
-                        final Text text = new Text(table, SWT.NONE);
-                        text.setForeground(item.getForeground());
-
-                        text.setText(item.getText(selectedColumnIdx));
-                        text.setForeground(item.getForeground());
-                        text.selectAll();
-                        text.setFocus();
-
-                        editor.minimumWidth = text.getBounds().width;
-
-                        editor.setEditor(text, item, selectedColumnIdx);
-
-                        final int col = selectedColumnIdx;
-                        text.addModifyListener(new ModifyListener() {
-                            public void modifyText(ModifyEvent event) {
-                                item.setText(col, text.getText());
-                                dirtyable.setDirty(true);
-                            }
-                        });
-                    }
-                } else if (item != null && item.getImage() != null) {
-                    new TableItem(table, SWT.NONE, table.getItemCount() - 1).setText(0,
-                            String.valueOf(table.getItemCount() - 1));
-                    dirtyable.setDirty(true);
+                if (event.button == LEFT_CLICK) {
+                    handleLeftClick(new Point(event.x, event.y));
                 }
             }
         });
-
     }
 
-    private Menu createContextMenu(final int selectedColIndex, boolean isHeader) {
+    private void handleLeftClick(Point pt) {
+        ViewerCell viewerCell = tableViewer.getCell(pt);
+        if (viewerCell == null) {
+            return;
+        }
 
+        Object selectedObject = viewerCell.getElement();
+        if (!(selectedObject instanceof InternalDataRow)) {
+            return;
+        }
+
+        InternalDataRow element = (InternalDataRow) selectedObject;
+        if (element.isLastRow()) {
+            insertNewRow(lastCollectionIndex(input));
+            table.showItem(table.getItem(lastCollectionIndex(input)));
+        }
+    }
+
+    private void insertNewRow(int indexToInsert) {
+        InternalDataRow newRow = new InternalDataRow();
+        for (int i = 0; i < getEditableColumnsSize(); i++) {
+            newRow.getCells().add(i, InternalDataCell.newEmptyCell());
+        }
+        input.add(indexToInsert, newRow);
+        tableViewer.refresh();
+        tableViewer.setSelection(new StructuredSelection(newRow));
+        dirtyable.setDirty(true);
+    }
+
+    private MenuItem createMenuItem(Menu parent, String text, int style, SelectionListener listener) {
+        MenuItem menuItemInsertRow = new MenuItem(parent, style);
+        menuItemInsertRow.setText(text);
+        if (listener != null) {
+            menuItemInsertRow.addSelectionListener(listener);
+        }
+        return menuItemInsertRow;
+    }
+
+    private Menu createContextMenu(final int selectedColIndex, boolean isHeader, Point point) {
         Menu menu = table.getMenu();
-        if (menu != null) menu.dispose();
-        menu = new Menu(table);
+        if (menu != null && menu.isDisposed()) {
+            menu.dispose();
+        }
 
-        MenuItem menuItemInsertRow = new MenuItem(menu, SWT.PUSH);
-        menuItemInsertRow.setText(StringConstants.PA_MENU_CONTEXT_INSERT_ROW);
-        menuItemInsertRow.addSelectionListener(new SelectionAdapter() {
+        menu = new Menu(table);
+        menu.setData(point);
+
+        createMenuItem(menu, StringConstants.PA_MENU_CONTEXT_INSERT_ROW, SWT.PUSH, new SelectionAdapter() {
             @Override
-            public void widgetSelected(SelectionEvent e) {
-                TableItem[] items = table.getSelection();
-                if (items.length > 0) {
-                    new TableItem(table, SWT.NONE, table.indexOf(items[0]));
-                } else {
-                    new TableItem(table, SWT.NONE, table.getItemCount() - 1);
-                }
-                reIndexRows();
-                dirtyable.setDirty(true);
+            public void widgetSelected(SelectionEvent event) {
+                insertNewRow(getRowIndexOnMouse(event));
             }
         });
 
         Menu menuInsertColumn = new Menu(menu);
-        MenuItem menuItemInsertColumn = new MenuItem(menu, SWT.CASCADE);
-        menuItemInsertColumn.setText(StringConstants.PA_MENU_CONTEXT_INSERT_COL);
+        MenuItem menuItemInsertColumn = createMenuItem(menu, StringConstants.PA_MENU_CONTEXT_INSERT_COL, SWT.CASCADE,
+                null);
         menuItemInsertColumn.setMenu(menuInsertColumn);
 
-        // Insert column left is available unless the selected item is "No."
-        // column
+        // Insert column left is available unless the selected item is "No." column
         if (selectedColIndex > COLUMN_NO_IDX) {
-            MenuItem menuItemInsertColumnLeft = new MenuItem(menuInsertColumn, SWT.PUSH);
-            menuItemInsertColumnLeft.setText(StringConstants.PA_MENU_CONTEXT_INSERT_COL_TO_THE_LEFT);
-            menuItemInsertColumnLeft.addSelectionListener(new SelectionAdapter() {
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    openAddColumnDialog(selectedColIndex);
-                }
-            });
+            createMenuItem(menuInsertColumn, StringConstants.PA_MENU_CONTEXT_INSERT_COL_TO_THE_LEFT, SWT.PUSH,
+                    new SelectionAdapter() {
+                        @Override
+                        public void widgetSelected(SelectionEvent e) {
+                            openAddColumnDialog(selectedColIndex);
+                        }
+                    });
         }
 
-        // Insert column right is available unless the selected item is "Add"
-        // column
-        if (selectedColIndex < getColumnAddIndex()) {
-            MenuItem menuItemInsertColumnRight = new MenuItem(menuInsertColumn, SWT.PUSH);
-            menuItemInsertColumnRight.setText(StringConstants.PA_MENU_CONTEXT_INSERT_COL_TO_THE_RIGHT);
-            menuItemInsertColumnRight.addSelectionListener(new SelectionAdapter() {
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    NewTestDataColumnDialog dialog = new NewTestDataColumnDialog(Display.getDefault().getActiveShell(),
-                            getCurrentColumnNames());
-                    dialog.open();
-                    if (dialog.getReturnCode() == Window.OK) {
-                        String columnName = dialog.getName();
-                        if (selectedColIndex >= 0) {
-                            addColumn(selectedColIndex + 1, columnName);
-                        } else {
-                            addColumn(table.getColumnCount(), columnName);
+        // Insert column right is available unless the selected item is "Add" column
+        if (selectedColIndex < lastColumnIndex()) {
+            createMenuItem(menuInsertColumn, StringConstants.PA_MENU_CONTEXT_INSERT_COL_TO_THE_RIGHT, SWT.PUSH,
+                    new SelectionAdapter() {
+                        @Override
+                        public void widgetSelected(SelectionEvent e) {
+                            int newColumnIndex = selectedColIndex >= 0 ? Math.min(selectedColIndex + BASE_COLUMN_INDEX,
+                                    lastColumnIndex()) : lastColumnIndex();
+                            openAddColumnDialog(newColumnIndex);
                         }
-                        dirtyable.setDirty(true);
-                    }
-                }
-            });
+                    });
         }
 
         // Add "Rename Column" menu item
         if (isEditableColumn(selectedColIndex)) {
-            MenuItem menuItemRenameColumn = new MenuItem(menu, SWT.PUSH);
-            menuItemRenameColumn.setText(StringConstants.PA_MENU_CONTEXT_RENAME_COL);
-            menuItemRenameColumn.addSelectionListener(new SelectionAdapter() {
+            createMenuItem(menu, StringConstants.PA_MENU_CONTEXT_RENAME_COL, SWT.PUSH, new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
-                    CustomTableColumn selectedCol = (CustomTableColumn) table.getColumn(selectedColIndex);
+                    TableColumn selectedCol = table.getColumn(selectedColIndex);
                     NewTestDataColumnDialog dialog = new NewTestDataColumnDialog(Display.getDefault().getActiveShell(),
                             selectedCol.getText(), getCurrentColumnNames());
-                    dialog.open();
-                    if (dialog.getReturnCode() == Window.OK) {
-                        String columnName = dialog.getName();
-                        if (!selectedCol.getText().equals(columnName)) {
-                            table.setRedraw(false);
-                            selectedCol.setText(columnName);
-                            table.setRedraw(true);
-                            dirtyable.setDirty(true);
-                        }
+                    if (dialog.open() != Window.OK) {
+                        return;
+                    }
+
+                    String columnName = dialog.getName();
+                    if (!selectedCol.getText().equals(columnName)) {
+                        table.setRedraw(false);
+                        selectedCol.setText(columnName);
+                        table.setRedraw(true);
+                        dirtyable.setDirty(true);
                     }
                 }
             });
         }
 
-        if (isEditableColumn(selectedColIndex) || isTableContainingRow()) {
-            Menu menuDelete = new Menu(menu);
-            MenuItem menuItemDelete = new MenuItem(menu, SWT.CASCADE);
-            menuItemDelete.setText(StringConstants.PA_MENU_CONTEXT_DEL);
-            menuItemDelete.setMenu(menuDelete);
+        Menu menuDelete = new Menu(menu);
+        MenuItem menuItemDelete = createMenuItem(menu, StringConstants.PA_MENU_CONTEXT_DEL, SWT.CASCADE, null);
+        menuItemDelete.setMenu(menuDelete);
 
-            if (isEditableColumn(selectedColIndex)) {
-                MenuItem menuItemDeleteColumn = new MenuItem(menuDelete, SWT.PUSH);
-                menuItemDeleteColumn.setText(StringConstants.PA_MENU_CONTEXT_DEL_COL);
-                menuItemDeleteColumn.addSelectionListener(new SelectionAdapter() {
-                    @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        deleteColumn(selectedColIndex);
-                        dirtyable.setDirty(true);
+        if (isEditableColumn(selectedColIndex)) {
+            createMenuItem(menuDelete, StringConstants.PA_MENU_CONTEXT_DEL_COL, SWT.PUSH, new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    deleteColumn(selectedColIndex);
+                    dirtyable.setDirty(true);
+                }
+            });
+        }
+
+        if (isTableContainingRow()) {
+            createMenuItem(menuDelete, StringConstants.PA_MENU_CONTEXT_DEL_ROWS, SWT.PUSH, new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    StructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
+                    if (selection != null && selection.isEmpty()) {
+                        return;
                     }
-                });
-            }
 
-            if (isTableContainingRow()) {
-                MenuItem menuItemDeleteRows = new MenuItem(menuDelete, SWT.PUSH);
-                menuItemDeleteRows.setText(StringConstants.PA_MENU_CONTEXT_DEL_ROWS);
-                menuItemDeleteRows.addSelectionListener(new SelectionAdapter() {
-                    @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        TableItem[] items = table.getSelection();
-                        for (TableItem tableItem : items) {
-                            if (tableItem.getImage() == null) {
-                                tableItem.dispose();
-                            }
+                    boolean changed = false;
+                    for (Object selected : selection.toArray()) {
+                        InternalDataRow dataRow = (InternalDataRow) selected;
+                        if (!dataRow.isLastRow()) {
+                            input.remove(dataRow);
+                            changed = true;
                         }
-                        table.redraw();
-                        reIndexRows();
+                    }
+                    if (changed) {
+                        tableViewer.refresh();
                         dirtyable.setDirty(true);
                     }
-                });
-            }
+                }
+            });
         }
         table.setMenu(menu);
 
         return menu;
     }
 
+    private int getRowIndexOnMouse(SelectionEvent event) {
+        Point pt = (Point) table.getMenu().getData();
+        ViewerCell viewerCell = tableViewer.getCell(pt);
+        if (viewerCell == null) {
+            return lastCollectionIndex(input);
+        }
+        return input.indexOf(viewerCell.getElement());
+    }
+
     private boolean isEditableColumn(int selectedColIndex) {
-        return selectedColIndex > COLUMN_NO_IDX && selectedColIndex < getColumnAddIndex();
+        return selectedColIndex > COLUMN_NO_IDX && selectedColIndex < lastColumnIndex();
     }
 
     private boolean isTableContainingRow() {
         return table.getItemCount() > 1;
     }
 
-    private TableColumn addColumn(int index, String title) {
-        CustomTableColumn tblColumn = new CustomTableColumn(table, SWT.LEFT, index);
-        tblColumn.setText(title);
-        tblColumn.pack();
-        tblColumn.getParent().showColumn(tblColumn);
-        return tblColumn;
+    private void insertNewColumn(int index, String title) {
+        TableViewerColumn tableViewColumn = new TableViewerColumn(tableViewer, SWT.NONE, index);
+        addInfoForTableColumn(tableViewColumn, title, true, DF_REMOVEVABLE_COLUMN_WIDTH,
+                new InternalDataLabelProvider(), new InternalDataEditingSupport(tableViewer, dirtyable));
+        for (InternalDataRow dataRow : input) {
+            dataRow.getCells().add(Math.min(lastCollectionIndex(dataRow.getCells()), index - BASE_COLUMN_INDEX),
+                    InternalDataCell.newEmptyCell());
+        }
+        tableViewer.refresh();
     }
 
     private void deleteColumn(int index) {
+        for (InternalDataRow dataRow : input) {
+            dataRow.getCells().remove(index - BASE_COLUMN_INDEX);
+        }
+
         TableColumn tblColumn = table.getColumn(index);
         if (tblColumn != null) {
             tblColumn.dispose();
             table.redraw();
         }
-    }
 
-    private void reIndexRows() {
-        // Re-calculate indexes
-        for (TableItem tableItem : table.getItems()) {
-            if (tableItem.getImage() == null) {
-                tableItem.setText(0, String.valueOf(table.indexOf(tableItem) + 1));
-            }
-        }
+        tableViewer.refresh();
     }
 
     @Persist
     public void save() {
-        List<Object> headers = new ArrayList<Object>();
-        for (int i = 1; i < getColumnAddIndex(); i++) {
-            CustomTableColumn col = (CustomTableColumn) table.getColumn(i);
-            InternalDataColumnEntity internalDataColumn = new InternalDataColumnEntity();
-            internalDataColumn.setName(col.getText());
-            internalDataColumn.setDataType(col.getDataType());
-            internalDataColumn.setColumnIndex(i);
-
-            headers.add(internalDataColumn);
-        }
-        List<List<Object>> datas = new ArrayList<List<Object>>();
-        for (TableItem tableItem : table.getItems()) {
-            if (tableItem.getImage() != null) continue;
-            List<Object> values = new ArrayList<Object>();
-            for (int i = 1; i < table.getColumnCount(); i++) {
-                String text = tableItem.getText(i);
-                values.add(text == null ? "" : text);
-            }
-            datas.add(values);
-        }
+        // commit edit
+        table.forceFocus();
 
         try {
             originalDataFile = updateInternalDataFileProperty(originalDataFile.getLocation(),
                     originalDataFile.getName(), originalDataFile.getDescription(), originalDataFile.getDriver(),
-                    originalDataFile.getDataSourceUrl(), "", originalDataFile.getTableDataName(), headers, datas);
+                    originalDataFile.getDataSourceUrl(), "", originalDataFile.getTableDataName(),
+                    getCurrentDataColumnEntities(), tableInputToData());
             updateDataFile(originalDataFile);
             dirtyable.setDirty(false);
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);
@@ -414,11 +432,6 @@ public class InternalTestDataPart extends TestDataMainPart {
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_TEST_DATA,
                     e.getClass().getSimpleName());
         }
-    }
-
-    @Focus
-    public void setFocus() {
-        table.setFocus();
     }
 
     private DataFileEntity updateInternalDataFileProperty(String pk, String name, String description,
@@ -441,75 +454,25 @@ public class InternalTestDataPart extends TestDataMainPart {
         return dataFileEntity;
     }
 
-    private static class CustomTableColumn extends TableColumn {
-
-        private String dataType;
-
-        public CustomTableColumn(Table parent, int style) {
-            super(parent, style);
-        }
-
-        public CustomTableColumn(Table parent, int style, int index) {
-            super(parent, style, index);
-        }
-
-        public String getDataType() {
-            return dataType;
-        }
-
-        public void setDataType(String dataType) {
-            this.dataType = dataType;
-        }
-
-        @Override
-        public void checkSubclass() {
-        }
-    }
-
-    @Override
-    protected Composite createFileInfoPart(Composite parent) {
-        // Internal data doesn't need to create File Info Part
-        return null;
-    }
-
     @Override
     protected void updateChildInfo(DataFileEntity dataFile) {
-
         clearTable();
 
-        // Data columns
         createColumns(dataFile);
 
-        loadDataRows(dataFile);
-
-        // Last row with Add button
-        createLastRow(table);
-
-        createLastColumn();
+        updateTableInput(dataFile);
     }
 
-    private void createLastColumn() {
-        TableColumn columnAdd = new TableColumn(table, SWT.CENTER);
-        columnAdd.setImage(addImage);
-        columnAdd.setWidth(DF_UNREMOVEVABLE_COLUMN_WIDTH);
-        columnAdd.setResizable(false);
-        columnAdd.setToolTipText(StringConstants.PA_TOOL_TIP_ADD_COLUMN);
-
-        columnAdd.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                openAddColumnDialog(getColumnAddIndex());
-            }
-        });
+    private void updateTableInput(DataFileEntity dataFile) {
+        input = getTableInput(dataFile);
+        tableViewer.setInput(input);
     }
 
     private void openAddColumnDialog(int selectedColIndex) {
         NewTestDataColumnDialog dialog = new NewTestDataColumnDialog(Display.getDefault().getActiveShell(),
                 getCurrentColumnNames());
-        dialog.open();
-        if (dialog.getReturnCode() == Window.OK) {
-            String columnName = dialog.getName();
-            addColumn(selectedColIndex, columnName);
+        if (dialog.open() == Window.OK) {
+            insertNewColumn(selectedColIndex, dialog.getName());
             dirtyable.setDirty(true);
         }
     }
@@ -517,34 +480,81 @@ public class InternalTestDataPart extends TestDataMainPart {
     private void clearTable() {
         table.setRedraw(false);
 
-        while (table.getColumnCount() > 1) {
-            table.getColumns()[1].dispose();
+        while (table.getColumnCount() > BASE_COLUMN_INDEX) {
+            table.getColumns()[BASE_COLUMN_INDEX].dispose();
         }
         table.removeAll();
         table.setRedraw(true);
     }
 
-    private int getColumnAddIndex() {
-        return table.getColumnCount() - 1;
+    private int lastColumnIndex() {
+        return table.getColumnCount() - BASE_COLUMN_INDEX;
+    }
+
+    private int lastCollectionIndex(Collection<?> collection) {
+        return collection.size() - 1;
     }
 
     private String[] getCurrentColumnNames() {
-        if (table.getColumnCount() < 2) {
+        if (table.getColumnCount() < UNREMOVABLE_COLUMNS) {
             return new String[0];
         }
-        String[] columnNames = new String[table.getColumnCount() - 2];
-        for (int i = 1; i < getColumnAddIndex(); i++) {
-            columnNames[i - 1] = ((CustomTableColumn) table.getColumn(i)).getText();
+        String[] columnNames = new String[getEditableColumnsSize()];
+        for (int i = BASE_COLUMN_INDEX; i < lastColumnIndex(); i++) {
+            columnNames[i - BASE_COLUMN_INDEX] = table.getColumn(i).getText();
         }
         return columnNames;
     }
 
-    @Override
-    protected EPartService getPartService() {
-        return partService;
+    private int getEditableColumnsSize() {
+        return Math.max(0, table.getColumnCount() - UNREMOVABLE_COLUMNS);
     }
 
-    @Override
-    protected void preDestroy() {
+    private List<Object> getCurrentDataColumnEntities() {
+        List<Object> dataColumnEntities = new ArrayList<>();
+        String[] currentColumnNames = getCurrentColumnNames();
+        for (int i = 0; i < currentColumnNames.length; i++) {
+            InternalDataColumnEntity dataColumn = new InternalDataColumnEntity();
+            dataColumn.setColumnIndex(i);
+            dataColumn.setName(currentColumnNames[i]);
+            dataColumn.setSize(input.size() - 1);
+
+            dataColumnEntities.add(dataColumn);
+        }
+        return dataColumnEntities;
+    }
+
+    private List<InternalDataRow> getTableInput(DataFileEntity dataFile) {
+        List<InternalDataRow> dataRows = new ArrayList<>();
+
+        List<InternalDataColumnEntity> internalDataColumns = dataFile.getInternalDataColumns();
+        for (List<Object> rowData : dataFile.getData()) {
+            InternalDataRow tableRow = new InternalDataRow();
+            for (int i = 0; i < internalDataColumns.size(); i++) {
+                InternalDataCell tableCell = new InternalDataCell(Objects.toString(rowData.get(i)));
+                tableRow.getCells().add(i, tableCell);
+            }
+
+            dataRows.add(tableRow);
+        }
+        dataRows.add(InternalDataRow.newLastRow());
+        return dataRows;
+    }
+
+    private List<List<Object>> tableInputToData() {
+        List<List<Object>> data = new ArrayList<>();
+        for (InternalDataRow tableRow : input) {
+            if (tableRow.isLastRow()) {
+                continue;
+            }
+
+            List<Object> rowData = new ArrayList<>();
+            for (int i = 0; i < getCurrentColumnNames().length; i++) {
+                rowData.add(tableRow.getCells().get(i).getValue());
+
+            }
+            data.add(rowData);
+        }
+        return data;
     }
 }

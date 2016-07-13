@@ -17,7 +17,7 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
 
     private static final int SPACE = 5;
 
-    final protected int columnIndex;
+    protected int columnIndex;
 
     private TextLayout cachedTextLayout;
 
@@ -87,6 +87,14 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
     protected int getSpace() {
         return SPACE;
     }
+    
+    protected int getLeftMargin() {
+        return SPACE;
+    }
+    
+    protected int getRightMargin() {
+        return SPACE;
+    }
 
     protected boolean canNotDrawSafely(Object element) {
         return !customPaint || !isElementInstanceOf(element);
@@ -106,7 +114,7 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
 
     private void drawCellFocus(ViewerCell cell, GC gc) {
         Rectangle focusBounds = getTextBounds(cell.getViewerRow().getBounds());
-        gc.drawFocus(focusBounds.x, focusBounds.y, focusBounds.width + deltaOfLastMeasure + getSpace(),
+        gc.drawFocus(focusBounds.x, focusBounds.y, focusBounds.width + deltaOfLastMeasure + getRightMargin(),
                 focusBounds.height);
     }
 
@@ -114,10 +122,12 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
         return (event.detail & SWT.FOCUSED) != 0;
     }
 
-    private void drawCellTextAndImage(Event event, ViewerCell cell, GC gc) {
+    protected void drawCellTextAndImage(Event event, ViewerCell cell, GC gc) {
         Image image = cell.getImage();
+        int startX = getLeftMargin();
         if (image != null) {
-            gc.drawImage(image, event.getBounds().x + getSpace(), event.getBounds().y);
+            gc.drawImage(image, event.getBounds().x + startX, event.getBounds().y);
+            startX = getSpace();
         }
 
         Rectangle textBounds = getTextBounds(cell.getTextBounds());
@@ -129,7 +139,7 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
 
             Rectangle saveClipping = gc.getClipping();
             gc.setClipping(textBounds);
-            textLayout.draw(gc, textBounds.x + getSpace(), y);
+            textLayout.draw(gc, textBounds.x + startX, y);
             gc.setClipping(saveClipping);
         }
     }
@@ -164,7 +174,7 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
 
         int textWidthDelta = deltaOfLastMeasure = updateTextLayout(layout, cell, applyColors);
 
-        event.width += textWidthDelta + getSpace();
+        event.width += textWidthDelta + getRightMargin();
     }
 
     private boolean isCellNotExisted(ViewerCell cell) {
@@ -210,7 +220,7 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
     /**
      * @see StyledCellLabelProvider#getSharedTextLayout(Display)
      */
-    private TextLayout getSharedTextLayout(Display display) {
+    protected TextLayout getSharedTextLayout(Display display) {
         if (cachedTextLayout == null) {
             int orientation = getViewer().getControl().getStyle() & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
             cachedTextLayout = new TextLayout(display);

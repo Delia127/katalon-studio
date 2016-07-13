@@ -18,7 +18,6 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
-import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -248,15 +247,15 @@ public class RecorderDialog extends Dialog implements EventHandler {
     private void pause() {
         isPausing = true;
         tltmPause.setText(RESUME_TOOL_ITEM_LABEL);
-        tltmPause.setImage(ImageConstants.IMG_16_PLAY);
-        toolBar.pack();
+        tltmPause.setImage(ImageConstants.IMG_28_PLAY);
+        toolBar.getParent().layout();
     }
 
     private void resume() {
         isPausing = false;
         tltmPause.setText(PAUSE_TOOL_ITEM_LABEL);
-        tltmPause.setImage(ImageConstants.IMG_16_PAUSE);
-        toolBar.pack();
+        tltmPause.setImage(ImageConstants.IMG_28_PAUSE);
+        toolBar.getParent().layout();
     }
 
     @Override
@@ -916,8 +915,8 @@ public class RecorderDialog extends Dialog implements EventHandler {
 
     private void createToolbar(Composite parent) {
         toolBar = new ToolBar(parent, SWT.FLAT | SWT.RIGHT);
+        toolBar.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
         toolBar.setLayout(new FillLayout(SWT.HORIZONTAL));
-        GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(true, false).applyTo(toolBar);
 
         toolItemBrowserDropdown = new ToolItem(toolBar, SWT.DROP_DOWN);
         toolItemBrowserDropdown.setText(START_TOOL_ITEM_LABEL);
@@ -935,7 +934,7 @@ public class RecorderDialog extends Dialog implements EventHandler {
 
         tltmPause = new ToolItem(toolBar, SWT.PUSH);
         tltmPause.setText(PAUSE_TOOL_ITEM_LABEL);
-        tltmPause.setImage(ImageConstants.IMG_16_PAUSE);
+        tltmPause.setImage(ImageConstants.IMG_28_PAUSE);
         tltmPause.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -951,7 +950,7 @@ public class RecorderDialog extends Dialog implements EventHandler {
 
         tltmStop = new ToolItem(toolBar, SWT.PUSH);
         tltmStop.setText(STOP_TOOL_ITEM_LABEL);
-        tltmStop.setImage(ImageConstants.IMG_16_STOP);
+        tltmStop.setImage(ImageConstants.IMG_28_STOP);
         tltmStop.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
@@ -978,6 +977,7 @@ public class RecorderDialog extends Dialog implements EventHandler {
         instantBrowserMenuItem.setMenu(instantBrowserMenu);
         
         addInstantBrowserMenuItem(instantBrowserMenu, WebUIDriverType.CHROME_DRIVER);
+        addInstantBrowserMenuItem(instantBrowserMenu, WebUIDriverType.FIREFOX_DRIVER);
     }
 
     private MenuItem createBrowserMenuItem(Menu browserMenu, final WebUIDriverType webUIDriverType) {
@@ -1044,14 +1044,21 @@ public class RecorderDialog extends Dialog implements EventHandler {
             }
             
             private void openBrowserToAddonUrl() throws IOException, URISyntaxException {
-                String url = null;
-                if (webUIDriverType == WebUIDriverType.CHROME_DRIVER) {
-                    url = StringConstants.RECORDER_CHROME_ADDON_URL;
-                }
+                String url = getAddonUrl(webUIDriverType);
                 if (url == null || !Desktop.isDesktopSupported()) {
                     return;
                 }
                 Desktop.getDesktop().browse(new URI(url));
+            }
+
+            private String getAddonUrl(final WebUIDriverType webUIDriverType) {
+                if (webUIDriverType == WebUIDriverType.CHROME_DRIVER) {
+                    return StringConstants.RECORDER_CHROME_ADDON_URL;
+                }
+                if (webUIDriverType == WebUIDriverType.FIREFOX_DRIVER) {
+                    return StringConstants.RECORDER_FIREFOX_ADDON_URL;
+                }
+                return null;
             }
 
         });

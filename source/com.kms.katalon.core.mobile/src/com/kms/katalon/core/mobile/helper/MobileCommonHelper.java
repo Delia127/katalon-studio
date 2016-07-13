@@ -1,20 +1,24 @@
 package com.kms.katalon.core.mobile.helper;
 
-import groovy.transform.CompileStatic;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 
+import com.kms.katalon.core.exception.StepFailedException;
+import com.kms.katalon.core.logging.KeywordLogger;
+import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.core.mobile.keyword.AndroidProperties;
 import com.kms.katalon.core.mobile.keyword.GUIObject;
 import com.kms.katalon.core.mobile.keyword.MobileDriverFactory;
 
 public class MobileCommonHelper {
+    
     private static final String ATTRIBUTE_NAME_FOR_ANDROID_RESOURCE_ID = "resourceId";
 
     private static final String ATTRIBUTE_NAME_FOR_ANDROID_CONTENT_DESC = "name";
@@ -24,12 +28,6 @@ public class MobileCommonHelper {
         driver.swipe(startX, startY, endX, endY, 500);
     }
 
-    //public static Map<String,String> configs = new HashMap<String, String>();
-    //static {
-    //	configs.put("iPhone6,1", "40;195");
-    //	configs.put("iPad2,4", "260;905");
-    //	configs.put("iPad4,2", "260;905");
-    //}
     public static Map<String,String> deviceModels = new HashMap<String, String>();
     static {
         deviceModels.put("iPhone3,1", "iPhone 4");
@@ -93,7 +91,6 @@ public class MobileCommonHelper {
         airPlaneButtonCoords.put("iPad mini 3", "265;905");
     }
 
-    @CompileStatic
     public static String getAttributeValue(WebElement element, String attributeName) {
         switch (attributeName.toString()) {
             case GUIObject.HEIGHT:
@@ -122,28 +119,17 @@ public class MobileCommonHelper {
         }
     }
 
-    /*public static void loadConfigs() throws Exception {
-     Properties props = new Properties();
-     String path = MobileBuiltInKeywords.class.getProtectionDomain().getCodeSource().getLocation().getFile();
-     path = URLDecoder.decode(path, "utf-8");
-     File jarFile = new File(path);
-     if (jarFile.isFile()) {
-     JarFile jar = new JarFile(jarFile);
-     Enumeration<JarEntry> entries = jar.entries();
-     while (entries.hasMoreElements()) {
-     JarEntry jarEntry = entries.nextElement();
-     String name = jarEntry.getName();
-     if (name.endsWith("config.properties")) {
-     props.load(jar.getInputStream(jarEntry));
-     break;
-     }
-     }
-     jar.close();
-     } else { // Run with IDE
-     File confFile = new File(path + "../" + "resources/config.properties");
-     props.load(new FileInputStream(confFile));
-     }
-     System.getProperties().putAll(props);
-     }
-     */
+    public static void checkXAndY(Number x, Number y) {
+        KeywordLogger logger = KeywordLogger.getInstance();
+        logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_X);
+        if (x == null) {
+            throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_FAILED_PARAM_X_CANNOT_BE_NULL,
+            "x"));
+        }
+        logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_Y);
+        if (y == null) {
+            throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_FAILED_PARAM_X_CANNOT_BE_NULL,
+            "y"));
+        }
+    }
 }

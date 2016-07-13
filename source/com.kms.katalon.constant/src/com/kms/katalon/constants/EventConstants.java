@@ -58,6 +58,7 @@ public class EventConstants {
     public static final String TESTCASE_UPDATED = "TESTCASE/UPDATED";
     public static final String TESTCASE_SAVE_SCRIPT = "TESTCASE/SAVE_SCRIPT";
     public static final String TESTCASE_REFRESH_EDITOR = "TESTCASE/UPDATE_SCRIPT";
+    public static final String TESTCASE_SETTINGS_FAILURE_HANDLING_UPDATED = "TESTCASE/FAILURE_HANDLING_UPDATED";
 
     // TestRun Events
     public static final String TEST_SUITE_COLLECTION_OPEN = "TEST_SUITE_COLLECTION/OPEN";
@@ -115,7 +116,6 @@ public class EventConstants {
     public static final String OBJECT_SPY_CLOSE_MOBILE_APP = "OBJECT_SPY/CLOSE_MOBILE_APP";
     public static final String OBJECT_SPY_MOBILE_HIGHLIGHT = "OBJECT_SPY/MOBILE_HIGHLIGHT";
     public static final String OBJECT_SPY_MOBILE_SCREEN_CAPTURE = "OBJECT_SPY/MOBILE_SCREEN_CAPTURE";
-    public static final String OBJECT_SPY_ENSURE_DEVICE_VIEW_DIALOG = "OBJECT_SPY/ENSURE_DEVICE_VIEW_DIALOG";
 
     // Recorder Events
     public static final String RECORDER_ELEMENT_ADDED = "RECORDER/ELEMENT_ADDED";

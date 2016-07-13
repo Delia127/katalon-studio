@@ -75,6 +75,8 @@ public class StringConstants extends GlobalStringConstants {
     
     public static final String OBJECT_SPY_CHROME_ADDON_URL = "https://chrome.google.com/webstore/detail/katalon-object-spy/gblkfilmbkbkjgpcoihaeghdindcanom";
     
+    public static final String OBJECT_SPY_FIREFOX_ADDON_URL = "https://addons.mozilla.org/en-US/firefox/addon/katalon-object-spy";
+    
     public static final String INSTANT_BROWSER_PREFIX = "Instant ";
 
     public static final String HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE = "Don't show this dialog again";

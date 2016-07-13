@@ -2,13 +2,12 @@ package com.kms.katalon.core.mobile.keyword;
 
 import groovy.transform.CompileStatic
 import io.appium.java_client.AppiumDriver
-import io.appium.java_client.DeviceActionShortcuts;
 import io.appium.java_client.MobileElement
 import io.appium.java_client.NetworkConnectionSetting
 import io.appium.java_client.android.AndroidDriver
 import io.appium.java_client.android.AndroidKeyCode
 import io.appium.java_client.ios.IOSDriver
-import io.appium.java_client.remote.HideKeyboardStrategy;
+import io.appium.java_client.remote.HideKeyboardStrategy
 
 import java.text.MessageFormat
 import java.util.concurrent.TimeUnit
@@ -24,6 +23,7 @@ import org.openqa.selenium.TimeoutException
 import org.openqa.selenium.WebDriverException
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.interactions.touch.TouchActions
+import org.openqa.selenium.remote.RemoteWebElement
 import org.openqa.selenium.support.ui.FluentWait
 
 import com.google.common.base.Function
@@ -38,6 +38,7 @@ import com.kms.katalon.core.mobile.constants.StringConstants
 import com.kms.katalon.core.mobile.helper.MobileCommonHelper
 import com.kms.katalon.core.mobile.helper.MobileDeviceCommonHelper
 import com.kms.katalon.core.mobile.helper.MobileElementCommonHelper
+import com.kms.katalon.core.mobile.helper.MobileGestureCommonHelper
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 
@@ -2117,6 +2118,42 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Select item of list view control by its label.
+     * @param to 
+     *      represent a mobile element
+     * @param label 
+     *      item label
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void selectListItemByLabel(TestObject to, String label, int timeout, FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            MobileElementCommonHelper.selectListItemByLabel(to, label, timeout, flowControl);
+        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_SELECT_ELEMENT_BY_LABEL_OF_OBJ, label, to.getObjectId())
+        : MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_SELECT_ELEMENT_BY_LABEL, label));
+    }
+    
+    /**
+     * Select item of list view control by its label.
+     * @param to 
+     *      represent a mobile element
+     * @param label 
+     *      item label
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void selectListItemByLabel(TestObject to, String label, int timeout) throws StepFailedException {
+        selectListItemByLabel(to, label, timeout, RunConfiguration.getDefaultFailureHandling())
+    }
+    
+    /**
      * Unlock device screen
      * @param flowControl
      * @throws StepFailedException
@@ -2217,7 +2254,44 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static void tapAndHoldAtPosition(Number x, Number y, Number duration) throws StepFailedException {
         tapAndHoldAtPosition(x, y, duration, RunConfiguration.getDefaultFailureHandling());
     }
-
+    
+    /**
+     *  Pinch to zoom in at a specific position on the screen of the mobile device
+     * @param x
+     *      x position
+     * @param y
+     *      y position
+     * @param offset
+     *      the offset length to pinch
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
+    public static void pinchToZoomInAtPosition(Number x, Number y, Number offset, FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            MobileGestureCommonHelper.pinchToZoomIn(x, y, offset);
+        }, flowControl, (x != null && y != null && offset != null) ?
+            MessageFormat.format(StringConstants.KW_LOG_FAILED_ZOOM_AT_X_Y_WITH_OFFSET_Z, x, y, offset)
+            : StringConstants.KW_LOG_FAILED_ZOOM_AT_POSITION );
+    }
+    
+    /**
+     *  Pinch to zoom in at a specific position on the screen of the mobile device
+     * @param x
+     *      x position
+     * @param y
+     *      y position
+     * @param offset
+     *      the offset length to pinch
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
+    public static void pinchToZoomInAtPosition(Number x, Number y, Number offset) throws StepFailedException {
+        pinchToZoomInAtPosition(x, y, offset, RunConfiguration.getDefaultFailureHandling());
+    }
+    
     /**
      * Get the width of mobile element
      * @param to 
@@ -2252,6 +2326,43 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
     public static int getElementWidth(TestObject to, int timeout) throws StepFailedException {
         return getElementWidth(to, timeout, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
+     *  Pinch to zoom out at a specific position on the screen of the mobile device
+     * @param x
+     *      x position
+     * @param y
+     *      y position
+     * @param offset
+     *      the offset length to pinch
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
+    public static void pinchToZoomOutAtPosition(Number x, Number y, Number offset, FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            MobileGestureCommonHelper.pinchToZoomOut(x, y, offset);
+        }, flowControl, (x != null && y != null && offset != null) ?
+            MessageFormat.format(StringConstants.KW_LOG_FAILED_PINCH_AT_X_Y_WITH_OFFSET_Z, x, y, offset)
+            : StringConstants.KW_LOG_FAILED_PINCH_AT_POSITION );
+    }
+    
+    /**
+     *  Pinch to zoom out at a specific position on the screen of the mobile device
+     * @param x
+     *      x position
+     * @param y
+     *      y position
+     * @param offset
+     *      the offset length to pinch
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_SCREEN)
+    public static void pinchToZoomOutAtPosition(Number x, Number y, Number offset) throws StepFailedException {
+        pinchToZoomOutAtPosition(x, y, offset, RunConfiguration.getDefaultFailureHandling());
     }
     
     /**
@@ -2354,5 +2465,41 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_DEVICE)
     public static int getElementLeftPosition(TestObject to, int timeout) throws StepFailedException {
         return getElementLeftPosition(to, timeout, RunConfiguration.getDefaultFailureHandling());
+    }
+
+    /**
+     * Select item of list view control by its index. Have not implemented for Android because its list view is async loaded
+     * @param to 
+     *      represent a mobile element
+     * @param index 
+     *      item index (1-based indexed)
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void selectListItemByIndex(TestObject to, int index, int timeout, FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            MobileElementCommonHelper.selectItemByIndex(to, index, timeout, flowControl);
+        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_SELECT_ELEMENT_BY_INDEX_OF_OBJ, index, to.getObjectId())
+        : MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_SELECT_ELEMENT_BY_INDEX, index));
+    }
+
+    /**
+     * Select item of list view control by its index. Have not implemented for Android because its list view is async loaded
+     * @param to 
+     *      represent a mobile element
+     * @param index 
+     *      item index (1-based indexed)
+     * @param timeout
+     *      system will wait at most timeout (seconds) to return result
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void selectListItemByIndex(TestObject to, int index, int timeout) throws StepFailedException {
+        selectListItemByIndex(to, index, timeout, RunConfiguration.getDefaultFailureHandling());
     }
 }

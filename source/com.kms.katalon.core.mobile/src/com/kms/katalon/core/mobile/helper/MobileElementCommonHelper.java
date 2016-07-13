@@ -8,12 +8,15 @@ import io.appium.java_client.ios.IOSDriver;
 
 import java.text.MessageFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.touch.TouchActions;
+import org.openqa.selenium.remote.RemoteWebElement;
 
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.helper.KeywordHelper;
@@ -21,6 +24,7 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.core.mobile.keyword.MobileDriverFactory;
 import com.kms.katalon.core.mobile.keyword.MobileSearchEngine;
+import com.kms.katalon.core.mobile.keyword.SelectorBuilderHelper;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testobject.TestObject;
 
@@ -29,7 +33,7 @@ public class MobileElementCommonHelper {
 
     private static final int DEFAULT_DRAG_AND_DROP_DELAY = 2000;
 
-    private static final int DEFAULT_TAP_DURATION = 50;
+    public static final int DEFAULT_TAP_DURATION = 50;
 
     private static final String IOS_CHECKED_ATTRIBUTE_IS_CHECKED = "1";
 
@@ -107,7 +111,7 @@ public class MobileElementCommonHelper {
     }
 
     public static void tapAndHold(Number x, Number y, Number duration) throws StepFailedException, Exception {
-        checkXAndY(x, y);
+        MobileCommonHelper.checkXAndY(x, y);
         boolean useCustomDuration = checkDuration(duration);
         TouchAction longPressAction = new TouchAction(MobileDriverFactory.getDriver());
         longPressAction = (useCustomDuration) ? longPressAction.longPress(x.intValue(), y.intValue(),
@@ -166,6 +170,33 @@ public class MobileElementCommonHelper {
                 MessageFormat.format(StringConstants.KW_LOG_PASSED_UNCHECK_ELEMENT, to.getObjectId()));
     }
 
+    public static void selectItemByIndex(TestObject to, int index, int timeout, FailureHandling flowControl)
+            throws Exception {
+        findElementWithCheck(to, timeout * 1000);
+        // Find direct children
+        AppiumDriver<?> driver = MobileDriverFactory.getDriver();
+        String xpath = SelectorBuilderHelper.makeXpath(to.getActiveProperties());
+        List<?> items = driver.findElementsByXPath(xpath + "/*");
+        if (items.size() < index) {
+            throw new StepFailedException(MessageFormat.format(StringConstants.KW_LOG_FAILED_LIST_ITEM_INDEX_EXCEED,
+                    index, items.size()));
+        }
+        if (driver instanceof IOSDriver) {
+            // Ensure element is visible
+            WebElement itemElement = driver.findElementByXPath(xpath + "/*" + "[" + index + "]");
+            HashMap<String, String> scrollObject = new HashMap<String, String>();
+            scrollObject.put("direction", "down");
+            scrollObject.put("element", ((MobileElement) itemElement).getId());
+            driver.executeScript("mobile: scrollTo", scrollObject);
+            // Click on element
+            ((MobileElement) itemElement).tap(1, 1);
+        } else if (driver instanceof AndroidDriver) {
+            throw new StepFailedException(StringConstants.KW_LOG_FAILED_FEATURE_NOT_AVAILABLE);
+        }
+        KeywordLogger.getInstance().logPassed(
+                MessageFormat.format(StringConstants.KW_LOG_PASSED_LIST_ITEM_CLICKED, index, to.getObjectId()));
+    }
+    
     public static boolean isElementChecked(TestObject to, int timeout) throws StepFailedException, Exception {
         return isElementChecked(findElementWithCheck(to, timeout));
     }
@@ -187,6 +218,49 @@ public class MobileElementCommonHelper {
         KeywordLogger.getInstance().logPassed(
                 MessageFormat.format(StringConstants.KW_LOG_PASSED_DRAG_AND_DROP_ELEMENT_X_TO_ELEMENT_Y,
                         fromObj.getObjectId()));
+    }
+    
+    public static void selectListItemByLabel(TestObject to, String label, int timeout, FailureHandling flowControl)
+            throws Exception {
+        WebElement element = findElementWithCheck(to, timeout);
+        if (element == null) {
+            throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_OBJ_NOT_FOUND, to.getObjectId()));
+        }
+        // Find direct children
+        AppiumDriver<?> driver = MobileDriverFactory.getDriver();
+        String xpath = SelectorBuilderHelper.makeXpath(to.getActiveProperties());
+
+        scrollToFindElementWithText(driver, (RemoteWebElement) element, label);
+
+        // Find child element with specified label
+        String itemXpath = (driver instanceof IOSDriver) ? (xpath + "//*" + "[@label='" + label + "' or @value='"
+                + label + "']") : (xpath + "//*" + "[@text='" + label + "' or text()='" + label + "']");
+        List<?> itemElements = driver.findElementsByXPath(itemXpath);
+        if (itemElements.size() > 0) {
+            WebElement itemElement = (WebElement) itemElements.get(0);
+            // Click on element
+            ((MobileElement) itemElement).tap(1, 1);
+        } else {
+            throw new StepFailedException(MessageFormat.format(StringConstants.KW_LOG_FAILED_LABELED_ITEM_NOT_FOUND,
+                    label, to.getObjectId()));
+        }
+
+        KeywordLogger.getInstance().logPassed(
+                MessageFormat.format(StringConstants.KW_LOG_PASSED_LIST_LABELED_ITEM_CLICKED, label, to.getObjectId()));
+    }
+
+    private static void scrollToFindElementWithText(AppiumDriver<?> driver, RemoteWebElement element, String text) {
+        // Ensure element visible
+        try {
+            HashMap<String, String> scrollObject = new HashMap<String, String>();
+            scrollObject = new HashMap<String, String>();
+            scrollObject.put("direction", "down");
+            scrollObject.put("element", element.getId());
+            scrollObject.put("text", text);
+            driver.executeScript("mobile: scrollTo", scrollObject);
+        } catch (WebDriverException ex) {
+            // Scroll action sometime throw unknown server error
+        }
     }
 
     public static void moveSlider(TestObject to, Number percent, int timeout) throws StepFailedException, Exception {
@@ -239,23 +313,9 @@ public class MobileElementCommonHelper {
     }
 
     public static void tapAtPosition(Number x, Number y) {
-        checkXAndY(x, y);
+        MobileCommonHelper.checkXAndY(x, y);
         MobileDriverFactory.getDriver().tap(1, x.intValue(), y.intValue(), DEFAULT_TAP_DURATION);
         KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TAPPED_AT_X_Y, x, y));
-    }
-
-    private static void checkXAndY(Number x, Number y) {
-        KeywordLogger logger = KeywordLogger.getInstance();
-        logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_X);
-        if (x == null) {
-            throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_FAILED_PARAM_X_CANNOT_BE_NULL,
-                    "x"));
-        }
-        logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_Y);
-        if (y == null) {
-            throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_FAILED_PARAM_X_CANNOT_BE_NULL,
-                    "y"));
-        }
     }
     
     public static int getElementWidth(TestObject to, int timeout) throws Exception {

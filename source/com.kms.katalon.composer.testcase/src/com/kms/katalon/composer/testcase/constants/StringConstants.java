@@ -207,7 +207,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PREF_BTN_EXPOSE_VARS_AUTO = "Expose variables automatically after choosing the called test case";
     public static final String PREF_BTN_DEFAULT_VIEW_MANUAL = "In Manual View";
     public static final String PREF_BTN_DEFAULT_VIEW_SCRIPT = "In Script View";
-    public static final String PREF_LBL_DEFAULT_FAILURE_HANDLING = "Default Failure Handling";
+    public static final String PREF_LBL_DEFAULT_FAILURE_HANDLING = "Default generated Failure Handling parameter";
     public static final String PREF_LBL_DEFAULT_KEYWORD_TYPE = "Default Keyword Type";
     public static final String PREF_GRP_DEFAULT_KEYWORD = "Default Keyword";
     public static final String PREF_GRP_TEST_CASE_DEFAULT_VIEW = "Initially open Test Case";

@@ -21,4 +21,5 @@ public class StringConstants extends GlobalStringConstants {
 	
 	//MobileSettingPreferencePage
 	public static final String PREF_LBL_APPIUM_DIRECTORY = "Appium Directory";
+	public static final String PREF_LBL_APPIUM_LOG_LEVEL = "Appium Log Level";
 }

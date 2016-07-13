@@ -77,7 +77,9 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PA_COL_NO = NO_;
 
-    public static final String PA_TOOL_TIP_ADD_COLUMN = "Add column";
+    public static final String PA_TOOL_TIP_ADD_COLUMN = "Click to add column";
+    
+    public static final String PA_TOOL_TIP_ADD_ROW = "Click to add row";
 
     // TestDataMainPart
     public static final String PA_LBL_GENERAL_INFO = "General Information";

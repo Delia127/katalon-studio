@@ -299,6 +299,18 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     
     public static final String KW_LOG_FAILED_TAPPED_AT_POSITION = "Failed to tap at position";
     
+    public static final String KW_LOG_PASSED_ZOOM_AT_X_Y_WITH_OFFSET_Z = "Zoomed in at [{0}, {1}] with offset {2}";
+
+    public static final String KW_LOG_FAILED_ZOOM_AT_X_Y_WITH_OFFSET_Z = "Failed to zoom in at [{0}, {1}] with offset {2}";
+    
+    public static final String KW_LOG_FAILED_ZOOM_AT_POSITION = "Failed to pinch to zoom at position";
+    
+    public static final String KW_LOG_PASSED_PINCH_AT_X_Y_WITH_OFFSET_Z = "Zoomed out to [{0}, {1}] with offset {2}";
+
+    public static final String KW_LOG_FAILED_PINCH_AT_X_Y_WITH_OFFSET_Z = "Failed to zoom out to [{0}, {1}] with offset {2}";
+    
+    public static final String KW_LOG_FAILED_PINCH_AT_POSITION = "Failed to pinch to zoom out at position";
+    
     public static final String KW_MSG_FAILED_PARAM_X_CANNOT_BE_NULL = "Param {0} cannot be null";
 
     public static final String KW_CATEGORIZE_APPLICATION = "Application";
@@ -351,10 +363,30 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_MSG_FAILED_TO_UNLOCK_SCREEN = "Failed to unlock screen";
 
     public static final String KW_MSG_PASSED_TO_UNLOCK_SCREEN = "Screen unlocked";
+    
+    public static final String KW_LOG_PASSED_LIST_LABELED_ITEM_CLICKED = "Item labeled ''{0}'' of object ''{1}'' clicked";
+    
+    public static final String KW_LOG_FAILED_LABELED_ITEM_NOT_FOUND = "Item labeled ''{0}'' of object ''{1}'' not found";
+    
+    public static final String KW_MSG_FAILED_TO_SELECT_ELEMENT_BY_LABEL_OF_OBJ = "Failed to select item labeled ''{0}'' of object ''{1}''";
+    
+    public static final String KW_MSG_FAILED_TO_SELECT_ELEMENT_BY_LABEL = "Failed to select item labeled ''{0}''";
 
     public static final String COMM_LOG_INFO_CHECKING_X = "Checking x position";
 
     public static final String COMM_LOG_INFO_CHECKING_Y = "Checking y position";
+
+    public static final String KW_LOG_PASSED_LIST_ITEM_CLICKED = "Item index ''{0}'' of object ''{1}'' clicked";
+    
+    public static final String KW_LOG_FAILED_LIST_ITEM_INDEX_EXCEED = "Index ''{0}'' exceed total item count ''{1}''";
+    
+    public static final String KW_LOG_FAILED_FEATURE_NOT_AVAILABLE = "This feature is being implemented";
+    
+    public static final String KW_MSG_FAILED_TO_SELECT_ELEMENT_BY_INDEX_OF_OBJ = "Failed to select item indexed ''{0}'' of object ''{1}''";
+    
+    public static final String KW_MSG_FAILED_TO_SELECT_ELEMENT_BY_INDEX = "Failed to select item indexed ''{0}''";
+    
+    public static final String COMM_LOG_INFO_CHECKING_OFFSET = "Checking offset position";
 
     public static final String KW_LOG_PASSED_OBJ_HAS_WIDTH = "Object ''{0}'' has width: ''{1}''";
 
