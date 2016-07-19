@@ -13,7 +13,7 @@ import org.supercsv.prefs.CsvPreference;
 
 public class CSVReader {
     private ICsvListReader listReader;
-    private List<String[]> data;
+    private List<List<String>> data;
     private String[] columnNames;
     private boolean containsHeader;
 
@@ -35,10 +35,10 @@ public class CSVReader {
             if (containHeader) {
                 columnNames = listReader.getHeader(containHeader);
             }
-            data = new ArrayList<String[]>();
+            data = new ArrayList<List<String>>();
             List<String> rowValues;
             while ((rowValues = listReader.read()) != null) {
-                data.add(rowValues.toArray(new String[rowValues.size()]));
+                data.add(rowValues);
             }
         } finally {
             IOUtils.closeQuietly(listReader);
@@ -57,7 +57,7 @@ public class CSVReader {
      * 
      * @return
      */
-    public List<String[]> getData() {
+    public List<List<String>> getData() {
         return data;
     }
 
@@ -77,7 +77,7 @@ public class CSVReader {
             return getColumnNames().length;
         } else {
             if (data != null && data.size() > 0) {
-                return data.get(0).length;
+                return data.get(0).size();
             }
             return 0;
         }

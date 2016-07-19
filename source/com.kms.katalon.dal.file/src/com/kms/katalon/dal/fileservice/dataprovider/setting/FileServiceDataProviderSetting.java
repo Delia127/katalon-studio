@@ -1,5 +1,6 @@
 package com.kms.katalon.dal.fileservice.dataprovider.setting;
 
+import com.kms.katalon.dal.ICheckpointProvider;
 import com.kms.katalon.dal.IDataFileDataProvider;
 import com.kms.katalon.dal.IEntityNameProvider;
 import com.kms.katalon.dal.IExportDataProvider;
@@ -12,6 +13,7 @@ import com.kms.katalon.dal.ITestCaseDataProvider;
 import com.kms.katalon.dal.ITestSuiteDataProvider;
 import com.kms.katalon.dal.IWebElementDataProvider;
 import com.kms.katalon.dal.TestSuiteCollectionDataProvider;
+import com.kms.katalon.dal.fileservice.dataprovider.CheckpointFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.DataFileFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.EntityNameFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.ExportFileServiceDataProvider;
@@ -31,86 +33,90 @@ import com.kms.katalon.entity.PKType;
 import com.kms.katalon.entity.project.ProjectEntity;
 
 public class FileServiceDataProviderSetting implements IDataProviderSetting {
-	
-	@Override
-	public void reset(String configValue) throws Exception {
-		// TODO initialize
 
-	}
+    @Override
+    public void reset(String configValue) throws Exception {
+        // TODO initialize
+    }
 
-	@Override
-	public ITestCaseDataProvider getTestCaseDataProvider() {
-	    return new TestCaseFileServiceDataProvider();
-	}
+    @Override
+    public ITestCaseDataProvider getTestCaseDataProvider() {
+        return new TestCaseFileServiceDataProvider();
+    }
 
-	@Override
-	public IFolderDataProvider getFolderDataProvider() {
-		return new FolderFileServiceDataProvider();
-	}
-	
-	@Override
-	public ITestSuiteDataProvider getTestSuiteDataProvider() {
-		return new TestSuiteFileServiceDataProvider();
-	}
+    @Override
+    public IFolderDataProvider getFolderDataProvider() {
+        return new FolderFileServiceDataProvider();
+    }
 
-	@Override
-	public IWebElementDataProvider getWebElementDataProvider() {
-		return new WebElementFileServiceDataProvider();
-	}
+    @Override
+    public ITestSuiteDataProvider getTestSuiteDataProvider() {
+        return new TestSuiteFileServiceDataProvider();
+    }
 
-	@Override
-	public IProjectDataProvider getProjectDataProvider() {
-		return new ProjectFileServiceDataProvider();
-	}
+    @Override
+    public IWebElementDataProvider getWebElementDataProvider() {
+        return new WebElementFileServiceDataProvider();
+    }
 
-	@Override
-	public IImportDataProvider getImportDataProvider() {
-		return new ImportFileServiceDataProvider();
-	}
+    @Override
+    public IProjectDataProvider getProjectDataProvider() {
+        return new ProjectFileServiceDataProvider();
+    }
 
-	@Override
-	public IExportDataProvider getExportDataProvider() {
-		return new ExportFileServiceDataProvider();
-	}
+    @Override
+    public IImportDataProvider getImportDataProvider() {
+        return new ImportFileServiceDataProvider();
+    }
 
-	@Override
-	public IDataFileDataProvider getDataFileDataProvider() {
-		return new DataFileFileServiceDataProvider();
-	}
+    @Override
+    public IExportDataProvider getExportDataProvider() {
+        return new ExportFileServiceDataProvider();
+    }
 
-	@Override
-	public PKType getEntityPKType() {
-		return PKType.Path;
-	}
+    @Override
+    public IDataFileDataProvider getDataFileDataProvider() {
+        return new DataFileFileServiceDataProvider();
+    }
 
-	@Override
-	public void setCurrentProject(ProjectEntity project) {
-		DataProviderState.getInstance().setCurrentProject(project);
-	}
+    @Override
+    public PKType getEntityPKType() {
+        return PKType.Path;
+    }
 
-	@Override
-	public IReportDataProvider getReportDataProvider() {
-		return new ReportFileServiceDataProvider();
-	}
+    @Override
+    public void setCurrentProject(ProjectEntity project) {
+        DataProviderState.getInstance().setCurrentProject(project);
+    }
 
-	@Override
-	public String getEntityPk(Entity entity) {
-		return entity.getId();
-	}
+    @Override
+    public IReportDataProvider getReportDataProvider() {
+        return new ReportFileServiceDataProvider();
+    }
 
-	@Override
-	public IGlobalVariableDataProvider getGlobalVariableDataProvider() {
-		return new GlobalVariableFileServiceDataProvider();
-	}
+    @Override
+    public String getEntityPk(Entity entity) {
+        return entity.getId();
+    }
+
+    @Override
+    public IGlobalVariableDataProvider getGlobalVariableDataProvider() {
+        return new GlobalVariableFileServiceDataProvider();
+    }
 
     @Override
     public IEntityNameProvider getEntityNameProvider() {
-       return new EntityNameFileServiceDataProvider();
+        return new EntityNameFileServiceDataProvider();
     }
 
     @Override
     public TestSuiteCollectionDataProvider getTestSuiteCollectionDataProvider() {
         return new TestRunFileServiceDataProvider();
+    }
+
+    @Override
+    public ICheckpointProvider getCheckpointDataProvider() {
+        return new CheckpointFileServiceDataProvider();
     }
 
 }

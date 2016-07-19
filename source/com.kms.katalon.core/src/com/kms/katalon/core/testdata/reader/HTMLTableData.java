@@ -19,10 +19,12 @@ import com.kms.katalon.core.testdata.InternalData;
 public class HTMLTableData extends ExcelData {
 
     private InternalData internalData;
+
     private String sheetName;
-    
-    //lookup for changing header mode    
+
+    // lookup for changing header mode
     private List<String> columnNames;
+
     private List<String[]> dataBody;
 
     public HTMLTableData(String sourceUrl, boolean hasHeaders) throws IOException {
@@ -81,10 +83,10 @@ public class HTMLTableData extends ExcelData {
         List<String[]> dataBodyCoppied = new ArrayList<String[]>(dataBody);
         if (hasHeaders) {
             internalData = new InternalData(getSourceUrl(), dataBodyCoppied, columnNamesCoppied);
-        } else {            
+        } else {
             dataBodyCoppied.add(0, columnNamesCoppied.toArray(new String[columnNamesCoppied.size()]));
-            internalData = new InternalData(getSourceUrl(), dataBodyCoppied, Arrays.asList(ArrayUtils
-                    .nullToEmpty(new String[columnNamesCoppied.size()])));
+            internalData = new InternalData(getSourceUrl(), dataBodyCoppied,
+                    Arrays.asList(ArrayUtils.nullToEmpty(new String[columnNamesCoppied.size()])));
         }
     }
 

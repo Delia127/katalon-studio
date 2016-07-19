@@ -1,11 +1,14 @@
 package com.kms.katalon.core.testdata;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class InternalData extends AbstractTestData {
 
     private List<String[]> data;
+
     private List<String> columnNames;
 
     public InternalData(String fileSource, List<String[]> data, List<String> columnNames) {
@@ -53,8 +56,18 @@ public class InternalData extends AbstractTestData {
     public int getColumnNumbers() {
         return columnNames.size();
     }
-    
+
     public List<String[]> getData() {
         return data;
     }
+
+    @Override
+    public List<List<Object>> getAllData() {
+        List<List<Object>> data = new ArrayList<List<Object>>();
+        for (String[] row : getData()) {
+            data.add(new ArrayList<Object>(Arrays.asList(row)));
+        }
+        return data;
+    }
+
 }

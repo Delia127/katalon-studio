@@ -7,6 +7,7 @@ Bundle-Vendor: KMS
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: com.kms.katalon.core.annotation,
  com.kms.katalon.core.ast,
+ com.kms.katalon.core.checkpoint,
  com.kms.katalon.core.configuration;uses:="com.kms.katalon.custom.driver",
  com.kms.katalon.core.constants,
  com.kms.katalon.core.db,

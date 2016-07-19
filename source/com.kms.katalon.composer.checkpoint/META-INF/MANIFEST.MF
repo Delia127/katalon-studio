@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Checkpoint
+Bundle-SymbolicName: com.kms.katalon.composer.checkpoint;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: KMS
+Require-Bundle: org.eclipse.e4.ui.model.workbench
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7

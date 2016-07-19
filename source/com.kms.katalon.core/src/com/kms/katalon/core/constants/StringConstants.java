@@ -238,7 +238,7 @@ public class StringConstants {
     public static final String XML_LOG_ID_PROPERTY = "id";
 
     public static final String XML_LOG_SOURCE_PROPERTY = "source";
-    
+
     public static final String XML_LOG_IS_OPTIONAL = "isOptional";
 
     public static final String XML_LOG_BROWSER_TYPE_PROPERTY = "browserType";
@@ -317,7 +317,7 @@ public class StringConstants {
     public static final String CONF_PROPERTY_LOG_FILE_PATH = "logFilePath";
 
     public static final String CONF_APPIUM_LOG_FILE = "appiumLogFile";
-    
+
     public static final String CONF_APPIUM_DIRECTORY = "appiumDirectory";
     
     public static final String CONF_APPIUM_LOG_LEVEL = "appiumLogLevel";
@@ -353,7 +353,7 @@ public class StringConstants {
     public static final String CONF_PROPERTY_EXECUTION_PREFS_PROPERTY = "preferences";
 
     public static final String CONF_PROPERTY_EXECUTION_SYSTEM_PROPERTY = "system";
-    
+
     public static final String CONF_PROPERTY_REPORT = "report";
 
     public static final String CONF_PROPERTY_SCREEN_CAPTURE_OPTION = "screenCaptureOption";
@@ -383,9 +383,35 @@ public class StringConstants {
 
     // AstTestStepTransformation
     public static final String NOT_RUN_LABEL = "not_run";
-    
+
     // KeywordMain
     public static final String KW_LOG_WARNING_CANNOT_TAKE_SCREENSHOT = "Cannot take screenshot (Root cause: {0})";
 
     public static final String TESTCASE_SETTINGS_FILE_NAME = "com.kms.katalon.composer.testcase.settings";
+
+    // JsonUtils
+    public static final String EXC_MSG_INVALID_JSON_SYNTAX = "Invalid JSON syntax. Root cause: {0}";
+
+    // CheckpointFactory
+    public static final String EXC_MSG_CHECKPOINT_ID_IS_NULL = "Checkpoint ID is null.";
+
+    public static final String INFO_MSG_FINDING_CHECKPOINT_WITH_ID = "Finding checkpoint with ID ''{0}''";
+
+    public static final String EXC_MSG_CHECKPOINT_DOES_NOT_EXIST = "Checkpoint does not exist.";
+
+    public static final String EXC_MSG_CHECKPOINT_INVALID_SOURCE_TYPE = "Invalid data source type ''{0}''";
+
+    public static final String INFO_MSG_CHECKPOINT_HAS_SOURCE_FROM_X = "Checkpoint has source data from {0}";
+
+    public static final String EXC_MSG_CANNOT_FIND_CHECKPOINT_WITH_ID_ROOT_CAUSE = "Cannot find checkpoint with ID ''{0}''. Root cause: ''{1}''";
+
+    public static final String EXC_MSG_NOT_FOUND_TEST_DATA_WITH_ID = "Not found Test Data with ID ''{0}''";
+
+    public static final String EXC_MSG_DB_CONNECTION_SETTIGNS_ARE_EMPTY = "Database Connection settings are empty.";
+
+    public static final String EXC_MSG_EXCEL_SHEET_NAME_IS_EMPTY = "Excel sheet name is null or empty.";
+
+    public static final String EXC_MSG_INVALID_CSV_SEPARATOR = "Invalid CSV separator.";
+
+    public static final String EXC_MSG_CHECKPOINT_IS_MISSING_ELEMENT = "Checkpoint is missing ''{0}'' element";
 }
