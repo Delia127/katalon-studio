@@ -59,7 +59,7 @@ public class AstTreeLabelProvider extends StyledCellLabelProvider {
     @Override
     public void update(ViewerCell cell) {
         Object element = cell.getElement();
-        if (element == null || !(element instanceof AstTreeTableNode)) {
+        if (!(element instanceof AstTreeTableNode)) {
             super.update(cell);
             return;
         }
