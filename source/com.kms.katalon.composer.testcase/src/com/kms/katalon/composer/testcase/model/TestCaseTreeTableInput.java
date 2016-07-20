@@ -954,7 +954,7 @@ public class TestCaseTreeTableInput {
         StatementWrapper newBuiltinKeywordStatement = null;
         if (!StringUtils.isBlank(defaultSettingKeywordName)
                 && (KeywordController.getInstance().getBuiltInKeywordByName(keywordClass.getName(),
-                        defaultSettingKeywordName, null)) != null) {
+                        defaultSettingKeywordName)) != null) {
 
             MethodCallExpressionWrapper keywordMethodCallExpression = new MethodCallExpressionWrapper(
                     keywordClass.getSimpleName(), defaultSettingKeywordName);
@@ -962,7 +962,7 @@ public class TestCaseTreeTableInput {
             AstKeywordsInputUtil.generateMethodCallArguments(
                     keywordMethodCallExpression,
                     KeywordController.getInstance().getBuiltInKeywordByName(keywordClass.getName(),
-                            defaultSettingKeywordName, null));
+                            defaultSettingKeywordName));
 
             newBuiltinKeywordStatement = new ExpressionStatementWrapper(keywordMethodCallExpression, null);
 

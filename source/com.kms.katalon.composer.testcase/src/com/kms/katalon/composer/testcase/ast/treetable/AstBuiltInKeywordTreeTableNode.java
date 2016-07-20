@@ -38,7 +38,7 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
 
     private List<KeywordMethod> getKeywords() {
         List<KeywordMethod> keywords = new ArrayList<KeywordMethod>();
-        for (KeywordMethod keywordMethod : getBuiltInKeywordMethods()) {
+        for (KeywordMethod keywordMethod : getBuiltInKeywordMethodsWithoutFlowControl()) {
             keywords.add(keywordMethod);
         }
         return keywords;
@@ -99,9 +99,7 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
 
     @Override
     public boolean canEditInput() {
-        KeywordMethod keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
-                getBuiltInKWClassSimpleName(), getKeywordName(),
-                methodCall.getArguments().getArgumentListParameterTypes());
+        KeywordMethod keywordMethod = findKeywordMethod();
 
         if (keywordMethod == null || keywordMethod.getParameters().length == 0) {
             return false;
@@ -123,8 +121,7 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
         if (arguments == null || arguments.getExpressions().size() == 0) {
             return "";
         }
-        KeywordMethod keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
-                getBuiltInKWClassSimpleName(), getKeywordName(), arguments.getArgumentListParameterTypes());
+        KeywordMethod keywordMethod = findKeywordMethod();
         if (keywordMethod == null) {
             return "";
         }
@@ -185,9 +182,7 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
             return false;
         }
         List<?> inputParameters = (List<?>) input;
-        KeywordMethod keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
-                getBuiltInKWClassSimpleName(), getKeywordName(),
-                methodCall.getArguments().getArgumentListParameterTypes());
+        KeywordMethod keywordMethod = findKeywordMethod();
         if (keywordMethod == null) {
             return false;
         }
@@ -209,9 +204,7 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
 
     @Override
     protected int getObjectArgumentIndex() {
-        KeywordMethod keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
-                getBuiltInKWClassSimpleName(), getKeywordName(),
-                methodCall.getArguments().getArgumentListParameterTypes());
+        KeywordMethod keywordMethod = findKeywordMethod();
         if (keywordMethod == null) {
             return -1;
         }
@@ -225,9 +218,7 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
 
     @Override
     public boolean canEditOutput() {
-        KeywordMethod keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
-                getBuiltInKWClassSimpleName(), getKeywordName(),
-                methodCall.getArguments().getArgumentListParameterTypes());
+        KeywordMethod keywordMethod = findKeywordMethod();
         return isOutputNotVoid(keywordMethod);
     }
 
@@ -237,9 +228,7 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
 
     @Override
     protected Class<?> getOutputReturnType() {
-        KeywordMethod keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
-                getBuiltInKWClassSimpleName(), getKeywordName(),
-                methodCall.getArguments().getArgumentListParameterTypes());
+        KeywordMethod keywordMethod = findKeywordMethod();
         if (isOutputNotVoid(keywordMethod)) {
             return keywordMethod.getReturnType();
         }
@@ -252,7 +241,18 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
      * 
      * @return list of keyword method
      */
-    private List<KeywordMethod> getBuiltInKeywordMethods() {
+    private List<KeywordMethod> getBuiltInKeywordMethodsWithoutFlowControl() {
         return KeywordController.getInstance().getBuiltInKeywords(getBuiltInKWClassSimpleName(), true);
+    }
+
+    /**
+     * Find the keyword method that most suitable for the given method call
+     * @return most suitable eywordMethod
+     */
+    private KeywordMethod findKeywordMethod() {
+        KeywordMethod keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
+                getBuiltInKWClassSimpleName(), getKeywordName(),
+                methodCall.getArguments().getArgumentListParameterTypes());
+        return keywordMethod;
     }
 }

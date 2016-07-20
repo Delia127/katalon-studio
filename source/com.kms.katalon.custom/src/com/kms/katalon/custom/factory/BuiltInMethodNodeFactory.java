@@ -52,6 +52,7 @@ public class BuiltInMethodNodeFactory {
         if (keywordMethods == null) {
             return null;
         }
+        KeywordMethod mostLikelyMethod = null;
         for (KeywordMethod kwMethod : keywordMethods) {
             if (!kwMethod.getName().equals(methodName)) {
                 continue;
@@ -59,14 +60,18 @@ public class BuiltInMethodNodeFactory {
             if (paramTypes == null) {
                 return kwMethod;
             }
+            if (mostLikelyMethod == null) {
+                mostLikelyMethod = kwMethod;
+            }
             if (kwMethod.getParameters().length != paramTypes.length) {
                 continue;
             }
+            mostLikelyMethod = kwMethod;
             if (kwMethod.checkParametersAssignable(paramTypes)) {
                 return kwMethod;
             }
         }
-        return null;
+        return mostLikelyMethod;
     }
 
     private static List<KeywordMethod> findKeywordMethodClassByName(String className) {
