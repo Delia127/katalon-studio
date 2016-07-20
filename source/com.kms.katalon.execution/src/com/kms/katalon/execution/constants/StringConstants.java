@@ -44,7 +44,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String LAU_PRT_LAUNCHING_X = "Launching {0}...";
     public static final String LAU_PRT_X_DONE = "{0} DONE. {1}";
     public static final String LAU_PRT_SENDING_EMAIL_RPT_TO = "Sending report to email: {0}...";
-    public static final String LAU_PRT_SENDING_RPT_TO = "Sending report to {0}...";
+    public static final String LAU_PRT_SENDING_RPT_TO = "Uploading report to {0}...";
     public static final String LAU_PRT_EMAIL_SENT = "Email sent.";
     public static final String LAU_PRT_REPORT_SENT = "Report has been sent to {0}";
     public static final String LAU_PRT_COPYING_RPT_TO_USR_RPT_FOLDER = "Copying report to folder {0}...";
@@ -56,4 +56,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String LAU_PRT_X_FAILED_AT_LINE_Y = "{0} failed at line: {1}";
     public static final String LAU_PRT_FAILED_AT_LINE_X = "Failed at line: {0}";
     public static final String LAU_PRT_CANNOT_CLEAN_TEMP_FILES = "Unable to clean temporary files";
+    
+    public static final String LAU_MESSAGE_UPLOADING_RPT = "Uploading report to {0}";
+    public static final String LAU_MESSAGE_SENDING_EMAIL = "Sending email";
 }

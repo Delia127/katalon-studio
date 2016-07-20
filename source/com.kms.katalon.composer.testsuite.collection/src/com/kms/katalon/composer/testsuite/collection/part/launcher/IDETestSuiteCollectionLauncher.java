@@ -53,7 +53,7 @@ public class IDETestSuiteCollectionLauncher extends TestSuiteCollectionLauncher 
     }
 
     @Override
-    public void setStatus(LauncherStatus status) {
+    public void setStatus(LauncherStatus status, String message) {
         super.setStatus(status);
         getEventBroker().post(EventConstants.JOB_REFRESH, null);
     }

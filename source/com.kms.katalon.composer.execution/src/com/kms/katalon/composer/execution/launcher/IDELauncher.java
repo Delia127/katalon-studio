@@ -6,6 +6,7 @@ import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPre
 import java.util.Date;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
@@ -109,8 +110,8 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
     }
 
     @Override
-    public void setStatus(LauncherStatus status) {
-        super.setStatus(status);
+    public void setStatus(LauncherStatus status, String message) {
+        super.setStatus(status, message);
         sendUpdateJobViewerEvent();
     }
 
@@ -261,6 +262,9 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
 
     @Override
     public String getDisplayMessage() {
-        return "<" + getStatus().toString() + ">" + " - " + getRunConfig().getName();
+        String currentStatusMessage = getMessage();
+        String displayMessage = StringUtils.isNotEmpty(currentStatusMessage) ? currentStatusMessage
+                : getStatus().toString();
+        return "<" + displayMessage + ">" + " - " + getRunConfig().getName();
     }
 }
