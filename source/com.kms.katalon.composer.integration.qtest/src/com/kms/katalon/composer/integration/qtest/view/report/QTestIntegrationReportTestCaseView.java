@@ -20,9 +20,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.browser.IWebBrowser;
 
+import com.kms.katalon.composer.components.impl.util.DesktopUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.ImageConstants;
@@ -200,8 +199,7 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
 
             URL url = QTestIntegrationReportManager.getTestLogURL(projectDir, qTestProject, qTestRun, qTestCaseLog);
 
-            IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser();
-            browser.openURL(url);
+            DesktopUtils.openUri(url.toURI());
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }

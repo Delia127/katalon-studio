@@ -15,10 +15,9 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.browser.IWebBrowser;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.util.DesktopUtils;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
@@ -163,8 +162,7 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
                     .getQTestProject();
             URL url = QTestIntegrationTestCaseManager.navigatedUrlToQTestTestCase(qTestProject, qTestTestCase,
                     projectEntity.getFolderLocation());
-            IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser();
-            browser.openURL(url);
+            DesktopUtils.openUri(url.toURI());
         } catch (Exception e) {
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.VIEW_MSG_UNABLE_NAVIGATE_TEST_CASE, e.getClass()
                     .getSimpleName());
