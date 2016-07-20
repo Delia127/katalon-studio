@@ -9,12 +9,14 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
+import com.kms.katalon.custom.factory.CustomMethodNodeFactory;
 import com.kms.katalon.dal.state.DataProviderState;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
@@ -71,6 +73,11 @@ public class ProjectController extends EntityController {
                 monitor.done();
             }
         }
+    }
+    
+    public void cleanProjectUISettings(ProjectEntity projectEntity) throws CoreException {
+        CustomMethodNodeFactory.getInstance().reset();
+        GroovyUtil.emptyProjectClasspath(projectEntity);
     }
 
     public ProjectEntity openProject(String projectPk) throws Exception {

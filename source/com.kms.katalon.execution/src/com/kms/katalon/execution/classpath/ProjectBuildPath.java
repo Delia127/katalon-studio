@@ -78,7 +78,7 @@ public class ProjectBuildPath {
     }
     
     private List<IBuildPath> getExternalBuildPaths() throws IOException {
-        File externalDriversFolder = new File(project.getFolderLocation(), EXTERNAL_DRIVERS_FOLDER);
+        File externalDriversFolder = getExternalLibrariesDir();
 
         if (!externalDriversFolder.exists()) {
             return Collections.emptyList();
@@ -89,6 +89,10 @@ public class ProjectBuildPath {
             externalLibBuildPaths.add(new BuildPathEntry(jarFile.getAbsolutePath()));
         }
         return externalLibBuildPaths;
+    }
+
+    public File getExternalLibrariesDir() {
+        return new File(project.getFolderLocation(), EXTERNAL_DRIVERS_FOLDER);
     }
     
     private List<String> getExternalBuildPathLoc() throws IOException {

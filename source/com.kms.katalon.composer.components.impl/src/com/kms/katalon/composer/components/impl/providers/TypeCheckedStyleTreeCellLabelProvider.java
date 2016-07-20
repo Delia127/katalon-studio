@@ -21,7 +21,7 @@ public abstract class TypeCheckedStyleTreeCellLabelProvider<T> extends TypeCheck
 
     protected ViewerCell getOwnedViewerCell(Event event) {
         CTreeViewer treeViewer = (CTreeViewer) getViewer();
-        return treeViewer.getViewerRowFromItem(event.item).getCell(columnIndex);
+        return treeViewer.getViewerRowFromWidgetItem(event.item).getCell(columnIndex);
     }
 
     @Override

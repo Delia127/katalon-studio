@@ -82,6 +82,11 @@
             id="com.kms.katalon.composer.execution.settings.custom"
             name="Custom">
       </page>
+      <page
+            class="com.kms.katalon.composer.execution.settings.ExternalLibratiesSettingPage"
+            id="com.kms.katalon.composer.execution.externallib"
+            name="External Libraries">
+      </page>
    </extension>
    <extension
          point="org.eclipse.debug.core.watchExpressionDelegates">
