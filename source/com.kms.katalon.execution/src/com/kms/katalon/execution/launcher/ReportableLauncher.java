@@ -63,12 +63,15 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
 
         try {
+            setStatus(LauncherStatus.SENDING_REPORT);
             Date startTime = ReportController.getInstance().getDateFromReportFolderName(
                     getRunConfig().getExecutionSetting().getName());
 
             updateLastRun(startTime);
 
-            prepareReport();
+            TestSuiteLogRecord suiteLogRecord = prepareReport();
+
+            uploadReportToIntegratingProduct(suiteLogRecord);
 
             sendReport();
 
@@ -112,8 +115,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
     private void sendReport() {
         try {
-            setStatus(LauncherStatus.SENDING_EMAIL);
-
+            setStatus(LauncherStatus.SENDING_REPORT, StringConstants.LAU_MESSAGE_SENDING_EMAIL);
             File testSuiteReportSourceFolder = new File(getRunConfig().getExecutionSetting().getFolderPath());
 
             File csvFile = new File(testSuiteReportSourceFolder,
@@ -159,14 +161,15 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
     }
 
-    protected void prepareReport() {
+    protected TestSuiteLogRecord prepareReport() {
         try {
             TestSuiteLogRecord suiteLog = ReportUtil.generate(getRunConfig().getExecutionSetting().getFolderPath());
             ReportUtil.writeLogRecordToFiles(suiteLog, getReportFolder());
-            uploadReportToIntegratingProduct(suiteLog);
             copyReport();
+            return suiteLog;
         } catch (Exception e) {
             LogUtil.logError(e);
+            return null;
         }
     }
 
@@ -222,16 +225,18 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             if (contribution == null || !contribution.isIntegrationActive(getTestSuite())) {
                 continue;
             }
-
+            String integratingProductName = reportContributorEntry.getKey();
+            setStatus(LauncherStatus.SENDING_REPORT,
+                    MessageFormat.format(StringConstants.LAU_MESSAGE_UPLOADING_RPT, integratingProductName));
             try {
-                writeLine(MessageFormat.format(StringConstants.LAU_PRT_SENDING_RPT_TO, reportContributorEntry.getKey()));
+                writeLine(MessageFormat.format(StringConstants.LAU_PRT_SENDING_RPT_TO, integratingProductName));
 
                 reportContributorEntry.getValue().uploadTestSuiteResult(getTestSuite(), suiteLog);
 
-                writeLine(MessageFormat.format(StringConstants.LAU_PRT_REPORT_SENT, reportContributorEntry.getKey()));
+                writeLine(MessageFormat.format(StringConstants.LAU_PRT_REPORT_SENT, integratingProductName));
             } catch (Exception e) {
                 writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_SEND_INTEGRATION_REPORT,
-                        reportContributorEntry.getKey(), e.getMessage()));
+                        integratingProductName, e.getMessage()));
             }
         }
     }
