@@ -4,9 +4,14 @@ import groovy.transform.CompileStatic
 
 import java.text.MessageFormat
 
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang.ObjectUtils
+import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang.math.NumberUtils
 
 import com.kms.katalon.core.annotation.Keyword
+import com.kms.katalon.core.checkpoint.Checkpoint
+import com.kms.katalon.core.checkpoint.CheckpointCell
+import com.kms.katalon.core.configuration.RunConfiguration
 import com.kms.katalon.core.constants.StringConstants
 import com.kms.katalon.core.exception.StepErrorException
 import com.kms.katalon.core.exception.StepFailedException
@@ -19,8 +24,7 @@ import com.kms.katalon.core.main.TestResult
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testcase.TestCase
 import com.kms.katalon.core.testcase.TestCaseBinding
-import java.text.MessageFormat
-import com.kms.katalon.core.configuration.RunConfiguration
+import com.kms.katalon.core.testdata.TestData
 
 @CompileStatic
 public class BuiltinKeywords {
@@ -61,8 +65,8 @@ public class BuiltinKeywords {
                 return false;
             }
         }
-        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_MATCHING_BETWEEN_TXTS, actualText, 
-            expectedText, regularExpressionLog))
+        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_MATCHING_BETWEEN_TXTS, actualText,
+        expectedText, regularExpressionLog))
     }
 
     /**
@@ -110,8 +114,8 @@ public class BuiltinKeywords {
                 return true;
             }
         }
-        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_TXTS_ARE_UNMATCHED, actualText, expectedText, 
-            regularExpressionLog))
+        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_TXTS_ARE_UNMATCHED, actualText, expectedText,
+        regularExpressionLog))
     }
 
     /**
@@ -131,7 +135,7 @@ public class BuiltinKeywords {
     public static boolean verifyNotMatch(String actualText, String expectedText, boolean isRegex) throws StepFailedException {
         return verifyNotMatch(actualText, expectedText, isRegex, RunConfiguration.getDefaultFailureHandling());
     }
-    
+
     /**
      * Verify if two objects are equal.
      *
@@ -154,15 +158,15 @@ public class BuiltinKeywords {
                 isEqual = actualObject == expectedObject;
             }
             if (!isEqual) {
-                throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_OBJECTS_ARE_NOT_EQUAL, 
-                    String.valueOf(actualObject), String.valueOf(expectedObject)))
+                throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_OBJECTS_ARE_NOT_EQUAL,
+                String.valueOf(actualObject), String.valueOf(expectedObject)))
             } else {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJECTS_ARE_EQUAL, String.valueOf(actualObject), String.valueOf(expectedObject)));
             }
             return isEqual;
         }
-        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJECTS_ARE_EQUAL, actualObject, 
-            expectedObject))
+        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJECTS_ARE_EQUAL, actualObject,
+        expectedObject))
     }
 
     /**
@@ -209,8 +213,8 @@ public class BuiltinKeywords {
             }
             return !isEqual;
         }
-        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJECTS_ARE_NOT_EQUAL, actualObject, 
-            expectedObject))
+        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJECTS_ARE_NOT_EQUAL, actualObject,
+        expectedObject))
     }
 
     /**
@@ -225,9 +229,9 @@ public class BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_NUMBER)
     public static boolean verifyNotEqual(Object actualObject, Object expectedObject) throws StepFailedException, StepErrorException {
-        return verifyNotEqual(actualObject, expectedObject, RunConfiguration.getDefaultFailureHandling());    
+        return verifyNotEqual(actualObject, expectedObject, RunConfiguration.getDefaultFailureHandling());
     }
-    
+
     /**
      * Verify if the actual number is greater than the expected number
      * @param actualNumber
@@ -252,7 +256,7 @@ public class BuiltinKeywords {
         }
         , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_GREATER, actualNumber, expectedNumber))
     }
-    
+
     /**
      * Verify if the actual number is greater than the expected number
      * @param actualNumber
@@ -288,8 +292,8 @@ public class BuiltinKeywords {
             }
             return isGreaterThanOrEqual;
         }
-        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_NUMS_ARE_GT_OR_EQ, actualNumber, 
-            expectedNumber))
+        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_NUMS_ARE_GT_OR_EQ, actualNumber,
+        expectedNumber))
     }
 
     /**
@@ -305,7 +309,7 @@ public class BuiltinKeywords {
     public static boolean verifyGreaterThanOrEqual(Object actualNumber, Object expectedNumber) throws StepFailedException {
         return verifyGreaterThanOrEqual(actualNumber, expectedNumber, RunConfiguration.getDefaultFailureHandling());
     }
-    
+
     /**
      * Verify if the actual number is less than the expected number
      * @param actualNumber
@@ -329,9 +333,9 @@ public class BuiltinKeywords {
             return isLessThan;
         }
         , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_LT, actualNumber
-            , expectedNumber))
+        , expectedNumber))
     }
-    
+
     /**
      * Verify if the actual number is less than the expected number
      * @param actualNumber
@@ -368,10 +372,10 @@ public class BuiltinKeywords {
             }
             return isLessThanOrEqual;
         }
-        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_LT_OR_EQ_TO, actualNumber, 
-            expectedNumber))
+        , flowControl, MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_LT_OR_EQ_TO, actualNumber,
+        expectedNumber))
     }
-    
+
     /**
      * Verify if the actual number is less than or equal with the expected number
      * @param actualNumber
@@ -419,10 +423,10 @@ public class BuiltinKeywords {
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_CONCAT_STR_ARRAY, stringArrayValue, sb.toString()));
             return sb.toString();
         }
-        , flowControl, (stringArrayValue != null) ? MessageFormat.format(StringConstants.KW_CANNOT_CONCAT_STR_ARRAY, 
-            stringArrayValue) : StringConstants.KW_CANNOT_CONCAT)
+        , flowControl, (stringArrayValue != null) ? MessageFormat.format(StringConstants.KW_CANNOT_CONCAT_STR_ARRAY,
+        stringArrayValue) : StringConstants.KW_CANNOT_CONCAT)
     }
-    
+
     /**
      * Concatenate string array into a single string
      * @param strings
@@ -484,7 +488,7 @@ public class BuiltinKeywords {
         , flowControl, (calledTestCase != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_CALL_TC_W_ID_X, calledTestCase.getTestCaseId())
         : StringConstants.KW_MSG_CANNOT_CALL_TC)
     }
-    
+
     /**
      * Call and execute another test case
      * @param calledTestCase
@@ -521,7 +525,7 @@ public class BuiltinKeywords {
         }
         , flowControl, StringConstants.KW_MSG_CANNOT_DELAY_BROWSER)
     }
-    
+
     /**
      * Delay execution for a specific time (in seconds)
      * @param second
@@ -532,5 +536,103 @@ public class BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
     public static void delay(Object second) throws StepFailedException {
         delay(second, RunConfiguration.getDefaultFailureHandling());
+    }
+
+    /**
+     * Verify Checkpoint
+     * 
+     * @param checkpoint Checkpoint
+     * @param logChangedValues <code>true</code> will log all the changed value between checkpoint data and the source. <code>false</code> will not log any changed value.
+     * @param flowControl failure handling
+     * @return <code>true</code> if checked data of checkpoint matches their source data. Otherwise, <code>false</code>.
+     * @throws StepFailedException if data does not match
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static boolean verifyCheckpoint(Checkpoint checkpoint, boolean logChangedValues, FailureHandling flowControl) throws StepFailedException {
+        KeywordMain.runKeyword({
+            logger.logInfo(StringConstants.KW_MSG_VERIFY_CHECKPOINT)
+            if (checkpoint == null) {
+                throw new IllegalArgumentException(StringConstants.KW_MSG_CHECKPOINT_IS_NULL)
+            }
+            logger.logInfo(MessageFormat.format(StringConstants.KW_MSG_CHECKPOINT_ID_X, checkpoint.getId()))
+            if (checkpoint.getTakenDate() == null) {
+                throw new StepFailedException(StringConstants.KW_MSG_NO_SNAPSHOT)
+            }
+            if (checkpoint.getCheckpointData() == null) {
+                logger.logWarning(StringConstants.KW_MSG_CHECKPOINT_DATA_IS_NULL)
+            }
+            if (checkpoint.getSourceData() == null) {
+                logger.logWarning(StringConstants.KW_MSG_CHECKPOINT_SRC_DATA_IS_NULL)
+            }
+            if (checkpoint.getCheckpointData() == null && checkpoint.getSourceData() == null) {
+                logger.logPassed(StringConstants.KW_MSG_CHECKPOINT_DATA_MATCHES_WITH_NULL);
+                return true
+            }
+            if ((checkpoint.getCheckpointData() != null && checkpoint.getSourceData() == null) || (checkpoint.getCheckpointData() == null && checkpoint.getSourceData() != null)) {
+                throw new StepFailedException(StringConstants.KW_MSG_CHECKPOINT_DATA_DOES_NOT_MATCH)
+            }
+
+            if (checkpoint.getCheckpointRowNumbers() == checkpoint.getSourceRowNumbers()) {
+                logger.logInfo(StringConstants.KW_MSG_CHECKPOINT_ROW_NUMBER_MATCHES)
+            } else {
+                logger.logWarning(StringConstants.KW_MSG_CHECKPOINT_ROW_NUMBER_DOES_NOT_MATCH)
+            }
+
+            if (checkpoint.getCheckpointColumnNumbers() == checkpoint.getSourceColumnNumbers()) {
+                logger.logInfo(StringConstants.KW_MSG_CHECKPOINT_COL_NUMBER_MATCHES)
+            } else {
+                logger.logWarning(StringConstants.KW_MSG_CHECKPOINT_COL_NUMBER_DOES_NOT_MATCH)
+            }
+
+            List<List<Object>> sourceData = checkpoint.getSourceData()
+            List<List<CheckpointCell>> checkpointData = checkpoint.getCheckpointData()
+            try {
+                logger.logInfo(StringConstants.KW_MSG_VERIFY_CHECKED_VALUES)
+                boolean isDataNotChanged = true
+                for (int rowIndex = 0; rowIndex < checkpoint.getCheckpointRowNumbers(); rowIndex++) {
+                    List<CheckpointCell> row = checkpointData.get(rowIndex)
+                    for (int colIndex = 0; colIndex < checkpoint.getCheckpointColumnNumbers(); colIndex++) {
+                        CheckpointCell cell = row.get(colIndex)
+                        if (!cell.isChecked()) {
+                            continue
+                        }
+
+                        Object checkedValue = cell.getValue()
+                        Object currentValue = sourceData.get(rowIndex).get(colIndex)
+                        if (!ObjectUtils.equals(checkedValue, currentValue)) {
+                            if (logChangedValues) {
+                                logger.logWarning(MessageFormat.format(StringConstants.KW_MSG_CHECKPOINT_NOT_MATCH_AT_ROW_X_COL_Y_CHECKED_VAL_NEW_VAL, rowIndex + TestData.BASE_INDEX, colIndex + TestData.BASE_INDEX, checkedValue, currentValue))
+                            }
+                            isDataNotChanged = false
+                        }
+                    }
+                }
+
+                if (isDataNotChanged) {
+                    logger.logPassed(StringConstants.KW_MSG_CHECKPOINT_DATA_MATCHES)
+                    return true
+                }
+
+                throw new StepFailedException(StringConstants.KW_MSG_CHECKPOINT_DATA_DOES_NOT_MATCH)
+            } catch (Exception e) {
+                // Index out of bound
+                throw new StepFailedException(StringConstants.KW_MSG_CHECKPOINT_DATA_DOES_NOT_MATCH)
+            }
+        }, flowControl, MessageFormat.format(StringConstants.KW_MSG_UNABLE_TO_VERIFY_CHECKPOINT_X, checkpoint != null ? checkpoint.getId() : StringUtils.EMPTY));
+    }
+
+    /**
+     * Verify Checkpoint
+     * 
+     * @param checkpoint Checkpoint
+     * @param logChangedValues <code>true</code> will log all the changed value between checkpoint data and the source. <code>false</code> will not log any changed value.
+     * @return <code>true</code> if checked data of checkpoint matches their source data. Otherwise, <code>false</code>.
+     * @throws StepFailedException if data does not match
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static boolean verifyCheckpoint(Checkpoint checkpoint, boolean logChangedValues) throws StepFailedException {
+        return verifyCheckpoint(checkpoint, logChangedValues, RunConfiguration.getDefaultFailureHandling())
     }
 }
