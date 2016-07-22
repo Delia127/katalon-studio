@@ -1,34 +1,33 @@
 //Recursively loop through DOM elements and assign properties to object
 function treeHTML(element, object, currentWindow) {
-    if (element) {
-        object["type"] = element.nodeName.toLowerCase();
-        object["attributes"] = {};
-        if (element.attributes != null) {
-            if (element.attributes.length) {
-                for (var i = 0; i < element.attributes.length; i++) {
-                    if ((element.attributes[i].value !== '') && (element.attributes[i].value != null) && (element.attributes[i].value !== 'null')) {
-                        object["attributes"][element.attributes[i].nodeName] = element.attributes[i].value;
-                    }
-                }
+    if (!element) {
+        return;
+    }
+    object["type"] = element.nodeName.toLowerCase();
+    object["attributes"] = {};
+    if (element.attributes != null && element.attributes.length) {
+        for (var i = 0; i < element.attributes.length; i++) {
+            if ((element.attributes[i].value !== '') && (element.attributes[i].value != null) && (element.attributes[i].value !== 'null')) {
+                object["attributes"][element.attributes[i].nodeName] = element.attributes[i].value;
             }
         }
-        var text = getTextFromNode(element, true);
-        if (text !== '') {
-            object["attributes"]["text"] = text;
-        }
+    }
+    var text = getTextFromNode(element, true);
+    if (text !== '') {
+        object["attributes"]["text"] = text;
+    }
 
-        var xpath = createXPathFromElement(element);
-        if (xpath) {
-            object['xpath'] = xpath;
-        } else {
-            object['xpath'] = '';
-        }
+    var xpath = createXPathFromElement(element);
+    if (xpath) {
+        object['xpath'] = xpath;
+    } else {
+        object['xpath'] = '';
+    }
 
-        if (window.location === window.parent.location) {
-            object["page"] = {};
-            object["page"]['url'] = currentWindow.document.URL;
-            object["page"]['title'] = currentWindow.document.title;
-        }
+    if (window.location === window.parent.location) {
+        object["page"] = {};
+        object["page"]['url'] = currentWindow.document.URL;
+        object["page"]['title'] = currentWindow.document.title;
     }
 }
 
@@ -81,22 +80,24 @@ function createDomMap() {
 function getChilds(element) {
     if ((element.nodeName.toLowerCase() == 'iframe' || element.nodeName.toLowerCase() == 'frame') && element.domData) {
         return [element.domData]
-    } else if (element.childNodes.length > 0) {
-        var childElementJsonArray = [];
-        for (var i = 0; i < element.childNodes.length; i++) {
-            var childElement = element.childNodes[i];
-            if (childElement.nodeType != 3) {
-                var childJsonObject = mapDOM(childElement, window);
-                var childJsonArrayObjects = getChilds(childElement);
-                if (childJsonArrayObjects != null) {
-                    childJsonObject['children'] = childJsonArrayObjects;
-                }
-                childElementJsonArray.push(childJsonObject);
-            }
-        }
-        return childElementJsonArray;
     }
-    return null;
+    if (element.childNodes.length <= 0) {
+        return null;
+    }
+    var childElementJsonArray = [];
+    for (var i = 0; i < element.childNodes.length; i++) {
+        var childElement = element.childNodes[i];
+        if (childElement.nodeType == 3) {
+            continue;
+        }
+        var childJsonObject = mapDOM(childElement, window);
+        var childJsonArrayObjects = getChilds(childElement);
+        if (childJsonArrayObjects != null) {
+            childJsonObject['children'] = childJsonArrayObjects;
+        }
+        childElementJsonArray.push(childJsonObject);
+    }
+    return childElementJsonArray;
 }
 
 if (!String.prototype.trim) {
@@ -121,7 +122,8 @@ function createXPathFromElement(element) {
             if (uniqueIdCount == 1) {
                 segs.unshift('id("' + element.getAttribute('id') + '")');
                 return segs.join('/');
-            } else if (element.nodeName) {
+            }
+            if (element.nodeName) {
                 segs.unshift(element.nodeName.toLowerCase() + '[@id="' + element.getAttribute('id') + '"]');
             }
         } else if ((element.getAttribute('class') != null) && (element.getAttribute('class') !== '')) {
@@ -138,7 +140,6 @@ function createXPathFromElement(element) {
 
 function detectIE() {
     var ua = window.navigator.userAgent;
-
     var msie = ua.indexOf('MSIE ');
     if (msie > 0) {
         // IE 10 or older => return version number

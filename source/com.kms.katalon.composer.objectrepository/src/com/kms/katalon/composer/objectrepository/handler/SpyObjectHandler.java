@@ -30,14 +30,14 @@ public class SpyObjectHandler {
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell activeShell) {
         try {
             if (objectSpyDialog != null) {
-                objectSpyDialog.dispose();
+                objectSpyDialog.stop();
                 objectSpyDialog.close();
             }
             objectSpyDialog = new ObjectSpyDialog(activeShell, LoggerSingleton.getInstance().getLogger(), eventBroker);
             objectSpyDialog.open();
         } catch (Exception e) {
             if (objectSpyDialog != null) {
-                objectSpyDialog.dispose();
+                objectSpyDialog.stop();
                 objectSpyDialog.close();
             }
             LoggerSingleton.logError(e);

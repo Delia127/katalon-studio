@@ -1,7 +1,9 @@
 package com.kms.katalon.objectspy.dialog;
 
 import java.awt.Desktop;
+import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
@@ -15,6 +17,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -65,6 +68,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.osgi.framework.Bundle;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 import org.w3c.dom.Document;
@@ -77,11 +81,13 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.objectspy.components.CapturedHTMLElementsComposite;
 import com.kms.katalon.objectspy.constants.ImageConstants;
 import com.kms.katalon.objectspy.constants.ObjectSpyPreferenceConstants;
@@ -102,11 +108,22 @@ import com.kms.katalon.objectspy.exception.DOMException;
 import com.kms.katalon.objectspy.exception.IEAddonNotInstalledException;
 import com.kms.katalon.objectspy.util.DOMUtils;
 import com.kms.katalon.objectspy.util.HTMLElementUtil;
+import com.kms.katalon.objectspy.util.InspectSessionUtil;
+import com.kms.katalon.objectspy.util.WinRegistry;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
-import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 @SuppressWarnings("restriction")
 public class ObjectSpyDialog extends Dialog implements EventHandler {
+    private static final String relativePathToIEAddonSetup = File.separator + "extensions" + File.separator + "IE"
+            + File.separator + "Object Spy" + File.separator + "setup.exe";
+
+    private static final String RESOURCES_FOLDER_NAME = "resources";
+
+    private static final String IE_ADDON_BHO_KEY = "{8CB0FB3A-8EFA-4F94-B605-F3427688F8C7}";
+
+    public static final String IE_WINDOWS_32BIT_BHO_REGISTRY_KEY = "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\explorer\\Browser Helper Objects";
+
+    public static final String IE_WINDOWS_BHO_REGISTRY_KEY = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\explorer\\Browser Helper Objects";
 
     private List<HTMLPageElement> elements;
 
@@ -169,8 +186,6 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
     }
 
     protected void registerEventHandler() {
-        eventBroker.subscribe(EventConstants.OBJECT_SPY_ELEMENT_ADDED, this);
-        eventBroker.subscribe(EventConstants.OBJECT_SPY_ELEMENT_DOM_MAP_ADDED, this);
         eventBroker.subscribe(EventConstants.OBJECT_SPY_TEST_OBJECT_ADDED, this);
     }
 
@@ -300,11 +315,16 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         startChrome.setImage(ImageConstants.IMG_16_BROWSER_CHROME);
         startChrome.setText(WebUIDriverType.CHROME_DRIVER.toString());
         startChrome.addSelectionListener(new InstantBrowserSelectionAdapter(WebUIDriverType.CHROME_DRIVER));
-        
+
         final MenuItem startFirefox = new MenuItem(instantBrowserMenu, SWT.PUSH);
         startFirefox.setImage(ImageConstants.IMG_16_BROWSER_FIREFOX);
         startFirefox.setText(WebUIDriverType.FIREFOX_DRIVER.toString());
         startFirefox.addSelectionListener(new InstantBrowserSelectionAdapter(WebUIDriverType.FIREFOX_DRIVER));
+
+        final MenuItem startIE = new MenuItem(instantBrowserMenu, SWT.PUSH);
+        startIE.setImage(ImageConstants.IMG_16_BROWSER_IE);
+        startIE.setText(WebUIDriverType.IE_DRIVER.toString());
+        startIE.addSelectionListener(new InstantBrowserSelectionAdapter(WebUIDriverType.IE_DRIVER));
     }
 
     private final class InstantBrowserSelectionAdapter extends SelectionAdapter {
@@ -314,25 +334,12 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
             this.driverType = driverType;
         }
 
-        private boolean isNotShowingInstantBrowserDialog() {
-            return getObjectSpyPreferenceStore()
-                    .getBoolean(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_INSTANT_BROWSER_DO_NOT_SHOW_AGAIN);
-        }
-
-        private void setNotShowingInstantBrowserDialog(boolean toogleState) {
-            getObjectSpyPreferenceStore().setValue(
-                    ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_INSTANT_BROWSER_DO_NOT_SHOW_AGAIN, toogleState);
-        }
-
-        private ScopedPreferenceStore getObjectSpyPreferenceStore() {
-            return PreferenceStoreManager.getPreferenceStore(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_QUALIFIER);
-        }
-
         @Override
         public void widgetSelected(SelectionEvent event) {
             try {
                 endInspectSession();
-                if (!isNotShowingInstantBrowserDialog() && !showInstantBrowserDialog()) {
+                if (!InspectSessionUtil.isNotShowingInstantBrowserDialog()
+                        && !showInstantBrowserDialog()) {
                     return;
                 }
                 defaultBrowser = driverType;
@@ -343,12 +350,29 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
             }
         }
 
+        protected void showMessageForStartingInstantIE() {
+            UISynchronizeService.syncExec(new Runnable() {
+                @Override
+                public void run() {
+                    MessageDialogWithToggle messageDialogWithToggle = MessageDialogWithToggle.openInformation(
+                            Display.getCurrent().getActiveShell(), StringConstants.HAND_INSTANT_BROWSERS_DIA_TITLE,
+                            StringConstants.DIALOG_RUNNING_INSTANT_IE_MESSAGE,
+                            StringConstants.HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE, false, null, null);
+                    InspectSessionUtil.setNotShowingInstantBrowserDialog(messageDialogWithToggle.getToggleState());
+                }
+            });
+        }
+        
         private boolean showInstantBrowserDialog() throws IOException, URISyntaxException {
+            if (driverType == WebUIDriverType.IE_DRIVER) {
+                showMessageForStartingInstantIE();
+                return true;
+            }
             MessageDialogWithToggle messageDialogWithToggle = MessageDialogWithToggle.openYesNoCancelQuestion(
                     getParentShell(), StringConstants.HAND_INSTANT_BROWSERS_DIA_TITLE,
                     MessageFormat.format(StringConstants.HAND_INSTANT_BROWSERS_DIA_MESSAGE, driverType.toString()),
                     StringConstants.HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE, false, null, null);
-            setNotShowingInstantBrowserDialog(messageDialogWithToggle.getToggleState());
+            InspectSessionUtil.setNotShowingInstantBrowserDialog(messageDialogWithToggle.getToggleState());
             int returnCode = messageDialogWithToggle.getReturnCode();
             if (returnCode == IDialogConstants.NO_ID) {
                 return true;
@@ -843,10 +867,10 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
     @Override
     protected void handleShellCloseEvent() {
         super.handleShellCloseEvent();
-        dispose();
+        stop();
     }
 
-    public void dispose() {
+    public void stop() {
         if (server != null && server.isRunning()) {
             try {
                 server.stop();
@@ -882,49 +906,62 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
 
     @Override
     public void handleEvent(Event event) {
-        if (event.getTopic().equals(EventConstants.OBJECT_SPY_ELEMENT_ADDED)
-                && event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME) instanceof HTMLElement) {
-            HTMLElement newElement = (HTMLElement) event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-            addNewElement(newElement);
-            capturedObjectComposite.getElementTreeViewer().refresh(null);
-        } else if (event.getTopic().equals(EventConstants.OBJECT_SPY_ELEMENT_DOM_MAP_ADDED)
-                && event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME) instanceof Object[]) {
-            currentHTMLDocument = (Document) ((Object[]) event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME))[0];
-            HTMLRawElement bodyElement = (HTMLRawElement) ((Object[]) event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME))[1];
-            setTreeInput(domTreeViewer, new HTMLRawElement[] { bodyElement });
-            refreshDomTree();
-        } else if (event.getTopic().equals(EventConstants.OBJECT_SPY_TEST_OBJECT_ADDED)
+        if (event.getTopic().equals(EventConstants.OBJECT_SPY_TEST_OBJECT_ADDED)
                 && event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME) instanceof Object[]) {
             Object[] selectedObjects = (Object[]) event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-            HTMLPageElement generatingPageElement = null;
-            Map<String, HTMLElement> generatingElementMap = new HashMap<String, HTMLElement>();
-            for (Object selectedObject : selectedObjects) {
-                if (selectedObject instanceof WebElementEntity) {
-                    if (generatingPageElement == null) {
-                        generatingPageElement = HTMLElementUtil.generateNewPageElement();
-                        elements.add(generatingPageElement);
-                    }
-                    HTMLElementUtil.createHTMLElementFromWebElement((WebElementEntity) selectedObject, false,
-                            generatingPageElement, generatingElementMap);
-                } else if (selectedObject instanceof FolderEntity) {
-                    elements.addAll(HTMLElementUtil.createHTMLElementFromFolder((FolderEntity) selectedObject,
-                            generatingElementMap));
-                }
-            }
-            capturedObjectComposite.getElementTreeViewer().refresh(null);
+            addObjectsFromObjectRepository(selectedObjects);
         }
     }
 
-    private void addNewElement(HTMLElement newElement) {
-        HTMLPageElement parentPageElement = newElement.getParentPageElement();
-        if (parentPageElement != null) {
-            if (elements.contains(parentPageElement)) {
-                addNewElement(elements.get(elements.indexOf(parentPageElement)), parentPageElement.getChildElements()
-                        .get(0), parentPageElement);
-            } else {
-                elements.add(parentPageElement);
+    public void setHTMLDOMDocument(final HTMLRawElement bodyElement, Document document) {
+        currentHTMLDocument = document;
+        UISynchronizeService.syncExec(new Runnable() {
+            @Override
+            public void run() {
+                setTreeInput(domTreeViewer, new HTMLRawElement[] { bodyElement });
+                refreshDomTree();
+            }
+        });
+    }
+
+    private void addObjectsFromObjectRepository(Object[] selectedObjects) {
+        HTMLPageElement generatingPageElement = null;
+        Map<String, HTMLElement> generatingElementMap = new HashMap<String, HTMLElement>();
+        for (Object selectedObject : selectedObjects) {
+            if (selectedObject instanceof WebElementEntity) {
+                if (generatingPageElement == null) {
+                    generatingPageElement = HTMLElementUtil.generateNewPageElement();
+                    elements.add(generatingPageElement);
+                }
+                HTMLElementUtil.createHTMLElementFromWebElement((WebElementEntity) selectedObject, false,
+                        generatingPageElement, generatingElementMap);
+                continue;
+            }
+            if (selectedObject instanceof FolderEntity) {
+                elements.addAll(HTMLElementUtil.createHTMLElementFromFolder((FolderEntity) selectedObject,
+                        generatingElementMap));
             }
         }
+        refreshTree(capturedObjectComposite.getElementTreeViewer(), null);
+    }
+
+    public void addNewElement(HTMLElement newElement) {
+        if (newElement == null || newElement.getParentPageElement() == null) {
+            return;
+        }
+        HTMLPageElement parentPageElement = newElement.getParentPageElement();
+        if (elements.contains(parentPageElement)) {
+            addNewElement(elements.get(elements.indexOf(parentPageElement)), parentPageElement.getChildElements()
+                    .get(0), parentPageElement);
+        } else {
+            elements.add(parentPageElement);
+        }
+        UISynchronizeService.syncExec(new Runnable() {
+            @Override
+            public void run() {
+                refreshTree(capturedObjectComposite.getElementTreeViewer(), null);
+            }
+        });
     }
 
     private void addNewElement(HTMLFrameElement parentElement, HTMLElement newElement, HTMLPageElement pageElement) {
@@ -943,15 +980,16 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
     }
 
     private void setTreeInput(TreeViewer treeViewer, Object newInput) {
-        if (newInput != null) {
-            treeViewer.getControl().setRedraw(false);
-            Object[] expandedElements = treeViewer.getExpandedElements();
-            treeViewer.setInput(newInput);
-            for (Object element : expandedElements) {
-                treeViewer.setExpandedState(element, true);
-            }
-            treeViewer.getControl().setRedraw(true);
+        if (newInput == null) {
+            return;
         }
+        treeViewer.getControl().setRedraw(false);
+        Object[] expandedElements = treeViewer.getExpandedElements();
+        treeViewer.setInput(newInput);
+        for (Object element : expandedElements) {
+            treeViewer.setExpandedState(element, true);
+        }
+        treeViewer.getControl().setRedraw(true);
     }
 
     public boolean isDisposed() {
@@ -965,26 +1003,39 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
 
     private void startObjectSpy(WebUIDriverType browser, boolean isInstant) {
         try {
+            if (browser == WebUIDriverType.IE_DRIVER) {
+                checkIEAddon();
+            }
             changeBrowserToolItemName();
             if (isInstant) {
                 startServerWithPort(getInstantBrowsersPort());
-                return;
+                if (browser != WebUIDriverType.IE_DRIVER) {
+                    return;
+                }
+            } else {
+                startServerWithPort(0);
             }
-            startServerWithPort(0);
-            startInspectSession(browser);
-        } catch (IEAddonNotInstalledException ex) {
-            MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, ex.getMessage());
+            startInspectSession(browser, isInstant);
+        } catch (final IEAddonNotInstalledException e) {
+            stop();
+            showMessageForMissingIEAddon();
+            try {
+                runIEAddonInstaller();
+            } catch (IOException iOException) {
+                LoggerSingleton.logError(iOException);
+            }
         } catch (Exception ex) {
             logger.error(ex);
             MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, ex.getMessage());
         }
     }
 
-    private void startInspectSession(WebUIDriverType browser) throws Exception {
+    private void startInspectSession(WebUIDriverType browser, boolean isInstant) throws Exception {
         if (session != null) {
             session.stop();
         }
-        session = new InspectSession(server, browser, ProjectController.getInstance().getCurrentProject(), logger);
+        session = new InspectSession(server, browser, isInstant, ProjectController.getInstance().getCurrentProject(),
+                logger);
         new Thread(session).start();
     }
 
@@ -1003,7 +1054,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         if (server != null && server.isRunning()) {
             server.stop();
         }
-        server = new HTMLElementCaptureServer(port, logger, eventBroker);
+        server = new HTMLElementCaptureServer(port, logger, this);
         server.start();
     }
 
@@ -1033,6 +1084,52 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
 
     private void enableToolItem(ToolItem toolItem, boolean isEnabled) {
         toolItem.setEnabled(isEnabled);
+    }
+
+    private void checkIEAddon() throws IllegalAccessException, InvocationTargetException, IEAddonNotInstalledException {
+        if (checkRegistryKey(IE_WINDOWS_32BIT_BHO_REGISTRY_KEY) || checkRegistryKey(IE_WINDOWS_BHO_REGISTRY_KEY)) {
+            return;
+        }
+        throw new IEAddonNotInstalledException(InspectSession.OBJECT_SPY_ADD_ON_NAME);
+    }
+
+    private boolean checkRegistryKey(String parentKey) throws IllegalAccessException, InvocationTargetException {
+        List<String> bhos = WinRegistry.readStringSubKeys(WinRegistry.HKEY_LOCAL_MACHINE, parentKey);
+        for (String bho : bhos) {
+            if (bho.toLowerCase().equals(IE_ADDON_BHO_KEY.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void showMessageForMissingIEAddon() {
+        UISynchronizeService.syncExec(new Runnable() {
+            @Override
+            public void run() {
+                MessageDialog.openInformation(Display.getCurrent().getActiveShell(), StringConstants.INFO,
+                        StringConstants.DIALOG_CANNOT_START_IE_MESSAGE);
+            }
+        });
+    }
+
+    private File getResourcesDirectory() throws IOException {
+        Bundle bundleExec = Platform.getBundle(IdConstants.KATALON_WEB_UI_OBJECT_SPY_BUNDLE_ID);
+        File bundleFile = FileLocator.getBundleFile(bundleExec);
+        if (bundleFile.isDirectory()) { // run by IDE
+            return new File(bundleFile + File.separator + RESOURCES_FOLDER_NAME);
+        }
+        // run as product
+        return new File(ClassPathResolver.getConfigurationFolder() + File.separator + RESOURCES_FOLDER_NAME);
+    }
+
+    private void runIEAddonInstaller() throws IOException {
+        String ieAddonSetupPath = getResourcesDirectory().getAbsolutePath() + relativePathToIEAddonSetup;
+        Desktop desktop = Desktop.getDesktop();
+        if (!Desktop.isDesktopSupported()) {
+            return;
+        }
+        desktop.open(new File(ieAddonSetupPath));
     }
 
 }
