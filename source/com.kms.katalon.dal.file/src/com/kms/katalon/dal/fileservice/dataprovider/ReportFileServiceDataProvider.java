@@ -110,7 +110,7 @@ public class ReportFileServiceDataProvider implements IReportDataProvider {
                     + entity.getIdForDisplay()
                             .replaceFirst(FileServiceConstant.TEST_SUITE_ROOT_FOLDER_NAME,
                                     FileServiceConstant.REPORT_ROOT_FOLDER_NAME)
-                            .replace(GlobalStringConstants.ENTITY_ID_SEPERATOR, File.separator);
+                            .replace(GlobalStringConstants.ENTITY_ID_SEPARATOR, File.separator);
         } catch (Exception e) {
             throw new DALException(e);
         }

@@ -19,6 +19,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.groovy.reference.TestArtifactScriptRefactor;
 import com.kms.katalon.groovy.util.GroovyRefreshUtil;
 
 public class WebElementFileServiceManager {
@@ -299,8 +300,8 @@ public class WebElementFileServiceManager {
         String oldRelativeToLocation = oldPk.substring(project.getFolderLocation().length() + 1);
         String oldRelativeToId = FilenameUtils.removeExtension(oldRelativeToLocation).replace(File.separator, "/");
         String newRelativeToId = webElement.getRelativePathForUI().replace(File.separator, "/");
-        GroovyRefreshUtil.updateStringScriptReferences(oldRelativeToId, newRelativeToId, project);
-
+        TestArtifactScriptRefactor.createForTestObjectEntity(oldRelativeToId).updateReferenceForProject(
+                newRelativeToId, project);
         // update ref_element
         for (WebElementEntity referenceEntity : getWebElementPropertyByRefElement(oldRelativeToId, project, true)) {
             for (WebElementPropertyEntity webElementProperty : referenceEntity.getWebElementProperties()) {
@@ -324,7 +325,7 @@ public class WebElementFileServiceManager {
                 + "/";
         String newRelativeToId = webElementFolder.getRelativePathForUI().replace(File.separator, "/") + "/";
 
-        FolderFileServiceManager.refreshFolderScriptReferences(oldRelativeToLocation, webElementFolder);
+        FolderFileServiceManager.refreshFolderScriptReferences(oldRelativeToId, webElementFolder);
 
         // update ref_element
         for (WebElementEntity referenceEntity : getWebElementPropertyByRefElement(oldRelativeToId, project, false)) {

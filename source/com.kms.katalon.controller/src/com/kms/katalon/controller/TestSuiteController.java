@@ -119,12 +119,12 @@ public class TestSuiteController extends EntityController {
     public String getIdForDisplay(TestSuiteEntity entity) throws Exception {
         return getDataProviderSetting().getTestSuiteDataProvider()
                 .getIdForDisplay(entity)
-                .replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPERATOR);
+                .replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPARATOR);
     }
 
     public TestSuiteEntity getTestSuiteByDisplayId(String testSuiteId, ProjectEntity projectEntity) throws Exception {
         String testSuitePk = projectEntity.getFolderLocation() + File.separator
-                + testSuiteId.replace(GlobalStringConstants.ENTITY_ID_SEPERATOR, File.separator)
+                + testSuiteId.replace(GlobalStringConstants.ENTITY_ID_SEPARATOR, File.separator)
                 + TestSuiteEntity.getTestSuiteFileExtension();
         return getTestSuite(testSuitePk);
     }

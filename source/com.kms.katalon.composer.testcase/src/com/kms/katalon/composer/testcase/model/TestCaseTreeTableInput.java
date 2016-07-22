@@ -76,12 +76,6 @@ import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.FailureHandling;
-import com.kms.katalon.core.testcase.TestCase;
-import com.kms.katalon.core.testcase.TestCaseFactory;
-import com.kms.katalon.core.testdata.TestData;
-import com.kms.katalon.core.testdata.TestDataFactory;
-import com.kms.katalon.core.testobject.ObjectRepository;
-import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
@@ -141,16 +135,6 @@ public class TestCaseTreeTableInput {
         this.mainClassNodeWrapper = scriptNode;
         this.parentPart = parentPart;
         setChanged(false);
-    }
-
-    /**
-     * Add import to script
-     * 
-     * @param importClass
-     * class to add import
-     */
-    public void addImport(Class<?> importClass) {
-        mainClassNodeWrapper.addImport(importClass);
     }
 
     /**
@@ -756,6 +740,7 @@ public class TestCaseTreeTableInput {
      * @param addType see {@link NodeAddType}
      */
     public void addNewAstObject(int astObjectId, AstTreeTableNode destinationNode, NodeAddType addType) {
+        addDefaultImports();
         switch (astObjectId) {
             case TreeTableMenuItemConstants.CUSTOM_KEYWORD_MENU_ITEM_ID:
                 addNewCustomKeyword(destinationNode, addType);
@@ -861,8 +846,10 @@ public class TestCaseTreeTableInput {
         }
         List<StatementWrapper> statementsToAdd = new ArrayList<StatementWrapper>();
         List<VariableEntity> variablesToAdd = new ArrayList<VariableEntity>();
+        ASTNodeWrapper parentNodeWrapper = getParentNodeForNewMethodCall(destinationNode);
         for (TestCaseEntity testCase : testCaseArray) {
-            statementsToAdd.add(AstEntityInputUtil.generateCallTestCaseExpresionStatement(testCase, variablesToAdd));
+            statementsToAdd.add(AstEntityInputUtil.generateCallTestCaseExpresionStatement(testCase, variablesToAdd,
+                    parentNodeWrapper));
         }
         addNewAstObjects(statementsToAdd, destinationNode, addType);
         if (variablesToAdd.isEmpty()) {
@@ -935,8 +922,9 @@ public class TestCaseTreeTableInput {
     }
 
     public void addNewDefaultBuiltInKeyword(NodeAddType addType) {
-        addNewBuiltInKeyword(getSelectedNode(), addType,
-                TestCasePreferenceDefaultValueInitializer.getDefaultKeywordType());
+        addNewAstObject(
+                TreeTableMenuItemConstants.getMenuItemID(TestCasePreferenceDefaultValueInitializer.getDefaultKeywordType()
+                        .getName()), getSelectedNode(), addType);
     }
 
     private void addNewBuiltInKeyword(AstTreeTableNode destinationNode, NodeAddType addType, String className) {
@@ -948,53 +936,52 @@ public class TestCaseTreeTableInput {
         if (keywordClass == null) {
             return;
         }
-        addDefaultImports();
         String defaultSettingKeywordName = TestCasePreferenceDefaultValueInitializer.getDefaultKeywords().get(
                 keywordClass.getName());
         StatementWrapper newBuiltinKeywordStatement = null;
+
+        ASTNodeWrapper parentNodeWrapper = getParentNodeForNewMethodCall(destinationNode);
         if (!StringUtils.isBlank(defaultSettingKeywordName)
                 && (KeywordController.getInstance().getBuiltInKeywordByName(keywordClass.getName(),
-                        defaultSettingKeywordName)) != null) {
-
+                        defaultSettingKeywordName, null)) != null) {
             MethodCallExpressionWrapper keywordMethodCallExpression = new MethodCallExpressionWrapper(
-                    keywordClass.getSimpleName(), defaultSettingKeywordName);
+                    keywordClass.getAliasName(), defaultSettingKeywordName, parentNodeWrapper);
 
             AstKeywordsInputUtil.generateMethodCallArguments(
                     keywordMethodCallExpression,
                     KeywordController.getInstance().getBuiltInKeywordByName(keywordClass.getName(),
-                            defaultSettingKeywordName));
+                            defaultSettingKeywordName, null));
 
             newBuiltinKeywordStatement = new ExpressionStatementWrapper(keywordMethodCallExpression, null);
 
         } else {
             newBuiltinKeywordStatement = AstKeywordsInputUtil.createBuiltInKeywordStatement(
-                    keywordClass.getSimpleName(),
-                    KeywordController.getInstance().getBuiltInKeywords(keywordClass.getSimpleName(), true).get(0).getName());
+                    keywordClass.getAliasName(),
+                    KeywordController.getInstance().getBuiltInKeywords(keywordClass.getAliasName(), true).get(0).getName(),
+                    parentNodeWrapper);
         }
         addNewAstObject(newBuiltinKeywordStatement, destinationNode, addType);
     }
 
     public void addDefaultImports() {
-        for (KeywordClass keywordClass : KeywordController.getInstance().getBuiltInKeywordClasses()) {
-            addImport(keywordClass.getType());
+        if (isChanged) {
+            return;
         }
-        addImport(ObjectRepository.class);
-        addImport(TestCaseFactory.class);
-        addImport(TestDataFactory.class);
-        addImport(FailureHandling.class);
-        addImport(TestCase.class);
-        addImport(TestData.class);
-        addImport(TestObject.class);
+        mainClassNodeWrapper.addDefaultImports();
     }
 
     public void addNewCustomKeyword(AstTreeTableNode destinationNode, NodeAddType addType) {
-        StatementWrapper customKeywordStatement = AstKeywordsInputUtil.createNewCustomKeywordStatement();
+        ASTNodeWrapper parentNodeWrapper = getParentNodeForNewMethodCall(destinationNode);
+        StatementWrapper customKeywordStatement = AstKeywordsInputUtil.createNewCustomKeywordStatement(parentNodeWrapper);
         if (customKeywordStatement == null) {
             MessageDialog.openWarning(null, StringConstants.WARN_TITLE, StringConstants.PA_ERROR_MSG_NO_CUSTOM_KEYWORD);
             return;
         }
-        addDefaultImports();
         addNewAstObject(customKeywordStatement, destinationNode, addType);
+    }
+
+    private ASTNodeWrapper getParentNodeForNewMethodCall(AstTreeTableNode destinationNode) {
+        return destinationNode != null ? destinationNode.getASTObject() : mainClassNodeWrapper;
     }
 
     private void addNewThrowStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
@@ -1030,7 +1017,9 @@ public class TestCaseTreeTableInput {
     }
 
     public void addNewMethodCall(AstTreeTableNode destinationNode, NodeAddType addType) {
-        addNewAstObject(new ExpressionStatementWrapper(new MethodCallExpressionWrapper()), destinationNode, addType);
+        ASTNodeWrapper parentNodeWrapper = getParentNodeForNewMethodCall(destinationNode);
+        addNewAstObject(new ExpressionStatementWrapper(new MethodCallExpressionWrapper(parentNodeWrapper)),
+                destinationNode, addType);
     }
 
     public void addNewBreakStatement(AstTreeTableNode destinationNode, NodeAddType addType) {

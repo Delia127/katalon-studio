@@ -74,7 +74,7 @@ public class CheckpointController extends EntityController {
             throw new EntityNotFoundException(StringConstants.EXC_MSG_PROJECT_NOT_FOUND);
         }
         return project.getFolderLocation() + File.separator
-                + checkpointDisplayedId.replace(GlobalStringConstants.ENTITY_ID_SEPERATOR, File.separator)
+                + checkpointDisplayedId.replace(GlobalStringConstants.ENTITY_ID_SEPARATOR, File.separator)
                 + CheckpointEntity.getCheckpointFileExtension();
     }
 

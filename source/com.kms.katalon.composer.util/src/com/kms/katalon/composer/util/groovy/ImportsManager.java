@@ -12,7 +12,8 @@ import org.eclipse.text.edits.TextEdit;
 @SuppressWarnings("restriction")
 public class ImportsManager {
 
-	private final CompilationUnit fAstRoot;
+	@SuppressWarnings("unused")
+    private final CompilationUnit fAstRoot;
 	private final ImportRewrite fImportsRewrite;
 
 	public ImportsManager(CompilationUnit astRoot) {

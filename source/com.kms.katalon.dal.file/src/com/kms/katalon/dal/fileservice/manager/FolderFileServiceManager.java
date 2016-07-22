@@ -29,6 +29,7 @@ import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.groovy.reference.TestArtifactScriptRefactor;
 import com.kms.katalon.groovy.util.GroovyRefreshUtil;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
@@ -533,15 +534,10 @@ public class FolderFileServiceManager {
         GroovyRefreshUtil.refreshFolder(folder.getRelativePath(), folder.getProject(), null);
     }
 
-    public static void refreshFolderScriptReferences(String oldFolderLocation, FolderEntity folder)
-            throws CoreException, IOException {
-        String oldFolderScript = oldFolderLocation.replace(File.separator, "/") + "/";
-        String newFolderScript = folder.getRelativePathForUI().replace(File.separator, "/") + "/";
-
-        GroovyRefreshUtil.updateScriptReferencesInTestCaseAndCustomScripts("'" + oldFolderScript,
-                "'" + newFolderScript, folder.getProject());
-        GroovyRefreshUtil.updateScriptReferencesInTestCaseAndCustomScripts("'" + oldFolderScript,
-                "'" + newFolderScript, folder.getProject());
+    public static void refreshFolderScriptReferences(String oldFolderId, FolderEntity folder) throws CoreException,
+            IOException {
+        new TestArtifactScriptRefactor(folder.getFolderType(), oldFolderId, false).updateReferenceForProject(
+                folder.getIdForDisplay(), folder.getProject());
     }
 
     public static FolderEntity saveFolder(FolderEntity folder) throws Exception {

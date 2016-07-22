@@ -21,6 +21,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStateme
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.controller.TestCaseController;
+import com.kms.katalon.core.testcase.TestCaseFactory;
 import com.kms.katalon.custom.factory.BuiltInMethodNodeFactory;
 import com.kms.katalon.custom.keyword.KeywordMethod;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -47,7 +48,7 @@ public class AstCallTestCaseKeywordTreeTableNode extends AstBuiltInKeywordTreeTa
         }
         TestCaseEntity testCase = null;
         try {
-            testCase = TestCaseController.getInstance().getTestCaseByDisplayId(testCaseId);
+            testCase = TestCaseController.getInstance().getTestCaseByDisplayId(TestCaseFactory.getTestCaseId(testCaseId));
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }

@@ -133,7 +133,7 @@ public class TestSuiteFileServiceManager {
 
         ProjectEntity projectEntity = DataProviderState.getInstance().getCurrentProject();
         String testSuitePk = projectEntity.getFolderLocation() + File.separator
-                + testSuiteId.replace(StringConstants.ENTITY_ID_SEPERATOR, File.separator)
+                + testSuiteId.replace(StringConstants.ENTITY_ID_SEPARATOR, File.separator)
                 + TestSuiteEntity.getTestSuiteFileExtension();
         return getTestSuite(testSuitePk);
     }

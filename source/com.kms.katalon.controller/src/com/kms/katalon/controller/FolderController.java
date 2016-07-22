@@ -144,7 +144,7 @@ public class FolderController extends EntityController implements Serializable {
     public FolderEntity getFolderByDisplayId(ProjectEntity projectEntity, String folderDisplayId) throws Exception {
         if (folderDisplayId == null || folderDisplayId.isEmpty()) return null;
         String folderId = projectEntity.getFolderLocation() + File.separator
-                + folderDisplayId.replace(GlobalStringConstants.ENTITY_ID_SEPERATOR, File.separator);
+                + folderDisplayId.replace(GlobalStringConstants.ENTITY_ID_SEPARATOR, File.separator);
         return getDataProviderSetting().getFolderDataProvider().getFolder(folderId);
     }
 
@@ -198,7 +198,7 @@ public class FolderController extends EntityController implements Serializable {
      */
     @Deprecated
     public String getIdForDisplay(FolderEntity folder) {
-        return folder.getRelativePathForUI().replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPERATOR);
+        return folder.getRelativePathForUI().replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPARATOR);
     }
 
     public void saveFolder(FolderEntity folder) throws Exception {

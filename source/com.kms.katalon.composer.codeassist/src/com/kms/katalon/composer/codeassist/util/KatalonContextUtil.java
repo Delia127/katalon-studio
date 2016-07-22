@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.groovy.ast.Parameter;
 import org.codehaus.groovy.ast.expr.ClassExpression;
@@ -15,15 +16,19 @@ import org.eclipse.jface.viewers.StyledString;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
+import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.groovy.util.GroovyUtil;
+import static com.kms.katalon.constants.GlobalStringConstants.CR_DOT;
 
 /**
  * Provides a set of utility methods for {@link ContentAssistContext}
  */
 public class KatalonContextUtil {
+    private static KeywordController keywordController = KeywordController.getInstance();
+
     private KatalonContextUtil() {
         // Disable default constructor
     }
@@ -41,32 +46,28 @@ public class KatalonContextUtil {
             }
         }
 
-        if ((GroovyConstants.CUSTOM_KEYWORD_LIB_FILE_NAME + ".").equals(context.fullCompletionExpression)) {
+        if ((GroovyConstants.CUSTOM_KEYWORD_LIB_FILE_NAME + CR_DOT).equals(context.fullCompletionExpression)) {
             return true;
         }
         return false;
     }
 
     public static boolean isBuiltinKeywordCompletionClassNode(ContentAssistContext context) {
+        return getBuiltInKeywordCompletionClassNode(context) != null;
+    }
+
+    public static KeywordClass getBuiltInKeywordCompletionClassNode(ContentAssistContext context) {
         if (context.getPerceivedCompletionNode() instanceof ClassExpression) {
             ClassExpression classExprs = (ClassExpression) context.getPerceivedCompletionNode();
             String className = classExprs.getType().getName();
             if (className == null) {
-                return false;
+                return null;
             }
-            if (KeywordController.getInstance().isBuiltinKeywordClassName(className)) {
-                return true;
-            }
+            keywordController.getBuiltInKeywordClassByName(className);
         }
 
-        String fullCompletion = context.fullCompletionExpression;
-        if (fullCompletion.endsWith(".")) {
-            String classNamePotential = fullCompletion.substring(0, fullCompletion.lastIndexOf("."));
-            if (KeywordController.getInstance().getBuiltInKeywordClassByName(classNamePotential) != null) {
-                return true;
-            }
-        }
-        return false;
+        return keywordController.getBuiltInKeywordClassByName(
+                StringUtils.substringBeforeLast(context.fullCompletionExpression, CR_DOT));
     }
 
     @SuppressWarnings("restriction")
@@ -97,7 +98,7 @@ public class KatalonContextUtil {
 
     public static boolean isKeywordMethodNode(MethodNode methodNode) {
         try {
-            return KeywordController.getInstance().getBuiltInKeywordByName(methodNode.getDeclaringClass().getName(),
+            return keywordController.getBuiltInKeywordByName(methodNode.getDeclaringClass().getName(),
                     methodNode.getName(), getAstParameterTypes(methodNode.getParameters())) != null;
         } catch (Exception ex) {
             return false;
@@ -106,6 +107,10 @@ public class KatalonContextUtil {
 
     public static StyledString getKatalonSignature() {
         return new StyledString(" (Katalon)", StyledString.DECORATIONS_STYLER);
+    }
+
+    public static StyledString getClassSignature(KeywordClass keywordClass) {
+        return new StyledString(" \t - " + keywordClass.getType().getName(), StyledString.QUALIFIER_STYLER);
     }
 
     public static String[] getAstParameterTypes(Parameter[] params) {
@@ -120,5 +125,5 @@ public class KatalonContextUtil {
         }
         return paramTypes;
     }
-    
+
 }

@@ -208,19 +208,19 @@ public enum InputValueType implements InputValueEditorProvider {
 
     private String getValueToDisplayForMethodCall(Object astObject) {
         MethodCallExpressionWrapper methodCall = (MethodCallExpressionWrapper) astObject;
-        if (AstEntityInputUtil.isFindTestCaseMethodCall(methodCall)) {
+        if (methodCall.isFindTestCaseMethodCall()) {
             return AstEntityInputUtil.getTextValueForTestCaseArgument(methodCall);
         }
-        if (AstEntityInputUtil.isCallTestCaseMethodCall(methodCall)) {
+        if (methodCall.isCallTestCaseMethodCall()) {
             return (methodCall.getArguments()).getExpression(0).getText();
         }
-        if (AstEntityInputUtil.isFindTestObjectMethodCall(methodCall)) {
+        if (methodCall.isFindTestObjectMethodCall()) {
             return AstEntityInputUtil.getTextValueForTestObjectArgument(methodCall);
         }
-        if (AstEntityInputUtil.isFindTestDataMethodCall(methodCall)) {
+        if (methodCall.isFindTestDataMethodCall()) {
             return AstEntityInputUtil.getTextValueForTestDataArgument(methodCall);
         }
-        if (AstEntityInputUtil.isGetTestDataValueMethodCall(methodCall)) {
+        if (methodCall.isGetTestDataValueMethodCall()) {
             return AstEntityInputUtil.getTextValueForTestDataValueArgument(methodCall);
         }
         return methodCall.getText();

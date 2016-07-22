@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
@@ -45,11 +46,9 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
-import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.objectspy.element.HTMLElement;
 import com.kms.katalon.objectspy.element.HTMLFrameElement;
 import com.kms.katalon.objectspy.element.HTMLPageElement;
@@ -117,7 +116,7 @@ public class RecordHandler {
                         FolderTreeEntity targetFolderTreeEntity = recordDialog.getTargetFolderTreeEntity();
                         final List<StatementWrapper> generatedStatementWrappers = generateStatementWrappersFromRecordedActions(
                                 recordDialog.getActions(), recordDialog.getElements(),
-                                testCaseCompositePart.getTestCase(),
+                                testCasePart,
                                 (FolderEntity) targetFolderTreeEntity.getObject(), monitor);
                         sync.syncExec(new Runnable() {
                             @Override
@@ -125,6 +124,7 @@ public class RecordHandler {
                                 try {
                                     testCasePart.addDefaultImports();
                                     testCasePart.addStatements(generatedStatementWrappers, NodeAddType.InserAfter);
+                                    testCaseCompositePart.refreshScript();
                                 } catch (Exception e) {
                                     LoggerSingleton.logError(e);
                                 }
@@ -209,17 +209,19 @@ public class RecordHandler {
 
     private List<StatementWrapper> generateStatementWrappersFromRecordedActions(
             List<HTMLActionMapping> recordedActions, List<HTMLPageElement> recordedElements,
-            TestCaseEntity selectedTestCase, FolderEntity targetFolder, IProgressMonitor monitor) throws Exception {
-
+            TestCasePart testCasePart, FolderEntity targetFolder, IProgressMonitor monitor) throws Exception {
         monitor.subTask(StringConstants.JOB_ADDING_OBJECT);
         addRecordedElements(recordedElements, targetFolder, monitor);
 
         monitor.subTask(StringConstants.JOB_GENERATE_STATEMENT_MESSAGE);
         List<StatementWrapper> resultStatementWrappers = new ArrayList<StatementWrapper>();
 
+        ASTNodeWrapper mainClassNode = testCasePart.getTreeTableInput().getMainClassNode();
         // add open browser keyword
+        String webUiKwAliasName = HTMLActionUtil.getWebUiKeywordClass().getAliasName();
         MethodCallExpressionWrapper methodCallExpressionWrapper = new MethodCallExpressionWrapper(
-                WebUiBuiltInKeywords.class.getSimpleName(), "openBrowser", null);
+                webUiKwAliasName,
+                "openBrowser", mainClassNode);
         ArgumentListExpressionWrapper arguments = methodCallExpressionWrapper.getArguments();
         arguments.addExpression(new ConstantExpressionWrapper(""));
 
@@ -234,7 +236,8 @@ public class RecordHandler {
                     && entitySavedMap.get(action.getTargetElement()) instanceof WebElementEntity) {
                 createdTestObject = (WebElementEntity) entitySavedMap.get(action.getTargetElement());
             }
-            StatementWrapper generatedStatementWrapper = HTMLActionUtil.generateWebUiTestStep(action, createdTestObject);
+            StatementWrapper generatedStatementWrapper = HTMLActionUtil.generateWebUiTestStep(action,
+                    createdTestObject, mainClassNode);
             if (generatedStatementWrapper != null) {
                 resultStatementWrappers.add(generatedStatementWrapper);
             }
@@ -242,8 +245,8 @@ public class RecordHandler {
         }
 
         // add close browser keyword
-        methodCallExpressionWrapper = new MethodCallExpressionWrapper(WebUiBuiltInKeywords.class.getSimpleName(),
-                "closeBrowser");
+        methodCallExpressionWrapper = new MethodCallExpressionWrapper(webUiKwAliasName,
+                "closeBrowser", mainClassNode);
         arguments = methodCallExpressionWrapper.getArguments();
         resultStatementWrappers.add(new ExpressionStatementWrapper(methodCallExpressionWrapper));
 

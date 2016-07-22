@@ -29,7 +29,7 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.util.Util;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.groovy.constant.GroovyConstants;
-import com.kms.katalon.groovy.util.GroovyRefreshUtil;
+import com.kms.katalon.groovy.reference.TestArtifactScriptRefactor;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class TestCaseFileServiceManager {
@@ -125,7 +125,8 @@ public class TestCaseFileServiceManager {
                 String oldRelativeTcId = FilenameUtils.removeExtension(oldRelativeTcLocation).replace(File.separator,
                         "/");
 
-                GroovyRefreshUtil.updateStringScriptReferences(oldRelativeTcId, newRelativeTcId, project);
+                TestArtifactScriptRefactor.createForTestCaseEntity(oldRelativeTcId).updateReferenceForProject(
+                        newRelativeTcId, project);
 
                 IFolder oldScriptFolder = GroovyUtil.getGroovyProject(project).getFolder(
                         GroovyUtil.getScriptPackageRelativePathForTestCase(oldRelativeTcId));
@@ -469,7 +470,7 @@ public class TestCaseFileServiceManager {
             }
         }
 
-        FolderFileServiceManager.refreshFolderScriptReferences(oldFolderLocation, folder);
+        FolderFileServiceManager.refreshFolderScriptReferences(oldFolderDisplayId, folder);
     }
 
     public static TestCaseEntity getTestCaseByScriptFileName(String scriptFileName, ProjectEntity projectEntity)

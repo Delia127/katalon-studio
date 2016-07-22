@@ -123,11 +123,11 @@ public class BuiltInMethodNodeFactory {
 
     public static KeywordClass findClass(String keywordClassName) {
         for (KeywordClass keywordClass : getKeywordClasses()) {
-            if (!keywordClass.getName().equals(keywordClassName)
-                    && !keywordClass.getSimpleName().equals(keywordClassName)) {
-                continue;
+            if (keywordClass.getName().equals(keywordClassName)
+                    || keywordClass.getSimpleName().equals(keywordClassName)
+                    || keywordClass.getAliasName().equals(keywordClassName)) {
+                return keywordClass;
             }
-            return keywordClass;
         }
         return null;
     }

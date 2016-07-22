@@ -814,4 +814,14 @@ public class GroovyUtil {
         }
         return listTestCaseFiles;
     }
+    
+    public static List<IFile> getAllTestCaseScripts(ProjectEntity projectEntity) throws CoreException {
+        IFolder testCaseRootFolder = GroovyUtil.getTestCaseScriptSourceFolder(projectEntity);
+        return getAllScriptFiles(testCaseRootFolder);
+    }
+    
+    public static List<IFile> getAllCustomKeywordsScripts(ProjectEntity projectEntity) throws CoreException {
+        IFolder customKeywordRootFolder = GroovyUtil.getCustomKeywordSourceFolder(projectEntity);
+        return getAllScriptFiles(customKeywordRootFolder);
+    }
 }

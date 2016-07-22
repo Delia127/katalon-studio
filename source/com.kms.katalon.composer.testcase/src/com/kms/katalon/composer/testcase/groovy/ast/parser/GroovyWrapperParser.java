@@ -1319,6 +1319,8 @@ public class GroovyWrapperParser {
         if (script == null) {
             return null;
         }
+
+        script.addDefaultImports();
         List<StatementWrapper> statementList = script.getBlock().getStatements();
         if (statementList.size() > 0 && statementList.get(0) instanceof ExpressionStatementWrapper) {
             return ((ExpressionStatementWrapper) statementList.get(0)).getExpression();
