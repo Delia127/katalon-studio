@@ -14,22 +14,22 @@ import com.kms.katalon.objectspy.core.InspectSession;
 
 @SuppressWarnings("restriction")
 public class RecordSession extends InspectSession {
-	private static final String CHROME_EXTENSION_RELATIVE_PATH = File.separator + "Chrome" + File.separator
-			+ "Recorder";
+	public static final String RECORDER_ADDON_NAME = "Recorder";
+	
+    private static final String CHROME_EXTENSION_RELATIVE_PATH = File.separator + "Chrome" + File.separator
+			+ RECORDER_ADDON_NAME;
 	private static final String FIREFOX_ADDON_RELATIVE_PATH = File.separator + "Firefox" + File.separator
 			+ "recorder.xpi";
 	
-	private static final String IE_ADDON_BHO_KEY = "{FEA8CA38-7979-4F6A-83E4-2949EDEA96EF}";
-	
 	private static final String RECORDER_APPLICATION_DATA_FOLDER = System.getProperty("user.home") + File.separator + "AppData" + File.separator
-			+ "Local" + File.separator + "KMS" + File.separator + "qAutomate" + File.separator + "Recorder";
+			+ "Local" + File.separator + "KMS" + File.separator + "qAutomate" + File.separator + RECORDER_ADDON_NAME;
 	
     private static final String RECORDER_FIREFOX_SERVER_PORT_PREFERENCE_KEY = "extensions.@recorder.katalonServerPort";
 
     private static final String RECORDER_FIREFOX_ON_OFF_PREFERENCE_KEY = "extensions.@recorder.katalonOnOffStatus";
 
-	public RecordSession(HTMLElementCaptureServer server, WebUIDriverType webUiDriverType, ProjectEntity currentProject, Logger logger) throws Exception {
-		super(server, webUiDriverType, currentProject, logger);
+	public RecordSession(HTMLElementCaptureServer server, WebUIDriverType webUiDriverType, boolean isInstant, ProjectEntity currentProject, Logger logger) throws Exception {
+		super(server, webUiDriverType, isInstant, currentProject, logger);
 	}
 	
 	protected String getChromeExtensionPath() {
@@ -40,13 +40,9 @@ public class RecordSession extends InspectSession {
 		return FIREFOX_ADDON_RELATIVE_PATH;
 	}
 
-	protected String getIEAddonRegistryKey() {
-		return IE_ADDON_BHO_KEY;
-	}
-	
 	@Override
 	protected String getAddOnName() {
-		return "Recorder";
+		return RECORDER_ADDON_NAME;
 	}
 	
 	@Override

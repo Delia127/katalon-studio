@@ -108,8 +108,6 @@ public class EventConstants {
     public static final String JOB_COMPLETED = "JOB/COMPLETED";
 
     // Object Spy Events
-    public static final String OBJECT_SPY_ELEMENT_ADDED = "OBJECT_SPY/ELEMENT_ADDED";
-    public static final String OBJECT_SPY_ELEMENT_DOM_MAP_ADDED = "OBJECT_SPY/ELEMENT_DOM_MAP_ADDED";
     public static final String OBJECT_SPY_RESET_SELECTED_TARGET = "OBJECT_SPY/RESET_SELECTED_TARGET";
     public static final String OBJECT_SPY_REFRESH_SELECTED_TARGET = "OBJECT_SPY/REFRESH_SELECTED_TARGET";
     public static final String OBJECT_SPY_TEST_OBJECT_ADDED = "OBJECT_SPY/TEST_OBJECT_ADDED";

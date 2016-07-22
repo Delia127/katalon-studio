@@ -23,40 +23,32 @@ namespace ObjectSpyExtension
     {
         private object site;
         private IWebBrowser browser;
+        private string serverUrl;
+        private static String addonDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "KMS", "qAutomate", "ObjectSpy");
 
-        private static Guid guidIWebBrowserApp = Marshal.GenerateGuidForType(typeof(IWebBrowserApp)); 
-        private static Guid guidIWebBrowser2 = Marshal.GenerateGuidForType(typeof(IWebBrowser2));
-        private static string serverUrl;
-
-        private static string AssemblyDirectory
-        {
-            get
-            {
-                UriBuilder uri = new UriBuilder(Assembly.GetExecutingAssembly().CodeBase);
-                string path = Uri.UnescapeDataString(uri.Path);
-                return Path.GetDirectoryName(path);
-            }
-        }
-
-        #region Handle Events
+        #region Handle Document Events
         private void OnDocumentComplete(object pDisp, ref object URL)
         {
+            if (pDisp == this.site)
+            {
+                return;
+            }
             try
             {
-                if (pDisp != this.site)
+                IWebBrowser2 childBrowser = GetBrowser(pDisp);
+                if (childBrowser == null)
                 {
-                    IWebBrowser2 childBrowser = getBrowser(pDisp);
-                    if (childBrowser != null)
-                    {
-                        IHTMLDocument2 document2 = childBrowser.Document as IHTMLDocument2;
-                        IHTMLWindow2 window = document2.parentWindow;
-                        runScriptOnWindow(window, this);
-                    }
+                    return;
+                }
+                serverUrl = GetKatalonServerUrl();
+                if (serverUrl != null)
+                {
+                    RunScriptOnDocument(childBrowser.Document as IHTMLDocument2);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.InnerException.StackTrace);
+                logError(ex);
             }
             
         }
@@ -64,61 +56,82 @@ namespace ObjectSpyExtension
         private void OnDownloadComplete()
         {
             IHTMLDocument2 doc = browser.Document as IHTMLDocument2;
-            if (doc != null)
+            if (doc == null || doc.parentWindow == null)
             {
-                IHTMLWindow2 tmpWindow = doc.parentWindow;
-                if (tmpWindow != null)
-                {
-                    HTMLWindowEvents2_Event events = (tmpWindow as HTMLWindowEvents2_Event);
-                    try
-                    {
-                        events.onload -= new HTMLWindowEvents2_onloadEventHandler(RefreshHandler);
-                    }
-                    catch (Exception ex) {
-                        MessageBox.Show(ex.InnerException.Message);
-                    }
-                    events.onload += new HTMLWindowEvents2_onloadEventHandler(RefreshHandler);
-                }
+                return;
             }
-        }
-
-        public void RefreshHandler(IHTMLEventObj e)
-        {
             try
             {
-                IHTMLDocument2 document2 = browser.Document as IHTMLDocument2;
-                IHTMLWindow2 window = document2.parentWindow;
-                runScriptOnWindow(window, this);
+                IHTMLWindow2 tmpWindow = doc.parentWindow;
+                HTMLWindowEvents2_Event events = (tmpWindow as HTMLWindowEvents2_Event);
+                if (events == null)
+                {
+                    return;
+                }
+                events.onload -= new HTMLWindowEvents2_onloadEventHandler(OnLoad);
+                serverUrl = GetKatalonServerUrl();
+                if (serverUrl != null)
+                {
+                    events.onload += new HTMLWindowEvents2_onloadEventHandler(OnLoad);
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                logError(ex);
             }
         }
 
-        private static void runScriptOnWindow(dynamic window, IHttpRequestExtension extensionClass)
+        public void OnLoad(IHTMLEventObj e)
         {
-
-            IExpando windowEx = (IExpando)window;
-
-            PropertyInfo propertyInfo = windowEx.GetProperty("httpRequestExtension", System.Reflection.BindingFlags.IgnoreCase);
-            if (propertyInfo == null)
+            try
             {
+                RunScriptOnDocument(browser.Document as IHTMLDocument2);
+            }
+            catch (Exception ex)
+            {
+                logError(ex);
+            }
+        }
+
+        private void RunScriptOnDocument(IHTMLDocument2 document)
+        {
+            IHTMLWindow2 window = document.parentWindow;
+            RunScriptOnWindow(window, this);
+        }
+
+        private void RunScriptOnWindow(IHTMLWindow2 window, IHttpRequestExtension extensionClass)
+        {
+            IExpando windowEx = (IExpando) window;
+            PropertyInfo propertyInfo = null;
+            try
+            {
+                propertyInfo = windowEx.GetProperty("httpRequestExtension", System.Reflection.BindingFlags.IgnoreCase);
+                if (propertyInfo == null)
+                {
+                    propertyInfo = windowEx.AddProperty("httpRequestExtension");
+                }
+            }
+            catch (AmbiguousMatchException)
+            {
+                // Ambiguous match error, ignored
                 propertyInfo = windowEx.AddProperty("httpRequestExtension");
             }
-            propertyInfo.SetValue(windowEx, extensionClass, null);
+            propertyInfo.SetValue(windowEx, extensionClass, null); 
 
             window.execScript(Properties.Resources.jquery_1_11_2_min);
             window.execScript(Properties.Resources.jquery_color);
             window.execScript(Properties.Resources.json3_min);
             window.execScript("qAutomate_server_url = '" + serverUrl + "';");
+            window.execScript(Properties.Resources.constants);
             window.execScript(Properties.Resources.common);
             window.execScript(Properties.Resources.dom_inspector);
             window.execScript(Properties.Resources.dom_collector);
+            window.execScript(Properties.Resources.main);
         }
 
         #endregion
 
+        #region Implementation of IObjectWithSite
         [Guid("6D5140C1-7436-11CE-8034-00AA006009FA")]
         [InterfaceType(1)]
         public interface IServiceProvider
@@ -126,70 +139,127 @@ namespace ObjectSpyExtension
             int QueryService(ref Guid guidService, ref Guid riid, out IntPtr ppvObject);
         }
 
-        #region Implementation of IObjectWithSite
-        private IWebBrowser2 getBrowser(object site)
+        private IWebBrowser2 GetBrowser(object site)
         {
-            if (site != null && site is IServiceProvider)
+            if (site == null || !(site is IServiceProvider))
             {
-                var serviceProv = (IServiceProvider)site;
-                IntPtr intPtr;
-                serviceProv.QueryService(ref guidIWebBrowserApp, ref guidIWebBrowser2, out intPtr);
-                object result = Marshal.GetObjectForIUnknown(intPtr);
-                if (result is IWebBrowser2)
-                {
-                    return (IWebBrowser2)result;
-                }
+                return null;
+            }
+            var serviceProv = (IServiceProvider)site;
+            IntPtr intPtr;
+            Guid guidIWebBrowserApp = Marshal.GenerateGuidForType(typeof(IWebBrowserApp)); 
+            Guid guidIWebBrowser2 = Marshal.GenerateGuidForType(typeof(IWebBrowser2));
+            serviceProv.QueryService(ref guidIWebBrowserApp, ref guidIWebBrowser2, out intPtr);
+            object result = Marshal.GetObjectForIUnknown(intPtr);
+            if (result is IWebBrowser2)
+            {
+                return (IWebBrowser2)result;
             }
             return null;
         }
 
         int IObjectWithSite.SetSite(object site)
         {
-            if (site != null)
+            if (site == null)
             {
-                try
-                {
-                    string userSettingFolderLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "KMS", "qAutomate", "ObjectSpy");
-                    if (Directory.Exists(userSettingFolderLocation))
-                    {
-                        string serverSettingFile = Path.Combine(userSettingFolderLocation, "serverUrl.txt");
-                        if (File.Exists(serverSettingFile))
-                        {
-                            serverUrl = File.ReadAllText(serverSettingFile);
-                            this.site = site;
-                            //var guidIWebBrowserApp = Marshal.GenerateGuidForType(typeof(IWebBrowserApp)); // new Guid("0002DF05-0000-0000-C000-000000000046");
-                            //var guidIWebBrowser2 = Marshal.GenerateGuidForType(typeof(IWebBrowser2)); // new Guid("D30C1661-CDAF-11D0-8A3E-00C04FC9E26E");
-
-                            browser = getBrowser(site);
-                            ((DWebBrowserEvents2_Event)browser).DocumentComplete +=
-                                new DWebBrowserEvents2_DocumentCompleteEventHandler(this.OnDocumentComplete);
-                            ((DWebBrowserEvents2_Event)browser).DownloadComplete +=
-                                new DWebBrowserEvents2_DownloadCompleteEventHandler(this.OnDownloadComplete);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }
-            else
-            {
-                ((DWebBrowserEvents2_Event)browser).DocumentComplete -=
-                    new DWebBrowserEvents2_DocumentCompleteEventHandler(this.OnDocumentComplete);
-                ((DWebBrowserEvents2_Event)browser).DownloadComplete -=
-                    new DWebBrowserEvents2_DownloadCompleteEventHandler(this.OnDownloadComplete);
+                Dispose();
                 browser = null;
+                return 0;
+            }
+            try
+            {
+                this.site = site;
+                browser = GetBrowser(site);
+                Setup();
+            }
+            catch (Exception ex)
+            {
+                logError(ex);
             }
             return 0;
         }
 
+        private void logError(Exception e)
+        {
+            if (e == null)
+            {
+                return;
+            }
+            try
+            {
+                if (!Directory.Exists(addonDataFolder))
+                {
+                    Directory.CreateDirectory(addonDataFolder);
+                }
+                long currentMilis = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+                string newLogFile = Path.Combine(addonDataFolder, currentMilis.ToString() + ".log");
+                File.WriteAllText(newLogFile, e.ToString());
+            }
+            catch (Exception)
+            {
+                // IO Exceptions, ignored
+            }
+            
+        }
+
+        private string GetKatalonServerUrl()
+        {
+            if (!Directory.Exists(addonDataFolder))
+            {
+                return null;
+            }
+            string serverSettingFile = Path.Combine(addonDataFolder, "serverUrl.txt");
+            if (!File.Exists(serverSettingFile))
+            {
+                return null;
+            }
+            string serverUrl = File.ReadAllText(serverSettingFile);
+            try
+            {
+                WebRequest request = WebRequest.Create(serverUrl);
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    return serverUrl;
+                }
+            }
+            catch (Exception ex)
+            {
+                // server not available at all, for some reason
+            }
+            return null;
+        }
+
+        private void Dispose()
+        {
+            ((DWebBrowserEvents2_Event)browser).DocumentComplete -=
+                new DWebBrowserEvents2_DocumentCompleteEventHandler(this.OnDocumentComplete);
+            ((DWebBrowserEvents2_Event)browser).DownloadComplete -=
+                new DWebBrowserEvents2_DownloadCompleteEventHandler(this.OnDownloadComplete);
+        }
+
+        private void Setup()
+        {
+            ((DWebBrowserEvents2_Event)browser).DocumentComplete +=
+                new DWebBrowserEvents2_DocumentCompleteEventHandler(this.OnDocumentComplete);
+            ((DWebBrowserEvents2_Event)browser).DownloadComplete +=
+                new DWebBrowserEvents2_DownloadCompleteEventHandler(this.OnDownloadComplete);
+        }
+
         int IObjectWithSite.GetSite(ref Guid guid, out IntPtr ppvSite)
         {
-            IntPtr punk = Marshal.GetIUnknownForObject(browser);
-            int hr = Marshal.QueryInterface(punk, ref guid, out ppvSite);
-            Marshal.Release(punk);
-            return hr;
+            try
+            {
+                IntPtr punk = Marshal.GetIUnknownForObject(browser);
+                int hr = Marshal.QueryInterface(punk, ref guid, out ppvSite);
+                Marshal.Release(punk);
+                return hr;
+            }
+            catch (Exception ex)
+            {
+                logError(ex);
+                throw ex;
+            }
         }
         #endregion
 
@@ -200,35 +270,34 @@ namespace ObjectSpyExtension
         public static void RegisterBHO(Type type)
         {
             string guid = type.GUID.ToString("B");
-
-            // Register BHO
+            RegistryKey registryKey = Registry.LocalMachine.OpenSubKey(RegBHO, true);
+            if (registryKey == null)
             {
-                RegistryKey registryKey = Registry.LocalMachine.OpenSubKey(RegBHO, true);
-                if (registryKey == null)
-                    registryKey = Registry.LocalMachine.CreateSubKey(RegBHO);
-                RegistryKey key = registryKey.OpenSubKey(guid);
-                if (key == null)
-                    key = registryKey.CreateSubKey(guid);
-                key.SetValue("Alright", 1);
-                //key.SetValue("NoExplorer", 1, RegistryValueKind.DWord);
-                registryKey.Close();
-                key.Close();
+                registryKey = Registry.LocalMachine.CreateSubKey(RegBHO);
             }
+            RegistryKey key = registryKey.OpenSubKey(guid);
+            if (key == null)
+            {
+                key = registryKey.CreateSubKey(guid);
+            }
+            key.SetValue("Alright", 1);
+            registryKey.Close();
+            key.Close();
         }
 
         [ComUnregisterFunction]
         public static void UnregisterBHO(Type type)
         {
             string guid = type.GUID.ToString("B");
-            // BHO
+            RegistryKey registryKey = Registry.LocalMachine.OpenSubKey(RegBHO, true);
+            if (registryKey != null)
             {
-                RegistryKey registryKey = Registry.LocalMachine.OpenSubKey(RegBHO, true);
-                if (registryKey != null)
-                    registryKey.DeleteSubKey(guid, false);
+                registryKey.DeleteSubKey(guid, false);
             }
         }
         #endregion
 
+        #region Handle web request
         public String postRequest(string data, string url)
         {
             using (var client = new WebClient())
@@ -245,9 +314,19 @@ namespace ObjectSpyExtension
                         HttpWebResponse response = (HttpWebResponse) webException.Response;
                         return "HTTP Status Code: " + (int)(response.StatusCode);
                     }
-                    return "Extension error: " + webException.Message;
+                    if (webException.Message.Contains("Unable to connect to the remote server"))
+                    {
+                        return "Cannot connect to Katalon Server. Make sure you have started Object Spy on Katalon application.";
+                    }
+                    return "Web Exception Error: " + webException.Message;
+                }
+                catch (Exception ex)
+                {
+                    logError(ex);
+                    return "Internal Error: " + ex.ToString();
                 }
             }
         }
+        #endregion
     }
 }

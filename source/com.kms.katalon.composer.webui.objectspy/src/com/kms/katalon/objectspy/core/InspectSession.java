@@ -2,11 +2,9 @@ package com.kms.katalon.objectspy.core;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -32,15 +30,17 @@ import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.webui.util.WebUIExecutionUtil;
 import com.kms.katalon.objectspy.exception.BrowserNotSupportedException;
 import com.kms.katalon.objectspy.exception.ExtensionNotFoundException;
-import com.kms.katalon.objectspy.exception.IEAddonNotInstalledException;
 import com.kms.katalon.objectspy.util.FileUtil;
-import com.kms.katalon.objectspy.util.WinRegistry;
+import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.WinDef.HWND;
 
 @SuppressWarnings("restriction")
 public class InspectSession implements Runnable {
-    protected static final String LOAD_EXTENSION_CHROME_PREFIX = "load-extension=";
+    public static final String OBJECT_SPY_ADD_ON_NAME = "Object Spy";
 
-    private static final String OBJECT_SPY_ADD_ON_NAME = "Object Spy";
+    private static final String IE_WINDOW_CLASS = "IEFrame";
+
+    protected static final String LOAD_EXTENSION_CHROME_PREFIX = "load-extension=";
 
     private static final String VARIABLE_INIT_EXPRESSION_FOR_CHROME = "katalonServerPort = ''{0}''" + "\r\n"
             + "katalonOnOffStatus = true";
@@ -48,7 +48,7 @@ public class InspectSession implements Runnable {
     private static final String VARIABLE_INIT_FILE_FOR_CHROME = "chrome_variables_init.js";
 
     private static final String FIREFOX_SERVER_PORT_PREFERENCE_KEY = "extensions.@objectspy.katalonServerPort";
-    
+
     private static final String FIREFOX_ON_OFF_PREFERENCE_KEY = "extensions.@objectspy.katalonOnOffStatus";
 
     private static final String SERVER_URL_FILE_NAME = "serverUrl.txt";
@@ -58,10 +58,6 @@ public class InspectSession implements Runnable {
             + File.separator + "ObjectSpy";
 
     protected static final String IE_ADDON_BHO_KEY = "{8CB0FB3A-8EFA-4F94-B605-F3427688F8C7}";
-
-    protected static final String WINDOWS_32BIT_BHO_REGISTRY_KEY = "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\explorer\\Browser Helper Objects";
-
-    protected static final String WINDOWS_BHO_REGISTRY_KEY = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\explorer\\Browser Helper Objects";
 
     protected static final String IE_ABSOLUTE_PATH = "C:\\Program Files\\Internet Explorer\\iexplore.exe";
 
@@ -87,34 +83,15 @@ public class InspectSession implements Runnable {
 
     protected ProjectEntity currentProject;
 
-    public InspectSession(HTMLElementCaptureServer server, WebUIDriverType webUiDriverType,
+    private boolean isInstant;
+
+    public InspectSession(HTMLElementCaptureServer server, WebUIDriverType webUiDriverType, boolean isInstant,
             ProjectEntity currentProject, Logger logger) throws Exception {
         this.server = server;
         this.webUiDriverType = webUiDriverType;
         this.currentProject = currentProject;
         isRunFlag = true;
-    }
-
-    protected void checkIEAddon() throws IllegalAccessException, InvocationTargetException,
-            IEAddonNotInstalledException {
-        boolean found = checkRegistryKey(WINDOWS_32BIT_BHO_REGISTRY_KEY);
-        if (!found) {
-            found = checkRegistryKey(WINDOWS_BHO_REGISTRY_KEY);
-        }
-        if (!found) {
-            throw new IEAddonNotInstalledException(getAddOnName());
-        }
-    }
-
-    protected boolean checkRegistryKey(String parentKey) throws IllegalAccessException, InvocationTargetException {
-        List<String> bhos;
-        bhos = WinRegistry.readStringSubKeys(WinRegistry.HKEY_LOCAL_MACHINE, parentKey);
-        for (String bho : bhos) {
-            if (bho.toLowerCase().equals(getIEAddonRegistryKey().toLowerCase())) {
-                return true;
-            }
-        }
-        return false;
+        this.isInstant = isInstant;
     }
 
     protected void setUp(WebUIDriverType webUIDriverType, ProjectEntity currentProject) throws IOException,
@@ -135,31 +112,51 @@ public class InspectSession implements Runnable {
 
     @Override
     public void run() {
-        if (webUiDriverType == WebUIDriverType.CHROME_DRIVER || webUiDriverType == WebUIDriverType.FIREFOX_DRIVER) {
-            try {
-                setUp(webUiDriverType, currentProject);
-                runSeleniumWebDriver();
-            } catch (IOException | ExtensionNotFoundException | BrowserNotSupportedException e) {
-                LoggerSingleton.logError(e);
-            }
-        } else if (webUiDriverType == WebUIDriverType.IE_DRIVER) {
-            try {
-                checkIEAddon();
+        try {
+            if (webUiDriverType == WebUIDriverType.IE_DRIVER) {
                 runIE();
-            } catch (IOException | IllegalAccessException | InvocationTargetException | IEAddonNotInstalledException e) {
-                LoggerSingleton.logError(e);
+                return;
             }
+            setUp(webUiDriverType, currentProject);
+            runSeleniumWebDriver();
+        } catch (IOException | ExtensionNotFoundException | BrowserNotSupportedException e) {
+            LoggerSingleton.logError(e);
         }
     }
 
-    protected void runIE() throws IOException {
+    protected void runIE() throws IOException, ExtensionNotFoundException, BrowserNotSupportedException {
+        setupIE();
+        if (isInstant) {
+            runInstantIE();
+        } else {
+            openNewIEInstance();
+        }
+    }
+
+    private void setupIE() throws IOException {
         File settingFolder = new File(getIEApplicationDataFolder());
         if (!settingFolder.exists()) {
             settingFolder.mkdirs();
         }
         File serverSettingFile = new File(getIEApplicationServerSettingFile());
         FileUtils.writeStringToFile(serverSettingFile, server.getServerUrl());
+    }
 
+    protected void runInstantIE() throws IOException {
+        HWND hwnd = User32.INSTANCE.FindWindow(IE_WINDOW_CLASS, null);
+        if (hwnd == null) {
+            openNewIEInstance();
+            return;
+        }
+        shiftFocusToWindow(hwnd);
+    }
+
+    private void shiftFocusToWindow(HWND hwnd) {
+        User32.INSTANCE.ShowWindow(hwnd, 9);        // SW_RESTORE
+        User32.INSTANCE.SetForegroundWindow(hwnd);   // bring to front
+    }
+
+    private void openNewIEInstance() throws IOException {
         File ieExecutingFile = new File(IE_32BIT_ABSOLUTE_PATH);
         if (!ieExecutingFile.exists()) {
             ieExecutingFile = new File(IE_ABSOLUTE_PATH);
@@ -213,9 +210,8 @@ public class InspectSession implements Runnable {
         }
         if (driverType == WebUIDriverType.FIREFOX_DRIVER) {
             return createFireFoxProfile();
-        } else {
-            throw new BrowserNotSupportedException(driverType);
         }
+        return null;
     }
 
     protected FirefoxProfile createFireFoxProfile() throws IOException {
@@ -303,6 +299,14 @@ public class InspectSession implements Runnable {
 
     protected String getIEAddonRegistryKey() {
         return IE_ADDON_BHO_KEY;
+    }
+
+    public boolean isInstant() {
+        return isInstant;
+    }
+
+    public void setInstant(boolean isInstant) {
+        this.isInstant = isInstant;
     }
 
 }

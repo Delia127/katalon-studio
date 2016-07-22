@@ -73,8 +73,6 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.dialogs.AbstractDialogCellEditor;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
@@ -107,7 +105,7 @@ import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 @SuppressWarnings("restriction")
-public class RecorderDialog extends Dialog implements EventHandler {
+public class RecorderDialog extends Dialog {
 
     private static final int ANY_PORT_NUMBER = 0;
     private static final String TABLE_COLUMN_ELEMENT_TITLE = StringConstants.DIA_COL_ELEMENT;
@@ -145,8 +143,6 @@ public class RecorderDialog extends Dialog implements EventHandler {
         super(parentShell);
         setShellStyle(SWT.SHELL_TRIM | SWT.APPLICATION_MODAL);
         this.logger = logger;
-        this.eventBroker = eventBroker;
-        eventBroker.subscribe(EventConstants.RECORDER_ELEMENT_ADDED, this);
         elements = new ArrayList<HTMLPageElement>();
         recordedActions = new ArrayList<HTMLActionMapping>();
         isPausing = false;
@@ -162,7 +158,7 @@ public class RecorderDialog extends Dialog implements EventHandler {
                 startServer(getInstantBrowsersPort());
             } else {
                 startServer();
-                startRecordSession(selectedBrowser);
+                startRecordSession(selectedBrowser, isInstant);
             }
 
             tltmPause.setEnabled(true);
@@ -181,9 +177,9 @@ public class RecorderDialog extends Dialog implements EventHandler {
         actionTableViewer.refresh();
     }
 
-    private void startRecordSession(WebUIDriverType webUiDriverType) throws Exception {
+    private void startRecordSession(WebUIDriverType webUiDriverType, boolean isInstant) throws Exception {
         stopRecordSession();
-        session = new RecordSession(server, webUiDriverType, ProjectController.getInstance()
+        session = new RecordSession(server, webUiDriverType, isInstant, ProjectController.getInstance()
                 .getCurrentProject(), logger);
         new Thread(session).start();
     }
@@ -198,7 +194,7 @@ public class RecorderDialog extends Dialog implements EventHandler {
             return;
         }
         stopServer();
-        server = new HTMLElementRecorderServer(port, logger, eventBroker);
+        server = new HTMLElementRecorderServer(port, logger, this);
         server.start();
     }
 
@@ -1113,7 +1109,6 @@ public class RecorderDialog extends Dialog implements EventHandler {
             }
         }
         stopRecordSession();
-        eventBroker.unsubscribe(this);
     }
 
     private void stopRecordSession() {
@@ -1164,23 +1159,22 @@ public class RecorderDialog extends Dialog implements EventHandler {
         dispose();
     }
 
-    @Override
-    public void handleEvent(Event event) {
-        if (event.getTopic().equals(EventConstants.RECORDER_ELEMENT_ADDED)
-                && event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME) instanceof HTMLActionMapping
-                && !isPausing) {
-            HTMLActionMapping newAction = (HTMLActionMapping) event
-                    .getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-            if (HTMLActionUtil.verifyActionMapping(newAction, recordedActions)) {
-                if (newAction.getTargetElement() != null) {
-                    addNewElement(newAction.getTargetElement(), newAction);
-                }
-                recordedActions.add(newAction);
+    public void addNewActionMapping(final HTMLActionMapping newAction) {
+        if (isPausing || !HTMLActionUtil.verifyActionMapping(newAction, recordedActions)) {
+            return;
+        }
+        if (newAction.getTargetElement() != null) {
+            addNewElement(newAction.getTargetElement(), newAction);
+        }
+        recordedActions.add(newAction);
+        UISynchronizeService.syncExec(new Runnable() {
+            @Override
+            public void run() {
                 actionTableViewer.refresh();
                 actionTableViewer.reveal(newAction);
                 capturedObjectComposite.refreshElementTree(null);
             }
-        }
+        });
     }
 
     private void addNewElement(HTMLElement newElement, HTMLActionMapping newAction) {
