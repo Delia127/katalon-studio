@@ -123,6 +123,8 @@ public interface IdConstants {
     public static final String KATALON_EXECUTION_BUNDLE_ID = "com.kms.katalon.execution";
     
     public static final String KATALON_WEB_UI_OBJECT_SPY_BUNDLE_ID = "com.kms.katalon.composer.webui.objectspy";
+    
+    public static final String KATALON_WEB_UI_RECORDER_BUNDLE_ID = "com.kms.katalon.composer.webui.recorder";
 
     public static final String XERCES_BUNDLE_ID = "org.apache.xerces.impl";
 

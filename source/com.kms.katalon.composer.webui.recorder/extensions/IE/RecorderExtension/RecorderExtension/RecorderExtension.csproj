@@ -86,7 +86,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\common.js" />
+    <Content Include="Resources\constants.js" />
     <Content Include="Resources\dom_recorder.js" />
+    <Content Include="Resources\main.js" />
+    <Content Include="Resources\record_common.js" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Key.pfx" />
