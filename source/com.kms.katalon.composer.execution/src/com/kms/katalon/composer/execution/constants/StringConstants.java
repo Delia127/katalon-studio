@@ -140,6 +140,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PREF_CHKBOX_NOTIFY_ME_AFTER_EXE_COMPLETELY = "Notify me";
 
     public static final String PREF_CHKBOX_OPEN_RPT_AFTER_EXE_COMPLETELY = "Open report";
+    
+    public static final String PREF_CHKBOX_QUIT_DRIVERS_AFTER_EXE_COMPLETELY = "Terminate drivers";
 
     public static final String PREF_ERROR_MSG_VAL_MUST_BE_AN_INT_BETWEEN_X_Y = "Value must be an Integer between {0} and {1}";
 

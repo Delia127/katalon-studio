@@ -25,7 +25,7 @@ import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
 
 public class ExecutionPreferencePage extends PreferencePage {
-    private Button chckNotifyMe, chckOpenReport;
+    private Button chckNotifyMe, chckOpenReport, chckQuitDrivers;
 
     private Text txtPageLoadTimeout;
 
@@ -80,6 +80,9 @@ public class ExecutionPreferencePage extends PreferencePage {
 
         chckOpenReport = new Button(grpAfterExecuting, SWT.CHECK);
         chckOpenReport.setText(StringConstants.PREF_CHKBOX_OPEN_RPT_AFTER_EXE_COMPLETELY);
+        
+        chckQuitDrivers = new Button(grpAfterExecuting, SWT.CHECK);
+        chckQuitDrivers.setText(StringConstants.PREF_CHKBOX_QUIT_DRIVERS_AFTER_EXE_COMPLETELY);
 
         initialize();
 
@@ -111,6 +114,8 @@ public class ExecutionPreferencePage extends PreferencePage {
                 ExecutionPreferenceConstants.EXECUTION_NOTIFY_AFTER_EXECUTING));
         chckOpenReport.setSelection(getPreferenceStore().getBoolean(
                 ExecutionPreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING));
+        chckQuitDrivers.setSelection(getPreferenceStore().getBoolean(
+                ExecutionPreferenceConstants.EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING));
         txtPageLoadTimeout.setText(Integer.toString(getPreferenceStore().getInt(
                 ExecutionPreferenceConstants.EXECUTION_DEFAULT_TIMEOUT)));
         selectedExecutionConfiguration = getPreferenceStore().getString(
@@ -154,6 +159,8 @@ public class ExecutionPreferencePage extends PreferencePage {
                 ExecutionPreferenceConstants.EXECUTION_NOTIFY_AFTER_EXECUTING));
         chckOpenReport.setSelection(getPreferenceStore().getDefaultBoolean(
                 ExecutionPreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING));
+        chckQuitDrivers.setSelection(getPreferenceStore().getDefaultBoolean(
+                ExecutionPreferenceConstants.EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING));
         txtPageLoadTimeout.setText(Integer.toString(getPreferenceStore().getDefaultInt(
                 ExecutionPreferenceConstants.EXECUTION_DEFAULT_TIMEOUT)));
         String selectedExecutionConfiguration = getPreferenceStore().getDefaultString(
@@ -193,6 +200,11 @@ public class ExecutionPreferencePage extends PreferencePage {
         if (chckOpenReport != null) {
             getPreferenceStore().setValue(ExecutionPreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING,
                     chckOpenReport.getSelection());
+        }
+        
+        if (chckQuitDrivers != null) {
+            getPreferenceStore().setValue(ExecutionPreferenceConstants.EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING,
+                    chckQuitDrivers.getSelection());
         }
 
         if (txtPageLoadTimeout != null) {

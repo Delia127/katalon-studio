@@ -13,6 +13,8 @@ public interface PreferenceConstants {
     public static final String EXECUTION_DEFAULT_TIMEOUT = "execution.defaultTimeout";
 
     public static final String EXECUTION_OPEN_REPORT_AFTER_EXECUTING = "execution.openReportAfterExecuting";
+    
+    public static final String EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING = "execution.quitDriversAfterExecuting";
 
     public static final String MAIL_CONFIG_HOST = "mailConfig.host";
 

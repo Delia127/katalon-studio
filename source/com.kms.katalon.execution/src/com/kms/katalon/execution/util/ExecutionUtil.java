@@ -95,6 +95,10 @@ public class ExecutionUtil {
     public static boolean openReportAfterExecuting() {
         return getStore().getBoolean(PreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING);
     }
+    
+    public static boolean isQuitDriversAfterExecuting() {
+        return getStore().getBoolean(PreferenceConstants.EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING);
+    }
 
     public static Map<String, Object> escapeGroovy(Map<String, Object> propertiesMap) {
         for (Entry<String, Object> entry : propertiesMap.entrySet()) {
