@@ -115,6 +115,8 @@ public class DriverFactory {
         }
     };
 
+    private static InternetExplorerDriverService ieDriverService;
+
     /**
      * Open a new web driver based on the execution configuration
      * 
@@ -153,13 +155,13 @@ public class DriverFactory {
                     }
                     break;
                 case IE_DRIVER:
-                    File ieDriverServerLogFile = new File(RunConfiguration.getLogFolderPath() + File.separator
-                            + IE_DRIVER_SERVER_LOG_FILE_NAME);
-                    InternetExplorerDriverService.Builder service = new InternetExploreDriverServiceBuilder().withLogLevel(
+                    ieDriverService = new InternetExploreDriverServiceBuilder().withLogLevel(
                             InternetExplorerDriverLogLevel.TRACE)
                             .usingDriverExecutable(new File(getIEDriverPath()))
-                            .withLogFile(ieDriverServerLogFile);
-                    webDriver = new InternetExplorerDriver(service.build(), desireCapibilities);
+                            .withLogFile(
+                                    new File(RunConfiguration.getLogFolderPath() + File.separator + IE_DRIVER_SERVER_LOG_FILE_NAME))
+                            .build();
+                    webDriver = new InternetExplorerDriver(ieDriverService, desireCapibilities);
                     break;
                 case SAFARI_DRIVER:
                     webDriver = new SafariDriver(desireCapibilities);
@@ -264,7 +266,7 @@ public class DriverFactory {
         if (webDriver == null) {
             return;
         }
-        
+
         KeywordLogger logger = KeywordLogger.getInstance();
         logger.logRunData("sessionId", ((RemoteWebDriver) webDriver).getSessionId().toString());
         logger.logRunData("browser", WebUiCommonHelper.getBrowserAndVersion(webDriver));
@@ -574,12 +576,16 @@ public class DriverFactory {
     }
 
     public static void closeWebDriver() {
+        WebUIDriverType driverType = (WebUIDriverType) getExecutedBrowser();
+        if (driverType == WebUIDriverType.IE_DRIVER) {
+            quitIE();
+            return;
+        }
         WebDriver webDriver = localWebServerStorage.get();
         if (null != webDriver && null != ((RemoteWebDriver) webDriver).getSessionId()) {
             try {
                 webDriver.quit();
-                WebUIDriverType driver = (WebUIDriverType) getExecutedBrowser();
-                switch (driver) {
+                switch (driverType) {
                     case ANDROID_DRIVER:
                     case IOS_DRIVER:
                         WebMobileDriverFactory.closeDriver();
@@ -600,6 +606,25 @@ public class DriverFactory {
         }
         localWebServerStorage.set(null);
         RunConfiguration.removeDriver(webDriver);
+    }
+
+    private static void quitIE() {
+        try {
+            WebDriver webDriver = localWebServerStorage.get();
+            if (null != webDriver && null != ((RemoteWebDriver) webDriver).getSessionId()) {
+                webDriver.quit();
+            }
+        } catch (UnreachableBrowserException e) {
+            // browser may have been already closed, ignored
+        }
+        quitIEDriverServer();
+    }
+
+    private static void quitIEDriverServer() {
+        if (ieDriverService == null) {
+            return;
+        }
+        ieDriverService.stop();
     }
 
     private static void waitForRemoteBrowserReady(URL url) throws Exception {

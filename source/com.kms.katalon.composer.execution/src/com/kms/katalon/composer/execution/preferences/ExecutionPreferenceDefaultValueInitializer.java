@@ -7,6 +7,8 @@ import com.kms.katalon.composer.execution.constants.ExecutionPreferenceConstants
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
 public class ExecutionPreferenceDefaultValueInitializer extends AbstractPreferenceInitializer {
+    private static final boolean EXECUTION_DEFAULT_QUIT_DRIVERS_AFTER_EXECUTING = true;
+
     public static final int EXECUTION_DEFAULT_TIMEOUT_VALUE = 30;
 
     public static final boolean EXECUTION_DEFAULT_IS_NOTIFY_ALLOWED_VALUE = false;
@@ -44,6 +46,8 @@ public class ExecutionPreferenceDefaultValueInitializer extends AbstractPreferen
                 EXECUTION_DEFAULT_IS_NOTIFY_ALLOWED_VALUE);
         store.setDefault(ExecutionPreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING,
                 EXECUTION_DEFAULT_OPEN_REPORT_REPORT_VALUE);
+        store.setDefault(ExecutionPreferenceConstants.EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING,
+                EXECUTION_DEFAULT_QUIT_DRIVERS_AFTER_EXECUTING);
 
         store.setDefault(ExecutionPreferenceConstants.EXECUTION_SHOW_ALL_LOGS, EXECUTION_DEFAULT_SHOW_ALL_LOGS_VALUE);
         store.setDefault(ExecutionPreferenceConstants.EXECUTION_SHOW_INFO_LOGS, EXECUTION_DEFAULT_SHOW_INFO_LOGS_VALUE);

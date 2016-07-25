@@ -7,6 +7,7 @@ public class MobileDriverCleaner implements IDriverCleaner{
 
 	@Override
 	public void cleanDriverAfterRunningTestCase() {
+	    cleanDriverAfterRunningTestSuite();
 	}
 
     @Override
