@@ -126,12 +126,6 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener, I
 
                 if (elementId.equalsIgnoreCase(mpart.getElementId())) {
                     DataFileEntity dataFile = (DataFileEntity) ((Object[]) object)[1];
-                    if (dataFile.equals(originalDataFile)) {
-                        return;
-                    }
-
-                    this.originalDataFile = dataFile;
-
                     boolean oldDirty = dirtyable.isDirty();
                     updateDataFile(dataFile);
                     dirtyable.setDirty(oldDirty);
