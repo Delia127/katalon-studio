@@ -214,7 +214,7 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
                 if (event.detail == SWT.CHECK) {
                     TreeItem item = (TreeItem) event.item;
                     treeViewer.getTree().setSelection(item);
-                    onStageChangedTreeItem(item, item.getChecked());
+                    onStageChangedTreeItem(item.getData(), item.getChecked());
                 }
             }
         });
@@ -232,7 +232,7 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
                     }
                     treeViewer.setChecked(item, true);
                     TreeItem treeItem = treeViewer.getTree().getSelection()[0];
-                    onStageChangedTreeItem(treeItem, true);
+                    onStageChangedTreeItem(treeItem.getData(), true);
                 }
             }
         });
@@ -245,22 +245,26 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
     /**
      * Check/Uncheck TreeItem action
      * 
-     * @param item TreeItem
+     * @param element {@link TreeItem#getData()}
      * @param isChecked whether TreeItem is checked or not
      */
-    private void onStageChangedTreeItem(TreeItem item, boolean isChecked) {
-        Object element = item.getData();
+    private void onStageChangedTreeItem(Object element, boolean isChecked) {
         if (element instanceof TestCaseTreeEntity) {
-            // Only add/remove TestCaseTreeEntity
             if (isChecked) {
                 checkedItems.add(element);
             } else {
                 checkedItems.remove(element);
             }
-        } else if (element instanceof FolderTreeEntity) {
-            // Check/Uncheck every child in folder
-            for (TreeItem child : item.getItems()) {
-                onStageChangedTreeItem(child, isChecked);
+            return;
+        }
+
+        if (element instanceof FolderTreeEntity) {
+            try {
+                for (Object childElement : TreeEntityUtil.getChildren((FolderTreeEntity) element)) {
+                    onStageChangedTreeItem(childElement, isChecked);
+                }
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
             }
         }
     }
