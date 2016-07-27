@@ -17,7 +17,7 @@ import com.kms.katalon.core.testdata.TestDataColumn
 import com.kms.katalon.entity.testsuite.TestSuiteEntity
 import com.kms.katalon.execution.configuration.IRunConfiguration
 import com.kms.katalon.execution.entity.IExecutedEntity
-import com.kms.katalon.execution.entity.TestCaseExecutedEntity;
+import com.kms.katalon.execution.entity.TestCaseExecutedEntity
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity
 import com.kms.katalon.execution.util.ExecutionUtil
 import com.kms.katalon.groovy.util.GroovyStringUtil
@@ -53,7 +53,8 @@ KeywordLogger.getInstance().startSuite('<%= testSuite.getName() %>', suiteProper
     "<%= trigger %>"()
 }
 
-DriverCleanerCollector.getInstance().cleanDriversAfterRunningTestSuite()
+<%= isQuitDriversAfterRun ? "DriverCleanerCollector.getInstance().cleanDriversAfterRunningTestSuite()" : "" %>
+
 KeywordLogger.getInstance().endSuite('<%= testSuite.getName() %>', null)
 '''
     @CompileStatic
@@ -96,17 +97,18 @@ KeywordLogger.getInstance().endSuite('<%= testSuite.getName() %>', null)
             "configProperties" : ExecutionUtil.escapeGroovy(testSuiteExecutedEntity.getAttributes()),
             "executionConfigFilePath" : GroovyStringUtil.escapeGroovy(runConfig.getExecutionSetting().getSettingFilePath()),
             "driverCleaners" : driverCleaners,
+            "isQuitDriversAfterRun" : ExecutionUtil.isQuitDriversAfterExecuting(),
             "trigger": 'runTestCase_${it}'
         ]
 
         def engine = new GStringTemplateEngine()
-        def tpl = engine.createTemplate(tpl).make(binding)
+        def tempTestSuiteContentWritable = engine.createTemplate(tpl).make(binding)
         if (file != null) {
             if (file.canWrite()) {
-                file.write(tpl.toString())
+                file.write(tempTestSuiteContentWritable.toString())
             }
         } else {
-            return tpl.toString()
+            return tempTestSuiteContentWritable.toString()
         }
     }
 }

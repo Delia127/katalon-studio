@@ -140,6 +140,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PREF_CHKBOX_NOTIFY_ME_AFTER_EXE_COMPLETELY = "Notify me";
 
     public static final String PREF_CHKBOX_OPEN_RPT_AFTER_EXE_COMPLETELY = "Open report";
+    
+    public static final String PREF_CHKBOX_QUIT_DRIVERS_AFTER_EXE_COMPLETELY = "Terminate drivers";
 
     public static final String PREF_ERROR_MSG_VAL_MUST_BE_AN_INT_BETWEEN_X_Y = "Value must be an Integer between {0} and {1}";
 
@@ -298,4 +300,7 @@ public class StringConstants extends GlobalStringConstants {
     // LaunchDelegate
     public static final String LAUNCH_CONFIGURATION_TYPE_ID = "com.kms.katalon.composer.execution.scriptLaunchConfiguration";
 
+    // ExternalLibratiesSettingPage
+    public static final String PAGE_EXTERNAL_LIB_JOB_TASK_REBUILD_PROJECT = "Updating external libraries...";
+    public static final String PAGE_EXTERNAL_LIB_MSG_UNABLE_UPDATE_PROJECT = "Unable to update external libraries";
 }

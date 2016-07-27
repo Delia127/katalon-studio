@@ -172,11 +172,11 @@ public class QTestIntegrationUtil {
         List<QTestProject> qTestProjects = QTestIntegrationProjectManager
                 .getQTestProjectsByIntegratedEntity(projectIntegratedEntity);
         String entityId = entity.getRelativePathForUI().replace(File.separator,
-                GlobalStringConstants.ENTITY_ID_SEPERATOR);
+                GlobalStringConstants.ENTITY_ID_SEPARATOR);
 
         for (TestCaseRepo testCaseRepo : getTestCaseRepositories(projectEntity, qTestProjects)) {
             String repoFolderId = testCaseRepo.getFolderId();
-            if (entityId.startsWith(repoFolderId + GlobalStringConstants.ENTITY_ID_SEPERATOR)
+            if (entityId.startsWith(repoFolderId + GlobalStringConstants.ENTITY_ID_SEPARATOR)
                     || entityId.equals(repoFolderId)) {
                 return testCaseRepo;
             }
@@ -199,7 +199,7 @@ public class QTestIntegrationUtil {
         }
 
         String entityId = entity.getRelativePathForUI().replace(File.separator,
-                GlobalStringConstants.ENTITY_ID_SEPERATOR);
+                GlobalStringConstants.ENTITY_ID_SEPARATOR);
 
         return getTestSuiteRepo(entityId, projectEntity);
     }
@@ -221,7 +221,7 @@ public class QTestIntegrationUtil {
 
         for (TestSuiteRepo testSuiteRepo : getTestSuiteRepositories(projectEntity, qTestProjects)) {
             String repoFolderId = testSuiteRepo.getFolderId();
-            if (entityId.startsWith(repoFolderId + GlobalStringConstants.ENTITY_ID_SEPERATOR)
+            if (entityId.startsWith(repoFolderId + GlobalStringConstants.ENTITY_ID_SEPARATOR)
                     || entityId.equals(repoFolderId)) {
                 return testSuiteRepo;
             }

@@ -1,7 +1,7 @@
 package com.kms.katalon.controller;
 
 import java.io.File;
-import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +13,6 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.constants.StringConstants;
 import com.kms.katalon.core.db.DatabaseConnection;
-import com.kms.katalon.core.util.Base64;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
@@ -148,7 +147,7 @@ public class TestDataController extends EntityController {
     public String getIdForDisplay(DataFileEntity entity) throws Exception {
         return getDataProviderSetting().getDataFileDataProvider()
                 .getIdForDisplay(entity)
-                .replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPERATOR);
+                .replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPARATOR);
     }
 
     public List<String> getSibblingDataFileNames(DataFileEntity dataFile) throws Exception {
@@ -180,7 +179,7 @@ public class TestDataController extends EntityController {
     }
 
     public DataFileEntity getTestDataByDisplayId(String displayId) throws Exception {
-        String relativePathWithoutExtensions = displayId.replace(GlobalStringConstants.ENTITY_ID_SEPERATOR,
+        String relativePathWithoutExtensions = displayId.replace(GlobalStringConstants.ENTITY_ID_SEPARATOR,
                 File.separator);
         return getDataProviderSetting().getDataFileDataProvider().getDataFileByDisplayId(relativePathWithoutExtensions);
     }
@@ -192,7 +191,7 @@ public class TestDataController extends EntityController {
     public String getTestDataDisplayIdByPk(String pk, String projectLocation) {
         return FilenameUtils.removeExtension(pk)
                 .replace(projectLocation + File.separator, "")
-                .replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPERATOR);
+                .replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPARATOR);
     }
 
     public Map<String, List<TestSuiteTestCaseLink>> getTestDataReferences(DataFileEntity dataFileEntity)
@@ -204,22 +203,15 @@ public class TestDataController extends EntityController {
         entity = testData = getTestData(entity.getId());
     }
 
-    public DatabaseConnection getDatabaseConnection(DataFileEntity testData) throws IOException {
+    public DatabaseConnection getDatabaseConnection(DataFileEntity testData) throws Exception {
         if (testData.getDriver() != DataFileDriverType.DBData) {
-            return null;
+            throw new IllegalArgumentException(MessageFormat.format(StringConstants.CTRL_EXC_TEST_DATA_IS_NOT_DB_TYPE,
+                    testData.getIdForDisplay()));
         }
 
-        if (testData.isUsingGlobalDBSetting()) {
-            return DatabaseController.getInstance().getGlobalDatabaseConnection();
-        }
-
-        String user = null;
-        String password = null;
-        if (testData.isSecureUserAccount()) {
-            user = testData.getUser();
-            password = Base64.decode(testData.getPassword());
-        }
-
-        return new DatabaseConnection(testData.getDataSourceUrl(), user, password);
+        return DatabaseController.getInstance()
+                .getDatabaseConnection(testData.isUsingGlobalDBSetting(), testData.isSecureUserAccount(),
+                        testData.getUser(), testData.getPassword(), testData.getDataSourceUrl());
     }
+
 }

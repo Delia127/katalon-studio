@@ -15,7 +15,17 @@ import org.codehaus.groovy.ast.ImportNode;
 import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.groovy.ast.ModuleNode;
 
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
+import com.kms.katalon.controller.KeywordController;
+import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.core.testcase.TestCase;
+import com.kms.katalon.core.testcase.TestCaseFactory;
+import com.kms.katalon.core.testdata.TestData;
+import com.kms.katalon.core.testdata.TestDataFactory;
+import com.kms.katalon.core.testobject.ObjectRepository;
+import com.kms.katalon.core.testobject.TestObject;
+import com.kms.katalon.custom.keyword.KeywordClass;
 
 public class ClassNodeWrapper extends ASTNodeWrapper {
     protected Class<?> typeClass;
@@ -34,11 +44,15 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
 
     protected ClassNodeWrapper componentType = null;
 
-    protected List<ImportNodeWrapper> imports = new ArrayList<ImportNodeWrapper>();
-
     protected List<MethodNodeWrapper> methods = new ArrayList<MethodNodeWrapper>();
 
     protected List<FieldNodeWrapper> fields = new ArrayList<FieldNodeWrapper>();
+
+    protected ImportNodeCollection importNodeCollection = new ImportNodeCollection();
+
+    public ImportNodeCollection getImportNodeCollection() {
+        return importNodeCollection;
+    }
 
     public ClassNodeWrapper(Class<?> clazz, ASTNodeWrapper parentNodeWrapper) {
         this(new ClassNode(clazz), parentNodeWrapper);
@@ -96,14 +110,14 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
     }
 
     private void copyImports(ClassNode classNode) {
-        imports.clear();
+        importNodeCollection.clear();
         ModuleNode module = classNode.getModule();
         addImportNodeWrappers(module.getImports());
         addImportNodeWrappers(module.getStaticImports().values());
         addImportNodeWrappers(module.getStarImports());
         addImportNodeWrappers(module.getStaticStarImports().values());
         // sort import base on start line
-        Collections.sort(imports, new Comparator<ImportNodeWrapper>() {
+        Collections.sort(getImports(), new Comparator<ImportNodeWrapper>() {
             @Override
             public int compare(ImportNodeWrapper import_1, ImportNodeWrapper import_2) {
                 return Integer.compare(import_1.getLineNumber(), import_2.getLineNumber());
@@ -114,7 +128,7 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
 
     private void addImportNodeWrappers(Collection<ImportNode> importsList) {
         for (ImportNode importNode : importsList) {
-            imports.add(new ImportNodeWrapper(importNode, this));
+            importNodeCollection.addImportNode(new ImportNodeWrapper(importNode, this));
         }
     }
 
@@ -139,9 +153,9 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
                 genericsTypes[index] = new GenericsTypeWrapper(classNodeWrapper.getGenericsTypes()[index], this);
             }
         }
-        imports.clear();
+        importNodeCollection.clear();
         for (ImportNodeWrapper importNode : classNodeWrapper.getImports()) {
-            imports.add(new ImportNodeWrapper(importNode, this));
+            importNodeCollection.addImportNode(new ImportNodeWrapper(importNode, this));
         }
         methods.clear();
         for (MethodNodeWrapper method : classNodeWrapper.getMethods()) {
@@ -162,7 +176,7 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
     @Override
     public List<? extends ASTNodeWrapper> getAstChildren() {
         List<ASTNodeWrapper> astNodeWrappers = new ArrayList<ASTNodeWrapper>();
-        astNodeWrappers.addAll(imports);
+        astNodeWrappers.addAll(getImports());
         astNodeWrappers.addAll(fields);
         astNodeWrappers.addAll(methods);
         return astNodeWrappers;
@@ -307,20 +321,34 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
     }
 
     public List<ImportNodeWrapper> getImports() {
-        return Collections.unmodifiableList(imports);
+        return importNodeCollection.getImportNodes();
     }
 
     public void addImport(Class<?> classNeedImport) {
-        boolean isContained = false;
-        for (ImportNodeWrapper importNode : imports) {
-            if (importNode.getType().getName().equals(classNeedImport.getName())) {
-                isContained = true;
-                break;
-            }
+        importNodeCollection.addImportNode(new ImportNodeWrapper(classNeedImport, this, classNeedImport.getSimpleName()));
+    }
+
+    public void addImportKeywordClass(KeywordClass keywordClass) {
+        ImportNodeWrapper wrapper = new ImportNodeWrapper(keywordClass.getType(), this, keywordClass.getAliasName());
+        importNodeCollection.addImportNode(wrapper);
+    }
+
+    public void addImportStaticMethod(Class<?> classToImport, String methodName) {
+        ImportNodeWrapper wrapper = new ImportNodeWrapper(classToImport, methodName, this, true);
+        importNodeCollection.addImportNode(wrapper);
+    }
+
+    public void addDefaultImports() {
+        for (KeywordClass keywordClass : KeywordController.getInstance().getBuiltInKeywordClasses()) {
+            addImportKeywordClass(keywordClass);
         }
-        if (!isContained) {
-            imports.add(new ImportNodeWrapper(classNeedImport, this));
-        }
+        addImportStaticMethod(ObjectRepository.class, MethodCallExpressionWrapper.FIND_TEST_OBJECT_METHOD_NAME);
+        addImportStaticMethod(TestDataFactory.class, MethodCallExpressionWrapper.FIND_TEST_DATA_METHOD_NAME);
+        addImportStaticMethod(TestCaseFactory.class, MethodCallExpressionWrapper.FIND_TEST_CASE_METHOD_NAME);
+        addImport(FailureHandling.class);
+        addImport(TestCase.class);
+        addImport(TestData.class);
+        addImport(TestObject.class);
     }
 
     public boolean isArray() {

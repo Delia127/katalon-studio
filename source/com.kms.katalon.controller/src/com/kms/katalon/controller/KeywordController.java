@@ -55,7 +55,11 @@ public class KeywordController extends EntityController {
     public KeywordMethod getBuiltInKeywordByName(String className, String keywordName, String[] paramTypes) {
         return BuiltInMethodNodeFactory.findMethod(className, keywordName, paramTypes);
     }
-    
+
+    public KeywordMethod getBuiltInKeywordByName(KeywordClass keywordClass, String keywordName) {
+        return BuiltInMethodNodeFactory.findMethod(keywordClass.getType().getName(), keywordName, null);
+    }
+
     public KeywordMethod getBuiltInKeywordByName(String className, String keywordName) {
         return BuiltInMethodNodeFactory.findMethod(className, keywordName, null);
     }

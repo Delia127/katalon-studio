@@ -6,14 +6,35 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.expr.ArgumentListExpression;
 import org.codehaus.groovy.ast.expr.MethodCallExpression;
+import org.openqa.selenium.Keys;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapHelper;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.ImportNodeCollection;
+import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
+import com.kms.katalon.controller.KeywordController;
+import com.kms.katalon.core.constants.StringConstants;
+import com.kms.katalon.core.testcase.TestCaseFactory;
+import com.kms.katalon.core.testdata.TestDataFactory;
+import com.kms.katalon.core.testobject.ObjectRepository;
+import com.kms.katalon.custom.keyword.KeywordClass;
 
 public class MethodCallExpressionWrapper extends ExpressionWrapper {
     public static final String TO_STRING_METHOD_NAME = "toString";
 
     public static final String THIS_VARIABLE = "this";
+
+    public static final String CALL_TEST_CASE_METHOD_NAME = "callTestCase";
+
+    public static final String FIND_TEST_CASE_METHOD_NAME = "findTestCase";
+
+    public static final String FIND_TEST_DATA_METHOD_NAME = "findTestData";
+
+    public static final String FIND_TEST_OBJECT_METHOD_NAME = "findTestObject";
+
+    public static final String GET_VALUE_METHOD_NAME = "getValue";
+
+    public static final String KEYS_CHORDS_METHOD_NAME = "chord";
 
     private ExpressionWrapper objectExpression;
 
@@ -25,16 +46,8 @@ public class MethodCallExpressionWrapper extends ExpressionWrapper {
 
     private boolean safe = false;
 
-    public MethodCallExpressionWrapper() {
-        this(null);
-    }
-
     public MethodCallExpressionWrapper(ASTNodeWrapper parentNodeWrapper) {
-        this("this", TO_STRING_METHOD_NAME, parentNodeWrapper);
-    }
-
-    public MethodCallExpressionWrapper(String classSimpleName, String method) {
-        this(classSimpleName, method, null);
+        this(THIS_VARIABLE, TO_STRING_METHOD_NAME, parentNodeWrapper);
     }
 
     public MethodCallExpressionWrapper(String classSimpleName, String method, ASTNodeWrapper parentNodeWrapper) {
@@ -45,7 +58,7 @@ public class MethodCallExpressionWrapper extends ExpressionWrapper {
     }
 
     public MethodCallExpressionWrapper(Class<?> clazz, String method, ASTNodeWrapper parentNodeWrapper) {
-        this(clazz.getSimpleName(), method, parentNodeWrapper);
+        this(clazz != null ? clazz.getSimpleName() : THIS_VARIABLE, method, parentNodeWrapper);
     }
 
     public MethodCallExpressionWrapper(MethodCallExpression expression, ASTNodeWrapper parentNodeWrapper) {
@@ -168,7 +181,7 @@ public class MethodCallExpressionWrapper extends ExpressionWrapper {
     @Override
     public String getText() {
         String object = objectExpression.getText();
-        return (object.equals("this") ? "" : object + ".")
+        return (THIS_VARIABLE.equals(object) ? "" : object + ".")
                 + ((method instanceof ConstantExpressionWrapper) ? ((ConstantExpressionWrapper) method).getValue()
                         : method.getText()) + arguments.getText();
 
@@ -223,7 +236,92 @@ public class MethodCallExpressionWrapper extends ExpressionWrapper {
         } else if (oldChild == getArguments() && newChild instanceof ArgumentListExpressionWrapper) {
             setArguments((ArgumentListExpressionWrapper) newChild);
             return true;
-        } 
+        }
         return super.replaceChild(oldChild, newChild);
+    }
+
+    public static MethodCallExpressionWrapper newLocalMethod(String method, ASTNodeWrapper parentNodeWrapper) {
+        return new MethodCallExpressionWrapper(THIS_VARIABLE, method, parentNodeWrapper);
+    }
+
+    public boolean isKeyword(String className) {
+        KeywordClass keywordClass = KeywordController.getInstance().getBuiltInKeywordClassByName(className);
+        if (keywordClass == null) {
+            return false;
+        }
+        return KeywordController.getInstance().getBuiltInKeywordByName(keywordClass, getMethodAsString()) != null;
+    }
+
+    public boolean isBuiltInKeywordMethodCall() {
+        if (getObjectExpression() == null) {
+            return false;
+        }
+
+        for (KeywordClass keywordClass : KeywordController.getInstance().getBuiltInKeywordClasses()) {
+            String classAliasName = keywordClass.getAliasName();
+            if ((isObjectExpressionOfClass(keywordClass.getType()) && isKeyword(keywordClass.getSimpleName()))
+                    || (importHasAliasName(classAliasName) && isObjectExpressionOfClass(classAliasName) && isKeyword(classAliasName))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean importHasAliasName(String aliasName) {
+        ImportNodeCollection importNodeCollection = getImportNodeCollection();
+        return importNodeCollection != null && importNodeCollection.isImported(aliasName);
+    }
+
+    private ImportNodeCollection getImportNodeCollection() {
+        ScriptNodeWrapper scriptClass = getScriptClass();
+        return scriptClass != null ? scriptClass.getImportNodeCollection() : null;
+    }
+
+    public boolean isMethodNameImportedAsStatic(String methodName) {
+        ImportNodeCollection importNodeCollection = getImportNodeCollection();
+        return importNodeCollection != null && isQualifiedNameImported(methodName)
+                && StringUtils.equals(methodName, importNodeCollection.getQualifierForAlias(getMethodAsString()));
+    }
+
+    private boolean isQualifiedNameImported(String qualifiedName) {
+        return isObjectExpressionOfClass(THIS_VARIABLE) && getImportNodeCollection().hasAlias(qualifiedName);
+    }
+
+    public boolean isCustomKeywordMethodCall() {
+        return getObjectExpression() != null
+                && StringConstants.CUSTOM_KEYWORD_CLASS_NAME.equals(getObjectExpressionAsString());
+    }
+
+    public boolean isCallTestCaseMethodCall() {
+        return isBuiltInKeywordMethodCall() && CALL_TEST_CASE_METHOD_NAME.equals(getMethodAsString())
+                && getArguments().getExpressions().size() > 1;
+    }
+
+    public boolean isFindTestCaseMethodCall() {
+        return isFindTestArtifactMethodCall(TestCaseFactory.class, FIND_TEST_CASE_METHOD_NAME);
+    }
+
+    public boolean isFindTestDataMethodCall() {
+        return isFindTestArtifactMethodCall(TestDataFactory.class, FIND_TEST_DATA_METHOD_NAME);
+    }
+
+    public boolean isFindTestObjectMethodCall() {
+        return isFindTestArtifactMethodCall(ObjectRepository.class, FIND_TEST_OBJECT_METHOD_NAME);
+    }
+
+    private boolean isFindTestArtifactMethodCall(Class<?> clazzToFind, String methodName) {
+        String fullMethodName = clazzToFind.getName() + "." + methodName;
+        return (isObjectExpressionOfClass(clazzToFind) && getMethodAsString().equals(methodName))
+                || (isMethodNameImportedAsStatic(fullMethodName)) && getArguments().getExpressions().size() == 1;
+    }
+
+    public boolean isGetTestDataValueMethodCall() {
+        return getObjectExpression() instanceof MethodCallExpressionWrapper
+                && ((MethodCallExpressionWrapper) getObjectExpression()).isFindTestDataMethodCall()
+                && GET_VALUE_METHOD_NAME.equals(getMethodAsString());
+    }
+
+    public boolean isKeysArgumentExpression() {
+        return isObjectExpressionOfClass(Keys.class) && getMethodAsString().equals(KEYS_CHORDS_METHOD_NAME);
     }
 }

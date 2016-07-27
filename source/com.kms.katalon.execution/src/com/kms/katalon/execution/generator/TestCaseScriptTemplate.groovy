@@ -13,6 +13,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testcase.TestCaseBinding
 import com.kms.katalon.entity.testcase.TestCaseEntity
 import com.kms.katalon.execution.configuration.IRunConfiguration
+import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
@@ -30,12 +31,13 @@ RunConfiguration.setExecutionSettingFile('<%= executionConfigFilePath %>')
 TestCaseMain.beforeStart()
 try {
 	TestCaseMain.runTestCase('<%= testCaseId %>', 
-								<%= testCaseBinding %>, FailureHandling.STOP_ON_FAILURE)
+								<%= testCaseBinding %>, FailureHandling.STOP_ON_FAILURE
+    <%= isQuitDriversAfterRun ? ", true" : "" %>)
 } catch (Exception e) {
     TestCaseMain.logError(e, '<%= testCaseId %>')
 }
-DriverCleanerCollector.getInstance().cleanDriversAfterRunningTestCase()
 '''
+    
     @CompileStatic
     def static generateTestCaseScriptFile(File file, TestCaseEntity testCase, String testCaseBinding, IRunConfiguration config) {
         def importNames = [
@@ -65,13 +67,14 @@ DriverCleanerCollector.getInstance().cleanDriversAfterRunningTestCase()
             "testCaseId"      : testCaseId,
             "testCaseBinding" : testCaseBinding,
             "executionConfigFilePath" : GroovyStringUtil.escapeGroovy(config.getExecutionSetting().getSettingFilePath()),
+            "isQuitDriversAfterRun" : ExecutionUtil.isQuitDriversAfterExecuting(),
             "driverCleaners" : driverCleaners
         ]
 
         def engine = new GStringTemplateEngine()
-        def tpl = engine.createTemplate(tpl).make(binding)
+        Writable tempTestCaseContentWritable = engine.createTemplate(tpl).make(binding)
         if (file.canWrite()) {
-            file.write(tpl.toString());
+            file.write(tempTestCaseContentWritable.toString());
         }
     }
 }

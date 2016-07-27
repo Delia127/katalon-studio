@@ -2,8 +2,6 @@ package com.kms.katalon.composer.objectrepository.handler;
 
 import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
 import static com.kms.katalon.composer.testcase.util.TestCaseEntityUtil.getTestCaseEntities;
-import static com.kms.katalon.groovy.util.GroovyRefreshUtil.findReferencesInTestCaseScripts;
-import static com.kms.katalon.groovy.util.GroovyRefreshUtil.removeReferencesInTestCaseScripts;
 import static java.text.MessageFormat.format;
 import static org.eclipse.jface.dialogs.MessageDialog.openError;
 
@@ -27,6 +25,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
+import com.kms.katalon.groovy.reference.TestArtifactScriptRefactor;
 
 public class DeleteTestObjectHandler extends AbstractDeleteReferredEntityHandler {
 
@@ -50,7 +49,8 @@ public class DeleteTestObjectHandler extends AbstractDeleteReferredEntityHandler
 
             WebElementEntity webElement = (WebElementEntity) treeEntity.getObject();
             String testObjectId = webElement.getIdForDisplay();
-            List<IFile> affectedTestCaseScripts = findReferencesInTestCaseScripts(testObjectId, webElement.getProject());
+            List<IFile> affectedTestCaseScripts = TestArtifactScriptRefactor.createForTestObjectEntity(testObjectId)
+                    .findReferrersInTestCaseScripts(ProjectController.getInstance().getCurrentProject());
 
             if (performDeleteTestObject(webElement, Collections.emptyList(), affectedTestCaseScripts)) {
                 eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, testObjectId);
@@ -121,7 +121,8 @@ public class DeleteTestObjectHandler extends AbstractDeleteReferredEntityHandler
                             removeReferencesInTestObjects(testObjectReferences);
 
                             // remove references in test case
-                            removeReferencesInTestCaseScripts(testObjectIdForDisplay, affectedTestCaseScripts);
+                            TestArtifactScriptRefactor.createForTestObjectEntity(testObjectIdForDisplay)
+                                    .removeReferences(affectedTestCaseScripts);
                         }
                     }
 

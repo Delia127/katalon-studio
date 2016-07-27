@@ -72,11 +72,11 @@ public class StringConstants extends GlobalStringConstants {
             + "Please make sure you have installed the browser''s add-on for Object Spy. Do you want go to the add-on store right now to get the add-on for Object Spy ?";
 
     public static final String DIA_INSTANT_BROWSER_CHROME_OBJECT_SPY_EXTENSION_PATH = "<Katalon build path>/Resources/extensions/Chrome/Object Spy Packed";
-    
+
     public static final String OBJECT_SPY_CHROME_ADDON_URL = "https://chrome.google.com/webstore/detail/katalon-object-spy/gblkfilmbkbkjgpcoihaeghdindcanom";
-    
+
     public static final String OBJECT_SPY_FIREFOX_ADDON_URL = "https://addons.mozilla.org/en-US/firefox/addon/katalon-object-spy";
-    
+
     public static final String INSTANT_BROWSER_PREFIX = "Instant ";
 
     public static final String HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE = "Don't show this dialog again";
@@ -97,6 +97,10 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String TREE_ELEMENT_TIP_INVALID_XPATH = "The xpath of element is not valid";
 
+    public static final String DIALOG_CANNOT_START_IE_MESSAGE = "Object Spy addon for IE is currently not installed on this machine. Katalon will now open the setup for Object Spy addon for IE. After installing completed, please enable the addon in IE and start Object Spy on IE again.";
+
+    public static final String DIALOG_RUNNING_INSTANT_IE_MESSAGE = "Running Object Spy addon on running IE. Please refresh the page for the Object Spy addon to start working.";
+    
     // BrowserNotSupportedException
     public static final String EXC_OBJ_SPY_FOR_BROWSER_IS_NOT_SUPPORTED = "Object spy for {0} is not supported.";
 
@@ -129,6 +133,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_LBL_SELECT_A_DESTINATION_FOLDER = "Select a destination folder";
 
     public static final String PREF_LBL_INSTANT_BROWSER_PORT = "Port for instant browsers";
-    
+
     public static final String PREF_LBL_INSTANT_BROWSER_PORT_DO_NOT_SHOW_WARNING_DIALOG = "Do not show warning dialog when starting";
 }

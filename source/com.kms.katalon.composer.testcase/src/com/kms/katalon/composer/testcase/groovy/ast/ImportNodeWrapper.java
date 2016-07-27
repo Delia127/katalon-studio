@@ -7,16 +7,31 @@ import org.codehaus.groovy.ast.ImportNode;
 
 public class ImportNodeWrapper extends AnnonatedNodeWrapper {
     private ClassNodeWrapper type;
+
     private String alias;
+
     private String fieldName;
+
     private String packageName;
+
     private boolean isStar;
+
     private boolean isStatic;
 
+    public ImportNodeWrapper(Class<?> type, String fieldName, ASTNodeWrapper parentNodeWrapper, boolean isStatic) {
+        this(type, parentNodeWrapper);
+        this.fieldName = fieldName;
+        this.isStatic = isStatic;
+    }
+
     public ImportNodeWrapper(Class<?> type, ASTNodeWrapper parentNodeWrapper) {
+        this(type, parentNodeWrapper, null);
+    }
+
+    public ImportNodeWrapper(Class<?> type, ASTNodeWrapper parentNodeWrapper, String alias) {
         super(parentNodeWrapper);
         this.type = new ClassNodeWrapper(type, this);
-        this.alias = null;
+        this.alias = alias;
         this.isStar = false;
         this.isStatic = false;
         this.packageName = null;
@@ -32,7 +47,7 @@ public class ImportNodeWrapper extends AnnonatedNodeWrapper {
         this.isStar = importNodeWrapper.isStar();
         this.isStatic = importNodeWrapper.isStatic();
     }
-    
+
     public ImportNodeWrapper(ImportNode importNode, ASTNodeWrapper parentNodeWrapper) {
         super(importNode, parentNodeWrapper);
         if (importNode.getType() != null) {
@@ -52,6 +67,17 @@ public class ImportNodeWrapper extends AnnonatedNodeWrapper {
     public String getAlias() {
         return alias;
     }
+    
+    public String getKnownAlias() {
+        if (alias != null) {
+            return alias;
+        }
+        if (fieldName != null) {
+            return fieldName;
+        }
+        
+        return getType().getNameWithoutPackage();
+    }
 
     public String getFieldName() {
         return fieldName;
@@ -68,7 +94,7 @@ public class ImportNodeWrapper extends AnnonatedNodeWrapper {
     public boolean isStatic() {
         return isStatic;
     }
-    
+
     public String getClassName() {
         return type == null ? null : type.getName();
     }
@@ -107,5 +133,30 @@ public class ImportNodeWrapper extends AnnonatedNodeWrapper {
     @Override
     public ImportNodeWrapper clone() {
         return new ImportNodeWrapper(this, getParent());
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((alias == null) ? 0 : alias.hashCode());
+        result = prime * result + ((fieldName == null) ? 0 : fieldName.hashCode());
+        result = prime * result + (isStar ? 1231 : 1237);
+        result = prime * result + (isStatic ? 1231 : 1237);
+        result = prime * result + ((packageName == null) ? 0 : packageName.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        ImportNodeWrapper other = (ImportNodeWrapper) obj;
+        return getText().equals(other.getText());
     }
 }

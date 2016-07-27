@@ -8,12 +8,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 
-import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
+import com.kms.katalon.composer.webui.recorder.dialog.RecorderDialog;
 import com.kms.katalon.composer.webui.recorder.util.HTMLActionJsonParser;
-import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.objectspy.core.HTMLElementServlet;
 import com.kms.katalon.objectspy.util.HTMLElementUtil;
 
 @SuppressWarnings("restriction")
@@ -21,11 +20,16 @@ public class HTMLElementRecorderServlet extends HttpServlet {
     private static final String ELEMENT_KEY = "element";
     private static final long serialVersionUID = 1L;
     private Logger logger;
-    private IEventBroker eventBroker;
+    private RecorderDialog recorderDialog;
 
-    public HTMLElementRecorderServlet(Logger logger, IEventBroker eventBroker) {
+    public HTMLElementRecorderServlet(Logger logger, RecorderDialog recorderDialog) {
         this.logger = logger;
-        this.eventBroker = eventBroker;
+        this.recorderDialog = recorderDialog;
+    }
+    
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setStatus(HttpServletResponse.SC_OK);
     }
 
     @Override
@@ -49,18 +53,13 @@ public class HTMLElementRecorderServlet extends HttpServlet {
             return;
         }
         String value = sb.substring(sb.indexOf("=") + 1, sb.length());
-        HTMLActionMapping newActionMapping = null;
+        response.setContentType(HTMLElementServlet.TEXT_HTML);
+        response.addHeader(HTMLElementServlet.ACCESS_CONTROL_ALLOW_ORIGIN, HTMLElementServlet.WILD_CARD);
         try {
-            newActionMapping = HTMLActionJsonParser.parseJsonIntoHTMLActionMapping(value);
+            recorderDialog.addNewActionMapping(HTMLActionJsonParser.parseJsonIntoHTMLActionMapping(value));
+            response.setStatus(HttpServletResponse.SC_OK);
         } catch (Exception e) {
             logger.error(e);
-        }
-        response.setContentType("text/html");
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        if (newActionMapping != null) {
-            eventBroker.post(EventConstants.RECORDER_ELEMENT_ADDED, newActionMapping);
-            response.setStatus(HttpServletResponse.SC_OK);
-        } else {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }

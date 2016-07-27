@@ -2,8 +2,6 @@ package com.kms.katalon.composer.testdata.handlers;
 
 import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
 import static com.kms.katalon.composer.testcase.util.TestCaseEntityUtil.getTestCaseEntities;
-import static com.kms.katalon.groovy.util.GroovyRefreshUtil.findReferencesInTestCaseScripts;
-import static com.kms.katalon.groovy.util.GroovyRefreshUtil.removeReferencesInTestCaseScripts;
 import static java.text.MessageFormat.format;
 import static org.eclipse.jface.dialogs.MessageDialog.openError;
 
@@ -32,6 +30,7 @@ import com.kms.katalon.entity.link.VariableLink.VariableType;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.groovy.reference.TestArtifactScriptRefactor;
 
 public class DeleteTestDataHandler extends AbstractDeleteReferredEntityHandler {
 
@@ -58,7 +57,8 @@ public class DeleteTestDataHandler extends AbstractDeleteReferredEntityHandler {
                     1);
 
             String testDataId = testData.getIdForDisplay();
-            if (performDeleteTestData(testData, findReferencesInTestCaseScripts(testDataId, testData.getProject()))) {
+            if (performDeleteTestData(testData, TestArtifactScriptRefactor.createForTestDataEntity(testDataId)
+                    .findReferrersInTestCaseScripts(ProjectController.getInstance().getCurrentProject()))) {
                 eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, testDataId);
                 return true;
             }
@@ -101,7 +101,8 @@ public class DeleteTestDataHandler extends AbstractDeleteReferredEntityHandler {
                             removeReferencesInTestSuites(testData, referencesInTestSuite);
 
                             // remove test data references in test case script
-                            removeReferencesInTestCaseScripts(testDataId, affectedTestCaseScripts);
+                            TestArtifactScriptRefactor.createForTestDataEntity(testDataId).removeReferences(
+                                    affectedTestCaseScripts);
                         }
                     }
 

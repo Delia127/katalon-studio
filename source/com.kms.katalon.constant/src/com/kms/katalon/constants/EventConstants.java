@@ -108,17 +108,12 @@ public class EventConstants {
     public static final String JOB_COMPLETED = "JOB/COMPLETED";
 
     // Object Spy Events
-    public static final String OBJECT_SPY_ELEMENT_ADDED = "OBJECT_SPY/ELEMENT_ADDED";
-    public static final String OBJECT_SPY_ELEMENT_DOM_MAP_ADDED = "OBJECT_SPY/ELEMENT_DOM_MAP_ADDED";
     public static final String OBJECT_SPY_RESET_SELECTED_TARGET = "OBJECT_SPY/RESET_SELECTED_TARGET";
     public static final String OBJECT_SPY_REFRESH_SELECTED_TARGET = "OBJECT_SPY/REFRESH_SELECTED_TARGET";
     public static final String OBJECT_SPY_TEST_OBJECT_ADDED = "OBJECT_SPY/TEST_OBJECT_ADDED";
     public static final String OBJECT_SPY_CLOSE_MOBILE_APP = "OBJECT_SPY/CLOSE_MOBILE_APP";
     public static final String OBJECT_SPY_MOBILE_HIGHLIGHT = "OBJECT_SPY/MOBILE_HIGHLIGHT";
     public static final String OBJECT_SPY_MOBILE_SCREEN_CAPTURE = "OBJECT_SPY/MOBILE_SCREEN_CAPTURE";
-
-    // Recorder Events
-    public static final String RECORDER_ELEMENT_ADDED = "RECORDER/ELEMENT_ADDED";
 
     // Global Variable Events
     public static final String GLOBAL_VARIABLE_REFRESH = "GLOBAL_VARIABLE/REFRESH";

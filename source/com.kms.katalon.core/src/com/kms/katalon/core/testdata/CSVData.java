@@ -1,6 +1,7 @@
 package com.kms.katalon.core.testdata;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.kms.katalon.core.testdata.reader.CSVReader;
@@ -9,13 +10,14 @@ import com.kms.katalon.core.testdata.reader.CSVSeparator;
 public class CSVData extends AbstractTestData {
 
     private CSVReader reader;
+
     private CSVSeparator separator;
 
     public CSVData(String sourceUrl, boolean containsHeader, CSVSeparator separator) throws IOException {
         super(sourceUrl, containsHeader);
         this.separator = separator;
     }
-    
+
     private CSVReader getReader() throws IOException {
         if (reader == null) {
             reader = new CSVReader(sourceUrl, separator, hasHeaders);
@@ -25,12 +27,12 @@ public class CSVData extends AbstractTestData {
 
     @Override
     public String internallyGetValue(String columnName, int rowIndex) throws IOException {
-        return getReader().getData().get(rowIndex)[getReader().getColumnIndex(columnName)];
+        return getReader().getData().get(rowIndex).get(getReader().getColumnIndex(columnName));
     }
 
     @Override
     public String internallyGetValue(int columnIndex, int rowIndex) throws IOException {
-        return getReader().getData().get(rowIndex)[columnIndex];
+        return getReader().getData().get(rowIndex).get(columnIndex);
     }
 
     @Override
@@ -62,8 +64,18 @@ public class CSVData extends AbstractTestData {
         super.activeHeaders(active);
         reader = null;
     }
-    
-    public List<String[]> getData() throws IOException {
+
+    public List<List<String>> getData() throws IOException {
         return getReader().getData();
     }
+
+    @Override
+    public List<List<Object>> getAllData() throws IOException {
+        List<List<Object>> data = new ArrayList<List<Object>>();
+        for (List<String> row : getData()) {
+            data.add(new ArrayList<Object>(row));
+        }
+        return data;
+    }
+
 }

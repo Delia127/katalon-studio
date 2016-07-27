@@ -75,31 +75,24 @@ public class AstInputValueTypeProvider {
     };
 
     private static final InputValueTypeProvider<MethodCallExpressionWrapper> methodValueTypeProvider = new InputValueTypeProvider<MethodCallExpressionWrapper>() {
-        public static final String KEYS_CHORDS_METHOD_NAME = "chord";
-        
         @Override
         public InputValueType getInputValueType(MethodCallExpressionWrapper methodCallExpression) {
-            if (AstEntityInputUtil.isFindTestCaseMethodCall(methodCallExpression)) {
+            if (methodCallExpression.isFindTestCaseMethodCall()) {
                 return InputValueType.TestCase;
             }
-            if (AstEntityInputUtil.isFindTestObjectMethodCall(methodCallExpression)) {
+            if (methodCallExpression.isFindTestObjectMethodCall()) {
                 return InputValueType.TestObject;
             }
-            if (AstEntityInputUtil.isFindTestDataMethodCall(methodCallExpression)) {
+            if (methodCallExpression.isFindTestDataMethodCall()) {
                 return InputValueType.TestData;
             }
-            if (AstEntityInputUtil.isGetTestDataValueMethodCall(methodCallExpression)) {
+            if (methodCallExpression.isGetTestDataValueMethodCall()) {
                 return InputValueType.TestDataValue;
             }
-            if (isKeysArgumentExpression(methodCallExpression)) {
+            if (methodCallExpression.isKeysArgumentExpression()) {
                 return InputValueType.Keys;
             }
             return InputValueType.MethodCall;
-        }
-
-        private boolean isKeysArgumentExpression(MethodCallExpressionWrapper methodCallExpressionWrapper) {
-            return (methodCallExpressionWrapper.isObjectExpressionOfClass(Keys.class) && methodCallExpressionWrapper.getMethodAsString()
-                    .equals(KEYS_CHORDS_METHOD_NAME));
         }
     };
 

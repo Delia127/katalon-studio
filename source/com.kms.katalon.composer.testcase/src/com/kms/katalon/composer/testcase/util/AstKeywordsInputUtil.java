@@ -46,29 +46,6 @@ import com.kms.katalon.custom.keyword.KeywordParameter;
  *
  */
 public class AstKeywordsInputUtil {
-    private static final String CUSTOM_KEYWORDS_CLASS_NAME = "CustomKeywords";
-
-    public static boolean isBuiltInKeywordMethodCall(MethodCallExpressionWrapper methodCallExpression) {
-        if (methodCallExpression == null || methodCallExpression.getObjectExpression() == null) {
-            return false;
-        }
-        for (KeywordClass keywordClass : KeywordController.getInstance().getBuiltInKeywordClasses()) {
-            if (methodCallExpression.isObjectExpressionOfClass(keywordClass.getType())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static boolean isCustomKeywordMethodCall(MethodCallExpressionWrapper methodCallExpression) {
-        return methodCallExpression != null && methodCallExpression.getObjectExpression() != null
-                && methodCallExpression.getObjectExpressionAsString().equals(CUSTOM_KEYWORDS_CLASS_NAME);
-    }
-
-    public static ExpressionStatementWrapper createNewCustomKeywordStatement() {
-        return createNewCustomKeywordStatement(null);
-    }
-
     public static ExpressionStatementWrapper createNewCustomKeywordStatement(ASTNodeWrapper parentNode) {
         List<MethodNode> customKeywords = KeywordController.getInstance().getCustomKeywords(
                 ProjectController.getInstance().getCurrentProject());
@@ -80,26 +57,18 @@ public class AstKeywordsInputUtil {
                 KeywordController.getInstance().getCustomKeywordName(defaultCustomKeyword.getName()), parentNode);
     }
 
-    public static ExpressionStatementWrapper createNewCustomKeywordStatement(String keywordClass, String keywordName) {
-        return createNewCustomKeywordStatement(keywordClass, keywordName, null);
-    }
-
     public static ExpressionStatementWrapper createNewCustomKeywordStatement(String keywordClass, String keywordName,
             ASTNodeWrapper parentNode) {
         MethodCallExpressionWrapper keywordMethodCallExpression = new MethodCallExpressionWrapper(keywordClass,
-                keywordName, null);
+                keywordName, parentNode);
         generateCustomKeywordArguments(keywordMethodCallExpression);
         return new ExpressionStatementWrapper(keywordMethodCallExpression, parentNode);
     }
 
-    public static ExpressionStatementWrapper createBuiltInKeywordStatement(String classSimpleName, String keyword) {
-        return createBuiltInKeywordStatement(classSimpleName, keyword, null);
-    }
-
-    private static ExpressionStatementWrapper createBuiltInKeywordStatement(String classSimpleName, String keyword,
+    public static ExpressionStatementWrapper createBuiltInKeywordStatement(String classSimpleName, String keyword,
             ASTNodeWrapper parentNode) {
         MethodCallExpressionWrapper keywordMethodCallExpression = new MethodCallExpressionWrapper(classSimpleName,
-                keyword);
+                keyword, parentNode);
         generateBuiltInKeywordArguments(keywordMethodCallExpression);
         return new ExpressionStatementWrapper(keywordMethodCallExpression, parentNode);
     }
@@ -205,8 +174,11 @@ public class AstKeywordsInputUtil {
         if (keywordCallExpression == null || keywordCallExpression.getMethod() == null) {
             return;
         }
-        KeywordMethod keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
-                keywordCallExpression.getObjectExpressionAsString(), keywordCallExpression.getMethodAsString());
+        KeywordController keywordController = KeywordController.getInstance();
+        KeywordClass keywordClass = keywordController.getBuiltInKeywordClassByName(
+                keywordCallExpression.getObjectExpressionAsString());
+        KeywordMethod keywordMethod = keywordController.getBuiltInKeywordByName(keywordClass,
+                keywordCallExpression.getMethodAsString());
         if (keywordMethod != null) {
             generateMethodCallArguments(keywordCallExpression, keywordMethod);
         }
@@ -414,7 +386,7 @@ public class AstKeywordsInputUtil {
 
     private static boolean isFindTestObjectMethodCall(ExpressionWrapper existingParam) {
         return existingParam instanceof MethodCallExpressionWrapper
-                && AstEntityInputUtil.isFindTestObjectMethodCall((MethodCallExpressionWrapper) existingParam);
+                && ((MethodCallExpressionWrapper) existingParam).isFindTestObjectMethodCall();
     }
 
     private static boolean isUnknowTypeParam(ExpressionWrapper existingParam) {

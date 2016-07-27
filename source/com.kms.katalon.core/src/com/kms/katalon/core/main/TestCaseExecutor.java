@@ -30,6 +30,7 @@ import com.kms.katalon.core.annotation.TearDownIfError;
 import com.kms.katalon.core.annotation.TearDownIfFailed;
 import com.kms.katalon.core.annotation.TearDownIfPassed;
 import com.kms.katalon.core.constants.StringConstants;
+import com.kms.katalon.core.driver.DriverCleanerCollector;
 import com.kms.katalon.core.logging.ErrorCollector;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.KeywordLogger.KeywordStackElement;
@@ -64,11 +65,18 @@ public class TestCaseExecutor {
     private Binding variableBinding;
 
     private TestCaseBinding testCaseBinding;
-
-    public TestCaseExecutor(String testCaseId, TestCaseBinding testCaseBinding, ScriptEngine engine) {
+    
+    private boolean doCleanUp;
+    
+    public TestCaseExecutor(String testCaseId, TestCaseBinding testCaseBinding, ScriptEngine engine, boolean doCleanUp) {
         this.testCaseBinding = testCaseBinding;
         this.engine = engine;
         this.testCase = TestCaseFactory.findTestCase(testCaseId);
+        this.doCleanUp = doCleanUp;
+    }
+
+    public TestCaseExecutor(String testCaseId, TestCaseBinding testCaseBinding, ScriptEngine engine) {
+        this(testCaseId, testCaseBinding, engine, false);
     }
 
     private void preExecution() {
@@ -182,12 +190,20 @@ public class TestCaseExecutor {
             // logError(e, ExceptionsUtil.getMessageForThrowable(e));
             errorCollector.addError(e);
         }
+        
+        if (doCleanUp) {
+            cleanUp();
+        }
 
         if (errorCollector.containsErrors()) {
             onExecutionError(errorCollector.getFirstError());
         } else {
             onExecutionComplete();
         }
+    }
+
+    private void cleanUp() {
+        DriverCleanerCollector.getInstance().cleanDriversAfterRunningTestCase();
     }
 
     private Object runScript(File scriptFile) throws ResourceException, ScriptException, IOException,

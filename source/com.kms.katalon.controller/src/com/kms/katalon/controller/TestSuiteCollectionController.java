@@ -32,7 +32,7 @@ public class TestSuiteCollectionController extends EntityController {
     public TestSuiteCollectionEntity getTestRunByDisplayId(String testSuiteCollectionDisplayId) throws DALException {
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
         return getTestSuiteCollectionDataProvider().get(
-                projectDir + GlobalStringConstants.ENTITY_ID_SEPERATOR + testSuiteCollectionDisplayId
+                projectDir + GlobalStringConstants.ENTITY_ID_SEPARATOR + testSuiteCollectionDisplayId
                         + TestSuiteCollectionEntity.FILE_EXTENSION);
     }
 

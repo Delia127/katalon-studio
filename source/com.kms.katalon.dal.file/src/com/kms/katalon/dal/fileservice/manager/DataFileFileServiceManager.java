@@ -1,5 +1,7 @@
 package com.kms.katalon.dal.fileservice.manager;
 
+import static com.kms.katalon.constants.GlobalStringConstants.ENTITY_ID_SEPARATOR;
+
 import java.io.File;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -33,7 +35,7 @@ import com.kms.katalon.entity.testdata.InternalDataFilePropertyEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.util.Util;
 import com.kms.katalon.entity.webservice.WsEntities;
-import com.kms.katalon.groovy.util.GroovyRefreshUtil;
+import com.kms.katalon.groovy.reference.TestArtifactScriptRefactor;
 
 public class DataFileFileServiceManager {
 
@@ -78,7 +80,7 @@ public class DataFileFileServiceManager {
         List<TestSuiteEntity> allTestSuites = FolderFileServiceManager.getDescendantTestSuitesOfFolder(FolderFileServiceManager.getTestSuiteRoot(dataFileEntity.getProject()));
 
         String dataFileId = dataFileEntity.getRelativePathForUI().replace(File.separator,
-                GlobalStringConstants.ENTITY_ID_SEPERATOR);
+                GlobalStringConstants.ENTITY_ID_SEPARATOR);
 
         for (TestSuiteEntity testSuiteEntity : allTestSuites) {
             List<TestSuiteTestCaseLink> testCaseLinkReferences = new ArrayList<TestSuiteTestCaseLink>();
@@ -94,7 +96,7 @@ public class DataFileFileServiceManager {
 
             if (!testCaseLinkReferences.isEmpty()) {
                 String testSuiteId = testSuiteEntity.getRelativePathForUI().replace(File.separator,
-                        GlobalStringConstants.ENTITY_ID_SEPERATOR);
+                        GlobalStringConstants.ENTITY_ID_SEPARATOR);
                 testDataReferences.put(testSuiteId, testCaseLinkReferences);
             }
         }
@@ -342,7 +344,8 @@ public class DataFileFileServiceManager {
                 }
             }
 
-            GroovyRefreshUtil.updateStringScriptReferences(oldTestDataId, newTestDataId, project);
+            TestArtifactScriptRefactor.createForTestDataEntity(oldTestDataId).updateReferenceForProject(newTestDataId,
+                    project);
         }
     }
 
@@ -537,8 +540,9 @@ public class DataFileFileServiceManager {
     public static void saveAllReferencesToDataFileAfterFolderRenamed(String oldFolderLocation,
             FolderEntity folderEntity, List<TestSuiteEntity> lstTestSuites) throws Exception {
 
-        String oldFolderDisplayId = oldFolderLocation.replace(File.separator, "/") + "/";
-        String newFolderDisplayId = folderEntity.getIdForDisplay() + "/";
+        String oldFolderDisplayId = oldFolderLocation.replace(File.separator, ENTITY_ID_SEPARATOR)
+                + ENTITY_ID_SEPARATOR;
+        String newFolderDisplayId = folderEntity.getIdForDisplay() + ENTITY_ID_SEPARATOR;
         Set<TestSuiteEntity> lstTestSuitesWillSave = new HashSet<>();
 
         // update references in test suite.
@@ -560,6 +564,6 @@ public class DataFileFileServiceManager {
         }
 
         // update references in test case's script and keywords.
-        FolderFileServiceManager.refreshFolderScriptReferences(oldFolderLocation, folderEntity);
+        FolderFileServiceManager.refreshFolderScriptReferences(oldFolderDisplayId, folderEntity);
     }
 }

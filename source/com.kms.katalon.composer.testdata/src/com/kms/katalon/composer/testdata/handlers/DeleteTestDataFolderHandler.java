@@ -1,8 +1,6 @@
 package com.kms.katalon.composer.testdata.handlers;
 
 import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
-import static com.kms.katalon.groovy.util.GroovyRefreshUtil.findReferencesInAffectedTestCaseScripts;
-import static com.kms.katalon.groovy.util.GroovyRefreshUtil.findReferencesInTestCaseScripts;
 import static java.text.MessageFormat.format;
 
 import java.util.ArrayList;
@@ -16,10 +14,12 @@ import com.kms.katalon.composer.folder.handlers.deletion.IDeleteFolderHandler;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.IEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.testdata.DataFileEntity;
+import com.kms.katalon.groovy.reference.TestArtifactScriptRefactor;
 
 public class DeleteTestDataFolderHandler extends DeleteTestDataHandler implements IDeleteFolderHandler {
 
@@ -41,8 +41,8 @@ public class DeleteTestDataFolderHandler extends DeleteTestDataHandler implement
 
             monitor.beginTask(format(StringConstants.HAND_JOB_DELETING_FOLDER, folderId), descendantEntities.size() + 1);
 
-            List<IFile> affectedTestCaseScripts = findReferencesInTestCaseScripts(folderId
-                    + StringConstants.ENTITY_ID_SEPERATOR, folderEntity.getProject());
+            List<IFile> affectedTestCaseScripts = TestArtifactScriptRefactor.createForFolderEntity(folderEntity)
+                    .findReferrersInTestCaseScripts(ProjectController.getInstance().getCurrentProject());
 
             List<IEntity> undeleteTestDatas = new ArrayList<IEntity>();
 
@@ -78,8 +78,8 @@ public class DeleteTestDataFolderHandler extends DeleteTestDataHandler implement
         try {
             String testDataId = testData.getIdForDisplay();
             monitor.subTask(format(StringConstants.HAND_JOB_DELETING_ENTITY, testDataId));
-            return performDeleteTestData(testData,
-                    findReferencesInAffectedTestCaseScripts(testDataId, affectedTestCaseScripts));
+            return performDeleteTestData(testData, TestArtifactScriptRefactor.createForTestDataEntity(testDataId)
+                    .findReferrers(affectedTestCaseScripts));
         } catch (Exception e) {
             logError(e);
             return false;

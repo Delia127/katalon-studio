@@ -6,10 +6,6 @@ import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
@@ -68,6 +64,7 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
         setTitle(StringConstants.DIA_TITLE_TEST_CASE_BROWSER);
         setAllowMultiple(false);
         updateTestCaseTreeEntities();
+        setDoubleClickSelects(false);
     }
 
     /*
@@ -214,25 +211,7 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
                 if (event.detail == SWT.CHECK) {
                     TreeItem item = (TreeItem) event.item;
                     treeViewer.getTree().setSelection(item);
-                    onStageChangedTreeItem(item, item.getChecked());
-                }
-            }
-        });
-        treeViewer.addDoubleClickListener(new IDoubleClickListener() {
-
-            @Override
-            public void doubleClick(DoubleClickEvent event) {
-                ISelection selection = event.getSelection();
-                if (selection instanceof IStructuredSelection) {
-                    Object item = ((IStructuredSelection) selection).getFirstElement();
-                    if (treeViewer.getExpandedState(item)) {
-                        treeViewer.collapseToLevel(item, 1);
-                    } else {
-                        treeViewer.expandToLevel(item, 1);
-                    }
-                    treeViewer.setChecked(item, true);
-                    TreeItem treeItem = treeViewer.getTree().getSelection()[0];
-                    onStageChangedTreeItem(treeItem, true);
+                    onStageChangedTreeItem(item.getData(), item.getChecked());
                 }
             }
         });
@@ -245,22 +224,26 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
     /**
      * Check/Uncheck TreeItem action
      * 
-     * @param item TreeItem
+     * @param element {@link TreeItem#getData()}
      * @param isChecked whether TreeItem is checked or not
      */
-    private void onStageChangedTreeItem(TreeItem item, boolean isChecked) {
-        Object element = item.getData();
+    private void onStageChangedTreeItem(Object element, boolean isChecked) {
         if (element instanceof TestCaseTreeEntity) {
-            // Only add/remove TestCaseTreeEntity
             if (isChecked) {
                 checkedItems.add(element);
             } else {
                 checkedItems.remove(element);
             }
-        } else if (element instanceof FolderTreeEntity) {
-            // Check/Uncheck every child in folder
-            for (TreeItem child : item.getItems()) {
-                onStageChangedTreeItem(child, isChecked);
+            return;
+        }
+
+        if (element instanceof FolderTreeEntity) {
+            try {
+                for (Object childElement : TreeEntityUtil.getChildren((FolderTreeEntity) element)) {
+                    onStageChangedTreeItem(childElement, isChecked);
+                }
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
             }
         }
     }

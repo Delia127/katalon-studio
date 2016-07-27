@@ -2,8 +2,6 @@ package com.kms.katalon.composer.testcase.handlers;
 
 import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
 import static com.kms.katalon.composer.testcase.util.TestCaseEntityUtil.getTestCaseEntities;
-import static com.kms.katalon.groovy.util.GroovyRefreshUtil.findReferencesInTestCaseScripts;
-import static com.kms.katalon.groovy.util.GroovyRefreshUtil.removeReferencesInTestCaseScripts;
 import static java.text.MessageFormat.format;
 import static org.eclipse.jface.dialogs.MessageDialog.openError;
 
@@ -20,12 +18,14 @@ import com.kms.katalon.composer.explorer.handlers.deletion.AbstractDeleteReferre
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.dialogs.TestCaseReferencesDialog;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.groovy.reference.TestArtifactScriptRefactor;
 
 public class DeleteTestCaseHandler extends AbstractDeleteReferredEntityHandler {
     @Override
@@ -44,7 +44,8 @@ public class DeleteTestCaseHandler extends AbstractDeleteReferredEntityHandler {
             String testCaseId = testCase.getIdForDisplay();
             monitor.subTask(format(StringConstants.HAND_JOB_DELETING, testCaseId));
 
-            if (performDeleteTestCase(testCase, findReferencesInTestCaseScripts(testCaseId, testCase.getProject()))) {
+            if (performDeleteTestCase(testCase, TestArtifactScriptRefactor.createForTestCaseEntity(testCaseId)
+                    .findReferrersInTestCaseScripts(ProjectController.getInstance().getCurrentProject()))) {
                 eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, testCaseId);
                 return true;
             }
@@ -86,7 +87,8 @@ public class DeleteTestCaseHandler extends AbstractDeleteReferredEntityHandler {
                             removeReferencesInTestSuite(testCase, affectedTestSuites);
 
                             // remove references (calling) in test case
-                            removeReferencesInTestCaseScripts(testCase.getIdForDisplay(), affectedTestCaseScripts);
+                            TestArtifactScriptRefactor.createForTestCaseEntity(testCase.getIdForDisplay())
+                                    .removeReferences(affectedTestCaseScripts);
                         }
                     }
 

@@ -174,7 +174,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
 
     private boolean isObjectExpressionFindTestObjectMethodCall() {
         return objectExpressionWrapper instanceof MethodCallExpressionWrapper
-                && AstEntityInputUtil.isFindTestObjectMethodCall((MethodCallExpressionWrapper) objectExpressionWrapper);
+                && ((MethodCallExpressionWrapper) objectExpressionWrapper).isFindTestObjectMethodCall();
     }
 
     private void createOtherTypesTab(final Composite parent) {
@@ -301,7 +301,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         if (objectPk == null) {
             return;
         }
-        MethodCallExpressionWrapper newMethodCall = AstEntityInputUtil.createNewFindTestObjectMethodCall(objectPk,
+        ExpressionWrapper newMethodCall = AstEntityInputUtil.createNewFindTestObjectMethodCall(objectPk,
                 objectExpressionWrapper.getParent());
         newMethodCall.copyProperties(objectExpressionWrapper);
         objectExpressionWrapper = newMethodCall;

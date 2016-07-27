@@ -36,6 +36,11 @@ public class DBData extends AbstractTestData {
         return fetchedData;
     }
 
+    @Override
+    public List<List<Object>> getAllData() {
+        return getData();
+    }
+
     public Date getRetrievedDate() {
         return retrievedDate;
     }

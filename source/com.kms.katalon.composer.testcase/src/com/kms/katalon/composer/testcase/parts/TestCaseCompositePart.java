@@ -669,6 +669,16 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         }
     }
 
+    public void refreshScript() {
+        if (!isInitialized) {
+            return;
+        }
+
+        if (subPartStack.getSelectedElement() == getChildCompatibilityPart()) {
+            setChildEditorContents(scriptNode);
+        }
+    }
+
     @Override
     public List<MPart> getChildParts() {
         List<MPart> childrenParts = new ArrayList<MPart>();

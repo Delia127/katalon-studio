@@ -7,6 +7,7 @@ public class WebUiDriverCleaner implements IDriverCleaner {
 
     @Override
     public void cleanDriverAfterRunningTestCase() {
+        cleanDriverAfterRunningTestSuite();
     }
 
     @Override

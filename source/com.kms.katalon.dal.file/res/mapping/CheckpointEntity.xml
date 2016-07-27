@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="com.kms.katalon.entity.checkpoint">
+    <java-types>
+        <java-type name="CheckpointEntity">
+            <xml-root-element name="checkpoint" />
+            <xml-type prop-order="sourceInfo takenDate columnNames checkpointData" />
+            <java-attributes>
+                <xml-element-ref java-attribute="sourceInfo" name="source-info" />
+                <xml-element java-attribute="columnNames" name="column-name">
+                    <xml-element-wrapper name="column-names" />
+                </xml-element>
+                <xml-element java-attribute="checkpointData" name="checkpoint-data" cdata="true">
+                    <xml-java-type-adapter value="com.kms.katalon.dal.fileservice.adapter.CheckpointDataXmlAdapter" />
+                </xml-element>
+                <xml-element java-attribute="takenDate" name="taken-date" type="java.util.Date" />
+            </java-attributes>
+        </java-type>
+    </java-types>
+</xml-bindings>

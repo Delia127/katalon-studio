@@ -131,8 +131,8 @@ public class TreeEntityUtil {
 
     public static KeywordTreeEntity getKeywordTreeEntity(String keywordRelativeLocation, ProjectEntity projectEntity)
             throws Exception {
-        String packageLocation = StringUtils.substringBeforeLast(keywordRelativeLocation, StringConstants.ENTITY_ID_SEPERATOR);
-        String keywordName = StringUtils.substringAfterLast(keywordRelativeLocation, StringConstants.ENTITY_ID_SEPERATOR);
+        String packageLocation = StringUtils.substringBeforeLast(keywordRelativeLocation, StringConstants.ENTITY_ID_SEPARATOR);
+        String keywordName = StringUtils.substringAfterLast(keywordRelativeLocation, StringConstants.ENTITY_ID_SEPARATOR);
         PackageTreeEntity packageTreeEntity = getPackageTreeEntity(packageLocation, projectEntity);
         if (packageTreeEntity != null) {
             ICompilationUnit keywordFile = ((IPackageFragment) packageTreeEntity.getObject()).getCompilationUnit(keywordName);

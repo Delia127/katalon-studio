@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
+import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.report.constants.StringConstants;
 import com.kms.katalon.composer.report.provider.ReportActionColumnLabelProvider;
 import com.kms.katalon.composer.report.provider.ReportCollectionTableLabelProvider;
@@ -46,7 +47,7 @@ public class ReportCollectionPart {
         composite.setLayout(new GridLayout(1, false));
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        tableViewer = new TableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION);
+        tableViewer = new CTableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION);
         Table table = tableViewer.getTable();
         table.setLinesVisible(true);
         table.setHeaderVisible(true);

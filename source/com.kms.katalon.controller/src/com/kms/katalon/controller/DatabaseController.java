@@ -8,6 +8,7 @@ import com.kms.katalon.core.db.DatabaseConnection;
 import com.kms.katalon.core.db.DatabaseSettings;
 import com.kms.katalon.core.db.ListResultSetHandler;
 import com.kms.katalon.core.db.SqlRunner;
+import com.kms.katalon.core.util.Base64;
 import com.kms.katalon.entity.project.ProjectEntity;
 
 public class DatabaseController {
@@ -33,6 +34,31 @@ public class DatabaseController {
             return null;
         }
         return new DatabaseSettings(currentProject.getFolderLocation()).getDatabaseConnection();
+    }
+
+    /**
+     * Get Database connection
+     * 
+     * @param isUsingGlobalDBSetting is using global DB setting
+     * @param isSecureUserAccount is user account secure and excluded from {@code connectionUrl}
+     * @param user Database user
+     * @param password Base64 encrypted password
+     * @param connectionUrl JDBC connection URL
+     * @return {@link DatabaseConnection}
+     * @throws IOException if {@code isUsingGlobalDBSetting} is true and
+     * <code>[project_dir]/settings/external/database.properties</code> is not found
+     */
+    public DatabaseConnection getDatabaseConnection(boolean isUsingGlobalDBSetting, boolean isSecureUserAccount,
+            String user, String password, String connectionUrl) throws IOException {
+        if (isUsingGlobalDBSetting) {
+            return getGlobalDatabaseConnection();
+        }
+
+        if (isSecureUserAccount) {
+            return new DatabaseConnection(connectionUrl, user, Base64.decode(password));
+        }
+
+        return new DatabaseConnection(connectionUrl);
     }
 
     public ResultSet query(DatabaseConnection dbConnection, String sqlQuery) throws SQLException {

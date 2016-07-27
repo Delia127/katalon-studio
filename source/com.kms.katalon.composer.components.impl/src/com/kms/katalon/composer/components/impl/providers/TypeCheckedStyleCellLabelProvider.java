@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.components.impl.providers;
 
+import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
@@ -12,6 +13,8 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+
+import com.kms.katalon.composer.components.impl.control.CustomColumnViewer;
 
 public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLabelProvider {
 
@@ -97,7 +100,7 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
     }
 
     protected boolean canNotDrawSafely(Object element) {
-        return !customPaint || !isElementInstanceOf(element);
+        return !customPaint || !isElementInstanceOf(element) || !(getViewer() instanceof CustomColumnViewer);
     }
 
     private void drawCellColor(ViewerCell cell, GC gc) {
@@ -149,7 +152,11 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
     }
 
     protected ViewerCell getOwnedViewerCell(Event event) {
-        return getViewer().getCell(new Point(event.x, event.y));
+        ColumnViewer columnViewer = getViewer();
+        if (columnViewer instanceof CustomColumnViewer) {
+            return ((CustomColumnViewer) columnViewer).getViewerRowFromWidgetItem(event.item).getCell(columnIndex);
+        }
+        return columnViewer.getCell(new Point(event.x, event.y));
     }
 
     /**

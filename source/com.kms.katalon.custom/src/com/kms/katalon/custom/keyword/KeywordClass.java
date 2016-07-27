@@ -15,6 +15,7 @@ public class KeywordClass {
     private String name;
     private String simpleName;
     private String labelName;
+    private String aliasName;
     private Class<?> type;
     private List<KeywordMethod> keywordMethods = new ArrayList<KeywordMethod>();
 
@@ -22,6 +23,7 @@ public class KeywordClass {
         name = keywordContributor.getKeywordClass().getName();
         simpleName = keywordContributor.getKeywordClass().getSimpleName();
         labelName = keywordContributor.getLabelName();
+        aliasName = keywordContributor.getAliasName();
         type = keywordContributor.getKeywordClass();
         for (Method method : keywordContributor.getKeywordClass().getMethods()) {
             if (!isBuiltinMethod(method)) {
@@ -69,5 +71,9 @@ public class KeywordClass {
 
     public Class<?> getType() {
         return type;
+    }
+
+    public String getAliasName() {
+        return aliasName;
     }
 }

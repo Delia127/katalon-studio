@@ -63,12 +63,15 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
 
         try {
+            setStatus(LauncherStatus.SENDING_REPORT);
             Date startTime = ReportController.getInstance().getDateFromReportFolderName(
                     getRunConfig().getExecutionSetting().getName());
 
             updateLastRun(startTime);
 
-            prepareReport();
+            TestSuiteLogRecord suiteLogRecord = prepareReport();
+
+            uploadReportToIntegratingProduct(suiteLogRecord);
 
             sendReport();
 
@@ -112,8 +115,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
     private void sendReport() {
         try {
-            setStatus(LauncherStatus.SENDING_EMAIL);
-
+            setStatus(LauncherStatus.SENDING_REPORT, StringConstants.LAU_MESSAGE_SENDING_EMAIL);
             File testSuiteReportSourceFolder = new File(getRunConfig().getExecutionSetting().getFolderPath());
 
             File csvFile = new File(testSuiteReportSourceFolder,
@@ -159,14 +161,15 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
     }
 
-    protected void prepareReport() {
+    protected TestSuiteLogRecord prepareReport() {
         try {
             TestSuiteLogRecord suiteLog = ReportUtil.generate(getRunConfig().getExecutionSetting().getFolderPath());
             ReportUtil.writeLogRecordToFiles(suiteLog, getReportFolder());
-            uploadReportToIntegratingProduct(suiteLog);
             copyReport();
+            return suiteLog;
         } catch (Exception e) {
             LogUtil.logError(e);
+            return null;
         }
     }
 
@@ -222,16 +225,18 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             if (contribution == null || !contribution.isIntegrationActive(getTestSuite())) {
                 continue;
             }
-
+            String integratingProductName = reportContributorEntry.getKey();
+            setStatus(LauncherStatus.SENDING_REPORT,
+                    MessageFormat.format(StringConstants.LAU_MESSAGE_UPLOADING_RPT, integratingProductName));
             try {
-                writeLine(MessageFormat.format(StringConstants.LAU_PRT_SENDING_RPT_TO, reportContributorEntry.getKey()));
+                writeLine(MessageFormat.format(StringConstants.LAU_PRT_SENDING_RPT_TO, integratingProductName));
 
                 reportContributorEntry.getValue().uploadTestSuiteResult(getTestSuite(), suiteLog);
 
-                writeLine(MessageFormat.format(StringConstants.LAU_PRT_REPORT_SENT, reportContributorEntry.getKey()));
+                writeLine(MessageFormat.format(StringConstants.LAU_PRT_REPORT_SENT, integratingProductName));
             } catch (Exception e) {
                 writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_SEND_INTEGRATION_REPORT,
-                        reportContributorEntry.getKey(), e.getMessage()));
+                        integratingProductName, e.getMessage()));
             }
         }
     }
@@ -281,21 +286,21 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             }
             // Collect result and send mail here
             CSVReader csvReader = new CSVReader(file, CSVSeparator.COMMA, true);
-            Deque<String[]> datas = new ArrayDeque<String[]>();
+            Deque<List<String>> datas = new ArrayDeque<List<String>>();
             datas.addAll(csvReader.getData());
-            String[] suiteRow = datas.pollFirst();
-            String suiteName = (suiteIndex + 1) + "." + suiteRow[0];
-            String browser = suiteRow[1];
+            List<String> suiteRow = datas.pollFirst();
+            String suiteName = (suiteIndex + 1) + "." + suiteRow.get(0);
+            String browser = suiteRow.get(1);
 
             String hostName = getRunConfig().getHostConfiguration().getHostName();
             String os = getRunConfig().getHostConfiguration().getOS();
 
-            Object[] arrSuitesSummaryForEmail = new Object[] { suiteRow[0], 0, 0, 0, 0, hostName, os, browser };
+            Object[] arrSuitesSummaryForEmail = new Object[] { suiteRow.get(0), 0, 0, 0, 0, hostName, os, browser };
             suitesSummaryForEmail.add(arrSuitesSummaryForEmail);
 
             int testIndex = 0;
             while (datas.size() > 0) {
-                String[] row = datas.pollFirst();
+                List<String> row = datas.pollFirst();
                 // Check empty line
                 boolean isEmptyLine = true;
                 for (String col : row) {
@@ -306,12 +311,12 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 }
                 if (isEmptyLine && !datas.isEmpty()) {
                     testIndex++;
-                    String[] testRow = datas.pollFirst();
-                    String testName = testIndex + "." + testRow[0];
+                    List<String> testRow = datas.pollFirst();
+                    String testName = testIndex + "." + testRow.get(0);
                     newDatas.add(ArrayUtils.addAll(new String[] { suiteName, testName, browser },
-                            Arrays.copyOfRange(testRow, 2, testRow.length)));
+                            Arrays.copyOfRange(testRow.toArray(new String[0]), 2, testRow.size())));
 
-                    String testStatus = testRow[6];
+                    String testStatus = testRow.get(6);
                     if (TestStatusValue.PASSED.toString().equals(testStatus)) {
                         arrSuitesSummaryForEmail[1] = (Integer) arrSuitesSummaryForEmail[1] + 1;
                     } else if (TestStatusValue.FAILED.toString().equals(testStatus)) {

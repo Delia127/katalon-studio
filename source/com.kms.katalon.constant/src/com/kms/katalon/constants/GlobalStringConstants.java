@@ -55,7 +55,14 @@ public class GlobalStringConstants {
     public static final String APP_NAME = "Katalon Studio";
 
     // Path
-    public static final String ENTITY_ID_SEPERATOR = "/";
+    public static final String ENTITY_ID_SEPARATOR = "/";
+    
+    // Common character
+    public static final String CR_DOT = ".";
+    public static final String CR_LEFT_PARENTHESIS = "(";
+    public static final String CR_RIGHT_PARENTHESIS = ")";
+    public static final String CR_PRIME = "'";
+    public static final String CR_DOUBLE_PRIMES = "\"";
 
     // Common action use
     public static final String ADD = "Add";

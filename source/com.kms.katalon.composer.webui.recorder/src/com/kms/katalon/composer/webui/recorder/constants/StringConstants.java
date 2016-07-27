@@ -55,4 +55,8 @@ public class StringConstants extends GlobalStringConstants {
 	// RecorderPreferencePage
 	public static final String PREF_LBL_INSTANT_BROWSER_PORT = "Port for instant browsers";
 	public static final String PREF_LBL_INSTANT_BROWSER_DO_NOT_SHOW_WARNING_DIALOG = "Do not show warning dialog when starting";
+	
+	// Record Session
+	public static final String DIALOG_CANNOT_START_IE_MESSAGE = "Recorder addon for IE is currently not installed on this machine. Katalon will now open the setup for Recorder addon for IE. After installing completed, please enable the addon in IE and start Recorder on IE again.";
+	public static final String DIALOG_RUNNING_INSTANT_IE_MESSAGE = "Running Recorder addon on running IE. Please refresh the page for the Recorder addon to start working.";
 }

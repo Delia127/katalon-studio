@@ -753,7 +753,7 @@ public class ObjectPropertyView implements EventHandler {
                     String projectFolderId = ProjectController.getInstance().getCurrentProject().getFolderLocation();
                     String oldTestObjectRelativeId = testObjectId.replace(projectFolderId + File.separator, "")
                             .replace(WebElementEntity.getWebElementFileExtension(), "")
-                            .replace(File.separator, StringConstants.ENTITY_ID_SEPERATOR);
+                            .replace(File.separator, StringConstants.ENTITY_ID_SEPARATOR);
                     if (oldTestObjectRelativeId.equals(txtParentObject.getText())) {
                         loadTestObject();
                         dirtyable.setDirty(false);

@@ -121,6 +121,9 @@
   <data name="common" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\common.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="constants" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\constants.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="dom_recorder" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\dom_recorder.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
@@ -129,5 +132,11 @@
   </data>
   <data name="json3_min" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\json3.min.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="main" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\main.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="record_common" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\record_common.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
 </root>

@@ -1,8 +1,10 @@
 package com.kms.katalon.composer.testcase.providers;
 
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.components.impl.providers.TypeCheckedStyleTreeCellLabelProvider;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.testcase.ast.treetable.AstMethodTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
@@ -56,5 +58,35 @@ public class AstTreeItemLabelProvider extends TypeCheckedStyleTreeCellLabelProvi
     @Override
     public String getElementToolTipText(AstTreeTableNode element) {
         return element.getItemTooltipText();
+    }
+    
+    @Override
+    public void update(ViewerCell cell) {
+        Object element = cell.getElement();
+        if (!(element instanceof AstTreeTableNode)) {
+            super.update(cell);
+            return;
+        }
+        AstTreeTableNode treeNode = (AstTreeTableNode) element;
+        cell.setText(getText(treeNode));
+        cell.setImage(getImage(treeNode));
+        if (isDisabledStatement(treeNode)) {
+            handleDisableStatement(cell);
+        } else {
+            handleDefaultStatement(cell);
+        }
+        super.update(cell);
+    }
+    
+    private boolean isDisabledStatement(AstTreeTableNode treeNode) {
+        return treeNode instanceof AstStatementTreeTableNode && ((AstStatementTreeTableNode) treeNode).isDisabled();
+    }
+
+    private void handleDisableStatement(ViewerCell cell) {
+        cell.setBackground(ColorUtil.getDisabledItemBackgroundColor());
+    }
+
+    private void handleDefaultStatement(ViewerCell cell) {
+        cell.setBackground(null);
     }
 }
