@@ -4,16 +4,16 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 
+import com.kms.katalon.composer.components.impl.handler.CommonExplorerHandler;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 
 @SuppressWarnings("restriction")
-public class OpenHandler {
+public class OpenHandler extends CommonExplorerHandler {
     @Inject
     private Logger logger;
     
@@ -22,6 +22,9 @@ public class OpenHandler {
 
     @CanExecute
     public boolean canExecute() {
+        if (!isExplorerPartActive()) {
+            return false;
+        }
         Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
         if (selectedObjects == null || selectedObjects.length == 0) {
             return false;
@@ -30,7 +33,7 @@ public class OpenHandler {
     }
 
     @Execute
-    public void execute(IEventBroker eventBroker) {
+    public void execute() {
         if (selectionService != null && selectionService.getSelection(IdConstants.EXPLORER_PART_ID) != null) {
             for (Object selectedItem : (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID)) {
                 if (selectedItem instanceof ITreeEntity) {
