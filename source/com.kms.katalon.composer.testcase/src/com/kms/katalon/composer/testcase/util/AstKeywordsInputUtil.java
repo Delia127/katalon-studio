@@ -37,6 +37,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testobject.TestObject;
+import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.custom.keyword.KeywordMethod;
 import com.kms.katalon.custom.keyword.KeywordParameter;
 
@@ -173,8 +174,11 @@ public class AstKeywordsInputUtil {
         if (keywordCallExpression == null || keywordCallExpression.getMethod() == null) {
             return;
         }
-        KeywordMethod keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
-                keywordCallExpression.getObjectExpressionAsString(), keywordCallExpression.getMethodAsString());
+        KeywordController keywordController = KeywordController.getInstance();
+        KeywordClass keywordClass = keywordController.getBuiltInKeywordClassByName(
+                keywordCallExpression.getObjectExpressionAsString());
+        KeywordMethod keywordMethod = keywordController.getBuiltInKeywordByName(keywordClass,
+                keywordCallExpression.getMethodAsString());
         if (keywordMethod != null) {
             generateMethodCallArguments(keywordCallExpression, keywordMethod);
         }

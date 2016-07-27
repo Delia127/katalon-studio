@@ -249,7 +249,7 @@ public class MethodCallExpressionWrapper extends ExpressionWrapper {
         if (keywordClass == null) {
             return false;
         }
-        return KeywordController.getInstance().getBuiltInKeywordByName(keywordClass.getName(), getMethodAsString()) != null;
+        return KeywordController.getInstance().getBuiltInKeywordByName(keywordClass, getMethodAsString()) != null;
     }
 
     public boolean isBuiltInKeywordMethodCall() {
