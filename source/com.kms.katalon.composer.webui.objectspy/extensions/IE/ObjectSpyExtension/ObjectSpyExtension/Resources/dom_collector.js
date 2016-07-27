@@ -58,19 +58,30 @@ function postDomMap(url, object) {
     }
     var data = 'elementsMap=' + encodeURIComponent(JSON.stringify(object));
     if (detectChrome()) {
-        chromePostData(url, data, function () {
-            console.log("Post DOM Map successful");
+        chromePostData(url, data, function (response) {
+            if (response) {
+                console.log(response)
+                // error happenened
+                alert(response);
+                setTimeout(function () {
+                    window.focus();
+                }, 1);
+                return;
+            }
+            alert(POST_DOM_MAP_SUCCESS);
         });
         return;
     }
     if (detectIE() && window.httpRequestExtension) {
         var response = window.httpRequestExtension.postRequest(data, url);
         if (response === '200') {
-            console.log("Post DOM Map successful");
+            alert(POST_DOM_MAP_SUCCESS);
             return;
+        } else {
+            alert(response);
         }
         console.log(response);
         return;
     }
-    self.port.emit("postData", { url: url, data: data });
+    self.port.emit("postDomMapData", { url: url, data: data });
 }
