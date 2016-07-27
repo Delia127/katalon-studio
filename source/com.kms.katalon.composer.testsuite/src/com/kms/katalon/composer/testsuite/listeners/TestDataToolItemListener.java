@@ -25,7 +25,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.ToolItem;
 
-import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
@@ -35,6 +34,7 @@ import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.constants.ToolItemConstants;
+import com.kms.katalon.composer.testsuite.dialogs.TestDataSelectionDialog;
 import com.kms.katalon.composer.testsuite.parts.TestSuitePartDataBindingView;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
@@ -152,11 +152,8 @@ public class TestDataToolItemListener extends SelectionAdapter {
             if (currentProject == null) return;
 
             EntityProvider entityProvider = new EntityProvider();
-            TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(tableViewer.getTable().getShell(),
+            TestDataSelectionDialog dialog = new TestDataSelectionDialog(tableViewer.getTable().getShell(),
                     new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(entityProvider));
-
-            dialog.setAllowMultiple(true);
-            dialog.setTitle(StringConstants.LIS_TITLE_TEST_DATA_BROWSER);
 
             FolderEntity rootFolder = FolderController.getInstance().getTestDataRoot(currentProject);
             dialog.setInput(TreeEntityUtil.getChildren(null, rootFolder));
