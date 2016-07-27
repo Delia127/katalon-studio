@@ -17,12 +17,12 @@ public class CTreeViewer extends TreeViewer implements CustomColumnViewer {
     }
 
     @Override
-    public ViewerRow getViewerRowFromItem(Widget item) {
-        return super.getViewerRowFromItem(item);
+    public Widget getColumn(int columnIndex) {
+        return getColumnViewerOwner(columnIndex);
     }
 
     @Override
-    public Widget getColumn(int columnIndex) {
-        return getColumnViewerOwner(columnIndex);
+    public ViewerRow getViewerRowFromWidgetItem(Widget item) {
+        return getViewerRowFromItem(item);
     }
 }

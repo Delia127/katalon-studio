@@ -93,6 +93,8 @@ public interface IdConstants {
     // Command ID
     public static final String SAVE_COMMAND_ID = "com.kms.katalon.command.save";
 
+    public static final String SAVE_ALL_COMMAND_ID = "com.kms.katalon.command.saveAll";
+
     public static final String CLOSE_COMMAND_ID = "com.kms.katalon.command.close";
 
     public static final String SEARCH_COMMAND_ID = "org.eclipse.search.ui.openSearchDialog";

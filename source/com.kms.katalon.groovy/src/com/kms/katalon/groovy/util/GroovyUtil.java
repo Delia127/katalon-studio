@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -147,6 +148,22 @@ public class GroovyUtil {
 
             }
         }
+    }
+
+    public static void emptyProjectClasspath(ProjectEntity projectEntity) throws CoreException{
+        IProject groovyProject = getGroovyProject(projectEntity);
+
+        IFolder outputParentFolder = groovyProject.getFolder(OUTPUT_FOLDER_NAME);
+        if (!outputParentFolder.exists()) {
+            outputParentFolder.create(true, true, new NullProgressMonitor());
+        }
+
+        IJavaProject javaProject = JavaCore.create(getGroovyProject(projectEntity));
+        javaProject.setOutputLocation(outputParentFolder.getFullPath(), new NullProgressMonitor());
+        List<IClasspathEntry> entries = new ArrayList<IClasspathEntry>();
+        entries.add(JavaCore.newContainerEntry(new Path(JDT_LAUNCHING)));
+        javaProject.setRawClasspath(new IClasspathEntry[0], new NullProgressMonitor());
+        GroovyRuntime.addGroovyClasspathContainer(javaProject);
     }
 
     public static void initGroovyProjectClassPath(ProjectEntity projectEntity, FolderEntity testCaseRootFolder,

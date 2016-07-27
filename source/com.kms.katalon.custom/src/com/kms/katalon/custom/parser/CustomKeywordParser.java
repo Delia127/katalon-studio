@@ -28,11 +28,11 @@ import com.kms.katalon.core.annotation.Keyword;
 import com.kms.katalon.custom.factory.CustomMethodNodeFactory;
 
 public class CustomKeywordParser {
+    private static final String CUSTOM_KEYWORDS_FILE_NAME = "CustomKeywords.groovy";
     private final static String TEMPLATE_CLASS_NAME = IdConstants.KATALON_CUSTOM_BUNDLE_ID
             + ".generation.CustomKeywordTemplate";
     private final static String GENERATED_KEYWORD_METHOD_NAME = "generateCustomKeywordFile";
     private static CustomKeywordParser _instance;
-    private ClassNode classNode;
 
     private CustomKeywordParser() {
     }
@@ -169,7 +169,7 @@ public class CustomKeywordParser {
             libFolderRaw.mkdirs();
         }
         IFile iFile = null;
-        File file = new File(libFolderRaw, "CustomKeywords.groovy");
+        File file = new File(libFolderRaw, CUSTOM_KEYWORDS_FILE_NAME);
         if (!file.exists()) {
             file.getParentFile().mkdirs();
             file.createNewFile();
@@ -187,11 +187,12 @@ public class CustomKeywordParser {
         object.invokeMethod(GENERATED_KEYWORD_METHOD_NAME, new Object[] { file });
 
         iFile.refreshLocal(IResource.DEPTH_ZERO, null);
-        GroovyCompilationUnit unit = (GroovyCompilationUnit) JavaCore.createCompilationUnitFrom(iFile);
-        classNode = unit.getModuleNode().getClasses().get(0);
     }
 
     public List<MethodNode> getAllMethodNodes(IFolder libFolder) {
+        IFile iFile = libFolder.getFile(CUSTOM_KEYWORDS_FILE_NAME);
+        GroovyCompilationUnit unit = (GroovyCompilationUnit) JavaCore.createCompilationUnitFrom(iFile);
+        ClassNode classNode = unit.getModuleNode().getClasses().get(0);
         if (classNode != null && classNode.getModule() != null && classNode.getModule().getMethods() != null) {
             List<MethodNode> methodNodes = classNode.getModule().getMethods();
 

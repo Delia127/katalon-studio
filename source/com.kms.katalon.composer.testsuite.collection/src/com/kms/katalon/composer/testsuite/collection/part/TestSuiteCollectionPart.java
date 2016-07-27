@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.osgi.service.event.Event;
 
+import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
@@ -166,7 +167,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         TableColumnLayout tableLayout = new TableColumnLayout();
         testSuiteTableComposite.setLayout(tableLayout);
 
-        tableViewer = new TableViewer(testSuiteTableComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+        tableViewer = new CTableViewer(testSuiteTableComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
         Table testSuiteWrapperTable = tableViewer.getTable();
         testSuiteWrapperTable.setLinesVisible(true);
         testSuiteWrapperTable.setHeaderVisible(true);

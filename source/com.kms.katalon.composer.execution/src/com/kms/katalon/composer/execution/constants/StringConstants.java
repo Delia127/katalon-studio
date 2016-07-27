@@ -300,4 +300,7 @@ public class StringConstants extends GlobalStringConstants {
     // LaunchDelegate
     public static final String LAUNCH_CONFIGURATION_TYPE_ID = "com.kms.katalon.composer.execution.scriptLaunchConfiguration";
 
+    // ExternalLibratiesSettingPage
+    public static final String PAGE_EXTERNAL_LIB_JOB_TASK_REBUILD_PROJECT = "Updating external libraries...";
+    public static final String PAGE_EXTERNAL_LIB_MSG_UNABLE_UPDATE_PROJECT = "Unable to update external libraries";
 }
