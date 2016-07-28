@@ -8,15 +8,11 @@ public class RefreshHandler extends CommonExplorerHandler {
 
     @Override
     public boolean canExecute() {
-        return getExplorerSelection().length != 0;
+        return isExplorerPartActive() && getExplorerSelection().length != 0;
     }
 
     @Override
     public void execute() {
-        if (isExplorerPartNotActive()) {
-            return;
-        }
-
         Object[] selectedObjects = getExplorerSelection();
         if (selectedObjects.length == 0) {
             return;

@@ -19,6 +19,10 @@ public class PasteHandler extends CommonExplorerHandler {
 
     @Override
     public boolean canExecute() {
+        if (!isExplorerPartActive()) {
+            return false;
+        }
+
         ITreeEntity entity = getValidSelection();
         if (entity == null) {
             return false;
@@ -60,10 +64,6 @@ public class PasteHandler extends CommonExplorerHandler {
 
     @Override
     public void execute() {
-        if (isExplorerPartNotActive()) {
-            return;
-        }
-
         ITreeEntity entity = getValidSelection();
         if (entity == null) {
             return;

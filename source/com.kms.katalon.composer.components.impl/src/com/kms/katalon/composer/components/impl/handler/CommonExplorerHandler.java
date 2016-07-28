@@ -3,6 +3,8 @@ package com.kms.katalon.composer.components.impl.handler;
 import static org.eclipse.ui.handlers.HandlerUtil.getActivePartId;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 
 import com.kms.katalon.constants.IdConstants;
 
@@ -29,4 +31,8 @@ public abstract class CommonExplorerHandler extends AbstractHandler {
         return (Object[]) o;
     }
 
+    protected boolean isExplorerPartActive() {
+        MPart activePart = getService(EPartService.class).getActivePart();
+        return activePart != null && IdConstants.EXPLORER_PART_ID.equals(activePart.getElementId());
+    }
 }
