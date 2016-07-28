@@ -84,7 +84,7 @@ public class FocusCellOwnerDrawHighlighterForMultiSelection extends FocusCellHig
                     ViewerCell focusCell = getFocusCell();
 
                     try {
-                        Method m = viewer.getClass().getDeclaredMethod("getViewerRowFromItem", Widget.class);
+                        Method m = ColumnViewer.class.getDeclaredMethod("getViewerRowFromItem", Widget.class);
                         boolean access = m.isAccessible();
                         if (!access) {
                             m.setAccessible(true);
