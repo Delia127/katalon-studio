@@ -245,19 +245,12 @@ public class WebUiCommonHelper extends KeywordHelper {
 
     private static void selectOrDeselectOptionsByValueByRegularExpression(Select select, String value,
             boolean isSelect, String regularExpressionLog) {
-        long startTime = System.currentTimeMillis();
         List<WebElement> allOptions = select.getOptions();
-        long period = System.currentTimeMillis() - startTime;
-        logger.logInfo("All options: " + period);
         for (int index = 0; index < allOptions.size(); index++) {
-            startTime = System.currentTimeMillis();
             String optionValue = allOptions.get(index).getAttribute("value");
-            period = System.currentTimeMillis() - startTime;
-            logger.logInfo("Get value #" + index + ":" + period);
             if (optionValue == null || !WebUiCommonHelper.match(optionValue, value, true)) {
                 continue;
             }
-            startTime = System.currentTimeMillis();
             if (isSelect) {
                 select.selectByIndex(index);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SELECTED_OPT_AT_INDEX_W_VAL, index,
@@ -267,8 +260,6 @@ public class WebUiCommonHelper extends KeywordHelper {
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_OPT_AT_IDX_X_W_VAL_Y_IS_SELECTED,
                         index, optionValue, regularExpressionLog));
             }
-            period = System.currentTimeMillis() - startTime;
-            logger.logInfo("Select or deselect #" + index + ":" + period);
         }
     }
 
