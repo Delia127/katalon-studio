@@ -6,6 +6,7 @@ var simplePrefs = require('sdk/simple-prefs');
 var portPrefName = 'katalonServerPort';
 var onOffStatusPrefName = 'katalonOnOffStatus';
 var CONNECTING_ERROR_MESSAGE = "Cannot connect to Katalon Server. Make sure you have started Object Spy on Katalon application."
+var POST_DOM_MAP_SUCCESS = "Load DOM map to Katalon successfully"
 
 var panel = require("sdk/panel").Panel(
 		{
@@ -58,7 +59,7 @@ panel.port.on("setKatalonOnOffStatus", function(onOffStatus) {
 pageMod.PageMod({
 	include : "*",
 	contentScriptFile : [ data.url("jquery-2.2.4.min.js"),
-			data.url("jquery.color.js"), data.url("constants.js"),
+			data.url("jquery.color-2.1.2.min.js"), data.url("constants.js"),
 			data.url("common.js"), data.url("dom_inspector.js"),
 			data.url("dom_collector.js"), data.url("main.js") ],
 	onAttach : function(worker) {
@@ -70,22 +71,41 @@ pageMod.PageMod({
 			});
 		});
 		worker.port.on("postData", function(message) {
-			Request({
-				url : message.url,
-				content : message.data,
-				onComplete : function(response) {
-					if (response.status == 200) {
-						worker.postMessage({
-							kind : "postSuccess"
-						});
-					} else {
-						worker.postMessage({
-							kind : "postFail",
-							text : CONNECTING_ERROR_MESSAGE
-						});
-					}
+			postData(message.url, message.data, function(response) {
+				if (response.status == 200) {
+					worker.postMessage({
+						kind : "postSuccess"
+					});
+				} else {
+					worker.postMessage({
+						kind : "postFail",
+						text : CONNECTING_ERROR_MESSAGE
+					});
 				}
-			}).post();
+			})
+		});
+		worker.port.on("postDomMapData", function(message) {
+			postData(message.url, message.data, function(response) {
+				if (response.status == 200) {
+					worker.postMessage({
+						kind : "postDomMapSuccess",
+						text : POST_DOM_MAP_SUCCESS
+					});
+				} else {
+					worker.postMessage({
+						kind : "postFail",
+						text : CONNECTING_ERROR_MESSAGE
+					});
+				}
+			})
 		});
 	}
 });
+
+function postData(url, data, onPostComplete) {
+	Request({
+		url : url,
+		content : data,
+		onComplete : onPostComplete
+	}).post();
+}
