@@ -23,22 +23,6 @@ public class FolderTreeEntity extends AbstractTreeEntity {
 
     private static final long serialVersionUID = 2019661366633516087L;
 
-    private static final String FOLDER_TYPE_NAME = StringConstants.TREE_FOLDER_TYPE_NAME;
-
-    private static final Image FOLDER_ICON = ImageConstants.IMG_16_FOLDER;
-
-    private static final Image FOLDER_TEST_CASE_ICON = ImageConstants.IMG_16_FOLDER_TEST_CASE;
-
-    private static final Image FOLDER_TEST_SUITE_ICON = ImageConstants.IMG_16_FOLDER_TEST_SUITE;
-
-    private static final Image FOLDER_KEYWORD_ICON = ImageConstants.IMG_16_FOLDER_KEYWORD;
-
-    private static final Image FOLDER_DATA_ICON = ImageConstants.IMG_16_FOLDER_DATA;
-
-    private static final Image FOLDER_OBJECT_ICON = ImageConstants.IMG_16_FOLDER_OBJECT;
-
-    private static final Image FOLDER_REPORT_ICON = ImageConstants.IMG_16_FOLDER_REPORT;
-
     private FolderEntity folder;
 
     public FolderTreeEntity(FolderEntity folder, ITreeEntity parentTreeEntity) {
@@ -69,46 +53,45 @@ public class FolderTreeEntity extends AbstractTreeEntity {
 
     @Override
     public Image getImage() throws Exception {
-        if (isRootFolder(FolderController.getInstance().getTestCaseRoot(folder.getProject()))) {
-            return FOLDER_TEST_CASE_ICON;
-        } else if (isRootFolder(FolderController.getInstance().getTestSuiteRoot(folder.getProject()))) {
-            return FOLDER_TEST_SUITE_ICON;
-        } else if (isRootFolder(FolderController.getInstance().getObjectRepositoryRoot(folder.getProject()))) {
-            return FOLDER_OBJECT_ICON;
-        } else if (isRootFolder(FolderController.getInstance().getTestDataRoot(folder.getProject()))) {
-            return FOLDER_DATA_ICON;
-        } else if (isRootFolder(FolderController.getInstance().getKeywordRoot(folder.getProject()))) {
-            return FOLDER_KEYWORD_ICON;
-        } else if (isRootFolder(FolderController.getInstance().getReportRoot(folder.getProject()))) {
-            return FOLDER_REPORT_ICON;
-        } else {
-            return FOLDER_ICON;
+        switch (folder.getIdForDisplay()) {
+            case StringConstants.ROOT_FOLDER_NAME_TEST_CASE:
+                return ImageConstants.IMG_16_FOLDER_TEST_CASE;
+            case StringConstants.ROOT_FOLDER_NAME_TEST_SUITE:
+                return ImageConstants.IMG_16_FOLDER_TEST_SUITE;
+            case StringConstants.ROOT_FOLDER_NAME_OBJECT_REPOSITORY:
+                return ImageConstants.IMG_16_FOLDER_OBJECT;
+            case StringConstants.ROOT_FOLDER_NAME_DATA_FILE:
+                return ImageConstants.IMG_16_FOLDER_DATA;
+            case StringConstants.ROOT_FOLDER_NAME_KEYWORD:
+                return ImageConstants.IMG_16_FOLDER_KEYWORD;
+            case StringConstants.ROOT_FOLDER_NAME_REPORT:
+                return ImageConstants.IMG_16_FOLDER_REPORT;
+            case StringConstants.ROOT_FOLDER_NAME_CHECKPOINT:
+                return ImageConstants.IMG_16_FOLDER_CHECKPOINT;
+            default:
+                return ImageConstants.IMG_16_FOLDER;
         }
     }
 
     @Override
     public String getTypeName() throws Exception {
-        return FOLDER_TYPE_NAME;
+        return StringConstants.TREE_FOLDER_TYPE_NAME;
     }
 
     @Override
     public boolean isRemoveable() throws Exception {
-        if (isRootFolder(FolderController.getInstance().getTestCaseRoot(folder.getProject()))
-                || isRootFolder(FolderController.getInstance().getTestSuiteRoot(folder.getProject()))
-                || isRootFolder(FolderController.getInstance().getObjectRepositoryRoot(folder.getProject()))
-                || isRootFolder(FolderController.getInstance().getTestDataRoot(folder.getProject()))
-                || isRootFolder(FolderController.getInstance().getReportRoot(folder.getProject()))
-                || isRootFolder(FolderController.getInstance().getKeywordRoot(folder.getProject()))) {
-            return false;
+        switch (folder.getIdForDisplay()) {
+            case StringConstants.ROOT_FOLDER_NAME_TEST_CASE:
+            case StringConstants.ROOT_FOLDER_NAME_TEST_SUITE:
+            case StringConstants.ROOT_FOLDER_NAME_OBJECT_REPOSITORY:
+            case StringConstants.ROOT_FOLDER_NAME_DATA_FILE:
+            case StringConstants.ROOT_FOLDER_NAME_KEYWORD:
+            case StringConstants.ROOT_FOLDER_NAME_REPORT:
+            case StringConstants.ROOT_FOLDER_NAME_CHECKPOINT:
+                return false;
+            default:
+                return true;
         }
-        return true;
-    }
-
-    private boolean isRootFolder(FolderEntity rootFolder) throws Exception {
-        if (folder.equals(rootFolder)) {
-            return true;
-        }
-        return false;
     }
 
     @Override
@@ -144,23 +127,24 @@ public class FolderTreeEntity extends AbstractTreeEntity {
 
     @Override
     public String getKeyWord() throws Exception {
-        if (folder.getFolderType() != null) {
-            switch (folder.getFolderType()) {
-                case TESTCASE:
-                    return TestCaseTreeEntity.KEY_WORD;
-                case TESTSUITE:
-                    return TestSuiteTreeEntity.KEY_WORD;
-                case DATAFILE:
-                    return TestDataTreeEntity.KEY_WORD;
-                case KEYWORD:
-                    return KeywordTreeEntity.KEY_WORD;
-                case WEBELEMENT:
-                    return WebElementTreeEntity.KEY_WORD;
-                case REPORT:
-                    return ReportTreeEntity.KEY_WORD;
-            }
+        switch (folder.getFolderType()) {
+            case TESTCASE:
+                return TestCaseTreeEntity.KEY_WORD;
+            case TESTSUITE:
+                return TestSuiteTreeEntity.KEY_WORD;
+            case DATAFILE:
+                return TestDataTreeEntity.KEY_WORD;
+            case KEYWORD:
+                return KeywordTreeEntity.KEY_WORD;
+            case WEBELEMENT:
+                return WebElementTreeEntity.KEY_WORD;
+            case REPORT:
+                return ReportTreeEntity.KEY_WORD;
+            case CHECKPOINT:
+                return CheckpointTreeEntity.KEY_WORD;
+            default:
+                return StringUtils.EMPTY;
         }
-        return StringUtils.EMPTY;
     }
 
     @Override
@@ -178,8 +162,11 @@ public class FolderTreeEntity extends AbstractTreeEntity {
                 return WebElementTreeEntity.SEARCH_TAGS;
             case REPORT:
                 return ReportTreeEntity.SEARCH_TAGS;
+            case CHECKPOINT:
+                return CheckpointTreeEntity.SEARCH_TAGS;
+            default:
+                return null;
         }
-        return null;
     }
 
     @Override
@@ -205,8 +192,11 @@ public class FolderTreeEntity extends AbstractTreeEntity {
                 return ImageConstants.IMG_16_TEST_OBJECT;
             case REPORT:
                 return ImageConstants.IMG_16_REPORT;
+            case CHECKPOINT:
+                return ImageConstants.IMG_16_CHECKPOINT;
+            default:
+                return null;
         }
-        return null;
     }
 
     public void loadAllDescentdantEntities() throws Exception {

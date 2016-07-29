@@ -27,6 +27,7 @@ public interface IdConstants {
 
     // Toolbar
     public static final String RUN_TOOL_ITEM_ID = "com.kms.katalon.composer.execution.handledtoolitem.run";
+
     public static final String DEBUG_TOOL_ITEM_ID = "com.kms.katalon.composer.execution.handledtoolitem.debug";
 
     // Composer PartStack content
@@ -76,16 +77,20 @@ public interface IdConstants {
 
     // Test Data Part content
     public static final String TESTDATA_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".testdata";
-    
+
     // Test Data Part content
-    public static final String TEST_SUITE_COLLECTION_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".testrun";
+    public static final String TEST_SUITE_COLLECTION_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID
+            + ".testrun";
 
     // Report Part content
     public static final String REPORT_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".report";
-    
+
     // Report Collection Part content
     public static final String REPORT_COLLECTION_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID
             + ".collectionReport";
+
+    // Checkpoint Part content
+    public static final String CHECKPOINT_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".checkpoint";
 
     // Test Suite Part: key of TestSuiteEntity in content part
     public static final String TESTSUITE_CONTEXT_OBJECT_KEY = "testSuite";
@@ -100,7 +105,7 @@ public interface IdConstants {
     public static final String SEARCH_COMMAND_ID = "org.eclipse.search.ui.openSearchDialog";
 
     public static final String RESET_PERSPECTIVE_HANDLER_ID = "com.kms.katalon.composer.menu.handler.resetPerspective";
-    
+
     // Parameter ID
     public static final String RUN_MODE_PARAMETER_ID = "com.kms.katalon.composer.execution.runMode";
 
@@ -111,13 +116,13 @@ public interface IdConstants {
 
     // Bundle
     public static final String KATALON_LOGGING_BUNDLE_ID = "com.kms.katalon.logging";
-    
+
     public static final String KATALON_CUSTOM_BUNDLE_ID = "com.kms.katalon.custom";
 
     public static final String KATALON_CORE_BUNDLE_ID = "com.kms.katalon.core";
 
     public static final String KATALON_WEB_UI_BUNDLE_ID = "com.kms.katalon.core.webui";
-    
+
     public static final String KATALON_MOBILE_BUNDLE_ID = "com.kms.katalon.core.mobile";
 
     public static final String KATALON_SELENIUM_BUNDLE_ID = "com.kms.katalon.selenium.server-standalone";

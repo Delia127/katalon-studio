@@ -47,7 +47,7 @@ public class RefreshTestDataHandler {
 			if (parentEntity != null && parentEntity instanceof FolderTreeEntity) {
 				eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, parentEntity);
 			} else {
-				FolderEntity folder = FolderController.getInstance().getTestCaseRoot(project);
+				FolderEntity folder = FolderController.getInstance().getTestDataRoot(project);
 				eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, new FolderTreeEntity(folder, null));
 			}
 		} else {

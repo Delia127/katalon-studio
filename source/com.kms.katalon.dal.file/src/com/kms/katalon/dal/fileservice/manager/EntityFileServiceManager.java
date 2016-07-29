@@ -15,6 +15,7 @@ import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.dal.fileservice.FileServiceConstant;
 import com.kms.katalon.dal.fileservice.dataprovider.setting.FileServiceDataProviderSetting;
 import com.kms.katalon.dal.state.DataProviderState;
+import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -111,6 +112,9 @@ public class EntityFileServiceManager {
                             break;
                         case FileServiceConstant.DATA_FILE_ROOT_FOLDER_NAME:
                             ((FolderEntity) entity).setFolderType(FolderType.DATAFILE);
+                            break;
+                        case FileServiceConstant.CHECKPOINT_ROOT_FOLDER_NAME:
+                            ((FolderEntity) entity).setFolderType(FolderType.CHECKPOINT);
                             break;
                         case FileServiceConstant.KEYWORD_ROOT_FOLDER_NAME:
                             ((FolderEntity) entity).setFolderType(FolderType.KEYWORD);
@@ -340,15 +344,34 @@ public class EntityFileServiceManager {
             for (FileEntity childEntity : getChildren(folder, FileEntity.class)) {
                 if (childEntity instanceof TestCaseEntity) {
                     TestCaseFileServiceManager.moveTestCase((TestCaseEntity) childEntity, newFolder);
-                } else if (childEntity instanceof TestSuiteEntity) {
+                    continue;
+                }
+
+                if (childEntity instanceof TestSuiteEntity) {
                     TestSuiteFileServiceManager.moveTestSuite((TestSuiteEntity) childEntity, newFolder);
-                } else if (childEntity instanceof DataFileEntity) {
+                    continue;
+                }
+
+                if (childEntity instanceof DataFileEntity) {
                     DataFileFileServiceManager.moveDataFile((DataFileEntity) childEntity, newFolder);
-                } else if (childEntity instanceof WebElementEntity) {
+                }
+
+                if (childEntity instanceof WebElementEntity) {
                     WebElementFileServiceManager.moveWebElement((WebElementEntity) childEntity, newFolder);
-                } else if (childEntity instanceof TestSuiteCollectionEntity) {
+                    continue;
+                }
+
+                if (childEntity instanceof TestSuiteCollectionEntity) {
                     new FileServiceDataProviderSetting().getTestSuiteCollectionDataProvider().move(childEntity.getId(), newFolder);
-                } else if (childEntity instanceof FolderEntity) {
+                    continue;
+                }
+
+                if (childEntity instanceof CheckpointEntity) {
+                    CheckpointFileServiceManager.move((CheckpointEntity) childEntity, newFolder);
+                    continue;
+                }
+
+                if (childEntity instanceof FolderEntity) {
                     moveFolder((FolderEntity) childEntity, newFolder);
                 }
             }

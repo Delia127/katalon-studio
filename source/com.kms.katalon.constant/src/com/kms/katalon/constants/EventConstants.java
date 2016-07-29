@@ -119,4 +119,9 @@ public class EventConstants {
     public static final String GLOBAL_VARIABLE_REFRESH = "GLOBAL_VARIABLE/REFRESH";
     public static final String GLOBAL_VARIABLE_SHOW_REFERENCES = "GLOBAL_VARIABLE/SHOW_REFERENCES";
 
+    // Checkpoint Events
+    public static final String CHECKPOINT_OPEN = "CHECKPOINT/OPEN";
+
+    public static final String CHECKPOINT_UPDATED = "CHECKPOINT/UPDATED";
+
 }

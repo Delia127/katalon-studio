@@ -97,7 +97,6 @@ import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants;
-import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -508,17 +507,8 @@ public class ExplorerPart {
     @Optional
     private void reloadTreeEventHandler(@UIEventTopic(EventConstants.EXPLORER_RELOAD_DATA) Object object) {
         try {
-            ProjectEntity project = ProjectController.getInstance().getCurrentProject();
-            List<ITreeEntity> treeEntities = new ArrayList<ITreeEntity>();
-            if (project != null) {
-                treeEntities.add(new FolderTreeEntity(FolderController.getInstance().getTestCaseRoot(project), null));
-                treeEntities.add(new FolderTreeEntity(FolderController.getInstance().getObjectRepositoryRoot(project),
-                        null));
-                treeEntities.add(new FolderTreeEntity(FolderController.getInstance().getTestSuiteRoot(project), null));
-                treeEntities.add(new FolderTreeEntity(FolderController.getInstance().getTestDataRoot(project), null));
-                treeEntities.add(new FolderTreeEntity(FolderController.getInstance().getKeywordRoot(project), null));
-                treeEntities.add(new FolderTreeEntity(FolderController.getInstance().getReportRoot(project), null));
-            }
+            List<ITreeEntity> treeEntities = TreeEntityUtil.getAllTreeEntity(ProjectController.getInstance()
+                    .getCurrentProject());
             eventBroker.post(EventConstants.EXPLORER_RELOAD_INPUT, treeEntities);
         } catch (Exception e) {
             LoggerSingleton.logError(e);

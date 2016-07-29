@@ -12,7 +12,7 @@ import com.kms.katalon.composer.components.impl.dialogs.CommonPropertiesDialog;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 
-public class TestDataPropertiesDialog extends CommonPropertiesDialog {
+public class TestDataPropertiesDialog extends CommonPropertiesDialog<DataFileEntity> {
 
     private Text txtDataType;
 
@@ -38,11 +38,6 @@ public class TestDataPropertiesDialog extends CommonPropertiesDialog {
     protected void setInput() {
         super.setInput();
         txtDataType.setText(getEntity().getDriver().toString());
-    }
-
-    @Override
-    public DataFileEntity getEntity() {
-        return (DataFileEntity) super.getEntity();
     }
 
 }

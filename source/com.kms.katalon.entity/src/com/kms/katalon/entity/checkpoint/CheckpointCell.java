@@ -1,9 +1,13 @@
 package com.kms.katalon.entity.checkpoint;
 
+import com.kms.katalon.entity.file.ClonableObject;
+
 /**
  * Checkpoint Cell
  */
-public class CheckpointCell {
+public class CheckpointCell extends ClonableObject {
+
+    private static final long serialVersionUID = -1694838499619995640L;
 
     private Object value;
 

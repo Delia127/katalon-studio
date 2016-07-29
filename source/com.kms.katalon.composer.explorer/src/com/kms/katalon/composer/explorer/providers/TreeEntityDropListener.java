@@ -11,6 +11,7 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.TreeDropTargetEffect;
 import org.eclipse.swt.widgets.Display;
 
+import com.kms.katalon.composer.components.impl.tree.CheckpointTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
@@ -23,6 +24,7 @@ import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
@@ -74,9 +76,11 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
         } else if (targetFolder.getFolderType().equals(FolderType.TESTSUITE)) {
             rootTargetFolder = FolderController.getInstance().getTestSuiteRoot(targetFolder.getProject());
         } else if (targetFolder.getFolderType().equals(FolderType.WEBELEMENT)) {
-            rootTargetFolder = FolderController.getInstance().getTestSuiteRoot(targetFolder.getProject());
+            rootTargetFolder = FolderController.getInstance().getObjectRepositoryRoot(targetFolder.getProject());
         } else if (targetFolder.getFolderType().equals(FolderType.DATAFILE)) {
-            rootTargetFolder = FolderController.getInstance().getTestSuiteRoot(targetFolder.getProject());
+            rootTargetFolder = FolderController.getInstance().getTestDataRoot(targetFolder.getProject());
+        } else if (targetFolder.getFolderType().equals(FolderType.CHECKPOINT)) {
+            rootTargetFolder = FolderController.getInstance().getCheckpointRoot(targetFolder.getProject());
         }
 
         for (ITreeEntity treeEntity : treeEntities) {
@@ -110,10 +114,14 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
                 WebElementEntity movedTo = EntityProcessingUtil.moveTestObject(
                         (WebElementEntity) ((WebElementTreeEntity) treeEntity).getObject(), targetFolder);
                 lastMovedTreeEntity = TreeEntityUtil.getWebElementTreeEntity(movedTo, targetFolder.getProject());
-            }  else if (treeEntity instanceof TestSuiteCollectionTreeEntity) {
+            } else if (treeEntity instanceof TestSuiteCollectionTreeEntity) {
                 TestSuiteCollectionEntity movedTo = EntityProcessingUtil.moveTestSuiteCollection(
                         (TestSuiteCollectionEntity) ((TestSuiteCollectionTreeEntity) treeEntity).getObject(), targetFolder);
                 lastMovedTreeEntity = TreeEntityUtil.getTestRunTreeEntity(movedTo, targetFolder.getProject());
+            } else if (treeEntity instanceof CheckpointTreeEntity) {
+                CheckpointEntity movedCheckpoint = EntityProcessingUtil.moveCheckpoint(
+                        ((CheckpointTreeEntity) treeEntity).getObject(), targetFolder);
+                lastMovedTreeEntity = TreeEntityUtil.getCheckpointTreeEntity(movedCheckpoint);
             }
             eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, treeEntity.getParent());
         }

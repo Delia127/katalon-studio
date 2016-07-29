@@ -8,5 +8,17 @@
             uri="fragment.e4xmi">
       </fragment>
    </extension>
+   <extension
+         point="com.kms.katalon.composer.folder.delete">
+      <client
+            handler="com.kms.katalon.composer.checkpoint.handlers.DeleteCheckpointFolderHandler">
+      </client>
+   </extension>
+   <extension
+         point="com.kms.katalon.composer.explorer.delete">
+      <client
+            handler="com.kms.katalon.composer.checkpoint.handlers.DeleteCheckpointHandler">
+      </client>
+   </extension>
 
 </plugin>

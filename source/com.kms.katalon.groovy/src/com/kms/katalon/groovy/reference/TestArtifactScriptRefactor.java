@@ -54,6 +54,8 @@ public class TestArtifactScriptRefactor {
                 return "findTestCase";
             case WEBELEMENT:
                 return "findTestObject";
+            case CHECKPOINT:
+                return "findCheckpoint";
             default:
                 return StringUtils.EMPTY;
         }
@@ -133,12 +135,12 @@ public class TestArtifactScriptRefactor {
             scriptContent = scriptContent.replace(potentialDoubleQuotes, newDoubleQuotedScript);
             updated = true;
         }
-        
+
         if (!updated) {
             return;
         }
 
-        try (InputStream is = IOUtils.toInputStream(scriptContent)){
+        try (InputStream is = IOUtils.toInputStream(scriptContent)) {
             scriptFile.setContents(is, true, true, null);
             scriptFile.refreshLocal(IResource.DEPTH_ZERO, null);
         }
@@ -169,7 +171,7 @@ public class TestArtifactScriptRefactor {
         }
         return referrers;
     }
-    
+
     public List<IFile> findReferrersInTestCaseScripts(ProjectEntity projectEntity) throws IOException, CoreException {
         return findReferrers(GroovyUtil.getAllTestCaseScripts(projectEntity));
     }
@@ -195,23 +197,27 @@ public class TestArtifactScriptRefactor {
             replace(newScript, scriptFile);
         }
     }
-    
+
     public void removeReferences(List<IFile> files) throws IOException, CoreException {
         updateReferences(NULL, files);
     }
-    
+
     public static TestArtifactScriptRefactor createForTestDataEntity(String testDataId) {
         return new TestArtifactScriptRefactor(FolderType.DATAFILE, testDataId, true);
     }
-    
+
     public static TestArtifactScriptRefactor createForTestCaseEntity(String testCaseId) {
         return new TestArtifactScriptRefactor(FolderType.TESTCASE, testCaseId, true);
     }
-    
+
     public static TestArtifactScriptRefactor createForTestObjectEntity(String testObjectId) {
         return new TestArtifactScriptRefactor(FolderType.WEBELEMENT, testObjectId, true);
     }
-    
+
+    public static TestArtifactScriptRefactor createForCheckpointEntity(String checkpointId) {
+        return new TestArtifactScriptRefactor(FolderType.CHECKPOINT, checkpointId, true);
+    }
+
     public static TestArtifactScriptRefactor createForFolderEntity(FolderEntity folder) {
         return new TestArtifactScriptRefactor(folder.getFolderType(), folder.getIdForDisplay() + ENTITY_ID_SEPARATOR,
                 false);

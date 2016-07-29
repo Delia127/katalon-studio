@@ -13,17 +13,16 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.impl.dialogs.CommonPropertiesDialog;
 import com.kms.katalon.composer.testsuite.collection.constant.StringConstants;
-import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 
-public class TestSuiteCollectionPropertiesDialog extends CommonPropertiesDialog {
+public class TestSuiteCollectionPropertiesDialog extends CommonPropertiesDialog<TestSuiteCollectionEntity> {
 
     private Text txtCreatedDate;
 
     private Text txtModifiedDate;
     private Text txtTag;
 
-    public TestSuiteCollectionPropertiesDialog(Shell parentShell, FileEntity entity) {
+    public TestSuiteCollectionPropertiesDialog(Shell parentShell, TestSuiteCollectionEntity entity) {
         super(parentShell, entity);
         setDialogTitle(StringConstants.DIA_TITLE_TEST_COLLECTION_SUITE_PROPERTIES);
     }
@@ -85,8 +84,4 @@ public class TestSuiteCollectionPropertiesDialog extends CommonPropertiesDialog 
         });
     }
 
-    @Override
-    public TestSuiteCollectionEntity getEntity() {
-        return (TestSuiteCollectionEntity) super.getEntity();
-    }
 }

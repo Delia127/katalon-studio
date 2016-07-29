@@ -41,6 +41,10 @@ public class CheckpointController extends EntityController {
         return instance;
     }
 
+    public String getAvailableName(FolderEntity parentFolder, String name) throws Exception {
+        return EntityNameController.getInstance().getAvailableName(name, parentFolder, false);
+    }
+
     public CheckpointEntity getById(String checkpointId) throws DALException {
         return getDataProviderSetting().getCheckpointDataProvider().getById(checkpointId);
     }
@@ -97,11 +101,11 @@ public class CheckpointController extends EntityController {
      */
     public CheckpointEntity takeSnapshot(CheckpointEntity checkpointEntity) throws Exception {
         if (checkpointEntity == null) {
-            new NullArgumentException(StringConstants.CTRL_EXC_CHECKPOINT_IS_NULL);
+            throw new NullArgumentException(StringConstants.CTRL_EXC_CHECKPOINT_IS_NULL);
         }
 
         CheckpointSourceInfo sourceInfo = checkpointEntity.getSourceInfo();
-        if (StringUtils.isBlank(sourceInfo.getSourceUrl())) {
+        if (sourceInfo.getSourceType() != DataFileDriverType.DBData && StringUtils.isBlank(sourceInfo.getSourceUrl())) {
             throw new NullAttributeException(StringConstants.CTRL_EXC_SOURCE_URL_IS_NULL);
         }
         List<String> columnNames = new ArrayList<>();
