@@ -505,11 +505,14 @@ public class ExplorerPart {
 
     @Inject
     @Optional
-    private void reloadTreeEventHandler(@UIEventTopic(EventConstants.EXPLORER_RELOAD_DATA) Object object) {
+    private void reloadTreeEventHandler(@UIEventTopic(EventConstants.EXPLORER_RELOAD_DATA) Object isForcingReload) {
         try {
-            List<ITreeEntity> treeEntities = TreeEntityUtil.getAllTreeEntity(ProjectController.getInstance()
-                    .getCurrentProject());
-            eventBroker.post(EventConstants.EXPLORER_RELOAD_INPUT, treeEntities);
+            if (!(isForcingReload instanceof Boolean) || (boolean) isForcingReload
+                    || (!((boolean) isForcingReload) && (treeEntities == null || treeEntities.isEmpty()))) {
+                List<ITreeEntity> treeEntities = TreeEntityUtil.getAllTreeEntity(ProjectController.getInstance()
+                        .getCurrentProject());
+                eventBroker.post(EventConstants.EXPLORER_RELOAD_INPUT, treeEntities);
+            }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
