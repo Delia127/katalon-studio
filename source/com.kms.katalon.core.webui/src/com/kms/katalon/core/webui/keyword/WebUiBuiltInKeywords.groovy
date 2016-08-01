@@ -4574,6 +4574,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Deprecated. As of Katalon version 3.7.0.0, replaced by keyword com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords.verifyElementInViewport.
      * Verify if the web element is visible in current view port
      * @param to
      *      represent a web element
@@ -4584,7 +4585,39 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    @Deprecated
     public static boolean verifyElementVisibleInViewport(TestObject to, int timeOut, FailureHandling flowControl) {
+        return verifyElementInViewport(to, timeOut, flowControl);
+    }
+    
+    /**
+     * Deprecated. As of Katalon version 3.7.0.0, replaced by keyword com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords.verifyElementInViewport.
+     * Verify if the web element is visible in current view port
+     * @param to
+     *      represent a web element
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @return true if element is present and visible in viewport; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    @Deprecated
+    public static boolean verifyElementVisibleInViewport(TestObject to, int timeOut) {
+        return verifyElementInViewport(to, timeOut, RunConfiguration.getDefaultFailureHandling());
+    }
+    
+    /**
+     * Verify if the web element is visible in current view port
+     * @param to
+     *      represent a web element
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return true if element is present and visible in viewport; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementInViewport(TestObject to, int timeOut, FailureHandling flowControl) {
         WebUIKeywordMain.runKeyword({
             try {
                 if (WebUiCommonHelper.isElementVisibleInViewport(DriverFactory.getWebDriver(), to, timeOut)) {
@@ -4613,10 +4646,43 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
-    public static boolean verifyElementVisibleInViewport(TestObject to, int timeOut) {
+    public static boolean verifyElementInViewport(TestObject to, int timeOut) {
         return verifyElementVisibleInViewport(to, timeOut, RunConfiguration.getDefaultFailureHandling());
     }
 
+    /**
+     * Deprecated. As of Katalon version 3.7.0.0, replaced by keyword com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords.verifyElementNotInViewport.
+     * Verify if the web element is NOT visible in current view port
+     * @param to
+     *      represent a web element
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @param flowControl
+     * @return true if element is present and NOT visible in viewport; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    @Deprecated
+    public static boolean verifyElementNotVisibleInViewport(TestObject to, int timeOut, FailureHandling flowControl) {
+        return verifyElementNotInViewport(to, timeOut, flowControl);
+    }
+
+    /**
+     * Deprecated. As of Katalon version 3.7.0.0, replaced by keyword com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords.verifyElementNotInViewport.
+     * Verify if the web element is NOT visible in current view port
+     * @param to
+     *      represent a web element
+     * @param timeOut
+     *      system will wait at most timeout (seconds) to return result
+     * @return true if element is present and NOT visible in viewport; otherwise, false
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    @Deprecated
+    public static boolean verifyElementNotVisibleInViewport(TestObject to, int timeOut) {
+        return verifyElementNotInViewport(to, timeOut, RunConfiguration.getDefaultFailureHandling());
+    }
+    
     /**
      * Verify if the web element is NOT visible in current view port
      * @param to
@@ -4628,7 +4694,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
-    public static boolean verifyElementNotVisibleInViewport(TestObject to, int timeOut, FailureHandling flowControl) {
+    public static boolean verifyElementNotInViewport(TestObject to, int timeOut, FailureHandling flowControl) {
         WebUIKeywordMain.runKeyword({
             try {
                 if (WebUiCommonHelper.isElementVisibleInViewport(DriverFactory.getWebDriver(), to, timeOut)) {
@@ -4656,8 +4722,8 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
-    public static boolean verifyElementNotVisibleInViewport(TestObject to, int timeOut) {
-        return verifyElementNotVisibleInViewport(to, timeOut, RunConfiguration.getDefaultFailureHandling());
+    public static boolean verifyElementNotInViewport(TestObject to, int timeOut) {
+        return verifyElementNotInViewport(to, timeOut, RunConfiguration.getDefaultFailureHandling());
     }
     
     /**
