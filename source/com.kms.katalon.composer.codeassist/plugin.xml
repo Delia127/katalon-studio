@@ -21,4 +21,13 @@
          </appliesTo>
       </proposalFilter>
    </extension>
+   <extension
+         point="org.eclipse.jdt.ui.javaEditorTextHovers">
+         <hover
+            activate="true"
+            class="com.kms.katalon.composer.codeassist.editor.ImprovedGroovyTextEditorHover"
+            id="com.kms.katalon.composer.codeassist.editor"
+            label="Katalon Information Hover">
+      </hover>
+   </extension>
 </plugin>
