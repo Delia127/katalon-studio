@@ -121,6 +121,8 @@ public class StringConstants extends GlobalStringConstants {
 
     // AddToObjectRepositoryDialog
     public static final String TITLE_ADD_TO_OBJECT_DIALOG = "Add Element to Object Repository";
+    
+    public static final String DIA_CHCK_BTN_CREATE_FOLDER_AS_PAGE_NAME = "Create new folder(s) as page's name";
 
     public static final String DIA_BTN_ADD_NEW_FOLDER = "New Folder";
 

@@ -49,6 +49,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.objectspy.dialog.AddToObjectRepositoryDialog.AddToObjectRepositoryDialogResult;
 import com.kms.katalon.objectspy.element.HTMLElement;
 import com.kms.katalon.objectspy.element.HTMLFrameElement;
 import com.kms.katalon.objectspy.element.HTMLPageElement;
@@ -113,11 +114,10 @@ public class RecordHandler {
                     try {
                         monitor.beginTask(StringConstants.JOB_GENERATE_SCRIPT_MESSAGE, recordDialog.getActions().size()
                                 + recordDialog.getElements().size());
-                        FolderTreeEntity targetFolderTreeEntity = recordDialog.getTargetFolderTreeEntity();
+                        AddToObjectRepositoryDialogResult folderSelectionResult = recordDialog.getTargetFolderTreeEntity();
                         final List<StatementWrapper> generatedStatementWrappers = generateStatementWrappersFromRecordedActions(
-                                recordDialog.getActions(), recordDialog.getElements(),
-                                testCasePart,
-                                (FolderEntity) targetFolderTreeEntity.getObject(), monitor);
+                                recordDialog.getActions(), recordDialog.getElements(), testCasePart,
+                                folderSelectionResult, monitor);
                         sync.syncExec(new Runnable() {
                             @Override
                             public void run() {
@@ -130,12 +130,12 @@ public class RecordHandler {
                                 }
                             }
                         });
+
+                        FolderTreeEntity targetFolderTreeEntity = folderSelectionResult.getSelectedParentFolder();
                         eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
                                 targetFolderTreeEntity.getParent());
-                        eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM,
-                                targetFolderTreeEntity);
-                        eventBroker.send(EventConstants.EXPLORER_EXPAND_TREE_ENTITY,
-                                targetFolderTreeEntity);
+                        eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, targetFolderTreeEntity);
+                        eventBroker.send(EventConstants.EXPLORER_EXPAND_TREE_ENTITY, targetFolderTreeEntity);
 
                         return Status.OK_STATUS;
                     } catch (final Exception e) {
@@ -193,25 +193,24 @@ public class RecordHandler {
         }
     }
 
-    private void addRecordedElements(List<HTMLPageElement> recordedElements, FolderEntity parentFolder,
-            IProgressMonitor monitor) throws Exception {
-        entitySavedMap = new HashMap<HTMLElement, FileEntity>();
+    private void addRecordedElements(List<HTMLPageElement> recordedElements,
+            AddToObjectRepositoryDialogResult folderSelectionResult, IProgressMonitor monitor) throws Exception {
+        entitySavedMap = new HashMap<>();
         for (HTMLPageElement pageElement : recordedElements) {
-            FolderEntity importedFolder = ObjectRepositoryController.getInstance().importWebElementFolder(
-                    HTMLElementUtil.convertPageElementToFolderEntity(pageElement, parentFolder), parentFolder);
+            FolderEntity importedFolder = folderSelectionResult.createFolderForPageElement(pageElement);
             entitySavedMap.put(pageElement, importedFolder);
             for (HTMLElement childElement : pageElement.getChildElements()) {
-                addRecordedElement(childElement, (importedFolder != null) ? importedFolder : parentFolder, null);
+                addRecordedElement(childElement, importedFolder, null);
             }
             monitor.worked(1);
         }
     }
 
     private List<StatementWrapper> generateStatementWrappersFromRecordedActions(
-            List<HTMLActionMapping> recordedActions, List<HTMLPageElement> recordedElements,
-            TestCasePart testCasePart, FolderEntity targetFolder, IProgressMonitor monitor) throws Exception {
+            List<HTMLActionMapping> recordedActions, List<HTMLPageElement> recordedElements, TestCasePart testCasePart,
+            AddToObjectRepositoryDialogResult folderSelectionResult, IProgressMonitor monitor) throws Exception {
         monitor.subTask(StringConstants.JOB_ADDING_OBJECT);
-        addRecordedElements(recordedElements, targetFolder, monitor);
+        addRecordedElements(recordedElements, folderSelectionResult, monitor);
 
         monitor.subTask(StringConstants.JOB_GENERATE_STATEMENT_MESSAGE);
         List<StatementWrapper> resultStatementWrappers = new ArrayList<StatementWrapper>();
@@ -219,8 +218,7 @@ public class RecordHandler {
         ASTNodeWrapper mainClassNode = testCasePart.getTreeTableInput().getMainClassNode();
         // add open browser keyword
         String webUiKwAliasName = HTMLActionUtil.getWebUiKeywordClass().getAliasName();
-        MethodCallExpressionWrapper methodCallExpressionWrapper = new MethodCallExpressionWrapper(
-                webUiKwAliasName,
+        MethodCallExpressionWrapper methodCallExpressionWrapper = new MethodCallExpressionWrapper(webUiKwAliasName,
                 "openBrowser", mainClassNode);
         ArgumentListExpressionWrapper arguments = methodCallExpressionWrapper.getArguments();
         arguments.addExpression(new ConstantExpressionWrapper(""));
@@ -245,8 +243,7 @@ public class RecordHandler {
         }
 
         // add close browser keyword
-        methodCallExpressionWrapper = new MethodCallExpressionWrapper(webUiKwAliasName,
-                "closeBrowser", mainClassNode);
+        methodCallExpressionWrapper = new MethodCallExpressionWrapper(webUiKwAliasName, "closeBrowser", mainClassNode);
         arguments = methodCallExpressionWrapper.getArguments();
         resultStatementWrappers.add(new ExpressionStatementWrapper(methodCallExpressionWrapper));
 
