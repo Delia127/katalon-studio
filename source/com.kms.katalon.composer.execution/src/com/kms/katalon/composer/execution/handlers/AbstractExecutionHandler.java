@@ -153,7 +153,7 @@ public abstract class AbstractExecutionHandler {
             // check the selected part is a test case or test suite part
             if (partElementId.startsWith(IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX)
                     && selectedPart.getObject() instanceof TestCaseCompositePart) {
-                return ((TestCaseCompositePart) selectedPart.getObject()).getTestCase();
+                return ((TestCaseCompositePart) selectedPart.getObject()).getOriginalTestCase();
             } else if (partElementId.startsWith(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX)
                     && selectedPart.getObject() instanceof TestSuiteCompositePart) {
                 TestSuiteCompositePart testSuiteComposite = (TestSuiteCompositePart) selectedPart.getObject();

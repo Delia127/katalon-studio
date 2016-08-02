@@ -51,6 +51,11 @@ public abstract class ExecutedEntity implements IExecutedEntity {
     }
     
     @Override
+    public String getSourcePath() {
+        return entity.getLocation();
+    }
+    
+    @Override
     public Map<String, Object> getAttributes() {
         Map<String, Object> attributes = new LinkedHashMap<String, Object>();
         attributes.put(StringConstants.ID.toLowerCase(), getSourceId());

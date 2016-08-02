@@ -411,6 +411,10 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
     public TestCaseEntity getTestCase() {
         return testCase;
     }
+    
+    public TestCaseEntity getOriginalTestCase() {
+        return originalTestCase;
+    }
 
     @Override
     public void save() throws Exception {

@@ -118,8 +118,18 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
 
         propertyMap.put(RunConfiguration.HOST, hostConfiguration.getProperties());
         
+        if (executionSetting == null) {            
+            return propertyMap;
+        }
         propertyMap.putAll(ExecutionUtil.getExecutionProperties(executionSetting, getDriverConnectors()));
-
+        IExecutedEntity executedEntity = executionSetting.getExecutedEntity();
+        if (executedEntity == null) {
+            return propertyMap;
+        }
+        propertyMap.put(RunConfiguration.EXCUTION_SOURCE_ID, executedEntity.getSourceId());
+        propertyMap.put(RunConfiguration.EXCUTION_SOURCE_NAME, executedEntity.getSourceName());
+        propertyMap.put(RunConfiguration.EXCUTION_SOURCE_DESCRIPTION, executedEntity.getSourceDescription());
+        propertyMap.put(RunConfiguration.EXCUTION_SOURCE, executedEntity.getSourcePath());
         return propertyMap;
     }
 
