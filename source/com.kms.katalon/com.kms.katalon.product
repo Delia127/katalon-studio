@@ -16,6 +16,8 @@
    <launcherArgs>
       <programArgs>-data config
       </programArgs>
+      <programArgsMac>-vm ../../../jre/Contents/Home/jre/lib/jli/libjli.dylib
+      </programArgsMac>
       <vmArgs>-Xms256m
 -Xmx2048m
 -XX:PermSize=128M
@@ -42,11 +44,9 @@
       </win>
    </launcher>
 
-
    <vm>
       <windows include="true">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7</windows>
    </vm>
-
 
    <plugins>
       <plugin id="com.ibm.icu"/>
