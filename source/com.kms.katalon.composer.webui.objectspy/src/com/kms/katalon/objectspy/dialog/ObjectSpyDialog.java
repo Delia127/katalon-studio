@@ -601,7 +601,6 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                                 domTreeViewer.collapseAll();
                                 domTreeViewerLabelProvider.setFilteredElements(selectedDOMElementXpaths);
                                 refreshTree(domTreeViewer, null);
-
                             }
                         });
                         for (final DomElementXpath selectedDOMElementXpath : selectedDOMElementXpaths) {
@@ -617,6 +616,12 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                                 }
                             });
                         }
+                        Display.getDefault().syncExec(new Runnable() {
+                            @Override
+                            public void run() {
+                                showFirstFoundDomElement(selectedDOMElementXpaths);
+                            }
+                        });
                         return Status.OK_STATUS;
 
                     } catch (final XPathExpressionException exception) {
@@ -651,6 +656,51 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
             job.setUser(true);
             job.schedule();
         }
+    }
+
+    private void showFirstFoundDomElement(final List<DomElementXpath> selectedDOMElementXpaths) {
+        if (selectedDOMElementXpaths == null || selectedDOMElementXpaths.isEmpty()) {
+            return;
+        }
+
+        Tree tree = domTreeViewer.getTree();
+        TreeItem foundItem = findTreeItem(selectedDOMElementXpaths.get(0), tree.getItems(), 0);
+        if (foundItem != null) {
+            tree.setTopItem(foundItem);
+        }
+    }
+
+    private TreeItem findTreeItem(DomElementXpath neededToBeRevealed, TreeItem[] items, int segment) {
+        String[] xpathTreePath = neededToBeRevealed.getXpathTreePath();
+        if (xpathTreePath == null || items == null) {
+            return null;
+        }
+
+        for (TreeItem item : items) {
+            HTMLRawElement rawElement = (HTMLRawElement) item.getData();
+
+            if (!xpathTreePath[segment].equals(rawElement.getAbsoluteXpath())) {
+                continue;
+            }
+
+            if (segment != xpathTreePath.length - 1) {
+                return findTreeItem(neededToBeRevealed, item.getItems(), segment + 1);
+            }
+
+            String selectedXpath = neededToBeRevealed.getXpath();
+            if (selectedXpath == null) {
+                return item;
+            }
+
+            for (TreeItem childItem : item.getItems()) {
+                HTMLRawElement rawChildElement = (HTMLRawElement) childItem.getData();
+                if (selectedXpath.equals(rawChildElement.getAbsoluteXpath())) {
+                    return childItem;
+                }
+            }
+            return item;
+        }
+        return null;
     }
 
     private void refreshDomTree() {
