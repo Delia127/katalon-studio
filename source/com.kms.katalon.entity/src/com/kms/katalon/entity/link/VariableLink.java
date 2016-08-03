@@ -1,10 +1,11 @@
 package com.kms.katalon.entity.link;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VariableLink implements Serializable {
+import com.kms.katalon.entity.file.ClonableObject;
+
+public class VariableLink extends ClonableObject {
     private static final long serialVersionUID = 1L;
 
     private String variableId;
@@ -18,7 +19,7 @@ public class VariableLink implements Serializable {
     public VariableLink() {
         variableId = "";
         value = "";
-        setType(VariableType.SCRIPT);
+        setType(VariableType.DEFAULT);
     }
 
     public String getValue() {
@@ -57,7 +58,8 @@ public class VariableLink implements Serializable {
     }
 
     public enum VariableType {
-        DATA_COLUMN("Data Column"), DATA_COLUMN_INDEX("Data Column Index"), SCRIPT("Script Variable");
+        DATA_COLUMN("Data Column"), DATA_COLUMN_INDEX("Data Column Index"), DEFAULT("Default"), SCRIPT_VARIABLE(
+                "Script Variable");
 
         private final String text;
 
@@ -71,9 +73,14 @@ public class VariableLink implements Serializable {
         }
 
         public static VariableType fromValue(String v) {
-            if (v.equals(DATA_COLUMN.toString())) return DATA_COLUMN;
-            if (v.equals(DATA_COLUMN_INDEX.toString())) return DATA_COLUMN_INDEX;
-            if (v.equals(SCRIPT.toString())) return SCRIPT;
+            if (v == null) {
+                return DEFAULT;
+            }
+            for (VariableType type : values()) {
+                if (type.toString().equals(v)) {
+                    return type;
+                }
+            }
             return valueOf(v);
         }
 

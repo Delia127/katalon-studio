@@ -457,4 +457,10 @@ public class StringConstants {
     public static final String TEST_CASE_FACTORY_MSG_TC_NOT_EXISTED_WITH_REASON = "Cannot find test case with id ''{0}''"
             + " because (of) ''{1}''";
 
+    // Common method name
+    public static final String METHOD_FIND_TEST_CASE = "findTestCase";
+
+    public static final String METHOD_FIND_TEST_OBJECT = "findTestObject";
+
+    public static final String METHOD_FIND_TEST_DATA = "findTestData";
 }

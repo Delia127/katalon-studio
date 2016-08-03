@@ -248,4 +248,6 @@ public class StringConstants extends GlobalStringConstants {
     // TestSuitePropertiesDialog
     public static final String DIA_TITLE_TEST_SUITE_PROPERTIES = "Test Suite Properties";
 
+    // VariableBindingScriptBuilderDialog
+    public static final String DIA_TITLE_VARIABLE_BINDING_VALUE_BUILDER = "Variable Value Builder";
 }

@@ -3,6 +3,12 @@ package com.kms.katalon.execution.generator;
 import groovy.text.GStringTemplateEngine
 import groovy.transform.CompileStatic
 
+import static com.kms.katalon.constants.GlobalStringConstants.CR_SPACE
+import static com.kms.katalon.constants.GlobalStringConstants.CR_DOT
+import static com.kms.katalon.core.constants.StringConstants.METHOD_FIND_TEST_CASE
+import static com.kms.katalon.core.constants.StringConstants.METHOD_FIND_TEST_OBJECT
+import static com.kms.katalon.core.constants.StringConstants.METHOD_FIND_TEST_DATA
+
 import com.kms.katalon.core.configuration.RunConfiguration
 import com.kms.katalon.core.driver.DriverCleanerCollector
 import com.kms.katalon.core.exception.StepFailedException
@@ -13,7 +19,10 @@ import com.kms.katalon.core.main.TestCaseMain
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.reporting.ReportUtil
 import com.kms.katalon.core.testcase.TestCaseBinding
+import com.kms.katalon.core.testcase.TestCaseFactory
 import com.kms.katalon.core.testdata.TestDataColumn
+import com.kms.katalon.core.testdata.TestDataFactory
+import com.kms.katalon.core.testobject.ObjectRepository
 import com.kms.katalon.entity.testsuite.TestSuiteEntity
 import com.kms.katalon.execution.configuration.IRunConfiguration
 import com.kms.katalon.execution.entity.IExecutedEntity
@@ -57,6 +66,12 @@ KeywordLogger.getInstance().startSuite('<%= testSuite.getName() %>', suiteProper
 
 KeywordLogger.getInstance().endSuite('<%= testSuite.getName() %>', null)
 '''
+    private static final String STATIC = "static";
+
+    def static buildStaticImportName(String className, String methodName) {
+        STATIC + CR_SPACE + className + CR_DOT + methodName
+    }
+
     @CompileStatic
     def static generateTestSuiteScriptFile(File file, TestSuiteEntity testSuite, List<String> testCaseBindings,
             IRunConfiguration runConfig, TestSuiteExecutedEntity testSuiteExecutedEntity) {
@@ -71,9 +86,11 @@ KeywordLogger.getInstance().endSuite('<%= testSuite.getName() %>', null)
             TestCaseBinding.class.getName(),
             DriverCleanerCollector.class.getName(),
             FailureHandling.class.getName(),
-            RunConfiguration.class.getName()
+            RunConfiguration.class.getName(),
+            buildStaticImportName(TestCaseFactory.class.getName(), METHOD_FIND_TEST_CASE),
+            buildStaticImportName(ObjectRepository.class.getName(), METHOD_FIND_TEST_OBJECT),
+            buildStaticImportName(TestDataFactory.class.getName(), METHOD_FIND_TEST_DATA)
         ]
-
 
         def driverCleaners = []
         for (IKeywordContributor contributor in KeywordContributorCollection.getKeywordContributors()) {
@@ -101,14 +118,14 @@ KeywordLogger.getInstance().endSuite('<%= testSuite.getName() %>', null)
             "trigger": 'runTestCase_${it}'
         ]
 
-        def engine = new GStringTemplateEngine()
-        def tempTestSuiteContentWritable = engine.createTemplate(tpl).make(binding)
-        if (file != null) {
-            if (file.canWrite()) {
-                file.write(tempTestSuiteContentWritable.toString())
-            }
-        } else {
-            return tempTestSuiteContentWritable.toString()
+        def template = new GStringTemplateEngine()
+                            .createTemplate(tpl)
+                            .make(binding)
+                            .toString()
+
+        if (file != null && file.canWrite()) {
+             file.write(template)
         }
+        return template
     }
 }

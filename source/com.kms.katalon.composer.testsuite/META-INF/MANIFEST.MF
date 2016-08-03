@@ -26,7 +26,8 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  com.kms.katalon.custom,
  org.eclipse.core.runtime,
  org.eclipse.swt,
- com.kms.katalon.preferences
+ com.kms.katalon.preferences,
+ com.kms.katalon.composer.testcase
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: com.kms.katalon.composer.testsuite.constants,
