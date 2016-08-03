@@ -27,7 +27,9 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_I_kiEHfUEeWiVci6VZKWGw" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:5">
     <elements xsi:type="menu:MenuSeparator" xmi:id="_5g0xkHfSEeWiVci6VZKWGw" elementId="com.kms.katalon.composer.webui.menuseparator.0"/>
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_jaHegFqZEeWwu6VuxUpakQ" elementId="com.kms.katalon.composer.webui.execution.handledmenuitem.remote" label="Remote" iconURI="platform:/plugin/com.kms.katalon.composer.webui/icons/remote_web_driver_16.png" command="_M23AkFIgEeWdwJZaPXJ0_w"/>
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_jaHegFqZEeWwu6VuxUpakQ" elementId="com.kms.katalon.composer.webui.execution.handledmenuitem.remote" label="Remote" iconURI="platform:/plugin/com.kms.katalon.composer.webui/icons/remote_web_driver_16.png" command="_M23AkFIgEeWdwJZaPXJ0_w">
+      <parameters xmi:id="_w68lEFhnEeaNKpXVhMax_g" elementId="com.kms.katalon.composer.webui.parameter.edge.runParam" name="com.kms.katalon.composer.execution.runMode" value="run"/>
+    </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_n72oYOwlEeWCzMi1cpQbtQ" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:6">
     <elements xsi:type="menu:Menu" xmi:id="_L2-9gOwnEeWCzMi1cpQbtQ" elementId="com.kms.katalon.composer.webui.execution.menu.remote_debug" label="Active Browser" iconURI="platform:/plugin/com.kms.katalon.composer.webui/icons/active_browser_16.png">
@@ -102,7 +104,9 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_EfsG4AhiEeaOHID5tXhDTg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:5">
     <elements xsi:type="menu:MenuSeparator" xmi:id="_EfsG4QhiEeaOHID5tXhDTg" elementId="com.kms.katalon.composer.webui.menuseparator.0"/>
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_EfsG4ghiEeaOHID5tXhDTg" elementId="com.kms.katalon.composer.webui.execution.handledmenuitem.remote" label="Remote" iconURI="platform:/plugin/com.kms.katalon.composer.webui/icons/remote_web_driver_16.png" command="_M23AkFIgEeWdwJZaPXJ0_w"/>
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_EfsG4ghiEeaOHID5tXhDTg" elementId="com.kms.katalon.composer.webui.execution.handledmenuitem.remote" label="Remote" iconURI="platform:/plugin/com.kms.katalon.composer.webui/icons/remote_web_driver_16.png" command="_M23AkFIgEeWdwJZaPXJ0_w">
+      <parameters xmi:id="_yh8_IFhnEeaNKpXVhMax_g" elementId="com.kms.katalon.composer.webui.parameter.edge.runParam" name="com.kms.katalon.composer.execution.runMode" value="debug"/>
+    </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_E1fXwAhiEeaOHID5tXhDTg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:6">
     <elements xsi:type="menu:Menu" xmi:id="_E1fXwQhiEeaOHID5tXhDTg" elementId="com.kms.katalon.composer.webui.execution.menu.remote_debug" label="Active Browser" iconURI="platform:/plugin/com.kms.katalon.composer.webui/icons/active_browser_16.png">

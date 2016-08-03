@@ -27,6 +27,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.debug.handler.ToggleBreakpointHandler;
 import com.kms.katalon.composer.execution.handlers.EvaluateDriverConnectorEditorContributionsHandler;
 import com.kms.katalon.composer.execution.menu.CustomExecutionMenuContribution;
@@ -48,16 +49,6 @@ public class TestExecutionAddon implements EventHandler {
 
     private static final String STEP_INTO_COMMAND = "org.eclipse.debug.ui.commands.StepInto";
 
-    private static final String KATALON_COMPOSER_EXECUTION_BUNDLE_URI = "bundleclass://com.kms.katalon.composer.execution/";
-
-    private static final String KATALON_COMPOSER_EXECUTION_ID = "com.kms.katalon.composer.execution";
-
-    private static final String CUSTOM_RUN_MENU_ID = KATALON_COMPOSER_EXECUTION_ID + ".run.custom";
-
-    public static final String CUSTOM_RUN_MENU_LABEL = "Custom";
-
-    private static final String CUSTOM_RUN_CONFIG_CONTRIBUTOR_ID = CUSTOM_RUN_MENU_ID + ".contributor";
-
     @Inject
     private IEclipseContext context;
 
@@ -72,21 +63,21 @@ public class TestExecutionAddon implements EventHandler {
         ContextInjectionFactory.make(EvaluateDriverConnectorEditorContributionsHandler.class, context);
         eventBroker.subscribe(EventConstants.WORKSPACE_CREATED, this);
         eventBroker.subscribe(EventConstants.PROJECT_OPENED, this);
-        initCustomRunConfigurationSubMenu(IdConstants.RUN_TOOL_ITEM_ID);
-        initCustomRunConfigurationSubMenu(IdConstants.DEBUG_TOOL_ITEM_ID);
+        initCustomRunConfigurationSubMenu(IdConstants.RUN_TOOL_ITEM_ID, StringConstants.CUSTOM_RUN_MENU_ID);
+        initCustomRunConfigurationSubMenu(IdConstants.DEBUG_TOOL_ITEM_ID, StringConstants.CUSTOM_DEBUG_MENU_ID);
     }
 
-    private void initCustomRunConfigurationSubMenu(String parentToolItemId) {
+    private void initCustomRunConfigurationSubMenu(String parentToolItemId, String elementId) {
         MToolItem parentToolItem = (MToolItem) modelService.find(parentToolItemId, application);
         MMenu menu = parentToolItem.getMenu();
         MMenu subMenu = MMenuFactory.INSTANCE.createMenu();
-        subMenu.setLabel(CUSTOM_RUN_MENU_LABEL);
-        subMenu.setElementId(CUSTOM_RUN_MENU_ID);
+        subMenu.setLabel(StringConstants.CUSTOM_RUN_MENU_LABEL);
+        subMenu.setElementId(elementId);
 
         MDynamicMenuContribution dynamicMenuContributor = MMenuFactory.INSTANCE.createDynamicMenuContribution();
 
-        dynamicMenuContributor.setElementId(CUSTOM_RUN_CONFIG_CONTRIBUTOR_ID);
-        dynamicMenuContributor.setContributionURI(KATALON_COMPOSER_EXECUTION_BUNDLE_URI
+        dynamicMenuContributor.setElementId(StringConstants.CUSTOM_RUN_CONFIG_CONTRIBUTOR_ID);
+        dynamicMenuContributor.setContributionURI(StringConstants.KATALON_COMPOSER_EXECUTION_BUNDLE_URI
                 + CustomExecutionMenuContribution.class.getName());
         subMenu.getChildren().add(dynamicMenuContributor);
         menu.getChildren().add(MMenuFactory.INSTANCE.createMenuSeparator());
@@ -106,7 +97,8 @@ public class TestExecutionAddon implements EventHandler {
 
     private void writeDefaultConsolePropertyFile() {
         try {
-            ConsoleOptionCollector.getInstance().writeDefaultPropertyFile(ProjectController.getInstance().getCurrentProject());
+            ConsoleOptionCollector.getInstance().writeDefaultPropertyFile(
+                    ProjectController.getInstance().getCurrentProject());
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
@@ -116,9 +108,10 @@ public class TestExecutionAddon implements EventHandler {
         wrapExecutionMenuItemsProcessor(IdConstants.RUN_TOOL_ITEM_ID);
         wrapExecutionMenuItemsProcessor(IdConstants.DEBUG_TOOL_ITEM_ID);
     }
-    
+
     private void activeDebugHandlers() {
-        IHandlerService handlerService = (IHandlerService) PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+        IHandlerService handlerService = (IHandlerService) PlatformUI.getWorkbench()
+                .getActiveWorkbenchWindow()
                 .getService(IHandlerService.class);
         handlerService.activateHandler(STEP_INTO_COMMAND, new StepIntoCommandHandler());
         handlerService.activateHandler(STEP_OVER_COMMAND, new StepOverCommandHandler());
@@ -126,13 +119,14 @@ public class TestExecutionAddon implements EventHandler {
         handlerService.activateHandler(TOGGLE_BREAKPOINT_COMMAND, new ToggleBreakpointHandler());
     }
 
-
     private void wrapExecutionMenuItemsProcessor(String menuItemId) {
         MToolItem runToolItem = (MToolItem) modelService.find(menuItemId, application);
-        if (runToolItem == null) return;
+        if (runToolItem == null)
+            return;
 
         MMenu menu = runToolItem.getMenu();
-        if (menu == null || menu.getChildren() == null || menu.getChildren().isEmpty()) return;
+        if (menu == null || menu.getChildren() == null || menu.getChildren().isEmpty())
+            return;
 
         List<MMenuElement> menuItems = new ArrayList<MMenuElement>();
         for (MMenuElement item : menu.getChildren()) {

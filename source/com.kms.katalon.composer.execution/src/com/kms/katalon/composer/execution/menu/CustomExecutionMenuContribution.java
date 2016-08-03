@@ -17,12 +17,11 @@ public class CustomExecutionMenuContribution {
 
     private static final String EMPTY_HANDLER_LABEL = "(empty)";
 
-    private static final String KATALON_COMPOSER_EXECUTION_BUNDLE_ID = "bundleclass://com.kms.katalon.composer.execution/";
-
-    private static final String CUSTOM_EXECUTION_HANDLER_URI = KATALON_COMPOSER_EXECUTION_BUNDLE_ID
+    private static final String CUSTOM_EXECUTION_HANDLER_URI = StringConstants.KATALON_COMPOSER_EXECUTION_BUNDLE_URI
             + CustomExecutionHandler.class.getName();
 
-    private static final String EMPTY_HANDLER_URI = KATALON_COMPOSER_EXECUTION_BUNDLE_ID + EmptyHandler.class.getName();
+    private static final String EMPTY_HANDLER_URI = StringConstants.KATALON_COMPOSER_EXECUTION_BUNDLE_URI
+            + EmptyHandler.class.getName();
 
     @AboutToShow
     public void aboutToShow(List<MMenuElement> menuItems) {
