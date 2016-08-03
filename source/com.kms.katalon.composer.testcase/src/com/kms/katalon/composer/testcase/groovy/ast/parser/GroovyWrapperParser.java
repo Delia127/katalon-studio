@@ -190,18 +190,20 @@ public class GroovyWrapperParser {
     private void parseBinary(BinaryExpressionWrapper binaryExpressionWrapper) {
         preParseASTNode(binaryExpressionWrapper);
         parseExpression(binaryExpressionWrapper.getLeftExpression());
-        TokenWrapper token = binaryExpressionWrapper.getOperation();
-        preParseASTNode(token);
-        if (token.getText().equals("[")) {
-            print(token.getText());
-        } else {
-            print(" " + token.getText() + " ");
-        }
-        postParseASTNode(token);
-        checkWrapLongLine();
-        parseExpression(binaryExpressionWrapper.getRightExpression());
-        if (binaryExpressionWrapper.getOperation().getText().equals("[")) {
-            print("]");
+        if (binaryExpressionWrapper.getRightExpression() != null) {
+            TokenWrapper token = binaryExpressionWrapper.getOperation();
+            preParseASTNode(token);
+            if (token.getText().equals("[")) {
+                print(token.getText());
+            } else {
+                print(" " + token.getText() + " ");
+            }
+            postParseASTNode(token);
+            checkWrapLongLine();
+            parseExpression(binaryExpressionWrapper.getRightExpression());
+            if (binaryExpressionWrapper.getOperation().getText().equals("[")) {
+                print("]");
+            }
         }
         postParseASTNode(binaryExpressionWrapper);
     }
@@ -308,7 +310,6 @@ public class GroovyWrapperParser {
             parseArgumentList((ArgumentListExpressionWrapper) declarationExpressionWrapper.getLeftExpression(), true);
             print(declarationExpressionWrapper.getOperation().getText());
             parseExpression(declarationExpressionWrapper.getRightExpression());
-
             if (declarationExpressionWrapper.getOperation().getText().equals("[")) {
                 print("]");
             }
@@ -320,13 +321,15 @@ public class GroovyWrapperParser {
             } else {
                 parseExpression(declarationExpressionWrapper.getLeftExpression());
             }
-            TokenWrapper token = declarationExpressionWrapper.getOperation();
-            preParseASTNode(token);
-            print(" " + token.getText() + " ");
-            postParseASTNode(token);
-            parseExpression(declarationExpressionWrapper.getRightExpression());
-            if (declarationExpressionWrapper.getOperation().getText().equals("[")) {
-                print("]");
+            if (declarationExpressionWrapper.getRightExpression() != null) {
+                TokenWrapper token = declarationExpressionWrapper.getOperation();
+                preParseASTNode(token);
+                print(" " + token.getText() + " ");
+                postParseASTNode(token);
+                parseExpression(declarationExpressionWrapper.getRightExpression());
+                if (declarationExpressionWrapper.getOperation().getText().equals("[")) {
+                    print("]");
+                }
             }
         }
         postParseASTNode(declarationExpressionWrapper);

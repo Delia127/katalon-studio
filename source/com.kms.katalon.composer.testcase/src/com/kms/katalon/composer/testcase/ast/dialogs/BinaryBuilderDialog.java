@@ -42,6 +42,9 @@ public class BinaryBuilderDialog extends AbstractAstBuilderWithTableDialog {
             @Override
             public Object[] getElements(Object inputElement) {
                 if (inputElement == binaryExpressionWrapper) {
+                    if (binaryExpressionWrapper.getRightExpression() == null) {
+                        return new Object[] { binaryExpressionWrapper.getLeftExpression() };
+                    }
                     return new Object[] { binaryExpressionWrapper.getLeftExpression(),
                             binaryExpressionWrapper.getOperation(), binaryExpressionWrapper.getRightExpression() };
                 }
