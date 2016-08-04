@@ -43,7 +43,9 @@ public class BinaryExpressionWrapper extends ExpressionWrapper {
 
     private void copyBinaryProperties(BinaryExpressionWrapper binaryExpressionWrapper) {
         leftExpression = binaryExpressionWrapper.getLeftExpression().copy(this);
-        rightExpression = binaryExpressionWrapper.getRightExpression().copy(this);
+        if (binaryExpressionWrapper.getRightExpression() != null) {
+            rightExpression = binaryExpressionWrapper.getRightExpression().copy(this);
+        }
         operation = new TokenWrapper(binaryExpressionWrapper.getOperation(), this);
     }
 
@@ -93,6 +95,9 @@ public class BinaryExpressionWrapper extends ExpressionWrapper {
 
     @Override
     public String getText() {
+        if (rightExpression == null) {
+            return leftExpression.getText();
+        }
         if (operation.getType() == Types.LEFT_SQUARE_BRACKET) {
             return leftExpression.getText() + "[" + rightExpression.getText() + "]";
         }
