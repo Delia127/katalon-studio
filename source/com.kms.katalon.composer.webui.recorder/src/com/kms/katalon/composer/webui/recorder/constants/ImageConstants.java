@@ -20,6 +20,10 @@ public class ImageConstants {
     public static final Image IMG_28_STOP = ImageUtil.loadImage(componentBundle, "/icons/stop_28.png");
 
     public static final Image IMG_28_PLAY = ImageUtil.loadImage(componentBundle, "/icons/play_28.png");
+    
+    public static final Image IMG_24_ADD = ImageUtil.loadImage(componentBundle, "/icons/add_24.png");
+
+    public static final Image IMG_24_DELETE = ImageUtil.loadImage(componentBundle, "/icons/remove_24.png");
 
     // RecorderDialog
     public static final Image IMG_16_CHROME = ImageUtil.loadImage(currentBundle, "/icons/chrome_16.png");
