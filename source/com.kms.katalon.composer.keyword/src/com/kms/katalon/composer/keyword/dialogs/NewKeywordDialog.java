@@ -1,16 +1,9 @@
 package com.kms.katalon.composer.keyword.dialogs;
 
-import javax.naming.InvalidNameException;
-
-import org.apache.commons.lang.StringUtils;
-import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.internal.corext.util.JavaConventionsUtil;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.window.Window;
@@ -29,13 +22,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
-import com.kms.katalon.composer.components.impl.dialogs.AbstractEntityDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.keyword.constants.StringConstants;
-import com.kms.katalon.groovy.constant.GroovyConstants;
 
-@SuppressWarnings("restriction")
-public class NewKeywordDialog extends AbstractEntityDialog {
+public class NewKeywordDialog extends CommonAbstractKeywordDialog {
 
     private IPackageFragment parentPackage;
 
@@ -83,11 +73,13 @@ public class NewKeywordDialog extends AbstractEntityDialog {
         btnBrowse = new Button(parent, SWT.PUSH);
         btnBrowse.setText(StringConstants.BROWSE);
         btnBrowse.addSelectionListener(new SelectionListener() {
+            @Override
             public void widgetDefaultSelected(SelectionEvent e) {
                 parentPackage = choosePackage();
                 txtPackage.setText(getParentPackage().getElementName());
             }
 
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 parentPackage = choosePackage();
                 txtPackage.setText(getParentPackage().getElementName());
@@ -98,48 +90,21 @@ public class NewKeywordDialog extends AbstractEntityDialog {
 
     @Override
     public void validateEntityName(String entityName) throws Exception {
-        // validate package name
         validatePackageName();
-
-        // validate Keyword class name
-        entityName = entityName + GroovyConstants.GROOVY_FILE_EXTENSION;
-
-        if (parentPackage.exists()) {
-            ICompilationUnit[] cuList = parentPackage.getCompilationUnits();
-            for (ICompilationUnit cu : cuList) {
-                if (StringUtils.equalsIgnoreCase(entityName, cu.getElementName())) {
-                    throw new InvalidNameException(
-                            com.kms.katalon.composer.components.impl.constants.StringConstants.DIA_NAME_EXISTED);
-                }
-            }
-        }
-
-        GroovyCompilationUnit cu = (GroovyCompilationUnit) parentPackage.getCompilationUnit(entityName);
-        IStatus status = JavaConventionsUtil.validateCompilationUnitName(entityName, cu);
-        if (status.isOK()) {
-            if (StringUtils.isAllLowerCase(entityName.substring(0, 1))) {
-                setMessage(StringConstants.DIA_WARN_KEYWORD_START_WITH_LOWERCASE, IMessageProvider.WARNING);
-            }
-        } else {
-            throw new InvalidNameException(status.getMessage().replaceAll(" Java", "")
-                    .replaceAll("(?i)type", StringConstants.KEYWORD));
-        }
+        validateKeywordName(entityName, parentPackage);
     }
 
-    private void validatePackageName() throws InvalidNameException {
+    private void validatePackageName() throws Exception {
         String packageName = txtPackage.getText();
         if (packageName.isEmpty()) {
             setMessage(StringConstants.DIA_WARN_DEFAULT_PACKAGE, IMessageProvider.WARNING);
-        } else {
-            setMessage(getDialogMsg(), getMsgType());
-            IPackageFragment pkg = rootPackage.getPackageFragment(packageName);
-            IStatus status = JavaConventionsUtil.validatePackageName(packageName, pkg);
-            if (status.isOK()) {
-                parentPackage = pkg;
-            } else {
-                throw new InvalidNameException(status.getMessage().replaceAll(" Java", ""));
-            }
+            return;
         }
+        setMessage(getDialogMsg(), getMsgType());
+
+        IPackageFragment pkg = rootPackage.getPackageFragment(packageName);
+        validatePackageName(packageName, pkg);
+        parentPackage = pkg;
     }
 
     protected IPackageFragment choosePackage() {

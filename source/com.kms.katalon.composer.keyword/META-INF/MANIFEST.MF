@@ -39,3 +39,4 @@ Require-Bundle: org.eclipse.e4.core.services,
  com.kms.katalon.composer.util,
  com.kms.katalon.groovy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Import-Package: com.kms.katalon.dal.exception
