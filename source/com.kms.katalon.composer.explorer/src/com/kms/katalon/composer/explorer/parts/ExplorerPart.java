@@ -611,6 +611,27 @@ public class ExplorerPart {
         getViewer().setExpandedState(object, true);
         setFocus();
     }
+    
+    @Inject
+    @Optional
+    private void setSelectedItems(@UIEventTopic(EventConstants.EXPLORER_SET_SELECTED_ITEMS) Object[] objects) {
+        if (objects == null) {
+            return;
+        }
+        
+        TreePath[] expandedTreePaths = getViewer().getExpandedTreePaths();
+        getViewer().getControl().setRedraw(false);
+        // reload input
+        getViewer().setInput(getViewer().getInput());
+
+        // restore expanded tree paths
+        getViewer().setExpandedTreePaths(expandedTreePaths);
+        getViewer().getControl().setRedraw(true);
+
+        // set new selection
+        getViewer().setSelection(new StructuredSelection(objects));
+        setFocus();
+    }
 
     @Inject
     @Optional

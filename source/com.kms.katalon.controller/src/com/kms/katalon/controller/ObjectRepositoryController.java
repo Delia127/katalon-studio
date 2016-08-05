@@ -2,6 +2,7 @@ package com.kms.katalon.controller;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -9,7 +10,9 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.kms.katalon.controller.constants.StringConstants;
 import com.kms.katalon.entity.Entity;
+import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.SaveWebElementInfoEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
@@ -190,5 +193,25 @@ public class ObjectRepositoryController extends EntityController {
 
     public void reloadTestObject(WebElementEntity testObject, Entity entity) throws Exception {
         entity = testObject = getWebElement(entity.getId());
+    }
+
+    public List<WebElementEntity> getAllDescendantWebElements(FolderEntity folder) throws Exception {
+        if (folder.getFolderType() != FolderType.WEBELEMENT) {
+            return Collections.emptyList();
+        }
+
+        List<WebElementEntity> childWebElements = new ArrayList<>();
+        for (FileEntity child : FolderController.getInstance().getChildren(folder)) {
+            if (child instanceof WebElementEntity) {
+                childWebElements.add((WebElementEntity) child);
+                continue;
+            }
+            
+            if (child instanceof FolderEntity) {
+                childWebElements.addAll(getAllDescendantWebElements((FolderEntity) child));
+            }
+        }
+
+        return childWebElements;
     }
 }

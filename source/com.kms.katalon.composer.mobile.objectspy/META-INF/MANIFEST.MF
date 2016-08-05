@@ -32,7 +32,14 @@ Require-Bundle: com.kms.katalon.entity;bundle-version="1.0.0",
  com.kms.katalon.execution,
  com.kms.katalon.core,
  com.kms.katalon.composer.execution,
- com.kms.katalon.core.appium
+ com.kms.katalon.core.appium,
+ com.kms.katalon.composer.objectrepository,
+ org.eclipse.e4.ui.model.workbench,
+ com.kms.katalon.composer.explorer,
+ org.eclipse.e4.core.commands,
+ org.eclipse.ui,
+ com.kms.katalon.composer.folder,
+ com.kms.katalon.preferences
 Bundle-ClassPath: .
 Export-Package: com.kms.katalon.composer.mobile.objectspy.dialog
 
