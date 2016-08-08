@@ -10,7 +10,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String KATALON_COMPOSER_EXECUTION_ID = "com.kms.katalon.composer.execution";
 
     public static final String CUSTOM_RUN_MENU_ID = KATALON_COMPOSER_EXECUTION_ID + ".run.custom";
-    
+
     public static final String CUSTOM_DEBUG_MENU_ID = KATALON_COMPOSER_EXECUTION_ID + ".debug.custom";
 
     public static final String CUSTOM_RUN_MENU_LABEL = "Custom";
@@ -123,6 +123,10 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_COL_MESSAGE = MESSAGE;
 
     public static final String PA_LOG_CONTEXT_MENU_PROPERTIES = DIA_TITLE_LOG_PROPERTIES;
+
+    public static final String PA_LOG_RESUME = "Resume";
+
+    public static final String PA_LOG_PAUSE = "Pause";
 
     // LogExceptionNavigator
     public static final String WARN_TITLE = WARN;
