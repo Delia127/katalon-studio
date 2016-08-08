@@ -1,5 +1,8 @@
 package com.kms.katalon.objectspy.dialog;
 
+import static com.kms.katalon.objectspy.constants.ObjectSpyPreferenceConstants.WEBUI_DIA_CREATE_FOLDER_AS_PAGE_NAME;
+
+import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -14,6 +17,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -32,6 +36,7 @@ import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.composer.explorer.providers.FolderProvider;
 import com.kms.katalon.composer.folder.dialogs.NewFolderDialog;
 import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -42,6 +47,9 @@ import com.kms.katalon.objectspy.element.HTMLPageElement;
 import com.kms.katalon.objectspy.element.tree.CheckboxTreeSelectionHelper;
 import com.kms.katalon.objectspy.element.tree.HTMLElementLabelProvider;
 import com.kms.katalon.objectspy.element.tree.HTMLElementTreeContentProvider;
+import com.kms.katalon.objectspy.util.HTMLElementUtil;
+import com.kms.katalon.preferences.internal.PreferenceStoreManager;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class AddToObjectRepositoryDialog extends TreeEntitySelectionDialog {
     private int fWidth = 60;
@@ -62,6 +70,16 @@ public class AddToObjectRepositoryDialog extends TreeEntitySelectionDialog {
 
     private Object[] expandedHTMLElements;
 
+    private Button btnPageAsFolder;
+
+    private ScopedPreferenceStore store;
+
+    private boolean modified;
+
+    private boolean createFolderAsPageNameAllowed;
+
+    private SashForm form;
+
     public AddToObjectRepositoryDialog(Shell parentShell, boolean isCheckable, List<HTMLPageElement> htmlElements,
             Object[] expandedHTMLElements) {
         super(parentShell, new EntityLabelProvider(), new FolderProvider(),
@@ -69,7 +87,8 @@ public class AddToObjectRepositoryDialog extends TreeEntitySelectionDialog {
         this.isCheckable = isCheckable;
         this.htmlElements = htmlElements;
         this.expandedHTMLElements = expandedHTMLElements;
-        setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+        this.store = PreferenceStoreManager.getPreferenceStore(this.getClass());
+        setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE);
         setTitle(StringConstants.TITLE_ADD_TO_OBJECT_DIALOG);
         setAllowMultiple(false);
         refresh();
@@ -89,18 +108,57 @@ public class AddToObjectRepositoryDialog extends TreeEntitySelectionDialog {
         }
     }
 
+    /**
+     * @wbp.parser.entryPoint
+     */
     @Override
     protected Control createDialogArea(Composite parent) {
-        parent.setLayoutData(new GridData(GridData.FILL_BOTH));
-        parent.setLayout(new GridLayout(1, false));
+        Composite composite = createMainDialogArea(parent);
 
-        SashForm form = new SashForm(parent, SWT.HORIZONTAL);
+        form = new SashForm(composite, SWT.HORIZONTAL);
+        form.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
         createLeftPanel(form);
 
         createRightPanel(form);
 
-        return parent;
+        updateInput();
+
+        registerControlModifyListeners();
+
+        return composite;
+    }
+
+    private Composite createMainDialogArea(Composite parent) {
+        Composite composite = new Composite(parent, SWT.NONE);
+        GridLayout layout = new GridLayout();
+        layout.marginHeight = convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_MARGIN);
+        layout.marginWidth = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_MARGIN);
+        layout.verticalSpacing = convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_SPACING);
+        layout.horizontalSpacing = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_SPACING);
+        composite.setLayout(layout);
+        composite.setLayoutData(new GridData(GridData.FILL_BOTH));
+        applyDialogFont(composite);
+        return composite;
+    }
+
+    private void updateInput() {
+        createFolderAsPageNameAllowed = store.getBoolean(WEBUI_DIA_CREATE_FOLDER_AS_PAGE_NAME);
+        btnPageAsFolder.setSelection(createFolderAsPageNameAllowed);
+
+        modified = false;
+    }
+
+    private void registerControlModifyListeners() {
+        btnPageAsFolder.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                createFolderAsPageNameAllowed = btnPageAsFolder.getSelection();
+                store.setValue(WEBUI_DIA_CREATE_FOLDER_AS_PAGE_NAME, createFolderAsPageNameAllowed);
+                modified = true;
+            }
+        });
     }
 
     private void createRightPanel(Composite parent) {
@@ -111,6 +169,7 @@ public class AddToObjectRepositoryDialog extends TreeEntitySelectionDialog {
         label.setLayoutData(new GridData(SWT.HORIZONTAL));
 
         treeViewer = createTreeViewer(objectRepositoryComposite);
+
         treeViewer.expandToLevel(rootFolderTreeEntity, 1);
         GridData data = new GridData(GridData.FILL_BOTH);
         data.widthHint = convertWidthInCharsToPixels(fWidth);
@@ -125,11 +184,16 @@ public class AddToObjectRepositoryDialog extends TreeEntitySelectionDialog {
     private void createLeftPanel(Composite parent) {
         Composite htmlObjectTreeComposite = new Composite(parent, SWT.NONE);
         GridLayout gl_htmlObjectComposite = new GridLayout();
+        gl_htmlObjectComposite.marginTop = 5;
         gl_htmlObjectComposite.marginBottom = 5;
         gl_htmlObjectComposite.horizontalSpacing = 0;
         gl_htmlObjectComposite.marginWidth = 0;
         gl_htmlObjectComposite.marginHeight = 0;
         htmlObjectTreeComposite.setLayout(gl_htmlObjectComposite);
+
+        btnPageAsFolder = new Button(htmlObjectTreeComposite, SWT.CHECK);
+        btnPageAsFolder.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        btnPageAsFolder.setText(StringConstants.DIA_CHCK_BTN_CREATE_FOLDER_AS_PAGE_NAME);
 
         HTMLElementTreeContentProvider contentProvider = new HTMLElementTreeContentProvider();
         if (isCheckable) {
@@ -170,7 +234,6 @@ public class AddToObjectRepositoryDialog extends TreeEntitySelectionDialog {
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.eclipse.ui.dialogs.SelectionDialog#createButtonsForButtonBar(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -244,12 +307,32 @@ public class AddToObjectRepositoryDialog extends TreeEntitySelectionDialog {
         createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
     }
 
+    private void updatePreferenceStore() {
+        if (modified) {
+            try {
+                store.save();
+            } catch (IOException ex) {
+                LoggerSingleton.logError(ex);
+            }
+        }
+    }
+
+    @Override
+    public boolean close() {
+        updatePreferenceStore();
+        return super.close();
+    }
+
+    @Override
+    protected Point getInitialSize() {
+        return new Point(600, 600);
+    }
+
     private void removeUncheckedElements(List<? extends HTMLElement> elementList) {
         int i = 0;
         while (i < elementList.size()) {
             HTMLElement childElement = elementList.get(i);
-            if (!(((CheckboxTreeViewer) htmlElementTreeViewer).getChecked(childElement) || ((CheckboxTreeViewer) htmlElementTreeViewer)
-                    .getGrayed(childElement))) {
+            if (!(((CheckboxTreeViewer) htmlElementTreeViewer).getChecked(childElement) || ((CheckboxTreeViewer) htmlElementTreeViewer).getGrayed(childElement))) {
                 elementList.remove(i);
             } else {
                 if (childElement instanceof HTMLFrameElement) {
@@ -262,5 +345,44 @@ public class AddToObjectRepositoryDialog extends TreeEntitySelectionDialog {
 
     public List<HTMLPageElement> getHtmlElements() {
         return htmlElements;
+    }
+
+    public AddToObjectRepositoryDialogResult getDialogResult() {
+        return new AddToObjectRepositoryDialogResult((FolderTreeEntity) getFirstResult(), createFolderAsPageNameAllowed);
+    }
+
+    public class AddToObjectRepositoryDialogResult {
+        private final boolean createFolderAsPageNameAllowed;
+
+        private final FolderTreeEntity selectedParentFolder;
+
+        public AddToObjectRepositoryDialogResult(FolderTreeEntity selectedParentFolder,
+                boolean createFolderAsPageNameAllowed) {
+            this.createFolderAsPageNameAllowed = createFolderAsPageNameAllowed;
+            this.selectedParentFolder = selectedParentFolder;
+        }
+
+        public FolderTreeEntity getSelectedParentFolder() {
+            return selectedParentFolder;
+        }
+        
+        public FolderTreeEntity createTreeFolderForPageElement(HTMLPageElement pageElement) throws Exception {
+            if (createFolderAsPageNameAllowed) {
+                return new FolderTreeEntity(createFolderForPageElement(pageElement), selectedParentFolder);
+            }
+            return selectedParentFolder;
+        }
+
+        public FolderEntity createFolderForPageElement(HTMLPageElement pageElement) throws Exception {
+            FolderEntity parentFolder = (FolderEntity) (getSelectedParentFolder()).getObject();
+            return createFolderAsPageNameAllowed ? newPageWebElementAsFolder(parentFolder, pageElement)
+                    : parentFolder;
+        }
+
+        private FolderEntity newPageWebElementAsFolder(FolderEntity parentFolder, HTMLPageElement pageElement)
+                throws Exception {
+            return ObjectRepositoryController.getInstance().importWebElementFolder(
+                    HTMLElementUtil.convertPageElementToFolderEntity(pageElement, parentFolder), parentFolder);
+        }
     }
 }

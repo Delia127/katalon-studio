@@ -8,9 +8,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -77,8 +80,10 @@ import org.w3c.dom.NodeList;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
@@ -94,6 +99,7 @@ import com.kms.katalon.objectspy.constants.ObjectSpyPreferenceConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.core.HTMLElementCaptureServer;
 import com.kms.katalon.objectspy.core.InspectSession;
+import com.kms.katalon.objectspy.dialog.AddToObjectRepositoryDialog.AddToObjectRepositoryDialogResult;
 import com.kms.katalon.objectspy.element.DomElementXpath;
 import com.kms.katalon.objectspy.element.HTMLElement;
 import com.kms.katalon.objectspy.element.HTMLElement.HTMLStatus;
@@ -839,29 +845,39 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
     private void addElementToObjectRepository() throws Exception {
         AddToObjectRepositoryDialog addToObjectRepositoryDialog = new AddToObjectRepositoryDialog(getParentShell(),
                 true, elements, capturedObjectComposite.getElementTreeViewer().getExpandedElements());
-        if (addToObjectRepositoryDialog.open() == Window.OK) {
-            FolderTreeEntity targetFolderTreeEntity = (FolderTreeEntity) addToObjectRepositoryDialog.getFirstResult();
-            FolderEntity parentFolder = (FolderEntity) (targetFolderTreeEntity).getObject();
-            for (HTMLPageElement pageElement : addToObjectRepositoryDialog.getHtmlElements()) {
-                for (HTMLElement childElement : pageElement.getChildElements()) {
-                    addCheckedElement(childElement, parentFolder, null);
-                }
-            }
-            eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, targetFolderTreeEntity.getParent());
-            eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, targetFolderTreeEntity);
-            eventBroker.send(EventConstants.EXPLORER_EXPAND_TREE_ENTITY, targetFolderTreeEntity);
+        if (addToObjectRepositoryDialog.open() != Window.OK) {
+            return;
         }
+
+        Set<ITreeEntity> newSelectionOnExplorer = new HashSet<>();
+        AddToObjectRepositoryDialogResult folderSelectionResult = addToObjectRepositoryDialog.getDialogResult();
+        for (HTMLPageElement pageElement : addToObjectRepositoryDialog.getHtmlElements()) {
+            FolderTreeEntity pageElementTreeFolder = folderSelectionResult.createTreeFolderForPageElement(pageElement);
+            newSelectionOnExplorer.add(pageElementTreeFolder);
+            for (HTMLElement childElement : pageElement.getChildElements()) {
+                newSelectionOnExplorer.addAll(addCheckedElements(childElement, pageElementTreeFolder, null));
+            }
+        }
+
+        //Refresh tree explorer
+        eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, folderSelectionResult.getSelectedParentFolder());
+        eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEMS, newSelectionOnExplorer.toArray());
     }
 
-    private void addCheckedElement(HTMLElement element, FolderEntity parentFolder, WebElementEntity refElement)
-            throws Exception {
+    private Collection<ITreeEntity> addCheckedElements(HTMLElement element, FolderTreeEntity parentTreeFolder,
+            WebElementEntity refElement) throws Exception {
+        FolderEntity parentFolder = (FolderEntity) parentTreeFolder.getObject();
         WebElementEntity importedElement = ObjectRepositoryController.getInstance().importWebElement(
                 HTMLElementUtil.convertElementToWebElementEntity(element, refElement, parentFolder), parentFolder);
+
+        List<ITreeEntity> newTreeWebElements = new ArrayList<>();
+        newTreeWebElements.add(new WebElementTreeEntity(importedElement, parentTreeFolder));
         if (element instanceof HTMLFrameElement) {
             for (HTMLElement childElement : ((HTMLFrameElement) element).getChildElements()) {
-                addCheckedElement(childElement, parentFolder, importedElement);
+                newTreeWebElements.addAll(addCheckedElements(childElement, parentTreeFolder, importedElement));
             }
         }
+        return newTreeWebElements;
     }
 
     @Override

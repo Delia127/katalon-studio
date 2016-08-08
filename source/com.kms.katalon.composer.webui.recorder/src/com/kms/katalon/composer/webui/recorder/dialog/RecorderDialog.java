@@ -80,7 +80,6 @@ import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.osgi.framework.Bundle;
 
 import com.kms.katalon.composer.components.dialogs.AbstractDialogCellEditor;
-import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -103,6 +102,7 @@ import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.objectspy.components.CapturedHTMLElementsComposite;
 import com.kms.katalon.objectspy.dialog.AddToObjectRepositoryDialog;
+import com.kms.katalon.objectspy.dialog.AddToObjectRepositoryDialog.AddToObjectRepositoryDialogResult;
 import com.kms.katalon.objectspy.dialog.ObjectSpyDialog;
 import com.kms.katalon.objectspy.element.HTMLElement;
 import com.kms.katalon.objectspy.element.HTMLFrameElement;
@@ -158,7 +158,7 @@ public class RecorderDialog extends Dialog {
 
     private RecordSession session;
 
-    private FolderTreeEntity targetFolderTreeEntity;
+    private AddToObjectRepositoryDialogResult targetFolderSelectionResult;
 
     private CapturedHTMLElementsComposite capturedObjectComposite;
 
@@ -1234,9 +1234,9 @@ public class RecorderDialog extends Dialog {
     @Override
     protected void okPressed() {
         AddToObjectRepositoryDialog addToObjectRepositoryDialog = new AddToObjectRepositoryDialog(getParentShell(),
-                false, elements, capturedObjectComposite.getElementTreeViewer().getExpandedElements());
+                true, elements, capturedObjectComposite.getElementTreeViewer().getExpandedElements());
         if (addToObjectRepositoryDialog.open() == Window.OK) {
-            targetFolderTreeEntity = (FolderTreeEntity) addToObjectRepositoryDialog.getFirstResult();
+            targetFolderSelectionResult = addToObjectRepositoryDialog.getDialogResult();
             super.okPressed();
             dispose();
         }
@@ -1323,8 +1323,8 @@ public class RecorderDialog extends Dialog {
         return elements;
     }
 
-    public FolderTreeEntity getTargetFolderTreeEntity() {
-        return targetFolderTreeEntity;
+    public AddToObjectRepositoryDialogResult getTargetFolderTreeEntity() {
+        return targetFolderSelectionResult;
     }
 
 }
