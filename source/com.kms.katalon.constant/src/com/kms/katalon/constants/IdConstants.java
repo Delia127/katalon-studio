@@ -30,16 +30,38 @@ public interface IdConstants {
 
     public static final String DEBUG_TOOL_ITEM_ID = "com.kms.katalon.composer.execution.handledtoolitem.debug";
 
+    public static final String PERSPECTIVE_SWITCHER_TOOL_CONTROL_ID = "com.kms.katalon.composer.perspective.switcher";
+
     // Composer PartStack content
     public static final String COMPOSER_CONTENT_PARTSTACK_ID = "com.kms.katalon.composer.content";
 
-    public static final String CONSOLE_PARTSTACK_ID = "com.kms.katalon.partstack.console";
+    public static final String CONSOLE_PART_STACK_ID = "com.kms.katalon.partstack.console";
 
-    public static final String SYSTEM_CONSOLE_PART_ID = "org.eclipse.ui.console.ConsoleView";
+    public static final String ECLIPSE_CONSOLE_PART_ID = "org.eclipse.ui.console.ConsoleView";
 
     public static final String IDE_CONSOLE_LOG_PART_ID = "com.kms.katalon.partstack.console.log";
 
     public static final String IDE_SEARCH_PART_ID = "org.eclipse.search.ui.views.SearchView";
+
+    public static final String ECLIPSE_EXPRESSION_PART_ID = "org.eclipse.debug.ui.ExpressionView";
+
+    public static final String ECLIPSE_BREAKPOINT_PART_ID = "org.eclipse.debug.ui.BreakpointView";
+
+    public static final String ECLIPSE_VARIABLE_PART_ID = "org.eclipse.debug.ui.VariableView";
+
+    public static final String ECLIPSE_DEBUG_PART_ID = "org.eclipse.debug.ui.DebugView";
+
+    public static final String DEBUG_TOP_LEFT_PART_STACK_ID = "com.kms.katalon.partstack.debug.top.left";
+
+    public static final String DEBUG_TOP_RIGHT_PART_STACK_ID = "com.kms.katalon.partstack.debug.top.right";
+
+    public static final String DEBUG_PLACEHOLDER_ID = "com.kms.katalon.placeholder.debug.top.debug";
+
+    public static final String DEBUG_VARIABLE_PLACEHOLDER_ID = "com.kms.katalon.placeholder.debug.top.variable";
+
+    public static final String DEBUG_BREAKPOINT_PLACEHOLDER_ID = "com.kms.katalon.placeholder.debug.top.breakpoints";
+
+    public static final String DEBUG_EXPRESSION_PLACEHOLDER_ID = "com.kms.katalon.placeholder.debug.top.expressions";
 
     // Explorer part content
     public static final String EXPLORER_PART_ID = "com.kms.katalon.composer.part.explorer";
@@ -128,9 +150,9 @@ public interface IdConstants {
     public static final String KATALON_SELENIUM_BUNDLE_ID = "com.kms.katalon.selenium.server-standalone";
 
     public static final String KATALON_EXECUTION_BUNDLE_ID = "com.kms.katalon.execution";
-    
+
     public static final String KATALON_WEB_UI_OBJECT_SPY_BUNDLE_ID = "com.kms.katalon.composer.webui.objectspy";
-    
+
     public static final String KATALON_WEB_UI_RECORDER_BUNDLE_ID = "com.kms.katalon.composer.webui.recorder";
 
     public static final String XERCES_BUNDLE_ID = "org.apache.xerces.impl";

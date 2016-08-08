@@ -3,7 +3,6 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="__hDcsNLhEeSzh84VLg7gLQ" featurename="children" parentElementId="com.kms.katalon.partstack.outline">
     <elements xsi:type="basic:Part" xmi:id="_mDJpgNLiEeSzh84VLg7gLQ" elementId="com.kms.katalon.composer.global.part.GlobalVariableView" contributionURI="bundleclass://com.kms.katalon.composer.global/com.kms.katalon.composer.global.part.GlobalVariablePart" label="Global Variable" iconURI="platform:/plugin/com.kms.katalon.composer.global/icons/global_16.png">
       <tags>View</tags>
-      <tags>active</tags>
     </elements>
   </fragments>
 </fragment:ModelFragments>

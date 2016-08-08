@@ -2,22 +2,25 @@ package com.kms.katalon.composer.perspective;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.model.application.ui.advanced.MPerspective;
 import org.eclipse.e4.ui.model.application.ui.advanced.MPerspectiveStack;
+import org.eclipse.e4.ui.model.application.ui.advanced.MPlaceholder;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MTrimBar;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolControl;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -28,205 +31,201 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.eclipse.ui.IPerspectiveDescriptor;
-import org.eclipse.ui.IPerspectiveFactory;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.internal.WorkbenchPage;
-import org.eclipse.ui.internal.e4.compatibility.ModeledPageLayout;
-import org.eclipse.ui.internal.menus.MenuHelper;
-import org.eclipse.ui.internal.registry.PerspectiveDescriptor;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.composer.components.application.ApplicationSingleton;
-import com.kms.katalon.composer.components.services.ModelServiceSingleton;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.IdConstants;
 
-@SuppressWarnings("restriction")
 public class PerspectiveSwitcher {
 
-	@Inject
-	IEventBroker eventBroker;
+    private static final String ECLIPSE_MAIN_TOOLBAR_ID = "org.eclipse.ui.main.toolbar";
 
-	@Inject
-	EModelService modelService;
+    @Inject
+    IEventBroker eventBroker;
 
-	@Inject
-	private MWindow window;
+    @Inject
+    EModelService modelService;
 
-	@Inject
-	private EPartService partService;
+    @Inject
+    private MWindow window;
 
-	@Inject
-	private MApplication application;
+    @Inject
+    private EPartService partService;
 
-	private MToolControl psME;
-	private ToolBar toolbar;
+    @Inject
+    private MApplication application;
 
-	@PostConstruct
-	void init() {
-		eventBroker.subscribe(UIEvents.ElementContainer.TOPIC_SELECTEDELEMENT, selectionHandler);
-	}
+    private MToolControl perspectiveToolControl;
 
-	private EventHandler selectionHandler = new EventHandler() {
-		@Override
-		public void handleEvent(Event event) {
-			if (toolbar.isDisposed()) {
-				return;
-			}
+    private ToolBar toolbar;
 
-			MUIElement changedElement = (MUIElement) event.getProperty(UIEvents.EventTags.ELEMENT);
+    private void registerEvent() {
+        eventBroker.subscribe(UIEvents.ElementContainer.TOPIC_SELECTEDELEMENT, selectionHandler);
+    }
 
-			if (psME == null || !(changedElement instanceof MPerspectiveStack)) return;
+    private EventHandler selectionHandler = new EventHandler() {
+        @Override
+        public void handleEvent(Event event) {
+            if (toolbar.isDisposed()) {
+                return;
+            }
 
-			MWindow perspWin = modelService.getTopLevelWindowFor(changedElement);
-			MWindow switcherWin = modelService.getTopLevelWindowFor(psME);
-			if (perspWin != switcherWin) return;
+            MUIElement changedElement = (MUIElement) event.getProperty(UIEvents.EventTags.ELEMENT);
+            if (perspectiveToolControl == null || !(changedElement instanceof MPerspectiveStack)) {
+                return;
+            }
 
-			MPerspectiveStack perspStack = (MPerspectiveStack) changedElement;
-			if (!perspStack.isToBeRendered()) return;
+            MWindow perspWin = modelService.getTopLevelWindowFor(changedElement);
+            MWindow switcherWin = modelService.getTopLevelWindowFor(perspectiveToolControl);
+            if (perspWin != switcherWin) {
+                return;
+            }
 
-			MPerspective selElement = perspStack.getSelectedElement();
-			for (ToolItem ti : toolbar.getItems()) {
-				ti.setSelection(ti.getData() == selElement);
-			}
-		}
-	};
+            MPerspectiveStack perspStack = (MPerspectiveStack) changedElement;
+            if (!perspStack.isToBeRendered()) {
+                return;
+            }
 
-	private void addPerspectiveItem(MPerspective persp) {
-		ToolItem tltmNewItem = new ToolItem(toolbar, SWT.CHECK);
+            MPerspective selElement = perspStack.getSelectedElement();
+            for (ToolItem ti : toolbar.getItems()) {
+                ti.setSelection(ti.getData() == selElement);
+            }
+        }
+    };
 
-		tltmNewItem.setToolTipText(persp.getTooltip());
+    private void addPerspectiveItem(MPerspective perspective) {
+        ToolItem tltmNewItem = new ToolItem(toolbar, SWT.CHECK);
+        tltmNewItem.setToolTipText(perspective.getTooltip());
+        tltmNewItem.setText(perspective.getLabel());
 
-		if (persp.getIconURI() != null || !persp.getIconURI().isEmpty()) {
-			try {
-				ImageDescriptor image = ImageDescriptor.createFromURL(new URL(persp.getIconURI()));
-				if (image != null) {
-					tltmNewItem.setImage(image.createImage());
-				}
-				tltmNewItem.setText(persp.getLabel());
+        if (StringUtils.isNotBlank(perspective.getIconURI())) {
+            try {
+                ImageDescriptor image = ImageDescriptor.createFromURL(new URL(perspective.getIconURI()));
+                if (image != null) {
+                    tltmNewItem.setImage(image.createImage());
+                }
+            } catch (MalformedURLException e) {
+                LoggerSingleton.logError(e);
+            }
+        }
 
-			} catch (MalformedURLException e) {
-				tltmNewItem.setText(persp.getLabel());
-			}
-		} else {
-			tltmNewItem.setText(persp.getLabel());
-		}
+        tltmNewItem.setData(perspective);
 
-		tltmNewItem.setData(persp);
+        tltmNewItem.addSelectionListener(new SelectionAdapter() {
 
-		tltmNewItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				ToolItem selectedItem = (ToolItem) e.getSource();
-				if (!selectedItem.getSelection()) {
-					selectedItem.setSelection(true);
-					return;
-				}
-				activePerspective(selectedItem);
-			}
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                ToolItem selectedItem = (ToolItem) e.getSource();
+                if (!selectedItem.getSelection()) {
+                    selectedItem.setSelection(true);
+                    return;
+                }
+                activePerspective(selectedItem);
+            }
+        });
+    }
 
-		});
-	}
+    /**
+     * Active a perspective that is data of the given toolItem
+     * 
+     * @param toolItem
+     */
+    private void activePerspective(ToolItem toolItem) {
+        for (ToolItem childItem : toolbar.getItems()) {
+            childItem.setSelection(childItem.equals(toolItem));
+        }
 
-	/**
-	 * Active a perspective that is data of the given toolItem
-	 * 
-	 * @param toolItem
-	 */
-	private void activePerspective(ToolItem toolItem) {
+        MPerspective perspective = (MPerspective) toolItem.getData();
 
-		for (ToolItem childItem : toolbar.getItems()) {
-			if (!childItem.equals(toolItem)) {
-				childItem.setSelection(false);
-			}
-		}
+        MPerspectiveStack perspectiveStack = find(IdConstants.MAIN_PERSPECTIVE_STACK_ID, window);
+        if (perspectiveStack == null) {
+            return;
+        }
+        perspectiveStack.setSelectedElement(perspective);
 
-		MPerspective perspective = (MPerspective) toolItem.getData();
+        // remove redundancy tool items
+        MTrimBar toolControl = find(ECLIPSE_MAIN_TOOLBAR_ID, application);
+        if (toolControl != null) {
+            toolControl.getChildren().removeAll(toolControl.getPendingCleanup());
+        }
 
-		MPerspectiveStack stack = getPerspectiveStack();	
-		stack.setSelectedElement(perspective);
+        if (IdConstants.KEYWORD_PERSPECTIVE_ID.equals(perspective.getElementId())) {
+            eventBroker.post(EventConstants.EXPLORER_RELOAD_DATA, false);
+            return;
+        }
 
-		// remove redundancy tool items
-		MTrimBar toolControl = (MTrimBar) ModelServiceSingleton.getInstance().getModelService()
-				.find("org.eclipse.ui.main.toolbar", ApplicationSingleton.getInstance().getApplication());
-	
-		toolControl.getChildren().removeAll(toolControl.getPendingCleanup());
-	}
+        if (IdConstants.DEBUG_PERSPECTIVE_ID.equals(perspective.getElementId())) {
+            reopenPartsIfClosed(perspective);
+        }
+    }
 
-	private MPerspectiveStack getPerspectiveStack() {
-		List<MPerspectiveStack> psList = modelService.findElements(window, null, MPerspectiveStack.class, null);
-		if (psList.size() > 0) return psList.get(0);
-		return null;
-	}
+    public void reopenPartsIfClosed(MPerspective perspective) {
+        showPart(IdConstants.ECLIPSE_DEBUG_PART_ID, perspective);
+        showPart(IdConstants.ECLIPSE_VARIABLE_PART_ID, perspective);
+        showPart(IdConstants.ECLIPSE_BREAKPOINT_PART_ID, perspective);
+        showPart(IdConstants.ECLIPSE_EXPRESSION_PART_ID, perspective);
 
-	@PostConstruct
-	void createWidget(Composite parent, MToolControl toolControl) {
-		psME = toolControl;
-		Composite container = new Composite(parent, SWT.NONE);
-		container.setLayout(new GridLayout(2, false));
+        MPlaceholder consolePlaceholder = find(IdConstants.ECLIPSE_CONSOLE_PART_ID, perspective);
+        if (consolePlaceholder != null && !consolePlaceholder.isToBeRendered()) {
+            partService.showPart(consolePlaceholder.getElementId(), PartState.ACTIVATE);
+        }
+    }
 
-		Label label = new Label(container, SWT.SEPARATOR | SWT.VERTICAL);
-		GridData gd_label = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_label.heightHint = 24;
-		label.setLayoutData(gd_label);
-		toolbar = new ToolBar(container, SWT.FLAT | SWT.RIGHT);
+    private void showPart(String partId, MPerspective perspective) {
+        MPart part = find(partId, perspective);
+        if (part != null && part.getCurSharedRef() != null && !part.getCurSharedRef().isToBeRendered()) {
+            partService.showPart(part.getElementId(), PartState.ACTIVATE);
+        }
+    }
 
-		MPerspectiveStack stack = getPerspectiveStack();
+    @PostConstruct
+    void createWidget(Composite parent, MToolControl toolControl) {
+        perspectiveToolControl = toolControl;
+        Composite container = new Composite(parent, SWT.NONE);
+        container.setLayout(new GridLayout(2, false));
 
-		// add debug perspective into the current perspectiveStack
-		// IPerspectiveRegistry perspectiveRegistry =
-		// PlatformUI.getWorkbench().getPerspectiveRegistry();
-		// IPerspectiveDescriptor personalPerspectiveDescriptor =
-		// perspectiveRegistry
-		// .findPerspectiveWithId("org.eclipse.debug.ui.DebugPerspective");
-		//
-		// addPerspective(personalPerspectiveDescriptor, stack);
-		if (stack != null) {
-			// Create an item for each perspective that should show up
-			for (MPerspective persp : stack.getChildren()) {
-				if (persp.isToBeRendered()) {
-					addPerspectiveItem(persp);
-				}
-			}
-		}
-		toolbar.getItems()[0].setSelection(true);
-	}
+        Label label = new Label(container, SWT.SEPARATOR | SWT.VERTICAL);
+        GridData gdLabel = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        gdLabel.heightHint = 24;
+        label.setLayoutData(gdLabel);
+        toolbar = new ToolBar(container, SWT.FLAT | SWT.RIGHT);
 
-	@SuppressWarnings("unused")
-	private void addPerspective(IPerspectiveDescriptor perspective, MPerspectiveStack perspectives) {
-		MPerspective modelPerspective = (MPerspective) modelService.cloneSnippet(application, perspective.getId(),
-				window);
+        MPerspectiveStack perspectiveStack = find(IdConstants.MAIN_PERSPECTIVE_STACK_ID, window);
+        if (perspectiveStack == null) {
+            return;
+        }
 
-		if (modelPerspective == null) {
+        // Create an item for each perspective that should show up
+        for (MPerspective perspective : perspectiveStack.getChildren()) {
+            if (perspective.isToBeRendered()) {
+                addPerspectiveItem(perspective);
+            }
+        }
+        initialPerspectiveSelection();
+        registerEvent();
+    }
 
-			// couldn't find the perspective, create a new one
-			modelPerspective = modelService.createModelElement(MPerspective.class);
+    private void initialPerspectiveSelection() {
+        MPerspective activePerspective = modelService.getActivePerspective(window);
+        if (activePerspective == null) {
+            toolbar.getItems()[0].setSelection(true);
+            return;
+        }
 
-			// tag it with the same id
-			modelPerspective.setElementId(perspective.getId());
+        for (ToolItem item : toolbar.getItems()) {
+            item.setSelection(item.getText().equals(activePerspective.getLabel()));
+        }
+    }
 
-			// instantiate the perspective
-			IPerspectiveFactory factory = ((PerspectiveDescriptor) perspective).createFactory();
-			ModeledPageLayout modelLayout = new ModeledPageLayout(window, modelService, partService, modelPerspective,
-					perspective, (WorkbenchPage) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(),
-					true);
-			factory.createInitialLayout(modelLayout);
-		}
+    public ToolBar getToolbar() {
+        return toolbar;
+    }
 
-		modelPerspective.setLabel(perspective.getLabel());
-		modelPerspective.setTooltip(perspective.getLabel());
+    @SuppressWarnings("unchecked")
+    public <T> T find(String elementId, MUIElement where) {
+        return (T) modelService.find(elementId, where);
+    }
 
-		ImageDescriptor imageDescriptor = perspective.getImageDescriptor();
-		if (imageDescriptor != null) {
-			String imageURL = MenuHelper.getImageUrl(imageDescriptor);
-			modelPerspective.setIconURI(imageURL);
-		}
-
-		// Hide place-holders for parts that exist in the 'global' areas
-		modelService.hideLocalPlaceholders(window, modelPerspective);
-
-		// add it to the stack
-		perspectives.getChildren().add(modelPerspective);
-
-	}
 }

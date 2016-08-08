@@ -32,6 +32,7 @@ import com.kms.katalon.services.PerspectiveRestoreService;
  * This add-on will store the perspective states in the application snippet container. It will also register an
  * {@link PerspectiveRestoreService} implementation in the {@link IEclipseContext} of the application which is able to
  * restore them.
+ * 
  * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=404231#c6
  */
 /* EventTopic and IEclipseContext which are needed. */
@@ -58,24 +59,25 @@ public class PerspectiveResetAddon {
      * will do nothing.
      * </p>
      * 
-     * @param event the event send by the event broker
+     * @param object the event data send by the event broker
      * @param application the current application
      * @param modelService the model service of the application (used to find and create the snippets)
      */
     @Inject
     public void keepState(@Optional @UIEventTopic(EventConstants.WORKSPACE_CREATED) Object object,
             MApplication application, EModelService modelService) {
-
-        MUIElement perspectivePartStack = modelService.find(IdConstants.MAIN_PERSPECTIVE_STACK_ID, application);
-        MPerspective perspective = null;
-        if (perspectivePartStack instanceof MPerspectiveStack) {
-            perspective = ((MPerspectiveStack) perspectivePartStack).getSelectedElement();
+        MUIElement perspectiveStack = modelService.find(IdConstants.MAIN_PERSPECTIVE_STACK_ID, application);
+        if (!(perspectiveStack instanceof MPerspectiveStack)) {
+            return;
         }
-        if (perspective != null) {
-            if (modelService.findSnippet(application, perspective.getElementId()) == null) {
-                // no snippet exists so far, create a new one
-                modelService.cloneElement(perspective, application);
+
+        // backup all perspectives
+        for (MPerspective perspective : ((MPerspectiveStack) perspectiveStack).getChildren()) {
+            if (modelService.findSnippet(application, perspective.getElementId()) != null) {
+                continue;
             }
+            // no snippet exists so far, create a new one
+            modelService.cloneElement(perspective, application);
         }
     }
 
@@ -111,10 +113,10 @@ public class PerspectiveResetAddon {
          * </p>
          */
         public MPerspective reloadPerspective(String perspectiveID, MWindow window) {
-            if (window == null || perspectiveID == null) return null;
-
             EModelService modelService = appContext.get(EModelService.class);
-            if (modelService == null) return null;
+            if (window == null || perspectiveID == null || modelService == null) {
+                return null;
+            }
 
             MApplication application = appContext.get(MApplication.class);
 

@@ -1,21 +1,26 @@
 package com.kms.katalon.composer.handlers;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.e4.ui.model.application.ui.MElementContainer;
-import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.model.application.ui.advanced.MPerspective;
+import org.eclipse.e4.ui.model.application.ui.advanced.MPerspectiveStack;
+import org.eclipse.e4.ui.model.application.ui.advanced.MPlaceholder;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.model.application.ui.basic.MStackElement;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
+import org.eclipse.e4.ui.model.application.ui.menu.MToolControl;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
+import com.kms.katalon.composer.perspective.PerspectiveSwitcher;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.services.PerspectiveRestoreService;
@@ -27,6 +32,10 @@ import com.kms.katalon.services.PerspectiveRestoreService;
  *
  */
 public class ResetPerspectiveHandler extends AbstractHandler {
+
+    /** Alias of org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor.MODEL_ELEMENT_ID */
+    private static final String COMPATIBILITY_EDITOR_ID = "org.eclipse.e4.ui.compatibility.editor";
+
     @Inject
     private EModelService modelService;
 
@@ -35,83 +44,102 @@ public class ResetPerspectiveHandler extends AbstractHandler {
 
     private MWindow window;
 
+    private PerspectiveSwitcher switcher;
+
     @Override
     public boolean canExecute() {
         return true;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void execute() {
         window = application.getChildren().get(0);
 
+        // get current active perspective
         MPerspective perspective = modelService.getActivePerspective(window);
         if (perspective == null) {
             return;
         }
 
+        MToolControl toolControl = (MToolControl) modelService.find(IdConstants.PERSPECTIVE_SWITCHER_TOOL_CONTROL_ID,
+                application);
+        switcher = (PerspectiveSwitcher) toolControl.getObject();
+
         // get perspective stack
-        MElementContainer<MUIElement> perspectiveParent = perspective.getParent();
+        MPerspectiveStack perspectiveStack = switcher.find(IdConstants.MAIN_PERSPECTIVE_STACK_ID, window);
 
         // get application context
         IEclipseContext appContext = application.getContext();
 
+        // get perspective restore service
         PerspectiveRestoreService restoreService = appContext.get(PerspectiveRestoreService.class);
-        if (restoreService == null) {
+        if (perspective == null || perspectiveStack == null || restoreService == null) {
             return;
         }
 
         // restore the old state (will only work if an add-on added an PerspectiveRestoreService implementation)
-        MPerspective state = restoreService.reloadPerspective(perspective.getElementId(), window);
-        if (state != null) {
-            boolean wasPerspectiveActive = perspective.equals(perspective.getParent().getSelectedElement());
+        MPerspective cleanPerspective = restoreService.reloadPerspective(perspective.getElementId(), window);
+        if (cleanPerspective == null || !perspective.equals(perspectiveStack.getSelectedElement())) {
+            return;
+        }
 
-            // switch to perspective only if it was active
-            if (wasPerspectiveActive) {
-                IEclipseContext context = window.getContext();
-                if (context == null) {
-                    context = appContext;
-                }
-                EPartService partService = context.get(EPartService.class);
-                Collection<MPart> parts = partService.getParts();
+        IEclipseContext context = window.getContext();
+        if (context == null) {
+            context = appContext;
+        }
+        EPartService partService = context.get(EPartService.class);
+        Collection<MPart> parts = partService.getParts();
 
-                // Relocate IComposerPart
-                MUIElement composerPartStack = modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
-                MUIElement area = modelService.find(IdConstants.SHARE_AREA_ID, application);
-
-                // Move all opened entities back to composer area
-                for (MPart p : parts) {
-                    if (p.getElementId().startsWith("com.kms.katalon.composer.content.")
-                            && p.getElementId().endsWith(")")
-                            || "org.eclipse.e4.ui.compatibility.editor".equals(p.getElementId())) {
-
-                        if (modelService.find(p.getElementId(), area) == null) {
-                            // not in MArea
-                            ((MElementContainer<MUIElement>) composerPartStack).getChildren().add(p);
-                        }
-
-                    }
-                }
-
-                state.setToBeRendered(true);
-                perspectiveParent.getChildren().remove(0);
-                perspectiveParent.getChildren().add(0, state);
-                perspectiveParent.setSelectedElement(state);
-
-                partService.switchPerspective(state);
-
-                reselectParts(state, partService);
-
-                // reload explorer tree entities
-                eventBroker.post(EventConstants.EXPLORER_RELOAD_DATA, null);
+        // Relocate IComposerPart
+        MPartStack composerPartStack = switcher.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
+        MPlaceholder area = switcher.find(IdConstants.SHARE_AREA_ID, application);
+        List<MStackElement> composerPartStackChildren = composerPartStack.getChildren();
+        // Move all opened entities back to composer area
+        for (MPart p : parts) {
+            String elementId = p.getElementId();
+            if ((elementId.startsWith("com.kms.katalon.composer.content.") && elementId.endsWith(")") || COMPATIBILITY_EDITOR_ID.equals(elementId))
+                    && modelService.find(elementId, area) == null) {
+                // not in MArea
+                composerPartStackChildren.add(p);
             }
         }
+        if (composerPartStackChildren != null && !composerPartStackChildren.isEmpty()) {
+            // reselect the first tab
+            composerPartStack.setSelectedElement(composerPartStackChildren.get(0));
+        }
+
+        if (IdConstants.KEYWORD_PERSPECTIVE_ID.equals(perspective.getElementId())) {
+            cleanPerspective.setToBeRendered(true);
+            List<MPerspective> perspectives = perspectiveStack.getChildren();
+            int pIndex = perspectives.indexOf(perspective);
+            perspectives.remove(pIndex);
+            perspectives.add(pIndex, cleanPerspective);
+            perspectiveStack.setSelectedElement(cleanPerspective);
+            updatePerspectiveToolbar(pIndex, cleanPerspective);
+            partService.switchPerspective(cleanPerspective);
+            reselectParts(cleanPerspective, partService);
+
+            // reload explorer tree entities
+            eventBroker.post(EventConstants.EXPLORER_RELOAD_DATA, false);
+            return;
+        }
+
+        if (IdConstants.DEBUG_PERSPECTIVE_ID.equals(perspective.getElementId())) {
+            // relocate the shared parts back into positions
+            switcher.reopenPartsIfClosed(perspective);
+            relocatePartsBackIntoPosition(perspective);
+        }
+    }
+
+    private void updatePerspectiveToolbar(int pIndex, MPerspective perspective) {
+        ToolItem perspectiveItem = switcher.getToolbar().getItem(pIndex);
+        perspectiveItem.setData(perspective);
+        perspectiveItem.setSelection(true);
     }
 
     private void reselectParts(MPerspective perspective, EPartService ps) {
         // Explorer Part
-        MPartStack explorerPartStack = (MPartStack) modelService.find(IdConstants.COMPOSER_PARTSTACK_EXPLORER_ID,
-                perspective);
+        MPartStack explorerPartStack = switcher.find(IdConstants.COMPOSER_PARTSTACK_EXPLORER_ID, perspective);
         if (explorerPartStack != null && explorerPartStack.getChildren() != null
                 && !explorerPartStack.getChildren().isEmpty()) {
             MPart explorerPart = (MPart) explorerPartStack.getChildren().get(0);
@@ -120,21 +148,55 @@ public class ResetPerspectiveHandler extends AbstractHandler {
         }
 
         // Keyword Browser Part
-        MPartStack leftOutlinePartStack = (MPartStack) modelService.find(
-                IdConstants.COMPOSER_PARTSTACK_LEFT_OUTLINE_ID, perspective);
+        MPartStack leftOutlinePartStack = switcher.find(IdConstants.COMPOSER_PARTSTACK_LEFT_OUTLINE_ID, perspective);
         if (leftOutlinePartStack != null && leftOutlinePartStack.getChildren() != null
                 && !leftOutlinePartStack.getChildren().isEmpty()) {
-            MPart keywordBrowserPart = (MPart) leftOutlinePartStack.getChildren().get(0);
-            leftOutlinePartStack.setSelectedElement(keywordBrowserPart);
+            leftOutlinePartStack.setSelectedElement(leftOutlinePartStack.getChildren().get(0));
         }
 
         // Global Variable Part
-        MPartStack rightOutlinePartStack = (MPartStack) modelService.find(IdConstants.OUTLINE_PARTSTACK_ID, perspective);
+        MPartStack rightOutlinePartStack = switcher.find(IdConstants.OUTLINE_PARTSTACK_ID, perspective);
         if (rightOutlinePartStack != null && rightOutlinePartStack.getChildren() != null
                 && !rightOutlinePartStack.getChildren().isEmpty()) {
-            MPart globalVariablePart = (MPart) rightOutlinePartStack.getChildren().get(0);
-            rightOutlinePartStack.setSelectedElement(globalVariablePart);
+            rightOutlinePartStack.setSelectedElement(rightOutlinePartStack.getChildren().get(0));
         }
+    }
+
+    private void relocatePartsBackIntoPosition(MPerspective perspective) {
+        MPartStack topLeftPartStack = switcher.find(IdConstants.DEBUG_TOP_LEFT_PART_STACK_ID, perspective);
+        MPlaceholder debugPlaceholder = switcher.find(IdConstants.DEBUG_PLACEHOLDER_ID, perspective);
+        relocatePartPlaceholder(topLeftPartStack, debugPlaceholder, -1);
+
+        MPartStack topRightPartStack = switcher.find(IdConstants.DEBUG_TOP_RIGHT_PART_STACK_ID, perspective);
+        MPlaceholder variablePlaceholder = switcher.find(IdConstants.DEBUG_VARIABLE_PLACEHOLDER_ID, perspective);
+        relocatePartPlaceholder(topRightPartStack, variablePlaceholder, 0);
+
+        MPlaceholder breakpointsPlaceholder = switcher.find(IdConstants.DEBUG_BREAKPOINT_PLACEHOLDER_ID, perspective);
+        relocatePartPlaceholder(topRightPartStack, breakpointsPlaceholder, 1);
+
+        MPlaceholder expressionsPlaceholder = switcher.find(IdConstants.DEBUG_EXPRESSION_PLACEHOLDER_ID, perspective);
+        relocatePartPlaceholder(topRightPartStack, expressionsPlaceholder, 2);
+
+        MPartStack consolePartStack = switcher.find(IdConstants.CONSOLE_PART_STACK_ID, perspective);
+        MPlaceholder consolePlaceholder = switcher.find(IdConstants.ECLIPSE_CONSOLE_PART_ID, perspective);
+        relocatePartPlaceholder(consolePartStack, consolePlaceholder, -1);
+    }
+
+    /**
+     * @param parentPartStack the destination parent part stack
+     * @param childPlaceholder the placeholder wants to move
+     * @param childIndex childPlaceholder index. Put -1 index will be ignored.
+     */
+    private void relocatePartPlaceholder(MPartStack parentPartStack, MPlaceholder childPlaceholder, int childIndex) {
+        if (childPlaceholder.getParent().equals(parentPartStack)) {
+            return;
+        }
+        List<MStackElement> children = parentPartStack.getChildren();
+        if (childIndex == -1) {
+            children.add(childPlaceholder);
+            return;
+        }
+        children.add(childIndex, childPlaceholder);
     }
 
 }

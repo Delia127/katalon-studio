@@ -34,7 +34,7 @@ public class SearchHandler extends AbstractHandler {
 
         List<MPerspectiveStack> psList = modelService.findElements(application, null, MPerspectiveStack.class, null);
 
-        MPartStack consolePartStack = (MPartStack) modelService.find(IdConstants.CONSOLE_PARTSTACK_ID, psList.get(0)
+        MPartStack consolePartStack = (MPartStack) modelService.find(IdConstants.CONSOLE_PART_STACK_ID, psList.get(0)
                 .getSelectedElement());
 
         // set console partStack visible

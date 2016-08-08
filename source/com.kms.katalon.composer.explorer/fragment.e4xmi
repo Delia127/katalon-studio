@@ -13,6 +13,8 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_u8dKgBb7EeSOVencM6x_7w" featurename="children" parentElementId="com.kms.katalon.composer.partstack.explorer" positionInList="">
     <elements xsi:type="basic:Part" xmi:id="_1oZzMBb9EeSOVencM6x_7w" elementId="com.kms.katalon.composer.part.explorer" contributionURI="bundleclass://com.kms.katalon.composer.explorer/com.kms.katalon.composer.explorer.parts.ExplorerPart" label="Tests Explorer" iconURI="platform:/plugin/com.kms.katalon.composer.explorer/icons/project_16.png">
+      <tags>NoMove</tags>
+      <tags>NoClose</tags>
       <menus xsi:type="menu:PopupMenu" xmi:id="_xkKI0B3bEeS9B51WlLqF9g" elementId="com.kms.katalon.composer.explorer.popupmenu">
         <children xsi:type="menu:Menu" xmi:id="_OFWksB4ZEeS_4pHoXlVSlg" elementId="com.kms.katalon.composer.explorer.popupmenu.new" label="New"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_3XD7kB3bEeS9B51WlLqF9g" elementId="com.kms.katalon.composer.explorer.popupmenu.open" label="Open" command="_DfqvoB7uEeSCzrWY6RMEZw"/>
