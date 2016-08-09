@@ -204,41 +204,49 @@ public class FolderFileServiceManager {
     }
 
     public static List<FileEntity> getChildReportsOfFolder(FolderEntity parentFolderEntity) throws Exception {
-        if (parentFolderEntity != null) {
-            File parentFolderFile = new File(parentFolderEntity.getLocation());
-            if (parentFolderFile.exists() && parentFolderFile.isDirectory()) {
-                List<FileEntity> list = new ArrayList<FileEntity>();
-                boolean sortByDate = false;
-                for (File file : parentFolderFile.listFiles(EntityFileServiceManager.fileFilter)) {
-                    if (file.isDirectory()) {
-                        File reportFile = new File(file, ReportEntity.DF_LOG_FILE_NAME);
+        if (parentFolderEntity == null) {
+            return Collections.emptyList();
+        }
 
-                        String folderName = FilenameUtils.getBaseName(file.getName());
-                        File reportCollectionFile = new File(file, folderName + ReportCollectionEntity.FILE_EXTENSION);
-                        IReportDataProvider reportDataProvider = new FileServiceDataProviderSetting().getReportDataProvider();
-                        if (reportFile.exists()) {
-                            ReportEntity report = reportDataProvider.getReportEntity(file.getAbsolutePath());
-                            list.add(report);
-                            sortByDate = true;
-                        } else if (reportCollectionFile.exists()) {
-                            ReportCollectionEntity report = reportDataProvider.getReportCollectionEntity(reportCollectionFile.getAbsolutePath());
-                            list.add(report);
-                            sortByDate = false;
-                        } else {
-                            FileEntity fileEntity = EntityFileServiceManager.get(file);
-                            if (fileEntity != null && !getChildReportsOfFolder((FolderEntity) fileEntity).isEmpty()) {
-                                list.add(fileEntity);
-                            }
-                        }
-                    }
-                }
-                if (sortByDate) {
-                    ReportFileServiceManager.sortListByCreatedDate(list, true);
-                }
-                return list;
+        File parentFolderFile = new File(parentFolderEntity.getLocation());
+        if (!parentFolderFile.exists() || !parentFolderFile.isDirectory()) {
+            return Collections.emptyList();
+        }
+
+        List<FileEntity> list = new ArrayList<FileEntity>();
+        boolean sortByDate = false;
+        IReportDataProvider reportDataProvider = new FileServiceDataProviderSetting().getReportDataProvider();
+        for (File file : parentFolderFile.listFiles(EntityFileServiceManager.fileFilter)) {
+            if (!file.isDirectory()) {
+                continue;
+            }
+
+            String folderName = FilenameUtils.getBaseName(file.getName());
+
+            if (new File(file, ReportEntity.DF_LOG_FILE_NAME).exists()) {
+                ReportEntity report = reportDataProvider.getReportEntity(file.getAbsolutePath());
+                list.add(report);
+                sortByDate = true;
+                continue;
+            }
+
+            File reportCollectionFile = new File(file, folderName + ReportCollectionEntity.FILE_EXTENSION);
+            if (reportCollectionFile.exists()) {
+                ReportCollectionEntity report = reportDataProvider.getReportCollectionEntity(reportCollectionFile.getAbsolutePath());
+                list.add(report);
+                sortByDate = true;
+                continue;
+            }
+
+            FileEntity fileEntity = EntityFileServiceManager.get(file);
+            if (fileEntity != null && !getChildReportsOfFolder((FolderEntity) fileEntity).isEmpty()) {
+                list.add(fileEntity);
             }
         }
-        return Collections.emptyList();
+        if (sortByDate) {
+            ReportFileServiceManager.sortListByCreatedDate(list, true);
+        }
+        return list;
     }
 
     public static List<TestCaseEntity> getDescendantTestCasesOfFolder(FolderEntity folder) throws Exception {
