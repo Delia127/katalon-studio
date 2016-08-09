@@ -68,9 +68,12 @@ public class MobileDeviceDialog extends Dialog {
     private boolean isDisposed;
 
     private Point initialLocation;
+    
+    private MobileObjectSpyDialog objectSpyDialog;
 
-    public MobileDeviceDialog(Shell parentShell, Point location) {
+    public MobileDeviceDialog(Shell parentShell, MobileObjectSpyDialog objectSpyDialog, Point location) {
         super(parentShell);
+        this.objectSpyDialog = objectSpyDialog;
         this.initialLocation = location;
         setShellStyle(SWT.SHELL_TRIM | SWT.FILL | SWT.RESIZE);
         this.isDisposed = false;
@@ -102,13 +105,23 @@ public class MobileDeviceDialog extends Dialog {
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrImage.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent me) {
+            public void mousePressed(MouseEvent e) {
+                if (e.getButton() != MouseEvent.BUTTON1) {
+                    return;
+                }
+                inspectElementAt(e.getX(), e.getY());
             }
         });
         frame.add(new AlphaContainer(scrImage));
         frame.pack();
 
         return mainContainer;
+    }
+
+    private void inspectElementAt(int x, int y) {
+        Double realX = x / wRatio;
+        Double realY = y / hRatio;
+        objectSpyDialog.setSelectedElementByLocation(safeRoundDouble(realX), safeRoundDouble(realY));
     }
 
     public void highlight(final double x, final double y, final double width, final double height) {
@@ -299,7 +312,7 @@ public class MobileDeviceDialog extends Dialog {
         return initialLocation;
     }
 
-    private int safeRoundDouble(double d) {
+    public static int safeRoundDouble(double d) {
         long rounded = Math.round(d);
         return (int) Math.max(Integer.MIN_VALUE, Math.min(Integer.MAX_VALUE, rounded));
     }
