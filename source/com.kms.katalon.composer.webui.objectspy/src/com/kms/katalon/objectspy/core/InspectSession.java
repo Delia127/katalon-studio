@@ -232,7 +232,7 @@ public class InspectSession implements Runnable {
         }
         generateVariableInitFileForChrome(chromeExtensionFolder);
         ChromeOptions options = new ChromeOptions();
-        options.addArguments(LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getAbsolutePath());
+        options.addArguments(LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getAbsolutePath(), WebDriverPropertyUtil.CHROME_SWITCHES, WebDriverPropertyUtil.DISABLE_EXTENSIONS);
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability(ChromeOptions.CAPABILITY, options);
         return capabilities;
