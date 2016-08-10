@@ -52,6 +52,8 @@ import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
@@ -229,6 +231,16 @@ public class ExplorerPart {
                     if (e.keyCode == 'c') {
                         CopyHandler.getInstance().execute();
                     }
+                }
+            }
+        });
+
+        treeViewer.getTree().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseDown(MouseEvent e) {
+                MPart activePart = partService.getActivePart();
+                if (activePart == null || !IdConstants.EXPLORER_PART_ID.equals(activePart.getElementId())) {
+                    partService.activate(partService.findPart(IdConstants.EXPLORER_PART_ID));
                 }
             }
         });
