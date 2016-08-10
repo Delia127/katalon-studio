@@ -31,8 +31,12 @@ import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TreePath;
@@ -65,6 +69,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
@@ -80,6 +86,7 @@ import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.osgi.framework.Bundle;
 
 import com.kms.katalon.composer.components.dialogs.AbstractDialogCellEditor;
+import com.kms.katalon.composer.components.impl.control.DropdownToolItemSelectionListener;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -163,6 +170,8 @@ public class RecorderDialog extends Dialog {
     private CapturedHTMLElementsComposite capturedObjectComposite;
 
     private WebUIDriverType selectedBrowser;
+
+    private ToolItem tltmDelete;
 
     /**
      * Create the dialog.
@@ -303,31 +312,30 @@ public class RecorderDialog extends Dialog {
         startServer(ANY_PORT_NUMBER);
     }
 
-    class DropdownSelectionListener extends SelectionAdapter {
+    class StartItemDropdownSelectionListener extends DropdownToolItemSelectionListener {
+
         private Menu menu;
 
-        public DropdownSelectionListener(Menu menu) {
+        public StartItemDropdownSelectionListener(Menu menu) {
             this.menu = menu;
         }
 
-        public void widgetSelected(SelectionEvent event) {
-            if (event.detail == SWT.ARROW) {
-                ToolItem item = (ToolItem) event.widget;
-                Rectangle rect = item.getBounds();
-                Point pt = item.getParent().toDisplay(new Point(rect.x, rect.y));
-                menu.setLocation(pt.x, pt.y + rect.height);
-                menu.setVisible(true);
-            } else if (event.widget instanceof ToolItem) {
-                ToolItem item = (ToolItem) event.widget;
-                if (item.getText().equals(StringConstants.INSTANT_BROWSER_PREFIX)) {
-                    startBrowser(true);
-                    return;
-                }
-                if (item.getText().equals(START_TOOL_ITEM_LABEL)) {
-                    changeBrowser(WebUIDriverType.FIREFOX_DRIVER);
-                }
-                startBrowser();
+        @Override
+        protected Menu getMenu() {
+            return menu;
+        }
+        
+        @Override
+        protected void centerWigetSelected(SelectionEvent event) {
+            ToolItem item = (ToolItem) event.widget;;
+            if (item.getText().equals(StringConstants.INSTANT_BROWSER_PREFIX)) {
+                startBrowser(true);
+                return;
             }
+            if (item.getText().equals(START_TOOL_ITEM_LABEL)) {
+                changeBrowser(WebUIDriverType.FIREFOX_DRIVER);
+            }
+            startBrowser();
         }
     }
 
@@ -500,6 +508,73 @@ public class RecorderDialog extends Dialog {
         });
     }
 
+    private void createDeleteItem(Item deleteMenuItem) {
+        deleteMenuItem.setText(StringConstants.DELETE);
+        deleteMenuItem.addListener(SWT.Selection, new Listener() {
+            @Override
+            public void handleEvent(Event event) {
+                if (actionTableViewer.getSelection() instanceof IStructuredSelection) {
+                    IStructuredSelection selection = (IStructuredSelection) actionTableViewer.getSelection();
+                    for (Object selectedObject : selection.toArray()) {
+                        if (selectedObject instanceof HTMLActionMapping) {
+                            HTMLActionMapping selectedActionMapping = (HTMLActionMapping) selectedObject;
+                            recordedActions.remove(selectedActionMapping);
+                        }
+                    }
+                    actionTableViewer.refresh();
+                }
+            }
+        });
+    }
+
+    private void createAddActionItem(Item addActionMenuItem) {
+        addActionMenuItem.setText(StringConstants.DIA_MENU_ADD_BASIC_ACTION);
+        addActionMenuItem.addListener(SWT.Selection, new Listener() {
+            @Override
+            public void handleEvent(Event event) {
+               addDefaultAction(getFirstSelectedHTMLAction());
+            }
+        });
+    }
+    
+    private void createAddValidationPointItem(Item addValidationPointMenuItem) {
+        addValidationPointMenuItem.setText(StringConstants.DIA_MENU_ADD_VALIDATION_POINT);
+        addValidationPointMenuItem.addListener(SWT.Selection, new Listener() {
+            @Override
+            public void handleEvent(Event event) {
+                HTMLActionMapping firstSelectedHTMLAction = getFirstSelectedHTMLAction();
+                addValidationPoint(firstSelectedHTMLAction != null ? firstSelectedHTMLAction.getTargetElement() : null,
+                        firstSelectedHTMLAction);
+            }
+        });
+    }
+
+    private void createAddSynchronizationItem(Item addSynchronizationPointMenuItem) {
+        addSynchronizationPointMenuItem.setText(StringConstants.DIA_MENU_ADD_SYNCHRONIZE_POINT);
+        addSynchronizationPointMenuItem.addListener(SWT.Selection, new Listener() {
+            @Override
+            public void handleEvent(Event event) {
+                HTMLActionMapping firstSelectedHTMLAction = getFirstSelectedHTMLAction();
+                addSynchonizationPoint(firstSelectedHTMLAction != null ? firstSelectedHTMLAction.getTargetElement() : null,
+                        firstSelectedHTMLAction);
+            }
+        });
+    }
+    
+    private HTMLActionMapping getFirstSelectedHTMLAction() {
+        ISelection selection = actionTableViewer.getSelection();
+        if (!(selection instanceof IStructuredSelection)) {
+            return null;
+        }
+
+        IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+        Object firstElement = structuredSelection.getFirstElement();
+        if (firstElement instanceof HTMLActionMapping) {
+            return (HTMLActionMapping) firstElement;
+        }
+        return null;
+    }
+
     protected void addContextMenuForActionTable() {
         actionTableViewer.getTable().addListener(SWT.MenuDetect, new Listener() {
             public void handleEvent(org.eclipse.swt.widgets.Event event) {
@@ -509,13 +584,11 @@ public class RecorderDialog extends Dialog {
                 }
 
                 Point point = Display.getCurrent().map(null, actionTableViewer.getTable(), event.x, event.y);
-                final TableItem tableItem = actionTableViewer.getTable().getItem(point);
-                if (tableItem == null) {
+                if (actionTableViewer.getTable().getItem(point) == null) {
                     return;
-                } else {
-                    menu = new Menu(actionTableViewer.getTable());
                 }
 
+                menu = new Menu(actionTableViewer.getTable());
                 createDeleteActionContextMenu(menu);
                 createAddValidationPointContextMenu(menu);
                 createAddSynchronizePointContextMenu(menu);
@@ -524,54 +597,17 @@ public class RecorderDialog extends Dialog {
 
             private void createDeleteActionContextMenu(Menu menu) {
                 MenuItem deleteMenuItem = new MenuItem(menu, SWT.PUSH);
-                deleteMenuItem.setText(StringConstants.DELETE);
-                deleteMenuItem.addSelectionListener(new SelectionAdapter() {
-                    @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        if (actionTableViewer.getSelection() instanceof IStructuredSelection) {
-                            IStructuredSelection selection = (IStructuredSelection) actionTableViewer.getSelection();
-                            for (Object selectedObject : selection.toArray()) {
-                                if (selectedObject instanceof HTMLActionMapping) {
-                                    HTMLActionMapping selectedActionMapping = (HTMLActionMapping) selectedObject;
-                                    recordedActions.remove(selectedActionMapping);
-                                }
-                            }
-                            actionTableViewer.refresh();
-                        }
-                    }
-                });
+                createDeleteItem(deleteMenuItem);
             }
 
             private void createAddValidationPointContextMenu(Menu menu) {
                 MenuItem addValidationPointMenuItem = new MenuItem(menu, SWT.PUSH);
-                addValidationPointMenuItem.setText(StringConstants.DIA_MENU_ADD_VALIDATION_POINT);
-                addValidationPointMenuItem.addSelectionListener(new SelectionAdapter() {
-                    @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        if (actionTableViewer.getSelection() instanceof IStructuredSelection) {
-                            IStructuredSelection selection = (IStructuredSelection) actionTableViewer.getSelection();
-                            if (selection.getFirstElement() instanceof HTMLActionMapping) {
-                                addValidationPoint((HTMLActionMapping) selection.getFirstElement());
-                            }
-                        }
-                    }
-                });
+                createAddValidationPointItem(addValidationPointMenuItem);
             }
 
             private void createAddSynchronizePointContextMenu(Menu menu) {
-                MenuItem addValidationPointMenuItem = new MenuItem(menu, SWT.PUSH);
-                addValidationPointMenuItem.setText(StringConstants.DIA_MENU_ADD_SYNCHRONIZE_POINT);
-                addValidationPointMenuItem.addSelectionListener(new SelectionAdapter() {
-                    @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        if (actionTableViewer.getSelection() instanceof IStructuredSelection) {
-                            IStructuredSelection selection = (IStructuredSelection) actionTableViewer.getSelection();
-                            if (selection.getFirstElement() instanceof HTMLActionMapping) {
-                                addSynchonizationPoint((HTMLActionMapping) selection.getFirstElement());
-                            }
-                        }
-                    }
-                });
+                MenuItem addSynchronizationPointMenuItem = new MenuItem(menu, SWT.PUSH);
+                createAddSynchronizationItem(addSynchronizationPointMenuItem);
             }
         });
     }
@@ -676,10 +712,6 @@ public class RecorderDialog extends Dialog {
         addAction(HTMLActionUtil.getDefaultValidationAction(), element, windowId, addIndex);
     }
 
-    private void addValidationPoint(HTMLActionMapping selectedHTMLActionMapping) {
-        addValidationPoint(selectedHTMLActionMapping.getTargetElement(), selectedHTMLActionMapping);
-    }
-
     private void addValidationPoint(HTMLElement element) {
         addValidationPoint(element, recordedActions.size() > 0 ? recordedActions.get(recordedActions.size() - 1) : null);
     }
@@ -691,13 +723,19 @@ public class RecorderDialog extends Dialog {
         addAction(HTMLActionUtil.getDefaultSynchronizeAction(), element, windowId, addIndex);
     }
 
-    private void addSynchonizationPoint(HTMLActionMapping selectedHTMLActionMapping) {
-        addSynchonizationPoint(selectedHTMLActionMapping.getTargetElement(), selectedHTMLActionMapping);
-    }
-
     private void addSynchonizationPoint(HTMLElement element) {
         addSynchonizationPoint(element, recordedActions.size() > 0 ? recordedActions.get(recordedActions.size() - 1)
                 : null);
+    }
+    
+    private void addDefaultAction(HTMLActionMapping selectedHTMLActionMapping) {
+        IHTMLAction defaultHTMLAction = HTMLActionUtil.getAllHTMLActions().get(0);
+        addAction(
+                defaultHTMLAction,
+                selectedHTMLActionMapping != null ? selectedHTMLActionMapping.getTargetElement() : null,
+                selectedHTMLActionMapping != null ? selectedHTMLActionMapping.getWindowId() : null,
+                selectedHTMLActionMapping != null ? recordedActions.indexOf(selectedHTMLActionMapping) + 1 
+                        : Math.max(0, recordedActions.size() - 1));
     }
 
     private void addAction(IHTMLAction newAction, HTMLElement element, String windowId, int selectedActionIndex) {
@@ -712,6 +750,8 @@ public class RecorderDialog extends Dialog {
             recordedActions.add(newActionMapping);
         }
         actionTableViewer.refresh();
+        actionTableViewer.setSelection(new StructuredSelection(newActionMapping));
+        actionTableViewer.getTable().setFocus();
     }
 
     private void removeDeletedElementsFromAction(HTMLElement element) {
@@ -724,11 +764,51 @@ public class RecorderDialog extends Dialog {
         actionTableViewer.refresh();
     }
 
-    private void createRightPanel(Composite parent) {
+    private void createActionToolbar(Composite parent) {
+        ToolBar actionToolBar = new ToolBar(parent, SWT.FLAT | SWT.RIGHT);
+        actionToolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
+        ToolItem tltmAdd = new ToolItem(actionToolBar, SWT.DROP_DOWN);
+        tltmAdd.setImage(ImageConstants.IMG_24_ADD);
+        tltmAdd.setText(StringConstants.ADD);
+        tltmAdd.addSelectionListener(new DropdownToolItemSelectionListener() {
+            @Override
+            protected Menu getMenu() {
+                Menu addMenu = new Menu(getShell());
+
+                MenuItem addActionItem = new MenuItem(addMenu, SWT.PUSH);
+                createAddActionItem(addActionItem);
+
+                MenuItem addValidationPointItem = new MenuItem(addMenu, SWT.PUSH);
+                createAddValidationPointItem(addValidationPointItem);
+
+                MenuItem addSynchronizationPointItem = new MenuItem(addMenu, SWT.PUSH);
+                createAddSynchronizationItem(addSynchronizationPointItem);
+                return addMenu;
+            }
+        });
+
+        tltmDelete = new ToolItem(actionToolBar, SWT.PUSH);
+        tltmDelete.setImage(ImageConstants.IMG_24_DELETE);
+        tltmDelete.setEnabled(false);
+        createDeleteItem(tltmDelete);
+    }
+
+    private boolean isAnyTableItemSelected() {
+        if (actionTableViewer == null) {
+            return false;
+        }
+
+        ISelection selection = actionTableViewer.getSelection();
+        return selection != null && !selection.isEmpty();
+    }
+
+    private void createRightPanel(Composite parent) {
         Label lblRecordedActions = new Label(parent, SWT.NONE);
         lblRecordedActions.setFont(getFontBold(lblRecordedActions));
         lblRecordedActions.setText(StringConstants.DIA_LBL_RECORED_ACTIONS);
+
+        createActionToolbar(parent);
 
         Composite tableComposite = new Composite(parent, SWT.None);
         tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -994,11 +1074,18 @@ public class RecorderDialog extends Dialog {
                 return false;
             }
         });
-
         actionTableViewer.setInput(recordedActions);
         addContextMenuForActionTable();
         hookDragEvent();
         hookDropEvent();
+
+        actionTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                tltmDelete.setEnabled(isAnyTableItemSelected());
+            }
+        });
     }
 
     private void createToolbar(Composite parent) {
@@ -1018,7 +1105,7 @@ public class RecorderDialog extends Dialog {
 
         createInstantBrowserMenu(browserMenu);
 
-        toolItemBrowserDropdown.addSelectionListener(new DropdownSelectionListener(browserMenu));
+        toolItemBrowserDropdown.addSelectionListener(new StartItemDropdownSelectionListener(browserMenu));
 
         tltmPause = new ToolItem(toolBar, SWT.PUSH);
         tltmPause.setText(PAUSE_TOOL_ITEM_LABEL);
