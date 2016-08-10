@@ -4,6 +4,7 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.swt.widgets.Composite;
 
 public abstract class TypeCheckedEditingSupport<T> extends EditingSupport {
 
@@ -83,4 +84,9 @@ public abstract class TypeCheckedEditingSupport<T> extends EditingSupport {
         columnIndex = cell.getColumnIndex();
         super.saveCellEditorValue(cellEditor, cell);
     }
+    
+    protected Composite getComposite() {
+        return (Composite) getViewer().getControl();
+    }
+    
 }

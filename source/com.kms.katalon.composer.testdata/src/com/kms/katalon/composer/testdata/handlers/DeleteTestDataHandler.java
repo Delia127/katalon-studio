@@ -143,7 +143,7 @@ public class DeleteTestDataHandler extends AbstractDeleteReferredEntityHandler {
                         }
 
                         variableLink.setTestDataLinkId(StringConstants.EMPTY);
-                        variableLink.setType(VariableType.SCRIPT);
+                        variableLink.setType(VariableType.DEFAULT);
                         variableLink.setValue(StringConstants.EMPTY);
                     }
                 }

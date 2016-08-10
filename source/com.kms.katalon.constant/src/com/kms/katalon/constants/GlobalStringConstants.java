@@ -63,6 +63,7 @@ public class GlobalStringConstants {
     public static final String CR_RIGHT_PARENTHESIS = ")";
     public static final String CR_PRIME = "'";
     public static final String CR_DOUBLE_PRIMES = "\"";
+    public static final String CR_SPACE = " ";
 
     // Common action use
     public static final String ADD = "Add";
@@ -161,6 +162,8 @@ public class GlobalStringConstants {
 
     public static final String NAME = "Name";
 
+    public static final String TYPE = "Type";
+    
     public static final String VALUE = "Value";
 
     public static final String IMAGE = "Image";

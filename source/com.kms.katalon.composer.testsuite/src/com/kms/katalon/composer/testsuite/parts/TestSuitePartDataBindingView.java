@@ -166,7 +166,7 @@ public class TestSuitePartDataBindingView {
         tableLayout.setColumnData(tblclmnVariableNo, new ColumnWeightData(0, 40));
         tableLayout.setColumnData(tblclmnVariableName, new ColumnWeightData(15, 90));
         tableLayout.setColumnData(tblclmnVaribaleDefaultValue, new ColumnWeightData(0, 90));
-        tableLayout.setColumnData(tblclmnVariableType, new ColumnWeightData(0, 100));
+        tableLayout.setColumnData(tblclmnVariableType, new ColumnWeightData(0, 120));
         tableLayout.setColumnData(tblclmnTestDataLinkId, new ColumnWeightData(30, 100));
         tableLayout.setColumnData(tblclmnVariableValue, new ColumnWeightData(15, 90));
         compositeVariableTable.setLayout(tableLayout);

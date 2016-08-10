@@ -13,7 +13,6 @@ import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.testdata.TestData;
 import com.kms.katalon.entity.link.TestDataCombinationType;
 import com.kms.katalon.entity.link.VariableLink;
-import com.kms.katalon.entity.link.VariableLink.VariableType;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.entity.TestCaseExecutedEntity;
 import com.kms.katalon.execution.entity.TestDataExecutedEntity;
@@ -110,10 +109,6 @@ public class TestCaseBindingStringBuilder {
         return testDataExecutedEntity.getRowIndexes()[rowIndex];
     }
 
-    private boolean isDefaultValueUsed(VariableLink variableLink) {
-        return (variableLink.getType() == VariableType.SCRIPT) && StringUtils.isEmpty(variableLink.getValue());
-    }
-
     private String getVariableValue(String variableName, VariableLink variableLink, Map<String, TestData> testDataMap)
             throws SyntaxErrorException {
         String variableValue = variableLink.getValue();
@@ -125,8 +120,10 @@ public class TestCaseBindingStringBuilder {
                 case DATA_COLUMN_INDEX:
                     variableValue = getValueByColumnIndex(variableName, variableLink, testDataMap);
                     break;
-                case SCRIPT:
-                    variableValue = getValueForScript(variableName, variableLink);
+                case DEFAULT:
+                    variableValue = null;
+                    break;
+                case SCRIPT_VARIABLE:
                     break;
                 default:
                     throw new NotImplementedException(variableLink.getType().name());
@@ -138,15 +135,6 @@ public class TestCaseBindingStringBuilder {
             throw new SyntaxErrorException(
                     getErrorSyntaxMessageWithReason(variableName, variableValue, ex.getMessage()));
         }
-    }
-
-    private String getValueForScript(String variableName, VariableLink variableLink) throws SyntaxErrorException {
-        String variableValue = variableLink.getValue();
-        if (isDefaultValueUsed(variableLink)) {
-            // use default value, don't append anything
-            return null;
-        }
-        return variableValue;
     }
 
     private String getValueByColumnName(String variableName, VariableLink variableLink,
