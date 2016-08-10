@@ -51,7 +51,7 @@ public class StringConstants extends GlobalStringConstants {
     // NewProjectDialog
     public static final String VIEW_TITLE_NEW_PROJ = "New Project";
 
-    public static final String VIEW_TITLE_UPDATE_PROJ = "Update Project";
+    public static final String VIEW_TITLE_PROJECT_PROPERTIES = "Project Properties";
 
     public static final String VIEW_MSG_PLS_ENTER_PROJ_INFO = "Please enter project information";
 

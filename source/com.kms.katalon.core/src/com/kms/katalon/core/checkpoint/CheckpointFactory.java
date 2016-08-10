@@ -39,6 +39,8 @@ public class CheckpointFactory {
 
     private static final String NODE_IS_FROM_TEST_DATA = "is-from-test-data";
 
+    private static final String NODE_SOURCE_INFO = "source-info";
+
     private static final String NODE_DATA = "checkpoint-data";
 
     private static final String NODE_TAKEN_DATE = "taken-date";
@@ -85,13 +87,15 @@ public class CheckpointFactory {
             Document document = reader.read(checkpointFile);
             Element checkpointElement = document.getRootElement();
 
-            validateElementName(checkpointElement, NODE_IS_FROM_TEST_DATA);
+            validateElementName(checkpointElement, NODE_SOURCE_INFO);
             validateElementName(checkpointElement, NODE_DATA);
             validateElementName(checkpointElement, NODE_TAKEN_DATE);
-            validateElementName(checkpointElement, NODE_SOURCE_URL);
+            Element sourceInfoElement = checkpointElement.element(NODE_SOURCE_INFO);
+            validateElementName(sourceInfoElement, NODE_IS_FROM_TEST_DATA);
+            validateElementName(sourceInfoElement, NODE_SOURCE_URL);
 
-            boolean isFromTestData = Boolean.parseBoolean(checkpointElement.element(NODE_IS_FROM_TEST_DATA).getText());
-            String sourceUrl = checkpointElement.element(NODE_SOURCE_URL).getText();
+            boolean isFromTestData = Boolean.parseBoolean(sourceInfoElement.element(NODE_IS_FROM_TEST_DATA).getText());
+            String sourceUrl = sourceInfoElement.element(NODE_SOURCE_URL).getText();
             Date takenDate = new SimpleDateFormat(TAKEN_DATE_FORMAT).parse(checkpointElement.element(NODE_TAKEN_DATE)
                     .getText());
 
@@ -107,12 +111,12 @@ public class CheckpointFactory {
             // source data is from Test Data
             if (isFromTestData) {
                 logger.logInfo(MessageFormat.format(StringConstants.INFO_MSG_CHECKPOINT_HAS_SOURCE_FROM_X, TEST_DATA));
-                return updateSourceData(checkpoint, getTestData(checkpointElement, sourceUrl));
+                return updateSourceData(checkpoint, getTestData(sourceUrl));
             }
 
             // otherwise, external data source will be used
-            validateElementName(checkpointElement, NODE_SOURCE_TYPE);
-            String sourceType = checkpointElement.element(NODE_SOURCE_TYPE).getText();
+            validateElementName(sourceInfoElement, NODE_SOURCE_TYPE);
+            String sourceType = sourceInfoElement.element(NODE_SOURCE_TYPE).getText();
             if (!ArrayUtils.contains(SUPPORTED_TEST_DATA_TYPES, sourceType)) {
                 throw new IllegalArgumentException(MessageFormat.format(
                         StringConstants.EXC_MSG_CHECKPOINT_INVALID_SOURCE_TYPE, sourceType));
@@ -124,17 +128,17 @@ public class CheckpointFactory {
 
             // source data is from Database
             if (testDataSourceType == TestDataType.DB_DATA) {
-                return updateSourceData(checkpoint, getDBData(checkpointElement, sourceUrl));
+                return updateSourceData(checkpoint, getDBData(sourceInfoElement, sourceUrl));
             }
 
-            validateElementName(checkpointElement, NODE_USING_FIRST_ROW_AS_HEADER);
-            validateElementName(checkpointElement, NODE_SHEETNAME_SEPARATOR);
-            validateElementName(checkpointElement, NODE_USING_RELAITVE_PATH);
+            validateElementName(sourceInfoElement, NODE_USING_FIRST_ROW_AS_HEADER);
+            validateElementName(sourceInfoElement, NODE_SHEETNAME_SEPARATOR);
+            validateElementName(sourceInfoElement, NODE_USING_RELAITVE_PATH);
 
-            boolean isUsingFirstRowAsHeader = Boolean.parseBoolean(checkpointElement.element(
+            boolean isUsingFirstRowAsHeader = Boolean.parseBoolean(sourceInfoElement.element(
                     NODE_USING_FIRST_ROW_AS_HEADER).getText());
-            String sheetNameOrSeparator = checkpointElement.element(NODE_SHEETNAME_SEPARATOR).getText();
-            boolean isUsingRelativePath = Boolean.parseBoolean(checkpointElement.element(NODE_USING_RELAITVE_PATH)
+            String sheetNameOrSeparator = sourceInfoElement.element(NODE_SHEETNAME_SEPARATOR).getText();
+            boolean isUsingRelativePath = Boolean.parseBoolean(sourceInfoElement.element(NODE_USING_RELAITVE_PATH)
                     .getText());
             sourceUrl = getSourcePath(sourceUrl, isUsingRelativePath);
 
@@ -171,7 +175,7 @@ public class CheckpointFactory {
         return checkpoint;
     }
 
-    private static List<List<Object>> getTestData(Element checkpointElement, String testDataId) throws Exception {
+    private static List<List<Object>> getTestData(String testDataId) throws Exception {
         TestData testData = TestDataFactory.findTestData(testDataId);
         if (testData == null) {
             throw new IllegalArgumentException(MessageFormat.format(
@@ -180,9 +184,9 @@ public class CheckpointFactory {
         return testData.getAllData();
     }
 
-    private static List<List<Object>> getDBData(Element checkpointElement, String query) throws Exception {
-        validateElementName(checkpointElement, NODE_DB_QUERY);
-        DatabaseConnection dbConnection = getDatabaseConnection(checkpointElement);
+    private static List<List<Object>> getDBData(Element sourceInfoElement, String query) throws Exception {
+        validateElementName(sourceInfoElement, NODE_DB_QUERY);
+        DatabaseConnection dbConnection = getDatabaseConnection(sourceInfoElement);
         if (dbConnection == null) {
             throw new IllegalArgumentException(StringConstants.EXC_MSG_DB_CONNECTION_SETTIGNS_ARE_EMPTY);
         }
@@ -220,29 +224,29 @@ public class CheckpointFactory {
         }
     }
 
-    private static DatabaseConnection getDatabaseConnection(Element checkpointElement) throws Exception {
-        validateElementName(checkpointElement, NODE_USING_GLOBAL_DB_SETTING);
-        boolean isUsingGlobalDBSetting = Boolean.parseBoolean(checkpointElement.element(NODE_USING_GLOBAL_DB_SETTING)
+    private static DatabaseConnection getDatabaseConnection(Element sourceInfoElement) throws Exception {
+        validateElementName(sourceInfoElement, NODE_USING_GLOBAL_DB_SETTING);
+        boolean isUsingGlobalDBSetting = Boolean.parseBoolean(sourceInfoElement.element(NODE_USING_GLOBAL_DB_SETTING)
                 .getText());
 
         if (isUsingGlobalDBSetting) {
             return new DatabaseSettings(getProjectDir()).getDatabaseConnection();
         }
 
-        validateElementName(checkpointElement, NODE_SECURE_USER_ACCOUNT);
-        boolean isSecureUserAccount = Boolean.parseBoolean(checkpointElement.element(NODE_SECURE_USER_ACCOUNT)
+        validateElementName(sourceInfoElement, NODE_SECURE_USER_ACCOUNT);
+        boolean isSecureUserAccount = Boolean.parseBoolean(sourceInfoElement.element(NODE_SECURE_USER_ACCOUNT)
                 .getText());
 
         String user = null;
         String password = null;
         if (isSecureUserAccount) {
-            validateElementName(checkpointElement, NODE_DB_USER);
-            validateElementName(checkpointElement, NODE_DB_PASSWORD);
+            validateElementName(sourceInfoElement, NODE_DB_USER);
+            validateElementName(sourceInfoElement, NODE_DB_PASSWORD);
 
-            user = checkpointElement.element(NODE_DB_USER).getText();
-            password = Base64.decode(checkpointElement.element(NODE_DB_PASSWORD).getText());
+            user = sourceInfoElement.element(NODE_DB_USER).getText();
+            password = Base64.decode(sourceInfoElement.element(NODE_DB_PASSWORD).getText());
         }
 
-        return new DatabaseConnection(checkpointElement.element(NODE_SOURCE_URL).getText(), user, password);
+        return new DatabaseConnection(sourceInfoElement.element(NODE_SOURCE_URL).getText(), user, password);
     }
 }

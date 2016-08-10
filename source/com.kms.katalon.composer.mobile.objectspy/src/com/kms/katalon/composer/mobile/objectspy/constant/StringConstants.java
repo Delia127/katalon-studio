@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.mobile.constants;
+package com.kms.katalon.composer.mobile.objectspy.constant;
 
 import com.kms.katalon.constants.GlobalStringConstants;
 
@@ -57,6 +57,8 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String DIA_ERROR_MSG_HAVE_NOT_SUPPORT_MOBILE_WEB = "Have not supported Mobile web";
 
+    public static final String DIA_LBL_ALL_OBJECTS = "ALL OBJECTS";
+
     public static final String DIA_LBL_CAPTURED_OBJECTS = "CAPTURED OBJECTS";
 
     public static final String DIA_LBL_CONFIGURATIONS = "CONFIGURATIONS";
@@ -81,6 +83,21 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_ERROR_MSG_OS_NOT_SUPPORT = "OS type has not been support";
 
     public static final String DIA_ERROR_MSG_OPERATION_CANCELED = "Operation was canceled";
-    
+
     public static final String INTEGER_PATTERN_FORMAT_STRING = "#####";
+
+    // MobileObjectSpyMenuContribution
+    public static final String MENU_ADD_TO_MOBILE_OBJECT_SPY = "Add to Mobile Object Spy";
+
+    public static final String MENU_ID_ADD_TO_MOBILE_OBJECT_SPY = "com.kms.katalon.composer.mobile.objectspy.command.mobile.addToMobileObjectSpy";
+
+    // CapturedElementLabelProvider
+    public static final String CELL_TOOLTIP_ACTIVE = "Active";
+
+    public static final String CELL_TOOLTIP_INACTIVE = "Inactive";
+
+    // AddElementToObjectRepositoryDialog
+    public static final String DIA_BTN_NEW_FOLDER = "New Folder";
+
+    public static final String DIA_TITLE_FOLDER_BROWSER = "Folder Browser";
 }

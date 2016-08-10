@@ -35,7 +35,7 @@ public class FolderController extends EntityController implements Serializable {
     public List<FileEntity> getChildren(FolderEntity folder) throws Exception {
         return getDataProviderSetting().getFolderDataProvider().getChildren(folder);
     }
-    
+
     public List<String> getChildNames(FolderEntity folder) throws Exception {
         List<String> childNames = new ArrayList<>();
         for (FileEntity child : getChildren(folder)) {
@@ -108,6 +108,10 @@ public class FolderController extends EntityController implements Serializable {
         return getDataProviderSetting().getFolderDataProvider().getReportRoot(project);
     }
 
+    public FolderEntity getCheckpointRoot(ProjectEntity project) throws Exception {
+        return getDataProviderSetting().getFolderDataProvider().getCheckpointRoot(project);
+    }
+
     public void deleteFolder(FolderEntity folder) throws Exception {
         getDataProviderSetting().getFolderDataProvider().deleteFolder(folder);
     }
@@ -142,7 +146,8 @@ public class FolderController extends EntityController implements Serializable {
     }
 
     public FolderEntity getFolderByDisplayId(ProjectEntity projectEntity, String folderDisplayId) throws Exception {
-        if (folderDisplayId == null || folderDisplayId.isEmpty()) return null;
+        if (folderDisplayId == null || folderDisplayId.isEmpty())
+            return null;
         String folderId = projectEntity.getFolderLocation() + File.separator
                 + folderDisplayId.replace(GlobalStringConstants.ENTITY_ID_SEPARATOR, File.separator);
         return getDataProviderSetting().getFolderDataProvider().getFolder(folderId);
@@ -152,7 +157,8 @@ public class FolderController extends EntityController implements Serializable {
         List<FolderEntity> sibblingFolders = getChildFolders(folder.getParentFolder());
         List<String> sibblingName = new ArrayList<String>();
         for (FolderEntity sibblingFolder : sibblingFolders) {
-            if (!getDataProviderSetting().getEntityPk(sibblingFolder).equals(getDataProviderSetting().getEntityPk(folder))) {
+            if (!getDataProviderSetting().getEntityPk(sibblingFolder).equals(
+                    getDataProviderSetting().getEntityPk(folder))) {
                 sibblingName.add(sibblingFolder.getName());
             }
         }

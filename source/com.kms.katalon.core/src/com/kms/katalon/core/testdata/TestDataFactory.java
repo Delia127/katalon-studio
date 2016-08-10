@@ -127,7 +127,7 @@ public class TestDataFactory {
 
     private static TestData internallyfindTestData(String projectDir, String testDataId) throws Exception {
         logger.logInfo(MessageFormat.format(StringConstants.XML_LOG_TEST_DATA_FINDING_TEST_DATA_WITH_ID_X, testDataId));
-        File dataFile = new File(getProjectDir(), testDataId + TEST_DATA_FILE_EXTENSION);
+        File dataFile = new File(projectDir, testDataId + TEST_DATA_FILE_EXTENSION);
         if (dataFile.exists()) {
             SAXReader reader = new SAXReader();
             Document document = reader.read(dataFile);

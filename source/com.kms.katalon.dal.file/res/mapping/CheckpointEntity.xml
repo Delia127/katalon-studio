@@ -15,5 +15,48 @@
                 <xml-element java-attribute="takenDate" name="taken-date" type="java.util.Date" />
             </java-attributes>
         </java-type>
+
+        <java-type name="CheckpointSourceInfo">
+            <xml-root-element name="source-info" />
+            <xml-type prop-order="fromTestData sourceUrl sourceType" />
+            <java-attributes>
+                <xml-element java-attribute="fromTestData" name="is-from-test-data" />
+
+                <!-- sourceUrl could be Test-Data-displayed-ID, DB Connection String or Excel, CSV file location -->
+                <xml-element java-attribute="sourceUrl" name="source-url" />
+
+                <!-- if isFromTestData is FALSE -->
+                <!-- data source type EXCEL, CSV, DATABASE -->
+                <xml-element java-attribute="sourceType" name="source-type" />
+            </java-attributes>
+        </java-type>
+
+        <java-type name="ExcelCheckpointSourceInfo">
+            <xml-root-element name="source-info" />
+            <xml-type prop-order="sheetNameOrSeparator usingRelativePath usingFirstRowAsHeader" />
+            <java-attributes>
+                <!-- for excel and csv -->
+                <xml-element java-attribute="sheetNameOrSeparator" name="sheet-name-or-separator" />
+                <xml-element java-attribute="usingRelativePath" name="is-using-relative-path" />
+                <xml-element java-attribute="usingFirstRowAsHeader" name="is-using-first-row-as-header" />
+            </java-attributes>
+        </java-type>
+
+        <java-type name="CsvCheckpointSourceInfo">
+            <xml-root-element name="source-info" />
+        </java-type>
+
+        <java-type name="DatabaseCheckpointSourceInfo">
+            <xml-root-element name="db-source-info" />
+            <xml-type prop-order="usingGlobalDBSetting secureUserAccount user password query" />
+            <java-attributes>
+                <!-- for database -->
+                <xml-element java-attribute="usingGlobalDBSetting" name="is-using-global-db-setting" />
+                <xml-element java-attribute="secureUserAccount" name="is-secure-user-account" />
+                <xml-element java-attribute="user" />
+                <xml-element java-attribute="password" />
+                <xml-element java-attribute="query" cdata="true" />
+            </java-attributes>
+        </java-type>
     </java-types>
 </xml-bindings>

@@ -6,9 +6,9 @@ import com.kms.katalon.controller.constants.StringConstants;
 import com.kms.katalon.core.testdata.CSVData;
 import com.kms.katalon.core.testdata.reader.CSVSeparator;
 import com.kms.katalon.core.util.PathUtil;
-import com.kms.katalon.entity.checkpoint.ExcelCheckpointSourceInfo;
+import com.kms.katalon.entity.checkpoint.CsvCheckpointSourceInfo;
 
-public class CsvCheckpointSourceController implements CheckpointSourceController<ExcelCheckpointSourceInfo> {
+public class CsvCheckpointSourceController implements CheckpointSourceController<CsvCheckpointSourceInfo> {
 
     private static CsvCheckpointSourceController instance;
 
@@ -20,7 +20,7 @@ public class CsvCheckpointSourceController implements CheckpointSourceController
     }
 
     @Override
-    public CSVData getSourceData(ExcelCheckpointSourceInfo sourceInfo) throws Exception {
+    public CSVData getSourceData(CsvCheckpointSourceInfo sourceInfo) throws Exception {
         String separator = sourceInfo.getSheetNameOrSeparator();
         if (!ArrayUtils.contains(CSVSeparator.stringValues(), separator)) {
             throw new IllegalArgumentException(StringConstants.CTRL_EXC_INVALID_CSV_SEPARATOR);

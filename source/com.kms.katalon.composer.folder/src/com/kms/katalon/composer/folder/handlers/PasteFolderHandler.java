@@ -26,6 +26,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.transfer.TreeEntityTransfer;
+import com.kms.katalon.composer.components.impl.tree.CheckpointTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
@@ -39,12 +40,15 @@ import com.kms.katalon.composer.components.transfer.TransferMoveFlag;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.folder.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.CheckpointController;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.dal.exception.DALException;
+import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
@@ -90,15 +94,13 @@ public class PasteFolderHandler {
                             targetTreeEntity = (ITreeEntity) targetObject;
                         } else if (targetObject instanceof ITreeEntity
                                 && ((ITreeEntity) targetObject).getParent() instanceof FolderTreeEntity) {
-                            targetFolder = (FolderEntity) ((FolderTreeEntity) ((ITreeEntity) targetObject).getParent())
-                                    .getObject();
+                            targetFolder = (FolderEntity) ((FolderTreeEntity) ((ITreeEntity) targetObject).getParent()).getObject();
                             targetTreeEntity = (ITreeEntity) ((ITreeEntity) targetObject).getParent();
                         }
                         if (targetFolder != null) {
                             Clipboard clipboard = new Clipboard(Display.getCurrent());
 
-                            ITreeEntity[] treeEntities = (ITreeEntity[]) clipboard.getContents(TreeEntityTransfer
-                                    .getInstance());
+                            ITreeEntity[] treeEntities = (ITreeEntity[]) clipboard.getContents(TreeEntityTransfer.getInstance());
                             if (verifyPaste(treeEntities, targetFolder)) {
                                 parentPastedTreeEntity = targetTreeEntity;
                                 lastPastedTreeEntity = null;
@@ -132,8 +134,7 @@ public class PasteFolderHandler {
                 if (treeEntity instanceof TestCaseTreeEntity && targetFolder.getFolderType() == FolderType.TESTCASE) {
                     copyTestCase((TestCaseEntity) ((TestCaseTreeEntity) treeEntity).getObject(), targetFolder);
                 } else if (treeEntity instanceof FolderTreeEntity
-                        && targetFolder.getFolderType() == ((FolderEntity) ((FolderTreeEntity) treeEntity).getObject())
-                                .getFolderType()) {
+                        && targetFolder.getFolderType() == ((FolderEntity) ((FolderTreeEntity) treeEntity).getObject()).getFolderType()) {
                     copyFolder((FolderEntity) ((FolderTreeEntity) treeEntity).getObject(), targetFolder);
                 } else if (treeEntity instanceof TestSuiteTreeEntity
                         && targetFolder.getFolderType() == FolderType.TESTSUITE) {
@@ -150,8 +151,12 @@ public class PasteFolderHandler {
                             null);
                 } else if (treeEntity instanceof TestSuiteCollectionTreeEntity
                         && targetFolder.getFolderType() == FolderType.TESTSUITE) {
-                    copyTestSuiteCollection((TestSuiteCollectionEntity) ((TestSuiteCollectionTreeEntity) treeEntity).getObject(),
+                    copyTestSuiteCollection(
+                            (TestSuiteCollectionEntity) ((TestSuiteCollectionTreeEntity) treeEntity).getObject(),
                             targetFolder);
+                } else if (treeEntity instanceof CheckpointTreeEntity
+                        && targetFolder.getFolderType() == FolderType.CHECKPOINT) {
+                    copyCheckpoint(((CheckpointTreeEntity) treeEntity).getObject(), targetFolder);
                 }
                 GroovyUtil.getGroovyProject(targetFolder.getProject()).refreshLocal(IResource.DEPTH_INFINITE, null);
             }
@@ -179,6 +184,8 @@ public class PasteFolderHandler {
                     moveTestSuiteCollection(
                             (TestSuiteCollectionEntity) ((TestSuiteCollectionTreeEntity) treeEntity).getObject(),
                             targetFolder);
+                } else if (treeEntity instanceof CheckpointTreeEntity) {
+                    moveCheckpoint(((CheckpointTreeEntity) treeEntity).getObject(), targetFolder);
                 }
             }
             GroovyUtil.getGroovyProject(targetFolder.getProject()).refreshLocal(IResource.DEPTH_INFINITE, null);
@@ -188,7 +195,8 @@ public class PasteFolderHandler {
     }
 
     private boolean verifyPaste(ITreeEntity[] treeEntities, FolderEntity targetFolder) throws Exception {
-        if (treeEntities == null) return false;
+        if (treeEntities == null)
+            return false;
         for (ITreeEntity treeEntity : treeEntities) {
             if (treeEntity instanceof FolderTreeEntity && treeEntity.getObject() instanceof FolderEntity) {
                 FolderEntity folder = (FolderEntity) treeEntity.getObject();
@@ -265,10 +273,8 @@ public class PasteFolderHandler {
         TestSuiteCollectionEntity copiedTestSuiteCollection = TestSuiteCollectionController.getInstance()
                 .copyTestSuiteCollection(testSuiteCollection, targetFolder);
         if (copiedTestSuiteCollection != null) {
-            eventBroker.post(
-                    EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM,
-                    new Object[] { testSuiteCollection.getIdForDisplay(),
-                            copiedTestSuiteCollection.getIdForDisplay() });
+            eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM,
+                    new Object[] { testSuiteCollection.getIdForDisplay(), copiedTestSuiteCollection.getIdForDisplay() });
             lastPastedTreeEntity = new TestSuiteCollectionTreeEntity(copiedTestSuiteCollection,
                     (FolderTreeEntity) parentPastedTreeEntity);
         }
@@ -305,6 +311,18 @@ public class PasteFolderHandler {
                         packageFragment.getElementName());
                 copyKeywordPackage(packageFragment, targetFolder, newNameQuery.getNewName());
             }
+        }
+    }
+
+    private void copyCheckpoint(CheckpointEntity checkpoint, FolderEntity targetFolder) throws DALException {
+        if (checkpoint == null) {
+            return;
+        }
+        CheckpointEntity copiedCheckpoint = CheckpointController.getInstance().copy(checkpoint, targetFolder);
+        if (copiedCheckpoint != null) {
+            eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM,
+                    new Object[] { checkpoint.getIdForDisplay(), copiedCheckpoint.getIdForDisplay() });
+            lastPastedTreeEntity = new CheckpointTreeEntity(copiedCheckpoint, parentPastedTreeEntity);
         }
     }
 
@@ -346,13 +364,22 @@ public class PasteFolderHandler {
     private void moveKeywordPackage(IPackageFragment packageFragment, FolderEntity targetFolder) {
         // not allow moving package
     }
-    
+
     private void moveTestSuiteCollection(TestSuiteCollectionEntity dataFile, FolderEntity targetFolder)
             throws Exception {
-        TestSuiteCollectionEntity movedTestSuiteCollection = EntityProcessingUtil.moveTestSuiteCollection(dataFile, targetFolder);
+        TestSuiteCollectionEntity movedTestSuiteCollection = EntityProcessingUtil.moveTestSuiteCollection(dataFile,
+                targetFolder);
         if (movedTestSuiteCollection != null) {
             lastPastedTreeEntity = new TestSuiteCollectionTreeEntity(movedTestSuiteCollection,
                     (FolderTreeEntity) parentPastedTreeEntity);
         }
     }
+
+    private void moveCheckpoint(CheckpointEntity checkpoint, FolderEntity targetFolder) throws Exception {
+        CheckpointEntity movedCheckpoint = EntityProcessingUtil.moveCheckpoint(checkpoint, targetFolder);
+        if (movedCheckpoint != null) {
+            lastPastedTreeEntity = new CheckpointTreeEntity(movedCheckpoint, parentPastedTreeEntity);
+        }
+    }
+
 }

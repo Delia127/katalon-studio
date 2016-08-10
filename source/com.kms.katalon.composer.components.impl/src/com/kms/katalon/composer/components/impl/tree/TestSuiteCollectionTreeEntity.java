@@ -15,7 +15,7 @@ public class TestSuiteCollectionTreeEntity extends AbstractTreeEntity {
 
     private static final String TEST_SUITE_COLLECTION_TYPE_NAME = GlobalStringConstants.TEST_SUITE;
 
-    public static final String KEY_WORD = GlobalStringConstants.ENTITY_KW_TEST_RUN;
+    public static final String KEY_WORD = GlobalStringConstants.ENTITY_KW_TEST_SUITE;
 
     public static final String[] SEARCH_TAGS = new String[] { "id", "name", "description", "tag" };
 
@@ -69,7 +69,7 @@ public class TestSuiteCollectionTreeEntity extends AbstractTreeEntity {
 
     @Override
     public String getKeyWord() throws Exception {
-        return "ts";
+        return KEY_WORD;
     }
 
     @Override

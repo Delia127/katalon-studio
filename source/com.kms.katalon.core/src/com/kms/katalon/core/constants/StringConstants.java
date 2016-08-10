@@ -203,6 +203,38 @@ public class StringConstants {
 
     public static final String KW_CATEGORIZE_UTILITIES = "Utilities";
 
+    public static final String KW_MSG_VERIFY_CHECKPOINT = "Verify Checkpoint";
+
+    public static final String KW_MSG_CHECKPOINT_IS_NULL = "Checkpoint is null";
+
+    public static final String KW_MSG_CHECKPOINT_ID_X = "Checkpoint ID: ''{0}''";
+
+    public static final String KW_MSG_NO_SNAPSHOT = "No Checkpoint snapshot was taken";
+
+    public static final String KW_MSG_CHECKPOINT_DATA_IS_NULL = "Checkpoint data is null";
+
+    public static final String KW_MSG_CHECKPOINT_SRC_DATA_IS_NULL = "Checkpoint source data is null";
+
+    public static final String KW_MSG_CHECKPOINT_DATA_MATCHES_WITH_NULL = "Checkpoint data and Source data are matched with null value";
+
+    public static final String KW_MSG_CHECKPOINT_DATA_DOES_NOT_MATCH = "Checkpoint data and Source data are NOT matched";
+
+    public static final String KW_MSG_CHECKPOINT_DATA_MATCHES = "Checkpoint data and Source data are matched";
+
+    public static final String KW_MSG_CHECKPOINT_ROW_NUMBER_MATCHES = "Number of rows matches";
+
+    public static final String KW_MSG_CHECKPOINT_ROW_NUMBER_DOES_NOT_MATCH = "Number of rows does NOT match. Checked values might be still valid.";
+
+    public static final String KW_MSG_CHECKPOINT_COL_NUMBER_MATCHES = "Number of columns matches";
+
+    public static final String KW_MSG_CHECKPOINT_COL_NUMBER_DOES_NOT_MATCH = "Number of columns does NOT match. Checked values might be still valid.";
+
+    public static final String KW_MSG_VERIFY_CHECKED_VALUES = "Verify checked values";
+
+    public static final String KW_MSG_CHECKPOINT_NOT_MATCH_AT_ROW_X_COL_Y_CHECKED_VAL_NEW_VAL = "Checked value does NOT match at position row = {0}, column = {1}. Checked value: {2}. Current value: {3}";
+
+    public static final String KW_MSG_UNABLE_TO_VERIFY_CHECKPOINT_X = "Unable to verify Checkpoint ''{0}''";
+
     // KeywordHelper
     public static final String COMM_LOG_INFO_CHECKING_OBJ = "Checking object";
 
@@ -425,4 +457,10 @@ public class StringConstants {
     public static final String TEST_CASE_FACTORY_MSG_TC_NOT_EXISTED_WITH_REASON = "Cannot find test case with id ''{0}''"
             + " because (of) ''{1}''";
 
+    // Common method name
+    public static final String METHOD_FIND_TEST_CASE = "findTestCase";
+
+    public static final String METHOD_FIND_TEST_OBJECT = "findTestObject";
+
+    public static final String METHOD_FIND_TEST_DATA = "findTestData";
 }

@@ -32,7 +32,6 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  org.eclipse.jface.text,
  com.kms.katalon.custom,
  com.kms.katalon.preferences,
- com.kms.katalon.composer.testsuite,
  com.kms.katalon.execution,
  com.kms.katalon.composer.folder,
  com.google.gson,
@@ -60,4 +59,3 @@ Export-Package: com.kms.katalon.composer.testcase.ast.dialogs,
  com.kms.katalon.composer.testcase.support,
  com.kms.katalon.composer.testcase.util
 Bundle-ClassPath: .
-Import-Package: com.kms.katalon.composer.testsuite.editors

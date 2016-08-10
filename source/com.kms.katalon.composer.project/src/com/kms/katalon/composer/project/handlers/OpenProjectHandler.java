@@ -2,8 +2,6 @@ package com.kms.katalon.composer.project.handlers;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -29,13 +27,11 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
-import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
@@ -118,24 +114,12 @@ public class OpenProjectHandler {
                         @Override
                         public void run() {
                             try {
-                                List<ITreeEntity> treeEntities = new ArrayList<ITreeEntity>();
                                 if (project != null) {
-                                    treeEntities.add(new FolderTreeEntity(FolderController.getInstance()
-                                            .getTestCaseRoot(project), null));
-                                    treeEntities.add(new FolderTreeEntity(FolderController.getInstance()
-                                            .getObjectRepositoryRoot(project), null));
-                                    treeEntities.add(new FolderTreeEntity(FolderController.getInstance()
-                                            .getTestSuiteRoot(project), null));
-                                    treeEntities.add(new FolderTreeEntity(FolderController.getInstance()
-                                            .getTestDataRoot(project), null));
-                                    treeEntities.add(new FolderTreeEntity(FolderController.getInstance()
-                                            .getKeywordRoot(project), null));
-                                    treeEntities.add(new FolderTreeEntity(FolderController.getInstance().getReportRoot(
-                                            project), null));
                                     // Set project name on window title
                                     OpenProjectHandler.updateProjectTitle(project, modelService, app);
                                 }
-                                eventBroker.post(EventConstants.EXPLORER_RELOAD_INPUT, treeEntities);
+                                eventBroker.post(EventConstants.EXPLORER_RELOAD_INPUT,
+                                        TreeEntityUtil.getAllTreeEntity(project));
                             } catch (Exception e) {
                                 LoggerSingleton.logError(e);
                             }

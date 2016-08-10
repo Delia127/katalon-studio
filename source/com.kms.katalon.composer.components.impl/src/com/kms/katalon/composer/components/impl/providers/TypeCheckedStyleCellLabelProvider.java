@@ -64,7 +64,6 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
             return;
         }
 
-        
         GC gc = event.gc;
         boolean applyColors = useColors(event);
 
@@ -90,11 +89,11 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
     protected int getSpace() {
         return SPACE;
     }
-    
+
     protected int getLeftMargin() {
         return SPACE;
     }
-    
+
     protected int getRightMargin() {
         return SPACE;
     }
@@ -126,10 +125,12 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
     }
 
     protected void drawCellTextAndImage(Event event, ViewerCell cell, GC gc) {
+        Rectangle eventBounds = event.getBounds();
         Image image = cell.getImage();
         int startX = getLeftMargin();
         if (image != null) {
-            gc.drawImage(image, event.getBounds().x + startX, event.getBounds().y);
+            int y = eventBounds.y + Math.max(0, (eventBounds.height - image.getBounds().height) / 2);
+            gc.drawImage(image, eventBounds.x + startX, y);
             startX = getSpace();
         }
 
@@ -272,7 +273,7 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
     protected abstract Image getImage(T element);
 
     protected abstract String getText(T element);
-    
+
     protected StyleRange[] getStyleRanges(ViewerCell cell, T element) {
         return null;
     }

@@ -9,6 +9,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
 
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
+import com.kms.katalon.composer.components.impl.tree.CheckpointTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
@@ -20,14 +21,15 @@ import com.kms.katalon.composer.components.impl.tree.TestSuiteCollectionTreeEnti
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
+import com.kms.katalon.controller.CheckpointController;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestDataController;
-import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
@@ -60,17 +62,24 @@ public class TreeEntityUtil {
                 } else if (childrenEntities[i] instanceof TestCaseEntity) {
                     childrenEntities[i] = new TestCaseTreeEntity((TestCaseEntity) childrenEntities[i], folderTreeEntity);
                 } else if (childrenEntities[i] instanceof TestSuiteEntity) {
-                    childrenEntities[i] = new TestSuiteTreeEntity((TestSuiteEntity) childrenEntities[i], folderTreeEntity);
+                    childrenEntities[i] = new TestSuiteTreeEntity((TestSuiteEntity) childrenEntities[i],
+                            folderTreeEntity);
                 } else if (childrenEntities[i] instanceof DataFileEntity) {
                     childrenEntities[i] = new TestDataTreeEntity((DataFileEntity) childrenEntities[i], folderTreeEntity);
                 } else if (childrenEntities[i] instanceof WebElementEntity) {
-                    childrenEntities[i] = new WebElementTreeEntity((WebElementEntity) childrenEntities[i], folderTreeEntity);
+                    childrenEntities[i] = new WebElementTreeEntity((WebElementEntity) childrenEntities[i],
+                            folderTreeEntity);
                 } else if (childrenEntities[i] instanceof ReportEntity) {
                     childrenEntities[i] = new ReportTreeEntity((ReportEntity) childrenEntities[i], folderTreeEntity);
-                } else if (childrenEntities[i] instanceof TestSuiteCollectionEntity) { 
-                    childrenEntities[i] = new TestSuiteCollectionTreeEntity((TestSuiteCollectionEntity) childrenEntities[i], folderTreeEntity);
+                } else if (childrenEntities[i] instanceof TestSuiteCollectionEntity) {
+                    childrenEntities[i] = new TestSuiteCollectionTreeEntity(
+                            (TestSuiteCollectionEntity) childrenEntities[i], folderTreeEntity);
                 } else if (childrenEntities[i] instanceof ReportCollectionEntity) {
-                    childrenEntities[i] = new ReportCollectionTreeEntity((ReportCollectionEntity) childrenEntities[i], folderTreeEntity);
+                    childrenEntities[i] = new ReportCollectionTreeEntity((ReportCollectionEntity) childrenEntities[i],
+                            folderTreeEntity);
+                } else if (childrenEntities[i] instanceof CheckpointEntity) {
+                    childrenEntities[i] = new CheckpointTreeEntity((CheckpointEntity) childrenEntities[i],
+                            folderTreeEntity);
                 }
             }
             return childrenEntities;
@@ -82,41 +91,49 @@ public class TreeEntityUtil {
         if (folderEntity == null || folderEntity.equals(rootFolder)) {
             return new FolderTreeEntity(rootFolder, null);
         }
-        return new FolderTreeEntity(folderEntity, createSelectedTreeEntityHierachy(folderEntity.getParentFolder(), rootFolder));
+        return new FolderTreeEntity(folderEntity, createSelectedTreeEntityHierachy(folderEntity.getParentFolder(),
+                rootFolder));
     }
 
     public static TestCaseTreeEntity getTestCaseTreeEntity(TestCaseEntity testCaseEntity, ProjectEntity projectEntity)
             throws Exception {
         FolderEntity testCaseRootFolder = FolderController.getInstance().getTestCaseRoot(projectEntity);
-        return new TestCaseTreeEntity(testCaseEntity, createSelectedTreeEntityHierachy(testCaseEntity.getParentFolder(),
-                testCaseRootFolder));
+        return new TestCaseTreeEntity(testCaseEntity, createSelectedTreeEntityHierachy(
+                testCaseEntity.getParentFolder(), testCaseRootFolder));
     }
 
-    public static WebElementTreeEntity getWebElementTreeEntity(WebElementEntity testObjectEntity, ProjectEntity projectEntity)
-            throws Exception {
+    public static WebElementTreeEntity getWebElementTreeEntity(WebElementEntity testObjectEntity,
+            ProjectEntity projectEntity) throws Exception {
         FolderEntity testCaseRootFolder = FolderController.getInstance().getObjectRepositoryRoot(projectEntity);
-        return new WebElementTreeEntity(testObjectEntity, createSelectedTreeEntityHierachy(testObjectEntity.getParentFolder(),
-                testCaseRootFolder));
+        return new WebElementTreeEntity(testObjectEntity, createSelectedTreeEntityHierachy(
+                testObjectEntity.getParentFolder(), testCaseRootFolder));
     }
 
     public static TestDataTreeEntity getTestDataTreeEntity(DataFileEntity testDataEntity, ProjectEntity projectEntity)
             throws Exception {
         FolderEntity testCaseRootFolder = FolderController.getInstance().getTestDataRoot(projectEntity);
-        return new TestDataTreeEntity(testDataEntity, createSelectedTreeEntityHierachy(testDataEntity.getParentFolder(),
-                testCaseRootFolder));
+        return new TestDataTreeEntity(testDataEntity, createSelectedTreeEntityHierachy(
+                testDataEntity.getParentFolder(), testCaseRootFolder));
     }
 
-    public static TestSuiteTreeEntity getTestSuiteTreeEntity(TestSuiteEntity testSuiteEntity, ProjectEntity projectEntity)
-            throws Exception {
+    public static TestSuiteTreeEntity getTestSuiteTreeEntity(TestSuiteEntity testSuiteEntity,
+            ProjectEntity projectEntity) throws Exception {
         FolderEntity testCaseRootFolder = FolderController.getInstance().getTestSuiteRoot(projectEntity);
-        return new TestSuiteTreeEntity(testSuiteEntity, createSelectedTreeEntityHierachy(testSuiteEntity.getParentFolder(),
-                testCaseRootFolder));
+        return new TestSuiteTreeEntity(testSuiteEntity, createSelectedTreeEntityHierachy(
+                testSuiteEntity.getParentFolder(), testCaseRootFolder));
     }
 
-    public static ReportTreeEntity getReportTreeEntity(ReportEntity reportEntity, ProjectEntity projectEntity) throws Exception {
+    public static ReportTreeEntity getReportTreeEntity(ReportEntity reportEntity, ProjectEntity projectEntity)
+            throws Exception {
         FolderEntity testCaseRootFolder = FolderController.getInstance().getReportRoot(projectEntity);
         return new ReportTreeEntity(reportEntity, createSelectedTreeEntityHierachy(reportEntity.getParentFolder(),
                 testCaseRootFolder));
+    }
+
+    public static CheckpointTreeEntity getCheckpointTreeEntity(CheckpointEntity checkpointEntity) throws Exception {
+        FolderEntity checkpointRootFolder = FolderController.getInstance().getReportRoot(checkpointEntity.getProject());
+        return new CheckpointTreeEntity(checkpointEntity, createSelectedTreeEntityHierachy(
+                checkpointEntity.getParentFolder(), checkpointRootFolder));
     }
 
     public static PackageTreeEntity getPackageTreeEntity(String packageRelativeLocation, ProjectEntity projectEntity)
@@ -142,29 +159,29 @@ public class TreeEntityUtil {
         }
         return null;
     }
-    
-    public static TestSuiteCollectionTreeEntity getTestRunTreeEntity(TestSuiteCollectionEntity reportEntity, ProjectEntity projectEntity)
-            throws Exception {
+
+    public static TestSuiteCollectionTreeEntity getTestRunTreeEntity(TestSuiteCollectionEntity reportEntity,
+            ProjectEntity projectEntity) throws Exception {
         FolderEntity testCaseRootFolder = FolderController.getInstance().getReportRoot(projectEntity);
-        return new TestSuiteCollectionTreeEntity(reportEntity, createSelectedTreeEntityHierachy(reportEntity.getParentFolder(),
-                testCaseRootFolder));
+        return new TestSuiteCollectionTreeEntity(reportEntity, createSelectedTreeEntityHierachy(
+                reportEntity.getParentFolder(), testCaseRootFolder));
     }
 
     /**
      * Get readable keyword name by capitalized and separated the words.
      * <p>
-     * Example: getReadableKeywordName("getDeviceOSVersion") will be
-     * "Get Device OS Version"
+     * Example: getReadableKeywordName("getDeviceOSVersion") will be "Get Device OS Version"
      * 
      * @param keywordMethodName
-     *            keyword name (also known as method name)
+     * keyword name (also known as method name)
      * @return Readable Keyword Name
      */
     public static String getReadableKeywordName(String keywordMethodName) {
         if (keywordMethodName == null) {
             return keywordMethodName;
         }
-        return StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(StringUtils.capitalize(keywordMethodName)), " ");
+        return StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(StringUtils.capitalize(keywordMethodName)),
+                " ");
     }
 
     /**
@@ -173,8 +190,7 @@ public class TreeEntityUtil {
      * Note: This is only used for PersistedState purpose.
      * 
      * @see #getExpandedTreeEntitiesFromIds(List)
-     * @param entities
-     *            TreeEntity[]
+     * @param entities TreeEntity[]
      * @return List of TreeEntity ID
      * @throws Exception
      */
@@ -189,9 +205,9 @@ public class TreeEntityUtil {
                 ITreeEntity treeEntity = (ITreeEntity) o;
                 Object entity = treeEntity.getObject();
                 String id = (entity instanceof FileEntity) ? ((FileEntity) entity).getIdForDisplay()
-                        : ((entity instanceof IPackageFragment) ? GroovyStringUtil
-                                .getKeywordsRelativeLocation(((IPackageFragment) entity).getPath()) : GroovyStringUtil
-                                .getKeywordsRelativeLocation(((ICompilationUnit) entity).getPath()));
+                        : ((entity instanceof IPackageFragment)
+                                ? GroovyStringUtil.getKeywordsRelativeLocation(((IPackageFragment) entity).getPath())
+                                : GroovyStringUtil.getKeywordsRelativeLocation(((ICompilationUnit) entity).getPath()));
                 ids.add(id);
             }
         }
@@ -204,8 +220,7 @@ public class TreeEntityUtil {
      * Note: This is only used for PersistedState purpose.
      * 
      * @param ids
-     *            TreeEntity IDs which is generated by
-     *            {@link #getTreeEntityIds(Object[])}
+     * TreeEntity IDs which is generated by {@link #getTreeEntityIds(Object[])}
      * @return List of ITreeEntity
      * @throws Exception
      */
@@ -223,7 +238,8 @@ public class TreeEntityUtil {
                     || StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_DATA_FILE)
                     || StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_TEST_SUITE)
                     || StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_REPORT)
-                    || StringUtils.equals(id, StringConstants.ROOT_FOLDER_NAME_KEYWORD)) {
+                    || StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_KEYWORD)
+                    || StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_CHECKPOINT)) {
                 // Folder
                 FolderEntity folder = FolderController.getInstance().getFolderByDisplayId(project, id);
                 if (folder != null) {
@@ -240,6 +256,8 @@ public class TreeEntityUtil {
                         rootFolder = FolderController.getInstance().getKeywordRoot(project);
                     } else if (FolderType.REPORT.equals(folder.getFolderType())) {
                         rootFolder = FolderController.getInstance().getReportRoot(project);
+                    } else if (FolderType.CHECKPOINT.equals(folder.getFolderType())) {
+                        rootFolder = FolderController.getInstance().getCheckpointRoot(project);
                     }
                     if (rootFolder != null) {
                         treeEntities.add(TreeEntityUtil.createSelectedTreeEntityHierachy(folder, rootFolder));
@@ -259,8 +277,8 @@ public class TreeEntityUtil {
      * Note: This is only used for PersistedState purpose.
      * 
      * @param ids
-     *            TreeEntity IDs which is generated by
-     *            {@link com.kms.katalon.composer.components.impl.util.EntityPartUtil#getOpenedEntityIds(java.util.Collection)}
+     * TreeEntity IDs which is generated by
+     * {@link com.kms.katalon.composer.components.impl.util.EntityPartUtil#getOpenedEntityIds(java.util.Collection)}
      * @return List of ITreeEntity
      * @throws Exception
      */
@@ -304,12 +322,32 @@ public class TreeEntityUtil {
             } else if (StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_KEYWORD)) {
                 // Keyword
                 treeEntities.add(TreeEntityUtil.getKeywordTreeEntity(id, project));
-            } else if (StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_TESTRUN)) {
-                // TestRun
-                TestSuiteCollectionEntity tr = TestSuiteCollectionController.getInstance().getTestRunByDisplayId(id);
-                treeEntities.add(TreeEntityUtil.getTestRunTreeEntity(tr, project));
+            } else if (StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_CHECKPOINT)) {
+                // Checkpoint
+                CheckpointEntity cp = CheckpointController.getInstance().getByDisplayedId(id);
+                if (cp != null) {
+                    treeEntities.add(getCheckpointTreeEntity(cp));
+                }
             }
         }
         return treeEntities;
     }
+
+    public static List<ITreeEntity> getAllTreeEntity(ProjectEntity project) throws Exception {
+        List<ITreeEntity> treeEntities = new ArrayList<>();
+        if (project == null) {
+            return treeEntities;
+        }
+
+        FolderController folderController = FolderController.getInstance();
+        treeEntities.add(new FolderTreeEntity(folderController.getTestCaseRoot(project), null));
+        treeEntities.add(new FolderTreeEntity(folderController.getObjectRepositoryRoot(project), null));
+        treeEntities.add(new FolderTreeEntity(folderController.getTestSuiteRoot(project), null));
+        treeEntities.add(new FolderTreeEntity(folderController.getTestDataRoot(project), null));
+        treeEntities.add(new FolderTreeEntity(folderController.getCheckpointRoot(project), null));
+        treeEntities.add(new FolderTreeEntity(folderController.getKeywordRoot(project), null));
+        treeEntities.add(new FolderTreeEntity(folderController.getReportRoot(project), null));
+        return treeEntities;
+    }
+
 }

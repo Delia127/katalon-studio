@@ -119,10 +119,6 @@ public class TestRunFileServiceDataProvider implements TestSuiteCollectionDataPr
     public TestSuiteCollectionEntity copy(String testSuiteCollectionId, FolderEntity location) throws DALException {
         TestSuiteCollectionEntity testSuiteCollection = get(testSuiteCollectionId);
 
-        if (testSuiteCollection.getParentFolder().equals(location)) {
-            return null;
-        }
-
         try {
             return EntityFileServiceManager.copy(testSuiteCollection, location);
         } catch (Exception e) {

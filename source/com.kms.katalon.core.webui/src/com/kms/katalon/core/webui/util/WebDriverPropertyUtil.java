@@ -1,8 +1,10 @@
 package com.kms.katalon.core.webui.util;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -16,6 +18,8 @@ import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 
 public class WebDriverPropertyUtil {
+    public static final String DISABLE_EXTENSIONS = "--disable-extensions";
+    public static final String CHROME_SWITCHES = "chrome.switches";
     private static final String CHROME_ARGUMENT_PROPERTY_KEY = "args";
     private static final String CHROME_BINARY_PROPERTY_KEY = "binary";
     private static final String CHROME_EXTENSIONS_PROPERTY_KEY = "extensions";
@@ -138,7 +142,21 @@ public class WebDriverPropertyUtil {
                     MessageFormat.format(StringConstants.KW_LOG_WEB_UI_PROPERTY_SETTING, driverProperty.getKey(),
                             driverProperty.getValue()));
         }
+        injectAddtionalArgumentsForChrome(chromeOptions);
         desireCapabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
         return desireCapabilities;
+    }
+
+    private static void injectAddtionalArgumentsForChrome(Map<String, Object> chromeOptions) {
+        if (chromeOptions == null) {
+            return;
+        }
+        List<Object> argumentsList = new ArrayList<Object>();
+        if (chromeOptions.get(CHROME_ARGUMENT_PROPERTY_KEY) instanceof List) {
+            argumentsList.addAll((List<?>) chromeOptions.get(CHROME_ARGUMENT_PROPERTY_KEY));
+        }
+        argumentsList.add(CHROME_SWITCHES);
+        argumentsList.add(DISABLE_EXTENSIONS);
+        chromeOptions.put(CHROME_ARGUMENT_PROPERTY_KEY, argumentsList);
     }
 }

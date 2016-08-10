@@ -315,4 +315,10 @@ public class StringConstants extends GlobalStringConstants {
     public static final String LP_WARN_MISSING_ARGUMENT_FOR_METHOD_CALL = "Missing input";
     
     public static final String LP_WARN_INVALID_ARGUMENT_X_FOR_METHOD_CALL_AVAILALE_ARE_Y = "Invalid input value type ''{0}'', possible input value types are ''{1}''";
+
+    // EntitySelectionDialogCellEditor
+    public static final String EDI_ERROR_MSG_CANNOT_OPEN_DIA = "Cannot open dialog.";
+
+    // TestDataSelectionDialogCellEditor
+    public static final String EDI_TITLE_TEST_DATA_BROWSER = "Test Data Browser";
 }

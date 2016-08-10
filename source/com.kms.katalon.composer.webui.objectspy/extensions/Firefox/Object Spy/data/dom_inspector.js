@@ -51,7 +51,9 @@ function createInstructionDiv() {
 	instructionDiv.style.zIndex = '99999999';
 	instructionDiv.style.display = 'none';
 	instructionDiv.style.opacity = '0.9';
-	instructionDiv.innerHTML = INSTRUCTION_IMAGE;
+	var instructionImg = document.createElement('img');
+	instructionImg.src = INSTRUCTION_IMAGE;
+	instructionDiv.appendChild(instructionImg);
 	document.body.appendChild(instructionDiv);
 }
 	
@@ -99,13 +101,14 @@ function getElementInfo(element) {
 
 function mouseMoveWindow(e) {
 	var x = e.clientX, y = e.clientY - 10;
+	var paddingSize = 20;
 	var windowWidth = Math.max(
 			document.documentElement.clientWidth,
 			window.innerWidth || 0);
-	if ((e.clientX + 260) >= windowWidth) {
-		x = e.clientX - 260;
+	if ((e.clientX + INSTRUCTION_IMAGE_SIZE + paddingSize) >= windowWidth) {
+		x = e.clientX - INSTRUCTION_IMAGE_SIZE - paddingSize;
 	} else {
-		x = e.clientX + 20;
+		x = e.clientX + paddingSize;
 	}
 	instructionDiv.style.display = 'block';
 	instructionDiv.style.left = x + 'px';
@@ -312,9 +315,11 @@ function startInspection() {
 	// for Firefox
 	if (!detectChrome() && !detectIE() && !(typeof self === 'undefined')) {
 		self.on('message', function(message) {
+			console.log(message.kind)
+			console.log(message.text)
 			if (message.kind == "postSuccess") {
 				flashElement();
-			} else if (message.kind == "postFail") {
+			} else if (message.kind == "postFail" || message.kind == "postDomMapSuccess") {
 				alert(message.text);
 			} 
 		});

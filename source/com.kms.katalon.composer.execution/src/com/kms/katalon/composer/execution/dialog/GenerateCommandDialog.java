@@ -54,7 +54,6 @@ import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.dialogs.AddMailRecipientDialog;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
-import com.kms.katalon.composer.execution.addons.TestExecutionAddon;
 import com.kms.katalon.composer.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.util.MobileDeviceUIProvider;
@@ -146,7 +145,7 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private static final String ZERO = "0";
 
-    private static final String BROWSER_TYPE_CUSTOM = TestExecutionAddon.CUSTOM_RUN_MENU_LABEL;
+    private static final String BROWSER_TYPE_CUSTOM = StringConstants.CUSTOM_RUN_MENU_LABEL;
 
     private static final String DEFAULT_RETRY_TIME = Integer.toString(DefaultRerunSetting.DEFAULT_RERUN_TIME);
 

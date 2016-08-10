@@ -35,7 +35,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.mobile.constants.StringConstants;
+import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
 import com.kms.katalon.core.mobile.keyword.GUIObject;
 
@@ -293,6 +293,9 @@ public class MobileDeviceDialog extends Dialog {
 
     @Override
     protected Point getInitialLocation(Point initialSize) {
+        if ((getShell().getStyle() & SWT.RESIZE) == 0) {
+            return new Point(initialLocation.x, initialLocation.y + 5);
+        }
         return initialLocation;
     }
 

@@ -29,4 +29,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.e4.core.services,
  com.kms.katalon.custom,
  org.apache.commons.lang,
- com.kms.katalon.constant
+ com.kms.katalon.constant,
+ org.codehaus.groovy.eclipse.ui,
+ org.codehaus.groovy.eclipse.codebrowsing

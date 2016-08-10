@@ -2,7 +2,6 @@ package com.kms.katalon.composer.testsuite.support;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
-import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.components.impl.support.TypeCheckedEditingSupport;
 import com.kms.katalon.composer.testsuite.editors.DataIterationCellEditor;
@@ -26,7 +25,7 @@ public class TestDataIterationColumnEditingSupport extends TypeCheckedEditingSup
 
     @Override
     protected CellEditor getCellEditorByElement(TestCaseTestDataLink element) {
-        return new DataIterationCellEditor((Composite) getViewer().getControl());
+        return new DataIterationCellEditor(getComposite());
     }
 
     @Override

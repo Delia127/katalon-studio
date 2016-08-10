@@ -59,8 +59,8 @@ public class NewProjectDialog extends TitleAreaDialog {
         Composite area = (Composite) super.createDialogArea(parent);
 
         getShell().setText(
-                project == null ? StringConstants.VIEW_TITLE_NEW_PROJ : StringConstants.VIEW_TITLE_UPDATE_PROJ);
-        setTitle(project == null ? StringConstants.VIEW_TITLE_NEW_PROJ : StringConstants.VIEW_TITLE_UPDATE_PROJ);
+                project == null ? StringConstants.VIEW_TITLE_NEW_PROJ : StringConstants.VIEW_TITLE_PROJECT_PROPERTIES);
+        setTitle(project == null ? StringConstants.VIEW_TITLE_NEW_PROJ : StringConstants.VIEW_TITLE_PROJECT_PROPERTIES);
         setMessage(StringConstants.VIEW_MSG_PLS_ENTER_PROJ_INFO);
 
         Composite container = new Composite(area, SWT.NONE);
@@ -149,6 +149,7 @@ public class NewProjectDialog extends TitleAreaDialog {
         });
     }
 
+    @Override
     public void setErrorMessage(String newErrorMessage) {
         if (showError) {
             super.setErrorMessage(newErrorMessage);

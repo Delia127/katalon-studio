@@ -16,11 +16,11 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.entity.file.FileEntity;
 
-public class CommonPropertiesDialog extends AbstractDialog {
+public class CommonPropertiesDialog<T extends FileEntity> extends AbstractDialog {
 
     private boolean isModified;
 
-    private FileEntity entity;
+    private T entity;
 
     protected Text txtId;
 
@@ -30,7 +30,7 @@ public class CommonPropertiesDialog extends AbstractDialog {
 
     protected ModifyListener modifyListener;
 
-    public CommonPropertiesDialog(Shell parentShell, FileEntity entity) {
+    public CommonPropertiesDialog(Shell parentShell, T entity) {
         super(parentShell);
         this.entity = entity;
     }
@@ -115,7 +115,7 @@ public class CommonPropertiesDialog extends AbstractDialog {
         getEntity().setDescription(StringUtils.trimToEmpty(txtDescription.getText()));
     }
 
-    public FileEntity getEntity() {
+    public T getEntity() {
         return entity;
     }
 

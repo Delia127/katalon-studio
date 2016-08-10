@@ -27,6 +27,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String JOB_GENERATE_SCRIPT_MESSAGE = "Generating scripts";
     public static final String JOB_ADDING_OBJECT = "Adding html elements into object repository";
     public static final String JOB_GENERATE_STATEMENT_MESSAGE = "Generating statements";
+    public static final String DIA_MENU_ADD_BASIC_ACTION = "Basic Action";
     public static final String DIA_MENU_ADD_VALIDATION_POINT = "Add Validation Point";
     public static final String DIA_MENU_ADD_SYNCHRONIZE_POINT = "Add Synchronization Point";
     public static final String INSTANT_BROWSER_PREFIX = "Instant ";

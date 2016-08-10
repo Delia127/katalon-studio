@@ -6,6 +6,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +29,19 @@ public class MethodComboBoxCellEditor extends ComboBoxCellEditor {
         } else {
             populateMethodListWithGroovyDefaultMethods();
         }
+        Collections.sort(methods, new Comparator<Method>() {
+            @Override
+            public int compare(Method method_1, Method method_2) {
+                if (method_1 == null || method_2 == null) {
+                    return 0;
+                }
+                int methodNameComparison = method_1.getName().compareTo(method_2.getName());
+                if (methodNameComparison != 0) {
+                    return methodNameComparison;
+                }
+                return method_1.getParameterTypes().length - method_2.getParameterTypes().length;
+            }
+        });
         String[] methodSignatures = new String[methods.size()];
         for (int index = 0; index < methods.size(); index++) {
             methodSignatures[index] = getMethodSignature(methods.get(index));

@@ -3,47 +3,40 @@ package com.kms.katalon.composer.mobile.objectspy.dialog;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnViewerEditor;
-import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
-import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.EditingSupport;
-import org.eclipse.jface.viewers.FocusCellOwnerDrawHighlighter;
-import org.eclipse.jface.viewers.ICellModifier;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.TreeSelection;
-import org.eclipse.jface.viewers.TreeViewerEditor;
-import org.eclipse.jface.viewers.TreeViewerFocusCellManager;
+import org.eclipse.jface.viewers.TreeViewerColumn;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.KeyAdapter;
@@ -64,77 +57,67 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.components.services.SelectionServiceSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.execution.util.MobileDeviceUIProvider;
-import com.kms.katalon.composer.mobile.constants.ImageConstants;
-import com.kms.katalon.composer.mobile.constants.StringConstants;
+import com.kms.katalon.composer.mobile.objectspy.constant.ImageConstants;
+import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
+import com.kms.katalon.composer.mobile.objectspy.element.MobileElementConverter;
+import com.kms.katalon.composer.mobile.objectspy.element.TreeMobileElement;
+import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
+import com.kms.katalon.composer.mobile.objectspy.element.provider.CapturedElementLabelProvider;
+import com.kms.katalon.composer.mobile.objectspy.element.provider.SelectableElementEditingSupport;
 import com.kms.katalon.composer.mobile.objectspy.element.tree.MobileElementLabelProvider;
 import com.kms.katalon.composer.mobile.objectspy.element.tree.MobileElementTreeContentProvider;
-import com.kms.katalon.composer.mobile.objectspy.util.MobileElementUtil;
+import com.kms.katalon.composer.mobile.objectspy.preferences.MobileObjectSpyPreferencesHelper;
+import com.kms.katalon.composer.mobile.objectspy.viewer.CapturedObjectTableViewer;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
-import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.core.mobile.driver.MobileDriverType;
-import com.kms.katalon.core.mobile.keyword.AndroidProperties;
-import com.kms.katalon.core.mobile.keyword.IOSProperties;
 import com.kms.katalon.entity.folder.FolderEntity;
-import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
-import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 
+public class MobileObjectSpyDialog extends Dialog {
 
-public class MobileObjectSpyDialog extends Dialog implements EventHandler {
-
-    public static final Point DIALOG_SIZE = new Point(800, 600);
+    public static final Point DIALOG_SIZE = new Point(800, 800);
 
     private static final String DIALOG_TITLE = StringConstants.DIA_DIALOG_TITLE_MOBILE_OBJ_INSPECTOR;
 
     private static final int DIALOG_MARGIN_OFFSET = 5;
 
-    private Text txtAppFile, txtObjectName;
+    private Text txtAppFile;
 
     private Combo cbbDevices, cbbAppType;
 
-    private Button btnBrowse;
+    private Button btnBrowse, btnRefreshDevice;
 
-    private TableViewer attributesTableViewer;
-
-    private CheckboxTreeViewer elementTreeViewer;
+    private CheckboxTreeViewer allElementTreeViewer;
 
     private ToolItem btnStart, btnCapture, btnAdd, btnStop;
 
-    private MobileElement selectedElement;
+    private TreeMobileElement appRootElement;
 
-    private FolderEntity parentFolder;
-
-    private FolderEntity orsRootNode;
-
-    private MobileElement appRootElement;
-
-    private boolean isDisposed;
+    private boolean disposed;
 
     private String ANDROID_FILTER_NAMES = "Android Application (*.apk)";
 
@@ -154,17 +137,24 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
     private boolean canceledBeforeOpening;
 
+    private CapturedObjectTableViewer capturedObjectsTableViewer;
+
+    private TableColumn tblclmnCapturedObjectsSelection;
+
+    private MobileElementPropertiesComposite propertiesComposite;
+    
+    private MobileObjectSpyPreferencesHelper preferencesHelper;
+
     public boolean isCanceledBeforeOpening() {
         return canceledBeforeOpening;
     }
 
     public MobileObjectSpyDialog(Shell parentShell) throws Exception {
         super(parentShell);
-        setShellStyle(SWT.SHELL_TRIM | SWT.NONE);
-        this.isDisposed = false;
+        setShellStyle(SWT.SHELL_TRIM | SWT.RESIZE);
+        this.disposed = false;
         this.inspectorController = new MobileInspectorController();
-        this.orsRootNode = FolderController.getInstance().getObjectRepositoryRoot(
-                ProjectController.getInstance().getCurrentProject());
+        this.preferencesHelper = new MobileObjectSpyPreferencesHelper();
     }
 
     @Override
@@ -176,17 +166,203 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
         sashForm.setSashWidth(3);
         sashForm.setLayout(new FillLayout());
 
-        Composite explorerComposite = new Composite(sashForm, SWT.NONE);
+        Composite explorerComposite = new Composite(sashForm, SWT.BORDER);
         explorerComposite.setLayout(new GridLayout());
 
         addElementTreeToolbar(explorerComposite);
 
-        Label lblCapturedObjects = new Label(explorerComposite, SWT.NONE);
-        lblCapturedObjects.setFont(getFontBold(lblCapturedObjects));
+        SashForm hSashForm = new SashForm(explorerComposite, SWT.VERTICAL);
+        hSashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+
+        createCapturedObjectsComposite(hSashForm);
+
+        propertiesComposite = new MobileElementPropertiesComposite(this);
+        propertiesComposite.createObjectPropertiesComposite(hSashForm);
+
+        hSashForm.setWeights(new int[] { 1, 1 });
+
+        Composite contentComposite = new Composite(sashForm, SWT.BORDER);
+        contentComposite.setLayout(new GridLayout());
+
+        addStartStopToolbar(contentComposite);
+
+        createSettingComposite(contentComposite);
+
+        createAllObjectsComposite(contentComposite);
+
+        sashForm.setWeights(new int[] { 4, 6 });
+
+        return container;
+    }
+
+    private void createCapturedObjectsComposite(SashForm hSashForm) {
+        Composite capturedObjectsComposite = new Composite(hSashForm, SWT.NONE);
+        capturedObjectsComposite.setLayout(new GridLayout());
+
+        Label lblCapturedObjects = new Label(capturedObjectsComposite, SWT.NONE);
         lblCapturedObjects.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         lblCapturedObjects.setText(StringConstants.DIA_LBL_CAPTURED_OBJECTS);
+        ControlUtils.setFontToBeBold(lblCapturedObjects);
 
-        elementTreeViewer = new CheckboxTreeViewer(explorerComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI) {
+        Composite capturedObjectTableComposite = new Composite(capturedObjectsComposite, SWT.NONE);
+        capturedObjectTableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        TableColumnLayout tbclCapturedObjects = new TableColumnLayout();
+        capturedObjectTableComposite.setLayout(tbclCapturedObjects);
+
+        capturedObjectsTableViewer = new CapturedObjectTableViewer(capturedObjectTableComposite,
+                SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION, this);
+        Table capturedObjectsTable = capturedObjectsTableViewer.getTable();
+        capturedObjectsTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+        capturedObjectsTable.setHeaderVisible(true);
+        capturedObjectsTable.setLinesVisible(true);
+
+        TableViewerColumn tbvclCapturedObjectsSelection = new TableViewerColumn(capturedObjectsTableViewer, SWT.NONE);
+        tblclmnCapturedObjectsSelection = tbvclCapturedObjectsSelection.getColumn();
+        tbvclCapturedObjectsSelection.setLabelProvider(new CapturedElementLabelProvider(
+                CapturedElementLabelProvider.SELECTION_COLUMN_IDX));
+        tbvclCapturedObjectsSelection.setEditingSupport(new SelectableElementEditingSupport(capturedObjectsTableViewer));
+
+        TableViewerColumn tableViewerColumnCapturedObjects = new TableViewerColumn(capturedObjectsTableViewer, SWT.NONE);
+        TableColumn tblclmnCapturedObjects = tableViewerColumnCapturedObjects.getColumn();
+        tblclmnCapturedObjects.setText(StringConstants.NAME);
+        tableViewerColumnCapturedObjects.setLabelProvider(new CapturedElementLabelProvider(
+                CapturedElementLabelProvider.ELEMENT_COLUMN_IDX));
+
+        capturedObjectsTableViewer.setContentProvider(ArrayContentProvider.getInstance());
+
+        tbclCapturedObjects.setColumnData(tblclmnCapturedObjectsSelection, new ColumnWeightData(0, 30));
+        tbclCapturedObjects.setColumnData(tblclmnCapturedObjects, new ColumnWeightData(60));
+
+        capturedObjectsTable.setToolTipText(StringUtils.EMPTY);
+        ColumnViewerToolTipSupport.enableFor(capturedObjectsTableViewer);
+
+        capturedObjectsTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+                CapturedMobileElement firstElement = (CapturedMobileElement) selection.getFirstElement();
+                propertiesComposite.setEditingElement(firstElement);
+                highlightObject(firstElement);
+            }
+        });
+
+        capturedObjectsTable.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                CapturedMobileElement[] elements = capturedObjectsTableViewer.getSelectedElements();
+                if (elements == null || elements.length == 0) {
+                    return;
+                }
+                switch (e.keyCode) {
+                    case SWT.DEL: {
+                        removeSelectedCapturedElements(elements);
+                        break;
+                    }
+                    case SWT.F5: {
+                        verifyCapturedElementsStates(elements);
+                        break;
+                    }
+                    case SWT.F2: {
+                        if (elements.length == 1) {
+                            propertiesComposite.focusAndEditCapturedElementName();
+                        }
+                        break;
+                    }
+                }
+            }
+        });
+
+        capturedObjectsTableViewer.addDoubleClickListener(new IDoubleClickListener() {
+
+            @Override
+            public void doubleClick(DoubleClickEvent event) {
+                CapturedMobileElement mobileElement = capturedObjectsTableViewer.getSelectedElement();
+                TreeMobileElement link = mobileElement.getLink();
+                if (link != null) {
+                    allElementTreeViewer.setSelection(new StructuredSelection(link));
+                    allElementTreeViewer.getTree().setFocus();
+                }
+            }
+        });
+
+        tblclmnCapturedObjectsSelection.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                capturedObjectsTableViewer.checkAllElements(!capturedObjectsTableViewer.isAllElementChecked());
+            }
+        });
+    }
+
+    public void updateCapturedElementSelectingColumnHeader() {
+        tblclmnCapturedObjectsSelection.setImage(capturedObjectsTableViewer.isAllElementChecked()
+                ? ImageConstants.IMG_16_CHECKED : ImageConstants.IMG_16_UNCHECKED);
+        btnAdd.setEnabled(capturedObjectsTableViewer.isAnyElementChecked());
+    }
+
+    private void verifyCapturedElementsStates(CapturedMobileElement[] elements) {
+        // clear previous state
+        clearAllObjectState(elements);
+
+        if (appRootElement != null) {
+            for (CapturedMobileElement needToVerify : elements) {
+                TreeMobileElement foundElement = appRootElement.findBestMatch(needToVerify);
+                if (foundElement == null) {
+                    continue;
+                }
+                needToVerify.setLink(foundElement);
+                foundElement.setCapturedElement(needToVerify);
+                allElementTreeViewer.setChecked(foundElement, true);
+            }
+        }
+
+        allElementTreeViewer.refresh();
+        capturedObjectsTableViewer.refresh();
+    }
+
+    private void removeSelectedCapturedElements(CapturedMobileElement[] elements) {
+        clearAllObjectState(elements);
+        allElementTreeViewer.refresh();
+
+        capturedObjectsTableViewer.removeCapturedElements(Arrays.asList(elements));
+
+        propertiesComposite.setEditingElement(null);
+    }
+
+    private void clearAllObjectState(CapturedMobileElement[] elements) {
+        for (CapturedMobileElement captured : elements) {
+            TreeMobileElement treeElementLink = captured.getLink();
+            if (treeElementLink == null) {
+                continue;
+            }
+            treeElementLink.setCapturedElement(null);
+            captured.setLink(null);
+
+            Tree elementTree = allElementTreeViewer.getTree();
+            if (elementTree != null && !elementTree.isDisposed() && allElementTreeViewer.getChecked(treeElementLink)) {
+                allElementTreeViewer.setChecked(treeElementLink, false);
+            }
+        }
+    }
+
+    private void createAllObjectsComposite(Composite parentComposite) {
+        Composite allObjectsComposite = new Composite(parentComposite, SWT.NONE);
+        allObjectsComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        allObjectsComposite.setLayout(new GridLayout());
+
+        Label lblAllObjects = new Label(allObjectsComposite, SWT.NONE);
+        lblAllObjects.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        lblAllObjects.setFont(getFontBold(lblAllObjects));
+        lblAllObjects.setText(StringConstants.DIA_LBL_ALL_OBJECTS);
+
+        Composite allObjectsTreeComposite = new Composite(allObjectsComposite, SWT.NONE);
+        allObjectsTreeComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        TreeColumnLayout tbclAllObjects = new TreeColumnLayout();
+        allObjectsTreeComposite.setLayout(tbclAllObjects);
+
+        allElementTreeViewer = new CheckboxTreeViewer(allObjectsTreeComposite, SWT.BORDER | SWT.FULL_SELECTION
+                | SWT.MULTI) {
             @Override
             public boolean setSubtreeChecked(Object element, boolean state) {
                 Widget widget = internalExpand(element, false);
@@ -199,77 +375,78 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
             }
         };
 
-        MobileElementTreeContentProvider contentProvider = new MobileElementTreeContentProvider();
-        elementTreeViewer.getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
+        TreeViewerColumn treeViewerColumn = new TreeViewerColumn(allElementTreeViewer, SWT.NONE);
+        TreeColumn treeColumn = treeViewerColumn.getColumn();
+        tbclAllObjects.setColumnData(treeColumn, new ColumnWeightData(98));
 
-        elementTreeViewer.setContentProvider(contentProvider);
-        elementTreeViewer.setLabelProvider(new MobileElementLabelProvider());
+        treeViewerColumn.setLabelProvider(new MobileElementLabelProvider());
 
-        elementTreeViewer.setCellEditors(new CellEditor[] { new TextCellEditor(elementTreeViewer.getTree()) });
-        elementTreeViewer.setColumnProperties(new String[] { "col1" });
-        elementTreeViewer.setCellModifier(new ICellModifier() {
+        allElementTreeViewer.setContentProvider(new MobileElementTreeContentProvider());
+        
+        allElementTreeViewer.getTree().setToolTipText(StringUtils.EMPTY);
+        ColumnViewerToolTipSupport.enableFor(allElementTreeViewer, ToolTip.NO_RECREATE);
 
-            public boolean canModify(Object element, String property) {
-                return true;
-            }
-
-            public Object getValue(Object element, String property) {
-                return ((MobileElement) element).getName();
-            }
-
-            public void modify(Object element, String property, Object value) {
-                element = ((Item) element).getData();
-                ((MobileElement) element).setName(value.toString());
-                elementTreeViewer.update(element, null);
-            }
-        });
-
-        TreeViewerFocusCellManager focusCellManager = new TreeViewerFocusCellManager(elementTreeViewer,
-                new FocusCellOwnerDrawHighlighter(elementTreeViewer));
-        ColumnViewerEditorActivationStrategy actSupport = new ColumnViewerEditorActivationStrategy(elementTreeViewer) {
-            protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
-                return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL
-                        || event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION
-                        || (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && event.keyCode == SWT.CR)
-                        || event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC;
-            }
-        };
-
-        TreeViewerEditor.create(elementTreeViewer, focusCellManager, actSupport, ColumnViewerEditor.TABBING_HORIZONTAL
-                | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR | ColumnViewerEditor.TABBING_VERTICAL
-                | ColumnViewerEditor.KEYBOARD_ACTIVATION);
-
-        elementTreeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+        allElementTreeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            @Override
             public void selectionChanged(SelectionChangedEvent event) {
-                if (event.getSelection() instanceof TreeSelection) {
-                    TreeSelection treeSelection = (TreeSelection) event.getSelection();
-                    if (treeSelection.getFirstElement() instanceof MobileElement) {
-                        selectedElement = (MobileElement) treeSelection.getFirstElement();
-                        refreshAttributesTable(selectedElement);
-                        highLightObject(selectedElement);
-                    }
+                TreeSelection treeSelection = (TreeSelection) event.getSelection();
+                if (treeSelection.getFirstElement() instanceof MobileElement) {
+                    highlightObject((MobileElement) treeSelection.getFirstElement());
                 }
             }
-
         });
 
-        Composite contentComposite = new Composite(sashForm, SWT.NONE);
-        GridLayout glContentComposite = new GridLayout(3, false);
-        contentComposite.setLayout(glContentComposite);
+        allElementTreeViewer.addCheckStateListener(new ICheckStateListener() {
+            @Override
+            public void checkStateChanged(CheckStateChangedEvent event) {
+                TreeMobileElement selectedElement = (TreeMobileElement) event.getElement();
+                if (event.getChecked()) {
+                    List<CapturedMobileElement> mobileElements = new ArrayList<>();
+                    mobileElements.add(selectedElement.newCapturedElement());
+                    capturedObjectsTableViewer.addMobileElements(mobileElements);
 
-        addStartStopToolbar(contentComposite);
+                    propertiesComposite.focusAndEditCapturedElementName();
+                } else {
+                    CapturedMobileElement capturedElement = selectedElement.getCapturedElement();
+                    if (capturedObjectsTableViewer.contains(capturedElement)) {
+                        capturedObjectsTableViewer.removeCapturedElement(capturedElement);
+                        selectedElement.setCapturedElement(null);
+                        propertiesComposite.setEditingElement(null);
+                    }
+                }
+                allElementTreeViewer.refresh(selectedElement);
+            }
+        });
+    }
 
-        Label lblConfiguration = new Label(contentComposite, SWT.NONE);
+    private void createSettingComposite(Composite parent) {
+        Composite settingComposite = new Composite(parent, SWT.NONE);
+        settingComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        GridLayout glSettingComposite = new GridLayout(2, false);
+        glSettingComposite.horizontalSpacing = 10;
+        settingComposite.setLayout(glSettingComposite);
+
+        Label lblConfiguration = new Label(settingComposite, SWT.NONE);
+        lblConfiguration.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         lblConfiguration.setFont(getFontBold(lblConfiguration));
-        lblConfiguration.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, glContentComposite.numColumns, 1));
         lblConfiguration.setText(StringConstants.DIA_LBL_CONFIGURATIONS);
 
         // Device Name
-        Label nameLabel = new Label(contentComposite, SWT.NONE);
-        nameLabel.setText(StringConstants.DIA_LBL_DEVICE_NAME);
+        Label lblDeviceName = new Label(settingComposite, SWT.NONE);
+        GridData gdDeviceName = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
+        gdDeviceName.widthHint = 100;
+        lblDeviceName.setLayoutData(gdDeviceName);
+        lblDeviceName.setText(StringConstants.DIA_LBL_DEVICE_NAME);
 
-        cbbDevices = new Combo(contentComposite, SWT.READ_ONLY);
-        cbbDevices.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        Composite devicesComposite = new Composite(settingComposite, SWT.NONE);
+        devicesComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+        GridLayout glDevicesComposite = new GridLayout(2, false);
+        glDevicesComposite.marginHeight = 0;
+        glDevicesComposite.marginWidth = 0;
+        devicesComposite.setLayout(glDevicesComposite);
+
+        cbbDevices = new Combo(devicesComposite, SWT.READ_ONLY);
+        cbbDevices.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         cbbDevices.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -277,12 +454,21 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
             }
         });
 
+        btnRefreshDevice = new Button(devicesComposite, SWT.FLAT);
+        btnRefreshDevice.setText(StringConstants.REFRESH);
+        btnRefreshDevice.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                updateDeviceNames();
+            }
+        });
+
         // Application Type
-        Label typeLabel = new Label(contentComposite, SWT.NONE);
+        Label typeLabel = new Label(settingComposite, SWT.NONE);
         typeLabel.setText(StringConstants.DIA_LBL_APP_TYPE);
 
-        cbbAppType = new Combo(contentComposite, SWT.READ_ONLY);
-        cbbAppType.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        cbbAppType = new Combo(settingComposite, SWT.READ_ONLY);
+        cbbAppType.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         cbbAppType.setItems(new String[] { StringConstants.DIA_APP_TYPE_NATIVE_APP });
         cbbAppType.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -292,24 +478,27 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
         });
 
         // Application File location
-        Label appFileLabel = new Label(contentComposite, SWT.NONE);
+        Label appFileLabel = new Label(settingComposite, SWT.NONE);
         appFileLabel.setText(StringConstants.DIA_LBL_APP_FILE);
 
-        txtAppFile = new Text(contentComposite, SWT.READ_ONLY | SWT.BORDER);
+        Composite appFileChooserComposite = new Composite(settingComposite, SWT.NONE);
+        appFileChooserComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        GridLayout glAppFileChooserComposite = new GridLayout(2, false);
+        glAppFileChooserComposite.marginHeight = 0;
+        glAppFileChooserComposite.marginWidth = 0;
+        appFileChooserComposite.setLayout(glAppFileChooserComposite);
+        txtAppFile = new Text(appFileChooserComposite, SWT.READ_ONLY | SWT.BORDER);
         txtAppFile.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtAppFile.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                if (selectedElement != null) {
-                    selectedElement.setType(txtAppFile.getText());
-                }
                 validateToEnableStartButton();
             }
         });
 
-        btnBrowse = new Button(contentComposite, SWT.PUSH);
-        btnBrowse.setText(StringConstants.DIA_BTN_BROWSE);
+        btnBrowse = new Button(appFileChooserComposite, SWT.PUSH);
         btnBrowse.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+        btnBrowse.setText(StringConstants.DIA_BTN_BROWSE);
         btnBrowse.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -317,77 +506,24 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
                 dialog.setFilterNames(getFilterNames());
                 dialog.setFilterExtensions(getFilterExtensions());
                 String absolutePath = dialog.open();
-                if (absolutePath == null)
+                if (StringUtils.isEmpty(absolutePath)) {
                     return;
+                }
+                preferencesHelper.setLastAppFile(absolutePath);
                 txtAppFile.setText(absolutePath);
             }
         });
-
-        GridData gdMarginTop15 = new GridData(SWT.FILL, SWT.CENTER, true, false, glContentComposite.numColumns, 1);
-        gdMarginTop15.verticalIndent = 15;
-        Label lblObjectProperties = new Label(contentComposite, SWT.NONE);
-        lblObjectProperties.setFont(getFontBold(lblObjectProperties));
-        lblObjectProperties.setLayoutData(gdMarginTop15);
-        lblObjectProperties.setText(StringConstants.DIA_LBL_OBJECT_PROPERTIES);
-
-        // Object Name
-        Label objectNameLabel = new Label(contentComposite, SWT.NONE);
-        objectNameLabel.setText(StringConstants.DIA_LBL_OBJECT_NAME);
-
-        txtObjectName = new Text(contentComposite, SWT.BORDER);
-        txtObjectName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        txtObjectName.setToolTipText(StringConstants.DIA_TOOLTIP_OBJECT_NAME);
-        txtObjectName.addKeyListener(new KeyAdapter() {
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-                if (selectedElement == null)
-                    return;
-                switch (e.keyCode) {
-                    case SWT.CR:
-                        String objectName = txtObjectName.getText();
-                        if (isNotBlank(objectName) && !StringUtils.equals(selectedElement.getName(), objectName)) {
-                            selectedElement.setName(objectName);
-                            elementTreeViewer.update(selectedElement, new String[] { "name" });
-                        }
-                        break;
-                    case SWT.ESC:
-                        txtObjectName.setText(selectedElement.getName());
-                        break;
-                }
-            }
-        });
-
-        Composite attributesTableComposite = new Composite(contentComposite, SWT.NONE);
-
-        TableColumnLayout tableColumnLayout = new TableColumnLayout();
-        attributesTableComposite.setLayout(tableColumnLayout);
-
-        GridData attributesTableCompositeGridData = new GridData(SWT.LEFT, SWT.CENTER, true, true,
-                glContentComposite.numColumns, 1);
-        attributesTableCompositeGridData.heightHint = 10000;
-        attributesTableCompositeGridData.widthHint = 10000;
-        attributesTableComposite.setLayoutData(attributesTableCompositeGridData);
-
-        attributesTableViewer = new TableViewer(attributesTableComposite, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL
-                | SWT.FULL_SELECTION | SWT.BORDER);
-
-        createColumns(attributesTableViewer, tableColumnLayout);
-
-        // make lines and header visible
-        final Table table = attributesTableViewer.getTable();
-
-        table.setHeaderVisible(true);
-        table.setLinesVisible(true);
-        attributesTableViewer.setContentProvider(ArrayContentProvider.getInstance());
-
-        attributesTableViewer.setInput(Collections.emptyList());
-
-        sashForm.setWeights(new int[] { 1, 1 });
-
-        return container;
     }
-    
+
+    /* package */void updateSelectedElement(CapturedMobileElement selectedElement) {
+        capturedObjectsTableViewer.refresh(selectedElement, true);
+        TreeMobileElement element = selectedElement.getLink();
+        if (element != null) {
+            allElementTreeViewer.refresh(element);
+            allElementTreeViewer.setSelection(new StructuredSelection(element));
+        }
+    }
+
     private void validateToEnableStartButton() {
         boolean ableToStart = isNotBlank(txtAppFile.getText()) && cbbDevices.getSelectionIndex() >= 0
                 && cbbAppType.getSelectionIndex() >= 0;
@@ -399,21 +535,22 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
         super.create();
 
         updateDeviceNames();
+
+        cbbAppType.select(0);
+        txtAppFile.setText(preferencesHelper.getLastAppFile());
+        validateToEnableStartButton();
+
+        capturedObjectsTableViewer.setCapturedElements(new ArrayList<CapturedMobileElement>());
     }
 
     private void updateDeviceNames() {
         try {
+            ControlUtils.recursiveSetEnabled(container, false);
             new ProgressMonitorDialogWithThread(getShell()).run(true, true, new IRunnableWithProgress() {
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     monitor.beginTask(StringConstants.DIA_JOB_TASK_LOADING_DEVICES, IProgressMonitor.UNKNOWN);
-                    UISynchronizeService.syncExec(new Runnable() {
-                        @Override
-                        public void run() {
-                            ControlUtils.recursiveSetEnabled(container, false);
 
-                        }
-                    });
                     final List<String> devices = getAllDevicesName();
 
                     checkMonitorCanceled(monitor);
@@ -423,10 +560,8 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
                         public void run() {
                             if (!devices.isEmpty()) {
                                 cbbDevices.setItems(devices.toArray(new String[] {}));
-
-                                cbbDevices.select(0);
+                                cbbDevices.select(Math.max(0, devices.indexOf(cbbDevices.getText())));
                             }
-                            ControlUtils.recursiveSetEnabled(container, true);
                         }
                     });
 
@@ -442,9 +577,12 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
             MultiStatusErrorDialog.showErrorDialog(targetException,
                     StringConstants.DIA_ERROR_UNABLE_TO_COLLECT_DEVICES, targetException.getClass().getSimpleName());
             canceledBeforeOpening = true;
+        } finally {
+            ControlUtils.recursiveSetEnabled(container, true);
+            validateToEnableStartButton();
         }
     }
-    
+
     @Override
     public int open() {
         try {
@@ -474,18 +612,7 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
     private void addElementTreeToolbar(Composite explorerComposite) {
         ToolBar elementTreeToolbar = new ToolBar(explorerComposite, SWT.FLAT | SWT.RIGHT);
-
-        btnCapture = new ToolItem(elementTreeToolbar, SWT.NONE);
-        btnCapture.setImage(ImageConstants.IMG_24_CAPTURE);
-        btnCapture.setText(StringConstants.DIA_TIP_CAPTURE_OBJ);
-        btnCapture.setToolTipText(StringConstants.DIA_TIP_CAPTURE_OBJ);
-        btnCapture.setEnabled(false);
-        btnCapture.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                captureObjectAction();
-            }
-        });
+        elementTreeToolbar.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
         btnAdd = new ToolItem(elementTreeToolbar, SWT.NONE);
         btnAdd.setImage(ImageConstants.IMG_24_NEW_TEST_OBJECT);
@@ -496,48 +623,60 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 try {
-                    if (appRootElement != null) {
-                        // eventBroker.send(EventConstants.OBJECT_SPY_RESET_SELECTED_TARGET, "");
-                        parentFolder = findSelectedFolderInExplorer();
-                        if (parentFolder == null || parentFolder == orsRootNode) {
-                            parentFolder = orsRootNode;
-                            FolderEntity appRootFolderEntity = FolderController.getInstance().getFolder(
-                                    orsRootNode.getLocation() + File.separator + appRootElement.getName());
-                            if (appRootFolderEntity == null) {
-                                FolderEntity folder = MobileElementUtil.convertPageElementToFolderEntity(
-                                        appRootElement, parentFolder);
-                                parentFolder = ObjectRepositoryController.getInstance().importWebElementFolder(folder,
-                                        parentFolder);
-                            } else {
-                                parentFolder = appRootFolderEntity;
-                            }
-                        }
-                        for (MobileElement childOfRoot : appRootElement.getChildrenElement()) {
-                            addElement(childOfRoot, parentFolder);
-                        }
-                        // Clear all selected element
-                        for (Object obj : elementTreeViewer.getCheckedElements()) {
-                            elementTreeViewer.setChecked(obj, false);
-                        }
-                        IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
-                        // Refresh explorer
-                        eventBroker.send(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, new FolderTreeEntity(
-                                parentFolder, null));
-                        eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);
+                    AddElementToObjectRepositoryDialog dialog = new AddElementToObjectRepositoryDialog(getParentShell());
+                    if (dialog.open() != Dialog.OK) {
+                        return;
                     }
+                    FolderTreeEntity folderTreeEntity = dialog.getSelectedFolderTreeEntity();
+                    FolderEntity folder = (FolderEntity) folderTreeEntity.getObject();
+                    List<ITreeEntity> newTreeEntities = addElementsToRepository(folderTreeEntity, folder);
+                    removeSelectedCapturedElements(capturedObjectsTableViewer.getAllCheckedElements().toArray(
+                            new CapturedMobileElement[0]));
+                    updateExplorerState(folderTreeEntity, newTreeEntities);
                 } catch (Exception ex) {
                     LoggerSingleton.logError(ex);
                     MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, ex.getMessage());
                 }
             }
-        });
 
+            private void updateExplorerState(FolderTreeEntity folderTreeEntity, List<ITreeEntity> newTreeEntities) {
+                IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
+                eventBroker.send(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, folderTreeEntity);
+                eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEMS, newTreeEntities.toArray());
+            }
+
+            private List<ITreeEntity> addElementsToRepository(FolderTreeEntity folderTreeEntity, FolderEntity folder)
+                    throws Exception {
+                MobileElementConverter converter = new MobileElementConverter();
+                List<ITreeEntity> newTreeEntities = new ArrayList<>();
+
+                ObjectRepositoryController objectRepositoryController = ObjectRepositoryController.getInstance();
+                MobileDeviceInfo mobileDeviceInfo = getMobileDeviceInfo();
+                for (CapturedMobileElement mobileElement : capturedObjectsTableViewer.getAllCheckedElements()) {
+                    WebElementEntity testObject = converter.convert(mobileElement, folder, mobileDeviceInfo);
+                    objectRepositoryController.updateTestObject(testObject);
+                    newTreeEntities.add(new WebElementTreeEntity(testObject, folderTreeEntity));
+                }
+                return newTreeEntities;
+            }
+        });
     }
 
     private void addStartStopToolbar(Composite contentComposite) {
         ToolBar contentToolbar = new ToolBar(contentComposite, SWT.FLAT | SWT.RIGHT);
-        GridLayout parentLayout = (GridLayout) contentComposite.getLayout();
-        contentToolbar.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false, parentLayout.numColumns, 1));
+        contentToolbar.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
+
+        btnCapture = new ToolItem(contentToolbar, SWT.NONE);
+        btnCapture.setImage(ImageConstants.IMG_24_CAPTURE);
+        btnCapture.setText(StringConstants.DIA_TIP_CAPTURE_OBJ);
+        btnCapture.setToolTipText(StringConstants.DIA_TIP_CAPTURE_OBJ);
+        btnCapture.setEnabled(false);
+        btnCapture.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                captureObjectAction();
+            }
+        });
 
         btnStart = new ToolItem(contentToolbar, SWT.NONE);
         btnStart.setImage(ImageConstants.IMG_24_START_DEVICE);
@@ -568,103 +707,14 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
     }
 
-    @SuppressWarnings("unchecked")
-    private void createColumns(TableViewer viewer, TableColumnLayout tableColumnLayout) {
-        TableViewerColumn keyColumn = new TableViewerColumn(viewer, SWT.NONE);
-        keyColumn.getColumn().setWidth(100);
-        keyColumn.getColumn().setText(StringConstants.DIA_COL_NAME);
-        keyColumn.setLabelProvider(new ColumnLabelProvider() {
-            @Override
-            public String getText(Object element) {
-                if (element instanceof Entry) {
-                    Entry<String, String> entry = (Entry<String, String>) element;
-                    if (entry.getKey() != null) {
-                        return entry.getKey().toString();
-                    }
-                }
-                return "";
-            }
-        });
-
-        TableViewerColumn valueColumn = new TableViewerColumn(viewer, SWT.NONE);
-        valueColumn.getColumn().setWidth(200);
-        valueColumn.getColumn().setText(StringConstants.DIA_COL_VALUE);
-        valueColumn.setLabelProvider(new ColumnLabelProvider() {
-            @Override
-            public String getText(Object element) {
-                if (element instanceof Entry) {
-                    Entry<String, String> entry = (Entry<String, String>) element;
-                    if (entry.getValue() != null) {
-                        return entry.getValue().toString();
-                    }
-                }
-                return "";
-            }
-        });
-
-        valueColumn.setEditingSupport(new EditingSupport(viewer) {
-            @Override
-            protected void setValue(Object element, Object value) {
-                if (element instanceof Entry && value instanceof String) {
-                    Entry<String, String> entry = (Entry<String, String>) element;
-                    entry.setValue(String.valueOf(value));
-                    attributesTableViewer.refresh(element);
-                }
-            }
-
-            @Override
-            protected Object getValue(Object element) {
-                if (element instanceof Entry) {
-                    Entry<String, String> entry = (Entry<String, String>) element;
-                    if (entry.getValue() != null) {
-                        return entry.getValue().toString();
-                    }
-                }
-                return "";
-            }
-
-            @Override
-            protected CellEditor getCellEditor(Object element) {
-                if (element instanceof Entry) {
-                    return new TextCellEditor(attributesTableViewer.getTable());
-                }
-                return null;
-            }
-
-            @Override
-            protected boolean canEdit(Object element) {
-                if (element instanceof Entry) {
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        tableColumnLayout.setColumnData(keyColumn.getColumn(), new ColumnWeightData(20, 100, true));
-        tableColumnLayout.setColumnData(valueColumn.getColumn(), new ColumnWeightData(80, 200, true));
-
-    }
-
     @Override
     protected void handleShellCloseEvent() {
         super.handleShellCloseEvent();
         dispose();
     }
 
-    private void addElement(MobileElement element, FolderEntity parentFolder) throws Exception {
-        if (elementTreeViewer.getChecked(element) || elementTreeViewer.getGrayed(element)) {
-            WebElementEntity convertedElement = MobileElementUtil.convertElementToWebElementEntity(element, null,
-                    parentFolder);
-            autoSelectObjectProperties(convertedElement);
-            ObjectRepositoryController.getInstance().importWebElement(convertedElement, parentFolder);
-        }
-        for (MobileElement childElement : element.getChildrenElement()) {
-            addElement(childElement, parentFolder);
-        }
-    }
-
     public void dispose() {
-        isDisposed = true;
+        disposed = true;
     }
 
     /**
@@ -681,65 +731,43 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
         shell.setText(DIALOG_TITLE);
     }
 
-    @Override
-    public void handleEvent(Event event) {
-    }
-
-    // Should to allow edit Object name when user select an Object
-    private void refreshAttributesTable(MobileElement selectedElement) {
-        if (selectedElement != null) {
-            txtObjectName.setText(selectedElement.getName());
-            attributesTableViewer.setInput(new ArrayList<>(selectedElement.getAttributes().entrySet()));
-        } else {
-            attributesTableViewer.setInput(Collections.emptyList());
-        }
-        attributesTableViewer.refresh();
-    }
-
     // Highlight Selected object on captured screenshot
-    private void highLightObject(MobileElement selectedElement) {
-        if (selectedElement == null) {
+    private void highlightObject(MobileElement selectedElement) {
+        if (selectedElement == null || deviceView == null || deviceView.isDisposed()) {
             return;
         }
 
         deviceView.highlightElement(selectedElement);
     }
 
-    public boolean isOutOfBound(Rectangle displayBounds, Point dialogSize, int startX) {
+    private boolean isOutOfBound(Rectangle displayBounds, Point dialogSize, int startX) {
         return startX < 0 || startX + dialogSize.x > displayBounds.width + displayBounds.x;
     }
 
-    public int getDeviceViewStartXIfPlaceRight(Rectangle objectSpyViewBounds) {
+    private int getDeviceViewStartXIfPlaceRight(Rectangle objectSpyViewBounds) {
         return objectSpyViewBounds.x + objectSpyViewBounds.width + DIALOG_MARGIN_OFFSET;
     }
 
-    public int getDeviceViewStartXIfPlaceLeft(Rectangle objectSpyViewBounds, Point dialogSize) {
+    private int getDeviceViewStartXIfPlaceLeft(Rectangle objectSpyViewBounds, Point dialogSize) {
         return objectSpyViewBounds.x - dialogSize.x - DIALOG_MARGIN_OFFSET;
     }
 
-    public int getDefaultDeviceViewDialogStartX(Rectangle displayBounds, Point dialogSize) {
+    private int getDefaultDeviceViewDialogStartX(Rectangle displayBounds, Point dialogSize) {
         return displayBounds.width - dialogSize.x;
     }
 
-    public Point calculateInitPositionForObjectSpyDialog() {
-        Rectangle displayBounds = getShell().getDisplay().getBounds();
-        Point dialogSize = MobileObjectSpyDialog.DIALOG_SIZE;
-        return new Point(calculateObjectSpyDialogStartX(displayBounds, dialogSize), calculateObjectSpyDialogStartY(
-                displayBounds, dialogSize));
-    }
-
-    public int calculateObjectSpyDialogStartX(Rectangle displayBounds, Point dialogSize) {
+    private int calculateObjectSpyDialogStartX(Rectangle displayBounds, Point dialogSize) {
         int dialogsWidth = dialogSize.x + MobileDeviceDialog.DIALOG_SIZE.x;
         int startX = (displayBounds.width - dialogsWidth) / 2 + displayBounds.x;
         return Math.max(startX, 0);
     }
 
-    public int calculateObjectSpyDialogStartY(Rectangle displayBounds, Point dialogSize) {
+    private int calculateObjectSpyDialogStartY(Rectangle displayBounds, Point dialogSize) {
         int startY = displayBounds.height - dialogSize.y;
         return Math.max(startY, 0) / 2;
     }
 
-    public Point calculateInitPositionForDeviceViewDialog() {
+    private Point calculateInitPositionForDeviceViewDialog() {
         Rectangle displayBounds = getShell().getMonitor().getBounds();
         Point dialogSize = MobileDeviceDialog.DIALOG_SIZE;
         Rectangle objectSpyViewBounds = getShell().getBounds();
@@ -753,7 +781,7 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
         return new Point(startX, objectSpyViewBounds.y);
     }
 
-    public void openDeviceView() {
+    private void openDeviceView() {
         if (deviceView != null && !deviceView.isDisposed()) {
             return;
         }
@@ -806,8 +834,11 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
                     @Override
                     public void run() {
                         dialog.setCancelable(false);
-                        elementTreeViewer.setInput(new Object[] { appRootElement });
-                        elementTreeViewer.refresh();
+                        allElementTreeViewer.setInput(new Object[] { appRootElement });
+                        allElementTreeViewer.refresh();
+                        allElementTreeViewer.expandAll();
+                        verifyCapturedElementsStates(capturedObjectsTableViewer.getCapturedElements().toArray(
+                                new CapturedMobileElement[0]));
                         dialog.setCancelable(true);
                     }
                 });
@@ -840,8 +871,7 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
             LoggerSingleton.logError(e);
             Throwable exception = e.getTargetException();
             MultiStatusErrorDialog.showErrorDialog(exception, StringConstants.DIA_ERROR_UNABLE_TO_CAPTURE_OBJECTS,
-                    exception.getClass()
-                    .getSimpleName());
+                    exception.getClass().getSimpleName());
         } finally {
             btnCapture.setEnabled(true);
         }
@@ -854,15 +884,7 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
     }
 
     public boolean isDisposed() {
-        return isDisposed;
-    }
-
-    public FolderEntity getParentFolder() {
-        return parentFolder;
-    }
-
-    public void setParentFolder(FolderEntity parentFolder) {
-        this.parentFolder = parentFolder;
+        return disposed;
     }
 
     private void startObjectInspectorAction() {
@@ -886,7 +908,6 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
                     btnStart.setEnabled(true);
                     btnStop.setEnabled(false);
                     btnCapture.setEnabled(false);
-                    btnAdd.setEnabled(false);
                 }
             };
 
@@ -918,21 +939,20 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
             captureObjectAction();
             // If no exception, application has been successful started, enable more features
-            btnAdd.setEnabled(true);
             btnCapture.setEnabled(true);
             btnStop.setEnabled(true);
-        } catch (Exception ex) {
+        } catch (InvocationTargetException | InterruptedException ex) {
             // If user intentionally cancel the progress, don't need to show error message
-            if (!StringConstants.DIA_ERROR_MSG_OPERATION_CANCELED.equals(ex.getMessage())) {
+            if (ex instanceof InvocationTargetException) {
                 MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
-                        StringConstants.DIA_ERROR_MSG_CANNOT_START_APP_ON_CURRENT_DEVICE + ": " + ex.getMessage());
-                // Enable start button and show error dialog if application cannot start
-                btnStart.setEnabled(true);
-                btnStop.setEnabled(false);
-                btnCapture.setEnabled(false);
-                btnAdd.setEnabled(false);
+                        StringConstants.DIA_ERROR_MSG_CANNOT_START_APP_ON_CURRENT_DEVICE + ": "
+                                + ((InvocationTargetException) ex).getTargetException().getMessage());
             }
 
+            // Enable start button and show error dialog if application cannot start
+            btnStart.setEnabled(true);
+            btnStop.setEnabled(false);
+            btnCapture.setEnabled(false);
         }
     }
 
@@ -952,10 +972,9 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
             btnStart.setEnabled(true);
             btnStop.setEnabled(false);
             btnCapture.setEnabled(false);
-            btnAdd.setEnabled(false);
 
-            elementTreeViewer.setInput(new Object[] {});
-            elementTreeViewer.refresh();
+            allElementTreeViewer.setInput(new Object[] {});
+            allElementTreeViewer.refresh();
         }
 
         if (deviceView != null) {
@@ -967,13 +986,13 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
     private boolean validateData() {
         if (cbbDevices.getSelectionIndex() < 0) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+            MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,
                     StringConstants.DIA_ERROR_MSG_PLS_CONNECT_AND_SELECT_DEVICE);
             return false;
         }
 
         if (cbbAppType.getSelectionIndex() < 0) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+            MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,
                     StringConstants.DIA_ERROR_MSG_PLS_SELECT_APP_TYPE);
             return false;
         }
@@ -981,14 +1000,14 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
         String appFilePath = txtAppFile.getText().trim();
 
         if (appFilePath.equals("")) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+            MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,
                     StringConstants.DIA_ERROR_MSG_PLS_SELECT_APP_FILE);
             return false;
         }
         File appFile = new File(appFilePath);
 
-        if (appFile.isDirectory() && !appFile.getName().endsWith(".app")) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+        if (!appFile.exists()) {
+            MessageDialog.openWarning(getShell(), StringConstants.ERROR_TITLE,
                     StringConstants.DIA_ERROR_MSG_APP_FILE_NOT_EXIST);
             return false;
         }
@@ -997,7 +1016,7 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
 
     @Override
     protected void setShellStyle(int newShellStyle) {
-        super.setShellStyle(SWT.CLOSE | SWT.MODELESS | SWT.BORDER | SWT.TITLE);
+        super.setShellStyle(newShellStyle | SWT.CLOSE | SWT.MODELESS | SWT.BORDER | SWT.TITLE);
         setBlockOnOpen(false);
     }
 
@@ -1010,36 +1029,12 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
     @Override
     public boolean close() {
         stopObjectInspectorAction();
+        try {
+            preferencesHelper.save();
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+        }
         return super.close();
-    }
-
-    private FolderEntity findSelectedFolderInExplorer() throws Exception {
-        ESelectionService selectionService = SelectionServiceSingleton.getInstance().getSelectionService();
-        Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-        if (selectedObjects != null && selectedObjects.length > 0) {
-            ITreeEntity parentTreeEntity = getParentTreeEntity(selectedObjects);
-            if (parentTreeEntity != null && parentTreeEntity.getObject() instanceof FolderEntity) {
-                FolderEntity parentFolder = (FolderEntity) parentTreeEntity.getObject();
-                return parentFolder;
-            }
-        }
-        return null;
-    }
-
-    private ITreeEntity getParentTreeEntity(Object[] selectedObjects) throws Exception {
-        for (Object object : selectedObjects) {
-            if (object instanceof ITreeEntity) {
-                if (((ITreeEntity) object).getObject() instanceof FolderEntity) {
-                    FolderEntity folder = (FolderEntity) ((ITreeEntity) object).getObject();
-                    if (folder.getFolderType() == FolderType.WEBELEMENT) {
-                        return (ITreeEntity) object;
-                    }
-                } else if (((ITreeEntity) object).getObject() instanceof WebElementEntity) {
-                    return (ITreeEntity) ((ITreeEntity) object).getParent();
-                }
-            }
-        }
-        return null;
     }
 
     private String[] getFilterNames() {
@@ -1063,23 +1058,6 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
                 displayBounds, initialSize));
     }
 
-    private void autoSelectObjectProperties(WebElementEntity entity) {
-        if (getMobileDeviceInfo() == null) {
-            return;
-        }
-        List<String> typicalProps = new ArrayList<String>();
-        if (isMobileDriverTypeOf(MobileDriverType.ANDROID_DRIVER)) {
-            typicalProps.addAll(Arrays.asList(AndroidProperties.ANDROID_TYPICAL_PROPERTIES));
-        } else if (isMobileDriverTypeOf(MobileDriverType.IOS_DRIVER)) {
-            typicalProps.addAll(Arrays.asList(IOSProperties.IOS_TYPICAL_PROPERTIES));
-        }
-        for (WebElementPropertyEntity prop : entity.getWebElementProperties()) {
-            if (typicalProps.contains(prop.getName())) {
-                prop.setIsSelected(true);
-            }
-        }
-    }
-
     private MobileDeviceInfo getMobileDeviceInfo() {
         int selectedMobileDeviceIndex = cbbDevices.getSelectionIndex();
         if (selectedMobileDeviceIndex < 0 || selectedMobileDeviceIndex >= deviceInfos.size()) {
@@ -1088,60 +1066,22 @@ public class MobileObjectSpyDialog extends Dialog implements EventHandler {
         return deviceInfos.get(selectedMobileDeviceIndex);
     }
 
-    private boolean isMobileDriverTypeOf(MobileDriverType type) {
-        return MobileInspectorController.getMobileDriverType(getMobileDeviceInfo()) == type;
-    }
-
-    public MobileDeviceDialog getDeviceView() {
-        return deviceView;
-    }
-
-    public void setDeviceView(MobileDeviceDialog deviceView) {
+    private void setDeviceView(MobileDeviceDialog deviceView) {
         this.deviceView = deviceView;
     }
 
-    private class ProgressMonitorDialogWithThread extends ProgressMonitorDialog {
-        public ProgressMonitorDialogWithThread(Shell parent) {
-            super(parent);
+    public void addElements(List<WebElementEntity> webElements) {
+        if (webElements == null) {
+            return;
         }
 
-        private Thread thread;
-
-        private void setThread(Thread thread) {
-            this.thread = thread;
+        MobileElementConverter converter = new MobileElementConverter();
+        List<CapturedMobileElement> newMobileElements = new ArrayList<>();
+        for (WebElementEntity webElement : webElements) {
+            newMobileElements.add(converter.revert(webElement));
         }
 
-        @Override
-        protected void cancelPressed() {
-            if (thread != null && thread.isAlive()) {
-                thread.interrupt();
-            }
-
-            super.cancelPressed();
-        }
-
-        private void startThreadAndWait() {
-            if (thread == null) {
-                return;
-            }
-
-            thread.run();
-
-            while (thread.isAlive()) {
-                // wait for thread complete or interrupted
-            }
-        }
-
-        public <V> V runAndWait(final Callable<V> callable) throws InterruptedException, InvocationTargetException {
-            FutureTask<V> futureTask = new FutureTask<V>(callable);
-            setThread(new Thread(futureTask));
-            startThreadAndWait();
-
-            try {
-                return futureTask.get();
-            } catch (ExecutionException e) {
-                throw new InvocationTargetException(e);
-            }
-        }
+        capturedObjectsTableViewer.addMobileElements(newMobileElements);
+        verifyCapturedElementsStates(capturedObjectsTableViewer.getSelectedElements());
     }
 }

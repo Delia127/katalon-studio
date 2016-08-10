@@ -2,6 +2,7 @@ package com.kms.katalon.composer.testdata.parts;
 
 import java.io.File;
 import java.text.MessageFormat;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -425,12 +426,13 @@ public class CSVTestDataPart extends TestDataMainPart {
                     TableViewerColumn column = new TableViewerColumn(tableViewer, SWT.NONE);
                     column.getColumn().setWidth(COLUMN_WIDTH);
                     column.setLabelProvider(new ColumnLabelProvider() {
+                        @SuppressWarnings("unchecked")
                         @Override
                         public String getText(Object element) {
-                            if (element != null && element instanceof String[]) {
-                                String[] rowData = ((String[]) element);
-                                if (rowData.length > idx) {
-                                    return rowData[idx];
+                            if (element instanceof List) {
+                                List<String> rowData = ((List<String>) element);
+                                if (rowData.size() > idx) {
+                                    return rowData.get(idx);
                                 }
                             }
                             return StringUtils.EMPTY;

@@ -1,8 +1,15 @@
 package com.kms.katalon.entity.checkpoint;
 
+import com.kms.katalon.entity.file.ClonableObject;
 import com.kms.katalon.entity.testdata.DataFileEntity.DataFileDriverType;
 
-public class CheckpointSourceInfo {
+public class CheckpointSourceInfo extends ClonableObject {
+
+    private static final long serialVersionUID = 6207338109094018009L;
+
+    public static final String[] SUPPORTED_SELF_DEFINED_DATA_SOURCE = new String[] {
+            DataFileDriverType.ExcelFile.toString(), DataFileDriverType.CSV.toString(),
+            DataFileDriverType.DBData.toString() };
 
     /** Checkpoint indicator. Whether data will be fetched from existing Test Data of new defined source */
     private boolean fromTestData;

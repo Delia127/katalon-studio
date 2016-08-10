@@ -185,7 +185,7 @@ public class TestSuiteController extends EntityController {
         }
 
         for (VariableLink variableLink : testCaseLink.getVariableLinks()) {
-            if (variableLink.getType() == VariableType.SCRIPT || variableLink.getTestDataLinkId() == null
+            if (variableLink.getType() == VariableType.DEFAULT || variableLink.getTestDataLinkId() == null
                     || variableLink.getValue() == null)
                 continue;
 

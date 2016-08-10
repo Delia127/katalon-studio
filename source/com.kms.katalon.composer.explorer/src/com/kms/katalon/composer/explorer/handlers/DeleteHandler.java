@@ -26,6 +26,10 @@ public class DeleteHandler extends CommonExplorerHandler {
 
     @Override
     public boolean canExecute() {
+        if (!isExplorerPartActive()) {
+            return false;
+        }
+
         Object[] selectedObjects = getExplorerSelection();
         if (selectedObjects.length == 0) {
             return false;
@@ -48,10 +52,6 @@ public class DeleteHandler extends CommonExplorerHandler {
 
     @Override
     public void execute() {
-        if (isExplorerPartNotActive()) {
-            return;
-        }
-
         Object[] selectedObjects = getExplorerSelection();
         if (selectedObjects.length == 0) {
             return;

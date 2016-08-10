@@ -4,19 +4,19 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.MessageDialog;
 
+import com.kms.katalon.composer.components.impl.handler.CommonExplorerHandler;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 
 @SuppressWarnings("restriction")
-public class RenameHandler {
+public class RenameHandler extends CommonExplorerHandler {
 
     @Inject
     private Logger logger;
@@ -29,6 +29,10 @@ public class RenameHandler {
 
     @CanExecute
     public boolean canExecute() {
+        if (!isExplorerPartActive()) {
+            return false;
+        }
+
         Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
         if (selectedObjects == null || selectedObjects.length != 1) {
             return false;
@@ -44,7 +48,7 @@ public class RenameHandler {
     }
 
     @Execute
-    public void execute(IEventBroker eventBroker) {
+    public void execute() {
         if (selectionService != null) {
             if (partService.getDirtyParts().size() > 0) {
                 if (!MessageDialog.openConfirm(null, StringConstants.HAND_CONFIRM_TITLE,

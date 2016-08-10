@@ -43,6 +43,7 @@ import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.execution.constants.ImageConstants;
+import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.launcher.IDEObservableLauncher;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -108,6 +109,7 @@ public class JobViewerPart implements EventHandler {
         listCompositeLauncher.setLayout(gl_composite_listLauncher);
 
         scrolledComposite.addControlListener(new ControlAdapter() {
+            @Override
             public void controlResized(ControlEvent e) {
                 Rectangle r = scrolledComposite.getClientArea();
                 scrolledComposite.setMinSize(listCompositeLauncher.computeSize(r.width, SWT.DEFAULT));
@@ -271,10 +273,10 @@ public class JobViewerPart implements EventHandler {
 
             if (launcher.getStatus() == LauncherStatus.SUSPENDED) {
                 tltmPause.setImage(IMG_PLAY);
-                tltmPause.setToolTipText("Resume");
+                tltmPause.setToolTipText(StringConstants.PA_LOG_RESUME);
             } else if (launcher.getStatus() == LauncherStatus.RUNNING) {
                 tltmPause.setImage(IMG_PAUSE);
-                tltmPause.setToolTipText("Suspend");
+                tltmPause.setToolTipText(StringConstants.PA_LOG_PAUSE);
             }
 
             if (launcher.getMode() == LaunchMode.RUN) {
@@ -320,6 +322,7 @@ public class JobViewerPart implements EventHandler {
         });
         
         ControlUtils.recursivelyAddMouseListener(compositeLauncher, new MouseAdapter() {
+            @Override
             public void mouseDown(MouseEvent event) {
                 if (compositeLauncher != null && !compositeLauncher.isDisposed()) {
                     compositeLauncher.setFocus();

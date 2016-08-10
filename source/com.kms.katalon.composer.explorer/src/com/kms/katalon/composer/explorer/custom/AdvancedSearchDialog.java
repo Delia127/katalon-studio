@@ -29,7 +29,7 @@ import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 
 public class AdvancedSearchDialog extends Dialog {
 
-    private static final int MIN_WIDTH = 300;
+    private static final int MIN_WIDTH = 500;
     
     private static final String DIALOG_TITLE = StringConstants.CUS_DIALOG_TITLE;
     private static final String SEARCH_LABEL = StringConstants.CUS_LBL_SEARCH;
@@ -42,7 +42,6 @@ public class AdvancedSearchDialog extends Dialog {
 
     public AdvancedSearchDialog(Shell parentShell, String[] searchTags, String txtInput, Point location) {
         super(parentShell);
-        setShellStyle(getShellStyle() | SWT.RESIZE);
         this.txtInput = txtInput;
         this.searchTags = searchTags;
         textMap = new LinkedHashMap<String, Text>();

@@ -17,6 +17,7 @@ import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.components.services.ModelServiceSingleton;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.CheckpointController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestCaseController;
@@ -24,6 +25,7 @@ import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.IEntity;
+import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
@@ -46,13 +48,17 @@ public class EntityPartUtil {
     public static String getTestSuiteCompositePartId(String testSuitePk) {
         return IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX + "(" + testSuitePk + ")";
     }
-    
+
     public static String getTestSuiteCollectionPartId(String testRunId) {
         return IdConstants.TEST_SUITE_COLLECTION_CONTENT_PART_ID_PREFIX + "(" + testRunId + ")";
     }
 
     public static String getTestDataPartId(String testDataPk) {
         return IdConstants.TESTDATA_CONTENT_PART_ID_PREFIX + "(" + testDataPk + ")";
+    }
+
+    public static String getCheckpointPartId(String checkpointId) {
+        return IdConstants.CHECKPOINT_CONTENT_PART_ID_PREFIX + "(" + checkpointId + ")";
     }
 
     public static String getReportPartId(String reportPk) {
@@ -86,6 +92,8 @@ public class EntityPartUtil {
             partId = getTestSuiteCollectionPartId(entityId);
         } else if (entity instanceof ReportCollectionEntity) {
             partId = getReportCollectionPartId(entityId);
+        } else if (entity instanceof CheckpointEntity) {
+            partId = getCheckpointPartId(entityId);
         } else {
             return;
         }
@@ -111,27 +119,45 @@ public class EntityPartUtil {
                         IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX.length() + 1,
                         partElementId.lastIndexOf(")"));
                 return TestCaseController.getInstance().getTestCase(testCaseId);
-            } else if (partElementId.startsWith(IdConstants.TESTOBJECT_CONTENT_PART_ID_PREFIX)) {
+            }
+
+            if (partElementId.startsWith(IdConstants.TESTOBJECT_CONTENT_PART_ID_PREFIX)) {
                 String testObjectId = partElementId.substring(
                         IdConstants.TESTOBJECT_CONTENT_PART_ID_PREFIX.length() + 1, partElementId.lastIndexOf(")"));
                 return ObjectRepositoryController.getInstance().getWebElement(testObjectId);
-            } else if (partElementId.startsWith(IdConstants.TESTDATA_CONTENT_PART_ID_PREFIX)) {
+            }
+
+            if (partElementId.startsWith(IdConstants.TESTDATA_CONTENT_PART_ID_PREFIX)) {
                 String testDataId = partElementId.substring(IdConstants.TESTDATA_CONTENT_PART_ID_PREFIX.length() + 1,
                         partElementId.lastIndexOf(")"));
                 return TestDataController.getInstance().getTestData(testDataId);
-            } else if (partElementId.startsWith(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX)) {
+            }
+
+            if (partElementId.startsWith(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX)) {
                 String testSuiteId = partElementId.substring(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX.length() + 1,
                         partElementId.lastIndexOf(")"));
                 return TestSuiteController.getInstance().getTestSuite(testSuiteId);
-            } else if (partElementId.startsWith(IdConstants.REPORT_CONTENT_PART_ID_PREFIX)) {
+            }
+
+            if (partElementId.startsWith(IdConstants.REPORT_CONTENT_PART_ID_PREFIX)) {
                 String reportId = partElementId.substring(IdConstants.REPORT_CONTENT_PART_ID_PREFIX.length() + 1,
                         partElementId.lastIndexOf(")"));
                 return ReportController.getInstance().getReportEntity(reportId);
-            } else if (partElementId.startsWith(IdConstants.TEST_SUITE_COLLECTION_CONTENT_PART_ID_PREFIX)) {
-                String testRunId = partElementId.substring(IdConstants.TEST_SUITE_COLLECTION_CONTENT_PART_ID_PREFIX.length() + 1,
+            }
+
+            if (partElementId.startsWith(IdConstants.TEST_SUITE_COLLECTION_CONTENT_PART_ID_PREFIX)) {
+                String testRunId = partElementId.substring(
+                        IdConstants.TEST_SUITE_COLLECTION_CONTENT_PART_ID_PREFIX.length() + 1,
                         partElementId.lastIndexOf(")"));
                 return TestSuiteCollectionController.getInstance().getTestSuiteCollection(testRunId);
             }
+
+            if (partElementId.startsWith(IdConstants.CHECKPOINT_CONTENT_PART_ID_PREFIX)) {
+                String checkpointId = partElementId.substring(
+                        IdConstants.CHECKPOINT_CONTENT_PART_ID_PREFIX.length() + 1, partElementId.lastIndexOf(")"));
+                return CheckpointController.getInstance().getById(checkpointId);
+            }
+
             return null;
         } catch (Exception ex) {
             return null;
@@ -146,20 +172,24 @@ public class EntityPartUtil {
      */
     public static List<String> getOpenedEntityIds(Collection<MPart> parts) {
         List<String> ids = new ArrayList<String>();
-        if (parts != null) {
-            for (MPart part : parts) {
-                Object o = part.getObject();
-                if (o instanceof IComposerPart) {
-                    ids.add(((IComposerPart) o).getEntityId());
-                } else if (o instanceof CompatibilityEditor) {
-                    String elementId = ((CompatibilityEditor) o).getModel().getElementId();
-                    if (!elementId.startsWith(IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX)) {
-                        GroovyEditor editor = (GroovyEditor) ((CompatibilityEditor) o).getEditor();
-                        String kwFilePath = GroovyStringUtil.getKeywordsRelativeLocation(((FileEditorInput) editor
-                                .getEditorInput()).getPath());
-                        ids.add(kwFilePath);
-                    }
-                }
+        if (parts == null || parts.isEmpty()) {
+            return ids;
+        }
+
+        for (MPart part : parts) {
+            Object o = part.getObject();
+            if (o instanceof IComposerPart) {
+                ids.add(((IComposerPart) o).getEntityId());
+                continue;
+            }
+
+            // for Keywords editor
+            if (o instanceof CompatibilityEditor
+                    && !StringUtils.startsWith(((CompatibilityEditor) o).getModel().getElementId(),
+                            IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX)) {
+                GroovyEditor editor = (GroovyEditor) ((CompatibilityEditor) o).getEditor();
+                String kwFilePath = GroovyStringUtil.getKeywordsRelativeLocation(((FileEditorInput) editor.getEditorInput()).getPath());
+                ids.add(kwFilePath);
             }
         }
         return ids;

@@ -21,94 +21,79 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
-import com.kms.katalon.entity.folder.FolderEntity.FolderType;
-import com.kms.katalon.entity.repository.WebElementEntity;
-import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.entity.testdata.DataFileEntity;
-import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
-import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class NewFolderHandler {
 
     @Inject
-    IEventBroker eventBroker;
+    private IEventBroker eventBroker;
 
     @Inject
     private ESelectionService selectionService;
 
     @CanExecute
     public static boolean canExecute() {
-        try {
-            if (ProjectController.getInstance().getCurrentProject() != null) {
-                return true;
-            }
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-        }
-        return false;
+        return ProjectController.getInstance().getCurrentProject() != null;
     }
 
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
         try {
             Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-            if (selectedObjects != null && selectedObjects.length > 0 && selectedObjects[0] instanceof ITreeEntity) {
-                FolderEntity parentFolder = null;
-                // The entity which is right-clicked on
-                ITreeEntity parentTreeEntity = (ITreeEntity) selectedObjects[0];
-                Object selectedEntity = parentTreeEntity.getObject();
-                if (selectedEntity != null) {
-                    // Not allow creating Folder under Keywords and Reports
-                    if (selectedEntity instanceof FolderEntity
-                            && !(((FolderEntity) selectedEntity).getFolderType().equals(FolderType.KEYWORD) || ((FolderEntity) selectedEntity)
-                                    .getFolderType().equals(FolderType.REPORT))) {
-                        parentFolder = (FolderEntity) selectedEntity;
-                    } else if (selectedEntity instanceof TestCaseEntity) {
-                        parentFolder = ((TestCaseEntity) selectedEntity).getParentFolder();
-                        parentTreeEntity = (ITreeEntity) parentTreeEntity.getParent();
-                    } else if (selectedEntity instanceof TestSuiteEntity) {
-                        parentFolder = ((TestSuiteEntity) selectedEntity).getParentFolder();
-                        parentTreeEntity = (ITreeEntity) parentTreeEntity.getParent();
-                    } else if (selectedEntity instanceof DataFileEntity) {
-                        parentFolder = ((DataFileEntity) selectedEntity).getParentFolder();
-                        parentTreeEntity = (ITreeEntity) parentTreeEntity.getParent();
-                    } else if (selectedEntity instanceof WebElementEntity) {
-                        parentFolder = ((WebElementEntity) selectedEntity).getParentFolder();
-                        parentTreeEntity = (ITreeEntity) parentTreeEntity.getParent();
-                    } else if (selectedEntity instanceof TestSuiteCollectionEntity) {
-                        parentFolder = ((TestSuiteCollectionEntity) selectedEntity).getParentFolder();
-                        parentTreeEntity = (ITreeEntity) parentTreeEntity.getParent();
-                    }
-                }
-
-                if (parentFolder != null) {
-                    String newDefaultName = StringConstants.HAND_NEW_FOLDER;
-
-                    String suggestedName = FolderController.getInstance().getAvailableFolderName(parentFolder,
-                            newDefaultName);
-
-                    NewFolderDialog dialog = new NewFolderDialog(parentShell, parentFolder);
-                    dialog.setName(suggestedName);
-                    dialog.open();
-
-                    if (dialog.getReturnCode() == Dialog.OK) {
-                        FolderEntity newEntity = FolderController.getInstance().addNewFolder(parentFolder,
-                                dialog.getName());
-
-                        if (newEntity != null) {
-                            eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
-                            eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, new FolderTreeEntity(newEntity,
-                                    parentTreeEntity));
-                        }
-                    }
-                }
-            }
-
+            createNewFolderEntity(parentShell, selectedObjects, eventBroker);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,
                     StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_FOLDER);
         }
+    }
+
+    public FolderTreeEntity createNewFolderEntity(Shell parentShell, Object[] selectedObjects, IEventBroker eventBroker)
+            throws Exception {
+        if (!isFirstSelectedObjectValid(selectedObjects)) {
+            return null;
+        }
+        FolderEntity parentFolder = null;
+        // The entity which is right-clicked on
+        ITreeEntity parentTreeEntity = (ITreeEntity) selectedObjects[0];
+        Object selectedEntity = parentTreeEntity.getObject();
+        if (!(selectedEntity instanceof FileEntity)) {
+            return null;
+        }
+
+        // not a root folder
+        if (!parentTreeEntity.hasChildren()) {
+            parentFolder = ((FileEntity) selectedEntity).getParentFolder();
+            parentTreeEntity = (ITreeEntity) parentTreeEntity.getParent();
+        }
+
+        if (parentFolder == null) {
+            parentFolder = (FolderEntity) selectedEntity;
+        }
+
+        String newDefaultName = StringConstants.HAND_NEW_FOLDER;
+
+        String suggestedName = FolderController.getInstance().getAvailableFolderName(parentFolder, newDefaultName);
+
+        NewFolderDialog dialog = new NewFolderDialog(parentShell, parentFolder);
+        dialog.setName(suggestedName);
+        if (dialog.open() != Dialog.OK) {
+            return null;
+        }
+
+        FolderEntity newEntity = FolderController.getInstance().addNewFolder(parentFolder, dialog.getName());
+        if (newEntity == null) {
+            return null;
+        }
+
+        FolderTreeEntity newFolderTreeEntity = new FolderTreeEntity(newEntity, parentTreeEntity);
+        eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
+        eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, newFolderTreeEntity);
+        return newFolderTreeEntity;
+    }
+
+    private boolean isFirstSelectedObjectValid(Object[] selectedObjects) {
+        return selectedObjects != null && selectedObjects.length > 0 && selectedObjects[0] instanceof ITreeEntity;
     }
 }

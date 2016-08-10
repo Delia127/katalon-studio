@@ -1,49 +1,81 @@
 package com.kms.katalon.composer.mobile.objectspy.element.tree;
 
-import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.resource.FontDescriptor;
+import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.StyledString.Styler;
+import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.TextStyle;
+import org.eclipse.swt.widgets.Display;
 
-import com.kms.katalon.composer.mobile.constants.ImageConstants;
-import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
+import com.kms.katalon.composer.components.impl.providers.TypeCheckedStyleTreeCellLabelProvider;
+import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.mobile.objectspy.constant.ImageConstants;
+import com.kms.katalon.composer.mobile.objectspy.element.TreeMobileElement;
+import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 
-public class MobileElementLabelProvider implements ILabelProvider {
+public class MobileElementLabelProvider extends TypeCheckedStyleTreeCellLabelProvider<TreeMobileElement> {
 
-	@Override
-	public void addListener(ILabelProviderListener listener) {
-		// TODO Auto-generated method stub
-	}
+    public MobileElementLabelProvider() {
+        super(0);
+    }
 
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
+    @Override
+    protected Class<TreeMobileElement> getElementType() {
+        return TreeMobileElement.class;
+    }
 
-	}
+    @Override
+    protected Image getImage(TreeMobileElement element) {
+        return ImageConstants.IMG_16_TEST_OBJECT;
+    }
+    
+    @Override
+    protected String getElementToolTipText(TreeMobileElement element) {
+        return getText(element);
+    }
 
-	@Override
-	public boolean isLabelProperty(Object element, String property) {
-		return element instanceof MobileElement && "name".equals(property);
-	}
+    @Override
+    protected String getText(TreeMobileElement element) {
+        return element.getName();
+    }
 
-	@Override
-	public void removeListener(ILabelProviderListener listener) {
-		// TODO Auto-generated method stub
+    @Override
+    protected StyleRange[] getStyleRanges(ViewerCell cell, TreeMobileElement element) {
+        CapturedMobileElement capturedElement = element.getCapturedElement();
+        if (capturedElement == null) {
+            return super.getStyleRanges(cell, element);
+        }
+        
+        String aliasName = capturedElement.getName();
+        StyledString styledString = new StyledString()
+                .append(aliasName, new BoldStyler(cell.getFont()));
+        
+        if (!aliasName.equals(element.getName())) {
+            styledString.append(" " + element.getName() + " ", StyledString.DECORATIONS_STYLER);
+        }
+        
+        cell.setText(styledString.getString());
+        return styledString.getStyleRanges();
+    }
 
-	}
+    private class BoldStyler extends Styler {
 
-	@Override
-	public Image getImage(Object element) {
-		if (element instanceof MobileElement) {
-			return ImageConstants.IMG_16_TEST_OBJECT;
-		}
-		return null;
-	}
+        private Font currentFont;
 
-	@Override
-	public String getText(Object element) {
-		if (element instanceof MobileElement) {
-			return ((MobileElement) element).getName();
-		}
-		return null;
-	}
+        private BoldStyler(Font font) {
+            this.currentFont = font;
+        }
+
+        @Override
+        public void applyStyles(final TextStyle textStyle) {
+            FontDescriptor boldDescriptor = FontDescriptor.createFrom(currentFont.getFontData()[0]).setStyle(SWT.BOLD);
+            Font boldFont = boldDescriptor.createFont(Display.getCurrent());
+            textStyle.foreground = ColorUtil.getTextSuccessfulColor();
+            textStyle.font = boldFont;
+        }
+    }
 }

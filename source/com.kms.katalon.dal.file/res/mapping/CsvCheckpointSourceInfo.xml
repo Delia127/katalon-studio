@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="com.kms.katalon.entity.checkpoint">
-    <java-types>
-        <java-type name="CsvCheckpointSourceInfo">
-            <xml-root-element name="source-info" />
-        </java-type>
-    </java-types>
-</xml-bindings>
