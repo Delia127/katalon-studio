@@ -80,11 +80,6 @@ public class VariableScriptBuilderLabelProvider extends TypeCheckedStyleCellLabe
     }
 
     @Override
-    protected int getLeftMargin() {
-        return 0;
-    }
-    
-    @Override
     protected String getElementToolTipText(VariableLink element) {
         return getText(element);
     }

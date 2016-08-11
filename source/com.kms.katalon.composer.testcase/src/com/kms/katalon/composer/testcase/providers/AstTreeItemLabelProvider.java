@@ -3,6 +3,8 @@ package com.kms.katalon.composer.testcase.providers;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.graphics.Image;
 
+import com.kms.katalon.composer.components.impl.providers.CellLayoutInfo;
+import com.kms.katalon.composer.components.impl.providers.DefaultCellLayoutInfo;
 import com.kms.katalon.composer.components.impl.providers.TypeCheckedStyleTreeCellLabelProvider;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.testcase.ast.treetable.AstMethodTreeTableNode;
@@ -23,8 +25,13 @@ public class AstTreeItemLabelProvider extends TypeCheckedStyleTreeCellLabelProvi
      * @see <a href="https://incubation.kms-technology.com/browse/KAT-969">KAT-969</a>
      */
     @Override
-    protected int getSpace() {
-        return 10;
+    public CellLayoutInfo getCellLayoutInfo() {
+        return new DefaultCellLayoutInfo() {
+            @Override
+            public int getLeftMargin() {
+                return 10;
+            }
+        };
     }
 
     @Override

@@ -5,7 +5,7 @@ import java.net.MalformedURLException;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.graphics.Image;
 
-import com.kms.katalon.composer.components.impl.providers.TypeCheckedStyleCellLabelProvider;
+import com.kms.katalon.composer.components.impl.providers.TypeCheckStyleCellTableLabelProvider;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ImageUtil;
 import com.kms.katalon.composer.testsuite.collection.constant.ImageConstants;
@@ -14,7 +14,7 @@ import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExec
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
 
-public class TestSuiteRunConfigLabelProvider extends TypeCheckedStyleCellLabelProvider<TestSuiteRunConfiguration> {
+public class TestSuiteRunConfigLabelProvider extends TypeCheckStyleCellTableLabelProvider<TestSuiteRunConfiguration> {
 
     public static final int NO_COLUMN_IDX = 0;
 

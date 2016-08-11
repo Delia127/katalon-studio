@@ -36,6 +36,7 @@ import org.osgi.service.event.Event;
 
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.editors.DefaultTableColumnViewerEditor;
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -67,7 +68,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
 
     private TestSuiteCollectionEntity cloneTestSuite;
 
-    private TableViewer tableViewer;
+    private CTableViewer tableViewer;
 
     private TableColumn tblclmnRun;
     
@@ -201,6 +202,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tableLayout.setColumnData(tblclmnRun, new ColumnWeightData(10, 70));
 
         tableViewer.setContentProvider(new ArrayContentProvider());
+        DefaultTableColumnViewerEditor.create(tableViewer);
     }
 
     @Override
