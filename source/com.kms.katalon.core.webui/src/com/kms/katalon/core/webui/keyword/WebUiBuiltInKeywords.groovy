@@ -4530,8 +4530,8 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      * scrolls a element into the visible area of the browser window
      * @param to
      *    represent a web element
-     * @param fileAbsolutePath
-     *       absolute path of the file on local machine
+     * @param timeOut
+     *       maximum period of time (in seconds) that system will wait to find the element
      * @param flowControl
      *       flow control
      * @throws StepFailedException
@@ -4563,8 +4563,8 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      * scrolls a element into the visible area of the browser window
      * @param to
      *    represent a web element
-     * @param fileAbsolutePath
-     *       absolute path of the file on local machine
+     * @param timeOut
+     *       maximum period of time (in seconds) that system will wait to find the element
      * @throws StepFailedException
      */
     @CompileStatic
