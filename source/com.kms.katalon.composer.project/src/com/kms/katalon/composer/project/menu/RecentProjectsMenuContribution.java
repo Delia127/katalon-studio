@@ -18,7 +18,7 @@ import org.eclipse.e4.ui.model.application.commands.MCommandsFactory;
 import org.eclipse.e4.ui.model.application.ui.menu.MHandledMenuItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuFactory;
-import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.model.application.ui.menu.MMenuSeparator;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
@@ -33,9 +33,6 @@ import com.kms.katalon.entity.project.ProjectEntity;
 public class RecentProjectsMenuContribution implements EventHandler {
     @Inject
     private ECommandService commandService;
-
-    @Inject
-    EModelService modelService;
 
     @Inject
     private IEventBroker eventBroker;
@@ -53,6 +50,9 @@ public class RecentProjectsMenuContribution implements EventHandler {
     @AboutToShow
     public void aboutToShow(List<MMenuElement> menuItems) {
         try {
+            // Add a separator at top of items
+            menuItems.add(newMenuSeparator());
+
             for (ProjectEntity project : recentProjects) {
                 // Add temp command to avoid warning message
                 MCommand command = MCommandsFactory.INSTANCE.createCommand();
@@ -79,9 +79,18 @@ public class RecentProjectsMenuContribution implements EventHandler {
 
                 menuItems.add(recentProjectMenuItem);
             }
+
+            if (!recentProjects.isEmpty()) {
+                // Add a separator under these items
+                menuItems.add(newMenuSeparator());
+            }
         } catch (Exception e) {
-            LoggerSingleton.getInstance().getLogger().error(e);
+            LoggerSingleton.logError(e);
         }
+    }
+
+    private MMenuSeparator newMenuSeparator() {
+        return MMenuFactory.INSTANCE.createMenuSeparator();
     }
 
     private String getLocationStringLabel(String location) {
