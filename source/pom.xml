@@ -71,7 +71,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	</modules>
 
 	<properties>
-		<tycho.version>0.19.0</tycho.version>
+		<tycho.version>0.21.0</tycho.version>
 		<gmavenplus.version>1.5</gmavenplus.version>
 		<maven-resources-plugin.version>2.6</maven-resources-plugin.version>
 		
