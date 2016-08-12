@@ -29,6 +29,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.VariableExpressi
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ThrowStatementWrapper;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstValueUtil;
+import com.kms.katalon.custom.parser.GlobalVariableParser;
 
 public enum InputValueType implements InputValueEditorProvider {
     String,
@@ -162,6 +163,10 @@ public enum InputValueType implements InputValueEditorProvider {
             case Property:
                 return new PropertyExpressionWrapper(parent);
             case GlobalVariable:
+                if (parent != null && parent.getScriptClass() != null) {
+                    parent.getScriptClass().addImport(GlobalVariableParser.INTERNAL_PACKAGE_NAME,
+                            GlobalVariableParser.GLOBAL_VARIABLE_CLASS_NAME);
+                }
                 return new PropertyExpressionWrapper(InputValueType.GlobalVariable.name(), parent);
             case TestObject:
                 return AstEntityInputUtil.createNewFindTestObjectMethodCall(parent);

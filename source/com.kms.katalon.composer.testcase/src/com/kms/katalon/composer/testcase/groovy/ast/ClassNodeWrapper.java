@@ -3,6 +3,7 @@ package com.kms.katalon.composer.testcase.groovy.ast;
 import groovy.lang.Script;
 import groovyjarjarasm.asm.Opcodes;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,6 +27,7 @@ import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.core.testobject.ObjectRepository;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.custom.keyword.KeywordClass;
+import com.kms.katalon.custom.parser.GlobalVariableParser;
 
 public class ClassNodeWrapper extends ASTNodeWrapper {
     protected Class<?> typeClass;
@@ -62,7 +64,11 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
         super(classNode, parentNodeWrapper);
         copyProperties(classNode);
     }
-
+    
+    public ClassNodeWrapper(String className, String classNameWithoutPackage, ASTNodeWrapper parentNodeWrapper) {
+        this(new ClassNode(className, Modifier.PUBLIC, new ClassNode(Object.class)), parentNodeWrapper);
+    }
+ 
     protected void copyProperties(ClassNode classNode) {
         this.name = classNode.getName();
         this.nameWithoutPackage = classNode.getNameWithoutPackage();
@@ -349,6 +355,11 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
         addImport(TestCase.class);
         addImport(TestData.class);
         addImport(TestObject.class);
+        addImport(GlobalVariableParser.INTERNAL_PACKAGE_NAME, GlobalVariableParser.GLOBAL_VARIABLE_CLASS_NAME);
+    }
+
+    public void addImport(String packageName, String className) {
+        importNodeCollection.addImportNode(new ImportNodeWrapper(packageName + "." + className, className, this));
     }
 
     public boolean isArray() {

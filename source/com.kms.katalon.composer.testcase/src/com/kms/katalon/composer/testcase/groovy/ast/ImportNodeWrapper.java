@@ -59,6 +59,16 @@ public class ImportNodeWrapper extends AnnonatedNodeWrapper {
         this.isStar = importNode.isStar();
         this.isStatic = importNode.isStatic();
     }
+    
+    public ImportNodeWrapper(String className, String classNameWithoutPackage, ASTNodeWrapper parentNodeWrapper) {
+        super(parentNodeWrapper);
+        this.type = new ClassNodeWrapper(className, classNameWithoutPackage, this);
+        this.isStar = false;
+        this.isStatic = false;
+        this.packageName = null;
+        this.fieldName = null;
+        this.alias = classNameWithoutPackage;
+    }
 
     public ClassNodeWrapper getType() {
         return type;
