@@ -6,6 +6,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Widget;
 
+import com.kms.katalon.composer.components.impl.providers.TypeCheckedStyleCellLabelProvider;
+
 public class CTableViewer extends TableViewer implements CustomColumnViewer {
 
     public CTableViewer(Composite parent, int style) {
@@ -36,5 +38,10 @@ public class CTableViewer extends TableViewer implements CustomColumnViewer {
         if (lastItemIndex >= 0) {
             table.showItem(table.getItem(lastItemIndex));
         }
+    }
+
+    @Override
+    public TypeCheckedStyleCellLabelProvider<?> getCellLabelProvider(int columnIndex) {
+        return new CellLayoutColumnViewerHelper(this).getCellLabelProvider(columnIndex);
     }
 }

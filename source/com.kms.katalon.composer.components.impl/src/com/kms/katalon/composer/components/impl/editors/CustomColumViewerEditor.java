@@ -15,6 +15,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.TableItem;
 
+import com.kms.katalon.composer.components.impl.control.CTableViewer;
+
 /**
  * Enhancement of {@link TableViewerEditor} </p>
  * Improve user behavior when pressing <code>TAB</code> on cell editor with cycle in table movement.
@@ -28,12 +30,16 @@ public abstract class CustomColumViewerEditor extends ColumnViewerEditor {
 
     public static final int TABBING_CYCLE_IN_TABLE = 1 << 7;
 
-    protected CustomColumViewerEditor(TableViewer viewer,
+    protected CustomColumViewerEditor(CTableViewer viewer,
             ColumnViewerEditorActivationStrategy editorActivationStrategy, int feature) {
         super(viewer, editorActivationStrategy, feature);
         viewer.setColumnViewerEditor(this);
-        tableEditor = new TableEditor(viewer.getTable());
+        tableEditor = getTableEditor(viewer);
         this.feature = feature;
+    }
+
+    protected TableEditor getTableEditor(CTableViewer viewer) {
+        return new CustomTableEditor(viewer);
     }
 
     /**

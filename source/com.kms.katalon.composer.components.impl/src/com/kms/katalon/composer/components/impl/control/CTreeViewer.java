@@ -6,6 +6,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.Widget;
 
+import com.kms.katalon.composer.components.impl.providers.TypeCheckedStyleCellLabelProvider;
+
 public class CTreeViewer extends TreeViewer implements CustomColumnViewer {
 
     public CTreeViewer(Composite parent, int style) {
@@ -24,5 +26,10 @@ public class CTreeViewer extends TreeViewer implements CustomColumnViewer {
     @Override
     public ViewerRow getViewerRowFromWidgetItem(Widget item) {
         return getViewerRowFromItem(item);
+    }
+
+    @Override
+    public TypeCheckedStyleCellLabelProvider<?> getCellLabelProvider(int columnIndex) {
+        return new CellLayoutColumnViewerHelper(this).getCellLabelProvider(columnIndex);
     }
 }

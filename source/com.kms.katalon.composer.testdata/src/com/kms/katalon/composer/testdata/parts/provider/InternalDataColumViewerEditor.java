@@ -1,16 +1,16 @@
 package com.kms.katalon.composer.testdata.parts.provider;
 
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerCell;
 
+import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.editors.CustomColumViewerEditor;
 import com.kms.katalon.composer.testdata.parts.InternalDataRow;
 import com.kms.katalon.composer.testdata.parts.InternalTestDataPart;
 
 public class InternalDataColumViewerEditor extends CustomColumViewerEditor {
 
-    private InternalDataColumViewerEditor(TableViewer viewer,
+    private InternalDataColumViewerEditor(CTableViewer viewer,
             ColumnViewerEditorActivationStrategy editorActivationStrategy, int feature) {
         super(viewer, editorActivationStrategy, feature);
     }
@@ -43,7 +43,7 @@ public class InternalDataColumViewerEditor extends CustomColumViewerEditor {
         return InternalTestDataPart.BASE_COLUMN_INDEX;
     }
 
-    public static void create(TableViewer tableViewer,
+    public static void create(CTableViewer tableViewer,
             ColumnViewerEditorActivationStrategy columnViewerEditorActivationStrategy, int feature) {
         new InternalDataColumViewerEditor(tableViewer, columnViewerEditorActivationStrategy, feature);
     }

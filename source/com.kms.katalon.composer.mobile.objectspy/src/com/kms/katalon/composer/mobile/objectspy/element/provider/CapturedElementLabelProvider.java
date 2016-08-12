@@ -3,6 +3,8 @@ package com.kms.katalon.composer.mobile.objectspy.element.provider;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.graphics.Image;
 
+import com.kms.katalon.composer.components.impl.providers.CellLayoutInfo;
+import com.kms.katalon.composer.components.impl.providers.TableCellLayoutInfo;
 import com.kms.katalon.composer.components.impl.providers.TypeCheckStyleCellTableLabelProvider;
 import com.kms.katalon.composer.mobile.objectspy.constant.ImageConstants;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
@@ -59,7 +61,12 @@ public class CapturedElementLabelProvider extends TypeCheckStyleCellTableLabelPr
     }
     
     @Override
-    protected int getLeftMargin() {
-        return 2;
+    public CellLayoutInfo getCellLayoutInfo() {
+        return new TableCellLayoutInfo() {
+            @Override
+            public int getLeftMargin() {
+                return 2;
+            }
+        };
     }
 }

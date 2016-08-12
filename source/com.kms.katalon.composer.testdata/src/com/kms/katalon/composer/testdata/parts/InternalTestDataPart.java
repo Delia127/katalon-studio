@@ -19,7 +19,6 @@ import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.window.Window;
@@ -48,8 +47,8 @@ import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testdata.constants.ImageConstants;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
-import com.kms.katalon.composer.testdata.parts.provider.InternalDataColumViewerEditor;
 import com.kms.katalon.composer.testdata.parts.provider.InternalDataAddColumnLabelProvider;
+import com.kms.katalon.composer.testdata.parts.provider.InternalDataColumViewerEditor;
 import com.kms.katalon.composer.testdata.parts.provider.InternalDataEditingSupport;
 import com.kms.katalon.composer.testdata.parts.provider.InternalDataLabelProvider;
 import com.kms.katalon.composer.testdata.views.NewTestDataColumnDialog;
@@ -81,7 +80,7 @@ public class InternalTestDataPart extends TestDataMainPart {
 
     private Table table;
 
-    private TableViewer tableViewer;
+    private CTableViewer tableViewer;
 
     @Override
     protected EPartService getPartService() {
