@@ -16,6 +16,8 @@ public class TestStepLogRecord extends AbstractLogRecord {
     private FailureHandling flowControl;
 
     private int index;
+    
+    private boolean isIgnoredIfFailed;
 
     public TestStepLogRecord(String name) {
         super(name);
@@ -66,6 +68,9 @@ public class TestStepLogRecord extends AbstractLogRecord {
                 setAttachment(childAttachment);
             }
         }
+        if (isIgnoredIfFailed()) {
+            testStatus.setStatusValue(TestStatusValue.PASSED);
+        }
         return testStatus;
     }
 
@@ -100,6 +105,14 @@ public class TestStepLogRecord extends AbstractLogRecord {
         } else {
             return ((TestStepLogRecord) parentLogRecord).getIndexString() + "." + stepIndex;
         }
+    }
+
+    public boolean isIgnoredIfFailed() {
+        return isIgnoredIfFailed;
+    }
+
+    public void setIgnoredIfFailed(boolean isIgnoredIfFailed) {
+        this.isIgnoredIfFailed = isIgnoredIfFailed;
     }
 
 }

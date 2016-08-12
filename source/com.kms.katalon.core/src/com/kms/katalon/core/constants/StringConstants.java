@@ -293,6 +293,8 @@ public class StringConstants {
 
     public static final String XML_LOG_DB_SERVER_INFO = "dbServerInfo";
 
+    public static final String XML_LOG_IS_IGNORED_IF_FAILED = "isIgnoredIfFailed";
+
     // CustomKeywords
     public static final String GENERATED_SCRIPT_FOLDER = "Libs";
 
