@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.execution.handlers;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -38,10 +39,11 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.execution.constants.StringConstants;
+import com.kms.katalon.composer.execution.exceptions.JobCancelException;
 import com.kms.katalon.composer.execution.launcher.IDELaunchShorcut;
 import com.kms.katalon.composer.execution.launcher.IDELauncher;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
-import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.parts.TestSuiteCompositePart;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
@@ -122,7 +124,7 @@ public abstract class AbstractExecutionHandler {
         }
         return false;
     }
-    
+
     private LaunchMode getLaunchMode(ParameterizedCommand command) {
         String launchModeAsString = ObjectUtils.toString(command.getParameterMap().get(
                 IdConstants.RUN_MODE_PARAMETER_ID));
@@ -138,8 +140,11 @@ public abstract class AbstractExecutionHandler {
         } catch (SWTException e) {
             // Ignore it
         } catch (Exception e) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR,
-                    "Unable to execute test script. (Root cause: " + e.getMessage() + " )");
+            MessageDialog.openError(
+                    Display.getCurrent().getActiveShell(),
+                    StringConstants.ERROR,
+                    MessageFormat.format(StringConstants.HAND_ERROR_MSG_UNABLE_TO_EXECUTE_TEST_SCRIPT_ROOT_CAUSE,
+                            e.getMessage()));
             LoggerSingleton.logError(e);
         }
     }
@@ -159,8 +164,8 @@ public abstract class AbstractExecutionHandler {
                 TestSuiteCompositePart testSuiteComposite = (TestSuiteCompositePart) selectedPart.getObject();
 
                 if (testSuiteComposite.getOriginalTestSuite().getTestSuiteTestCaseLinks().isEmpty()) {
-                    if (MessageDialog.openQuestion(null, StringConstants.INFORMATION_TITLE,
-                            "The test suite didn't have any test case to run. Do you want to add some test cases?")) {
+                    if (MessageDialog.openQuestion(null, StringConstants.HAND_TITLE_INFORMATION,
+                            StringConstants.HAND_CONFIRM_MSG_NO_TEST_CASE_IN_TEST_SUITE)) {
                         testSuiteComposite.openAddTestCaseDialog();
                     }
                     return null;
@@ -202,19 +207,21 @@ public abstract class AbstractExecutionHandler {
     public void executeTestCase(final TestCaseEntity testCase, final LaunchMode launchMode,
             final IRunConfiguration runConfig) throws Exception {
         if (testCase != null) {
-            Job job = new Job("Launching test case...") {
+            Job job = new Job(StringConstants.HAND_JOB_LAUNCHING_TEST_CASE) {
                 @Override
                 protected IStatus run(final IProgressMonitor monitor) {
                     try {
-                        monitor.beginTask("Launching test case...", 3);
+                        monitor.beginTask(StringConstants.HAND_JOB_LAUNCHING_TEST_CASE, 3);
 
-                        monitor.subTask("Activating viewers...");
+                        monitor.subTask(StringConstants.HAND_JOB_ACTIVATING_VIEWERS);
                         openConsoleLog();
+                        validateJobProgressMonitor(monitor);
                         monitor.worked(1);
 
-                        monitor.subTask("Building scripts...");
+                        monitor.subTask(StringConstants.HAND_JOB_BUILDING_SCRIPTS);
 
                         runConfig.build(testCase, new TestCaseExecutedEntity(testCase));
+                        validateJobProgressMonitor(monitor);
 
                         LauncherManager launcherManager = LauncherManager.getInstance();
                         ILauncher launcher = new IDELauncher(launcherManager, runConfig, launchMode);
@@ -224,12 +231,15 @@ public abstract class AbstractExecutionHandler {
 
                         monitor.done();
                         return Status.OK_STATUS;
+                    } catch (JobCancelException e) {
+                        return Status.CANCEL_STATUS;
                     } catch (final Exception e) {
                         sync.syncExec(new Runnable() {
                             @Override
                             public void run() {
                                 MultiStatusErrorDialog.showErrorDialog(e,
-                                        "Unable to execute the current selected test case.", "Wrong syntax");
+                                        StringConstants.HAND_ERROR_MSG_UNABLE_TO_EXECUTE_SELECTED_TEST_CASE,
+                                        StringConstants.HAND_ERROR_MSG_REASON_WRONG_SYNTAX);
                             }
                         });
                         return Status.CANCEL_STATUS;
@@ -251,26 +261,28 @@ public abstract class AbstractExecutionHandler {
             return;
         }
 
-        Job job = new Job("Launching test suite...") {
+        Job job = new Job(StringConstants.HAND_JOB_LAUNCHING_TEST_SUITE) {
             @Override
             protected IStatus run(final IProgressMonitor monitor) {
                 try {
-                    monitor.beginTask("Launching test suite...", 4);
-                    monitor.subTask("Validating test suite...");
+                    monitor.beginTask(StringConstants.HAND_JOB_LAUNCHING_TEST_SUITE, 4);
+                    monitor.subTask(StringConstants.HAND_JOB_VALIDATING_TEST_SUITE);
                     // back-up
 
                     final TestSuiteExecutedEntity testSuiteExecutedEntity = new TestSuiteExecutedEntity(testSuite);
                     final int totalTestCases = testSuiteExecutedEntity.getTotalTestCases();
                     if (totalTestCases > 0) {
-                        monitor.subTask("Activating viewers...");
+                        monitor.subTask(StringConstants.HAND_JOB_ACTIVATING_VIEWERS);
                         openConsoleLog();
+                        validateJobProgressMonitor(monitor);
                         monitor.worked(1);
 
-                        monitor.subTask("Building scripts...");
+                        monitor.subTask(StringConstants.HAND_JOB_BUILDING_SCRIPTS);
                         runConfig.build(testSuite, testSuiteExecutedEntity);
+                        validateJobProgressMonitor(monitor);
                         monitor.worked(1);
 
-                        monitor.subTask("Launching test suite...");
+                        monitor.subTask(StringConstants.HAND_JOB_LAUNCHING_TEST_SUITE);
                         LauncherManager launcherManager = LauncherManager.getInstance();
                         ILauncher launcher = new IDELauncher(launcherManager, runConfig, launchMode);
                         launcherManager.addLauncher(launcher);
@@ -283,24 +295,23 @@ public abstract class AbstractExecutionHandler {
                         sync.syncExec(new Runnable() {
                             @Override
                             public void run() {
-                                MessageDialog
-                                        .openWarning(
-                                                Display.getCurrent().getActiveShell(),
-                                                StringConstants.WARN_TITLE,
-                                                "There is no test case selected.\n"
-                                                        + "Please select test cases you want to execute by checking their checkboxes at 'Run' column.");
+                                MessageDialog.openWarning(Display.getCurrent().getActiveShell(),
+                                        StringConstants.WARN_TITLE, StringConstants.HAND_WARN_MSG_NO_TEST_CASE_SELECTED);
                             }
                         });
                         return Status.CANCEL_STATUS;
                     }
 
+                } catch (JobCancelException e) {
+                    return Status.CANCEL_STATUS;
                 } catch (final Exception e) {
                     sync.syncExec(new Runnable() {
                         @Override
                         public void run() {
 
                             MultiStatusErrorDialog.showErrorDialog(e,
-                                    "Unable to execute the current selected test suite.", "Test suite is not valid.");
+                                    StringConstants.HAND_ERROR_MSG_UNABLE_TO_EXECUTE_SELECTED_TEST_SUITE,
+                                    StringConstants.HAND_ERROR_MSG_REASON_INVALID_TEST_SUITE);
                         }
                     });
 
@@ -315,8 +326,7 @@ public abstract class AbstractExecutionHandler {
     /**
      * Open LogViewerPart and its partStack
      * 
-     * @param numTestCasesRun
-     *            : number of test cases will be executed
+     * @param numTestCasesRun number of test cases will be executed
      */
     public static void openConsoleLog() {
         // turn off pop-up messages on system console when execute the script
@@ -332,8 +342,8 @@ public abstract class AbstractExecutionHandler {
                 List<MPerspectiveStack> psList = modelService.findElements(application, null, MPerspectiveStack.class,
                         null);
 
-                MPartStack consolePartStack = (MPartStack) modelService.find(IdConstants.CONSOLE_PART_STACK_ID, psList
-                        .get(0).getSelectedElement());
+                MPartStack consolePartStack = (MPartStack) modelService.find(IdConstants.CONSOLE_PART_STACK_ID,
+                        psList.get(0).getSelectedElement());
 
                 // set console partStack visible
                 consolePartStack.getTags().remove("Minimized");
@@ -366,5 +376,11 @@ public abstract class AbstractExecutionHandler {
                 }
             }
         });
+    }
+
+    private void validateJobProgressMonitor(IProgressMonitor monitor) throws JobCancelException {
+        if (monitor.isCanceled()) {
+            throw new JobCancelException();
+        }
     }
 }
