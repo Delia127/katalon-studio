@@ -2,7 +2,6 @@ package com.kms.katalon.objectspy.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,11 +62,10 @@ public class HTMLElementUtil {
 
     private static final String XPATH_KEY = "xpath";
 
-    public static String generateHTMLElementName(String elementType, Map<String, String> attributes)
-            throws UnsupportedEncodingException {
+    public static String generateHTMLElementName(String elementType, Map<String, String> attributes) {
         String content = attributes.get(ELEMENT_TEXT_KEY);
         if (content != null) {
-            return elementType + "_" + URLEncoder.encode(content, "UTF-8");
+            return elementType + "_" + content;
         }
         String id = attributes.get(ELEMENT_ID_KEY);
         if (id != null) {
@@ -186,8 +184,7 @@ public class HTMLElementUtil {
                 && !StringUtils.isBlank(contentArray.get(0).getAsString());
     }
 
-    private static HTMLPageElement buildHTMLPageElement(JsonObject parentPageJsonObject)
-            throws UnsupportedEncodingException {
+    private static HTMLPageElement buildHTMLPageElement(JsonObject parentPageJsonObject) {
         if (parentPageJsonObject == null) {
             return null;
         }
@@ -202,11 +199,8 @@ public class HTMLElementUtil {
                 new ArrayList<HTMLElement>(), pageUrlString);
     }
 
-    private static String generateHTMLPageElementName(String pageTitleString) throws UnsupportedEncodingException {
-        return "Page_"
-                + URLEncoder.encode(
-                        (pageTitleString.length() > NAME_LENGTH_LIMIT) ? pageTitleString
-                                .substring(0, NAME_LENGTH_LIMIT) : pageTitleString, "UTF-8");
+    private static String generateHTMLPageElementName(String pageTitleString) {
+        return "Page_" + StringUtils.substring(pageTitleString, 0, NAME_LENGTH_LIMIT);
     }
 
     public static WebElementEntity convertElementToWebElementEntity(HTMLElement element, WebElementEntity refElement,
