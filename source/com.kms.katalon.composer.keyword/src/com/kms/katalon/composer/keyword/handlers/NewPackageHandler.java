@@ -51,11 +51,7 @@ public class NewPackageHandler {
 
     @CanExecute
     private boolean canExecute() {
-        if (ProjectController.getInstance().getCurrentProject() != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return ProjectController.getInstance().getCurrentProject() != null;
     }
 
     @Execute
