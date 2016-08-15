@@ -1,13 +1,14 @@
 package com.kms.katalon.composer.mobile.objectspy.dialog;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
-
+import static com.kms.katalon.composer.mobile.objectspy.dialog.MobileDeviceDialog.safeRoundDouble;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.io.FilenameUtils;
@@ -93,6 +94,7 @@ import com.kms.katalon.composer.mobile.objectspy.preferences.MobileObjectSpyPref
 import com.kms.katalon.composer.mobile.objectspy.viewer.CapturedObjectTableViewer;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
+import com.kms.katalon.core.mobile.keyword.GUIObject;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
@@ -142,7 +144,7 @@ public class MobileObjectSpyDialog extends Dialog {
     private TableColumn tblclmnCapturedObjectsSelection;
 
     private MobileElementPropertiesComposite propertiesComposite;
-    
+
     private MobileObjectSpyPreferencesHelper preferencesHelper;
 
     public boolean isCanceledBeforeOpening() {
@@ -209,8 +211,8 @@ public class MobileObjectSpyDialog extends Dialog {
         TableColumnLayout tbclCapturedObjects = new TableColumnLayout();
         capturedObjectTableComposite.setLayout(tbclCapturedObjects);
 
-        capturedObjectsTableViewer = new CapturedObjectTableViewer(capturedObjectTableComposite,
-                SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION, this);
+        capturedObjectsTableViewer = new CapturedObjectTableViewer(capturedObjectTableComposite, SWT.BORDER | SWT.MULTI
+                | SWT.FULL_SELECTION, this);
         Table capturedObjectsTable = capturedObjectsTableViewer.getTable();
         capturedObjectsTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
         capturedObjectsTable.setHeaderVisible(true);
@@ -382,7 +384,7 @@ public class MobileObjectSpyDialog extends Dialog {
         treeViewerColumn.setLabelProvider(new MobileElementLabelProvider());
 
         allElementTreeViewer.setContentProvider(new MobileElementTreeContentProvider());
-        
+
         allElementTreeViewer.getTree().setToolTipText(StringUtils.EMPTY);
         ColumnViewerToolTipSupport.enableFor(allElementTreeViewer, ToolTip.NO_RECREATE);
 
@@ -785,9 +787,49 @@ public class MobileObjectSpyDialog extends Dialog {
         if (deviceView != null && !deviceView.isDisposed()) {
             return;
         }
-        deviceView = new MobileDeviceDialog(getShell(), calculateInitPositionForDeviceViewDialog());
+        deviceView = new MobileDeviceDialog(getParentShell(), this, calculateInitPositionForDeviceViewDialog());
         deviceView.open();
         setDeviceView(deviceView);
+    }
+
+    /* package */void setSelectedElementByLocation(int x, int y) {
+        if (appRootElement == null) {
+            return;
+        }
+        final TreeMobileElement foundElement = recursivelyFindElementByLocation(appRootElement, x, y);
+        UISynchronizeService.syncExec(new Runnable() {
+            @Override
+            public void run() {
+                getShell().setFocus();
+                allElementTreeViewer.getTree().setFocus();
+                allElementTreeViewer.setSelection(new StructuredSelection(foundElement));
+            }
+        });
+    }
+
+    /**
+     * Recursively find element that is positioned at [x, y]. This is by assumed that mobile elements don't overlap each
+     * other.
+     * 
+     * @param currentElement
+     * @param x
+     * @param y
+     * @return element that were found
+     */
+    private TreeMobileElement recursivelyFindElementByLocation(TreeMobileElement currentElement, int x, int y) {
+        for (TreeMobileElement childElement : currentElement.getChildrenElement()) {
+            Map<String, String> attributes = childElement.getAttributes();
+            Double elementX = Double.parseDouble(attributes.get(GUIObject.X));
+            Double elementY = Double.parseDouble(attributes.get(GUIObject.Y));
+            Double elementWidth = Double.parseDouble(attributes.get(GUIObject.WIDTH));
+            Double elementHeight = Double.parseDouble(attributes.get(GUIObject.HEIGHT));
+            Rectangle rectangle = new Rectangle(safeRoundDouble(elementX), safeRoundDouble(elementY),
+                    safeRoundDouble(elementWidth), safeRoundDouble(elementHeight));
+            if (rectangle.contains(x, y)) {
+                return recursivelyFindElementByLocation(childElement, x, y);
+            }
+        }
+        return currentElement;
     }
 
     private void captureObjectAction() {
