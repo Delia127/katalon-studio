@@ -9,12 +9,12 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
-import com.kms.katalon.composer.components.impl.transfer.TreeEntityTransfer;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
@@ -114,7 +114,7 @@ public class PackageTreeEntity implements ITreeEntity {
 
     @Override
     public Transfer getEntityTransfer() throws Exception {
-        return TreeEntityTransfer.getInstance();
+        return FileTransfer.getInstance();
     }
 
     @Override

@@ -4,7 +4,6 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.keyword.constants.StringConstants;
-import com.kms.katalon.groovy.constant.GroovyConstants;
 
 public class RenameKeywordDialog extends CommonAbstractKeywordDialog {
 
@@ -20,7 +19,7 @@ public class RenameKeywordDialog extends CommonAbstractKeywordDialog {
 
     @Override
     public void validateEntityName(String entityName) throws Exception {
-        validateKeywordName(entityName + GroovyConstants.GROOVY_FILE_EXTENSION, parentPackage);
+        validateKeywordName(entityName, parentPackage);
     }
 
 }
