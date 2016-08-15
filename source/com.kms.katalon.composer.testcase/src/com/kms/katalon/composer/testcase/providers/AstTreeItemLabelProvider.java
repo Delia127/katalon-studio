@@ -28,7 +28,7 @@ public class AstTreeItemLabelProvider extends TypeCheckedStyleTreeCellLabelProvi
     public CellLayoutInfo getCellLayoutInfo() {
         return new DefaultCellLayoutInfo() {
             @Override
-            public int getLeftMargin() {
+            public int getSpace() {
                 return 10;
             }
         };
