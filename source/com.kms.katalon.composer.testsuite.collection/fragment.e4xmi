@@ -12,6 +12,7 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_jNdGABJ5EeaBC_8l6YNNlg" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="before:com.kms.katalon.composer.objectrepository.handledtoolitem.newTestObject">
     <elements xsi:type="menu:HandledToolItem" xmi:id="_jNdGARJ5EeaBC_8l6YNNlg" elementId="com.kms.katalon.composer.toolbar.testsuite.collection.new" label="" iconURI="platform:/plugin/com.kms.katalon.composer.testsuite.collection/icons/new_test_suite_collection_28.png" tooltip="New Test Suite Collection" command="_Ov8x8BJ3EeaBC_8l6YNNlg">
+      <persistedState key="index" value="7"/>
       <tags>FORCE_TEXT</tags>
     </elements>
   </fragments>

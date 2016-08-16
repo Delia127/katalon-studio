@@ -104,12 +104,16 @@
       <children xsi:type="menu:ToolBar" xmi:id="_hQQH9hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.toolbar">
         <tags>Draggable</tags>
         <children xsi:type="menu:HandledToolItem" xmi:id="_hQQH-BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.toolbar.save" iconURI="platform:/plugin/com.kms.katalon/icons/save_28.png" tooltip="Save" command="_hQQH4xYMEeSUMbyEN2kbFQ">
+          <persistedState key="index" value="0"/>
           <tags>Opaque</tags>
         </children>
         <children xsi:type="menu:HandledToolItem" xmi:id="_5oUMAEO4EeSlQuaMBzQJOw" elementId="com.kms.katalon.composer.toolbar.saveAll" iconURI="platform:/plugin/com.kms.katalon/icons/save_all_28.png" tooltip="Save All" command="_8qJlUEO4EeSlQuaMBzQJOw">
+          <persistedState key="index" value="1"/>
           <tags>Opaque</tags>
         </children>
-        <children xsi:type="menu:ToolBarSeparator" xmi:id="_3PTrMBQXEeWFKqx225rIVg" elementId="com.kms.katalon.toolbarseparator.0"/>
+        <children xsi:type="menu:ToolBarSeparator" xmi:id="_3PTrMBQXEeWFKqx225rIVg" elementId="com.kms.katalon.toolbarseparator.0">
+          <persistedState key="index" value="2"/>
+        </children>
       </children>
       <children xsi:type="menu:ToolControl" xmi:id="_1-cu4OJUEeSyVPtKyNklew" elementId="PerspectiveSpacer" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.renderers.swt/org.eclipse.e4.ui.workbench.renderers.swt.LayoutModifierToolControl">
         <tags>stretch</tags>
