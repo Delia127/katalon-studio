@@ -29,9 +29,7 @@
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_8pdzkAmfEeWmsZWUQ_5cNA" elementId="com.kms.katalon.menu.submenu.project.clean" label="Clean..." iconURI="platform:/plugin/com.kms.katalon.composer.project/icons/project_clean_16.png" tooltip="Clean all temporary files" command="_NI-S8AmgEeWmsZWUQ_5cNA"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_4J8jACaMEeSEdPS-LRT4TQ" featurename="children" parentElementId="com.kms.katalon.composer.menu.file" positionInList="before:com.kms.katalon.composer.menu.file.quit">
-    <elements xsi:type="menu:MenuSeparator" xmi:id="_7bCD0CaNEeSEdPS-LRT4TQ" elementId="com.kms.katalon.composer.project.menuseparator.1"/>
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_oVkgwCaLEeSEdPS-LRT4TQ" elementId="com.kms.katalon.composer.project.dynamicmenucontribution.recentprojects" label="Recent Projects" contributionURI="bundleclass://com.kms.katalon.composer.project/com.kms.katalon.composer.project.menu.RecentProjectsMenuContribution"/>
-    <elements xsi:type="menu:MenuSeparator" xmi:id="_62RJ4CaNEeSEdPS-LRT4TQ" elementId="com.kms.katalon.composer.project.menuseparator.0"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="__KXWgAKuEeW37K_X6tVvgQ" featurename="addons" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="application:Addon" xmi:id="_A4nBAAKvEeW37K_X6tVvgQ" elementId="com.kms.katalon.composer.project.addon.inject" contributionURI="bundleclass://com.kms.katalon.composer.project/com.kms.katalon.composer.project.addon.ProjectInjectionManagerAddon"/>
