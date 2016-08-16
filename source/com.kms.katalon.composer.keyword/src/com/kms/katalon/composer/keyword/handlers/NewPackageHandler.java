@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.keyword.handlers;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -98,6 +99,12 @@ public class NewPackageHandler {
                 }
                 dialog.open();
                 if (dialog.getReturnCode() == Dialog.OK) {
+                    if (dialog.getName().length() > StringConstants.MAX_PKG_AND_CLASS_NAME_LENGTH) {
+                        MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE, MessageFormat.format(
+                                StringConstants.HAND_ERROR_MSG_EXCEED_PKG_NAME_LENGTH, dialog.getName().length(),
+                                StringConstants.MAX_PKG_AND_CLASS_NAME_LENGTH));
+                        return;
+                    }
                     // Create package
                     IProgressMonitor monitor = new NullProgressMonitor();
                     IPackageFragment newPackageFragment = root.createPackageFragment(dialog.getName(), true, monitor);
