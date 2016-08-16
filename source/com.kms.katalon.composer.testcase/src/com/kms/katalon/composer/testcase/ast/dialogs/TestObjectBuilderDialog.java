@@ -85,6 +85,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         this.haveOtherTypes = haveOtherTypes;
         this.objectExpressionWrapper = objectExpressionWrapper.clone();
         setAllowMultiple(false);
+        setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | getDefaultOrientation());
         try {
             setInput(TreeEntityUtil.getChildren(
                     null,
@@ -269,6 +270,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         tableViewer.setInput(objectExpressionWrapperList);
     }
 
+    @Override
     protected void createButtonsForButtonBar(Composite parent) {
         Button btnOK = createButton(parent, 102, IDialogConstants.OK_LABEL, true);
         btnOK.addSelectionListener(new SelectionListener() {
