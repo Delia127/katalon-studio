@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.impl.dialogs.CommonNewEntityDialog;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.testsuite.collection.constant.StringConstants;
 import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -65,7 +65,8 @@ public class NewTestSuiteCollectionDialog extends CommonNewEntityDialog<TestSuit
         try {
             entity = TestSuiteCollectionController.getInstance().newTestSuiteCollection(parentFolder, getName());
         } catch (Exception e) {
-            LoggerSingleton.logError(e);
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.HDL_MSG_UNABLE_TO_CREATE_TEST_SUITE_COLLECTION,
+                    e.getMessage());
         }
     }
 
