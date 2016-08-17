@@ -16,6 +16,8 @@
    <launcherArgs>
       <programArgs>-data config
       </programArgs>
+      <programArgsMac>-vm ../../../jre/Contents/Home/jre/lib/jli/libjli.dylib
+      </programArgsMac>
       <vmArgs>-Xms256m
 -XX:PermSize=128M
 -XX:MaxPermSize=512M

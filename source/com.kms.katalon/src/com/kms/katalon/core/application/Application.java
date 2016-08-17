@@ -65,8 +65,8 @@ public class Application implements IApplication {
     }
 
     private void preRunInit() {
+        MacOSAddon.initDefaultJRE();
         ApplicationInfo.setAppInfoIntoUserHomeDir();
-        MacOSAddon.init();
     }
 
     private OptionSet parseOption(final String[] appArgs) {
