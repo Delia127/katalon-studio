@@ -13,6 +13,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -36,7 +38,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 public class NewProjectDialog extends TitleAreaDialog {
     private static final String DEFAULT_PROJECT_LOCATION = System.getProperty("user.home") + File.separator
             + StringConstants.APP_NAME;
-    
+
     private static final int PROJECT_DESC_TEXT_LEFT_MARGIN = 3;
 
     private static final int PROJECT_DESC_DISPLAY_LINE_NUMBER = 4;
@@ -155,7 +157,6 @@ public class NewProjectDialog extends TitleAreaDialog {
                 checkInput();
             }
         });
-        
         if (Platform.getOS().equals(Platform.OS_MACOSX)) {
             txtProjectName.addKeyListener(new KeyAdapter() {
                 @Override
@@ -165,7 +166,20 @@ public class NewProjectDialog extends TitleAreaDialog {
 
             });
         }
-        
+        // On MAC OS, with some input source language that enable Auto correct spelling (ex: Telex or VNI)
+        // if the input text not accept by the system then when the input control lost focus the text will be remove as
+        // default.
+        if (Platform.getOS().equals(Platform.OS_MACOSX)) {
+            txtProjectName.addFocusListener(new FocusAdapter() {
+                @Override
+                public void focusLost(FocusEvent e) {
+                    String projectName = txtProjectName.getText();
+                    super.focusLost(e);
+                    txtProjectName.setText(projectName);
+                }
+            });
+        }
+
         if (btnFolderChooser == null) {
             return;
         }
