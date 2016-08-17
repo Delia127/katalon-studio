@@ -36,7 +36,6 @@ public abstract class AbstractAstBuilderWithTableDialog extends AbstractAstBuild
      * sub classes need to override this method to add columns to table
      */
     protected abstract void addTableColumns();
-    
 
     /**
      * Refresh the input
