@@ -14,6 +14,7 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_4fH-cCkhEeSovtUyBOitzw" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="before:com.kms.katalon.composer.toolbar.handledtoolitem.new.keyword">
     <elements xsi:type="menu:HandledToolItem" xmi:id="_8oQXACkhEeSovtUyBOitzw" elementId="com.kms.katalon.composer.toolbar.testdata.newtestdata" label="" iconURI="platform:/plugin/com.kms.katalon.composer.testdata/icons/new_test_data_28.png" tooltip="New Test Data" command="_KAfY4CkhEeSovtUyBOitzw">
+      <persistedState key="index" value="10"/>
       <tags>FORCE_TEXT</tags>
     </elements>
   </fragments>

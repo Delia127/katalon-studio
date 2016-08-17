@@ -74,6 +74,11 @@
           beforefragment="true"
           class="com.kms.katalon.processors.MenuProcessor">
     </processor>
+    <processor
+          apply="always"
+          beforefragment="false"
+          class="com.kms.katalon.processors.ToolbarProcessor">
+    </processor>
  </extension>
  <extension
        point="org.eclipse.core.runtime.preferences">

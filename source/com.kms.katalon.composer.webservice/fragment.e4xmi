@@ -16,6 +16,8 @@
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_OZOUAHPGEeW6OYuGjekwrg" elementId="com.kms.katalon.composer.webservice.handledmenuitem.webServiceRequest" label="Web Service Request" iconURI="platform:/plugin/com.kms.katalon.composer.webservice/icons/ws_test_object_16.png" tooltip="New Web Service Request" command="_zzY_QLEBEeSrwsGaXHfzzg"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_vpqigHPdEeW6OYuGjekwrg" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="after:com.kms.katalon.composer.toolbar.testsuite.newtestsuite">
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_1XCVAHPdEeW6OYuGjekwrg" elementId="com.kms.katalon.composer.webservice.handledtoolitem.newWsRequest" iconURI="platform:/plugin/com.kms.katalon.composer.webservice/icons/new_ws_test_object_28.png" tooltip="New Web Service Request" command="_zzY_QLEBEeSrwsGaXHfzzg"/>
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_1XCVAHPdEeW6OYuGjekwrg" elementId="com.kms.katalon.composer.webservice.handledtoolitem.newWsRequest" iconURI="platform:/plugin/com.kms.katalon.composer.webservice/icons/new_ws_test_object_28.png" tooltip="New Web Service Request" command="_zzY_QLEBEeSrwsGaXHfzzg">
+      <persistedState key="index" value="9"/>
+    </elements>
   </fragments>
 </fragment:ModelFragments>
