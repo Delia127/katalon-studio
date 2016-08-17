@@ -9,7 +9,9 @@ import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.FileLocator;
@@ -915,6 +917,18 @@ public class RecorderDialog extends Dialog {
                 } else {
                     htmlActions.addAll(HTMLActionUtil.getAllHTMLActions());
                 }
+                
+                // remove duplicate keyword
+                Map<String, IHTMLAction> keywords = new LinkedHashMap<>();
+                for (int i = 0; i < htmlActions.size(); ++i) {
+                    action = htmlActions.get(i);
+                    if (!keywords.containsKey(action.getName())) {
+                        keywords.put(action.getName(), htmlActions.get(i));
+                    }
+                }
+                htmlActions.clear();
+                htmlActions.addAll(keywords.values());
+                
                 for (IHTMLAction htmlAction : htmlActions) {
                     actionNames.add(TreeEntityUtil.getReadableKeywordName(htmlAction.getName()));
                 }
