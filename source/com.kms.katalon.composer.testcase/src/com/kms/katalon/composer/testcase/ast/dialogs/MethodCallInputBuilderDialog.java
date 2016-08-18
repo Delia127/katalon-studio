@@ -12,8 +12,13 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.testcase.ast.editors.InputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.MethodComboBoxCellEditor;
@@ -180,7 +185,10 @@ public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDia
 
             @Override
             protected CellEditor getCellEditor(Object element) {
-                return new MethodComboBoxCellEditor(tableViewer.getTable(), getObjectType(methodCallExpression));
+                MethodComboBoxCellEditor cellEditor = new MethodComboBoxCellEditor(tableViewer.getTable(),
+                        getObjectType(methodCallExpression));
+                processAutoSuggestion(cellEditor);
+                return cellEditor;
             }
 
             @Override
@@ -189,6 +197,57 @@ public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDia
             }
         });
     }
+    
+    private void processAutoSuggestion(MethodComboBoxCellEditor cellEditor) {
+        final KeyAdapter keyAdapter = new KeyAdapter() {
+            private org.eclipse.swt.widgets.List listItem = null;
+
+            @Override
+            public void keyReleased(KeyEvent ke) {
+                if (ke.keyCode == SWT.ARROW_UP || ke.keyCode == SWT.ARROW_DOWN) {
+                    return;
+                }
+                CCombo combo = (CCombo) ke.getSource();
+                if (!(combo.getDisplay().getFocusControl() instanceof Text)) {
+                    return;
+                }
+                Text textControl = (Text) combo.getDisplay().getFocusControl();
+
+                if (combo.getItemCount() <= 0) {
+                    return;
+                }
+                combo.setListVisible(true);
+                String[] items = combo.getItems();
+                String curText = textControl.getText();
+                int selectIndex = -1;
+                for (int i = 0; i < items.length && curText.length() > 0; ++i) {
+                    if (getMethodName(items[i]).startsWith(curText)) {
+                        selectIndex = i;
+                        break;
+                    }
+                }
+                Control focusControl = combo.getDisplay().getFocusControl();
+                if (focusControl instanceof org.eclipse.swt.widgets.List) {
+                    focusControl.removeListener(SWT.FocusOut, focusControl.getListeners(SWT.FocusOut)[0]);
+                    listItem = (org.eclipse.swt.widgets.List) focusControl;
+                }
+                if (listItem != null) {
+                    listItem.setSelection(selectIndex);
+                }
+                textControl.setFocus();
+            }
+
+            private String getMethodName(String item) {
+                if (item.contains("(")) {
+                    return item.substring(0, item.indexOf("("));
+                }
+                return item;
+            }
+        };
+
+        cellEditor.getControl().addKeyListener(keyAdapter);
+    }
+
 
     private void addTableColumnInput() {
         TableViewerColumn tableViewerColumnInput = new TableViewerColumn(tableViewer, SWT.NONE);
