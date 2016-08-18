@@ -150,7 +150,7 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PA_LBL_MAIL_RECIPIENTS = "Mail Recipients";
 
-    public static final String PA_LBL_PAGE_LOAD_TIMEOUT = "Page load timeout";
+    public static final String PA_LBL_PAGE_LOAD_TIMEOUT = "Implicit timeout";
 
     public static final String PA_LBL_USE_DEFAULT = "Use default";
 

@@ -63,7 +63,7 @@ public class DefaultExecutionSetting implements IExecutionSetting {
         return reportProps;
     }
 
-    private ProjectEntity getCurrentProject() {
+    protected ProjectEntity getCurrentProject() {
         return ProjectController.getInstance().getCurrentProject();
     }
 

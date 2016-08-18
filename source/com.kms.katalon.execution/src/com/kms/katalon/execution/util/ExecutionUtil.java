@@ -88,7 +88,7 @@ public class ExecutionUtil {
         return null;
     }
 
-    public static int getDefaultPageLoadTimeout() {
+    public static int getDefaultImplicitTimeout() {
         return getStore().getInt(PreferenceConstants.EXECUTION_DEFAULT_TIMEOUT);
     }
 

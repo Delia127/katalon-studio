@@ -18,4 +18,10 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String LBL_DEBUG_HOST = "Debugging Host";
 	public static final String LBL_DESIRED_CAP = "Desired capabilities (additional WebDriver preferences):";
 	
+	//WebUiSettingsPreferencePage
+	public static final String PREF_LBL_DEFAULT_PAGE_LOAD_TIMEOUT = "Default page load timeout (in seconds)";
+	public static final String PREF_LBL_ENABLE_DEFAULT_PAGE_LOAD_TIMEOUT = "Wait until the page is loaded";
+	public static final String PREF_LBL_IGNORE_DEFAULT_PAGE_LOAD_TIMEOUT_EXCEPTION = "After timeout, continue to run";
+	public static final String PREF_ERROR_MSG_VAL_MUST_BE_AN_INT_BIGGER_FROM_X = "Invalid number, number value must be >= {0}";
+	
 }

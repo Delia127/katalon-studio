@@ -70,10 +70,14 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
 
         int timeOut = (fileEntity instanceof TestSuiteEntity && !((TestSuiteEntity) fileEntity)
                 .isPageLoadTimeoutDefault()) ? ((TestSuiteEntity) fileEntity).getPageLoadTimeout() : ExecutionUtil
-                .getDefaultPageLoadTimeout();
+                .getDefaultImplicitTimeout();
 
-        executionSetting = new DefaultExecutionSetting();
+        initExecutionSetting();
         executionSetting.setTimeout(timeOut);
+    }
+
+    protected void initExecutionSetting() {
+        executionSetting = new DefaultExecutionSetting();
     }
 
     protected String getLogFolderLocation(TestCaseEntity testCase) {
