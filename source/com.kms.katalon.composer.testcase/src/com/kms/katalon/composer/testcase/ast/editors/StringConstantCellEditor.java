@@ -8,7 +8,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressi
 
 public class StringConstantCellEditor extends TextCellEditor {
     private ConstantExpressionWrapper constantExpression;
-    
+
     public StringConstantCellEditor(Composite parent) {
         super(parent);
     }
@@ -29,5 +29,9 @@ public class StringConstantCellEditor extends TextCellEditor {
         }
         constantExpression.setValue(stringResult);
         return constantExpression;
+    }
+
+    public void applyEditingValue() {
+        fireApplyEditorValue();
     }
 }

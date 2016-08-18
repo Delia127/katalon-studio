@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Shell;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.ast.editors.EnumPropertyComboBoxCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.StringConstantCellEditor;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
@@ -46,6 +47,8 @@ public class ArgumentInputBuilderDialog extends AbstractAstBuilderWithTableDialo
     private List<InputParameter> originalParameters;
 
     private ASTNodeWrapper parent;
+
+    protected StringConstantCellEditor valueCellEditor;
 
     public ArgumentInputBuilderDialog(Shell parentShell, List<InputParameter> inputParameters, ASTNodeWrapper parent) {
         super(parentShell);
@@ -161,9 +164,22 @@ public class ArgumentInputBuilderDialog extends AbstractAstBuilderWithTableDialo
                     return new EnumPropertyComboBoxCellEditor((Composite) getViewer().getControl(),
                             FailureHandling.class);
                 }
-                return super.getCellEditor(((InputParameter) element).getValue());
+                CellEditor cellEditor = super.getCellEditor(((InputParameter) element).getValue());
+                valueCellEditor = null;
+                if (cellEditor instanceof StringConstantCellEditor) {
+                    valueCellEditor = (StringConstantCellEditor)cellEditor;
+                }
+
+                return cellEditor;
             }
         });
+    }
+    
+    @Override
+    protected void processEditingValueWhenOKPressed() {
+        if (tableViewer.isCellEditorActive() && valueCellEditor != null) {
+            valueCellEditor.applyEditingValue();
+        }
     }
 
     private void addTableColumnValueType() {

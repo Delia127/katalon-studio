@@ -29,10 +29,17 @@ public abstract class AbstractAstBuilderDialog extends Dialog implements IAstDia
         btnOK.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                processEditingValueWhenOKPressed();
                 okPressed();
             }
         });
         createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+    }
+
+    // apply editting value when user click OK. However, not all child dialog take care this action.
+    // So, we make the method be empty. As the result, if a child dialog need take care this action,
+    // then it will override the method.
+    protected void processEditingValueWhenOKPressed() {
     }
 
     /**
@@ -41,7 +48,7 @@ public abstract class AbstractAstBuilderDialog extends Dialog implements IAstDia
      * @return the dialog title for a specific ast node
      */
     public abstract String getDialogTitle();
-    
+
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
