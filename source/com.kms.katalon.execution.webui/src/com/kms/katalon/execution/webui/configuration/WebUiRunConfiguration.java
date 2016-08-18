@@ -7,6 +7,7 @@ import java.util.Map;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.configuration.IDriverConnector;
+import com.kms.katalon.execution.webui.configuration.impl.WebUIExecutionSetting;
 import com.kms.katalon.execution.webui.driver.WebUiDriverConnector;
 
 public abstract class WebUiRunConfiguration extends AbstractRunConfiguration {
@@ -24,5 +25,10 @@ public abstract class WebUiRunConfiguration extends AbstractRunConfiguration {
         Map<String, IDriverConnector> webUIDriverCollector = new LinkedHashMap<String, IDriverConnector>();
         webUIDriverCollector.put(DriverFactory.WEB_UI_DRIVER_PROPERTY, webUiDriverConnector);
         return webUIDriverCollector;
+    }
+    
+    @Override
+    protected void initExecutionSetting() {
+        executionSetting = new WebUIExecutionSetting();
     }
 }

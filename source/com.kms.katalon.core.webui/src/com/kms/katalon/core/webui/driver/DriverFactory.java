@@ -17,6 +17,7 @@ import org.openqa.selenium.Alert;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriver.Timeouts;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -80,6 +81,12 @@ public class DriverFactory {
     public static final String CHROME_DRIVER_PATH_PROPERTY = StringConstants.CONF_PROPERTY_CHROME_DRIVER_PATH;
 
     public static final String WAIT_FOR_IE_HANGING_PROPERTY = StringConstants.CONF_PROPERTY_WAIT_FOR_IE_HANGING;
+    
+    public static final String ENABLE_PAGE_LOAD_TIMEOUT = StringConstants.CONF_PROPERTY_ENABLE_PAGE_LOAD_TIMEOUT;
+    
+    public static final String DEFAULT_PAGE_LOAD_TIMEOUT = StringConstants.CONF_PROPERTY_DEFAULT_PAGE_LOAD_TIMEOUT;
+    
+    public static final String IGNORE_PAGE_LOAD_TIMEOUT_EXCEPTION = StringConstants.CONF_PROPERTY_IGNORE_PAGE_LOAD_TIMEOUT_EXCEPTION;
 
     public static final String EXECUTED_BROWSER_PROPERTY = StringConstants.CONF_PROPERTY_EXECUTED_BROWSER;
 
@@ -327,10 +334,15 @@ public class DriverFactory {
     }
 
     private static void setTimeout() {
-        if (localWebServerStorage.get() instanceof EdgeDriver) {
+        WebDriver webDriver = localWebServerStorage.get();
+        if (webDriver instanceof EdgeDriver) {
             return;
         }
-        localWebServerStorage.get().manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
+        Timeouts timeouts = webDriver.manage().timeouts();
+        timeouts.implicitlyWait(0, TimeUnit.SECONDS);
+        if (isEnablePageLoadTimeout()) {
+            timeouts.pageLoadTimeout(getDefaultPageLoadTimeout(), TimeUnit.SECONDS);
+        }
     }
 
     /**
@@ -548,6 +560,18 @@ public class DriverFactory {
         }
         return Integer.parseInt(RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY,
                 WAIT_FOR_IE_HANGING_PROPERTY));
+    }
+    
+    public static boolean isEnablePageLoadTimeout() {
+        return RunConfiguration.getBooleanProperty(ENABLE_PAGE_LOAD_TIMEOUT, RunConfiguration.getExecutionGeneralProperties());
+    }
+    
+    public static int getDefaultPageLoadTimeout() {
+        return RunConfiguration.getIntProperty(DEFAULT_PAGE_LOAD_TIMEOUT, RunConfiguration.getExecutionGeneralProperties());
+    }
+    
+    public static boolean isIgnorePageLoadTimeoutException() {
+        return RunConfiguration.getBooleanProperty(IGNORE_PAGE_LOAD_TIMEOUT_EXCEPTION, RunConfiguration.getExecutionGeneralProperties());
     }
 
     public static DriverType getExecutedBrowser() {

@@ -101,7 +101,7 @@ public class InspectSession implements Runnable {
         IDriverConnector webUIDriverConnector = WebUIExecutionUtil.getBrowserDriverConnector(webUIDriverType,
                 projectDir);
         DefaultExecutionSetting executionSetting = new DefaultExecutionSetting();
-        executionSetting.setTimeout(ExecutionUtil.getDefaultPageLoadTimeout());
+        executionSetting.setTimeout(ExecutionUtil.getDefaultImplicitTimeout());
 
         Map<String, IDriverConnector> driverConnectors = new HashMap<String, IDriverConnector>(1);
         driverConnectors.put(DriverFactory.WEB_UI_DRIVER_PROPERTY, webUIDriverConnector);

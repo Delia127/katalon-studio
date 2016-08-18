@@ -29,7 +29,7 @@
          point="com.kms.katalon.preferences.ProjectSettingPages">
       <page
       		category="com.kms.katalon.composer.execution.settings.default"
-            class="com.kms.katalon.composer.webui.setting.WebUiPerferencePage"
+            class="com.kms.katalon.composer.webui.setting.WebUiSettingsPerferencePage"
             id="com.kms.katalon.composer.execution.settings.default.1"
             name="Web UI">
       </page>
@@ -71,7 +71,7 @@
       </page>
        <page
              category="com.kms.katalon.composer.execution.settings.default"
-             class="com.kms.katalon.composer.webui.setting.WebUiPerferencePage"
+             class="com.kms.katalon.composer.webui.setting.WebUiSettingsPerferencePage"
              id="com.kms.katalon.composer.execution.settings.default.3"
              name="Remote Web Debug">
        </page>
