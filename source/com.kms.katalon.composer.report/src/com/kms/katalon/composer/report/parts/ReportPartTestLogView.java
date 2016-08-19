@@ -10,10 +10,14 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
@@ -145,6 +149,16 @@ public class ReportPartTestLogView {
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 updateSelectedTestStep(getSelectedTestStep());
+            }
+        });
+        
+        treeViewerTestSteps.addDoubleClickListener(new IDoubleClickListener() {
+            @Override
+            public void doubleClick(DoubleClickEvent event) {
+                TreeViewer viewer = (TreeViewer) event.getViewer();
+                IStructuredSelection thisSelection = (IStructuredSelection) event.getSelection();
+                Object selectedNode = thisSelection.getFirstElement();
+                viewer.setExpandedState(selectedNode, !viewer.getExpandedState(selectedNode));
             }
         });
 
