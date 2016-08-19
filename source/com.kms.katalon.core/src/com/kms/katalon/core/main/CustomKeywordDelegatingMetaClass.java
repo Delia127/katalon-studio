@@ -8,7 +8,10 @@ import groovy.lang.MetaClass;
 import java.util.List;
 
 import org.codehaus.groovy.runtime.InvokerHelper;
+import org.codehaus.groovy.runtime.InvokerInvocationException;
 
+import com.kms.katalon.core.exception.StepErrorException;
+import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.ErrorCollector;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.LogLevel;
@@ -54,13 +57,32 @@ public class CustomKeywordDelegatingMetaClass extends DelegatingMetaClass {
 
             Throwable errorToThrow = errorCollector.getFirstError();
             if (errorToThrow != null) {
-                ErrorCollector.throwError(errorToThrow);
+                throwError(errorToThrow);
             }
             return null;
         } finally {
             // return previous errors to error collector
             errorCollector.getErrors().addAll(0, oldErrors);
         }
+    }
+
+    private static void throwError(Throwable error) {
+        KeywordLogger keywordLogger = KeywordLogger.getInstance();
+        if (ErrorCollector.isErrorFailed(error)) {
+            keywordLogger.logFailed(error.getMessage());
+            if (error instanceof InvokerInvocationException) {
+                throw (InvokerInvocationException) error;
+            }
+            if (error instanceof AssertionError) {
+                throw (AssertionError) error;
+            }
+            if (error instanceof StepFailedException) {
+                throw (StepFailedException) error;
+            }
+            throw new StepFailedException(error);
+        }
+        keywordLogger.logError(error.getMessage());
+        throw new StepErrorException(error);
     }
 
     private Class<?> getCustomKeywordClassAndSetMetaClass(String customKeywordClassName) throws ClassNotFoundException {
