@@ -9,6 +9,7 @@ Bundle-ClassPath: .
 Require-Bundle: org.codehaus.groovy,
  com.kms.katalon.constant,
  com.kms.katalon.core,
- wsdl4j
+ wsdl4j,
+ org.apache.commons.lang
 Export-Package: com.kms.katalon.core.webservice.contribution,
  com.kms.katalon.core.webservice.keyword
