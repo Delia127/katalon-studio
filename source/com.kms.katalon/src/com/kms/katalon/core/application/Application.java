@@ -22,6 +22,7 @@ import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.execution.console.ConsoleMain;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
+import com.kms.katalon.util.ActivationInfoCollector;
 import com.kms.katalon.util.ApplicationInfo;
 
 /**
@@ -50,6 +51,7 @@ public class Application implements IApplication {
         final String[] appArgs = (String[]) args.get(IApplicationContext.APPLICATION_ARGS);
 
         RunningModeParam runningModeParam = getRunningModeParamFromParam(parseOption(appArgs));
+
         switch (runningModeParam) {
             case CONSOLE:
                 // hide splash screen
@@ -89,6 +91,9 @@ public class Application implements IApplication {
         // Set this to allow application to return it's own exit code instead of Eclipse's exit code
         System.setProperty(IApplicationContext.EXIT_DATA_PROPERTY, "");
         try {
+            if (!(ActivationInfoCollector.checkActivation(RunningModeParam.CONSOLE))) {
+                return LauncherResult.RETURN_CODE_PASSED;
+            }
             return ConsoleMain.launch(arguments);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -109,7 +114,7 @@ public class Application implements IApplication {
         return PlatformUI.RETURN_OK;
     }
 
-    private enum RunningModeParam {
+    public enum RunningModeParam {
         GUI, CONSOLE, INVALID
     }
 
