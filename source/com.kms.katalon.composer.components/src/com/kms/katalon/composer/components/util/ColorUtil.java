@@ -133,4 +133,8 @@ public class ColorUtil {
     public static Color getUnEditableTableCellBackgroundColor() {
         return Display.getCurrent().getSystemColor(SWT.COLOR_GRAY);
     }
+
+    public static Color getHighlightForegroundColor() {
+        return Display.getCurrent().getSystemColor(SWT.COLOR_LINK_FOREGROUND);
+    }
 }
