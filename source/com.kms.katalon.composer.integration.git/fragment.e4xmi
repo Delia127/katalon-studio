@@ -10,6 +10,7 @@
     <elements xsi:type="commands:Handler" xmi:id="__fT5UF08EeapguTfS-l63A" elementId="com.kms.katalon.composer.integration.git.handler.pull" contributionURI="bundleclass://com.kms.katalon.composer.integration.git/com.kms.katalon.composer.integration.git.handlers.PullHandler" command="_6zd1QF08EeapguTfS-l63A"/>
     <elements xsi:type="commands:Handler" xmi:id="_UkKzMF09EeapguTfS-l63A" elementId="com.kms.katalon.composer.integration.git.handler.fetch" contributionURI="bundleclass://com.kms.katalon.composer.integration.git/com.kms.katalon.composer.integration.git.handlers.FetchHandler" command="_Tof1IF09EeapguTfS-l63A"/>
     <elements xsi:type="commands:Handler" xmi:id="_5N2S4GgfEeaXdLB_F7wkyw" elementId="com.kms.katalon.composer.integration.git.handler.branch.new" contributionURI="bundleclass://com.kms.katalon.composer.integration.git/com.kms.katalon.composer.integration.git.handlers.NewBranchHandler" command="_2soTUGgfEeaXdLB_F7wkyw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_Bob6wGg6EeaXdLB_F7wkyw" elementId="com.kms.katalon.composer.integration.git.handler.branch.checkOut" contributionURI="bundleclass://com.kms.katalon.composer.integration.git/com.kms.katalon.composer.integration.git.handlers.CheckOutBranchHandler" command="__DeDoGg5EeaXdLB_F7wkyw"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_4VtBQFrqEeaUtN11XiUV6w" featurename="commands" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Command" xmi:id="_STUzgGT0EeaO3oYZQbbJmA" elementId="com.kms.katalon.composer.integration.git.command.clone" commandName="Clone"/>
@@ -21,6 +22,7 @@
     <elements xsi:type="commands:Command" xmi:id="_6zd1QF08EeapguTfS-l63A" elementId="com.kms.katalon.composer.integration.git.command.pull" commandName="Pull"/>
     <elements xsi:type="commands:Command" xmi:id="_Tof1IF09EeapguTfS-l63A" elementId="com.kms.katalon.composer.integration.git.command.fetch" commandName="Fetch"/>
     <elements xsi:type="commands:Command" xmi:id="_2soTUGgfEeaXdLB_F7wkyw" elementId="com.kms.katalon.composer.integration.git.command.branch.new" commandName="New Branch"/>
+    <elements xsi:type="commands:Command" xmi:id="__DeDoGg5EeaXdLB_F7wkyw" elementId="com.kms.katalon.composer.integration.git.command.branch.checkOut" commandName="Checkout Branch"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_FvMx8FrrEeaUtN11XiUV6w" featurename="children" parentElementId="com.kms.katalon.menu.integration" positionInList="first">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_fBpuQGRaEeaO3oYZQbbJmA" elementId="com.kms.katalon.composer.integration.git.dynamicmenucontribution" contributionURI="bundleclass://com.kms.katalon.composer.integration.git/com.kms.katalon.composer.integration.git.menu.GitMenuContribution"/>

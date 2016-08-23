@@ -3,6 +3,7 @@ package com.kms.katalon.composer.integration.git.components.wizards;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.egit.ui.Activator;
 import org.eclipse.egit.ui.internal.UIText;
@@ -84,8 +85,10 @@ public class CustomCreateBranchWizard extends Wizard {
                     try {
                         cp.createBranch(newBranchName, checkoutNewBranch,
                                 monitor);
-                    } catch (Exception e) {
-                        throw new InvocationTargetException(e);
+                    } catch (CoreException ce) {
+                        throw new InvocationTargetException(ce);
+                    } catch (IOException ioe) {
+                        throw new InvocationTargetException(ioe);
                     }
                 }
             });

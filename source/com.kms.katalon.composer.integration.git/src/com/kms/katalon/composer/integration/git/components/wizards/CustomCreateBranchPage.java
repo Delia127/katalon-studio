@@ -280,7 +280,8 @@ public class CustomCreateBranchPage extends WizardPage {
 
     private void selectSource() {
         SourceSelectionDialog dialog = new SourceSelectionDialog(getShell(), myRepository, sourceRefName);
-        if (dialog.open() == Window.OK) {
+        int result = dialog.open();
+        if (result == Window.OK) {
             String refName = dialog.getRefName();
             setSourceRef(refName);
             nameText.setFocus();
@@ -290,9 +291,8 @@ public class CustomCreateBranchPage extends WizardPage {
     private void checkPage() {
         try {
             boolean basedOnLocalBranch = sourceRefName.startsWith(Constants.R_HEADS);
-            if (basedOnLocalBranch && upstreamConfig != UpstreamConfig.NONE) {
+            if (basedOnLocalBranch && upstreamConfig != UpstreamConfig.NONE)
                 setMessage(UIText.CreateBranchPage_LocalBranchWarningMessage, IMessageProvider.INFORMATION);
-            }
 
             if (sourceRefName.length() == 0) {
                 setErrorMessage(UIText.CreateBranchPage_MissingSourceMessage);
@@ -369,11 +369,11 @@ public class CustomCreateBranchPage extends WizardPage {
         IExtensionRegistry registry = Platform.getExtensionRegistry();
         IConfigurationElement[] config = registry.getConfigurationElementsFor(BRANCH_NAME_PROVIDER_ID);
         if (config.length > 0) {
+            Object provider;
             try {
-                Object provider = config[0].createExecutableExtension("class"); //$NON-NLS-1$
-                if (provider instanceof IBranchNameProvider) {
+                provider = config[0].createExecutableExtension("class"); //$NON-NLS-1$
+                if (provider instanceof IBranchNameProvider)
                     return (IBranchNameProvider) provider;
-                }
             } catch (Throwable e) {
                 Activator.logError(UIText.CreateBranchPage_CreateBranchNameProviderFailed, e);
             }
@@ -384,14 +384,13 @@ public class CustomCreateBranchPage extends WizardPage {
     private String getBranchNameSuggestionFromProvider() {
         final AtomicReference<String> ref = new AtomicReference<>();
         final IBranchNameProvider branchNameProvider = getBranchNameProvider();
-        if (branchNameProvider != null) {
+        if (branchNameProvider != null)
             SafeRunner.run(new SafeRunnable() {
                 @Override
                 public void run() throws Exception {
                     ref.set(branchNameProvider.getBranchNameSuggestion());
                 }
             });
-        }
         return ref.get();
     }
 
