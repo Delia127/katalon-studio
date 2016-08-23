@@ -396,7 +396,7 @@ public class TestCaseTreeTableInput {
     }
 
     // refresh treetable root
-    private void reloadTreeTableNodes() {
+    public void reloadTreeTableNodes() {
         List<AstTreeTableNode> astTreeTableNodes = new ArrayList<AstTreeTableNode>();
         mainClassTreeNode = new AstScriptTreeTableNode(mainClassNodeWrapper, null);
         astTreeTableNodes.add(mainClassTreeNode);

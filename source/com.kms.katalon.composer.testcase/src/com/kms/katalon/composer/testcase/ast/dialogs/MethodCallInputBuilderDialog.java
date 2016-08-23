@@ -1,11 +1,12 @@
 package com.kms.katalon.composer.testcase.ast.dialogs;
 
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -20,21 +21,26 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.ast.editors.InputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.MethodComboBoxCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.MethodComboBoxCellEditor.MethodComparation;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputParameter;
+import com.kms.katalon.composer.testcase.model.InputParameterBuilder;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
-import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.composer.testcase.util.AstInputValueTypeOptionsProvider;
+import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
+import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
+import com.kms.katalon.controller.ProjectController;
 
 public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
 
@@ -42,9 +48,21 @@ public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDia
 
     private MethodCallExpressionWrapper methodCallExpression;
 
+    private ClassLoader classLoader;
+
     public MethodCallInputBuilderDialog(Shell parentShell, MethodCallExpressionWrapper methodCallExpression) {
         super(parentShell);
         this.methodCallExpression = methodCallExpression.clone();
+        classLoader = getClassLoader();
+    }
+
+    private ClassLoader getClassLoader() {
+        try {
+            return GroovyGuiUtil.getProjectClasLoader(ProjectController.getInstance().getCurrentProject());
+        } catch (MalformedURLException | CoreException e) {
+            LoggerSingleton.logError(e);
+            return null;
+        }
     }
 
     @Override
@@ -169,7 +187,8 @@ public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDia
             protected void setValue(Object element, Object value) {
                 if (value instanceof Method) {
                     Method newMethod = (Method) value;
-                    if (MethodComboBoxCellEditor.compareMethodAndMethodCall(newMethod, methodCallExpression)) {
+                    if (MethodComboBoxCellEditor.compareMethodAndMethodCall(newMethod, methodCallExpression,
+                            classLoader) == MethodComparation.EQUAL_NAME_AND_PARAM) {
                         return;
                     }
                     methodCallExpression.setMethod(newMethod.getName());
@@ -185,8 +204,12 @@ public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDia
 
             @Override
             protected CellEditor getCellEditor(Object element) {
+                if (classLoader == null) {
+                    return null;
+                }
                 MethodComboBoxCellEditor cellEditor = new MethodComboBoxCellEditor(tableViewer.getTable(),
-                        getObjectType(methodCallExpression));
+                        getObjectType(methodCallExpression), methodCallExpression.isStaticMethodCall(classLoader),
+                        classLoader);
                 processAutoSuggestion(cellEditor);
                 return cellEditor;
             }
@@ -197,7 +220,7 @@ public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDia
             }
         });
     }
-    
+
     private void processAutoSuggestion(MethodComboBoxCellEditor cellEditor) {
         final KeyAdapter keyAdapter = new KeyAdapter() {
             private org.eclipse.swt.widgets.List listItem = null;
@@ -248,7 +271,6 @@ public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDia
         cellEditor.getControl().addKeyListener(keyAdapter);
     }
 
-
     private void addTableColumnInput() {
         TableViewerColumn tableViewerColumnInput = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnNewColumnInput = tableViewerColumnInput.getColumn();
@@ -267,17 +289,12 @@ public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDia
         tableViewerColumnInput.setEditingSupport(new EditingSupport(tableViewer) {
             @Override
             protected void setValue(Object element, Object value) {
-                if (!(value instanceof List<?>)) {
+                if (!(value instanceof InputParameterBuilder)) {
                     return;
                 }
-                List<?> inputParameters = (List<?>) value;
                 ArgumentListExpressionWrapper argumentListExpression = new ArgumentListExpressionWrapper(
                         methodCallExpression);
-                for (int i = 0; i < inputParameters.size(); i++) {
-                    if (!(inputParameters.get(i) instanceof InputParameter)) {
-                        continue;
-                    }
-                    InputParameter inputParameter = (InputParameter) inputParameters.get(i);
+                for (InputParameter inputParameter : ((InputParameterBuilder) value).getOriginalParameters()) {
                     argumentListExpression.addExpression(inputParameter.getValueAsExpression());
                 }
                 methodCallExpression.setArguments(argumentListExpression);
@@ -287,11 +304,12 @@ public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDia
             @Override
             protected Object getValue(Object element) {
                 Method method = findMethod(getObjectType(methodCallExpression), methodCallExpression);
-                if (method == null) {
-                    return Collections.emptyList();
+                List<InputParameter> inputParameters = new ArrayList<>();
+                if (method != null) {
+                    inputParameters = AstKeywordsInputUtil.generateInputParameters(method,
+                            (ArgumentListExpressionWrapper) methodCallExpression.getArguments());
                 }
-                return AstKeywordsInputUtil.generateInputParameters(method,
-                        (ArgumentListExpressionWrapper) methodCallExpression.getArguments());
+                return InputParameterBuilder.createForNestedMethodCall(inputParameters);
             }
 
             @Override
@@ -302,7 +320,8 @@ public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDia
 
             @Override
             protected boolean canEdit(Object element) {
-                return (element == methodCallExpression && MethodComboBoxCellEditor.getMethodCallParams(methodCallExpression).length > 0);
+                return (element == methodCallExpression && MethodComboBoxCellEditor.getMethodCallParams(
+                        methodCallExpression, classLoader).length > 0);
             }
         });
     }
@@ -320,13 +339,10 @@ public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDia
     }
 
     public Class<?> getObjectType(MethodCallExpressionWrapper methodCall) {
-        if (methodCall.getObjectExpression().getText().equals(MethodCallExpressionWrapper.THIS_VARIABLE)) {
-            return null;
-        }
-        return AstKeywordsInputUtil.loadType(methodCall.getObjectExpression().getText(), methodCall.getScriptClass());
+        return classLoader != null ? methodCall.resolveType(classLoader) : null;
     }
 
-    private static Method findMethod(Class<?> type, MethodCallExpressionWrapper methodCall) {
+    private Method findMethod(Class<?> type, MethodCallExpressionWrapper methodCall) {
         if (methodCall == null) {
             return null;
         }
@@ -340,11 +356,12 @@ public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDia
         return method;
     }
 
-    private static Method findMatchingMethod(Class<?> type, MethodCallExpressionWrapper methodCall) {
+    private Method findMatchingMethod(Class<?> type, MethodCallExpressionWrapper methodCall) {
         Method[] methods = type.getMethods();
         for (int index = 0; index < methods.length; index++) {
             Method methodNode = methods[index];
-            if (MethodComboBoxCellEditor.compareMethodAndMethodCall(methodNode, methodCall)) {
+            if (MethodComboBoxCellEditor.compareMethodAndMethodCall(methodNode, methodCall, classLoader) 
+                    == MethodComparation.EQUAL_NAME_AND_PARAM) {
                 return methodNode;
             }
         }

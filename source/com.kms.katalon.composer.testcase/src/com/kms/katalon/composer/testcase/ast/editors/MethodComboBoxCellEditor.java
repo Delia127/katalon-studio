@@ -22,8 +22,14 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpres
 public class MethodComboBoxCellEditor extends ComboBoxCellEditor {
     private List<Method> methods = new ArrayList<Method>();
 
-    public MethodComboBoxCellEditor(Composite parent, Class<?> type) {
+    private boolean staticOnly;
+
+    private ClassLoader classLoader;
+
+    public MethodComboBoxCellEditor(Composite parent, Class<?> type, boolean staticOnly, ClassLoader classLoader) {
         super(parent, new String[0]);
+        this.staticOnly = staticOnly;
+        this.classLoader = classLoader;
         if (type != null) {
             pupulateMethodListWithTypeMethods(type);
         } else {
@@ -51,7 +57,7 @@ public class MethodComboBoxCellEditor extends ComboBoxCellEditor {
 
     private void pupulateMethodListWithTypeMethods(Class<?> type) {
         for (Method method : type.getDeclaredMethods()) {
-            if (Modifier.isPublic(method.getModifiers()) && Modifier.isStatic(method.getModifiers())) {
+            if (Modifier.isPublic(method.getModifiers()) && (!staticOnly || Modifier.isStatic(method.getModifiers()))) {
                 methods.add(method);
             }
         }
@@ -71,18 +77,31 @@ public class MethodComboBoxCellEditor extends ComboBoxCellEditor {
     protected void doSetValue(Object value) {
         Assert.isTrue(value instanceof MethodCallExpressionWrapper);
         MethodCallExpressionWrapper methodCall = (MethodCallExpressionWrapper) value;
+        int bestMatchIndex = 0;
         for (int index = 0; index < methods.size(); index++) {
-            if (compareMethodAndMethodCall(methods.get(index), methodCall)) {
-                super.doSetValue(index);
-                return;
+            switch (compareMethodAndMethodCall(methods.get(index), methodCall, classLoader)) {
+                case EQUAL_NAME_ONLY:
+                    bestMatchIndex = index;
+                    break;
+                case EQUAL_NAME_AND_PARAM:
+                    super.doSetValue(index);
+                    return;
+                default:
+                    break;
             }
         }
-        super.doSetValue(0);
+        super.doSetValue(bestMatchIndex);
     }
 
-    public static boolean compareMethodAndMethodCall(Method methodNode, MethodCallExpressionWrapper methodCall) {
-        return methodCall.getMethodAsString().equals(methodNode.getName())
-                && compareArguments(methodNode.getParameterTypes(), getMethodCallParams(methodCall));
+    public static MethodComparation compareMethodAndMethodCall(Method methodNode,
+            MethodCallExpressionWrapper methodCall, ClassLoader classLoader) {
+        if (!methodCall.getMethodAsString().equals(methodNode.getName())) {
+            return MethodComparation.NOT_EQUAL_NAME;
+        }
+        if (compareArguments(methodNode.getParameterTypes(), getMethodCallParams(methodCall, classLoader), classLoader)) {
+            return MethodComparation.EQUAL_NAME_AND_PARAM;
+        }
+        return MethodComparation.EQUAL_NAME_ONLY;
     }
 
     /**
@@ -154,38 +173,52 @@ public class MethodComboBoxCellEditor extends ComboBoxCellEditor {
         return type.getName();
     }
 
-    public static Class<?>[] getMethodCallParams(MethodCallExpressionWrapper methodCall) {
+    public static Class<?>[] getMethodCallParams(MethodCallExpressionWrapper methodCall, ClassLoader classLoader) {
         ArgumentListExpressionWrapper argumentList = methodCall.getArguments();
         Class<?>[] methodCallParam = new Class<?>[argumentList.getExpressions().size()];
         for (int index = 0; index < argumentList.getExpressions().size(); index++) {
-            methodCallParam[index] = argumentList.getExpression(index).getType().getTypeClass();
+            methodCallParam[index] = argumentList.getExpression(index).resolveType(classLoader);
         }
         return methodCallParam;
     }
 
-    private static boolean compareArguments(Class<?>[] methodClassParams, Class<?>[] methodCallParams) {
+    private static boolean compareArguments(Class<?>[] methodClassParams, Class<?>[] methodCallParams,
+            ClassLoader classLoader) {
         if (methodClassParams.length != methodCallParams.length) {
             return false;
         }
         for (int i = 0; i < methodClassParams.length; i++) {
-            Class<?> methodClassParam = changeToPrimitiveTypeIfPossible(methodClassParams[i]);
-            Class<?> methodCallParam = changeToPrimitiveTypeIfPossible(methodCallParams[i]);
-            if (!ClassUtils.isAssignable(methodCallParam, methodClassParam, true)) {
+            Class<?> methodCallParam = changeToPrimitiveTypeIfPossible(methodCallParams[i], classLoader);
+            Class<?> methodClassParam = changeToPrimitiveTypeIfPossible(methodClassParams[i], classLoader);
+            if (!ClassUtils.isAssignable(methodClassParam, methodCallParam, true)) {
                 return false;
             }
         }
         return true;
     }
 
-    private static Class<?> changeToPrimitiveTypeIfPossible(Class<?> type) {
-        if (type == null || type.isPrimitive()) {
+    private static Class<?> changeToPrimitiveTypeIfPossible(Class<?> type, ClassLoader classLoader) {
+        if (type == null) {
+            return null;
+        }
+        try {
+            Class<?> wrapper = ClassUtils.primitiveToWrapper(type);
+            Class<?> numberClass = getNumberClass(classLoader);
+            if (numberClass.isAssignableFrom(wrapper)) {
+                wrapper = numberClass;
+            }
+            return classLoader.loadClass(wrapper.getName());
+        } catch (ClassNotFoundException e) {
             return type;
         }
-        Class<?> primitiveType = ClassUtils.wrapperToPrimitive(type);
-        if (primitiveType != null) {
-            return primitiveType;
+    }
+
+    private static Class<?> getNumberClass(ClassLoader classLoader) {
+        try {
+            return classLoader.loadClass(Number.class.getName());
+        } catch (ClassNotFoundException e) {
+            return Number.class;
         }
-        return type;
     }
 
     public static List<Class<?>> getParamClasses(Method method) {
@@ -208,5 +241,9 @@ public class MethodComboBoxCellEditor extends ComboBoxCellEditor {
     private static boolean isMapType(Type type) {
         return type instanceof ParameterizedType && ((ParameterizedType) type).getRawType() instanceof Class<?>
                 && ((Class<?>) ((ParameterizedType) type).getRawType()).getName().equals(Map.class.getName());
+    }
+
+    public enum MethodComparation {
+        NOT_EQUAL_NAME, EQUAL_NAME_ONLY, EQUAL_NAME_AND_PARAM
     }
 }

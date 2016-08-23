@@ -63,7 +63,8 @@ public class KatalonProposalProvider implements IProposalProvider {
         }
 
         // Add test case's binded variable for test case's script
-        if (completionType.equals(context.getEnclosingGroovyType())) {
+        ClassNode enclosingGroovyType = context.getEnclosingGroovyType();
+        if (completionType.equals(enclosingGroovyType)) {
             TestCaseEntity testCaseEntity = KatalonContextUtil.isTestCaseScriptContext(context);
             if (testCaseEntity != null) {
                 for (String variableName : KatalonContextUtil.getTestCaseVariableStrings(testCaseEntity)) {
@@ -80,6 +81,16 @@ public class KatalonProposalProvider implements IProposalProvider {
             }
         }
 
+        //Support completion type of imported static method
+        if (enclosingGroovyType != null && !completionType.equals(enclosingGroovyType)
+                && !completionType.isRedirectNode()) {
+            for (MethodNode methodNode : completionType.getMethods()) {
+                if (!methodNode.isPublic()) {
+                    continue;
+                }
+                groovyProposals.add(new KatalonMethodNodeProposal(methodNode));
+            }
+        }
         return groovyProposals;
     }
 

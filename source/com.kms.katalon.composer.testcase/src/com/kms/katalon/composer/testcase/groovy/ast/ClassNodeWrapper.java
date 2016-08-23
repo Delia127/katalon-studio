@@ -64,11 +64,16 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
         super(classNode, parentNodeWrapper);
         copyProperties(classNode);
     }
-    
+
     public ClassNodeWrapper(String className, String classNameWithoutPackage, ASTNodeWrapper parentNodeWrapper) {
         this(new ClassNode(className, Modifier.PUBLIC, new ClassNode(Object.class)), parentNodeWrapper);
     }
- 
+
+    public ClassNodeWrapper(ClassNodeWrapper classNodeWrapper, ASTNodeWrapper parentNodeWrapper) {
+        super(classNodeWrapper, parentNodeWrapper);
+        copyClassProperties(classNodeWrapper);
+    }
+
     protected void copyProperties(ClassNode classNode) {
         this.name = classNode.getName();
         this.nameWithoutPackage = classNode.getNameWithoutPackage();
@@ -128,7 +133,6 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
             public int compare(ImportNodeWrapper import_1, ImportNodeWrapper import_2) {
                 return Integer.compare(import_1.getLineNumber(), import_2.getLineNumber());
             }
-
         });
     }
 
@@ -136,11 +140,6 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
         for (ImportNode importNode : importsList) {
             importNodeCollection.addImportNode(new ImportNodeWrapper(importNode, this));
         }
-    }
-
-    public ClassNodeWrapper(ClassNodeWrapper classNodeWrapper, ASTNodeWrapper parentNodeWrapper) {
-        super(classNodeWrapper, parentNodeWrapper);
-        copyClassProperties(classNodeWrapper);
     }
 
     private void copyClassProperties(ClassNodeWrapper classNodeWrapper) {
@@ -161,7 +160,10 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
         }
         importNodeCollection.clear();
         for (ImportNodeWrapper importNode : classNodeWrapper.getImports()) {
-            importNodeCollection.addImportNode(new ImportNodeWrapper(importNode, this));
+            // Prevent infinite loop
+            if (!importNode.equals(parentNodeWrapper)) {
+                importNodeCollection.addImportNode(new ImportNodeWrapper(importNode, this));
+            }
         }
         methods.clear();
         for (MethodNodeWrapper method : classNodeWrapper.getMethods()) {

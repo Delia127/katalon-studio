@@ -1,15 +1,14 @@
 package com.kms.katalon.composer.testcase.ast.editors;
 
-import java.util.List;
-
 import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.testcase.ast.dialogs.AbstractAstBuilderDialog;
 import com.kms.katalon.composer.testcase.ast.dialogs.ArgumentInputBuilderDialog;
+import com.kms.katalon.composer.testcase.ast.dialogs.IAstDialogBuilder;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
-import com.kms.katalon.composer.testcase.model.InputParameter;
+import com.kms.katalon.composer.testcase.model.InputParameterBuilder;
 
 public class InputCellEditor extends AstDialogCellEditor {
     private ASTNodeWrapper parentNode;
@@ -20,26 +19,21 @@ public class InputCellEditor extends AstDialogCellEditor {
         this.setValidator(new ICellEditorValidator() {
             @Override
             public String isValid(Object value) {
-                if (value instanceof List<?>) {
-                    List<?> list = (List<?>) value;
-                    boolean isValid = true;
-                    for (Object object : list) {
-                        if (!(object instanceof InputParameter)) {
-                            isValid = false;
-                        }
-                    }
-                    if (isValid) {
-                        return null;
-                    }
+                if (!(value instanceof InputParameterBuilder)) {
+                    return getValidatorMessage(InputParameterBuilder.class.getName()) ;
                 }
-                return getValidatorMessage("java.util.List<" + InputParameter.class.getName() + ">");
+                return null;
             }
         });
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected AbstractAstBuilderDialog getDialog(Shell shell) {
-        return new ArgumentInputBuilderDialog(shell, (List<InputParameter>) getValue(), parentNode);
+        return new ArgumentInputBuilderDialog(shell, (InputParameterBuilder) getValue(), parentNode);
+    }
+    
+    @Override
+    protected Object getReturnValue(IAstDialogBuilder dialog) {
+        return doGetValue();
     }
 }
