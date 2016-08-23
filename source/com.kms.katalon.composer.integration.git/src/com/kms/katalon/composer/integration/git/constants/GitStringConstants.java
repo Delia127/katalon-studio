@@ -21,6 +21,8 @@ public class GitStringConstants extends GlobalStringConstants {
     public static final String GIT_NEW_BRANCH_MENU_ITEM_LABEL = "New Branch";
     
     public static final String GIT_CHECKOUT_BRANCH_MENU_ITEM_LABEL = "Checkout Branch";
+    
+    public static final String GIT_DELETE_BRANCH_MENU_ITEM_LABEL = "Delete Branch";
 
     public static final String GIT_COMMIT_MENU_ITEM_LABEL = "Commit";
 

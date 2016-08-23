@@ -71,6 +71,9 @@ public class GitMenuContribution {
                 GitStringConstants.GIT_NEW_BRANCH_MENU_ITEM_LABEL);
         addChildMenuItem(gitBranchMenu, GitIdConstant.GIT_CHECKOUT_BRANCH_PROJECT_COMMAND_ID,
                 GitStringConstants.GIT_CHECKOUT_BRANCH_MENU_ITEM_LABEL);
+        addChildMenuItem(gitBranchMenu, GitIdConstant.GIT_DELETE_BRANCH_PROJECT_COMMAND_ID,
+                GitStringConstants.GIT_DELETE_BRANCH_MENU_ITEM_LABEL);
+        
         gitBranchMenu.getChildren().add(menuFactory.createMenuSeparator());
         addChildMenuItem(gitBranchMenu, GitIdConstant.GIT_BRANCH_PROJECT_COMMAND_ID,
                 GitStringConstants.GIT_ADVANCE_BRANCH_MENU_ITEM_LABEL);
