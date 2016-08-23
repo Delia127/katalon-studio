@@ -31,11 +31,18 @@ public class TestArtifactScriptRefactor {
     private String entityId;
 
     private boolean hasRightBrackets;
+    
+    private boolean isFolder;
 
     public TestArtifactScriptRefactor(FolderType parentType, String entityId, boolean hasRightBrackets) {
+        this(parentType, entityId, hasRightBrackets, false);
+    }
+    
+    public TestArtifactScriptRefactor(FolderType parentType, String entityId, boolean hasRightBrackets, boolean isFolder) {
         this.parentType = parentType;
         this.entityId = entityId;
         this.hasRightBrackets = hasRightBrackets;
+        this.isFolder = isFolder;
     }
 
     public FolderType getParentType() {
@@ -66,7 +73,7 @@ public class TestArtifactScriptRefactor {
         if (firstSeparatorIdx < 0) {
             return s;
         }
-        return s.substring(firstSeparatorIdx + 1, s.length());
+        return s.substring(firstSeparatorIdx + (isFolder ? 0 : 1), s.length());
     }
 
     private String buildBrackets(String s, String left, String right) {
@@ -220,6 +227,6 @@ public class TestArtifactScriptRefactor {
 
     public static TestArtifactScriptRefactor createForFolderEntity(FolderEntity folder) {
         return new TestArtifactScriptRefactor(folder.getFolderType(), folder.getIdForDisplay() + ENTITY_ID_SEPARATOR,
-                false);
+        		false, true);
     }
 }
