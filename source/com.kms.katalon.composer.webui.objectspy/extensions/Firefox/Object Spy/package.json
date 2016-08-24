@@ -1,7 +1,7 @@
 {
   "title": "Object Spy",
   "name": "objectspy",
-  "version": "0.0.7",
+  "version": "0.0.9",
   "description": "Object Spy extension for Katalon",
   "main": "./lib/main.js",
   "author": "Katalon",
