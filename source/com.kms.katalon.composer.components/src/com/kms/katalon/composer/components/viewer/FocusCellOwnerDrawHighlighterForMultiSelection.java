@@ -3,6 +3,7 @@ package com.kms.katalon.composer.components.viewer;
 import java.lang.reflect.Method;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.FocusCellHighlighter;
 import org.eclipse.jface.viewers.FocusCellOwnerDrawHighlighter;
@@ -69,6 +70,10 @@ public class FocusCellOwnerDrawHighlighterForMultiSelection extends FocusCellHig
                 gc.fillRectangle(area);
             } else {
                 gc.fillRectangle(event.getBounds());
+            }
+            
+            if (Platform.getOS().equals(Platform.OS_MACOSX)) {
+                cell.setBackground(background);
             }
 
             event.detail &= ~SWT.SELECTED;
@@ -172,6 +177,10 @@ public class FocusCellOwnerDrawHighlighterForMultiSelection extends FocusCellHig
 
     @Override
     protected void focusCellChanged(ViewerCell newCell, ViewerCell oldCell) {
+        if (oldCell != null && Platform.getOS().equals(Platform.OS_MACOSX)) {
+            oldCell.setBackground(null);
+        }
+        
         super.focusCellChanged(newCell, oldCell);
 
         // Redraw new area
