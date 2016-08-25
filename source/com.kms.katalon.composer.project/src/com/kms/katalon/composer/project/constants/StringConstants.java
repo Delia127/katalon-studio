@@ -74,4 +74,26 @@ public class StringConstants extends GlobalStringConstants {
     public static final String VIEW_ERROR_MSG_PROJ_LOC_NOT_READABLE = "Project's location is not readable.";
     
     public static final String VIEW_ERROR_MSG_PROJ_LOC_NOT_WRITEABLE = "Project's location is not writeable.";
+    
+    public static final String VIEW_NEW_EMPTY_PROJECT_PAGE_NAME = "New Empty Project Page";
+
+    public static final String VIEW_TESTING_TYPES_PROJECT_PAGE_NAME = "Select testing type(s)";
+
+    public static final String VIEW_MSG_SPECIFY_TESTING_TYPES = "Please specify your type(s) of testing. Selected option will be included in sample module of generated project";
+
+    public static final String VIEW_LBL_WEB_TESTING = "Web Testing";
+
+    public static final String VIEW_LBL_MOBILE_TESTING = "Mobile Testing";
+
+    public static final String VIEW_LBL_API_TESTING = "API Testing";
+    
+    public static final String WEB_ICON_PATH = "/icons/template_web.png";
+    
+    public static final String MOBILE_ICON_PATH = "/icons/template-mobile.png";
+    
+    public static final String WEB_API_ICON_PATH = "/icons/template_api.png";
+    
+    public static final String VIEW_LBL_NEW_PROJECT_WIZARD_TIP = "Click the Finish button to create a blank project. Click Next button to see more template project options";
+    
+    public static final String TEMPL_CUSTOM_KW_PKG_REL_PATH = GlobalStringConstants.ROOT_FOLDER_NAME_KEYWORD + "/com/example";
 }
