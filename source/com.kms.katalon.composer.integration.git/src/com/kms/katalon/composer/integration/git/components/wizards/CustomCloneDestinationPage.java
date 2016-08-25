@@ -31,7 +31,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
@@ -82,7 +81,9 @@ public class CustomCloneDestinationPage extends WizardPage {
     @Override
     public void createControl(final Composite parent) {
         final Composite panel = new Composite(parent, SWT.NULL);
-        panel.setLayout(new GridLayout());
+        final GridLayout layout = new GridLayout();
+        layout.numColumns = 1;
+        panel.setLayout(layout);
 
         createDestinationGroup(panel);
         if (showProjectImport) {
@@ -95,9 +96,9 @@ public class CustomCloneDestinationPage extends WizardPage {
 
     @Override
     public void setVisible(final boolean visible) {
-        if (visible && this.availableRefs.isEmpty()) {
-            initialBranch.getCombo().setEnabled(false);
-        }
+        if (visible)
+            if (this.availableRefs.isEmpty())
+                initialBranch.getCombo().setEnabled(false);
         super.setVisible(visible);
         if (visible) {
             directoryText.setFocus();
@@ -133,15 +134,17 @@ public class CustomCloneDestinationPage extends WizardPage {
     }
 
     private void createDestinationGroup(final Composite parent) {
-        final Group destinationGroup = createGroup(parent, UIText.CloneDestinationPage_groupDestination);
+        final Group g = createGroup(parent, UIText.CloneDestinationPage_groupDestination);
 
-        Label dirLabel = new Label(destinationGroup, SWT.NONE);
+        Label dirLabel = new Label(g, SWT.NONE);
         dirLabel.setText(UIText.CloneDestinationPage_promptDirectory + ":"); //$NON-NLS-1$
         dirLabel.setToolTipText(UIText.CloneDestinationPage_DefaultRepoFolderTooltip);
-        final Composite composite = new Composite(destinationGroup, SWT.NONE);
-        composite.setLayout(new GridLayout(2, false));
-        composite.setLayoutData(createFieldGridData());
-        directoryText = new Text(composite, SWT.BORDER);
+        final Composite p = new Composite(g, SWT.NONE);
+        final GridLayout grid = new GridLayout();
+        grid.numColumns = 2;
+        p.setLayout(grid);
+        p.setLayoutData(createFieldGridData());
+        directoryText = new Text(p, SWT.BORDER);
         directoryText.setLayoutData(createFieldGridData());
         directoryText.addModifyListener(new ModifyListener() {
             @Override
@@ -149,29 +152,30 @@ public class CustomCloneDestinationPage extends WizardPage {
                 checkPage();
             }
         });
-        final Button browseButton = new Button(composite, SWT.PUSH);
-        browseButton.setText(UIText.CloneDestinationPage_browseButton);
-        browseButton.addSelectionListener(new SelectionAdapter() {
+        final Button b = new Button(p, SWT.PUSH);
+        b.setText(UIText.CloneDestinationPage_browseButton);
+        b.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(final SelectionEvent e) {
-                final FileDialog fileDialog = new FileDialog(getShell(), SWT.APPLICATION_MODAL | SWT.SAVE);
+                final FileDialog d;
+
+                d = new FileDialog(getShell(), SWT.APPLICATION_MODAL | SWT.SAVE);
                 if (directoryText.getText().length() > 0) {
                     final File file = new File(directoryText.getText()).getAbsoluteFile();
-                    fileDialog.setFilterPath(file.getParent());
-                    fileDialog.setFileName(file.getName());
+                    d.setFilterPath(file.getParent());
+                    d.setFileName(file.getName());
                 }
-                final String resultPath = fileDialog.open();
-                if (resultPath != null) {
-                    directoryText.setText(resultPath);
+                final String r = d.open();
+                if (r != null) {
+                    directoryText.setText(r);
                 }
             }
         });
 
-        newLabel(destinationGroup, UIText.CloneDestinationPage_promptInitialBranch + ":"); //$NON-NLS-1$
-        initialBranch = new ComboViewer(destinationGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
-        Combo branchCombo = initialBranch.getCombo();
-        branchCombo.setLayoutData(createFieldGridData());
-        branchCombo.addSelectionListener(new SelectionAdapter() {
+        newLabel(g, UIText.CloneDestinationPage_promptInitialBranch + ":"); //$NON-NLS-1$
+        initialBranch = new ComboViewer(g, SWT.DROP_DOWN | SWT.READ_ONLY);
+        initialBranch.getCombo().setLayoutData(createFieldGridData());
+        initialBranch.getCombo().addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(final SelectionEvent e) {
                 checkPage();
@@ -219,11 +223,16 @@ public class CustomCloneDestinationPage extends WizardPage {
     }
 
     private static Group createGroup(final Composite parent, final String text) {
-        final Group group = new Group(parent, SWT.NONE);
-        group.setLayout(new GridLayout(2, false));
-        group.setText(text);
-        group.setLayoutData(createFieldGridData());
-        return group;
+        final Group g = new Group(parent, SWT.NONE);
+        final GridLayout layout = new GridLayout();
+        layout.numColumns = 2;
+        g.setLayout(layout);
+        g.setText(text);
+        final GridData gd = new GridData();
+        gd.grabExcessHorizontalSpace = true;
+        gd.horizontalAlignment = SWT.FILL;
+        g.setLayoutData(gd);
+        return g;
     }
 
     private static void newLabel(final Group g, final String text) {
@@ -252,9 +261,8 @@ public class CustomCloneDestinationPage extends WizardPage {
      * @return selected working sets
      */
     public IWorkingSet[] getWorkingSets() {
-        if (workingSetGroup == null) {
+        if (workingSetGroup == null)
             return new IWorkingSet[0];
-        }
         return workingSetGroup.getSelectedWorkingSets();
     }
 
@@ -339,9 +347,12 @@ public class CustomCloneDestinationPage extends WizardPage {
      * @since 4.0.0
      */
     public boolean cloneSettingsChanged() {
-        return (clonedDestination == null || !clonedDestination.equals(getDestinationFile())
-                || clonedInitialBranch == null || !clonedInitialBranch.equals(getInitialBranch())
-                || clonedRemote == null || !clonedRemote.equals(getRemote()));
+        boolean cloneSettingsChanged = false;
+        if (clonedDestination == null || !clonedDestination.equals(getDestinationFile()) || clonedInitialBranch == null
+                || !clonedInitialBranch.equals(getInitialBranch()) || clonedRemote == null
+                || !clonedRemote.equals(getRemote()))
+            cloneSettingsChanged = true;
+        return cloneSettingsChanged;
     }
 
     private static boolean isEmptyDir(final File dir) {
@@ -390,7 +401,8 @@ public class CustomCloneDestinationPage extends WizardPage {
         initialBranch.setInput(branches);
         if (head != null && branches.contains(head)) {
             initialBranch.setSelection(new StructuredSelection(head));
-        } else if (branches.size() > 0) {
+        }
+        else if (branches.size() > 0) {
             initialBranch.setSelection(new StructuredSelection(branches.get(0)));
         }
         checkPage();

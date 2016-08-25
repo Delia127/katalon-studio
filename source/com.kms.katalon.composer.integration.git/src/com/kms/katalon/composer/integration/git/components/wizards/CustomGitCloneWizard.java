@@ -248,9 +248,8 @@ public class CustomGitCloneWizard extends Wizard {
         final String remoteName = cloneDestination.getRemote();
 
         boolean created = workdir.exists();
-        if (!created) {
+        if (!created)
             created = workdir.mkdirs();
-        }
 
         if (!created || !workdir.isDirectory()) {
             final String errorMessage = NLS.bind(UIText.GitCloneWizard_errorCannotCreate, workdir.getPath());
@@ -392,14 +391,12 @@ public class CustomGitCloneWizard extends Wizard {
             public IStatus runInWorkspace(IProgressMonitor monitor) {
                 List<File> files = new ArrayList<>();
                 ProjectUtil.findProjectFiles(files, repository.getWorkTree(), true, monitor);
-                if (files.isEmpty()) {
+                if (files.isEmpty())
                     return Status.OK_STATUS;
-                }
 
                 Set<ProjectRecord> records = new LinkedHashSet<>();
-                for (File file : files) {
+                for (File file : files)
                     records.add(new ProjectRecord(file));
-                }
                 try {
                     ProjectUtils.createProjects(records, sets, monitor);
                 } catch (InvocationTargetException e) {
@@ -450,9 +447,8 @@ public class CustomGitCloneWizard extends Wizard {
 
             @Override
             public boolean belongsTo(Object family) {
-                if (JobFamilies.CLONE.equals(family)) {
+                if (JobFamilies.CLONE.equals(family))
                     return true;
-                }
                 return super.belongsTo(family);
             }
         };

@@ -33,8 +33,10 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench,
  org.eclipse.ui.forms,
  org.eclipse.help,
  com.kms.katalon.execution,
- org.eclipse.e4.core.contexts
+ org.eclipse.e4.core.contexts,
+ org.eclipse.e4.ui.services
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: javax.annotation;version="1.2.0",
- javax.inject;version="1.0.0"
+ javax.inject;version="1.0.0",
+ org.apache.commons.lang3.exception;version="3.1.0"
 Bundle-ActivationPolicy: lazy

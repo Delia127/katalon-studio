@@ -38,4 +38,7 @@ public class GitStringConstants extends GlobalStringConstants {
 
     // CustomSourceBranchPage
     public static final String HAND_ERROR_MSG_UNABLE_TO_CONNECT = "Unable to connect to Git Repository. Please go back and check your Git Repository URL, User and Password then try again.";
+    
+    // CustomFetchOperationUI
+    public static final String HAND_ERROR_MSG_UNABLE_TO_ACCESS_COULD_NOT_RESOLVE_Y = "Unable to access repository: Couldn''t resolve host ''{0}''";
 }

@@ -113,7 +113,9 @@ public class CustomSourceBranchPage extends WizardPage {
     @Override
     public void createControl(final Composite parent) {
         final Composite panel = new Composite(parent, SWT.NULL);
-        panel.setLayout(new GridLayout());
+        final GridLayout layout = new GridLayout();
+        layout.numColumns = 1;
+        panel.setLayout(layout);
 
         label = new Label(panel, SWT.NONE);
         label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
@@ -128,15 +130,14 @@ public class CustomSourceBranchPage extends WizardPage {
                 refreshJob.addJobChangeListener(new JobChangeAdapter() {
                     @Override
                     public void done(IJobChangeEvent event) {
-                        if (!event.getResult().isOK()) {
-                            return;
+                        if (event.getResult().isOK()) {
+                            getDisplay().asyncExec(new Runnable() {
+                                @Override
+                                public void run() {
+                                    checkPage();
+                                }
+                            });
                         }
-                        getDisplay().asyncExec(new Runnable() {
-                            @Override
-                            public void run() {
-                                checkPage();
-                            }
-                        });
                     }
                 });
                 return refreshJob;
@@ -180,15 +181,9 @@ public class CustomSourceBranchPage extends WizardPage {
         refsViewer.setLabelProvider(new LabelProvider() {
             @Override
             public String getText(Object element) {
-                final Ref ref = (Ref) element;
-                if (ref == null) {
-                    return "";
-                }
-                final String refName = ref.getName();
-                if (refName.startsWith(Constants.R_HEADS)) {
-                    return refName.substring(Constants.R_HEADS.length());
-                }
-                return refName;
+                if (((Ref) element).getName().startsWith(Constants.R_HEADS))
+                    return ((Ref) element).getName().substring(Constants.R_HEADS.length());
+                return ((Ref) element).getName();
             }
 
             @Override
@@ -318,9 +313,8 @@ public class CustomSourceBranchPage extends WizardPage {
     }
 
     private void revalidateImpl(final RepositorySelection newRepoSelection) {
-        if (label.isDisposed() || !isCurrentPage()) {
+        if (label.isDisposed() || !isCurrentPage())
             return;
-        }
 
         final ListRemoteOperation listRemoteOp;
         final URIish uri = newRepoSelection.getURI();
@@ -328,10 +322,9 @@ public class CustomSourceBranchPage extends WizardPage {
             final Repository db = FileRepositoryBuilder.create(new File("/tmp")); //$NON-NLS-1$
             int timeout = Activator.getDefault().getPreferenceStore().getInt(UIPreferences.REMOTE_CONNECTION_TIMEOUT);
             listRemoteOp = new ListRemoteOperation(db, uri, timeout);
-            if (credentials != null) {
+            if (credentials != null)
                 listRemoteOp.setCredentialsProvider(new EGitCredentialsProvider(credentials.getUser(),
                         credentials.getPassword()));
-            }
             getContainer().run(true, true, new IRunnableWithProgress() {
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
@@ -344,10 +337,10 @@ public class CustomSourceBranchPage extends WizardPage {
                 return;
             }
             LoggerSingleton.logError(e);
-            transportError(e.getCause());
-            if (showDetailedFailureDialog()) {
+            Throwable why = e.getCause();
+            transportError(why);
+            if (showDetailedFailureDialog())
                 SourceBranchFailureDialog.show(getShell(), uri);
-            }
             return;
         } catch (IOException e) {
             transportError(UIText.SourceBranchPage_cannotCreateTemp);
@@ -361,23 +354,23 @@ public class CustomSourceBranchPage extends WizardPage {
         head = null;
         boolean headIsMaster = false;
         final String masterBranchRef = Constants.R_HEADS + Constants.MASTER;
-        for (final Ref ref : listRemoteOp.getRemoteRefs()) {
-            final String refName = ref.getName();
-            if (!refName.startsWith(Constants.R_HEADS)) {
+        for (final Ref r : listRemoteOp.getRemoteRefs()) {
+            final String n = r.getName();
+            if (!n.startsWith(Constants.R_HEADS)) {
                 continue;
             }
-            availableRefs.add(ref);
+            availableRefs.add(r);
             if (idHEAD == null || headIsMaster) {
                 continue;
             }
-            ObjectId objectId = ref.getObjectId();
+            ObjectId objectId = r.getObjectId();
             if (objectId == null) {
                 continue;
             }
             if (objectId.equals(idHEAD.getObjectId())) {
-                headIsMaster = masterBranchRef.equals(ref.getName());
+                headIsMaster = masterBranchRef.equals(r.getName());
                 if (head == null || headIsMaster) {
-                    head = ref;
+                    head = r;
                 }
             }
         }
@@ -402,19 +395,15 @@ public class CustomSourceBranchPage extends WizardPage {
     private void transportError(final Throwable why) {
         Activator.logError(why.getMessage(), why);
         Throwable cause = why.getCause();
-        if (why instanceof TransportException && cause != null) {
+        if (why instanceof TransportException && cause != null)
             transportError(NLS.bind(getMessage(why), why.getMessage(), cause.getMessage()));
-        } else {
-            transportError(why.getMessage());
-        }
+        else transportError(why.getMessage());
     }
 
     private String getMessage(final Throwable why) {
-        if (why.getMessage().endsWith("Auth fail")) {
+        if (why.getMessage().endsWith("Auth fail")) //$NON-NLS-1$
             return UIText.SourceBranchPage_AuthFailMessage;
-        } else {
-            return UIText.SourceBranchPage_CompositeTransportErrorMessage;
-        }
+        else return UIText.SourceBranchPage_CompositeTransportErrorMessage;
     }
 
     private void transportError(final String msg) {

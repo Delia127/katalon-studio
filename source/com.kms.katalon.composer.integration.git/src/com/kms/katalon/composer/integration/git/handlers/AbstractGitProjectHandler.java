@@ -10,8 +10,10 @@ import org.eclipse.core.expressions.IEvaluationContext;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.egit.ui.internal.selection.SelectionUtils;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jgit.lib.Repository;
 import org.eclipse.ui.ISources;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.services.IEvaluationService;
@@ -26,6 +28,8 @@ import com.kms.katalon.groovy.util.GroovyUtil;
  * Abstract class to re-direct command to Egit Handlers
  *
  */
+
+@SuppressWarnings("restriction")
 public abstract class AbstractGitProjectHandler extends WorkbenchUtilizer {
     protected ExecutionEvent createExecutionEventForCommand(String id) {
         IProject groovyProject = getCurrentIProject();
@@ -37,12 +41,12 @@ public abstract class AbstractGitProjectHandler extends WorkbenchUtilizer {
         Command command = getService(ICommandService.class).getCommand(id);
         return new ExecutionEvent(command, new HashMap<Object, Object>(), null, currentState);
     }
-    
+
     @CanExecute
     public boolean canExecute() {
         return getCurrentProject() != null && getHandler().isEnabled();
     }
-    
+
     protected IProject getCurrentIProject() {
         return GroovyUtil.getGroovyProject(getCurrentProject());
     }
@@ -50,7 +54,7 @@ public abstract class AbstractGitProjectHandler extends WorkbenchUtilizer {
     protected ProjectEntity getCurrentProject() {
         return ProjectController.getInstance().getCurrentProject();
     }
-    
+
     @Execute
     public void execute() {
         ExecutionEvent executionEvent = createExecutionEventForCommand(getEgitCommandId());
@@ -63,18 +67,26 @@ public abstract class AbstractGitProjectHandler extends WorkbenchUtilizer {
             LoggerSingleton.logError(e);
         }
     }
-    
+
     protected IStructuredSelection createIProjectSelection() {
         return new StructuredSelection(getCurrentIProject());
     }
-    
+
     /**
      * @return the original egit command's id
      */
     public abstract String getEgitCommandId();
-    
+
     /**
      * @return the original egit command's handler
      */
     public abstract AbstractHandler getHandler();
+
+    /**
+     * @return current project's repository if it has one
+     * @throws ExecutionException
+     */
+    protected Repository getRepository() {
+        return SelectionUtils.getRepository(createIProjectSelection());
+    }
 }

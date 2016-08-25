@@ -65,9 +65,8 @@ public class OpenProjectHandler {
 
                     if (projectFile != null) {
                         if (!CloseProjectHandler.closeCurrentProject(partService, modelService, application,
-                                eventBroker)) {
+                                eventBroker))
                             return;
-                        }
                         openProjectEventHandler(shell, projectFile.getAbsolutePath());
                     } else {
                         MessageDialog.openWarning(null, StringConstants.WARN_TITLE,

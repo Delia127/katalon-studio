@@ -403,11 +403,11 @@ public class CustomRepositorySelectionPage extends WizardPage implements IReposi
     }
 
     private void createLocationGroup(final Composite parent) {
-        final Group locationGroup = createGroup(parent, UIText.RepositorySelectionPage_groupLocation);
+        final Group g = createGroup(parent, UIText.RepositorySelectionPage_groupLocation);
 
-        locationGroup.setLayout(new GridLayout(2, false));
-        newLabel(locationGroup, GitStringConstants.LBL_REPOSITORY_URL + ":"); //$NON-NLS-1$
-        uriText = new Text(locationGroup, SWT.BORDER);
+        g.setLayout(new GridLayout(2, false));
+        newLabel(g, GitStringConstants.LBL_REPOSITORY_URL + ":"); //$NON-NLS-1$
+        uriText = new Text(g, SWT.BORDER);
 
         if (presetUri != null) {
             uriText.setText(presetUri);
@@ -424,10 +424,10 @@ public class CustomRepositorySelectionPage extends WizardPage implements IReposi
     }
 
     private Group createAuthenticationGroup(final Composite parent) {
-        final Group authenticateGroup = createGroup(parent, UIText.RepositorySelectionPage_groupAuthentication);
+        final Group g = createGroup(parent, UIText.RepositorySelectionPage_groupAuthentication);
 
-        newLabel(authenticateGroup, UIText.RepositorySelectionPage_promptUser + ":"); //$NON-NLS-1$
-        userText = new Text(authenticateGroup, SWT.BORDER);
+        newLabel(g, UIText.RepositorySelectionPage_promptUser + ":"); //$NON-NLS-1$
+        userText = new Text(g, SWT.BORDER);
         userText.setLayoutData(createFieldGridData());
         userText.addModifyListener(new ModifyListener() {
             @Override
@@ -436,8 +436,8 @@ public class CustomRepositorySelectionPage extends WizardPage implements IReposi
             }
         });
 
-        newLabel(authenticateGroup, UIText.RepositorySelectionPage_promptPassword + ":"); //$NON-NLS-1$
-        passText = new Text(authenticateGroup, SWT.BORDER | SWT.PASSWORD);
+        newLabel(g, UIText.RepositorySelectionPage_promptPassword + ":"); //$NON-NLS-1$
+        passText = new Text(g, SWT.BORDER | SWT.PASSWORD);
         passText.setLayoutData(createFieldGridData());
         passText.addModifyListener(new ModifyListener() {
             @Override
@@ -446,7 +446,7 @@ public class CustomRepositorySelectionPage extends WizardPage implements IReposi
             }
         });
 
-        storeCheckbox = new Button(authenticateGroup, SWT.CHECK);
+        storeCheckbox = new Button(g, SWT.CHECK);
         storeCheckbox.setText(GitStringConstants.CHCK_SAVE_AUTHENTICATION);
         storeCheckbox.setSelection(storeInSecureStore);
         storeCheckbox.addSelectionListener(new SelectionListener() {
@@ -461,15 +461,20 @@ public class CustomRepositorySelectionPage extends WizardPage implements IReposi
             }
         });
         GridDataFactory.fillDefaults().span(2, 1).applyTo(storeCheckbox);
-        return authenticateGroup;
+        return g;
     }
 
     private Group createGroup(final Composite parent, final String text) {
-        final Group group = new Group(parent, SWT.NONE);
-        group.setLayout(new GridLayout(2, false));
-        group.setText(text);
-        group.setLayoutData(createFieldGridData());
-        return group;
+        final Group g = new Group(parent, SWT.NONE);
+        final GridLayout layout = new GridLayout();
+        layout.numColumns = 2;
+        g.setLayout(layout);
+        g.setText(text);
+        final GridData gd = new GridData();
+        gd.grabExcessHorizontalSpace = true;
+        gd.horizontalAlignment = SWT.FILL;
+        g.setLayoutData(gd);
+        return g;
     }
 
     private void newLabel(final Group g, final String text) {
@@ -488,6 +493,7 @@ public class CustomRepositorySelectionPage extends WizardPage implements IReposi
      * Check the user input and set messages in case of invalid input.
      */
     protected void checkPage() {
+        assert uri != null;
         if (uriText.getText().length() == 0) {
             selectionIncomplete(null);
             return;
@@ -495,10 +501,7 @@ public class CustomRepositorySelectionPage extends WizardPage implements IReposi
             selectionIncomplete(UIText.RepositorySelectionPage_UriMustNotHaveTrailingSpacesMessage);
             return;
         }
-        
-        if (uri == null) {
-            return;
-        }
+
         try {
             final URIish finalURI = new URIish(stripGitCloneCommand(uriText.getText()));
             String proto = finalURI.getScheme();
@@ -511,24 +514,21 @@ public class CustomRepositorySelectionPage extends WizardPage implements IReposi
 
             if (Protocol.FILE.handles(finalURI)) {
                 String badField = null;
-                if (uri.getHost() != null) {
+                if (uri.getHost() != null)
                     badField = UIText.RepositorySelectionPage_promptHost;
-                }
-                else if (uri.getUser() != null) {
+                else if (uri.getUser() != null)
                     badField = UIText.RepositorySelectionPage_promptUser;
-                }
-                else if (uri.getPass() != null) {
+                else if (uri.getPass() != null)
                     badField = UIText.RepositorySelectionPage_promptPassword;
-                }
                 if (badField != null) {
                     selectionIncomplete(NLS.bind(UIText.RepositorySelectionPage_fieldNotSupported, unamp(badField),
                             proto));
                     return;
                 }
 
-                final File file = FS.DETECTED.resolve(new File("."), uri.getPath()); //$NON-NLS-1$
-                if (!file.exists()) {
-                    selectionIncomplete(NLS.bind(UIText.RepositorySelectionPage_fileNotFound, file.getAbsolutePath()));
+                final File d = FS.DETECTED.resolve(new File("."), uri.getPath()); //$NON-NLS-1$
+                if (!d.exists()) {
+                    selectionIncomplete(NLS.bind(UIText.RepositorySelectionPage_fileNotFound, d.getAbsolutePath()));
                     return;
                 }
 
@@ -544,12 +544,10 @@ public class CustomRepositorySelectionPage extends WizardPage implements IReposi
 
             if (Protocol.GIT.handles(finalURI)) {
                 String badField = null;
-                if (uri.getUser() != null) {
+                if (uri.getUser() != null)
                     badField = UIText.RepositorySelectionPage_promptUser;
-                }
-                else if (uri.getPass() != null) {
+                else if (uri.getPass() != null)
                     badField = UIText.RepositorySelectionPage_promptPassword;
-                }
                 if (badField != null) {
                     selectionIncomplete(NLS.bind(UIText.RepositorySelectionPage_fieldNotSupported, unamp(badField),
                             proto));
@@ -564,13 +562,11 @@ public class CustomRepositorySelectionPage extends WizardPage implements IReposi
                     String p = credentials.getPassword();
                     String uriUser = finalURI.getUser();
                     if (uriUser == null) {
-                        if (setSafeUser(u) && setSafePassword(p)) {
+                        if (setSafeUser(u) && setSafePassword(p))
                             setStoreInSecureStore(true);
-                        }
                     } else if (uriUser.length() != 0 && uriUser.equals(u)) {
-                        if (setSafePassword(p)) {
+                        if (setSafePassword(p))
                             setStoreInSecureStore(true);
-                        }
                     }
                 }
             }
@@ -583,6 +579,7 @@ public class CustomRepositorySelectionPage extends WizardPage implements IReposi
         } catch (Exception e) {
             Activator.logError(NLS.bind(UIText.RepositorySelectionPage_errorValidating, getClass().getName()), e);
             selectionIncomplete(UIText.RepositorySelectionPage_internalError);
+            return;
         }
     }
 
@@ -635,9 +632,9 @@ public class CustomRepositorySelectionPage extends WizardPage implements IReposi
 
     private void setExposedSelection(final URIish u, final RemoteConfig rc) {
         final RepositorySelection newSelection = new RepositorySelection(u, rc);
-        if (newSelection.equals(selection)) {
+        if (newSelection.equals(selection))
             return;
-        }
+
         selection = newSelection;
     }
 
@@ -657,9 +654,8 @@ public class CustomRepositorySelectionPage extends WizardPage implements IReposi
      * @return credentials
      */
     public UserPasswordCredentials getCredentials() {
-        if ((user == null || user.length() == 0) && (password == null || password.length() == 0)) {
+        if ((user == null || user.length() == 0) && (password == null || password.length() == 0))
             return null;
-        }
         return new UserPasswordCredentials(user, password);
     }
 
@@ -673,9 +669,8 @@ public class CustomRepositorySelectionPage extends WizardPage implements IReposi
     private void updateFields(final String text) {
         try {
             eventDepth++;
-            if (eventDepth != 1) {
+            if (eventDepth != 1)
                 return;
-            }
 
             String strippedText = stripGitCloneCommand(text);
             final URIish u = new URIish(strippedText);
