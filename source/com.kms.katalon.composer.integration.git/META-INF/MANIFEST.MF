@@ -36,6 +36,7 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench,
  org.eclipse.e4.core.contexts,
  org.eclipse.e4.ui.services,
  com.kms.katalon.composer.explorer,
+ org.apache.commons.io,
  org.eclipse.ui.ide,
  org.eclipse.debug.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7

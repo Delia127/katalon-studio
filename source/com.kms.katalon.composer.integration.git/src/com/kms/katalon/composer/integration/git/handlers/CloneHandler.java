@@ -62,6 +62,7 @@ public class CloneHandler {
             try {
                 ProjectEntity newProject = NewProjectHandler.createNewProject(destinationFolder.getName(),
                         destinationFolder.getParentFile().getAbsolutePath(), "");
+                ShareProjectHandler.addDefaultIgnores(newProject.getFolderLocation());
                 projectFile = new File(newProject.getLocation());
                 EventBrokerSingleton.getInstance().getEventBroker().send(EventConstants.PROJECT_CREATED, newProject);
             } catch (Exception e) {

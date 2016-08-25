@@ -3,7 +3,11 @@ package com.kms.katalon.composer.integration.git.handlers;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -20,6 +24,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.util.StringUtils;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -29,6 +34,9 @@ import com.kms.katalon.entity.project.ProjectEntity;
 
 @SuppressWarnings("restriction")
 public class ShareProjectHandler extends AbstractGitProjectHandler {
+    private static final String GITIGNORE_FILE_NAME = ".gitignore";
+
+    private static final String[] DEFAULT_IGNORE_RESOURCES = { "/bin/", "/Libs/", "/.settings/", "/.classpath", "/.svn/" };
 
     private static final String SHARE_PROJECT_COMMAND_ID = "org.eclipse.egit.ui.command.shareProject";
 
@@ -40,15 +48,16 @@ public class ShareProjectHandler extends AbstractGitProjectHandler {
     @Execute
     public void execute(final Shell shell) {
         try {
-            ProjectEntity currentProject = getCurrentProject();
-            IProject groovyProject = getCurrentIProject();
-            File repo = createRepo(currentProject.getFolderLocation(), groovyProject);
-            final ConnectProviderOperation op = new ConnectProviderOperation(groovyProject, repo);
+            final ProjectEntity currentProject = getCurrentProject();
+            final IProject groovyProject = getCurrentIProject();
             new ProgressMonitorDialog(shell).run(true, false, new IRunnableWithProgress() {
                 @Override
                 public void run(final IProgressMonitor monitor) throws InvocationTargetException {
                     try {
+                        File repo = createRepo(currentProject.getFolderLocation(), groovyProject);
+                        final ConnectProviderOperation op = new ConnectProviderOperation(groovyProject, repo);
                         op.execute(monitor);
+                        addDefaultIgnores(currentProject.getFolderLocation());
                         UISynchronizeService.syncExec(new Runnable() {
                             @Override
                             public void run() {
@@ -56,7 +65,7 @@ public class ShareProjectHandler extends AbstractGitProjectHandler {
                                         GitStringConstants.HAND_SUCCESS_MSG_SHARE_PROJECT);
                             }
                         });
-                    } catch (CoreException ce) {
+                    } catch (CoreException | IOException ce) {
                         throw new InvocationTargetException(ce);
                     }
                 }
@@ -95,5 +104,21 @@ public class ShareProjectHandler extends AbstractGitProjectHandler {
     @Override
     public AbstractHandler getHandler() {
         return new ShareSingleProjectCommand();
+    }
+    
+    public static void addDefaultIgnores(String projectFolder) throws IOException {
+        File gitIgnoreFile = new File(projectFolder, GITIGNORE_FILE_NAME);
+        if (!gitIgnoreFile.exists()) {
+            gitIgnoreFile.createNewFile();
+        }
+        String[] ignoreResources = FileUtils.readFileToString(gitIgnoreFile).split("\n");
+        List<String> ignoreResourcesList = new ArrayList<>(Arrays.asList(ignoreResources));
+        for (String ignoreResource : DEFAULT_IGNORE_RESOURCES) {
+            if (ignoreResourcesList.contains(ignoreResource)) {
+                continue;
+            }
+            ignoreResourcesList.add(ignoreResource);
+        }
+        FileUtils.writeStringToFile(gitIgnoreFile, StringUtils.join(ignoreResourcesList, "\n"));
     }
 }
