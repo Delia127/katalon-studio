@@ -34,7 +34,11 @@ public class EditorSavedHandler implements EventHandler {
                 if (!(object instanceof MPart)) {
                     return;
                 }
-                final IFile file = ((FileEditorInput) (GroovyEditorUtil.getEditor((MPart) object).getEditorInput()))
+                MPart part = (MPart) object;
+                if (!GroovyEditorUtil.isGroovyEditorPart(part)) {
+                    return;
+                }
+                final IFile file = ((FileEditorInput) (GroovyEditorUtil.getEditor(part).getEditorInput()))
                         .getFile();
                 try {
                     KeywordController.getInstance().parseCustomKeywordFile(file,
