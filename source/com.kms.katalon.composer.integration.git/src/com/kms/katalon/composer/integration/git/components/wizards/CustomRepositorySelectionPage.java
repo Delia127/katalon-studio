@@ -2,6 +2,7 @@ package com.kms.katalon.composer.integration.git.components.wizards;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -271,12 +272,16 @@ public class CustomRepositorySelectionPage extends WizardPage implements IReposi
      * @param presetUri
      * the pre-set URI, may be null
      */
-    public CustomRepositorySelectionPage(final boolean sourceSelection, final List<RemoteConfig> configuredRemotes,
+    public CustomRepositorySelectionPage(final boolean sourceSelection, List<RemoteConfig> configuredRemotes,
             String presetUri) {
 
         super(CustomRepositorySelectionPage.class.getName());
 
         this.uri = new URIish();
+        configuredRemotes = getUsableConfigs(configuredRemotes);
+        if (configuredRemotes != null && !configuredRemotes.isEmpty() && !configuredRemotes.get(0).getURIs().isEmpty()) {
+            presetUri = configuredRemotes.get(0).getURIs().get(0).toString();
+        }
         if (presetUri == null) {
             presetUri = getPresetUriFromClipboard();
         }
@@ -317,6 +322,23 @@ public class CustomRepositorySelectionPage extends WizardPage implements IReposi
             // ignore, preset is null
         } finally {
             clipboard.dispose();
+        }
+        return null;
+    }
+
+    private List<RemoteConfig> getUsableConfigs(final List<RemoteConfig> remotes) {
+        if (remotes == null) {
+            return null;
+        }
+        List<RemoteConfig> result = new ArrayList<>();
+        for (RemoteConfig config : remotes) {
+            if ((!config.getPushURIs().isEmpty() || !config.getURIs().isEmpty())) {
+                result.add(config);
+            }
+        }
+
+        if (!result.isEmpty()) {
+            return result;
         }
         return null;
     }

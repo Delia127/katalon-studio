@@ -49,4 +49,13 @@ public class GitStringConstants extends GlobalStringConstants {
     
     // CustomFetchOperationUI
     public static final String HAND_ERROR_MSG_UNABLE_TO_ACCESS_COULD_NOT_RESOLVE_Y = "Unable to access repository: Couldn''t resolve host ''{0}''";
+    
+    // CustomPushBranchPage
+    public static final String MSG_PUSH_BRANCH_DIALOG = "Please select one of the existing remote branches or enter the name for a new remote branch";
+    
+    public static final String LBL_REMOTE_BRANCH_NAME = "Remote branch: ";
+    
+    public static final String LBL_CURRENT_BRANCH_NAME = "Current local branch: ";
+    
+    public static final String MSG_ERR_MISSING_REMOTE_BRANCH = "Remote branch cannot be empty";
 }
