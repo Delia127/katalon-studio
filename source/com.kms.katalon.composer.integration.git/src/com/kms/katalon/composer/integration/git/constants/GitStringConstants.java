@@ -58,4 +58,9 @@ public class GitStringConstants extends GlobalStringConstants {
     public static final String LBL_CURRENT_BRANCH_NAME = "Current local branch: ";
     
     public static final String MSG_ERR_MISSING_REMOTE_BRANCH = "Remote branch cannot be empty";
+    
+    // CustomPullWizardPage
+    public static final String LBL_REFRESH_BUTTON = "Refresh";
+    
+    public static final String HAND_ERROR_MSG_NO_REMOTE_BRANCHES_FOUND = "No remote branches found";
 }
