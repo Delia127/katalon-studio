@@ -36,7 +36,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 public class ShareProjectHandler extends AbstractGitProjectHandler {
     private static final String GITIGNORE_FILE_NAME = ".gitignore";
 
-    private static final String[] DEFAULT_IGNORE_RESOURCES = { "/bin/", "/Libs/", "/.settings/", "/.classpath", "/.svn/" };
+    private static final String[] DEFAULT_IGNORE_RESOURCES = { "/bin/", "/Libs/", "/.settings/", "/.classpath", ".svn/" };
 
     private static final String SHARE_PROJECT_COMMAND_ID = "org.eclipse.egit.ui.command.shareProject";
 
